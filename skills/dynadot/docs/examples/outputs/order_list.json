@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "order_list",
+  "search_by": "date_range",
+  "start_date": "2024/01/01",
+  "end_date": "2024/01/31",
+  "payment_method": "account_balance,credit_card",
+  "out_path": null,
+  "dynadot": {
+    "command": "order_list",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "OrderList": [
+        {
+          "OrderId": "123456",
+          "SubmittedDate": "1717000000000",
+          "Currency": "USD",
+          "PaymentMethod": "Account Balance",
+          "TotalCost": "$8.00",
+          "TotalPaid": "$8.00",
+          "Status": "Completed"
+        }
+      ]
+    }
+  }
+}

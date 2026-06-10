@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_open_auctions",
+  "page": 1,
+  "page_size": 50,
+  "types": [
+    "expired"
+  ],
+  "currency": "USD",
+  "out_path": null,
+  "dynadot": {
+    "command": "get_open_auctions",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "AuctionCount": "0",
+      "Auctions": []
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "legacy-v49.accounts.locations.verifications.complete",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli legacy-v49 accounts locations verifications complete --name accounts/123/locations/456/verifications/verify-001 --pin-file /tmp/pin.txt",
+    "selector": "accounts/123/locations/456/verifications/verify-001",
+    "risk_level": "high",
+    "risk_reasons": [
+      "Legacy verification completion mutates verification state."
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "legacy-v49.accounts.locations.verifications.complete",
+        "selector": "accounts/123/locations/456/verifications/verify-001",
+        "mask": "name",
+        "body_fingerprint": "9847afc4b0d41eaa085fbc7b64e1129170c775dd48f8c0be6688749cf702e470"
+      }
+    ],
+    "verification_plan": [
+      "Call legacy verifications list on the parent location and confirm completed verification has state COMPLETED."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "accounts/123/locations/456/verifications/verify-001",
+      "mask": "name",
+      "body_fingerprint": "9847afc4b0d41eaa085fbc7b64e1129170c775dd48f8c0be6688749cf702e470",
+      "mask_fingerprint": "82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89"
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "command": "event send",
+    "env_fingerprint": {
+      "base_url": "https://plausible.io",
+      "site_id": "example.com"
+    },
+    "generated_at_utc": "2026-02-02T00:00:00Z",
+    "preconditions": [
+      "Reviewed this plan and confirmed the event details are correct",
+      "Confirmed the event does not include PII in props",
+      "Acknowledged the action is irreversible"
+    ],
+    "proposed_changes": [
+      {
+        "action": "plausible.events.send",
+        "payload": {
+          "domain": "example.com",
+          "interactive": false,
+          "name": "test_event",
+          "props": {
+            "keys": [],
+            "redacted": false,
+            "values": {}
+          },
+          "referrer": "https://example.com/from",
+          "revenue": {
+            "amount": "9.99",
+            "currency": "USD"
+          },
+          "url": "https://example.com/"
+        }
+      }
+    ],
+    "risk_level": "irreversible",
+    "risk_reasons": [
+      "Sends an analytics event; Plausible does not provide a delete/undo API for events"
+    ],
+    "rollback": {
+      "notes": "Not supported: events cannot be removed once sent.",
+      "supported": false
+    },
+    "recovery": {
+      "end_state": "irreversible_and_clearly_labeled",
+      "strategy": "no_inverse",
+      "rollback_ready": false,
+      "rollback_plan": null
+    },
+    "selector": {
+      "domain": "example.com",
+      "name": "test_event",
+      "url": "https://example.com/"
+    },
+    "tool": "plausible-api-tool",
+    "verification_plan": "Optional: poll Stats API v2 for events on the URL path (best-effort, may be delayed).",
+    "version": "0.1.0"
+  },
+  "refused": true,
+  "reasons": [
+    "Write disabled: pass --apply --yes --ack-irreversible to send events (pollutes analytics)."
+  ],
+  "risk_level": "irreversible"
+}

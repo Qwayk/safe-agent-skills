@@ -1,0 +1,51 @@
+{
+  "plan_hash": "a6f1c7a7f2d85cf3e8af830057c08d74651b81e6152f1a17aac7021b69fabb93",
+  "operation": {
+    "operation_command": "ListContainers",
+    "method": "GET",
+    "path_template": "/containers",
+    "path_filled": "/containers",
+    "url": "https://api.openai.com/v1/containers",
+    "doc_url": "https://developers.openai.com/api/reference/resources/containers/methods/list",
+    "missing_path_params": []
+  },
+  "classification": {
+    "method": "GET",
+    "is_read": true,
+    "is_write": false,
+    "spend_money": false,
+    "irreversible": false,
+    "tags": [],
+    "gates": {
+      "apply": false,
+      "live": false,
+      "plan_in": false,
+      "yes": false,
+      "ack_spend_money": false,
+      "ack_irreversible": false
+    }
+  },
+  "request": {
+    "method": "GET",
+    "url": "https://api.openai.com/v1/containers",
+    "query": {},
+    "body": null,
+    "files": []
+  },
+  "response": {
+    "status": 200,
+    "url": "https://api.openai.com/v1/containers",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "type": "json",
+      "preview": "{}",
+      "size_bytes": 2
+    }
+  },
+  "verification": {
+    "status": "skipped",
+    "details": "No verification target for read-only operation"
+  }
+}

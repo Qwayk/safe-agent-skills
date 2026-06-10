@@ -1,0 +1,81 @@
+{
+  "api_command": "register",
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "api_command": "register",
+    "baseline": {
+      "params": {
+        "currency": "USD",
+        "domain": "example.com",
+        "duration": "1"
+      }
+    },
+    "command": "dynadot-api-tool --output json --plan-out plan.json api3 register --domain example.com --duration 1 --currency USD",
+    "env_fingerprint": "https://api.dynadot.com/api3.json",
+    "generated_at_utc": "2026-02-25T00:00:00Z",
+    "preconditions": [
+      "env_fingerprint must match",
+      "plan baseline must match current inputs"
+    ],
+    "preview": {
+      "params": {
+        "currency": "USD",
+        "domain": "example.com",
+        "duration": "1"
+      }
+    },
+    "proposed_changes": [
+      {
+        "params": {
+          "currency": "USD",
+          "domain": "example.com",
+          "duration": "1"
+        }
+      }
+    ],
+    "risk_level": "irreversible",
+    "risk_reasons": [
+      "dynadot-api3-write",
+      "irreversible/monetary"
+    ],
+    "rollback": {
+      "notes": "Most Dynadot writes are not safely auto-reversible.",
+      "supported": false
+    },
+    "recovery": {
+      "end_state": "irreversible_and_clearly_labeled",
+      "backups": [],
+      "snapshots": [],
+      "rollback_plan": null
+    },
+    "selector": {
+      "kind": "api3.register",
+      "value": "example.com"
+    },
+    "tool": "dynadot-api-tool",
+    "post_apply_verification_plan": {
+      "notes": "Best-effort: verify ResponseCode=0 from Dynadot.",
+      "type": "api-response-only"
+    },
+    "verification_plan": {
+      "notes": "Apply requires explicit no-snapshot approval before Dynadot HTTP when no useful before-state can be saved.",
+      "type": "no-snapshot-approval"
+    },
+    "before_state": {
+      "required": true,
+      "supported": false,
+      "status": "no_snapshot_available",
+      "selector": {
+        "kind": "api3.register",
+        "value": "example.com"
+      },
+      "storage": null,
+      "saved_at_utc": null,
+      "reason": "Refused: missing explicit no-snapshot approval for a Dynadot write with no reliable before-state snapshot. Review the dry-run plan, then rerun with --ack-no-snapshot if you approve applying without a snapshot.",
+      "notes": "No reliable before-state snapshot is available in this example. Approved apply may continue after explicit no-snapshot approval."
+    },
+    "version": "0.5.0"
+  },
+  "plan_out": "plan.json"
+}

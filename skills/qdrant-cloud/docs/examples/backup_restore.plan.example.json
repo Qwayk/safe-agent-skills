@@ -1,0 +1,53 @@
+{
+  "command": "qdrant-cloud-api-tool --output json --plan-out ./docs/examples/backup_restore.plan.example.json cluster-backup-v1 restore-backup --account-id 00000000-0000-0000-0000-000000000000 --backup-id 11111111-1111-1111-1111-111111111111 --request-json ./docs/examples/backup_restore.request.example.json",
+  "env_fingerprint": "qdrant-cloud:http://127.0.0.1:41631",
+  "generated_at_utc": "2026-06-04T12:08:28Z",
+  "operation": {
+    "domain": "cluster-backup-v1",
+    "http_path": "/api/cluster/backup/v1/accounts/{account_id}/backups/{backup_id}/restore",
+    "http_verb": "POST",
+    "path_params": [
+      {
+        "arg": "account_id",
+        "template": "account_id"
+      },
+      {
+        "arg": "backup_id",
+        "template": "backup_id"
+      }
+    ],
+    "rpc": "qdrant.cloud.cluster.backup.v1.BackupService.RestoreBackup"
+  },
+  "request": {
+    "snapshot": "example"
+  },
+  "request_sha256": "3dd2edcd039f015db910aba68b0b778a354cdce11d33c7ddba1a6a3f708a1dab",
+  "risk_level": "medium",
+  "risk_reasons": [
+    "write-like (non-GET)"
+  ],
+  "safety": {
+    "before_state": {
+      "notes": "This operation is part of Qdrant Cloud provider backup/restore. It is allowed live after the normal gates, but it is not automatic rollback for unrelated writes.",
+      "required": false,
+      "status": "provider-backup-restore-family",
+      "supported": true
+    },
+    "recovery": {
+      "contract": "provider-backup-restore",
+      "details": "Recovery is explicit at provider level through backup/restore commands (for example, create-backup, restore-backup, create-cluster-from-backup). This is not an automatic rollback for other writes."
+    },
+    "requires_ack_irreversible": false,
+    "requires_ack_spend_money": false,
+    "requires_apply": true,
+    "requires_live": true,
+    "requires_plan_in": false,
+    "requires_yes": false
+  },
+  "tool": "qdrant-cloud-api-tool",
+  "verification_plan": [
+    "Best-effort: capture HTTP status + response body.",
+    "For writes: if a GET operation exists with the same path template, run it as a read-back check."
+  ],
+  "version": "0.1.0"
+}

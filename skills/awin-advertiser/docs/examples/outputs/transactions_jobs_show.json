@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "command": "transactions jobs show",
+  "advertiser_id": "123456",
+  "endpoint": "/advertisers/123456/transactions/jobs/job-007",
+  "method": "GET",
+  "status": 200,
+  "query": {
+    "output": "all"
+  },
+  "job": {
+    "jobId": "job-007",
+    "status": "done",
+    "type": "validation",
+    "result": {
+      "errors": 0
+    }
+  }
+}

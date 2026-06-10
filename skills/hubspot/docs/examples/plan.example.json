@@ -1,0 +1,40 @@
+{
+  "tool": "qwayk-hubspot-safe-agent-cli",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-05-25T00:00:00Z",
+  "env_fingerprint": "https://api.hubapi.com",
+  "command": "qwayk-hubspot-safe-agent-cli hubspot objects create --object-type contacts --body-file body.json",
+  "family": "objects",
+  "action": "create",
+  "method": "POST",
+  "path": "/crm/objects/2026-03/{object_type}",
+  "risk_level": "low",
+  "risk_reasons": [],
+  "query": {},
+  "payload": {
+    "properties": {
+      "email": "person@example.com",
+      "firstname": "Ada",
+      "lastname": "Lovelace"
+    }
+  },
+  "upload_files": [],
+  "baseline": {
+    "env_fingerprint": "https://api.hubapi.com"
+  },
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "statement": "No saved before-state is available for this HubSpot write family/action. Apply may proceed only after explicit no-snapshot approval, and the receipt must record the recovery limit."
+  },
+  "proposed_changes": [
+    {
+      "family": "objects",
+      "action": "create"
+    }
+  ],
+  "rollback_plan": {
+    "possible": false,
+    "statement": "No automatic rollback is available because this CLI does not yet create safe before-state snapshots or provider backups for HubSpot writes."
+  }
+}

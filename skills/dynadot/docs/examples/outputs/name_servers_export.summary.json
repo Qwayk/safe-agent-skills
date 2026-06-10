@@ -1,0 +1,10 @@
+{
+  "command": "get_ns",
+  "count": 3,
+  "dry_run": true,
+  "errors": 0,
+  "ok": true,
+  "out_path": "name_servers.current.json",
+  "results": null
+}
+

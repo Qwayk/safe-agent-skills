@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "tool": "meta-ads-api-tool",
+  "version": "0.1.0",
+  "command": "meta-ads-api-tool --output json auth check",
+  "auth_check": {
+    "mode": "ad_account",
+    "ad_account_id": "act_1234567890",
+    "response": {
+      "id": "act_1234567890",
+      "account_id": "1234567890",
+      "name": "Example Account (redacted)",
+      "account_status": 1,
+      "currency": "USD",
+      "timezone_name": "America/Los_Angeles"
+    }
+  }
+}

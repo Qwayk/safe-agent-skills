@@ -1,0 +1,91 @@
+{
+  "artifacts_dir": ".state/runs/<REDACTED>",
+  "audit_log": ".state/runs/<REDACTED>/audit.jsonl",
+  "audit_log_global": null,
+  "candidates": [
+    {
+      "channel_id": "UC1111111111111111111111",
+      "channel_url": "https://www.youtube.com/channel/UC1111111111111111111111",
+      "index": 1,
+      "raw": {
+        "id": {
+          "channelId": "UC1111111111111111111111",
+          "kind": "youtube#channel"
+        },
+        "snippet": {
+          "customUrl": "@ExampleOne",
+          "description": "Example channel candidate #1",
+          "publishedAt": "2012-01-01T00:00:00Z",
+          "title": "Example One"
+        }
+      },
+      "snippet": {
+        "customUrl": "@ExampleOne",
+        "description": "Example channel candidate #1",
+        "publishedAt": "2012-01-01T00:00:00Z",
+        "thumbnails": null,
+        "title": "Example One"
+      },
+      "title": "Example One"
+    },
+    {
+      "channel_id": "UC2222222222222222222222",
+      "channel_url": "https://www.youtube.com/channel/UC2222222222222222222222",
+      "index": 2,
+      "raw": {
+        "id": {
+          "channelId": "UC2222222222222222222222",
+          "kind": "youtube#channel"
+        },
+        "snippet": {
+          "customUrl": "@ExampleTwo",
+          "description": "Example channel candidate #2",
+          "publishedAt": "2014-01-01T00:00:00Z",
+          "title": "Example Two"
+        }
+      },
+      "snippet": {
+        "customUrl": "@ExampleTwo",
+        "description": "Example channel candidate #2",
+        "publishedAt": "2014-01-01T00:00:00Z",
+        "thumbnails": null,
+        "title": "Example Two"
+      },
+      "title": "Example Two"
+    }
+  ],
+  "input": {
+    "kind": "query",
+    "raw": "Example",
+    "value": "Example"
+  },
+  "live": true,
+  "method": "search.list",
+  "ok": true,
+  "plan_out": ".state/runs/<REDACTED>/plan.json",
+  "reasons": [
+    "Selection required: multiple channels matched"
+  ],
+  "refusal_type": "SelectionRequired",
+  "refused": true,
+  "runs_index": ".state/runs/index.jsonl",
+  "run_id": "<REDACTED>",
+  "selection": {
+    "mechanisms": [
+      {
+        "example": "youtube-api-tool --output json channels resolve --channel \"<QUERY>\" --live --pick 1",
+        "type": "pick"
+      },
+      {
+        "note": "Re-run resolve with an explicit channelId for an unambiguous result.",
+        "type": "channel_id"
+      }
+    ],
+    "required": true
+  },
+  "suggested_next_commands": [
+    "youtube-api-tool --output json channels resolve --channel UC1111111111111111111111 --live",
+    "youtube-api-tool --output json channels resolve --channel UC2222222222222222222222 --live"
+  ]
+}
+

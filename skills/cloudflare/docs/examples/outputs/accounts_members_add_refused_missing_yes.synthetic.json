@@ -1,0 +1,14 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "ok": true,
+  "reasons": [
+    "Refusing: this is a write. Re-run with --apply --yes after reviewing the plan."
+  ],
+  "refusal_type": "SafetyError",
+  "refused": true,
+  "run_id": "2026-02-10T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}
+

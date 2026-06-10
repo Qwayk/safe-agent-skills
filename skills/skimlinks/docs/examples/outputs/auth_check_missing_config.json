@@ -1,0 +1,20 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "auth_url": "https://authentication.skimapis.com/access_token",
+  "checks": [
+    {
+      "error": "Missing Skimlinks credentials. Set SKIMLINKS_CLIENT_ID and SKIMLINKS_CLIENT_SECRET.",
+      "error_type": "ValidationError",
+      "ok": false,
+      "scope": "shared",
+      "token_received": false
+    }
+  ],
+  "ok": false,
+  "product_credentials_configured": false,
+  "publisher_id_configured": false,
+  "run_id": null,
+  "runs_index": "/path/to/skimlinks-safe-cli/.state/runs/index.jsonl"
+}

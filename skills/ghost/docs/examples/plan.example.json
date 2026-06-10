@@ -1,0 +1,76 @@
+{
+  "dry_run": true,
+  "kind": "ghost.post.patch",
+  "ok": true,
+  "recovery": {
+    "end_state": "snapshot_plus_restore",
+    "strategy": "restore_from_local_snapshots",
+    "rollback_ready": false,
+    "rollback_plan": {
+      "type": "manual_restore_from_snapshot",
+      "artifacts_dir": "backup-snapshots",
+      "artifacts_expected_on_apply": [
+        "__before.json",
+        "__after.json",
+        "__meta.json"
+      ],
+      "notes": "Use the saved __before.json snapshot together with the matching __meta.json file to rebuild the prior state with a new reviewed write command."
+    },
+    "backups": [
+      {
+        "type": "snapshot_dir",
+        "path": "backup-snapshots"
+      }
+    ],
+    "snapshots": [],
+    "restore_note": "This write family keeps local snapshot files under backup-snapshots/ so you can restore from the saved before-state after apply."
+  },
+  "plan": {
+    "target": {
+      "id": "POST_ID_REDACTED",
+      "slug": "example-post-slug"
+    },
+    "require_current": "draft",
+    "changes": {
+      "title": "Example title (patched)",
+      "custom_excerpt": "Example excerpt (patched).",
+      "meta_title": "Example meta title (patched)",
+      "meta_description": "Example meta description (patched)",
+      "og_title": "Example OG title (patched)",
+      "og_description": "Example OG description (patched)",
+      "twitter_title": "Example Twitter title (patched)",
+      "twitter_description": "Example Twitter description (patched)"
+    },
+    "writes": [
+      {
+        "type": "ghost_admin_api",
+        "method": "PUT",
+        "path": "/posts/POST_ID_REDACTED/",
+        "note": "Write is gated behind --apply; backups + receipt will be produced on apply."
+      }
+    ],
+    "recovery": {
+      "end_state": "snapshot_plus_restore",
+      "strategy": "restore_from_local_snapshots",
+      "rollback_ready": false,
+      "rollback_plan": {
+        "type": "manual_restore_from_snapshot",
+        "artifacts_dir": "backup-snapshots",
+        "artifacts_expected_on_apply": [
+          "__before.json",
+          "__after.json",
+          "__meta.json"
+        ],
+        "notes": "Use the saved __before.json snapshot together with the matching __meta.json file to rebuild the prior state with a new reviewed write command."
+      },
+      "backups": [
+        {
+          "type": "snapshot_dir",
+          "path": "backup-snapshots"
+        }
+      ],
+      "snapshots": [],
+      "restore_note": "This write family keeps local snapshot files under backup-snapshots/ so you can restore from the saved before-state after apply."
+    }
+  }
+}

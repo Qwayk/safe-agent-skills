@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "auth": {
+    "auth_mode": "adc",
+    "scopes_count": 5,
+    "service_account_json": null,
+    "has_refresh_token": null
+  },
+  "admin_base_url": "https://analyticsadmin.googleapis.com/",
+  "data_base_url": "https://analyticsdata.googleapis.com/",
+  "token_refreshed": false,
+  "oauth_token": {
+    "exists": false,
+    "path": ".state/token.json"
+  },
+  "run_id": null,
+  "artifacts_dir": null,
+  "runs_index": ".state/runs/index.jsonl",
+  "audit_log": null,
+  "audit_log_global": null
+}

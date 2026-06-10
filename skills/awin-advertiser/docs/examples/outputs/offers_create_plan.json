@@ -1,0 +1,52 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "offers create",
+  "advertiser_id": "123456",
+  "endpoint": "/promotion/advertiser/123456",
+  "method": "POST",
+  "request_payload": {
+    "offer_type": "promotion"
+  },
+  "plan": {
+    "tool": "awin-advertiser-safe-cli",
+    "version": "0.1.1",
+    "generated_at_utc": "2026-06-09T00:00:00Z",
+    "env_fingerprint": "https://api.awin.com",
+    "command": "awin-advertiser-safe-cli offers create --advertiser-id 123456 --offer-file examples/offer_example.json --plan-out examples/offers_plan.json",
+    "selector": {
+      "advertiser_id": "123456",
+      "endpoint": "promotion/advertiser/123456"
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "offers create"
+    ],
+    "preconditions": [
+      "Dry-run only by default",
+      "Apply requires --apply --yes --ack-irreversible"
+    ],
+    "baseline": {
+      "env_fingerprint": "https://api.awin.com",
+      "offer_file": "examples/offer_example.json",
+      "offer_file_sha256": "<REDACTED>",
+      "offer_type": "promotion"
+    },
+    "proposed_changes": [
+      {
+        "resource": "offers",
+        "action": "create",
+        "advertiser_id": "123456"
+      }
+    ],
+    "verification_plan": {
+      "type": "provider-response",
+      "notes": "Refuse only on transport or validation failure; review apply summary and receipt summary"
+    },
+    "rollback": {
+      "supported": false,
+      "notes": "No rollback endpoint is defined in current offer docs"
+    }
+  },
+  "plan_out": "examples/offers_plan.json"
+}

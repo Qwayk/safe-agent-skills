@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_transfer_status",
+  "domain": "example.com",
+  "transfer_type": "in",
+  "out_path": null,
+  "dynadot": {
+    "command": "get_transfer_status",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "TransferList": [
+        {
+          "Domain": "example.com",
+          "OrderId": "123456",
+          "TransferStatus": "waiting"
+        }
+      ]
+    }
+  }
+}

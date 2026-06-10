@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "account-management.locations.admins.create",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessaccountmanagement.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/account_management_locations_admins_create_plan.mock.json --yes --receipt-out /tmp/account_management_locations_admins_create_receipt.mock.json account-management locations admins create --parent locations/abc --admin-file /tmp/location_admin.json",
+    "selector": "locations/abc/admins/admin-789",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "account-management.locations.admins.list",
+      "request": {
+        "operation": "account-management.locations.admins.list",
+        "method": "GET",
+        "host": "https://mybusinessaccountmanagement.googleapis.com",
+        "path": "v1/locations/abc/admins"
+      },
+      "response": {
+        "admins": [
+          {
+            "name": "locations/abc/admins/admin-789",
+            "admin": "owner@example.com",
+            "role": "OWNER"
+          }
+        ]
+      }
+    },
+    "diff_applied": [
+      "admin",
+      "role"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

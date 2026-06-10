@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "reasons": [
+    "Customer id is not allowlisted for writes: 1234567890"
+  ],
+  "refusal_type": "SafetyError",
+  "refused": true
+}

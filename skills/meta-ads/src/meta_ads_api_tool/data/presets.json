@@ -1,0 +1,113 @@
+{
+  "schema_version": "1",
+  "presets": [
+    {
+      "id": "ecom_core",
+      "label": "Ecommerce (core)",
+      "description": "Core ecommerce reporting at ad level (spend + purchases + ROAS) plus minimal inventory context.",
+      "use_case_tags": ["ecommerce", "performance", "roas"],
+      "surfaces": {
+        "campaigns": {
+          "fields": "id,name,status,objective,created_time,updated_time"
+        },
+        "ad_sets": {
+          "fields": "id,name,status,campaign_id,optimization_goal,billing_event,daily_budget,lifetime_budget,created_time,updated_time"
+        },
+        "ads": {
+          "fields": "id,name,status,campaign_id,adset_id,creative,created_time,updated_time"
+        },
+        "creatives": {
+          "fields": "id,name,object_story_spec,asset_feed_spec,image_url,thumbnail_url,call_to_action_type"
+        },
+        "insights": {
+          "level": "ad",
+          "fields": "ad_id,campaign_id,adset_id,date_start,date_stop,impressions,clicks,spend,cpm,cpc,ctr,frequency,actions,action_values,purchase_roas,website_purchase_roas",
+          "params": {
+            "time_increment": "1"
+          }
+        }
+      }
+    },
+    {
+      "id": "leadgen_core",
+      "label": "Lead gen (core)",
+      "description": "Lead-gen reporting at ad level (leads + CPL) plus minimal inventory context.",
+      "use_case_tags": ["lead_gen", "performance", "cpl"],
+      "surfaces": {
+        "campaigns": {
+          "fields": "id,name,status,objective,created_time,updated_time"
+        },
+        "ad_sets": {
+          "fields": "id,name,status,campaign_id,optimization_goal,billing_event,daily_budget,lifetime_budget,created_time,updated_time"
+        },
+        "ads": {
+          "fields": "id,name,status,campaign_id,adset_id,creative,created_time,updated_time"
+        },
+        "creatives": {
+          "fields": "id,name,object_story_spec,asset_feed_spec,image_url,thumbnail_url,call_to_action_type"
+        },
+        "insights": {
+          "level": "ad",
+          "fields": "ad_id,campaign_id,adset_id,date_start,date_stop,impressions,clicks,spend,cpm,cpc,ctr,frequency,actions,cost_per_action_type",
+          "params": {
+            "time_increment": "1"
+          }
+        }
+      }
+    },
+    {
+      "id": "maximal_firehose",
+      "label": "Maximal (firehose)",
+      "description": "A maximal, analysis-friendly preset intended for snapshot exports. May require extra permissions.",
+      "use_case_tags": ["maximal", "diagnostics", "creative_fatigue", "reporting"],
+      "surfaces": {
+        "campaigns": {
+          "fields": "id,name,status,objective,buying_type,special_ad_categories,created_time,updated_time,start_time,stop_time"
+        },
+        "ad_sets": {
+          "fields": "id,name,status,campaign_id,optimization_goal,billing_event,bid_strategy,bid_amount,daily_budget,lifetime_budget,attribution_spec,promoted_object,targeting,created_time,updated_time,start_time,end_time"
+        },
+        "ads": {
+          "fields": "id,name,status,campaign_id,adset_id,configured_status,effective_status,creative,created_time,updated_time"
+        },
+        "creatives": {
+          "fields": "id,name,object_story_spec,asset_feed_spec,image_url,thumbnail_url,call_to_action_type,object_type,instagram_permalink_url,url_tags"
+        },
+        "insights": {
+          "level": "ad",
+          "fields": "account_id,campaign_id,adset_id,ad_id,ad_name,adset_name,campaign_name,date_start,date_stop,impressions,reach,clicks,unique_clicks,spend,cpm,cpc,ctr,frequency,inline_link_clicks,inline_link_click_ctr,outbound_clicks,outbound_clicks_ctr,unique_outbound_clicks,cost_per_inline_link_click,cost_per_outbound_click,cost_per_unique_outbound_click,actions,action_values,cost_per_action_type,purchase_roas,website_purchase_roas,quality_ranking,engagement_rate_ranking,conversion_rate_ranking,video_play_actions,video_avg_time_watched_actions,video_thruplay_watched_actions,video_p25_watched_actions,video_p50_watched_actions,video_p75_watched_actions,video_p95_watched_actions",
+          "params": {
+            "time_increment": "1"
+          }
+        }
+      }
+    },
+    {
+      "id": "creative_fatigue_daily",
+      "label": "Creative fatigue (daily)",
+      "description": "Daily ad-level metrics and rankings to spot fatigue and performance shifts over time.",
+      "use_case_tags": ["diagnostics", "creative_fatigue", "daily", "rankings"],
+      "surfaces": {
+        "campaigns": {
+          "fields": "id,name,status,objective,created_time,updated_time"
+        },
+        "ad_sets": {
+          "fields": "id,name,status,campaign_id,optimization_goal,billing_event,daily_budget,lifetime_budget,targeting,created_time,updated_time"
+        },
+        "ads": {
+          "fields": "id,name,status,campaign_id,adset_id,configured_status,effective_status,creative,created_time,updated_time"
+        },
+        "creatives": {
+          "fields": "id,name,object_story_spec,asset_feed_spec,image_url,thumbnail_url,call_to_action_type,object_type,instagram_permalink_url,url_tags"
+        },
+        "insights": {
+          "level": "ad",
+          "fields": "campaign_id,adset_id,ad_id,date_start,date_stop,impressions,clicks,spend,cpm,cpc,ctr,frequency,actions,action_values,quality_ranking,engagement_rate_ranking,conversion_rate_ranking",
+          "params": {
+            "time_increment": "1"
+          }
+        }
+      }
+    }
+  ]
+}

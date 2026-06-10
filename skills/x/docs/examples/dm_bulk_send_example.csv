@@ -1,0 +1,4 @@
+recipient,message,intent_evidence
+alice,"Hi — sharing the info you asked for.","User requested pricing details."
+bob,"Following up on your question.","User opted in on a call."
+

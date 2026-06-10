@@ -1,0 +1,1 @@
+{"customer":{"id":"YOUR_CUSTOMER_ID"},"campaign":{"id":"1","resource_name":"customers/YOUR_CUSTOMER_ID/campaigns/1"},"asset_group":{"id":"10","resource_name":"customers/YOUR_CUSTOMER_ID/assetGroups/10","name":"Example Asset Group","status":"ENABLED"}}

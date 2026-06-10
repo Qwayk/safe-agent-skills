@@ -1,0 +1,13 @@
+{
+  "artifacts_dir": ".state/runs/2026-06-04T000054Z_example",
+  "audit_log": ".state/runs/2026-06-04T000054Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "ok": true,
+  "reasons": [
+    "Refused: Google Merchant live write requires explicit no-snapshot approval when no saved snapshot is available for this command. Use the dry-run plan for review only; no Google Merchant write was sent."
+  ],
+  "refusal_type": "SafetyError",
+  "refused": true,
+  "run_id": "2026-06-04T000054Z_example",
+  "runs_index": ".state/runs/index.jsonl"
+}

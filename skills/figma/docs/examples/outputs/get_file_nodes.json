@@ -1,0 +1,66 @@
+{
+  "artifacts_dir": "/tmp/figma_safe_agent_cli_proof/.state/runs/2026-05-27T091354Z_6a8cd0",
+  "audit_log": "/tmp/figma_safe_agent_cli_proof/.state/runs/2026-05-27T091354Z_6a8cd0/audit.jsonl",
+  "audit_log_global": null,
+  "dry_run": false,
+  "env_fingerprint": "http://127.0.0.1:8765|personal",
+  "ok": true,
+  "operation": {
+    "area": "files",
+    "method": "GET",
+    "op_key": "get-file-nodes",
+    "path_template": "/v1/files/{file_key}/nodes",
+    "safety": {
+      "live_verification_note": "Pending live verification once this operation is wired into the runtime and auth mode is connected",
+      "mode": "read-only",
+      "requires_ack_irreversible": false,
+      "requires_yes": false
+    },
+    "title": "Get file JSON for specific nodes"
+  },
+  "plan": {
+    "body": null,
+    "env_fingerprint": "http://127.0.0.1:8765|personal",
+    "method": "GET",
+    "operation_id": "files:get-file-nodes",
+    "path": "/v1/files/file_123/nodes",
+    "query": {
+      "depth": "2",
+      "ids": "1"
+    },
+    "url": "http://127.0.0.1:8765/v1/files/file_123/nodes",
+    "verification_note": "Read response is the verification signal for this operation."
+  },
+  "request": {
+    "body": null,
+    "method": "GET",
+    "path": "/v1/files/file_123/nodes",
+    "query": {
+      "depth": "2",
+      "ids": "1"
+    },
+    "verification_note": "Read response is the verification signal for this operation."
+  },
+  "response": {
+    "body_json": {
+      "name": "Proof file",
+      "nodes": {
+        "1": {
+          "id": "1",
+          "name": "Node 1"
+        }
+      },
+      "query": {
+        "depth": "2",
+        "ids": "1"
+      }
+    },
+    "body_text": null,
+    "status": 200,
+    "url": "http://127.0.0.1:8765/v1/files/file_123/nodes?ids=1&depth=2"
+  },
+  "response_status": 200,
+  "run_id": "2026-05-27T091354Z_6a8cd0",
+  "runs_index": "/tmp/figma_safe_agent_cli_proof/.state/runs/index.jsonl",
+  "verification_note": "Read response is the verification signal for this operation."
+}

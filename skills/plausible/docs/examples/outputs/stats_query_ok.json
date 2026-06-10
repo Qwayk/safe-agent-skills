@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "results": [
+    {
+      "dimensions": [
+        "example.com/"
+      ],
+      "metrics": [
+        123
+      ]
+    }
+  ]
+}

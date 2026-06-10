@@ -1,0 +1,14 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-16T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-16T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "ok": true,
+  "reasons": [
+    "Refusing: this operation is irreversible-ish or can return/create a secret and requires --ack-irreversible."
+  ],
+  "refusal_type": "SafetyError",
+  "refused": true,
+  "run_id": "2026-02-16T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}
+

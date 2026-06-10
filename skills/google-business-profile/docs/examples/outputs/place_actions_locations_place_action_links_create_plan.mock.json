@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "place-actions.locations.place-action-links.create",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessplaceactions.googleapis.com",
+    "command": "google-business-profile-safe-cli place-actions locations place-action-links create --parent locations/abc --place-action-link-file /tmp/place_action_link.json",
+    "selector": "locations/abc",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Place action link create"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "place-actions.locations.place-action-links.create",
+        "selector": "locations/abc",
+        "mask": "name",
+        "body_fingerprint": "4e1ebcaeaf5cf1f3c0f0e3db1c7d16b5f6d4b0f7d5cf6bb7f3f0ea7cb0f5f5a58"
+      }
+    ],
+    "verification_plan": [
+      "Create the place action link, then read it back by name using get."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/abc",
+      "mask": "name",
+      "body_fingerprint": "4e1ebcaeaf5cf1f3c0f0e3db1c7d16b5f6d4b0f7d5cf6bb7f3f0ea7cb0f5f5a58",
+      "mask_fingerprint": "2d3b5e8a4f4f0f6a1dd4f3d2f8a4b6c5d5b8f0a3e0bb95c4f6f8d4e3c8f3f2f1f"
+    }
+  }
+}

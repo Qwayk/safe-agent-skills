@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "verifications.locations.verifications.complete",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessverifications.googleapis.com",
+    "command": "google-business-profile-safe-cli verifications locations verifications complete --name locations/abc/verifications/verify-001 --pin-file /tmp/pin.txt",
+    "selector": "locations/abc/verifications/verify-001",
+    "risk_level": "high",
+    "risk_reasons": [
+      "Verification completion mutates verification state."
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "verifications.locations.verifications.complete",
+        "selector": "locations/abc/verifications/verify-001",
+        "mask": "name",
+        "body_fingerprint": "9847afc4b0d41eaa085fbc7b64e1129170c775dd48f8c0be6688749cf702e470"
+      }
+    ],
+    "verification_plan": [
+      "Call verifications list on the parent location and confirm the same verification exists with state COMPLETED."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/abc/verifications/verify-001",
+      "mask": "name",
+      "body_fingerprint": "9847afc4b0d41eaa085fbc7b64e1129170c775dd48f8c0be6688749cf702e470",
+      "mask_fingerprint": "82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89"
+    }
+  }
+}

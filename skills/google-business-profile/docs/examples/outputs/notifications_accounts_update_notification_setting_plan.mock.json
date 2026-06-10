@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "notifications.accounts.update-notification-setting",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessnotifications.googleapis.com",
+    "command": "google-business-profile-safe-cli notifications accounts update-notification-setting --name accounts/123/notificationSetting --update-mask emailNotifications --notification-setting-file /tmp/notification_setting.json",
+    "selector": "accounts/123/notificationSetting",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Notification setting update"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "notifications.accounts.update-notification-setting",
+        "selector": "accounts/123/notificationSetting",
+        "mask": "emailNotifications",
+        "body_fingerprint": "fdec77660a96286f4f9833e866a4e6bd6c2d3c54d396f336de7d3b84fc11cbbb"
+      }
+    ],
+    "verification_plan": [
+      "Read the notification setting with get-notification-setting."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "accounts/123/notificationSetting",
+      "mask": "emailNotifications",
+      "body_fingerprint": "fdec77660a96286f4f9833e866a4e6bd6c2d3c54d396f336de7d3b84fc11cbbb",
+      "mask_fingerprint": "800f589e2c50dbe064fecea361ced963f317b50fd97b96a5207bf4ff447ef469"
+    }
+  }
+}

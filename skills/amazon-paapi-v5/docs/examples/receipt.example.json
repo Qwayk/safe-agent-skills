@@ -1,0 +1,19 @@
+{
+  "example": true,
+  "note": "This is a redacted example receipt format for documentation. amazon-pa-api-tool is read-only and does not currently write receipt files automatically.",
+  "tool": "amazon-pa-api-tool",
+  "version": "0.1.0",
+  "applied_at_utc": "2026-01-22T00:00:00Z",
+  "env_fingerprint": "webservices.amazon.com/us-east-1/www.amazon.com",
+  "command": "amazon-pa-api-tool product search --query \"wireless earbuds\" --limit 1",
+  "selector": "query:wireless earbuds",
+  "changed": false,
+  "verification": {
+    "ok": null,
+    "details": "Not applicable (read-only example)"
+  },
+  "diff_applied": [],
+  "backups": [],
+  "rollback_plan": null
+}
+

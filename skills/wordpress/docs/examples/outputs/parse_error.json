@@ -1,0 +1,5 @@
+{
+  "error": "Missing command. Use --help to see available commands.",
+  "error_type": "ValidationError",
+  "ok": false
+}

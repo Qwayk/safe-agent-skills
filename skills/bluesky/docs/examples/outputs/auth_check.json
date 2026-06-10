@@ -1,0 +1,16 @@
+{
+  "access_jwt_present": false,
+  "admin_token_present": false,
+  "app_password_present": false,
+  "default_pds_url": null,
+  "entryway_url": "https://bsky.social",
+  "identifier_present": false,
+  "live_checked": false,
+  "oauth_token": {
+    "exists": false,
+    "path": ".state/token.json"
+  },
+  "ok": true,
+  "refresh_jwt_present": false,
+  "session_base_url": null
+}

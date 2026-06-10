@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "legacy-v49.accounts.locations.media.start-upload",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli legacy-v49 accounts locations media start-upload --parent accounts/123/locations/456",
+    "selector": "accounts/123/locations/456",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Media upload start marker"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "legacy-v49.accounts.locations.media.start-upload",
+        "selector": "accounts/123/locations/456",
+        "mask": "mediaItemDataRef",
+        "body_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      }
+    ],
+    "verification_plan": [
+      "No direct read-back verification is available for this legacy media start-upload; success is inferred from response mediaItemDataRef.resourceName, dataRef.resourceName, resourceName, or sourceUrl."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "accounts/123/locations/456",
+      "mask": "mediaItemDataRef",
+      "body_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mask_fingerprint": "6398b169f7a3bb727b7110a43450481083b39aa831323788515b4a6abea0ec2c"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "meta": {
+    "customer_id": "YOUR_CUSTOMER_ID",
+    "row_count": 1,
+    "limited": false,
+    "page_size": 1000
+  },
+  "rows": [
+    {
+      "customer": {
+        "id": "YOUR_CUSTOMER_ID"
+      }
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "refused": true,
+  "reasons": [
+    "Refused: TikTok Marketing API write apply requires explicit no-snapshot approval until this command saves real before-state before provider writes or receipt output"
+  ],
+  "refusal_type": "SafetyError",
+  "plan": {
+    "tool": "tiktok-marketing-api-tool",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-01-01T00:00:00Z",
+    "env_fingerprint": "https://business-api.tiktok.com",
+    "operation": {
+      "operation_command": "bc-image-upload",
+      "method": "POST",
+      "path_template": "/open_api/v1.3/bc/image/upload/",
+      "path_filled": "/open_api/v1.3/bc/image/upload/",
+      "url": "https://business-api.tiktok.com/open_api/v1.3/bc/image/upload/",
+      "doc_url": "https://business-api.tiktok.com/portal/docs?id=1739938996913218",
+      "family": "bc",
+      "body_mode": "multipart",
+      "source_files": [
+        "bc_api.py",
+        "bc_image_upload.yml"
+      ],
+      "tags": [],
+      "source": "python_sdk",
+      "summary": "Upload certificate images for an ad account.  # noqa: E501"
+    },
+    "headers": {
+      "provided": {
+        "Access-Token": "***REDACTED***"
+      },
+      "missing": []
+    },
+    "inputs": {
+      "path": {},
+      "query": {},
+      "body": {
+        "bc_id": "bc_123"
+      },
+      "files": {
+        "image_file": "/tmp/cert.png"
+      },
+      "body_mode": "multipart"
+    },
+    "requirements": {
+      "missing_required": []
+    },
+    "dry_run": true,
+    "classification": {
+      "method": "POST",
+      "is_read": false,
+      "is_write": true,
+      "gates": {
+        "live": true,
+        "apply": true,
+        "plan_in": true,
+        "yes": true,
+        "ack_irreversible": true
+      }
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "write-operation",
+      "irreversible-write",
+      "before-state-required"
+    ],
+    "preconditions": [
+      "env_fingerprint must match when applying from a reviewed plan",
+      "live writes require --live --apply",
+      "live writes require --plan-in",
+      "live writes require --yes",
+      "live writes require --ack-irreversible"
+    ],
+    "before_state": {
+      "required": true,
+      "supported": false,
+      "status": "blocked",
+      "saved_path": null,
+      "provider_backup_id": null,
+      "reason": "This source tool can build and review TikTok Marketing write plans, but it does not yet save operation-specific before-state or provider backup data before applying them.",
+      "provider_write": {
+        "operation_command": "bc-image-upload",
+        "method": "POST",
+        "path_template": "/open_api/v1.3/bc/image/upload/",
+        "url": "https://business-api.tiktok.com/open_api/v1.3/bc/image/upload/",
+        "family": "bc",
+        "body_mode": "multipart"
+      }
+    },
+    "verification_plan": {
+      "status": "blocked_before_apply",
+      "steps": [
+        "Confirm no TikTok Marketing provider write endpoint was called.",
+        "Confirm no successful write receipt was emitted.",
+        "Confirm no receipt file was written."
+      ],
+      "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply."
+    },
+    "rollback": {
+      "supported": false,
+      "mode": "irreversible_and_clearly_labeled",
+      "automatic_rollback": false,
+      "requires_ack_irreversible": true,
+      "notes": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current TikTok Marketing write families as irreversible_and_clearly_labeled and use the saved plan and refusal output for manual follow-up only."
+    },
+    "plan_hash": "<REDACTED>"
+  },
+  "verification_plan": {
+    "status": "blocked_before_apply",
+    "steps": [
+      "Confirm no TikTok Marketing provider write endpoint was called.",
+      "Confirm no successful write receipt was emitted.",
+      "Confirm no receipt file was written."
+    ],
+    "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply."
+  },
+  "rollback": {
+    "supported": false,
+    "mode": "irreversible_and_clearly_labeled",
+    "automatic_rollback": false,
+    "requires_ack_irreversible": true,
+    "notes": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current TikTok Marketing write families as irreversible_and_clearly_labeled and use the saved plan and refusal output for manual follow-up only."
+  }
+}

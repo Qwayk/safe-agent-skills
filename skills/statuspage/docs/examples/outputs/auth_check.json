@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "tool": "statuspage-api-tool",
+  "auth": {
+    "required": false,
+    "type": "none"
+  },
+  "note": "This tool calls Statuspage public Status API endpoints and does not use authentication."
+}

@@ -1,0 +1,87 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "baseline": {
+      "body_sha256": "be2b009550eca614b68cb89afb5fe92d35916b6d4408761f0104816ca6714bdb",
+      "command": "create",
+      "env_fingerprint": "7832d32cb622c16ac0f41f2c8e9ef26a7c06f57256a6684e43e3321666e03f85",
+      "family": "ad-campaigns",
+      "method": "POST",
+      "path_template": "/adAccounts/{ad_account_id}/adCampaigns",
+      "query": {},
+      "resolved_path": "https://api.example.com/adAccounts/123456/adCampaigns"
+    },
+    "before_state": {
+      "required": true,
+      "statement": "LinkedIn Ads live writes are blocked when no saved snapshot is available for this operation.",
+      "supported": false
+    },
+    "command": "linkedin-ads-api-tool --output json --no-artifacts --env-file examples/example.env ad-campaigns create --ad-account-id 123456 --body-json {\"name\":\"Sample campaign\",\"status\":\"PAUSED\"}",
+    "env_fingerprint": "7832d32cb622c16ac0f41f2c8e9ef26a7c06f57256a6684e43e3321666e03f85",
+    "generated_at_utc": "2026-06-04T11:24:38Z",
+    "operation": {
+      "command": "create",
+      "doc_url": "https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads/account-structure/create-and-manage-campaigns?view=li-lms-2026-05",
+      "family": "ad-campaigns",
+      "method": "POST",
+      "path_template": "/adAccounts/{ad_account_id}/adCampaigns",
+      "safety": "write-apply",
+      "status": "implemented"
+    },
+    "plan_fingerprint": "1aaf00b32b5ea67ba7c04756e491b904724fe27504b4208188dbb0745800e099",
+    "preconditions": [
+      "env_fingerprint must match plan",
+      "resolved request must match signature",
+      "live apply requires --ack-irreversible"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "POST /adAccounts/{ad_account_id}/adCampaigns",
+        "type": "api_request"
+      }
+    ],
+    "request": {
+      "body": {
+        "name": "Sample campaign",
+        "status": "PAUSED"
+      },
+      "method": "POST",
+      "path_template": "/adAccounts/{ad_account_id}/adCampaigns",
+      "path_values": {
+        "ad_account_id": "123456"
+      },
+      "query": {},
+      "resolved_path": "https://api.example.com/adAccounts/123456/adCampaigns"
+    },
+    "request_signature": "1aaf00b32b5ea67ba7c04756e491b904724fe27504b4208188dbb0745800e099",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "access-gated",
+      "tier-gated",
+      "live-unverified"
+    ],
+    "rollback": {
+      "mode": "irreversible_and_clearly_labeled",
+      "notes": "This runtime does not capture before-state snapshots or provider backups. Treat every live LinkedIn write as irreversible here.",
+      "requires_ack_irreversible": true,
+      "supported": false
+    },
+    "tool": "linkedin-ads-api-tool",
+    "verification_plan": {
+      "checks": [
+        "Apply gates pass only with the required flags and matching plan.",
+        "Current write applies require explicit no-snapshot approval before LinkedIn HTTP.",
+        "No LinkedIn Ads write is sent until before-state capture support exists."
+      ],
+      "type": "no-snapshot-approval"
+    },
+    "version": "0.1.0"
+  },
+  "plan_out": null,
+  "run_id": null,
+  "runs_index": "examples/.state/runs/index.jsonl"
+}

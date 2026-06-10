@@ -1,0 +1,32 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "ok": true,
+  "operation": {
+    "area": "comments",
+    "auth_notes": "OAuth2 file_comments:write or PAT with matching write scope.",
+    "body_json_file_expected": true,
+    "docs_url": "https://developers.figma.com/docs/rest-api/comments-endpoints/",
+    "method": "POST",
+    "op_key": "post-comment",
+    "optional_query_params": [],
+    "path_template": "/v1/files/{file_key}/comments",
+    "required_path_params": [
+      "file_key"
+    ],
+    "required_query_exactly_one_of": [],
+    "required_query_params": [],
+    "safety": {
+      "live_verification_note": "Pending live verification once this operation is wired into the runtime and auth mode is connected",
+      "mode": "write",
+      "requires_ack_irreversible": false,
+      "requires_yes": true
+    },
+    "scope_notes": "Create a new comment or reply in a file.",
+    "title": "Add comment",
+    "verification_strategy": "comment-post"
+  },
+  "run_id": null,
+  "runs_index": "/tmp/figma_safe_agent_cli_proof/.state/runs/index.jsonl"
+}

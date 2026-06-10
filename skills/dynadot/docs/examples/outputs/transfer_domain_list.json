@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "transfer_domain_list",
+  "out_path": null,
+  "dynadot": {
+    "command": "transfer_domain_list",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "TransferOutDomainList": [
+        {
+          "Domain": "example.com",
+          "OrderId": "123456",
+          "ItemStatus": "waiting"
+        }
+      ]
+    }
+  }
+}

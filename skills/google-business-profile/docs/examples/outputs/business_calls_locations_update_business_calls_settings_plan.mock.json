@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "business-calls.locations.update-business-calls-settings",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessbusinesscalls.googleapis.com",
+    "command": "google-business-profile-safe-cli business-calls locations update-business-calls-settings --name locations/123/businesscallssettings --update-mask businessCallsEnabled --business-calls-settings-file /tmp/business_calls_settings.json",
+    "selector": "locations/123/businesscallssettings",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Business calls settings update"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "business-calls.locations.update-business-calls-settings",
+        "selector": "locations/123/businesscallssettings",
+        "mask": "businessCallsEnabled",
+        "body_fingerprint": "1715df9cae0037d1d79465821f667680f2b1a5367b4905948d8f48b23eb0e13f"
+      }
+    ],
+    "verification_plan": [
+      "Read back the settings with get-business-calls-settings and verify the returned resource name."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/123/businesscallssettings",
+      "mask": "businessCallsEnabled",
+      "body_fingerprint": "1715df9cae0037d1d79465821f667680f2b1a5367b4905948d8f48b23eb0e13f",
+      "mask_fingerprint": "ec322d5ff0cc043c3c3ba937be6d687eedab5dea33bab88cd4219f0a14c7bbc0"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

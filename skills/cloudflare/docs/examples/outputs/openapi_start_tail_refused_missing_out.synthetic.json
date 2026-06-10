@@ -1,0 +1,13 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "ok": true,
+  "refused": true,
+  "reasons": [
+    "Refusing: this endpoint may return a secret/token. Provide --out."
+  ],
+  "refusal_type": "SafetyError",
+  "run_id": "2026-02-10T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}

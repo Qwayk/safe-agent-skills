@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "base_url": "https://creatorsapi.amazon/catalog/v1",
+  "credential_version": "3",
+  "locale": "en_US",
+  "oauth_token": {
+    "status": {
+      "exists": true,
+      "path": ".state/token.json",
+      "updated_at_utc": "2026-03-23T18:00:00Z",
+      "fields": [
+        "access_token",
+        "expires_at",
+        "refresh_token"
+      ],
+      "has_refresh_token": true,
+      "expires_at_utc": "2026-03-23T18:50:00Z"
+    },
+    "sample": {
+      "access_token": "***REDACTED***",
+      "expires_at": "2026-03-23T18:50:00Z",
+      "scope": "creatorsapi/catalog"
+    }
+  }
+}

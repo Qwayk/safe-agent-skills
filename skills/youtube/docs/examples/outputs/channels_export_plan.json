@@ -1,0 +1,77 @@
+{
+  "artifacts_dir": ".state/runs/<REDACTED>",
+  "audit_log": ".state/runs/<REDACTED>/audit.jsonl",
+  "audit_log_global": null,
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "command": "youtube-api-tool --output json channels export --channel @GoogleDevelopers --out-dir ./channel_export",
+    "env_fingerprint": "https://www.googleapis.com",
+    "generated_at_utc": "2026-02-26T00:00:00Z",
+    "inputs": {
+      "channel": {
+        "kind": "handle",
+        "raw": "@GoogleDevelopers",
+        "value": "GoogleDevelopers"
+      },
+      "max_pages": 2000,
+      "max_results": 5,
+      "out_dir": "./channel_export",
+      "overwrite": false,
+      "pick": null,
+      "resume": false,
+      "video_parts": "snippet,contentDetails,statistics"
+    },
+    "notes": [
+      "Transcripts/captions are not exported: the official YouTube Data API v3 does not allow downloading captions for arbitrary public channels without owner permission."
+    ],
+    "official_methods": [
+      {
+        "method": "channels.list",
+        "purpose": "Resolve channel and read uploads playlist (contentDetails.relatedPlaylists.uploads)"
+      },
+      {
+        "method": "playlistItems.list",
+        "purpose": "Enumerate uploads playlist to collect video IDs"
+      },
+      {
+        "method": "videos.list",
+        "purpose": "Fetch metadata/statistics for video IDs in batches of 50"
+      }
+    ],
+    "output_layout": {
+      "channel.json": "Resolved channel resource",
+      "checkpoint.json": "Resume checkpoint (do not edit manually)",
+      "manifest.json": "Export summary (inputs, counts, errors, and notes)",
+      "video_ids.txt": "One videoId per line",
+      "video_urls.txt": "One watch URL per line (https://www.youtube.com/watch?v=<id>)",
+      "videos.jsonl": "One JSON object per video (analysis-friendly; stable JSON keys)"
+    },
+    "preconditions": [
+      "Pass --live to execute network reads and write the dataset",
+      "Output directory must be empty unless --overwrite/--yes or --resume is used"
+    ],
+    "risk_level": "low",
+    "risk_reasons": [
+      "Read-only API methods (GET) + local dataset files"
+    ],
+    "selector": {
+      "kind": "youtube_channel_export",
+      "value": {
+        "kind": "handle",
+        "raw": "@GoogleDevelopers",
+        "value": "GoogleDevelopers"
+      }
+    },
+    "tool": "youtube-api-tool",
+    "verification_plan": {
+      "notes": "On completion, the tool writes a manifest with counts and SHA256 fingerprints for key outputs.",
+      "type": "local_files"
+    },
+    "version": "0.1.0"
+  },
+  "plan_out": ".state/runs/<REDACTED>/plan.json",
+  "run_id": "<REDACTED>",
+  "runs_index": ".state/runs/index.jsonl"
+}
+

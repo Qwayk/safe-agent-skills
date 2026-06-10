@@ -1,0 +1,47 @@
+{
+  "command": "qdrant-cloud-api-tool --output json --plan-out ./docs/examples/plan.example.json account-v1 create-account --request-json ./docs/examples/request.example.json",
+  "env_fingerprint": "qdrant-cloud:http://127.0.0.1:41631",
+  "generated_at_utc": "2026-06-04T12:08:28Z",
+  "operation": {
+    "domain": "account-v1",
+    "http_path": "/api/account/v1/accounts",
+    "http_verb": "POST",
+    "path_params": [],
+    "rpc": "qdrant.cloud.account.v1.AccountService.CreateAccount"
+  },
+  "request": {
+    "account": {
+      "name": "Example"
+    }
+  },
+  "request_sha256": "a250c1782b21aa65cf1472dc3c2c5feb7698e4a855bd8a4a4ab83e4fd4a25d6c",
+  "risk_level": "medium",
+  "risk_reasons": [
+    "write-like (non-GET)"
+  ],
+  "safety": {
+    "before_state": {
+      "notes": "No saved before-state or provider backup is available for this ordinary Qdrant Cloud write. Apply may proceed only after explicit no-snapshot approval, and the receipt must record the recovery limit.",
+      "required": true,
+      "status": "no_snapshot_available",
+      "supported": false
+    },
+    "recovery": {
+      "contract": "no-recovery",
+      "details": "No automatic rollback is guaranteed for this operation. If you need recovery, run provider-native backup/restore commands as a separate workflow."
+    },
+    "requires_ack_irreversible": false,
+    "requires_ack_spend_money": false,
+    "requires_apply": true,
+    "requires_live": true,
+    "requires_plan_in": false,
+    "requires_yes": false
+  },
+  "tool": "qdrant-cloud-api-tool",
+  "verification_plan": {
+    "expected_outcome": "refused-before-provider-http",
+    "notes": "Review the dry-run plan only. Apply requires explicit no-snapshot approval before Qdrant Cloud HTTP when no saved snapshot is available when no saved snapshot or provider backup is available for this operation.",
+    "type": "no-snapshot-approval"
+  },
+  "version": "0.1.0"
+}

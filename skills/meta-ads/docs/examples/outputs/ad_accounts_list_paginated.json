@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "tool": "meta-ads-api-tool",
+  "version": "0.1.0",
+  "command": "meta-ads-api-tool --output json ad-accounts list --fields id,name --max-pages 2",
+  "ad_accounts_list": {
+    "params": {
+      "fields": "id,name",
+      "limit": "100"
+    }
+  },
+  "data": [
+    {
+      "id": "act_1234567890",
+      "name": "Account A (redacted)"
+    },
+    {
+      "id": "act_2345678901",
+      "name": "Account B (redacted)"
+    }
+  ],
+  "count": 2,
+  "paging": {
+    "cursors": {
+      "before": "QVFI...",
+      "after": "QVFI..."
+    }
+  },
+  "pages_fetched": 1
+}
+

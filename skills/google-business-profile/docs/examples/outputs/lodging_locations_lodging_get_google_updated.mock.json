@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "operation": "lodging.locations.lodging.get-google-updated",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinesslodging.googleapis.com",
+    "path": "v1/locations/123/lodging:getGoogleUpdated",
+    "params": {
+      "readMask": "googleUpdated"
+    }
+  },
+  "response": {
+    "name": "locations/123/lodging",
+    "googleUpdated": true
+  }
+}

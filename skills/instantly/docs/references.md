@@ -1,0 +1,227 @@
+# References (sources)
+
+Purpose:
+- Record what sources the tool implementation relies on (so behavior is auditable and reproducible).
+- Prefer official provider docs; use other sources only when needed and note why.
+
+Rules:
+- Never include secrets (tokens, client secrets) in this file.
+- When a capability depends on a specific documented behavior (rate limits, required headers, download tracking), link the exact doc page.
+- Update this file whenever you add/change an endpoint or behavior based on new research.
+
+## Provider docs (official)
+
+- Provider: Instantly.ai
+- API docs home: https://developer.instantly.ai/
+- API docs sitemap (endpoint discovery + group enumeration): https://developer.instantly.ai/sitemap.xml
+- OpenAPI store (v2; schemas-only; no operations/paths as of 2026-02-22): https://developer.instantly.ai/page-data/shared/oas-api/v2.json.json
+- Getting started (API keys): https://developer.instantly.ai/getting-started/getting-started
+- Authorization (Bearer token): https://developer.instantly.ai/getting-started/authorization
+- Rate limits: https://developer.instantly.ai/getting-started/rate-limit
+  - Documented workspace-wide limits: 100 requests / 10 seconds; 600 requests / minute
+  - Documented emails list limit: 20 requests / minute
+- API explorer pages (selected; see `docs/api_coverage.md` for mapping):
+  - Workspace: https://developer.instantly.ai/api/v2/workspace/getworkspace
+  - Workspace billing:
+    - https://developer.instantly.ai/api/v2/workspacebilling/getplandetails
+    - https://developer.instantly.ai/api/v2/workspacebilling/getsubscriptiondetails
+  - Workspace members:
+    - https://developer.instantly.ai/api/v2/workspacemember/listworkspacemembers
+    - https://developer.instantly.ai/api/v2/workspacemember/getworkspacemember
+    - https://developer.instantly.ai/api/v2/workspacemember/addworkspacemember
+    - https://developer.instantly.ai/api/v2/workspacemember/updateworkspacemember
+    - https://developer.instantly.ai/api/v2/workspacemember/deleteworkspacemember
+  - Workspace group members:
+    - https://developer.instantly.ai/api/v2/workspacegroupmember/listworkspacegroupmembers
+    - https://developer.instantly.ai/api/v2/workspacegroupmember/getworkspacegroupmembersadmin
+    - https://developer.instantly.ai/api/v2/workspacegroupmember/getworkspacegroupmember
+    - https://developer.instantly.ai/api/v2/workspacegroupmember/addworkspacegroupmember
+    - https://developer.instantly.ai/api/v2/workspacegroupmember/deleteworkspacegroupmember
+  - OAuth:
+    - https://developer.instantly.ai/api/v2/oauth/initoauthgooglesession
+    - https://developer.instantly.ai/api/v2/oauth/initoauthmicrosoftsession
+    - https://developer.instantly.ai/api/v2/oauth/checkoauthsessionstatus
+  - Templates/flows (schemas-only in API explorer; no operations/paths listed as of 2026-02-22):
+    - https://developer.instantly.ai/api/v2/customprompttemplate
+    - https://developer.instantly.ai/api/v2/customprompttemplate/def-44
+    - https://developer.instantly.ai/api/v2/salesflow
+    - https://developer.instantly.ai/api/v2/salesflow/def-45
+    - https://developer.instantly.ai/api/v2/emailtemplate
+    - https://developer.instantly.ai/api/v2/emailtemplate/def-46
+  - CRM actions:
+    - https://developer.instantly.ai/api/v2/crmactions/listphonenumbers
+    - https://developer.instantly.ai/api/v2/crmactions/deletephonenumber
+  - DFY email account orders:
+    - https://developer.instantly.ai/api/v2/dfyemailaccountorder/listdfyemailaccountorders
+    - https://developer.instantly.ai/api/v2/dfyemailaccountorder/listdfyemailaccounts
+    - https://developer.instantly.ai/api/v2/dfyemailaccountorder/createorder
+    - https://developer.instantly.ai/api/v2/dfyemailaccountorder/cancelaccounts
+    - https://developer.instantly.ai/api/v2/dfyemailaccountorder/checkdomains
+    - https://developer.instantly.ai/api/v2/dfyemailaccountorder/getsimilardomains
+    - https://developer.instantly.ai/api/v2/dfyemailaccountorder/getprewarmeddomains
+  - API keys:
+    - https://developer.instantly.ai/api/v2/apikey/listapikeys
+    - https://developer.instantly.ai/api/v2/apikey/createapikey
+    - https://developer.instantly.ai/api/v2/apikey/deleteapikey
+  - Accounts (email accounts):
+    - https://developer.instantly.ai/api/v2/account/listaccount
+    - https://developer.instantly.ai/api/v2/account/getaccount
+    - https://developer.instantly.ai/api/v2/account/createaccount
+    - https://developer.instantly.ai/api/v2/account/patchaccount
+    - https://developer.instantly.ai/api/v2/account/deleteaccount
+    - https://developer.instantly.ai/api/v2/account/enablewarmupforaccounts
+    - https://developer.instantly.ai/api/v2/account/disablewarmupforaccounts
+    - https://developer.instantly.ai/api/v2/account/pauseaccount
+    - https://developer.instantly.ai/api/v2/account/resumeaccount
+    - https://developer.instantly.ai/api/v2/account/markaccountfixed
+    - https://developer.instantly.ai/api/v2/account/moveaccounts
+    - https://developer.instantly.ai/api/v2/account/testaccountvitals
+    - https://developer.instantly.ai/api/v2/account/getctdstatus
+  - Campaigns:
+    - https://developer.instantly.ai/api/v2/campaign/listcampaign
+    - https://developer.instantly.ai/api/v2/campaign/getcampaign
+    - https://developer.instantly.ai/api/v2/campaign/createcampaign
+    - https://developer.instantly.ai/api/v2/campaign/activatecampaign
+    - https://developer.instantly.ai/api/v2/campaign/pausecampaign
+    - https://developer.instantly.ai/api/v2/campaign/patchcampaign
+    - https://developer.instantly.ai/api/v2/campaign/deletecampaign
+    - https://developer.instantly.ai/api/v2/campaign/getcampaignsendingstatus
+    - https://developer.instantly.ai/api/v2/campaign/searchbycontact
+    - https://developer.instantly.ai/api/v2/campaign/sharecampaign
+    - https://developer.instantly.ai/api/v2/campaign/createfromexport
+    - https://developer.instantly.ai/api/v2/campaign/exportcampaign
+    - https://developer.instantly.ai/api/v2/campaign/duplicate
+    - https://developer.instantly.ai/api/v2/campaign/countlaunched
+    - https://developer.instantly.ai/api/v2/campaign/addvariables
+  - Analytics:
+    - https://developer.instantly.ai/api/v2/analytics/getwarmupanalytics
+    - https://developer.instantly.ai/api/v2/analytics/getdailyaccountanalytics
+    - https://developer.instantly.ai/api/v2/analytics/testaccountvitals
+    - https://developer.instantly.ai/api/v2/analytics/getcampaignanalytics
+    - https://developer.instantly.ai/api/v2/analytics/getcampaignanalyticsoverview
+    - https://developer.instantly.ai/api/v2/analytics/getdailycampaignanalytics
+    - https://developer.instantly.ai/api/v2/analytics/getcampaignstepsanalytics
+  - Leads:
+    - https://developer.instantly.ai/api/v2/lead/listleads
+    - https://developer.instantly.ai/api/v2/lead/getlead
+    - https://developer.instantly.ai/api/v2/lead/bulkaddleads
+    - https://developer.instantly.ai/api/v2/lead/createlead
+    - https://developer.instantly.ai/api/v2/lead/bulkdeleteleads
+    - https://developer.instantly.ai/api/v2/lead/patchlead
+    - https://developer.instantly.ai/api/v2/lead/deletelead
+    - https://developer.instantly.ai/api/v2/lead/mergeleads
+    - https://developer.instantly.ai/api/v2/lead/updateleadintereststatus
+    - https://developer.instantly.ai/api/v2/lead/removeleadfromsubsequence
+    - https://developer.instantly.ai/api/v2/lead/bulkassignleads
+    - https://developer.instantly.ai/api/v2/lead/moveleads
+    - https://developer.instantly.ai/api/v2/lead/moveleadtosubsequence
+  - Inbox placement:
+    - Tests:
+      - https://developer.instantly.ai/api/v2/inboxplacementtest/createinboxplacementtest
+      - https://developer.instantly.ai/api/v2/inboxplacementtest/listinboxplacementtest
+      - https://developer.instantly.ai/api/v2/inboxplacementtest/getinboxplacementtest
+      - https://developer.instantly.ai/api/v2/inboxplacementtest/patchinboxplacementtest
+      - https://developer.instantly.ai/api/v2/inboxplacementtest/deleteinboxplacementtest
+      - https://developer.instantly.ai/api/v2/inboxplacementtest/getinboxplacementtestespoptions
+    - Analytics:
+      - https://developer.instantly.ai/api/v2/inboxplacementanalytics/listinboxplacementanalytics
+      - https://developer.instantly.ai/api/v2/inboxplacementanalytics/getinboxplacementanalytics
+      - https://developer.instantly.ai/api/v2/inboxplacementanalytics/getinboxplacementanalyticsstatsbytestid
+      - https://developer.instantly.ai/api/v2/inboxplacementanalytics/getinboxplacementanalyticsdeliverabilityinsights
+      - https://developer.instantly.ai/api/v2/inboxplacementanalytics/getinboxplacementanalyticsstatsbydate
+    - Reports (blacklist + spamassassin):
+      - https://developer.instantly.ai/api/v2/inboxplacementblacklistandspamassassinreport/listinboxplacementblacklist&spamassassinreport
+      - https://developer.instantly.ai/api/v2/inboxplacementblacklistandspamassassinreport/getinboxplacementblacklist&spamassassinreport
+  - Webhooks:
+    - https://developer.instantly.ai/api/v2/webhook/listwebhook
+    - https://developer.instantly.ai/api/v2/webhook/createwebhook
+    - https://developer.instantly.ai/api/v2/webhook/getwebhook
+    - https://developer.instantly.ai/api/v2/webhook/patchwebhook
+    - https://developer.instantly.ai/api/v2/webhook/deletewebhook
+    - https://developer.instantly.ai/api/v2/webhook/testwebhook
+    - https://developer.instantly.ai/api/v2/webhook/listwebhookeventtypes
+    - https://developer.instantly.ai/api/v2/webhook/resumewebhook
+  - Webhook events:
+    - https://developer.instantly.ai/api/v2/webhookevent/listwebhookevent
+    - https://developer.instantly.ai/api/v2/webhookevent/getwebhookevent
+    - https://developer.instantly.ai/api/v2/webhookevent/getwebhookeventssummary
+    - https://developer.instantly.ai/api/v2/webhookevent/getwebhookeventssummarybydate
+    - https://developer.instantly.ai/webhook-events
+  - Emails + threads:
+    - https://developer.instantly.ai/api/v2/email/listemail
+    - https://developer.instantly.ai/api/v2/email/getemail
+    - https://developer.instantly.ai/api/v2/email/countunreademails
+    - https://developer.instantly.ai/api/v2/email/forwardemail
+    - https://developer.instantly.ai/api/v2/email/patchemail
+    - https://developer.instantly.ai/api/v2/email/deleteemail
+    - https://developer.instantly.ai/api/v2/email/markthreadasread
+    - https://developer.instantly.ai/api/v2/email/replytoemail
+  - Email verification:
+    - https://developer.instantly.ai/api/v2/emailverification/createemailverification
+    - https://developer.instantly.ai/api/v2/emailverification/checkverificationstatus
+  - Do-not-contact (block list entries):
+    - https://developer.instantly.ai/api/v2/blocklistentry/listblocklistentry
+    - https://developer.instantly.ai/api/v2/blocklistentry/createblocklistentry
+    - https://developer.instantly.ai/api/v2/blocklistentry/getblocklistentry
+    - https://developer.instantly.ai/api/v2/blocklistentry/patchblocklistentry
+    - https://developer.instantly.ai/api/v2/blocklistentry/deleteblocklistentry
+  - Audit logs:
+    - https://developer.instantly.ai/api/v2/auditlog/listauditlog
+  - Background jobs:
+    - https://developer.instantly.ai/api/v2/backgroundjob/listbackgroundjob
+    - https://developer.instantly.ai/api/v2/backgroundjob/getbackgroundjob
+  - Lead organization:
+    - Lead lists:
+      - https://developer.instantly.ai/api/v2/leadlist/listleadlist
+      - https://developer.instantly.ai/api/v2/leadlist/getleadlist
+      - https://developer.instantly.ai/api/v2/leadlist/createleadlist
+      - https://developer.instantly.ai/api/v2/leadlist/patchleadlist
+      - https://developer.instantly.ai/api/v2/leadlist/deleteleadlist
+      - https://developer.instantly.ai/api/v2/leadlist/getverificationstats
+    - Lead labels:
+      - https://developer.instantly.ai/api/v2/leadlabel/listleadlabel
+      - https://developer.instantly.ai/api/v2/leadlabel/getleadlabel
+      - https://developer.instantly.ai/api/v2/leadlabel/createleadlabel
+      - https://developer.instantly.ai/api/v2/leadlabel/patchleadlabel
+      - https://developer.instantly.ai/api/v2/leadlabel/deleteleadlabel
+    - Custom tags:
+      - https://developer.instantly.ai/api/v2/customtag/listcustomtag
+      - https://developer.instantly.ai/api/v2/customtag/getcustomtag
+      - https://developer.instantly.ai/api/v2/customtag/createcustomtag
+      - https://developer.instantly.ai/api/v2/customtag/patchcustomtag
+      - https://developer.instantly.ai/api/v2/customtag/deletecustomtag
+      - https://developer.instantly.ai/api/v2/customtag/toggletagresource
+    - Custom tag mappings:
+      - https://developer.instantly.ai/api/v2/customtagmapping/listcustomtagmapping
+  - Account↔campaign mappings:
+    - https://developer.instantly.ai/api/v2/accountcampaignmapping/getaccountcampaignmapping
+  - Campaign subsequences:
+    - https://developer.instantly.ai/api/v2/campaignsubsequence/listcampaignsubsequence
+    - https://developer.instantly.ai/api/v2/campaignsubsequence/getcampaignsubsequence
+    - https://developer.instantly.ai/api/v2/campaignsubsequence/createcampaignsubsequence
+    - https://developer.instantly.ai/api/v2/campaignsubsequence/patchcampaignsubsequence
+    - https://developer.instantly.ai/api/v2/campaignsubsequence/deletecampaignsubsequence
+    - https://developer.instantly.ai/api/v2/campaignsubsequence/duplicatesubsequence
+    - https://developer.instantly.ai/api/v2/campaignsubsequence/pausesubsequence
+    - https://developer.instantly.ai/api/v2/campaignsubsequence/resumesubsequence
+    - https://developer.instantly.ai/api/v2/campaignsubsequence/getsubsequencesendingstatus
+  - Supersearch enrichment:
+    - https://developer.instantly.ai/api/v2/supersearchenrichment/createsupersearchenrichment
+    - https://developer.instantly.ai/api/v2/supersearchenrichment/getenrichmentforresource
+    - https://developer.instantly.ai/api/v2/supersearchenrichment/updateenrichmentsettingsforresource
+    - https://developer.instantly.ai/api/v2/supersearchenrichment/getenrichmenthistory
+    - https://developer.instantly.ai/api/v2/supersearchenrichment/runenrichment
+    - https://developer.instantly.ai/api/v2/supersearchenrichment/enrichleadsfromsupersearch
+    - https://developer.instantly.ai/api/v2/supersearchenrichment/createaienrichment
+    - https://developer.instantly.ai/api/v2/supersearchenrichment/countleadsfromsupersearch
+    - https://developer.instantly.ai/api/v2/supersearchenrichment/previewleadsfromsupersearch
+- Help center (webhooks overview): https://help.instantly.ai/en/articles/6261906-how-to-use-webhooks
+- Last verified (UTC): 2026-02-22
+
+## Implementation verification notes (no secrets)
+
+- This repository change set does not include any live Instantly API calls (unit tests only).
+- Endpoint paths/methods are taken from the official Instantly docs listed above and validated by mocked unit tests.
+
+## Other sources (only if needed)
+- None (this tool currently relies only on official Instantly docs + help center pages listed above).

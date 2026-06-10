@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "operation": "feeds.legacy-list",
+  "download": {
+    "path": "/redacted/legacy-feed-list.csv",
+    "bytes_written": 980,
+    "sha256": "1234512345123451234512345123451234512345123451234512345123451234",
+    "content_type": "text/csv",
+    "line_count": 6
+  },
+  "request": {
+    "method": "GET",
+    "endpoint": "https://productdata.awin.com/datafeed/list/apikey/<redacted>",
+    "response_status": 200
+  },
+  "metadata": {
+    "auth_mode": "feed-api-key-in-url"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "data": {
+    "entries": [
+      {
+        "authors": [
+          {
+            "key": "/authors/OL34184A"
+          },
+          {
+            "key": "/authors/OL236943A"
+          }
+        ],
+        "covers": [
+          13269612
+        ],
+        "created": {
+          "type": "/type/datetime",
+          "value": "2022-12-17T18:27:33.399038"
+        },
+        "full_title": "Fantastic Mr. Fox",
+        "isbn_13": [
+          "9780142418222"
+        ],
+        "key": "/books/OL44247403M",
+        "languages": [
+          {
+            "key": "/languages/eng"
+          }
+        ],
+        "last_modified": {
+          "type": "/type/datetime",
+          "value": "2024-08-24T18:33:07.169230"
+        },
+        "latest_revision": 5,
+        "number_of_pages": 96,
+        "pagination": "96",
+        "publish_date": "2011",
+        "publishers": [
+          "Penguin Publishing Group",
+          "Puffin"
+        ],
+        "revision": 5,
+        "source_records": [
+          "bwb:9780142418222",
+          "amazon:0142418226"
+        ],
+        "subjects": [
+          "Children's fiction",
+          "Foxes, fiction"
+        ],
+        "title": "Fantastic Mr. Fox",
+        "type": {
+          "key": "/type/edition"
+        },
+        "weight": "0.005",
+        "works": [
+          {
+            "key": "/works/OL45804W"
+          }
+        ]
+      }
+    ],
+    "links": {
+      "next": "/works/OL45804W/editions.json?limit=1&offset=1",
+      "self": "/works/OL45804W/editions.json?limit=1",
+      "work": "/works/OL45804W"
+    },
+    "size": 139
+  },
+  "ok": true,
+  "params": {
+    "limit": 1
+  },
+  "path": "works/OL45804W/editions.json",
+  "tool": "qwayk-open-library-safe-agent-cli",
+  "version": "0.1.0"
+}

@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "product-feeds upload",
+  "advertiser_id": "123456",
+  "endpoint": "/advertisers/123456/awinfeeds/retail/en_GB/products",
+  "method": "POST",
+  "product_count": 2,
+  "plan": {
+    "tool": "awin-advertiser-safe-cli",
+    "version": "0.1.1",
+    "generated_at_utc": "2026-06-09T00:00:00Z",
+    "env_fingerprint": "https://api.awin.com",
+    "command": "awin-advertiser-safe-cli product-feeds upload --advertiser-id 123456 --vertical retail --locale en_GB --feed-file examples/feed.jsonl --plan-out examples/product_feeds_plan.json",
+    "selector": {
+      "advertiser_id": "123456",
+      "endpoint": "advertisers/123456/awinfeeds/retail/en_GB/products",
+      "vertical": "retail",
+      "locale": "en_GB"
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "product-feeds upload"
+    ],
+    "preconditions": [
+      "Dry-run only by default",
+      "Apply requires --apply --yes --ack-irreversible"
+    ],
+    "baseline": {
+      "env_fingerprint": "https://api.awin.com",
+      "feed_file": "examples/feed.jsonl",
+      "feed_file_sha256": "<REDACTED>",
+      "product_count": 2,
+      "vertical": "retail",
+      "locale": "en_GB"
+    },
+    "proposed_changes": [
+      {
+        "resource": "product_feeds",
+        "action": "upload",
+        "advertiser_id": "123456",
+        "vertical": "retail",
+        "locale": "en_GB"
+      }
+    ],
+    "verification_plan": {
+      "type": "provider-response",
+      "notes": "Refuse on transport or payload-validation failure; review response body for validation errors"
+    },
+    "rollback": {
+      "supported": false,
+      "notes": "No rollback endpoint is defined in current product-feed docs"
+    }
+  },
+  "plan_out": "examples/product_feeds_plan.json"
+}

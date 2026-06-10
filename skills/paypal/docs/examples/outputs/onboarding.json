@@ -1,0 +1,30 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "ok": true,
+  "onboarding": {
+    "env_created": false,
+    "env_file": ".env",
+    "missing": [
+      "PAYPAL_ENVIRONMENT",
+      "PAYPAL_CLIENT_ID",
+      "PAYPAL_CLIENT_SECRET"
+    ],
+    "next_command": "qwayk-paypal-safe-agent-cli --output json auth check",
+    "steps": [
+      "Copy .env.example to .env if it is missing. Keep it local and do not commit it.",
+      "Open the PayPal Developer Dashboard and go to Apps & Credentials.",
+      "Create or open a REST app, then copy the client ID and client secret.",
+      "Set PAYPAL_ENVIRONMENT to sandbox while testing or live when you are ready for production.",
+      "Fill the required .env values:",
+      "  - PAYPAL_ENVIRONMENT=sandbox",
+      "  - PAYPAL_CLIENT_ID=<your PayPal REST app client ID>",
+      "  - PAYPAL_CLIENT_SECRET=<your PayPal REST app client secret>",
+      "Optional partner/on-behalf-of headers can stay blank unless your PayPal setup needs them.",
+      "Run: qwayk-paypal-safe-agent-cli --output json auth check"
+    ]
+  },
+  "run_id": null,
+  "runs_index": "/tmp/paypal-example/.state/runs/index.jsonl"
+}

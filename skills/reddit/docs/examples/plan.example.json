@@ -1,0 +1,95 @@
+{
+  "tool": "qwayk-reddit-safe-agent-cli",
+  "version": "0.1.0",
+  "dry_run": true,
+  "env_fingerprint": "<REDACTED>",
+  "operation": {
+    "operation_command": "delete-api-filter-filterpath",
+    "method": "DELETE",
+    "path_template": "/api/filter/{filterpath}",
+    "path_filled": "/api/filter/example",
+    "url": "https://oauth.reddit.com/api/filter/example",
+    "doc_url": "https://www.reddit.com/dev/api/#DELETE_api_filter_{filterpath}",
+    "section": "multis",
+    "oauth_scope": "subscribe",
+    "missing_path_params": []
+  },
+  "inputs": {
+    "path": {
+      "filterpath": "example"
+    },
+    "query": {},
+    "body": {},
+    "files": {},
+    "body_format": "form"
+  },
+  "requirements": {
+    "missing_required": []
+  },
+  "generated_at_utc": "2026-01-01T00:00:00Z",
+  "command": "qwayk-reddit-safe-agent-cli --output json api delete-api-filter-filterpath --path filterpath=example",
+  "classification": {
+    "method": "DELETE",
+    "is_read": false,
+    "is_write": true,
+    "irreversible": true,
+    "risky": true,
+    "section": "multis",
+    "oauth_scope": "subscribe",
+    "gates": {
+      "live": true,
+      "apply": true,
+      "plan_in": true,
+      "yes": true,
+      "ack_irreversible": true
+    }
+  },
+  "risk_level": "high",
+  "risk_reasons": [
+    "write-operation",
+    "risky-write",
+    "irreversible-write"
+  ],
+  "preconditions": [
+    "env_fingerprint must match when applying from a reviewed plan",
+    "live writes require --live --apply",
+    "risky apply requires --plan-in",
+    "risky apply requires --yes",
+    "irreversible apply requires --ack-irreversible"
+  ],
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "blocked",
+    "saved_path": null,
+    "provider_backup_id": null,
+    "reason": "This source tool can build and review Reddit write plans, but it does not yet save endpoint-specific before-state or provider backup data before applying them.",
+    "provider_write": {
+      "operation_command": "delete-api-filter-filterpath",
+      "method": "DELETE",
+      "path_template": "/api/filter/{filterpath}",
+      "url": "https://oauth.reddit.com/api/filter/example"
+    }
+  },
+  "verification_plan": {
+    "status": "blocked_before_apply",
+    "steps": [
+      "Confirm no Reddit provider write endpoint was called.",
+      "Confirm no local stub receipt was written by the write flow.",
+      "Confirm no successful write receipt was emitted."
+    ],
+    "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply."
+  },
+  "legacy_verification_plan": {
+    "type": "best-effort-read-back",
+    "notes": "If the provider exposes a matching GET path, try a read-back check after the write."
+  },
+  "rollback": {
+    "supported": false,
+    "mode": "irreversible_and_clearly_labeled",
+    "automatic_rollback": false,
+    "requires_ack_irreversible": true,
+    "notes": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current Reddit write families as irreversible_and_clearly_labeled and fix problems manually from the saved plan and refusal output."
+  },
+  "plan_hash": "<REDACTED>"
+}

@@ -1,0 +1,243 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "count": 21,
+  "ok": true,
+  "operations": [
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "ai-search-list-instances",
+      "path_template": "/accounts/{account_id}/ai-search/instances",
+      "sensitivity": "sensitive_read",
+      "summary": "List instances.",
+      "tags": "AI Search Instances"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "ai-search-create-instances",
+      "path_template": "/accounts/{account_id}/ai-search/instances",
+      "sensitivity": "sensitive_read",
+      "summary": "Create new instances.",
+      "tags": "AI Search Instances"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "DELETE",
+      "operation_id": "ai-search-delete-instances",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}",
+      "sensitivity": "sensitive_read",
+      "summary": "Delete instances.",
+      "tags": "AI Search Instances"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "ai-search-fetch-instances",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}",
+      "sensitivity": "sensitive_read",
+      "summary": "Read instances.",
+      "tags": "AI Search Instances"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "PUT",
+      "operation_id": "ai-search-update-instances",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}",
+      "sensitivity": "sensitive_read",
+      "summary": "Update instances.",
+      "tags": "AI Search Instances"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "ai-search-instance-chat-completion",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/chat/completions",
+      "sensitivity": "sensitive_read",
+      "summary": "Chat Completions",
+      "tags": "AI Search Instances"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "ai-search-instance-list-items",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/items",
+      "sensitivity": "sensitive_read",
+      "summary": "Items List.",
+      "tags": "AI Search Instances Items"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "ai-search-instance-get-item",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/items/{item_id}",
+      "sensitivity": "sensitive_read",
+      "summary": "Get Item.",
+      "tags": "AI Search Instances Items"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "PATCH",
+      "operation_id": "ai-search-instance-sync-item",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/items/{item_id}",
+      "sensitivity": "sensitive_read",
+      "summary": "Sync Item.",
+      "tags": "AI Search Instances Items"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "ai-search-instance-list-jobs",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/jobs",
+      "sensitivity": "sensitive_read",
+      "summary": "List Jobs",
+      "tags": "AI Search Instances Jobs"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "ai-search-instance-create-job",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/jobs",
+      "sensitivity": "sensitive_read",
+      "summary": "Create new job",
+      "tags": "AI Search Instances Jobs"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "ai-search-instance-get-job",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/jobs/{job_id}",
+      "sensitivity": "sensitive_read",
+      "summary": "Get a Job Details",
+      "tags": "AI Search Instances Jobs"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "PATCH",
+      "operation_id": "ai-search-instance-change-job-status",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/jobs/{job_id}",
+      "sensitivity": "sensitive_read",
+      "summary": "Change Job Status",
+      "tags": "AI Search Instances Jobs"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "ai-search-instance-list-job-logs",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/jobs/{job_id}/logs",
+      "sensitivity": "sensitive_read",
+      "summary": "List Job Logs",
+      "tags": "AI Search Instances Jobs"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "ai-search-instance-search",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/search",
+      "sensitivity": "sensitive_read",
+      "summary": "Search",
+      "tags": "AI Search Instances"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "ai-search-stats",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/stats",
+      "sensitivity": "sensitive_read",
+      "summary": "Stats",
+      "tags": "AI Search Instances"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "ai-search-list-tokens",
+      "path_template": "/accounts/{account_id}/ai-search/tokens",
+      "sensitivity": "sensitive_read",
+      "summary": "List tokens.",
+      "tags": "AI Search Tokens"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "ai-search-create-tokens",
+      "path_template": "/accounts/{account_id}/ai-search/tokens",
+      "sensitivity": "sensitive_write_result",
+      "summary": "Create new tokens.",
+      "tags": "AI Search Tokens"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "DELETE",
+      "operation_id": "ai-search-delete-tokens",
+      "path_template": "/accounts/{account_id}/ai-search/tokens/{id}",
+      "sensitivity": "sensitive_read",
+      "summary": "Delete tokens.",
+      "tags": "AI Search Tokens"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "ai-search-fetch-tokens",
+      "path_template": "/accounts/{account_id}/ai-search/tokens/{id}",
+      "sensitivity": "sensitive_read",
+      "summary": "Read tokens.",
+      "tags": "AI Search Tokens"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "ai_search",
+      "deprecated": false,
+      "method": "PUT",
+      "operation_id": "ai-search-update-tokens",
+      "path_template": "/accounts/{account_id}/ai-search/tokens/{id}",
+      "sensitivity": "sensitive_write_result",
+      "summary": "Update tokens.",
+      "tags": "AI Search Tokens"
+    }
+  ],
+  "run_id": null,
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}
+

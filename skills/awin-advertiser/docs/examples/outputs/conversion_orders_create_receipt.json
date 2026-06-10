@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "conversion orders create",
+  "advertiser_id": "123456",
+  "endpoint": "/s2s/advertiser/123456/orders",
+  "method": "POST",
+  "status": 201,
+  "orders_count": 2,
+  "has_webhook": false,
+  "result": {
+    "response_status": 201
+  },
+  "receipt": {
+    "tool": "awin-advertiser-safe-cli",
+    "version": "0.1.1",
+    "applied_at_utc": "2026-06-09T00:00:00Z",
+    "env_fingerprint": "https://api.awin.com",
+    "command": "awin-advertiser-safe-cli conversion orders create --advertiser-id 123456 --orders-file examples/jobs_with_write.json --apply --yes --ack-irreversible --plan-in examples/conversion_plan.json --receipt-out examples/conversion_receipt.json",
+    "selector": {
+      "advertiser_id": "123456",
+      "endpoint": "s2s/advertiser/123456/orders"
+    },
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "details": {
+        "response_status": 201,
+        "orders_count": 2,
+        "orders_file_sha256": "<REDACTED>"
+      }
+    },
+    "diff_applied": [
+      {
+        "resource": "conversion.orders",
+        "action": "created",
+        "advertiser_id": "123456",
+        "orders_count": 2
+      }
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "receipt_out": "examples/conversion_receipt.json"
+}

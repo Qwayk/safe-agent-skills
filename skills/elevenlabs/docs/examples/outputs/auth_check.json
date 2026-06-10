@@ -1,0 +1,70 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "base_url": "https://api.elevenlabs.io",
+  "dry_run": true,
+  "env_token_present": false,
+  "ok": true,
+  "plan": {
+    "baseline": {
+      "env_fingerprint": "https://api.elevenlabs.io",
+      "operation": "user_info",
+      "selector": {
+        "kind": "user.info",
+        "value": "workspace user"
+      }
+    },
+    "command": "elevenlabs-api-tool --output json --env-file .env.example auth check",
+    "doc_url": "https://elevenlabs.io/docs/api-reference/user/get",
+    "endpoint": "GET /v1/user",
+    "env_fingerprint": "https://api.elevenlabs.io",
+    "generated_at_utc": "2026-03-23T20:27:51Z",
+    "operation": "user_info",
+    "preconditions": [
+      "API key configured via ELEVENLABS_API_KEY",
+      "Base URL matches the intended environment"
+    ],
+    "proposed_changes": [
+      {
+        "description": "Retrieve the workspace profile and API key status.",
+        "selector": {
+          "kind": "user.info",
+          "value": "workspace user"
+        }
+      }
+    ],
+    "request": {
+      "method": "GET",
+      "path": "/v1/user"
+    },
+    "risk_level": "low",
+    "risk_reasons": [
+      "read",
+      "sensitive_output"
+    ],
+    "recovery": {
+      "end_state": "irreversible_and_clearly_labeled",
+      "strategy": "no_inverse",
+      "rollback_ready": false,
+      "backups": [],
+      "snapshots": [],
+      "rollback_plan": null,
+      "restore_note": "No automated rollback is available for this operation; it is treated as irreversible and needs manual cleanup if removal is required."
+    },
+    "section": "User",
+    "selector": {
+      "kind": "user.info",
+      "value": "workspace user"
+    },
+    "tool": "elevenlabs-api-tool",
+    "verification_plan": {
+      "notes": "Inspect the response to confirm the expected data.",
+      "type": "read"
+    },
+    "version": "0.1.0"
+  },
+  "plan_out": null,
+  "run_id": null,
+  "runs_index": ".state/runs/index.jsonl"
+}

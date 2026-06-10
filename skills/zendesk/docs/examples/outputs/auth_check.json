@@ -1,0 +1,16 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "base_url": "https://acme.zendesk.com",
+  "env_api_token_present": false,
+  "env_email_present": false,
+  "env_oauth_access_token_present": false,
+  "oauth_token": {
+    "exists": false,
+    "path": "/tmp/tmp.KxoMU2gFq4/.state/token.json"
+  },
+  "ok": true,
+  "run_id": null,
+  "runs_index": "/tmp/tmp.KxoMU2gFq4/.state/runs/index.jsonl"
+}

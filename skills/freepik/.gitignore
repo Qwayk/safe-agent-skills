@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+.state/
+.venv/
+backup-snapshots/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+src/**.egg-info/
+__pycache__/

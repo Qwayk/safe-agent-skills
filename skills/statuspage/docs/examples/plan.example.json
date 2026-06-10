@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "tool": "statuspage-api-tool",
+  "kind": "example_plan",
+  "note": "Static review artifact only. This CLI does not implement a plan mode.",
+  "base_url": "https://status.example.com",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/v2/status.json",
+      "url": "https://status.example.com/api/v2/status.json"
+    }
+  ]
+}

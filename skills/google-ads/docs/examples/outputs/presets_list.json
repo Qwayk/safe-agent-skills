@@ -1,0 +1,31 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "count": 4,
+  "ok": true,
+  "presets": [
+    {
+      "builtin": true,
+      "name": "analysis_pack_max_v1",
+      "path": "./src/google_ads_api_tool/presets/builtin/analysis_pack_max_v1.json"
+    },
+    {
+      "builtin": true,
+      "name": "analysis_pack_v1",
+      "path": "./src/google_ads_api_tool/presets/builtin/analysis_pack_v1.json"
+    },
+    {
+      "builtin": true,
+      "name": "analysis_pack_v2",
+      "path": "./src/google_ads_api_tool/presets/builtin/analysis_pack_v2.json"
+    },
+    {
+      "builtin": true,
+      "name": "optimization_pack_v1",
+      "path": "./src/google_ads_api_tool/presets/builtin/optimization_pack_v1.json"
+    }
+  ],
+  "run_id": null,
+  "runs_index": "./.state/runs/index.jsonl"
+}

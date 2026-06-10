@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+.state/
+backup-snapshots/
+.venv/
+tmp-caption-patches/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/

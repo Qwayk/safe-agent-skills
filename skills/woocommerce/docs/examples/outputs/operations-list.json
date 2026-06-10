@@ -1,0 +1,1262 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "count": 139,
+  "ok": true,
+  "operations": [
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/api-reference/",
+      "family": "index",
+      "key": "index get",
+      "method": "GET",
+      "path": "/",
+      "risk_level": "read"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/coupons/",
+      "family": "coupons",
+      "key": "coupons create",
+      "method": "POST",
+      "path": "/coupons",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/coupons/",
+      "family": "coupons",
+      "key": "coupons get",
+      "method": "GET",
+      "path": "/coupons/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/coupons/",
+      "family": "coupons",
+      "key": "coupons list",
+      "method": "GET",
+      "path": "/coupons",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/coupons/",
+      "family": "coupons",
+      "key": "coupons update",
+      "method": "PUT",
+      "path": "/coupons/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/coupons/",
+      "family": "coupons",
+      "key": "coupons delete",
+      "method": "DELETE",
+      "path": "/coupons/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/coupons/",
+      "family": "coupons",
+      "key": "coupons batch",
+      "method": "POST",
+      "path": "/coupons/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/customers/",
+      "family": "customers",
+      "key": "customers create",
+      "method": "POST",
+      "path": "/customers",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/customers/",
+      "family": "customers",
+      "key": "customers get",
+      "method": "GET",
+      "path": "/customers/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/customers/",
+      "family": "customers",
+      "key": "customers list",
+      "method": "GET",
+      "path": "/customers",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/customers/",
+      "family": "customers",
+      "key": "customers update",
+      "method": "PUT",
+      "path": "/customers/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/customers/",
+      "family": "customers",
+      "key": "customers delete",
+      "method": "DELETE",
+      "path": "/customers/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/customers/",
+      "family": "customers",
+      "key": "customers batch",
+      "method": "POST",
+      "path": "/customers/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "list-downloads",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/customers/",
+      "family": "customers",
+      "key": "customers list-downloads",
+      "method": "GET",
+      "path": "/customers/{id}/downloads",
+      "risk_level": "read"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/orders/",
+      "family": "orders",
+      "key": "orders create",
+      "method": "POST",
+      "path": "/orders",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/orders/",
+      "family": "orders",
+      "key": "orders get",
+      "method": "GET",
+      "path": "/orders/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/orders/",
+      "family": "orders",
+      "key": "orders list",
+      "method": "GET",
+      "path": "/orders",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/orders/",
+      "family": "orders",
+      "key": "orders update",
+      "method": "PUT",
+      "path": "/orders/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/orders/",
+      "family": "orders",
+      "key": "orders delete",
+      "method": "DELETE",
+      "path": "/orders/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/orders/",
+      "family": "orders",
+      "key": "orders batch",
+      "method": "POST",
+      "path": "/orders/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "send-order-details",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/order-actions/",
+      "family": "order-actions",
+      "key": "order-actions send-order-details",
+      "method": "POST",
+      "path": "/orders/{id}/actions/send_order_details",
+      "risk_level": "high"
+    },
+    {
+      "action": "send-email",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/order-actions/",
+      "family": "order-actions",
+      "key": "order-actions send-email",
+      "method": "POST",
+      "path": "/orders/{id}/actions/send_email",
+      "risk_level": "high"
+    },
+    {
+      "action": "list-email-templates",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/order-actions/",
+      "family": "order-actions",
+      "key": "order-actions list-email-templates",
+      "method": "GET",
+      "path": "/orders/{id}/actions/email_templates",
+      "risk_level": "read"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/order-notes/",
+      "family": "order-notes",
+      "key": "order-notes create",
+      "method": "POST",
+      "path": "/orders/{id}/notes",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/order-notes/",
+      "family": "order-notes",
+      "key": "order-notes get",
+      "method": "GET",
+      "path": "/orders/{id}/notes/{note_id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/order-notes/",
+      "family": "order-notes",
+      "key": "order-notes list",
+      "method": "GET",
+      "path": "/orders/{id}/notes",
+      "risk_level": "read"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/order-notes/",
+      "family": "order-notes",
+      "key": "order-notes delete",
+      "method": "DELETE",
+      "path": "/orders/{id}/notes/{note_id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/order-refunds/",
+      "family": "order-refunds",
+      "key": "order-refunds create",
+      "method": "POST",
+      "path": "/orders/{id}/refunds",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/order-refunds/",
+      "family": "order-refunds",
+      "key": "order-refunds get",
+      "method": "GET",
+      "path": "/orders/{id}/refunds/{refund_id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/order-refunds/",
+      "family": "order-refunds",
+      "key": "order-refunds list",
+      "method": "GET",
+      "path": "/orders/{id}/refunds",
+      "risk_level": "read"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/order-refunds/",
+      "family": "order-refunds",
+      "key": "order-refunds delete",
+      "method": "DELETE",
+      "path": "/orders/{id}/refunds/{refund_id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/products/",
+      "family": "products",
+      "key": "products create",
+      "method": "POST",
+      "path": "/products",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/products/",
+      "family": "products",
+      "key": "products get",
+      "method": "GET",
+      "path": "/products/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/products/",
+      "family": "products",
+      "key": "products list",
+      "method": "GET",
+      "path": "/products",
+      "risk_level": "read"
+    },
+    {
+      "action": "duplicate",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/products/",
+      "family": "products",
+      "key": "products duplicate",
+      "method": "POST",
+      "path": "/products/{product_id}/duplicate",
+      "risk_level": "medium"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/products/",
+      "family": "products",
+      "key": "products update",
+      "method": "PUT",
+      "path": "/products/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/products/",
+      "family": "products",
+      "key": "products delete",
+      "method": "DELETE",
+      "path": "/products/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/products/",
+      "family": "products",
+      "key": "products batch",
+      "method": "POST",
+      "path": "/products/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-variations/",
+      "family": "product-variations",
+      "key": "product-variations create",
+      "method": "POST",
+      "path": "/products/{product_id}/variations",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-variations/",
+      "family": "product-variations",
+      "key": "product-variations get",
+      "method": "GET",
+      "path": "/products/{product_id}/variations/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-variations/",
+      "family": "product-variations",
+      "key": "product-variations list",
+      "method": "GET",
+      "path": "/products/{product_id}/variations",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-variations/",
+      "family": "product-variations",
+      "key": "product-variations update",
+      "method": "PUT",
+      "path": "/products/{product_id}/variations/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-variations/",
+      "family": "product-variations",
+      "key": "product-variations delete",
+      "method": "DELETE",
+      "path": "/products/{product_id}/variations/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-variations/",
+      "family": "product-variations",
+      "key": "product-variations batch",
+      "method": "POST",
+      "path": "/products/{product_id}/variations/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attributes/",
+      "family": "product-attributes",
+      "key": "product-attributes create",
+      "method": "POST",
+      "path": "/products/attributes",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attributes/",
+      "family": "product-attributes",
+      "key": "product-attributes get",
+      "method": "GET",
+      "path": "/products/attributes/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attributes/",
+      "family": "product-attributes",
+      "key": "product-attributes list",
+      "method": "GET",
+      "path": "/products/attributes",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attributes/",
+      "family": "product-attributes",
+      "key": "product-attributes update",
+      "method": "PUT",
+      "path": "/products/attributes/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attributes/",
+      "family": "product-attributes",
+      "key": "product-attributes delete",
+      "method": "DELETE",
+      "path": "/products/attributes/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attributes/",
+      "family": "product-attributes",
+      "key": "product-attributes batch",
+      "method": "POST",
+      "path": "/products/attributes/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attribute-terms/",
+      "family": "product-attribute-terms",
+      "key": "product-attribute-terms create",
+      "method": "POST",
+      "path": "/products/attributes/{attribute_id}/terms",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attribute-terms/",
+      "family": "product-attribute-terms",
+      "key": "product-attribute-terms get",
+      "method": "GET",
+      "path": "/products/attributes/{attribute_id}/terms/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attribute-terms/",
+      "family": "product-attribute-terms",
+      "key": "product-attribute-terms list",
+      "method": "GET",
+      "path": "/products/attributes/{attribute_id}/terms",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attribute-terms/",
+      "family": "product-attribute-terms",
+      "key": "product-attribute-terms update",
+      "method": "PUT",
+      "path": "/products/attributes/{attribute_id}/terms/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attribute-terms/",
+      "family": "product-attribute-terms",
+      "key": "product-attribute-terms delete",
+      "method": "DELETE",
+      "path": "/products/attributes/{attribute_id}/terms/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-attribute-terms/",
+      "family": "product-attribute-terms",
+      "key": "product-attribute-terms batch",
+      "method": "POST",
+      "path": "/products/attributes/{attribute_id}/terms/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-categories/",
+      "family": "product-categories",
+      "key": "product-categories create",
+      "method": "POST",
+      "path": "/products/categories",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-categories/",
+      "family": "product-categories",
+      "key": "product-categories get",
+      "method": "GET",
+      "path": "/products/categories/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-categories/",
+      "family": "product-categories",
+      "key": "product-categories list",
+      "method": "GET",
+      "path": "/products/categories",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-categories/",
+      "family": "product-categories",
+      "key": "product-categories update",
+      "method": "PUT",
+      "path": "/products/categories/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-categories/",
+      "family": "product-categories",
+      "key": "product-categories delete",
+      "method": "DELETE",
+      "path": "/products/categories/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-categories/",
+      "family": "product-categories",
+      "key": "product-categories batch",
+      "method": "POST",
+      "path": "/products/categories/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "list-names",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-custom-fields/",
+      "family": "product-custom-fields",
+      "key": "product-custom-fields list-names",
+      "method": "GET",
+      "path": "/products/custom-fields/names",
+      "risk_level": "read"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-shipping-classes/",
+      "family": "product-shipping-classes",
+      "key": "product-shipping-classes create",
+      "method": "POST",
+      "path": "/products/shipping_classes",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-shipping-classes/",
+      "family": "product-shipping-classes",
+      "key": "product-shipping-classes get",
+      "method": "GET",
+      "path": "/products/shipping_classes/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-shipping-classes/",
+      "family": "product-shipping-classes",
+      "key": "product-shipping-classes list",
+      "method": "GET",
+      "path": "/products/shipping_classes",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-shipping-classes/",
+      "family": "product-shipping-classes",
+      "key": "product-shipping-classes update",
+      "method": "PUT",
+      "path": "/products/shipping_classes/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-shipping-classes/",
+      "family": "product-shipping-classes",
+      "key": "product-shipping-classes delete",
+      "method": "DELETE",
+      "path": "/products/shipping_classes/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-shipping-classes/",
+      "family": "product-shipping-classes",
+      "key": "product-shipping-classes batch",
+      "method": "POST",
+      "path": "/products/shipping_classes/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-tags/",
+      "family": "product-tags",
+      "key": "product-tags create",
+      "method": "POST",
+      "path": "/products/tags",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-tags/",
+      "family": "product-tags",
+      "key": "product-tags get",
+      "method": "GET",
+      "path": "/products/tags/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-tags/",
+      "family": "product-tags",
+      "key": "product-tags list",
+      "method": "GET",
+      "path": "/products/tags",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-tags/",
+      "family": "product-tags",
+      "key": "product-tags update",
+      "method": "PUT",
+      "path": "/products/tags/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-tags/",
+      "family": "product-tags",
+      "key": "product-tags delete",
+      "method": "DELETE",
+      "path": "/products/tags/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-tags/",
+      "family": "product-tags",
+      "key": "product-tags batch",
+      "method": "POST",
+      "path": "/products/tags/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-reviews/",
+      "family": "product-reviews",
+      "key": "product-reviews create",
+      "method": "POST",
+      "path": "/products/reviews",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-reviews/",
+      "family": "product-reviews",
+      "key": "product-reviews get",
+      "method": "GET",
+      "path": "/products/reviews/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-reviews/",
+      "family": "product-reviews",
+      "key": "product-reviews list",
+      "method": "GET",
+      "path": "/products/reviews",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-reviews/",
+      "family": "product-reviews",
+      "key": "product-reviews update",
+      "method": "PUT",
+      "path": "/products/reviews/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-reviews/",
+      "family": "product-reviews",
+      "key": "product-reviews delete",
+      "method": "DELETE",
+      "path": "/products/reviews/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/product-reviews/",
+      "family": "product-reviews",
+      "key": "product-reviews batch",
+      "method": "POST",
+      "path": "/products/reviews/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/reports/",
+      "family": "reports",
+      "key": "reports list",
+      "method": "GET",
+      "path": "/reports",
+      "risk_level": "read"
+    },
+    {
+      "action": "sales",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/reports/",
+      "family": "reports",
+      "key": "reports sales",
+      "method": "GET",
+      "path": "/reports/sales",
+      "risk_level": "read"
+    },
+    {
+      "action": "top-sellers",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/reports/",
+      "family": "reports",
+      "key": "reports top-sellers",
+      "method": "GET",
+      "path": "/reports/top_sellers",
+      "risk_level": "read"
+    },
+    {
+      "action": "coupon-totals",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/reports/",
+      "family": "reports",
+      "key": "reports coupon-totals",
+      "method": "GET",
+      "path": "/reports/coupons/totals",
+      "risk_level": "read"
+    },
+    {
+      "action": "customer-totals",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/reports/",
+      "family": "reports",
+      "key": "reports customer-totals",
+      "method": "GET",
+      "path": "/reports/customers/totals",
+      "risk_level": "read"
+    },
+    {
+      "action": "order-totals",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/reports/",
+      "family": "reports",
+      "key": "reports order-totals",
+      "method": "GET",
+      "path": "/reports/orders/totals",
+      "risk_level": "read"
+    },
+    {
+      "action": "product-totals",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/reports/",
+      "family": "reports",
+      "key": "reports product-totals",
+      "method": "GET",
+      "path": "/reports/products/totals",
+      "risk_level": "read"
+    },
+    {
+      "action": "review-totals",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/reports/",
+      "family": "reports",
+      "key": "reports review-totals",
+      "method": "GET",
+      "path": "/reports/reviews/totals",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/refunds/",
+      "family": "refunds",
+      "key": "refunds list",
+      "method": "GET",
+      "path": "/refunds",
+      "risk_level": "read"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/taxes/",
+      "family": "taxes",
+      "key": "taxes create",
+      "method": "POST",
+      "path": "/taxes",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/taxes/",
+      "family": "taxes",
+      "key": "taxes get",
+      "method": "GET",
+      "path": "/taxes/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/taxes/",
+      "family": "taxes",
+      "key": "taxes list",
+      "method": "GET",
+      "path": "/taxes",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/taxes/",
+      "family": "taxes",
+      "key": "taxes update",
+      "method": "PUT",
+      "path": "/taxes/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/taxes/",
+      "family": "taxes",
+      "key": "taxes delete",
+      "method": "DELETE",
+      "path": "/taxes/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/taxes/",
+      "family": "taxes",
+      "key": "taxes batch",
+      "method": "POST",
+      "path": "/taxes/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/tax-classes/",
+      "family": "tax-classes",
+      "key": "tax-classes create",
+      "method": "POST",
+      "path": "/taxes/classes",
+      "risk_level": "medium"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/tax-classes/",
+      "family": "tax-classes",
+      "key": "tax-classes list",
+      "method": "GET",
+      "path": "/taxes/classes",
+      "risk_level": "read"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/tax-classes/",
+      "family": "tax-classes",
+      "key": "tax-classes delete",
+      "method": "DELETE",
+      "path": "/taxes/classes/{slug}",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/webhooks/",
+      "family": "webhooks",
+      "key": "webhooks create",
+      "method": "POST",
+      "path": "/webhooks",
+      "risk_level": "high"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/webhooks/",
+      "family": "webhooks",
+      "key": "webhooks get",
+      "method": "GET",
+      "path": "/webhooks/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/webhooks/",
+      "family": "webhooks",
+      "key": "webhooks list",
+      "method": "GET",
+      "path": "/webhooks",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/webhooks/",
+      "family": "webhooks",
+      "key": "webhooks update",
+      "method": "PUT",
+      "path": "/webhooks/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/webhooks/",
+      "family": "webhooks",
+      "key": "webhooks delete",
+      "method": "DELETE",
+      "path": "/webhooks/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/webhooks/",
+      "family": "webhooks",
+      "key": "webhooks batch",
+      "method": "POST",
+      "path": "/webhooks/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "list-groups",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/settings/",
+      "family": "settings",
+      "key": "settings list-groups",
+      "method": "GET",
+      "path": "/settings",
+      "risk_level": "read"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/setting-options/",
+      "family": "setting-options",
+      "key": "setting-options get",
+      "method": "GET",
+      "path": "/settings/{group_id}/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list-group",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/setting-options/",
+      "family": "setting-options",
+      "key": "setting-options list-group",
+      "method": "GET",
+      "path": "/settings/{group_id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/setting-options/",
+      "family": "setting-options",
+      "key": "setting-options update",
+      "method": "PUT",
+      "path": "/settings/{group_id}/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "batch",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/setting-options/",
+      "family": "setting-options",
+      "key": "setting-options batch",
+      "method": "POST",
+      "path": "/settings/{group_id}/batch",
+      "risk_level": "high"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/payment-gateways/",
+      "family": "payment-gateways",
+      "key": "payment-gateways get",
+      "method": "GET",
+      "path": "/payment_gateways/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/payment-gateways/",
+      "family": "payment-gateways",
+      "key": "payment-gateways list",
+      "method": "GET",
+      "path": "/payment_gateways",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/payment-gateways/",
+      "family": "payment-gateways",
+      "key": "payment-gateways update",
+      "method": "PUT",
+      "path": "/payment_gateways/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zones/",
+      "family": "shipping-zones",
+      "key": "shipping-zones create",
+      "method": "POST",
+      "path": "/shipping/zones",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zones/",
+      "family": "shipping-zones",
+      "key": "shipping-zones get",
+      "method": "GET",
+      "path": "/shipping/zones/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zones/",
+      "family": "shipping-zones",
+      "key": "shipping-zones list",
+      "method": "GET",
+      "path": "/shipping/zones",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zones/",
+      "family": "shipping-zones",
+      "key": "shipping-zones update",
+      "method": "PUT",
+      "path": "/shipping/zones/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zones/",
+      "family": "shipping-zones",
+      "key": "shipping-zones delete",
+      "method": "DELETE",
+      "path": "/shipping/zones/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zone-locations/",
+      "family": "shipping-zone-locations",
+      "key": "shipping-zone-locations get",
+      "method": "GET",
+      "path": "/shipping/zones/{zone_id}/locations",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zone-locations/",
+      "family": "shipping-zone-locations",
+      "key": "shipping-zone-locations update",
+      "method": "PUT",
+      "path": "/shipping/zones/{zone_id}/locations",
+      "risk_level": "high"
+    },
+    {
+      "action": "create",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zone-methods/",
+      "family": "shipping-zone-methods",
+      "key": "shipping-zone-methods create",
+      "method": "POST",
+      "path": "/shipping/zones/{zone_id}/methods",
+      "risk_level": "medium"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zone-methods/",
+      "family": "shipping-zone-methods",
+      "key": "shipping-zone-methods get",
+      "method": "GET",
+      "path": "/shipping/zones/{zone_id}/methods/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zone-methods/",
+      "family": "shipping-zone-methods",
+      "key": "shipping-zone-methods list",
+      "method": "GET",
+      "path": "/shipping/zones/{zone_id}/methods",
+      "risk_level": "read"
+    },
+    {
+      "action": "update",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zone-methods/",
+      "family": "shipping-zone-methods",
+      "key": "shipping-zone-methods update",
+      "method": "PUT",
+      "path": "/shipping/zones/{zone_id}/methods/{id}",
+      "risk_level": "medium"
+    },
+    {
+      "action": "delete",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-zone-methods/",
+      "family": "shipping-zone-methods",
+      "key": "shipping-zone-methods delete",
+      "method": "DELETE",
+      "path": "/shipping/zones/{zone_id}/methods/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-methods/",
+      "family": "shipping-methods",
+      "key": "shipping-methods get",
+      "method": "GET",
+      "path": "/shipping_methods/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/shipping-methods/",
+      "family": "shipping-methods",
+      "key": "shipping-methods list",
+      "method": "GET",
+      "path": "/shipping_methods",
+      "risk_level": "read"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/system-status/",
+      "family": "system-status",
+      "key": "system-status get",
+      "method": "GET",
+      "path": "/system_status",
+      "risk_level": "read"
+    },
+    {
+      "action": "get",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/system-status-tools/",
+      "family": "system-status-tools",
+      "key": "system-status-tools get",
+      "method": "GET",
+      "path": "/system_status/tools/{id}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/system-status-tools/",
+      "family": "system-status-tools",
+      "key": "system-status-tools list",
+      "method": "GET",
+      "path": "/system_status/tools",
+      "risk_level": "read"
+    },
+    {
+      "action": "run",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/system-status-tools/",
+      "family": "system-status-tools",
+      "key": "system-status-tools run",
+      "method": "PUT",
+      "path": "/system_status/tools/{id}",
+      "risk_level": "high"
+    },
+    {
+      "action": "list",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/data/",
+      "family": "data",
+      "key": "data list",
+      "method": "GET",
+      "path": "/data",
+      "risk_level": "read"
+    },
+    {
+      "action": "list-continents",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/data/",
+      "family": "data",
+      "key": "data list-continents",
+      "method": "GET",
+      "path": "/data/continents",
+      "risk_level": "read"
+    },
+    {
+      "action": "get-continent",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/data/",
+      "family": "data",
+      "key": "data get-continent",
+      "method": "GET",
+      "path": "/data/continents/{location}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list-countries",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/data/",
+      "family": "data",
+      "key": "data list-countries",
+      "method": "GET",
+      "path": "/data/countries",
+      "risk_level": "read"
+    },
+    {
+      "action": "get-country",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/data/",
+      "family": "data",
+      "key": "data get-country",
+      "method": "GET",
+      "path": "/data/countries/{location}",
+      "risk_level": "read"
+    },
+    {
+      "action": "list-currencies",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/data/",
+      "family": "data",
+      "key": "data list-currencies",
+      "method": "GET",
+      "path": "/data/currencies",
+      "risk_level": "read"
+    },
+    {
+      "action": "get-currency",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/data/",
+      "family": "data",
+      "key": "data get-currency",
+      "method": "GET",
+      "path": "/data/currencies/{currency}",
+      "risk_level": "read"
+    },
+    {
+      "action": "current-currency",
+      "docs_url": "https://developer.woocommerce.com/docs/apis/rest-api/v3/data/",
+      "family": "data",
+      "key": "data current-currency",
+      "method": "GET",
+      "path": "/data/currencies/current",
+      "risk_level": "read"
+    }
+  ],
+  "run_id": null,
+  "runs_index": "./.state/runs/index.jsonl"
+}

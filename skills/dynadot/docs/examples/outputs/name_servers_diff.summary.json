@@ -1,0 +1,10 @@
+{
+  "changes": null,
+  "count": 3,
+  "dry_run": true,
+  "ok": true,
+  "out_path": "name_servers.diff.json",
+  "to_change": 1,
+  "unchanged": 2
+}
+

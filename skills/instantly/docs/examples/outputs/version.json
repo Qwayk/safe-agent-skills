@@ -1,0 +1,10 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "ok": true,
+  "run_id": null,
+  "runs_index": "<tool_dir>/.state/runs/index.jsonl",
+  "tool": "instantly-api-tool",
+  "version": "0.6.0"
+}

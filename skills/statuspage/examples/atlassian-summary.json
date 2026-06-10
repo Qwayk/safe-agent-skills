@@ -1,0 +1,22 @@
+{
+  "data": {
+    "components": [],
+    "incidents": [],
+    "page": {
+      "id": "0f54fx204jpt",
+      "name": "Atlassian",
+      "time_zone": "Etc/UTC",
+      "updated_at": "2026-05-25T08:43:52.316Z",
+      "url": "https://status.atlassian.com"
+    },
+    "scheduled_maintenances": [],
+    "status": {
+      "description": "All Systems Operational",
+      "indicator": "none"
+    }
+  },
+  "endpoint": "summary",
+  "ok": true,
+  "tool": "qwayk-statuspage-skill",
+  "url": "https://status.atlassian.com"
+}

@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_account_balance",
+  "out_path": null,
+  "dynadot": {
+    "command": "get_account_balance",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "Currency": "USD",
+      "Balance": "123.45"
+    }
+  }
+}

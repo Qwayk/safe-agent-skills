@@ -1,0 +1,11 @@
+searchconsole.urlInspection.index.inspect
+searchconsole.urlTestingTools.mobileFriendlyTest.run
+webmasters.searchanalytics.query
+webmasters.sitemaps.delete
+webmasters.sitemaps.get
+webmasters.sitemaps.list
+webmasters.sitemaps.submit
+webmasters.sites.add
+webmasters.sites.delete
+webmasters.sites.get
+webmasters.sites.list

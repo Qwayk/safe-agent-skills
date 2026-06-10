@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cloudflare-api-tool"
+version = "0.7.6"
+description = "Cloudflare API safe agent CLI (read-first; Workers inventory)."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "blake3>=1.0.0",
+  "requests>=2.31.0",
+  "websockets>=12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.8.0",
+  "ruff>=0.6.0",
+  "types-requests>=2.31.0.0",
+]
+
+[project.scripts]
+cloudflare-api-tool = "cloudflare_api_tool.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+exclude = [".venv", "build", "dist", "src/**.egg-info"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "src"
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+check_untyped_defs = true
+show_error_codes = true
+pretty = false
+exclude = "(^\\.venv/|^build/|^dist/|^src/.*\\.egg-info/)"

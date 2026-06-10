@@ -1,0 +1,15 @@
+{
+  "base_url": "https://status.example.com",
+  "data": {
+    "page": {
+      "id": "abcd1234",
+      "name": "Example Status"
+    },
+    "status": {
+      "description": "All Systems Operational",
+      "indicator": "none"
+    }
+  },
+  "endpoint": "/api/v2/status.json",
+  "ok": true
+}

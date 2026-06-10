@@ -1,0 +1,47 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-06T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-06T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "command": "dns.records.ensure",
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "command": "cloudflare-api-tool --env-file /path/to/your/project/.env --output json dns records ensure --zone-id <your_zone_id> --name www.example.com --type A --content 1.1.1.1",
+    "env_fingerprint": "https://api.cloudflare.com/client/v4",
+    "generated_at_utc": "2026-02-06T00:00:00Z",
+    "notes": [],
+    "preconditions": [
+      "API token has least-privilege permissions needed for this action.",
+      "Review the plan output before applying."
+    ],
+    "proposed_changes": [
+      {
+        "action": "create",
+        "record": {
+          "content": "1.1.1.1",
+          "name": "www.example.com",
+          "type": "A"
+        },
+        "resource": "dns_record",
+        "zone_id": "<your_zone_id>"
+      }
+    ],
+    "risk_level": "high",
+    "risk_reasons": [
+      "DNS record changes can affect production traffic."
+    ],
+    "selector": {
+      "content": "1.1.1.1",
+      "name": "www.example.com",
+      "type": "A",
+      "zone_id": "<your_zone_id>"
+    },
+    "tool": "cloudflare-api-tool",
+    "verification_plan": [
+      "Re-list records with the same name/type/content and confirm exactly one exists."
+    ],
+    "version": "0.5.0"
+  },
+  "run_id": "2026-02-06T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}

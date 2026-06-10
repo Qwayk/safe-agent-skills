@@ -1,0 +1,35 @@
+# Pages (Projects, Deployments, Domains, Build cache) endpoint coverage (detailed)
+This file is generated from Cloudflare's OpenAPI snapshot extracts.
+- Snapshot (sha256): 73b3b8e9c0bca1cf59f22dd6e212eeaa433ea6b33370e7320af10b435d991824
+- Source CSV: docs/cloudflare-api-docs/extracts/endpoints_pages.csv
+
+Regenerate:
+```bash
+python3 scripts/generate_pages_coverage.py
+```
+
+Note: The new `cloudflare-api-tool pages deploy` command keeps dry-runs local, ensures the Pages project exists on apply (creating it when needed), then uses Cloudflare's direct-upload asset flow for static sites: upload token, missing-hash check, asset upload, hash upsert, then `POST /accounts/{account_id}/pages/projects/{project_name}/deployments` with a manifest. Applies require `--apply --yes --out`; `--branch` targets a preview deployment and `--production-branch` controls project creation when needed.
+
+Legend:
+- Implemented: runnable via explicit per-operation `cloudflare-api-tool operations <area> <op_key>` commands (safe-by-default).
+
+| Status | Method | Path | OperationId | Summary | Tags | Permissions | CLI command(s) | Notes |
+|---|---|---|---|---|---|---|---|---|
+| Implemented | GET | `/accounts/{account_id}/pages/projects` | `pages-project-get-projects` | Get projects | Pages Project |  | cloudflare-api-tool operations pages pages-project-get-projects | Sensitive read. Requires --apply and --out; file-only output (never printed). |
+| Implemented | POST | `/accounts/{account_id}/pages/projects` | `pages-project-create-project` | Create project | Pages Project |  | cloudflare-api-tool operations pages pages-project-create-project | Sensitive output. Apply requires --apply --yes and --out; file-only output (never printed). |
+| Implemented | DELETE | `/accounts/{account_id}/pages/projects/{project_name}` | `pages-project-delete-project` | Delete project | Pages Project |  | cloudflare-api-tool operations pages pages-project-delete-project | Sensitive output. Apply requires --apply --yes and --out; file-only output (never printed). |
+| Implemented | GET | `/accounts/{account_id}/pages/projects/{project_name}` | `pages-project-get-project` | Get project | Pages Project |  | cloudflare-api-tool operations pages pages-project-get-project | Sensitive read. Requires --apply and --out; file-only output (never printed). |
+| Implemented | PATCH | `/accounts/{account_id}/pages/projects/{project_name}` | `pages-project-update-project` | Update project | Pages Project |  | cloudflare-api-tool operations pages pages-project-update-project | Sensitive output. Apply requires --apply --yes and --out; file-only output (never printed). |
+| Implemented | GET | `/accounts/{account_id}/pages/projects/{project_name}/deployments` | `pages-deployment-get-deployments` | Get deployments | Pages Deployment |  | cloudflare-api-tool operations pages pages-deployment-get-deployments | Sensitive read. Requires --apply and --out; file-only output (never printed). |
+| Implemented | POST | `/accounts/{account_id}/pages/projects/{project_name}/deployments` | `pages-deployment-create-deployment` | Create deployment | Pages Deployment |  | cloudflare-api-tool operations pages pages-deployment-create-deployment | Sensitive output. Apply requires --apply --yes and --out; file-only output (never printed). |
+| Implemented | DELETE | `/accounts/{account_id}/pages/projects/{project_name}/deployments/{deployment_id}` | `pages-deployment-delete-deployment` | Delete deployment | Pages Deployment |  | cloudflare-api-tool operations pages pages-deployment-delete-deployment | Sensitive output. Apply requires --apply --yes and --out; file-only output (never printed). |
+| Implemented | GET | `/accounts/{account_id}/pages/projects/{project_name}/deployments/{deployment_id}` | `pages-deployment-get-deployment-info` | Get deployment info | Pages Deployment |  | cloudflare-api-tool operations pages pages-deployment-get-deployment-info | Sensitive read. Requires --apply and --out; file-only output (never printed). |
+| Implemented | GET | `/accounts/{account_id}/pages/projects/{project_name}/deployments/{deployment_id}/history/logs` | `pages-deployment-get-deployment-logs` | Get deployment logs | Pages Deployment |  | cloudflare-api-tool operations pages pages-deployment-get-deployment-logs | Sensitive read. Requires --apply and --out; file-only output (never printed). |
+| Implemented | POST | `/accounts/{account_id}/pages/projects/{project_name}/deployments/{deployment_id}/retry` | `pages-deployment-retry-deployment` | Retry deployment | Pages Deployment |  | cloudflare-api-tool operations pages pages-deployment-retry-deployment | Sensitive output. Apply requires --apply --yes and --out; file-only output (never printed). |
+| Implemented | POST | `/accounts/{account_id}/pages/projects/{project_name}/deployments/{deployment_id}/rollback` | `pages-deployment-rollback-deployment` | Rollback deployment | Pages Deployment |  | cloudflare-api-tool operations pages pages-deployment-rollback-deployment | Irreversible rollback. Apply requires --apply --yes --ack-irreversible and --out; file-only output (never printed). Verifies via read-back GET when possible. |
+| Implemented | GET | `/accounts/{account_id}/pages/projects/{project_name}/domains` | `pages-domains-get-domains` | Get domains | Pages Domains |  | cloudflare-api-tool operations pages pages-domains-get-domains | Sensitive read. Requires --apply and --out; file-only output (never printed). |
+| Implemented | POST | `/accounts/{account_id}/pages/projects/{project_name}/domains` | `pages-domains-add-domain` | Add domain | Pages Domains |  | cloudflare-api-tool operations pages pages-domains-add-domain | Sensitive output. Apply requires --apply --yes and --out; file-only output (never printed). |
+| Implemented | DELETE | `/accounts/{account_id}/pages/projects/{project_name}/domains/{domain_name}` | `pages-domains-delete-domain` | Delete domain | Pages Domains |  | cloudflare-api-tool operations pages pages-domains-delete-domain | Sensitive output. Apply requires --apply --yes and --out; file-only output (never printed). |
+| Implemented | GET | `/accounts/{account_id}/pages/projects/{project_name}/domains/{domain_name}` | `pages-domains-get-domain` | Get domain | Pages Domains |  | cloudflare-api-tool operations pages pages-domains-get-domain | Sensitive read. Requires --apply and --out; file-only output (never printed). |
+| Implemented | PATCH | `/accounts/{account_id}/pages/projects/{project_name}/domains/{domain_name}` | `pages-domains-patch-domain` | Patch domain | Pages Domains |  | cloudflare-api-tool operations pages pages-domains-patch-domain | Sensitive output. Apply requires --apply --yes and --out; file-only output (never printed). |
+| Implemented | POST | `/accounts/{account_id}/pages/projects/{project_name}/purge_build_cache` | `pages-purge-build-cache` | Purge build cache | Pages Build Cache |  | cloudflare-api-tool operations pages pages-purge-build-cache | Sensitive output. Apply requires --apply --yes and --out; file-only output (never printed). |

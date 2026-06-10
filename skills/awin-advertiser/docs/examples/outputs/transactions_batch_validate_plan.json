@@ -1,0 +1,63 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "transactions batch validate",
+  "advertiser_id": "123456",
+  "endpoint": "/advertisers/123456/transactions/batch",
+  "method": "POST",
+  "action_count": 2,
+  "action_breakdown": {
+    "approve": 1,
+    "amend": 1
+  },
+  "plan": {
+    "tool": "awin-advertiser-safe-cli",
+    "version": "0.1.1",
+    "generated_at_utc": "2026-06-09T00:00:00Z",
+    "env_fingerprint": "https://api.awin.com",
+    "command": "awin-advertiser-safe-cli transactions batch validate --advertiser-id 123456 --batch-file examples/transactions_batch.json --plan-out examples/transactions_batch_validate_plan.json",
+    "selector": {
+      "advertiser_id": "123456",
+      "endpoint": "advertisers/123456/transactions/batch"
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "transactions batch validate"
+    ],
+    "preconditions": [
+      "Dry-run only by default",
+      "Apply requires --apply --yes --ack-irreversible"
+    ],
+    "baseline": {
+      "env_fingerprint": "https://api.awin.com",
+      "batch_file": "examples/transactions_batch.json",
+      "batch_file_sha256": "<REDACTED>",
+      "batch_action_count": 2,
+      "action_breakdown": {
+        "approve": 1,
+        "amend": 1
+      }
+    },
+    "proposed_changes": [
+      {
+        "resource": "transactions",
+        "action": "batch_validate",
+        "advertiser_id": "123456",
+        "batch_action_count": 2,
+        "action_breakdown": {
+          "approve": 1,
+          "amend": 1
+        }
+      }
+    ],
+    "verification_plan": {
+      "type": "provider-response",
+      "notes": "Refuse on transport or provider rejection; review response for rejected actions"
+    },
+    "rollback": {
+      "supported": false,
+      "notes": "No rollback endpoint is defined in current transaction batch docs"
+    }
+  },
+  "plan_out": "examples/transactions_batch_validate_plan.json"
+}

@@ -1,0 +1,3233 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "count": 240,
+  "ok": true,
+  "ops": [
+    {
+      "beta_header": "chatkit_beta=v1",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/sessions/methods/cancel",
+      "method": "POST",
+      "operation_command": "CancelChatSessionMethod",
+      "path": "/chatkit/sessions/{session_id}/cancel",
+      "required_path_params": [
+        "session_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/responses/methods/compact",
+      "method": "POST",
+      "operation_command": "Compactconversation",
+      "path": "/responses/compact",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": []
+    },
+    {
+      "beta_header": "chatkit_beta=v1",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/sessions/methods/create",
+      "method": "POST",
+      "operation_command": "CreateChatSessionMethod",
+      "path": "/chatkit/sessions",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/containers/methods/create",
+      "method": "POST",
+      "operation_command": "CreateContainer",
+      "path": "/containers",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/containers/subresources/files/methods/create",
+      "method": "POST",
+      "operation_command": "CreateContainerFile",
+      "path": "/containers/{container_id}/files",
+      "required_path_params": [
+        "container_id"
+      ],
+      "required_request_body": true,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/skills/methods/create",
+      "method": "POST",
+      "operation_command": "CreateSkill",
+      "path": "/skills",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Skills"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/skills/subresources/versions/methods/create",
+      "method": "POST",
+      "operation_command": "CreateSkillVersion",
+      "path": "/skills/{skill_id}/versions",
+      "required_path_params": [
+        "skill_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Skills"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/create_character",
+      "method": "POST",
+      "operation_command": "CreateVideoCharacter",
+      "path": "/videos/characters",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Videos"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/edit",
+      "method": "POST",
+      "operation_command": "CreateVideoEdit",
+      "path": "/videos/edits",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Videos"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/extend",
+      "method": "POST",
+      "operation_command": "CreateVideoExtend",
+      "path": "/videos/extensions",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Videos"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/remix",
+      "method": "POST",
+      "operation_command": "CreateVideoRemix",
+      "path": "/videos/{video_id}/remix",
+      "required_path_params": [
+        "video_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Videos"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/containers/methods/delete",
+      "method": "DELETE",
+      "operation_command": "DeleteContainer",
+      "path": "/containers/{container_id}",
+      "required_path_params": [
+        "container_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/containers/subresources/files/methods/delete",
+      "method": "DELETE",
+      "operation_command": "DeleteContainerFile",
+      "path": "/containers/{container_id}/files/{file_id}",
+      "required_path_params": [
+        "container_id",
+        "file_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/skills/methods/delete",
+      "method": "DELETE",
+      "operation_command": "DeleteSkill",
+      "path": "/skills/{skill_id}",
+      "required_path_params": [
+        "skill_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Skills"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/skills/subresources/versions/methods/delete",
+      "method": "DELETE",
+      "operation_command": "DeleteSkillVersion",
+      "path": "/skills/{skill_id}/versions/{version}",
+      "required_path_params": [
+        "skill_id",
+        "version"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Skills"
+      ]
+    },
+    {
+      "beta_header": "chatkit_beta=v1",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/threads/methods/delete",
+      "method": "DELETE",
+      "operation_command": "DeleteThreadMethod",
+      "path": "/chatkit/threads/{thread_id}",
+      "required_path_params": [
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/delete",
+      "method": "DELETE",
+      "operation_command": "DeleteVideo",
+      "path": "/videos/{video_id}",
+      "required_path_params": [
+        "video_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Videos"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/skills/methods/retrieve",
+      "method": "GET",
+      "operation_command": "GetSkill",
+      "path": "/skills/{skill_id}",
+      "required_path_params": [
+        "skill_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Skills"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/skills/subresources/content/methods/retrieve",
+      "method": "GET",
+      "operation_command": "GetSkillContent",
+      "path": "/skills/{skill_id}/content",
+      "required_path_params": [
+        "skill_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Skills"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/skills/subresources/versions/methods/retrieve",
+      "method": "GET",
+      "operation_command": "GetSkillVersion",
+      "path": "/skills/{skill_id}/versions/{version}",
+      "required_path_params": [
+        "skill_id",
+        "version"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Skills"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/skills/subresources/versions/subresources/content/methods/retrieve",
+      "method": "GET",
+      "operation_command": "GetSkillVersionContent",
+      "path": "/skills/{skill_id}/versions/{version}/content",
+      "required_path_params": [
+        "skill_id",
+        "version"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Skills"
+      ]
+    },
+    {
+      "beta_header": "chatkit_beta=v1",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/threads/methods/retrieve",
+      "method": "GET",
+      "operation_command": "GetThreadMethod",
+      "path": "/chatkit/threads/{thread_id}",
+      "required_path_params": [
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/retrieve",
+      "method": "GET",
+      "operation_command": "GetVideo",
+      "path": "/videos/{video_id}",
+      "required_path_params": [
+        "video_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Videos"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/get_character",
+      "method": "GET",
+      "operation_command": "GetVideoCharacter",
+      "path": "/videos/characters/{character_id}",
+      "required_path_params": [
+        "character_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Videos"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/responses/subresources/input_tokens/methods/count",
+      "method": "POST",
+      "operation_command": "Getinputtokencounts",
+      "path": "/responses/input_tokens",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/containers/subresources/files/methods/list",
+      "method": "GET",
+      "operation_command": "ListContainerFiles",
+      "path": "/containers/{container_id}/files",
+      "required_path_params": [
+        "container_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/containers/methods/list",
+      "method": "GET",
+      "operation_command": "ListContainers",
+      "path": "/containers",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/skills/subresources/versions/methods/list",
+      "method": "GET",
+      "operation_command": "ListSkillVersions",
+      "path": "/skills/{skill_id}/versions",
+      "required_path_params": [
+        "skill_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Skills"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/skills/methods/list",
+      "method": "GET",
+      "operation_command": "ListSkills",
+      "path": "/skills",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Skills"
+      ]
+    },
+    {
+      "beta_header": "chatkit_beta=v1",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/threads/methods/list_items",
+      "method": "GET",
+      "operation_command": "ListThreadItemsMethod",
+      "path": "/chatkit/threads/{thread_id}/items",
+      "required_path_params": [
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": "chatkit_beta=v1",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/threads/methods/list",
+      "method": "GET",
+      "operation_command": "ListThreadsMethod",
+      "path": "/chatkit/threads",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/list",
+      "method": "GET",
+      "operation_command": "ListVideos",
+      "path": "/videos",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Videos"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/containers/methods/retrieve",
+      "method": "GET",
+      "operation_command": "RetrieveContainer",
+      "path": "/containers/{container_id}",
+      "required_path_params": [
+        "container_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/containers/subresources/files/methods/retrieve",
+      "method": "GET",
+      "operation_command": "RetrieveContainerFile",
+      "path": "/containers/{container_id}/files/{file_id}",
+      "required_path_params": [
+        "container_id",
+        "file_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/containers/subresources/files/subresources/content/methods/retrieve",
+      "method": "GET",
+      "operation_command": "RetrieveContainerFileContent",
+      "path": "/containers/{container_id}/files/{file_id}/content",
+      "required_path_params": [
+        "container_id",
+        "file_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/download_content",
+      "method": "GET",
+      "operation_command": "RetrieveVideoContent",
+      "path": "/videos/{video_id}/content",
+      "required_path_params": [
+        "video_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Videos"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/skills/methods/update",
+      "method": "POST",
+      "operation_command": "UpdateSkillDefaultVersion",
+      "path": "/skills/{skill_id}",
+      "required_path_params": [
+        "skill_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Skills"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/realtime/subresources/calls/methods/accept",
+      "method": "POST",
+      "operation_command": "accept-realtime-call",
+      "path": "/realtime/calls/{call_id}/accept",
+      "required_path_params": [
+        "call_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Realtime"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/activate",
+      "method": "POST",
+      "operation_command": "activateOrganizationCertificates",
+      "path": "/organization/certificates/activate",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Certificates"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/certificates/methods/activate",
+      "method": "POST",
+      "operation_command": "activateProjectCertificates",
+      "path": "/organization/projects/{project_id}/certificates/activate",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Certificates"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/users/methods/create",
+      "method": "POST",
+      "operation_command": "add-group-user",
+      "path": "/organization/groups/{group_id}/users",
+      "required_path_params": [
+        "group_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Group users"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/groups/methods/create",
+      "method": "POST",
+      "operation_command": "add-project-group",
+      "path": "/organization/projects/{project_id}/groups",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Project groups"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/uploads/subresources/parts/methods/create",
+      "method": "POST",
+      "operation_command": "addUploadPart",
+      "path": "/uploads/{upload_id}/parts",
+      "required_path_params": [
+        "upload_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Uploads"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/admin_api_keys/methods/create",
+      "method": "POST",
+      "operation_command": "admin-api-keys-create",
+      "path": "/organization/admin_api_keys",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/admin_api_keys/methods/delete",
+      "method": "DELETE",
+      "operation_command": "admin-api-keys-delete",
+      "path": "/organization/admin_api_keys/{key_id}",
+      "required_path_params": [
+        "key_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/admin_api_keys/methods/retrieve",
+      "method": "GET",
+      "operation_command": "admin-api-keys-get",
+      "path": "/organization/admin_api_keys/{key_id}",
+      "required_path_params": [
+        "key_id"
+      ],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/admin_api_keys/methods/list",
+      "method": "GET",
+      "operation_command": "admin-api-keys-list",
+      "path": "/organization/admin_api_keys",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": []
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/methods/archive",
+      "method": "POST",
+      "operation_command": "archive-project",
+      "path": "/organization/projects/{project_id}/archive",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/roles/methods/create",
+      "method": "POST",
+      "operation_command": "assign-group-role",
+      "path": "/organization/groups/{group_id}/roles",
+      "required_path_params": [
+        "group_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Group organization role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/groups/subresources/roles/methods/create",
+      "method": "POST",
+      "operation_command": "assign-project-group-role",
+      "path": "/projects/{project_id}/groups/{group_id}/roles",
+      "required_path_params": [
+        "group_id",
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Project group role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/users/subresources/roles/methods/create",
+      "method": "POST",
+      "operation_command": "assign-project-user-role",
+      "path": "/projects/{project_id}/users/{user_id}/roles",
+      "required_path_params": [
+        "project_id",
+        "user_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Project user role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/subresources/roles/methods/create",
+      "method": "POST",
+      "operation_command": "assign-user-role",
+      "path": "/organization/users/{user_id}/roles",
+      "required_path_params": [
+        "user_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "User organization role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/batches/methods/cancel",
+      "method": "POST",
+      "operation_command": "cancelBatch",
+      "path": "/batches/{batch_id}/cancel",
+      "required_path_params": [
+        "batch_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Batch"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/methods/cancel",
+      "method": "POST",
+      "operation_command": "cancelFineTuningJob",
+      "path": "/fine_tuning/jobs/{fine_tuning_job_id}/cancel",
+      "required_path_params": [
+        "fine_tuning_job_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/responses/methods/cancel",
+      "method": "POST",
+      "operation_command": "cancelResponse",
+      "path": "/responses/{response_id}/cancel",
+      "required_path_params": [
+        "response_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Responses"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/cancel",
+      "method": "POST",
+      "operation_command": "cancelRun",
+      "path": "/threads/{thread_id}/runs/{run_id}/cancel",
+      "required_path_params": [
+        "run_id",
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/uploads/methods/complete",
+      "method": "POST",
+      "operation_command": "completeUpload",
+      "path": "/uploads/{upload_id}/complete",
+      "required_path_params": [
+        "upload_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Uploads"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/methods/create",
+      "method": "POST",
+      "operation_command": "create-group",
+      "path": "/organization/groups",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Groups"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/methods/create",
+      "method": "POST",
+      "operation_command": "create-project",
+      "path": "/organization/projects",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/roles/methods/create",
+      "method": "POST",
+      "operation_command": "create-project-role",
+      "path": "/projects/{project_id}/roles",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Roles"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/service_accounts/methods/create",
+      "method": "POST",
+      "operation_command": "create-project-service-account",
+      "path": "/organization/projects/{project_id}/service_accounts",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/users/methods/create",
+      "method": "POST",
+      "operation_command": "create-project-user",
+      "path": "/organization/projects/{project_id}/users",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/realtime/subresources/client_secrets/methods/create",
+      "method": "POST",
+      "operation_command": "create-realtime-client-secret",
+      "path": "/realtime/client_secrets",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Realtime"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/realtime/subresources/sessions/methods/create",
+      "method": "POST",
+      "operation_command": "create-realtime-session",
+      "path": "/realtime/sessions",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Realtime"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/realtime/subresources/transcription_sessions/methods/create",
+      "method": "POST",
+      "operation_command": "create-realtime-transcription-session",
+      "path": "/realtime/transcription_sessions",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Realtime"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/roles/methods/create",
+      "method": "POST",
+      "operation_command": "create-role",
+      "path": "/organization/roles",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Roles"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/create",
+      "method": "POST",
+      "operation_command": "createAssistant",
+      "path": "/assistants",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/batches/methods/create",
+      "method": "POST",
+      "operation_command": "createBatch",
+      "path": "/batches",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Batch"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create",
+      "method": "POST",
+      "operation_command": "createChatCompletion",
+      "path": "/chat/completions",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/completions/methods/create",
+      "method": "POST",
+      "operation_command": "createCompletion",
+      "path": "/completions",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Completions"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/methods/create",
+      "method": "POST",
+      "operation_command": "createConversation",
+      "path": "/conversations",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Conversations"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/subresources/items/methods/create",
+      "method": "POST",
+      "operation_command": "createConversationItems",
+      "path": "/conversations/{conversation_id}/items",
+      "required_path_params": [
+        "conversation_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Conversations"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/embeddings/methods/create",
+      "method": "POST",
+      "operation_command": "createEmbedding",
+      "path": "/embeddings",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Embeddings"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/methods/create",
+      "method": "POST",
+      "operation_command": "createEval",
+      "path": "/evals",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/methods/create",
+      "method": "POST",
+      "operation_command": "createEvalRun",
+      "path": "/evals/{eval_id}/runs",
+      "required_path_params": [
+        "eval_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/files/methods/create",
+      "method": "POST",
+      "operation_command": "createFile",
+      "path": "/files",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Files"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/checkpoints/subresources/permissions/methods/create",
+      "method": "POST",
+      "operation_command": "createFineTuningCheckpointPermission",
+      "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions",
+      "required_path_params": [
+        "fine_tuned_model_checkpoint"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/methods/create",
+      "method": "POST",
+      "operation_command": "createFineTuningJob",
+      "path": "/fine_tuning/jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/images/methods/generate",
+      "method": "POST",
+      "operation_command": "createImage",
+      "path": "/images/generations",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Images"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/images/methods/edit",
+      "method": "POST",
+      "operation_command": "createImageEdit",
+      "path": "/images/edits",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Images"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/images/methods/create_variation",
+      "method": "POST",
+      "operation_command": "createImageVariation",
+      "path": "/images/variations",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Images"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/messages/methods/create",
+      "method": "POST",
+      "operation_command": "createMessage",
+      "path": "/threads/{thread_id}/messages",
+      "required_path_params": [
+        "thread_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/moderations/methods/create",
+      "method": "POST",
+      "operation_command": "createModeration",
+      "path": "/moderations",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Moderations"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/responses/methods/create",
+      "method": "POST",
+      "operation_command": "createResponse",
+      "path": "/responses",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Responses"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/create",
+      "method": "POST",
+      "operation_command": "createRun",
+      "path": "/threads/{thread_id}/runs",
+      "required_path_params": [
+        "thread_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/audio/subresources/speech/methods/create",
+      "method": "POST",
+      "operation_command": "createSpeech",
+      "path": "/audio/speech",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Audio"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/methods/create",
+      "method": "POST",
+      "operation_command": "createThread",
+      "path": "/threads",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/methods/create_and_run",
+      "method": "POST",
+      "operation_command": "createThreadAndRun",
+      "path": "/threads/runs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create",
+      "method": "POST",
+      "operation_command": "createTranscription",
+      "path": "/audio/transcriptions",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Audio"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/audio/subresources/translations/methods/create",
+      "method": "POST",
+      "operation_command": "createTranslation",
+      "path": "/audio/translations",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Audio"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/uploads/methods/create",
+      "method": "POST",
+      "operation_command": "createUpload",
+      "path": "/uploads",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Uploads"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/methods/create",
+      "method": "POST",
+      "operation_command": "createVectorStore",
+      "path": "/vector_stores",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/files/methods/create",
+      "method": "POST",
+      "operation_command": "createVectorStoreFile",
+      "path": "/vector_stores/{vector_store_id}/files",
+      "required_path_params": [
+        "vector_store_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/create",
+      "method": "POST",
+      "operation_command": "createVectorStoreFileBatch",
+      "path": "/vector_stores/{vector_store_id}/file_batches",
+      "required_path_params": [
+        "vector_store_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/create",
+      "method": "POST",
+      "operation_command": "createVideo",
+      "path": "/videos",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Videos"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/audio/subresources/voices/methods/create",
+      "method": "POST",
+      "operation_command": "createVoice",
+      "path": "/audio/voices",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Audio"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/audio/subresources/voice_consents/methods/create",
+      "method": "POST",
+      "operation_command": "createVoiceConsent",
+      "path": "/audio/voice_consents",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Audio"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/deactivate",
+      "method": "POST",
+      "operation_command": "deactivateOrganizationCertificates",
+      "path": "/organization/certificates/deactivate",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Certificates"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/certificates/methods/deactivate",
+      "method": "POST",
+      "operation_command": "deactivateProjectCertificates",
+      "path": "/organization/projects/{project_id}/certificates/deactivate",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Certificates"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/methods/delete",
+      "method": "DELETE",
+      "operation_command": "delete-group",
+      "path": "/organization/groups/{group_id}",
+      "required_path_params": [
+        "group_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Groups"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/invites/methods/delete",
+      "method": "DELETE",
+      "operation_command": "delete-invite",
+      "path": "/organization/invites/{invite_id}",
+      "required_path_params": [
+        "invite_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Invites"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/api_keys/methods/delete",
+      "method": "DELETE",
+      "operation_command": "delete-project-api-key",
+      "path": "/organization/projects/{project_id}/api_keys/{key_id}",
+      "required_path_params": [
+        "key_id",
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/roles/methods/delete",
+      "method": "DELETE",
+      "operation_command": "delete-project-role",
+      "path": "/projects/{project_id}/roles/{role_id}",
+      "required_path_params": [
+        "project_id",
+        "role_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Roles"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/service_accounts/methods/delete",
+      "method": "DELETE",
+      "operation_command": "delete-project-service-account",
+      "path": "/organization/projects/{project_id}/service_accounts/{service_account_id}",
+      "required_path_params": [
+        "project_id",
+        "service_account_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/users/methods/delete",
+      "method": "DELETE",
+      "operation_command": "delete-project-user",
+      "path": "/organization/projects/{project_id}/users/{user_id}",
+      "required_path_params": [
+        "project_id",
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/roles/methods/delete",
+      "method": "DELETE",
+      "operation_command": "delete-role",
+      "path": "/organization/roles/{role_id}",
+      "required_path_params": [
+        "role_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Roles"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/methods/delete",
+      "method": "DELETE",
+      "operation_command": "delete-user",
+      "path": "/organization/users/{user_id}",
+      "required_path_params": [
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteAssistant",
+      "path": "/assistants/{assistant_id}",
+      "required_path_params": [
+        "assistant_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteCertificate",
+      "path": "/organization/certificates/{certificate_id}",
+      "required_path_params": [
+        "certificate_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Certificates"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteChatCompletion",
+      "path": "/chat/completions/{completion_id}",
+      "required_path_params": [
+        "completion_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteConversation",
+      "path": "/conversations/{conversation_id}",
+      "required_path_params": [
+        "conversation_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Conversations"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/subresources/items/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteConversationItem",
+      "path": "/conversations/{conversation_id}/items/{item_id}",
+      "required_path_params": [
+        "conversation_id",
+        "item_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Conversations"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteEval",
+      "path": "/evals/{eval_id}",
+      "required_path_params": [
+        "eval_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteEvalRun",
+      "path": "/evals/{eval_id}/runs/{run_id}",
+      "required_path_params": [
+        "eval_id",
+        "run_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/files/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteFile",
+      "path": "/files/{file_id}",
+      "required_path_params": [
+        "file_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Files"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/messages/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteMessage",
+      "path": "/threads/{thread_id}/messages/{message_id}",
+      "required_path_params": [
+        "message_id",
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/models/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteModel",
+      "path": "/models/{model}",
+      "required_path_params": [
+        "model"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Models"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/responses/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteResponse",
+      "path": "/responses/{response_id}",
+      "required_path_params": [
+        "response_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Responses"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteThread",
+      "path": "/threads/{thread_id}",
+      "required_path_params": [
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteVectorStore",
+      "path": "/vector_stores/{vector_store_id}",
+      "required_path_params": [
+        "vector_store_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/files/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteVectorStoreFile",
+      "path": "/vector_stores/{vector_store_id}/files/{file_id}",
+      "required_path_params": [
+        "file_id",
+        "vector_store_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/audio/subresources/voice_consents/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteVoiceConsent",
+      "path": "/audio/voice_consents/{consent_id}",
+      "required_path_params": [
+        "consent_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Audio"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/files/methods/content",
+      "method": "GET",
+      "operation_command": "downloadFile",
+      "path": "/files/{file_id}/content",
+      "required_path_params": [
+        "file_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Files"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getAssistant",
+      "path": "/assistants/{assistant_id}",
+      "required_path_params": [
+        "assistant_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getCertificate",
+      "path": "/organization/certificates/{certificate_id}",
+      "required_path_params": [
+        "certificate_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Certificates"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getChatCompletion",
+      "path": "/chat/completions/{completion_id}",
+      "required_path_params": [
+        "completion_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/chat/subresources/completions/subresources/messages/methods/list",
+      "method": "GET",
+      "operation_command": "getChatCompletionMessages",
+      "path": "/chat/completions/{completion_id}/messages",
+      "required_path_params": [
+        "completion_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getConversation",
+      "path": "/conversations/{conversation_id}",
+      "required_path_params": [
+        "conversation_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Conversations"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/subresources/items/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getConversationItem",
+      "path": "/conversations/{conversation_id}/items/{item_id}",
+      "required_path_params": [
+        "conversation_id",
+        "item_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Conversations"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getEval",
+      "path": "/evals/{eval_id}",
+      "required_path_params": [
+        "eval_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getEvalRun",
+      "path": "/evals/{eval_id}/runs/{run_id}",
+      "required_path_params": [
+        "eval_id",
+        "run_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/subresources/output_items/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getEvalRunOutputItem",
+      "path": "/evals/{eval_id}/runs/{run_id}/output_items/{output_item_id}",
+      "required_path_params": [
+        "eval_id",
+        "output_item_id",
+        "run_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/subresources/output_items/methods/list",
+      "method": "GET",
+      "operation_command": "getEvalRunOutputItems",
+      "path": "/evals/{eval_id}/runs/{run_id}/output_items",
+      "required_path_params": [
+        "eval_id",
+        "run_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/methods/list",
+      "method": "GET",
+      "operation_command": "getEvalRuns",
+      "path": "/evals/{eval_id}/runs",
+      "required_path_params": [
+        "eval_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/messages/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getMessage",
+      "path": "/threads/{thread_id}/messages/{message_id}",
+      "required_path_params": [
+        "message_id",
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/responses/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getResponse",
+      "path": "/responses/{response_id}",
+      "required_path_params": [
+        "response_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Responses"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getRun",
+      "path": "/threads/{thread_id}/runs/{run_id}",
+      "required_path_params": [
+        "run_id",
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/subresources/steps/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getRunStep",
+      "path": "/threads/{thread_id}/runs/{run_id}/steps/{step_id}",
+      "required_path_params": [
+        "run_id",
+        "step_id",
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getThread",
+      "path": "/threads/{thread_id}",
+      "required_path_params": [
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getVectorStore",
+      "path": "/vector_stores/{vector_store_id}",
+      "required_path_params": [
+        "vector_store_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/files/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getVectorStoreFile",
+      "path": "/vector_stores/{vector_store_id}/files/{file_id}",
+      "required_path_params": [
+        "file_id",
+        "vector_store_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getVectorStoreFileBatch",
+      "path": "/vector_stores/{vector_store_id}/file_batches/{batch_id}",
+      "required_path_params": [
+        "batch_id",
+        "vector_store_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/audio/subresources/voice_consents/methods/retrieve",
+      "method": "GET",
+      "operation_command": "getVoiceConsent",
+      "path": "/audio/voice_consents/{consent_id}",
+      "required_path_params": [
+        "consent_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Audio"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/checkpoints/subresources/permissions/methods/delete",
+      "method": "GET",
+      "operation_command": "get_fine_tuning_checkpoints_fine_tuned_model_checkpoint_permissions_permission_id",
+      "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}",
+      "required_path_params": [
+        "fine_tuned_model_checkpoint",
+        "permission_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/uploads/methods/cancel",
+      "method": "GET",
+      "operation_command": "get_uploads_upload_id_cancel",
+      "path": "/uploads/{upload_id}/cancel",
+      "required_path_params": [
+        "upload_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Uploads"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/list_files",
+      "method": "GET",
+      "operation_command": "get_vector_stores_vector_store_id_files_batches_id1_files",
+      "path": "/vector_stores/{vector_store_id}/files_batches/{id1}/files",
+      "required_path_params": [
+        "id1",
+        "vector_store_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/realtime/subresources/calls/methods/hangup",
+      "method": "POST",
+      "operation_command": "hangup-realtime-call",
+      "path": "/realtime/calls/{call_id}/hangup",
+      "required_path_params": [
+        "call_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Realtime"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/invites/methods/create",
+      "method": "POST",
+      "operation_command": "inviteUser",
+      "path": "/organization/invites",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Invites"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/methods/list",
+      "method": "GET",
+      "operation_command": "list-audit-logs",
+      "path": "/organization/audit_logs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Audit Logs"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/roles/methods/list",
+      "method": "GET",
+      "operation_command": "list-group-role-assignments",
+      "path": "/organization/groups/{group_id}/roles",
+      "required_path_params": [
+        "group_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Group organization role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/users/methods/list",
+      "method": "GET",
+      "operation_command": "list-group-users",
+      "path": "/organization/groups/{group_id}/users",
+      "required_path_params": [
+        "group_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Group users"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/methods/list",
+      "method": "GET",
+      "operation_command": "list-groups",
+      "path": "/organization/groups",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Groups"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/invites/methods/list",
+      "method": "GET",
+      "operation_command": "list-invites",
+      "path": "/organization/invites",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Invites"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/api_keys/methods/list",
+      "method": "GET",
+      "operation_command": "list-project-api-keys",
+      "path": "/organization/projects/{project_id}/api_keys",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/groups/subresources/roles/methods/list",
+      "method": "GET",
+      "operation_command": "list-project-group-role-assignments",
+      "path": "/projects/{project_id}/groups/{group_id}/roles",
+      "required_path_params": [
+        "group_id",
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Project group role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/groups/methods/list",
+      "method": "GET",
+      "operation_command": "list-project-groups",
+      "path": "/organization/projects/{project_id}/groups",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Project groups"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/rate_limits/methods/list_rate_limits",
+      "method": "GET",
+      "operation_command": "list-project-rate-limits",
+      "path": "/organization/projects/{project_id}/rate_limits",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/roles/methods/list",
+      "method": "GET",
+      "operation_command": "list-project-roles",
+      "path": "/projects/{project_id}/roles",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Roles"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/service_accounts/methods/list",
+      "method": "GET",
+      "operation_command": "list-project-service-accounts",
+      "path": "/organization/projects/{project_id}/service_accounts",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/users/subresources/roles/methods/list",
+      "method": "GET",
+      "operation_command": "list-project-user-role-assignments",
+      "path": "/projects/{project_id}/users/{user_id}/roles",
+      "required_path_params": [
+        "project_id",
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Project user role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/users/methods/list",
+      "method": "GET",
+      "operation_command": "list-project-users",
+      "path": "/organization/projects/{project_id}/users",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/methods/list",
+      "method": "GET",
+      "operation_command": "list-projects",
+      "path": "/organization/projects",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/roles/methods/list",
+      "method": "GET",
+      "operation_command": "list-roles",
+      "path": "/organization/roles",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Roles"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/subresources/roles/methods/list",
+      "method": "GET",
+      "operation_command": "list-user-role-assignments",
+      "path": "/organization/users/{user_id}/roles",
+      "required_path_params": [
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "User organization role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/methods/list",
+      "method": "GET",
+      "operation_command": "list-users",
+      "path": "/organization/users",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/list",
+      "method": "GET",
+      "operation_command": "listAssistants",
+      "path": "/assistants",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/batches/methods/list",
+      "method": "GET",
+      "operation_command": "listBatches",
+      "path": "/batches",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Batch"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/list",
+      "method": "GET",
+      "operation_command": "listChatCompletions",
+      "path": "/chat/completions",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/subresources/items/methods/list",
+      "method": "GET",
+      "operation_command": "listConversationItems",
+      "path": "/conversations/{conversation_id}/items",
+      "required_path_params": [
+        "conversation_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Conversations"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/methods/list",
+      "method": "GET",
+      "operation_command": "listEvals",
+      "path": "/evals",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/files/methods/list",
+      "method": "GET",
+      "operation_command": "listFiles",
+      "path": "/files",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Files"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/checkpoints/subresources/permissions/methods/retrieve",
+      "method": "GET",
+      "operation_command": "listFineTuningCheckpointPermissions",
+      "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions",
+      "required_path_params": [
+        "fine_tuned_model_checkpoint"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/methods/list_events",
+      "method": "GET",
+      "operation_command": "listFineTuningEvents",
+      "path": "/fine_tuning/jobs/{fine_tuning_job_id}/events",
+      "required_path_params": [
+        "fine_tuning_job_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/subresources/checkpoints/methods/list",
+      "method": "GET",
+      "operation_command": "listFineTuningJobCheckpoints",
+      "path": "/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints",
+      "required_path_params": [
+        "fine_tuning_job_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/responses/subresources/input_items/methods/list",
+      "method": "GET",
+      "operation_command": "listInputItems",
+      "path": "/responses/{response_id}/input_items",
+      "required_path_params": [
+        "response_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Responses"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/messages/methods/list",
+      "method": "GET",
+      "operation_command": "listMessages",
+      "path": "/threads/{thread_id}/messages",
+      "required_path_params": [
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/models/methods/list",
+      "method": "GET",
+      "operation_command": "listModels",
+      "path": "/models",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Models"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/list",
+      "method": "GET",
+      "operation_command": "listOrganizationCertificates",
+      "path": "/organization/certificates",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Certificates"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/methods/list",
+      "method": "GET",
+      "operation_command": "listPaginatedFineTuningJobs",
+      "path": "/fine_tuning/jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/certificates/methods/list",
+      "method": "GET",
+      "operation_command": "listProjectCertificates",
+      "path": "/organization/projects/{project_id}/certificates",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Certificates"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/subresources/steps/methods/list",
+      "method": "GET",
+      "operation_command": "listRunSteps",
+      "path": "/threads/{thread_id}/runs/{run_id}/steps",
+      "required_path_params": [
+        "run_id",
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/list",
+      "method": "GET",
+      "operation_command": "listRuns",
+      "path": "/threads/{thread_id}/runs",
+      "required_path_params": [
+        "thread_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/files/methods/list",
+      "method": "GET",
+      "operation_command": "listVectorStoreFiles",
+      "path": "/vector_stores/{vector_store_id}/files",
+      "required_path_params": [
+        "vector_store_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/methods/list",
+      "method": "GET",
+      "operation_command": "listVectorStores",
+      "path": "/vector_stores",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/audio/subresources/voice_consents/methods/list",
+      "method": "GET",
+      "operation_command": "listVoiceConsents",
+      "path": "/audio/voice_consents",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Audio"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/methods/update",
+      "method": "POST",
+      "operation_command": "modify-project",
+      "path": "/organization/projects/{project_id}",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/users/methods/update",
+      "method": "POST",
+      "operation_command": "modify-project-user",
+      "path": "/organization/projects/{project_id}/users/{user_id}",
+      "required_path_params": [
+        "project_id",
+        "user_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/methods/update",
+      "method": "POST",
+      "operation_command": "modify-user",
+      "path": "/organization/users/{user_id}",
+      "required_path_params": [
+        "user_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/update",
+      "method": "POST",
+      "operation_command": "modifyAssistant",
+      "path": "/assistants/{assistant_id}",
+      "required_path_params": [
+        "assistant_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/update",
+      "method": "POST",
+      "operation_command": "modifyCertificate",
+      "path": "/organization/certificates/{certificate_id}",
+      "required_path_params": [
+        "certificate_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Certificates"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/messages/methods/update",
+      "method": "POST",
+      "operation_command": "modifyMessage",
+      "path": "/threads/{thread_id}/messages/{message_id}",
+      "required_path_params": [
+        "message_id",
+        "thread_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/update",
+      "method": "POST",
+      "operation_command": "modifyRun",
+      "path": "/threads/{thread_id}/runs/{run_id}",
+      "required_path_params": [
+        "run_id",
+        "thread_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/methods/update",
+      "method": "POST",
+      "operation_command": "modifyThread",
+      "path": "/threads/{thread_id}",
+      "required_path_params": [
+        "thread_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/methods/update",
+      "method": "POST",
+      "operation_command": "modifyVectorStore",
+      "path": "/vector_stores/{vector_store_id}",
+      "required_path_params": [
+        "vector_store_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/methods/pause",
+      "method": "POST",
+      "operation_command": "pauseFineTuningJob",
+      "path": "/fine_tuning/jobs/{fine_tuning_job_id}/pause",
+      "required_path_params": [
+        "fine_tuning_job_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/methods/cancel",
+      "method": "POST",
+      "operation_command": "post_evals_eval_id_runs_run_id_cancel",
+      "path": "/evals/{eval_id}/runs/{run_id}/cancel",
+      "required_path_params": [
+        "eval_id",
+        "run_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/cancel",
+      "method": "POST",
+      "operation_command": "post_vector_stores_vector_store_id_files_batches_id1_cancel",
+      "path": "/vector_stores/{vector_store_id}/files_batches/{id1}/cancel",
+      "required_path_params": [
+        "id1",
+        "vector_store_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/realtime/subresources/calls/methods/refer",
+      "method": "POST",
+      "operation_command": "refer-realtime-call",
+      "path": "/realtime/calls/{call_id}/refer",
+      "required_path_params": [
+        "call_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Realtime"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/realtime/subresources/calls/methods/reject",
+      "method": "POST",
+      "operation_command": "reject-realtime-call",
+      "path": "/realtime/calls/{call_id}/reject",
+      "required_path_params": [
+        "call_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Realtime"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/users/methods/delete",
+      "method": "DELETE",
+      "operation_command": "remove-group-user",
+      "path": "/organization/groups/{group_id}/users/{user_id}",
+      "required_path_params": [
+        "group_id",
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Group users"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/groups/methods/delete",
+      "method": "DELETE",
+      "operation_command": "remove-project-group",
+      "path": "/organization/projects/{project_id}/groups/{group_id}",
+      "required_path_params": [
+        "group_id",
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Project groups"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/methods/resume",
+      "method": "POST",
+      "operation_command": "resumeFineTuningJob",
+      "path": "/fine_tuning/jobs/{fine_tuning_job_id}/resume",
+      "required_path_params": [
+        "fine_tuning_job_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/invites/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-invite",
+      "path": "/organization/invites/{invite_id}",
+      "required_path_params": [
+        "invite_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Invites"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-project",
+      "path": "/organization/projects/{project_id}",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/api_keys/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-project-api-key",
+      "path": "/organization/projects/{project_id}/api_keys/{key_id}",
+      "required_path_params": [
+        "key_id",
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/service_accounts/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-project-service-account",
+      "path": "/organization/projects/{project_id}/service_accounts/{service_account_id}",
+      "required_path_params": [
+        "project_id",
+        "service_account_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/users/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-project-user",
+      "path": "/organization/projects/{project_id}/users/{user_id}",
+      "required_path_params": [
+        "project_id",
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-user",
+      "path": "/organization/users/{user_id}",
+      "required_path_params": [
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/batches/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieveBatch",
+      "path": "/batches/{batch_id}",
+      "required_path_params": [
+        "batch_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Batch"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/files/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieveFile",
+      "path": "/files/{file_id}",
+      "required_path_params": [
+        "file_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Files"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieveFineTuningJob",
+      "path": "/fine_tuning/jobs/{fine_tuning_job_id}",
+      "required_path_params": [
+        "fine_tuning_job_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/models/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieveModel",
+      "path": "/models/{model}",
+      "required_path_params": [
+        "model"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Models"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/files/methods/content",
+      "method": "GET",
+      "operation_command": "retrieveVectorStoreFileContent",
+      "path": "/vector_stores/{vector_store_id}/files/{file_id}/content",
+      "required_path_params": [
+        "file_id",
+        "vector_store_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/alpha/subresources/graders/methods/run",
+      "method": "POST",
+      "operation_command": "runGrader",
+      "path": "/fine_tuning/alpha/graders/run",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/methods/search",
+      "method": "POST",
+      "operation_command": "searchVectorStore",
+      "path": "/vector_stores/{vector_store_id}/search",
+      "required_path_params": [
+        "vector_store_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/submit_tool_outputs",
+      "method": "POST",
+      "operation_command": "submitToolOuputsToRun",
+      "path": "/threads/{thread_id}/runs/{run_id}/submit_tool_outputs",
+      "required_path_params": [
+        "run_id",
+        "thread_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/roles/methods/delete",
+      "method": "DELETE",
+      "operation_command": "unassign-group-role",
+      "path": "/organization/groups/{group_id}/roles/{role_id}",
+      "required_path_params": [
+        "group_id",
+        "role_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Group organization role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/groups/subresources/roles/methods/delete",
+      "method": "DELETE",
+      "operation_command": "unassign-project-group-role",
+      "path": "/projects/{project_id}/groups/{group_id}/roles/{role_id}",
+      "required_path_params": [
+        "group_id",
+        "project_id",
+        "role_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Project group role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/users/subresources/roles/methods/delete",
+      "method": "DELETE",
+      "operation_command": "unassign-project-user-role",
+      "path": "/projects/{project_id}/users/{user_id}/roles/{role_id}",
+      "required_path_params": [
+        "project_id",
+        "role_id",
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Project user role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/subresources/roles/methods/delete",
+      "method": "DELETE",
+      "operation_command": "unassign-user-role",
+      "path": "/organization/users/{user_id}/roles/{role_id}",
+      "required_path_params": [
+        "role_id",
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "User organization role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/methods/update",
+      "method": "POST",
+      "operation_command": "update-group",
+      "path": "/organization/groups/{group_id}",
+      "required_path_params": [
+        "group_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Groups"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/rate_limits/methods/update_rate_limit",
+      "method": "POST",
+      "operation_command": "update-project-rate-limits",
+      "path": "/organization/projects/{project_id}/rate_limits/{rate_limit_id}",
+      "required_path_params": [
+        "project_id",
+        "rate_limit_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/roles/methods/update",
+      "method": "POST",
+      "operation_command": "update-project-role",
+      "path": "/projects/{project_id}/roles/{role_id}",
+      "required_path_params": [
+        "project_id",
+        "role_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Roles"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/roles/methods/update",
+      "method": "POST",
+      "operation_command": "update-role",
+      "path": "/organization/roles/{role_id}",
+      "required_path_params": [
+        "role_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Roles"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/update",
+      "method": "POST",
+      "operation_command": "updateChatCompletion",
+      "path": "/chat/completions/{completion_id}",
+      "required_path_params": [
+        "completion_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/methods/update",
+      "method": "POST",
+      "operation_command": "updateConversation",
+      "path": "/conversations/{conversation_id}",
+      "required_path_params": [
+        "conversation_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Conversations"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/methods/update",
+      "method": "POST",
+      "operation_command": "updateEval",
+      "path": "/evals/{eval_id}",
+      "required_path_params": [
+        "eval_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Evals"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/files/methods/update",
+      "method": "POST",
+      "operation_command": "updateVectorStoreFileAttributes",
+      "path": "/vector_stores/{vector_store_id}/files/{file_id}",
+      "required_path_params": [
+        "file_id",
+        "vector_store_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/audio/subresources/voice_consents/methods/update",
+      "method": "POST",
+      "operation_command": "updateVoiceConsent",
+      "path": "/audio/voice_consents/{consent_id}",
+      "required_path_params": [
+        "consent_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Audio"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/create",
+      "method": "POST",
+      "operation_command": "uploadCertificate",
+      "path": "/organization/certificates",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Certificates"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_audio_speeches",
+      "method": "GET",
+      "operation_command": "usage-audio-speeches",
+      "path": "/organization/usage/audio_speeches",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_audio_transcriptions",
+      "method": "GET",
+      "operation_command": "usage-audio-transcriptions",
+      "path": "/organization/usage/audio_transcriptions",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_code_interpreter_sessions",
+      "method": "GET",
+      "operation_command": "usage-code-interpreter-sessions",
+      "path": "/organization/usage/code_interpreter_sessions",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_completions",
+      "method": "GET",
+      "operation_command": "usage-completions",
+      "path": "/organization/usage/completions",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/methods/get_costs",
+      "method": "GET",
+      "operation_command": "usage-costs",
+      "path": "/organization/costs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_embeddings",
+      "method": "GET",
+      "operation_command": "usage-embeddings",
+      "path": "/organization/usage/embeddings",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_images",
+      "method": "GET",
+      "operation_command": "usage-images",
+      "path": "/organization/usage/images",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_moderations",
+      "method": "GET",
+      "operation_command": "usage-moderations",
+      "path": "/organization/usage/moderations",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_vector_stores",
+      "method": "GET",
+      "operation_command": "usage-vector-stores",
+      "path": "/organization/usage/vector_stores",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/alpha/subresources/graders/methods/validate",
+      "method": "POST",
+      "operation_command": "validateGrader",
+      "path": "/fine_tuning/alpha/graders/validate",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Fine-tuning"
+      ]
+    }
+  ],
+  "run_id": null,
+  "runs_index": "/dev/.state/runs/index.jsonl"
+}

@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "onboarding": {
+    "env_created": true,
+    "env_file": ".env",
+    "missing": [],
+    "next_command": "qwayk-open-library-safe-agent-cli --output json search books --q <text>",
+    "note": "This tool is read-only and needs no auth key for Open Library public endpoints. Set OPEN_LIBRARY_CONTACT and OPEN_LIBRARY_USER_AGENT_APP to improve identification during low-volume use.",
+    "optional": [
+      "OPEN_LIBRARY_CONTACT",
+      "OPEN_LIBRARY_USER_AGENT_APP"
+    ]
+  },
+  "tool": "qwayk-open-library-safe-agent-cli",
+  "version": "0.1.0"
+}

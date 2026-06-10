@@ -1,0 +1,37 @@
+{
+  "tool": "cloudflare-api-tool",
+  "version": "0.5.0",
+  "generated_at_utc": "2026-02-05T00:00:00Z",
+  "env_fingerprint": "https://api.cloudflare.com/client/v4",
+  "command": "cloudflare-api-tool workers routes ensure --zone-id <your_zone_id> --pattern \"example.com/*\" --script-name example-worker",
+  "selector": {
+    "zone_id": "<your_zone_id>",
+    "pattern": "example.com/*",
+    "script_name": "example-worker"
+  },
+  "risk_level": "high",
+  "risk_reasons": [
+    "Worker routes can affect production traffic."
+  ],
+  "preconditions": [
+    "API token has least-privilege permissions needed for this action.",
+    "Target identifiers are correct (account_id/zone_id/resource ids).",
+    "Dry-run plan has been reviewed before applying."
+  ],
+  "proposed_changes": [
+    {
+      "resource": "workers_route",
+      "action": "create",
+      "zone_id": "<your_zone_id>",
+      "pattern": "example.com/*",
+      "script_name": "example-worker"
+    }
+  ],
+  "verification_plan": [
+    "Re-fetch routes list and confirm a route exists with the same pattern and expected script_name."
+  ],
+  "notes": [
+    "Example only (redacted identifiers).",
+    "This plan contains no secrets."
+  ]
+}

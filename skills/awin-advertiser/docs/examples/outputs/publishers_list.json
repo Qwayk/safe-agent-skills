@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "command": "publishers list",
+  "advertiser_id": "123456",
+  "endpoint": "/advertisers/123456/publishers",
+  "method": "GET",
+  "status": 200,
+  "count": 2,
+  "publishers": [
+    {
+      "id": "p-001",
+      "name": "Publisher One"
+    },
+    {
+      "id": "p-002",
+      "name": "Publisher Two"
+    }
+  ]
+}

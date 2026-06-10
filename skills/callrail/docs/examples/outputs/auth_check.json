@@ -1,0 +1,30 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "base_url": "https://api.callrail.test",
+  "env_token_present": true,
+  "ok": true,
+  "request": {
+    "headers": {
+      "Authorization": "***REDACTED***"
+    },
+    "method": "GET",
+    "url": "https://api.callrail.test/v3/a.json"
+  },
+  "response": {
+    "body": {
+      "accounts": [
+        {
+          "id": "ACC123",
+          "name": "Example Account"
+        }
+      ]
+    },
+    "headers": {},
+    "status": 200,
+    "url": "https://api.callrail.test/v3/a.json"
+  },
+  "run_id": null,
+  "runs_index": "/path/to/qwayk-callrail-safe-agent-cli/.state/runs/index.jsonl"
+}

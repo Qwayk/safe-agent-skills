@@ -1,0 +1,39 @@
+{
+  "anatomy": {
+    "actors": {
+      "instagram_actor_id": null,
+      "page_id": "987"
+    },
+    "creative_id": "cr_1",
+    "cta_types": ["LEARN_MORE"],
+    "image_urls": ["https://cdn.example.com/hero.jpg"],
+    "text": {
+      "descriptions": ["Save 20% today"],
+      "headlines": ["New collection"],
+      "primary": ["Limited-time offer"]
+    },
+    "urls": ["https://example.com/?access_token=***REDACTED***"],
+    "video_ids": []
+  },
+  "asset_urls": [
+    {
+      "creative_id": "cr_1",
+      "kind": "image_url",
+      "url": "https://cdn.example.com/hero.jpg",
+      "url_sha256": "5c36a83631d1675ff3b4bba9c04c449c71a8db6f38e578c2feaaebdc2d05f6b3"
+    },
+    {
+      "creative_id": "cr_1",
+      "kind": "landing_url",
+      "url": "https://example.com/?access_token=***REDACTED***",
+      "url_sha256": "645d4f97e6968433596ecb36dc21b5ab6a9ea4ec43f247700a100e5b9b21b904"
+    }
+  ],
+  "creatives_anatomy": {
+    "creative_id": "cr_1",
+    "params": {
+      "fields": "id,object_story_spec"
+    }
+  },
+  "ok": true
+}

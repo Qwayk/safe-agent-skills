@@ -1,0 +1,37 @@
+{
+  "data": {
+    "docs": [
+      {
+        "_version_": 1843588235011293192,
+        "already_read_count": 0,
+        "currently_reading_count": 0,
+        "key": "OL10168410A",
+        "name": "Harly Twain",
+        "ratings_average": 0.0,
+        "ratings_count": 0,
+        "ratings_count_1": 0,
+        "ratings_count_2": 0,
+        "ratings_count_3": 0,
+        "ratings_count_4": 0,
+        "ratings_count_5": 0,
+        "ratings_sortable": 2.047372,
+        "readinglog_count": 0,
+        "top_work": "Happy Guests",
+        "type": "author",
+        "want_to_read_count": 0,
+        "work_count": 24
+      }
+    ],
+    "numFound": 149,
+    "numFoundExact": true,
+    "start": 0
+  },
+  "ok": true,
+  "params": {
+    "limit": 1,
+    "q": "twain"
+  },
+  "path": "search/authors.json",
+  "tool": "qwayk-open-library-safe-agent-cli",
+  "version": "0.1.0"
+}

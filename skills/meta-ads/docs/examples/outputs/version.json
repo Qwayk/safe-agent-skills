@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "tool": "meta-ads-api-tool",
+  "version": "0.1.0",
+  "command": "meta-ads-api-tool --output json --version"
+}

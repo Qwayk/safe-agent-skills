@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "base_url": "https://api.unsplash.com",
+  "env_access_key_present": true,
+  "smoke_test": {
+    "endpoint": "GET /photos",
+    "ok": true,
+    "sample_count": 1
+  },
+  "stored_access_key": {
+    "exists": false,
+    "path": ".state/auth.json"
+  }
+}

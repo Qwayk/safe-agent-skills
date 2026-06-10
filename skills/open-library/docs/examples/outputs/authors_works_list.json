@@ -1,0 +1,326 @@
+{
+  "data": {
+    "entries": [
+      {
+        "authors": [
+          {
+            "author": {
+              "key": "/authors/OL1684660A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL24137A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL2255399A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL28127A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL70343A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL29097A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL29388A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL18277A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL19441A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL120825A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL161167A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL755080A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL124948A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL197515A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL2205533A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL1004630A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL20243A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL458948A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL318116A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL235327A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL21831A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL35145A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL34184A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL1238814A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL28577A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL34047A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          },
+          {
+            "author": {
+              "key": "/authors/OL2645919A"
+            },
+            "type": {
+              "key": "/type/author_role"
+            }
+          }
+        ],
+        "covers": [
+          12091737,
+          12150495
+        ],
+        "created": {
+          "type": "/type/datetime",
+          "value": "2009-12-09T22:27:00.312120"
+        },
+        "description": {
+          "type": "/type/text",
+          "value": "[Black Cat](https://openlibrary.org/works/OL41068W) / Edgar Allan Poe --\r\n[Tell-tale Heart](https://openlibrary.org/works/OL41059W) / Edgar Allan Poe --\r\n[Premature Burial](https://openlibrary.org/works/OL24583029W) / Edgar Allan Poe --\r\nTorture of hope / Villiers de L'Isle Adam --\r\nAn episode of the terror / Honore de Balzac --\r\nThe hand / Guy de Maupassant --\r\nThe withered arm / Thomas Hardy --\r\nThe idiots / Joseph Conrad --\r\nThe bird / Thomas Burke --\r\nLot no. 249 / Sir Arthur Conan Doyle --\r\nThe sentence / J. Kaden-Bandrowski --\r\nArabesque, the mouse / A.E. Coppard --\r\nCinci / Luigi Pirandello --\r\nSuspicion / Dorothy L. Sayers --\r\nDead on her feet / Cornell Woolrich --\r\nTaboo / Geoffrey Household --\r\nA little place off the Edgware Road / Graham Greene --\r\nThe words of guru / C.M. Kornbluth --\r\nYours truly, Jack the Ripper / Robert Bloch --\r\nThe veld / Ray Bradbury --\r\nEvening primrose / John Collier --\r\nBack from the grave / Robert Silverberg --\r\n[A rose for Emily](https://openlibrary.org/works/OL82884W) / William Faulkner --\r\nThe comforts of home / Flannery O'Connor --\r\n[Pig](https://openlibrary.org/works/OL20504275W) / Roald Dahl --\r\nRobert / Stanley Ellin --\r\nThe question / Stanley Ellin --\r\nThe terrapin / Patricia Highsmith --\r\nNot after mindnight / Daphne du Maurier --\r\nCorabella / David Fletcher."
+        },
+        "first_publish_date": "1990",
+        "key": "/works/OL1839372W",
+        "last_modified": {
+          "type": "/type/datetime",
+          "value": "2026-05-14T11:24:23.604919"
+        },
+        "latest_revision": 7,
+        "revision": 7,
+        "subject_people": [
+          "Emily Grierson",
+          "Homer Barron",
+          "Mr. Grierson",
+          "Tobe",
+          "Colonel Sartoris",
+          "Lexington",
+          "Aunt Glosspan",
+          "Mr. Zuckermann"
+        ],
+        "subject_places": [
+          "Jefferson",
+          "Mississippi",
+          "Yoknapatawpha County",
+          "New York City"
+        ],
+        "subject_times": [
+          "Antebellum era"
+        ],
+        "subjects": [
+          "American Horror tales",
+          "American literature",
+          "Children's fiction",
+          "Classic Literature",
+          "Crime",
+          "Crime fiction",
+          "Detective and mystery stories",
+          "Fiction",
+          "first-person narrative",
+          "Gothic fiction",
+          "Homicide",
+          "Horror",
+          "Horror fiction",
+          "Horror stories",
+          "Horror tales",
+          "Hyperesthesia",
+          "Juvenile fiction",
+          "Murder",
+          "short stories",
+          "premature burial",
+          "catalepsy",
+          "Taphophobia",
+          "crypts",
+          "phobias",
+          "unconsciousness",
+          "berths",
+          "cats",
+          "short story",
+          "unreliable narrators",
+          "self-hatred",
+          "gallows",
+          "tradition",
+          "change",
+          "death",
+          "allegory",
+          "nonlinear narrative",
+          "gentleman's agreements",
+          "recluses",
+          "Mentally ill women",
+          "macabre",
+          "diners",
+          "cannibalism"
+        ],
+        "title": "The best horror stories",
+        "type": {
+          "key": "/type/work"
+        }
+      }
+    ],
+    "links": {
+      "author": "/authors/OL34184A",
+      "next": "/authors/OL34184A/works.json?limit=1&offset=1",
+      "self": "/authors/OL34184A/works.json?limit=1"
+    },
+    "size": 750
+  },
+  "ok": true,
+  "params": {
+    "limit": 1
+  },
+  "path": "authors/OL34184A/works.json",
+  "tool": "qwayk-open-library-safe-agent-cli",
+  "version": "0.1.0"
+}

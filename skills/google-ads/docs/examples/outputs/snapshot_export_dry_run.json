@@ -1,0 +1,7 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "preset": "analysis_pack_v2",
+  "out_dir": "./out/google-ads-pack",
+  "plan_written": true
+}

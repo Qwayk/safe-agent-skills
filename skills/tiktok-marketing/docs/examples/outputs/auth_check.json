@@ -1,0 +1,21 @@
+{
+  "advertiser_count": 2,
+  "app_id_present": true,
+  "app_secret_present": true,
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "auth_endpoint": "oauth2-advertiser-get",
+  "base_url": "https://business-api.tiktok.com",
+  "env_access_token_present": true,
+  "live_checked": true,
+  "live_status_code": 200,
+  "oauth_token": {
+    "exists": false,
+    "path": ".state/token.json"
+  },
+  "ok": true,
+  "run_id": null,
+  "runs_index": ".state/runs/index.jsonl",
+  "token_source": "env"
+}

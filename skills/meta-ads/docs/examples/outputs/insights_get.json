@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "tool": "meta-ads-api-tool",
+  "version": "0.1.0",
+  "command": "meta-ads-api-tool --output json insights get --ad-account-id act_1234567890 --level campaign --fields campaign_id,impressions,clicks,spend --since 2026-01-01 --until 2026-01-31",
+  "insights_get": {
+    "ad_account_id": "act_1234567890",
+    "level": "campaign",
+    "params": {
+      "level": "campaign",
+      "fields": "campaign_id,impressions,clicks,spend",
+      "time_range": "{\"since\":\"2026-01-01\",\"until\":\"2026-01-31\"}"
+    }
+  },
+  "data": [
+    {
+      "campaign_id": "111",
+      "impressions": "1000",
+      "clicks": "12",
+      "spend": "34.56"
+    }
+  ],
+  "count": 1,
+  "paging": {},
+  "pages_fetched": 1
+}
+

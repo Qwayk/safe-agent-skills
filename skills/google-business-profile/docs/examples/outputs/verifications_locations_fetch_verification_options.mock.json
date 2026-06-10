@@ -1,0 +1,39 @@
+{
+  "ok": true,
+  "operation": "verifications.locations.fetch-verification-options",
+  "request": {
+    "method": "POST",
+    "host": "https://mybusinessverifications.googleapis.com",
+    "path": "v1/locations/123:fetchVerificationOptions",
+    "body": {
+      "languageCode": "en-US",
+      "context": {
+        "address": {
+          "regionCode": "US",
+          "administrativeArea": "CA",
+          "locality": "San Francisco",
+          "addressLines": ["1600 Example Avenue"],
+          "postalCode": "94105"
+        }
+      }
+    }
+  },
+  "response": {
+    "options": [
+      {
+        "verificationMethod": "ADDRESS",
+        "addressData": {
+          "address": {
+            "regionCode": "US",
+            "administrativeArea": "CA",
+            "locality": "San Francisco",
+            "addressLines": ["1600 Example Avenue"],
+            "postalCode": "94105"
+          },
+          "business": "Example Bistro",
+          "expectedDeliveryDaysRegion": 5
+        }
+      }
+    ]
+  }
+}

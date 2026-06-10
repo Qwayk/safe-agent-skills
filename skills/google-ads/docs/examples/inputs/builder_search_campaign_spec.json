@@ -1,0 +1,71 @@
+{
+  "customer_id": "1234567890",
+  "budget": {
+    "name": "Search Budget | Example",
+    "amount": "70"
+  },
+  "campaign": {
+    "name": "Search Campaign | Example",
+    "status": "PAUSED",
+    "max_clicks_cpc_ceiling_amount": "12"
+  },
+  "targeting": {
+    "locations": ["9059448"],
+    "languages": ["1000"],
+    "ad_schedule": [
+      {
+        "day_of_week": "MONDAY",
+        "start_hour": 7,
+        "end_hour": 19
+      }
+    ]
+  },
+  "campaign_negatives": [
+    "glass repair"
+  ],
+  "asset_creates": [
+    {
+      "alias": "callout_repair_first",
+      "type": "CALLOUT",
+      "name": "Callout | Repair First",
+      "callout_text": "Repair First"
+    }
+  ],
+  "campaign_asset_links": [
+    {
+      "asset_alias": "callout_repair_first",
+      "field_type": "CALLOUT"
+    }
+  ],
+  "ad_groups": [
+    {
+      "alias": "general",
+      "name": "General Repair",
+      "keywords": [
+        {
+          "text": "sliding door repair",
+          "match_type": "EXACT"
+        }
+      ],
+      "negative_keywords": [
+        "screen repair"
+      ],
+      "ads": [
+        {
+          "final_urls": [
+            "https://example.com/repair"
+          ],
+          "headlines": [
+            "Sliding Door Repair",
+            "Repair First",
+            "Call Today"
+          ],
+          "descriptions": [
+            "We fix sliding doors across DFW.",
+            "Call during business hours."
+          ]
+        }
+      ]
+    }
+  ]
+}

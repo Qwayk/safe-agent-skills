@@ -1,0 +1,20 @@
+{
+  "browse_nodes": [
+    {
+      "display_name": "Kitchen & Dining",
+      "id": "284507"
+    },
+    {
+      "display_name": "Small Appliances",
+      "id": "3737671"
+    }
+  ],
+  "count": 2,
+  "ok": true,
+  "request_id": "EXAMPLE_REQUEST_ID",
+  "requested": [
+    "284507",
+    "3737671"
+  ]
+}
+

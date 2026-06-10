@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "operation": "offers.list",
+  "publisher_id": "12345",
+  "offers": {
+    "offers": [
+      {
+        "promotionId": 9001,
+        "type": "voucher",
+        "title": "10% off",
+        "advertiser": {
+          "id": 500,
+          "name": "Example Advertiser",
+          "joined": true
+        }
+      }
+    ]
+  },
+  "request": {
+    "method": "POST",
+    "endpoint": "https://api.awin.com/publisher/12345/promotions",
+    "query": {
+      "required": [
+        "accessToken"
+      ],
+      "sent": [
+        "accessToken"
+      ]
+    },
+    "body": {
+      "filters": [
+        "membership",
+        "status",
+        "type"
+      ],
+      "pagination": [
+        "page",
+        "pageSize"
+      ]
+    },
+    "response_status": 200
+  },
+  "metadata": {
+    "advertiser_ids": [],
+    "auth_mode": "bearer",
+    "exclusive_only": false,
+    "membership": "joined",
+    "page": 1,
+    "page_size": 50,
+    "region_codes": [],
+    "status": "active",
+    "type": "voucher",
+    "updated_since": null
+  }
+}

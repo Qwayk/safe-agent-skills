@@ -1,0 +1,5987 @@
+{
+  "beta_source_count": 87,
+  "excluded_beta_reason": "beta operations excluded by product choice; only stable operations included",
+  "generated_at": "2026-05-25T00:00:00Z",
+  "operation_source_count": 308,
+  "operations": [
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/add_categories_to_catalog_item",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "add_category_to_catalog_item",
+        "create_catalog_item_relationships_categories",
+        "create_catalog_item_relationships_category"
+      ],
+      "operation_command": "add_categories_to_catalog_item",
+      "path": "/api/catalog-items/{id}/relationships/categories",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/add_items_to_catalog_category",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_catalog_category_relationships_item",
+        "create_catalog_category_relationships_items"
+      ],
+      "operation_command": "add_items_to_catalog_category",
+      "path": "/api/catalog-categories/{id}/relationships/items",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/add_profiles_to_list",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_list_relationships",
+        "create_list_relationships_profile",
+        "create_list_relationships_profiles"
+      ],
+      "operation_command": "add_profiles_to_list",
+      "path": "/api/lists/{id}/relationships/profiles",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/assign_template_to_campaign_message",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_campaign_message_assign_template"
+      ],
+      "operation_command": "assign_template_to_campaign_message",
+      "path": "/api/campaign-message-assign-template",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Messages",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_create_catalog_categories",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_catalog_category_bulk_create_job",
+        "spawn_create_categories_job"
+      ],
+      "operation_command": "bulk_create_catalog_categories",
+      "path": "/api/catalog-category-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_create_catalog_items",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_catalog_item_bulk_create_job",
+        "spawn_create_items_job"
+      ],
+      "operation_command": "bulk_create_catalog_items",
+      "path": "/api/catalog-item-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_create_catalog_variants",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_catalog_variant_bulk_create_job",
+        "spawn_create_variants_job"
+      ],
+      "operation_command": "bulk_create_catalog_variants",
+      "path": "/api/catalog-variant-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_create_client_events",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_client_event_bulk_create"
+      ],
+      "operation_command": "bulk_create_client_events",
+      "path": "/client/event-bulk-create",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": true,
+      "subtag": "",
+      "tags": [
+        "Client"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_create_coupon_codes",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_coupon_code_bulk_create_job",
+        "spawn_coupon_code_bulk_create_job"
+      ],
+      "operation_command": "bulk_create_coupon_codes",
+      "path": "/api/coupon-code-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_create_data_source_records",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_data_source_record_bulk_create_job"
+      ],
+      "operation_command": "bulk_create_data_source_records",
+      "path": "/api/data-source-record-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Custom Objects"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_create_events",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_event_bulk_create_job"
+      ],
+      "operation_command": "bulk_create_events",
+      "path": "/api/event-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Events"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_delete_catalog_categories",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_catalog_category_bulk_delete_job",
+        "spawn_delete_categories_job"
+      ],
+      "operation_command": "bulk_delete_catalog_categories",
+      "path": "/api/catalog-category-bulk-delete-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_delete_catalog_items",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_catalog_item_bulk_delete_job",
+        "spawn_delete_items_job"
+      ],
+      "operation_command": "bulk_delete_catalog_items",
+      "path": "/api/catalog-item-bulk-delete-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_delete_catalog_variants",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_catalog_variant_bulk_delete_job",
+        "spawn_delete_variants_job"
+      ],
+      "operation_command": "bulk_delete_catalog_variants",
+      "path": "/api/catalog-variant-bulk-delete-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_import_profiles",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_profile_bulk_import_job",
+        "spawn_bulk_profile_import_job"
+      ],
+      "operation_command": "bulk_import_profiles",
+      "path": "/api/profile-bulk-import-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Bulk Import Profiles",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_subscribe_profiles",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_profile_subscription_bulk_create_job",
+        "subscribe_profiles"
+      ],
+      "operation_command": "bulk_subscribe_profiles",
+      "path": "/api/profile-subscription-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Consent",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_suppress_profiles",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_profile_suppression_bulk_create_job",
+        "suppress_profiles"
+      ],
+      "operation_command": "bulk_suppress_profiles",
+      "path": "/api/profile-suppression-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Consent",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_unsubscribe_profiles",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_profile_subscription_bulk_delete_job",
+        "unsubscribe_profiles"
+      ],
+      "operation_command": "bulk_unsubscribe_profiles",
+      "path": "/api/profile-subscription-bulk-delete-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Consent",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_unsuppress_profiles",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_profile_suppression_bulk_delete_job",
+        "unsuppress_profiles"
+      ],
+      "operation_command": "bulk_unsuppress_profiles",
+      "path": "/api/profile-suppression-bulk-delete-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Consent",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_update_catalog_categories",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_catalog_category_bulk_update_job",
+        "spawn_update_categories_job"
+      ],
+      "operation_command": "bulk_update_catalog_categories",
+      "path": "/api/catalog-category-bulk-update-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_update_catalog_items",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_catalog_item_bulk_update_job",
+        "spawn_update_items_job"
+      ],
+      "operation_command": "bulk_update_catalog_items",
+      "path": "/api/catalog-item-bulk-update-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/bulk_update_catalog_variants",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_catalog_variant_bulk_update_job",
+        "spawn_update_variants_job"
+      ],
+      "operation_command": "bulk_update_catalog_variants",
+      "path": "/api/catalog-variant-bulk-update-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/cancel_campaign_send",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [
+        "update_campaign_send_job"
+      ],
+      "operation_command": "cancel_campaign_send",
+      "path": "/api/campaign-send-jobs/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Jobs",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/clone_template",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_template_clone"
+      ],
+      "operation_command": "clone_template",
+      "path": "/api/template-clone",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_back_in_stock_subscription",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_back_in_stock_subscription",
+      "path": "/api/back-in-stock-subscriptions",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Back In Stock",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_campaign",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_campaign",
+      "path": "/api/campaigns",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_campaign_clone",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "clone_campaign"
+      ],
+      "operation_command": "create_campaign_clone",
+      "path": "/api/campaign-clone",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_catalog_category",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_catalog_category",
+      "path": "/api/catalog-categories",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_catalog_item",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_catalog_item",
+      "path": "/api/catalog-items",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_catalog_variant",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_catalog_variant",
+      "path": "/api/catalog-variants",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_client_back_in_stock_subscription",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_client_back_in_stock_subscription",
+      "path": "/client/back-in-stock-subscriptions",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": true,
+      "subtag": "",
+      "tags": [
+        "Client"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_client_event",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_client_event",
+      "path": "/client/events",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": true,
+      "subtag": "",
+      "tags": [
+        "Client"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_client_profile",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_client_profile",
+      "path": "/client/profiles",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": true,
+      "subtag": "",
+      "tags": [
+        "Client"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_client_push_token",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_client_push_token",
+      "path": "/client/push-tokens",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": true,
+      "subtag": "",
+      "tags": [
+        "Client"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_client_review",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_client_review",
+      "path": "/client/reviews",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": true,
+      "subtag": "",
+      "tags": [
+        "Client"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_client_subscription",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_client_subscription",
+      "path": "/client/subscriptions",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": true,
+      "subtag": "",
+      "tags": [
+        "Client"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_conversation_message",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_conversation_message",
+      "path": "/api/conversation-messages",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Conversations"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_coupon",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_coupon",
+      "path": "/api/coupons",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_coupon_code",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_coupon_code",
+      "path": "/api/coupon-codes",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_custom_metric",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_custom_metric",
+      "path": "/api/custom-metrics",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Custom Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_data_source",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_data_source",
+      "path": "/api/data-sources",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Custom Objects"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_data_source_record",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_data_source_record_create_job"
+      ],
+      "operation_command": "create_data_source_record",
+      "path": "/api/data-source-record-create-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Custom Objects"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_event",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_event",
+      "path": "/api/events",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Events"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_flow",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_flow",
+      "path": "/api/flows",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_form",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_form",
+      "path": "/api/forms",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Forms"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_list",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_list",
+      "path": "/api/lists",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_or_update_profile",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_profile_import"
+      ],
+      "operation_command": "create_or_update_profile",
+      "path": "/api/profile-import",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_profile",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_profile",
+      "path": "/api/profiles",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_push_token",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_push_token",
+      "path": "/api/push-tokens",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Push Tokens",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_segment",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_segment",
+      "path": "/api/segments",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Segments"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_tag",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_tag",
+      "path": "/api/tags",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_tag_group",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_tag_group",
+      "path": "/api/tag-groups",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Tag Groups",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_template",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_template",
+      "path": "/api/templates",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_universal_content",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_template_universal_content"
+      ],
+      "operation_command": "create_universal_content",
+      "path": "/api/template-universal-content",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Universal Content",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_web_feed",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_web_feed",
+      "path": "/api/web-feeds",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Web Feeds"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/create_webhook",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [],
+      "operation_command": "create_webhook",
+      "path": "/api/webhooks",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Webhooks"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_campaign",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_campaign",
+      "path": "/api/campaigns/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_catalog_category",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_catalog_category",
+      "path": "/api/catalog-categories/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_catalog_item",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_catalog_item",
+      "path": "/api/catalog-items/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_catalog_variant",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_catalog_variant",
+      "path": "/api/catalog-variants/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_coupon",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_coupon",
+      "path": "/api/coupons/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_coupon_code",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_coupon_code",
+      "path": "/api/coupon-codes/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_custom_metric",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_custom_metric",
+      "path": "/api/custom-metrics/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Custom Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_data_source",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_data_source",
+      "path": "/api/data-sources/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Custom Objects"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_flow",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_flow",
+      "path": "/api/flows/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_form",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_form",
+      "path": "/api/forms/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Forms"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_list",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_list",
+      "path": "/api/lists/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_push_token",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_push_token",
+      "path": "/api/push-tokens/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Push Tokens",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_segment",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_segment",
+      "path": "/api/segments/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Segments"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_tag",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_tag",
+      "path": "/api/tags/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_tag_group",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_tag_group",
+      "path": "/api/tag-groups/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Tag Groups",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_template",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_template",
+      "path": "/api/templates/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_universal_content",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [
+        "delete_template_universal_content"
+      ],
+      "operation_command": "delete_universal_content",
+      "path": "/api/template-universal-content/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Universal Content",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_web_feed",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_web_feed",
+      "path": "/api/web-feeds/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Web Feeds"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/delete_webhook",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [],
+      "operation_command": "delete_webhook",
+      "path": "/api/webhooks/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Webhooks"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_account",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_account",
+      "path": "/api/accounts/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Accounts"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_accounts",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_accounts",
+      "path": "/api/accounts",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Accounts"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_action_for_flow_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_message_action"
+      ],
+      "operation_command": "get_action_for_flow_message",
+      "path": "/api/flow-messages/{id}/flow-action",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_action_id_for_flow_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_message_relationships_action"
+      ],
+      "operation_command": "get_action_id_for_flow_message",
+      "path": "/api/flow-messages/{id}/relationships/flow-action",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_action_ids_for_flow",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_relationships_actions",
+        "get_flow_relationships_flow_actions"
+      ],
+      "operation_command": "get_action_ids_for_flow",
+      "path": "/api/flows/{id}/relationships/flow-actions",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_actions_for_flow",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_actions",
+        "get_flow_flow_actions"
+      ],
+      "operation_command": "get_actions_for_flow",
+      "path": "/api/flows/{id}/flow-actions",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_all_universal_content",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_template_universal_content"
+      ],
+      "operation_command": "get_all_universal_content",
+      "path": "/api/template-universal-content",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Universal Content",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_create_catalog_items_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_item_bulk_create_job",
+        "get_create_items_job"
+      ],
+      "operation_command": "get_bulk_create_catalog_items_job",
+      "path": "/api/catalog-item-bulk-create-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_create_catalog_items_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_item_bulk_create_jobs",
+        "get_create_items_jobs"
+      ],
+      "operation_command": "get_bulk_create_catalog_items_jobs",
+      "path": "/api/catalog-item-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_create_categories_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_category_bulk_create_job",
+        "get_create_categories_job"
+      ],
+      "operation_command": "get_bulk_create_categories_job",
+      "path": "/api/catalog-category-bulk-create-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_create_categories_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_category_bulk_create_jobs",
+        "get_create_categories_jobs"
+      ],
+      "operation_command": "get_bulk_create_categories_jobs",
+      "path": "/api/catalog-category-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_create_coupon_code_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_coupon_code_bulk_create_jobs"
+      ],
+      "operation_command": "get_bulk_create_coupon_code_jobs",
+      "path": "/api/coupon-code-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_create_coupon_codes_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_coupon_code_bulk_create_job"
+      ],
+      "operation_command": "get_bulk_create_coupon_codes_job",
+      "path": "/api/coupon-code-bulk-create-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_create_variants_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_variant_bulk_create_job",
+        "get_create_variants_job"
+      ],
+      "operation_command": "get_bulk_create_variants_job",
+      "path": "/api/catalog-variant-bulk-create-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_create_variants_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_variant_bulk_create_jobs",
+        "get_create_variants_jobs"
+      ],
+      "operation_command": "get_bulk_create_variants_jobs",
+      "path": "/api/catalog-variant-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_delete_catalog_items_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_item_bulk_delete_job",
+        "get_delete_items_job"
+      ],
+      "operation_command": "get_bulk_delete_catalog_items_job",
+      "path": "/api/catalog-item-bulk-delete-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_delete_catalog_items_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_item_bulk_delete_jobs",
+        "get_delete_items_jobs"
+      ],
+      "operation_command": "get_bulk_delete_catalog_items_jobs",
+      "path": "/api/catalog-item-bulk-delete-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_delete_categories_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_category_bulk_delete_job",
+        "get_delete_categories_job"
+      ],
+      "operation_command": "get_bulk_delete_categories_job",
+      "path": "/api/catalog-category-bulk-delete-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_delete_categories_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_category_bulk_delete_jobs",
+        "get_delete_categories_jobs"
+      ],
+      "operation_command": "get_bulk_delete_categories_jobs",
+      "path": "/api/catalog-category-bulk-delete-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_delete_variants_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_variant_bulk_delete_job",
+        "get_delete_variants_job"
+      ],
+      "operation_command": "get_bulk_delete_variants_job",
+      "path": "/api/catalog-variant-bulk-delete-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_delete_variants_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_variant_bulk_delete_jobs",
+        "get_delete_variants_jobs"
+      ],
+      "operation_command": "get_bulk_delete_variants_jobs",
+      "path": "/api/catalog-variant-bulk-delete-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_import_profiles_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_bulk_profile_import_job",
+        "get_profile_bulk_import_job"
+      ],
+      "operation_command": "get_bulk_import_profiles_job",
+      "path": "/api/profile-bulk-import-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Bulk Import Profiles",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_import_profiles_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_bulk_profile_import_jobs",
+        "get_profile_bulk_import_jobs"
+      ],
+      "operation_command": "get_bulk_import_profiles_jobs",
+      "path": "/api/profile-bulk-import-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Bulk Import Profiles",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_suppress_profiles_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_suppression_bulk_create_job"
+      ],
+      "operation_command": "get_bulk_suppress_profiles_job",
+      "path": "/api/profile-suppression-bulk-create-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Consent",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_suppress_profiles_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_suppression_bulk_create_jobs"
+      ],
+      "operation_command": "get_bulk_suppress_profiles_jobs",
+      "path": "/api/profile-suppression-bulk-create-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Consent",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_unsuppress_profiles_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_suppression_bulk_delete_job"
+      ],
+      "operation_command": "get_bulk_unsuppress_profiles_job",
+      "path": "/api/profile-suppression-bulk-delete-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Consent",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_unsuppress_profiles_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_suppression_bulk_delete_jobs"
+      ],
+      "operation_command": "get_bulk_unsuppress_profiles_jobs",
+      "path": "/api/profile-suppression-bulk-delete-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Consent",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_update_catalog_items_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_item_bulk_update_job",
+        "get_update_items_job"
+      ],
+      "operation_command": "get_bulk_update_catalog_items_job",
+      "path": "/api/catalog-item-bulk-update-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_update_catalog_items_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_item_bulk_update_jobs",
+        "get_update_items_jobs"
+      ],
+      "operation_command": "get_bulk_update_catalog_items_jobs",
+      "path": "/api/catalog-item-bulk-update-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_update_categories_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_category_bulk_update_job",
+        "get_update_categories_job"
+      ],
+      "operation_command": "get_bulk_update_categories_job",
+      "path": "/api/catalog-category-bulk-update-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_update_categories_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_category_bulk_update_jobs",
+        "get_update_categories_jobs"
+      ],
+      "operation_command": "get_bulk_update_categories_jobs",
+      "path": "/api/catalog-category-bulk-update-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_update_variants_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_variant_bulk_update_job",
+        "get_update_variants_job"
+      ],
+      "operation_command": "get_bulk_update_variants_job",
+      "path": "/api/catalog-variant-bulk-update-jobs/{job_id}",
+      "required_path_params": [
+        "job_id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_bulk_update_variants_jobs",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_variant_bulk_update_jobs",
+        "get_update_variants_jobs"
+      ],
+      "operation_command": "get_bulk_update_variants_jobs",
+      "path": "/api/catalog-variant-bulk-update-jobs",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_campaign",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_campaign",
+      "path": "/api/campaigns/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_campaign_for_campaign_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_campaign_message_campaign"
+      ],
+      "operation_command": "get_campaign_for_campaign_message",
+      "path": "/api/campaign-messages/{id}/campaign",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Messages",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_campaign_id_for_campaign_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_campaign_message_relationships_campaign"
+      ],
+      "operation_command": "get_campaign_id_for_campaign_message",
+      "path": "/api/campaign-messages/{id}/relationships/campaign",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Messages",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_campaign_ids_for_tag",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_tag_relationships_campaigns"
+      ],
+      "operation_command": "get_campaign_ids_for_tag",
+      "path": "/api/tags/{id}/relationships/campaigns",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_campaign_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_campaign_message",
+      "path": "/api/campaign-messages/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Messages",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_campaign_recipient_estimation",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_campaign_recipient_estimation",
+      "path": "/api/campaign-recipient-estimations/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_campaign_recipient_estimation_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_campaign_recipient_estimation_job",
+      "path": "/api/campaign-recipient-estimation-jobs/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Jobs",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_campaign_send_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_campaign_send_job",
+      "path": "/api/campaign-send-jobs/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Jobs",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_campaigns",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_campaigns",
+      "path": "/api/campaigns",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_catalog_categories",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_catalog_categories",
+      "path": "/api/catalog-categories",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_catalog_category",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_catalog_category",
+      "path": "/api/catalog-categories/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_catalog_item",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_catalog_item",
+      "path": "/api/catalog-items/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_catalog_items",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_catalog_items",
+      "path": "/api/catalog-items",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_catalog_variant",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_catalog_variant",
+      "path": "/api/catalog-variants/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_catalog_variants",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_catalog_variants",
+      "path": "/api/catalog-variants",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_categories_for_catalog_item",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_item_categories"
+      ],
+      "operation_command": "get_categories_for_catalog_item",
+      "path": "/api/catalog-items/{id}/categories",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_category_ids_for_catalog_item",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_item_relationships_categories"
+      ],
+      "operation_command": "get_category_ids_for_catalog_item",
+      "path": "/api/catalog-items/{id}/relationships/categories",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_client_geofences",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_client_geofences",
+      "path": "/client/geofences",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": true,
+      "subtag": "",
+      "tags": [
+        "Client"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_client_review_values_reports",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_client_review_values_reports",
+      "path": "/client/review-values-reports",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": true,
+      "subtag": "",
+      "tags": [
+        "Client"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_client_reviews",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_client_reviews",
+      "path": "/client/reviews",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": true,
+      "subtag": "",
+      "tags": [
+        "Client"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_conversation_for_profile",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_conversation"
+      ],
+      "operation_command": "get_conversation_for_profile",
+      "path": "/api/profiles/{id}/conversation",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Conversations",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_conversation_id_for_profile",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_relationships_conversation"
+      ],
+      "operation_command": "get_conversation_id_for_profile",
+      "path": "/api/profiles/{id}/relationships/conversation",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Conversations",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_coupon",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_coupon",
+      "path": "/api/coupons/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_coupon_code",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_coupon_code",
+      "path": "/api/coupon-codes/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_coupon_code_ids_for_coupon",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_code_ids_for_coupon",
+        "get_coupon_code_relationships_coupon",
+        "get_coupon_relationships_codes"
+      ],
+      "operation_command": "get_coupon_code_ids_for_coupon",
+      "path": "/api/coupons/{id}/relationships/coupon-codes",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_coupon_codes",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_coupon_codes",
+      "path": "/api/coupon-codes",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_coupon_codes_for_coupon",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_codes_for_coupon",
+        "get_coupon_coupon_codes"
+      ],
+      "operation_command": "get_coupon_codes_for_coupon",
+      "path": "/api/coupons/{id}/coupon-codes",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_coupon_for_coupon_code",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_coupon_code_coupon"
+      ],
+      "operation_command": "get_coupon_for_coupon_code",
+      "path": "/api/coupon-codes/{id}/coupon",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_coupon_id_for_coupon_code",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_coupon_relationships_coupon_codes"
+      ],
+      "operation_command": "get_coupon_id_for_coupon_code",
+      "path": "/api/coupon-codes/{id}/relationships/coupon",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_coupons",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_coupons",
+      "path": "/api/coupons",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_custom_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_custom_metric",
+      "path": "/api/custom-metrics/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Custom Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_custom_metric_for_mapped_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_mapped_metric_custom_metric"
+      ],
+      "operation_command": "get_custom_metric_for_mapped_metric",
+      "path": "/api/mapped-metrics/{id}/custom-metric",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Mapped Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_custom_metric_id_for_mapped_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_mapped_metric_relationships_custom_metric"
+      ],
+      "operation_command": "get_custom_metric_id_for_mapped_metric",
+      "path": "/api/mapped-metrics/{id}/relationships/custom-metric",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Mapped Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_custom_metrics",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_custom_metrics",
+      "path": "/api/custom-metrics",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Custom Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_data_source",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_data_source",
+      "path": "/api/data-sources/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Custom Objects"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_data_sources",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_data_sources",
+      "path": "/api/data-sources",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Custom Objects"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_errors_for_bulk_import_profiles_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_bulk_profile_import_job_import_errors",
+        "get_import_errors_for_profile_bulk_import_job",
+        "get_profile_bulk_import_job_import_errors"
+      ],
+      "operation_command": "get_errors_for_bulk_import_profiles_job",
+      "path": "/api/profile-bulk-import-jobs/{id}/import-errors",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Bulk Import Profiles",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_event",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_event",
+      "path": "/api/events/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Events"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_events",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_events",
+      "path": "/api/events",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Events"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_flow",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_flow",
+      "path": "/api/flows/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_flow_action",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_flow_action",
+      "path": "/api/flow-actions/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_flow_action_messages",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_messages_for_flow_action"
+      ],
+      "operation_command": "get_flow_action_messages",
+      "path": "/api/flow-actions/{id}/flow-messages",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_flow_for_flow_action",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_action_flow"
+      ],
+      "operation_command": "get_flow_for_flow_action",
+      "path": "/api/flow-actions/{id}/flow",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_flow_id_for_flow_action",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_action_relationships_flow"
+      ],
+      "operation_command": "get_flow_id_for_flow_action",
+      "path": "/api/flow-actions/{id}/relationships/flow",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_flow_ids_for_tag",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_tag_relationships_flows"
+      ],
+      "operation_command": "get_flow_ids_for_tag",
+      "path": "/api/tags/{id}/relationships/flows",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_flow_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_flow_message",
+      "path": "/api/flow-messages/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_flows",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_flows",
+      "path": "/api/flows",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_flows_triggered_by_list",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_triggers_for_list",
+        "get_list_flow_triggers"
+      ],
+      "operation_command": "get_flows_triggered_by_list",
+      "path": "/api/lists/{id}/flow-triggers",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_flows_triggered_by_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_triggers_for_metric",
+        "get_metric_flow_triggers"
+      ],
+      "operation_command": "get_flows_triggered_by_metric",
+      "path": "/api/metrics/{id}/flow-triggers",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_flows_triggered_by_segment",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_triggers_for_segment",
+        "get_segment_flow_triggers"
+      ],
+      "operation_command": "get_flows_triggered_by_segment",
+      "path": "/api/segments/{id}/flow-triggers",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Segments"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_form",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_form",
+      "path": "/api/forms/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Forms"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_form_for_form_version",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_form_version_form"
+      ],
+      "operation_command": "get_form_for_form_version",
+      "path": "/api/form-versions/{id}/form",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Forms"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_form_id_for_form_version",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_form_version_relationships_form"
+      ],
+      "operation_command": "get_form_id_for_form_version",
+      "path": "/api/form-versions/{id}/relationships/form",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Forms"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_form_version",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_form_version",
+      "path": "/api/form-versions/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Forms"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_forms",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_forms",
+      "path": "/api/forms",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Forms"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_ids_for_flows_triggered_by_list",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_trigger_ids_for_list",
+        "get_list_relationships_flow_triggers"
+      ],
+      "operation_command": "get_ids_for_flows_triggered_by_list",
+      "path": "/api/lists/{id}/relationships/flow-triggers",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_ids_for_flows_triggered_by_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_trigger_ids_for_metric",
+        "get_metric_relationships_flow_triggers"
+      ],
+      "operation_command": "get_ids_for_flows_triggered_by_metric",
+      "path": "/api/metrics/{id}/relationships/flow-triggers",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_ids_for_flows_triggered_by_segment",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_trigger_ids_for_segment",
+        "get_segment_relationships_flow_triggers"
+      ],
+      "operation_command": "get_ids_for_flows_triggered_by_segment",
+      "path": "/api/segments/{id}/relationships/flow-triggers",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Segments"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_image",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_image",
+      "path": "/api/images/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Images"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_image_for_campaign_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_campaign_message_image"
+      ],
+      "operation_command": "get_image_for_campaign_message",
+      "path": "/api/campaign-messages/{id}/image",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Messages",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_image_id_for_campaign_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_campaign_message_relationships_image"
+      ],
+      "operation_command": "get_image_id_for_campaign_message",
+      "path": "/api/campaign-messages/{id}/relationships/image",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Messages",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_images",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_images",
+      "path": "/api/images",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Images"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_item_ids_for_catalog_category",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_category_relationships_items"
+      ],
+      "operation_command": "get_item_ids_for_catalog_category",
+      "path": "/api/catalog-categories/{id}/relationships/items",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_items_for_catalog_category",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_category_items"
+      ],
+      "operation_command": "get_items_for_catalog_category",
+      "path": "/api/catalog-categories/{id}/items",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_list",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_list",
+      "path": "/api/lists/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_list_for_bulk_import_profiles_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_bulk_profile_import_job_lists",
+        "get_lists_for_profile_bulk_import_job",
+        "get_profile_bulk_import_job_lists"
+      ],
+      "operation_command": "get_list_for_bulk_import_profiles_job",
+      "path": "/api/profile-bulk-import-jobs/{id}/lists",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Bulk Import Profiles",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_list_ids_for_bulk_import_profiles_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_bulk_profile_import_job_relationships_lists",
+        "get_list_ids_for_profile_bulk_import_job",
+        "get_profile_bulk_import_job_relationships_lists"
+      ],
+      "operation_command": "get_list_ids_for_bulk_import_profiles_job",
+      "path": "/api/profile-bulk-import-jobs/{id}/relationships/lists",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Bulk Import Profiles",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_list_ids_for_profile",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_relationships_lists"
+      ],
+      "operation_command": "get_list_ids_for_profile",
+      "path": "/api/profiles/{id}/relationships/lists",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_list_ids_for_tag",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_tag_relationships_lists"
+      ],
+      "operation_command": "get_list_ids_for_tag",
+      "path": "/api/tags/{id}/relationships/lists",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_lists",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_lists",
+      "path": "/api/lists",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_lists_for_profile",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_lists"
+      ],
+      "operation_command": "get_lists_for_profile",
+      "path": "/api/profiles/{id}/lists",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_mapped_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_mapped_metric",
+      "path": "/api/mapped-metrics/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Mapped Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_mapped_metrics",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_mapped_metrics",
+      "path": "/api/mapped-metrics",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Mapped Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_message_ids_for_campaign",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_campaign_relationships_campaign_messages",
+        "get_campaign_relationships_messages"
+      ],
+      "operation_command": "get_message_ids_for_campaign",
+      "path": "/api/campaigns/{id}/relationships/campaign-messages",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_message_ids_for_flow_action",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_action_relationships_messages"
+      ],
+      "operation_command": "get_message_ids_for_flow_action",
+      "path": "/api/flow-actions/{id}/relationships/flow-messages",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_messages_for_campaign",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_campaign_campaign_messages",
+        "get_campaign_messages"
+      ],
+      "operation_command": "get_messages_for_campaign",
+      "path": "/api/campaigns/{id}/campaign-messages",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_metric",
+      "path": "/api/metrics/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_metric_for_event",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_event_metric"
+      ],
+      "operation_command": "get_metric_for_event",
+      "path": "/api/events/{id}/metric",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Events"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_metric_for_mapped_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_mapped_metric_metric"
+      ],
+      "operation_command": "get_metric_for_mapped_metric",
+      "path": "/api/mapped-metrics/{id}/metric",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Mapped Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_metric_for_metric_property",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_metric_property_metric"
+      ],
+      "operation_command": "get_metric_for_metric_property",
+      "path": "/api/metric-properties/{id}/metric",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_metric_id_for_event",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_event_relationships_metric"
+      ],
+      "operation_command": "get_metric_id_for_event",
+      "path": "/api/events/{id}/relationships/metric",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Events"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_metric_id_for_mapped_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_mapped_metric_relationships_metric"
+      ],
+      "operation_command": "get_metric_id_for_mapped_metric",
+      "path": "/api/mapped-metrics/{id}/relationships/metric",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Mapped Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_metric_id_for_metric_property",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_metric_property_relationships_metric"
+      ],
+      "operation_command": "get_metric_id_for_metric_property",
+      "path": "/api/metric-properties/{id}/relationships/metric",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_metric_ids_for_custom_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_custom_metric_relationships_metrics"
+      ],
+      "operation_command": "get_metric_ids_for_custom_metric",
+      "path": "/api/custom-metrics/{id}/relationships/metrics",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Custom Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_metric_property",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_metric_property",
+      "path": "/api/metric-properties/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_metrics",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_metrics",
+      "path": "/api/metrics",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_metrics_for_custom_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_custom_metric_metrics"
+      ],
+      "operation_command": "get_metrics_for_custom_metric",
+      "path": "/api/custom-metrics/{id}/metrics",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Custom Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profile",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_profile",
+      "path": "/api/profiles/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profile_for_event",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_event_profile"
+      ],
+      "operation_command": "get_profile_for_event",
+      "path": "/api/events/{id}/profile",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Events"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profile_for_push_token",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_push_token_profile"
+      ],
+      "operation_command": "get_profile_for_push_token",
+      "path": "/api/push-tokens/{id}/profile",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Push Tokens",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profile_id_for_event",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_event_relationships_profile"
+      ],
+      "operation_command": "get_profile_id_for_event",
+      "path": "/api/events/{id}/relationships/profile",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Events"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profile_id_for_push_token",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_push_token_relationships_profile"
+      ],
+      "operation_command": "get_profile_id_for_push_token",
+      "path": "/api/push-tokens/{id}/relationships/profile",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Push Tokens",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profile_ids_for_bulk_import_profiles_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_bulk_profile_import_job_relationships_profiles",
+        "get_profile_bulk_import_job_relationships_profiles",
+        "get_profile_ids_for_profile_bulk_import_job"
+      ],
+      "operation_command": "get_profile_ids_for_bulk_import_profiles_job",
+      "path": "/api/profile-bulk-import-jobs/{id}/relationships/profiles",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Bulk Import Profiles",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profile_ids_for_list",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_list_relationships_profiles"
+      ],
+      "operation_command": "get_profile_ids_for_list",
+      "path": "/api/lists/{id}/relationships/profiles",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profile_ids_for_segment",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_segment_relationships_profiles"
+      ],
+      "operation_command": "get_profile_ids_for_segment",
+      "path": "/api/segments/{id}/relationships/profiles",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Segments"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profiles",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_profiles",
+      "path": "/api/profiles",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profiles_for_bulk_import_profiles_job",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_bulk_profile_import_job_profiles",
+        "get_profile_bulk_import_job_profiles",
+        "get_profiles_for_profile_bulk_import_job"
+      ],
+      "operation_command": "get_profiles_for_bulk_import_profiles_job",
+      "path": "/api/profile-bulk-import-jobs/{id}/profiles",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Bulk Import Profiles",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profiles_for_list",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_list_profiles"
+      ],
+      "operation_command": "get_profiles_for_list",
+      "path": "/api/lists/{id}/profiles",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_profiles_for_segment",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_segment_profiles"
+      ],
+      "operation_command": "get_profiles_for_segment",
+      "path": "/api/segments/{id}/profiles",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Segments"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_properties_for_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_metric_metric_properties",
+        "get_metric_properties"
+      ],
+      "operation_command": "get_properties_for_metric",
+      "path": "/api/metrics/{id}/metric-properties",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_property_ids_for_metric",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_metric_relationships_metric_properties",
+        "get_metric_relationships_properties"
+      ],
+      "operation_command": "get_property_ids_for_metric",
+      "path": "/api/metrics/{id}/relationships/metric-properties",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_push_token",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_push_token",
+      "path": "/api/push-tokens/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Push Tokens",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_push_token_ids_for_profile",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_relationships_push_tokens"
+      ],
+      "operation_command": "get_push_token_ids_for_profile",
+      "path": "/api/profiles/{id}/relationships/push-tokens",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_push_tokens",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_push_tokens",
+      "path": "/api/push-tokens",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Push Tokens",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_push_tokens_for_profile",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_push_tokens"
+      ],
+      "operation_command": "get_push_tokens_for_profile",
+      "path": "/api/profiles/{id}/push-tokens",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_review",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_review",
+      "path": "/api/reviews/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Reviews"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_reviews",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_reviews",
+      "path": "/api/reviews",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Reviews"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_segment",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_segment",
+      "path": "/api/segments/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Segments"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_segment_ids_for_profile",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_relationships_segments"
+      ],
+      "operation_command": "get_segment_ids_for_profile",
+      "path": "/api/profiles/{id}/relationships/segments",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_segment_ids_for_tag",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_tag_relationships_segments"
+      ],
+      "operation_command": "get_segment_ids_for_tag",
+      "path": "/api/tags/{id}/relationships/segments",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_segments",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_segments",
+      "path": "/api/segments",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Segments"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_segments_for_profile",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_profile_segments"
+      ],
+      "operation_command": "get_segments_for_profile",
+      "path": "/api/profiles/{id}/segments",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tag",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_tag",
+      "path": "/api/tags/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tag_group",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_tag_group",
+      "path": "/api/tag-groups/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Tag Groups",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tag_group_for_tag",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_group_for_tag",
+        "get_tag_tag_group"
+      ],
+      "operation_command": "get_tag_group_for_tag",
+      "path": "/api/tags/{id}/tag-group",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tag_group_id_for_tag",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_group_id_for_tag",
+        "get_tag_relationships_group",
+        "get_tag_relationships_tag_group"
+      ],
+      "operation_command": "get_tag_group_id_for_tag",
+      "path": "/api/tags/{id}/relationships/tag-group",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tag_groups",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_tag_groups",
+      "path": "/api/tag-groups",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Tag Groups",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tag_ids_for_campaign",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_campaign_relationships_tags"
+      ],
+      "operation_command": "get_tag_ids_for_campaign",
+      "path": "/api/campaigns/{id}/relationships/tags",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tag_ids_for_flow",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_relationships_tags"
+      ],
+      "operation_command": "get_tag_ids_for_flow",
+      "path": "/api/flows/{id}/relationships/tags",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tag_ids_for_list",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_list_relationships_tags"
+      ],
+      "operation_command": "get_tag_ids_for_list",
+      "path": "/api/lists/{id}/relationships/tags",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tag_ids_for_segment",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_segment_relationships_tags"
+      ],
+      "operation_command": "get_tag_ids_for_segment",
+      "path": "/api/segments/{id}/relationships/tags",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Segments"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tag_ids_for_tag_group",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_tag_group_relationships_tags"
+      ],
+      "operation_command": "get_tag_ids_for_tag_group",
+      "path": "/api/tag-groups/{id}/relationships/tags",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Tag Groups",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tags",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_tags",
+      "path": "/api/tags",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tags_for_campaign",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_campaign_tags"
+      ],
+      "operation_command": "get_tags_for_campaign",
+      "path": "/api/campaigns/{id}/tags",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tags_for_flow",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_tags"
+      ],
+      "operation_command": "get_tags_for_flow",
+      "path": "/api/flows/{id}/tags",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tags_for_list",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_list_tags"
+      ],
+      "operation_command": "get_tags_for_list",
+      "path": "/api/lists/{id}/tags",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tags_for_segment",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_segment_tags"
+      ],
+      "operation_command": "get_tags_for_segment",
+      "path": "/api/segments/{id}/tags",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Segments"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tags_for_tag_group",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_tag_group_tags"
+      ],
+      "operation_command": "get_tags_for_tag_group",
+      "path": "/api/tag-groups/{id}/tags",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Tag Groups",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_template",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_template",
+      "path": "/api/templates/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_template_for_campaign_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_campaign_message_template"
+      ],
+      "operation_command": "get_template_for_campaign_message",
+      "path": "/api/campaign-messages/{id}/template",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Messages",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_template_for_flow_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_message_template"
+      ],
+      "operation_command": "get_template_for_flow_message",
+      "path": "/api/flow-messages/{id}/template",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_template_id_for_campaign_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_campaign_message_relationships_template"
+      ],
+      "operation_command": "get_template_id_for_campaign_message",
+      "path": "/api/campaign-messages/{id}/relationships/template",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Messages",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_template_id_for_flow_message",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_flow_message_relationships_template"
+      ],
+      "operation_command": "get_template_id_for_flow_message",
+      "path": "/api/flow-messages/{id}/relationships/template",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_templates",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_templates",
+      "path": "/api/templates",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tracking_setting",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_tracking_setting",
+      "path": "/api/tracking-settings/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tracking Settings"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_tracking_settings",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_tracking_settings",
+      "path": "/api/tracking-settings",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tracking Settings"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_universal_content",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_universal_content",
+      "path": "/api/template-universal-content/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Universal Content",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_variant_ids_for_catalog_item",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_item_relationships_variants"
+      ],
+      "operation_command": "get_variant_ids_for_catalog_item",
+      "path": "/api/catalog-items/{id}/relationships/variants",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_variants_for_catalog_item",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_catalog_item_variants"
+      ],
+      "operation_command": "get_variants_for_catalog_item",
+      "path": "/api/catalog-items/{id}/variants",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_version_ids_for_form",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_form_relationships_form_versions",
+        "get_form_relationships_versions"
+      ],
+      "operation_command": "get_version_ids_for_form",
+      "path": "/api/forms/{id}/relationships/form-versions",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Forms"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_versions_for_form",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [
+        "get_form_form_versions",
+        "get_form_versions"
+      ],
+      "operation_command": "get_versions_for_form",
+      "path": "/api/forms/{id}/form-versions",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Forms"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_web_feed",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_web_feed",
+      "path": "/api/web-feeds/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Web Feeds"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_web_feeds",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_web_feeds",
+      "path": "/api/web-feeds",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Web Feeds"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_webhook",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_webhook",
+      "path": "/api/webhooks/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Webhooks"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_webhook_topic",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_webhook_topic",
+      "path": "/api/webhook-topics/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Webhooks"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_webhook_topics",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_webhook_topics",
+      "path": "/api/webhook-topics",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Webhooks"
+      ]
+    },
+    {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_webhooks",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_aliases": [],
+      "operation_command": "get_webhooks",
+      "path": "/api/webhooks",
+      "required_path_params": [],
+      "required_request_body": false,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Webhooks"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/merge_profiles",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_profile_merge"
+      ],
+      "operation_command": "merge_profiles",
+      "path": "/api/profile-merge",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/query_campaign_values",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_campaign_value_report",
+        "create_campaign_values_report"
+      ],
+      "operation_command": "query_campaign_values",
+      "path": "/api/campaign-values-reports",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Reporting"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/query_flow_series",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_flow_series_report",
+        "create_flow_sery_report"
+      ],
+      "operation_command": "query_flow_series",
+      "path": "/api/flow-series-reports",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Reporting"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/query_flow_values",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_flow_value_report",
+        "create_flow_values_report"
+      ],
+      "operation_command": "query_flow_values",
+      "path": "/api/flow-values-reports",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Reporting"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/query_form_series",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_form_series_report",
+        "create_form_sery_report"
+      ],
+      "operation_command": "query_form_series",
+      "path": "/api/form-series-reports",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Reporting"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/query_form_values",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_form_value_report",
+        "create_form_values_report"
+      ],
+      "operation_command": "query_form_values",
+      "path": "/api/form-values-reports",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Reporting"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/query_metric_aggregates",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_metric_aggregate"
+      ],
+      "operation_command": "query_metric_aggregates",
+      "path": "/api/metric-aggregates",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/query_segment_series",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_segment_series_report",
+        "create_segment_sery_report"
+      ],
+      "operation_command": "query_segment_series",
+      "path": "/api/segment-series-reports",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Reporting"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/query_segment_values",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_segment_value_report",
+        "create_segment_values_report"
+      ],
+      "operation_command": "query_segment_values",
+      "path": "/api/segment-values-reports",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Reporting"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/refresh_campaign_recipient_estimation",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_campaign_recipient_estimation_job"
+      ],
+      "operation_command": "refresh_campaign_recipient_estimation",
+      "path": "/api/campaign-recipient-estimation-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Jobs",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/remove_categories_from_catalog_item",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [
+        "delete_catalog_item_relationships_categories"
+      ],
+      "operation_command": "remove_categories_from_catalog_item",
+      "path": "/api/catalog-items/{id}/relationships/categories",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/remove_items_from_catalog_category",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [
+        "delete_catalog_category_relationships_items"
+      ],
+      "operation_command": "remove_items_from_catalog_category",
+      "path": "/api/catalog-categories/{id}/relationships/items",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/remove_profiles_from_list",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [
+        "delete_list_relationships",
+        "delete_list_relationships_profiles"
+      ],
+      "operation_command": "remove_profiles_from_list",
+      "path": "/api/lists/{id}/relationships/profiles",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/remove_tag_from_campaigns",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [
+        "delete_tag_relationships_campaigns",
+        "remove_campaigns_from_tag"
+      ],
+      "operation_command": "remove_tag_from_campaigns",
+      "path": "/api/tags/{id}/relationships/campaigns",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/remove_tag_from_flows",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [
+        "delete_tag_relationships_flows",
+        "remove_flows_from_tag"
+      ],
+      "operation_command": "remove_tag_from_flows",
+      "path": "/api/tags/{id}/relationships/flows",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/remove_tag_from_lists",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [
+        "delete_tag_relationships_lists",
+        "remove_lists_from_tag"
+      ],
+      "operation_command": "remove_tag_from_lists",
+      "path": "/api/tags/{id}/relationships/lists",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/remove_tag_from_segments",
+      "has_multipart_request": false,
+      "method": "DELETE",
+      "operation_aliases": [
+        "delete_tag_relationships_segments",
+        "remove_segments_from_tag"
+      ],
+      "operation_command": "remove_tag_from_segments",
+      "path": "/api/tags/{id}/relationships/segments",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/render_template",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_template_render"
+      ],
+      "operation_command": "render_template",
+      "path": "/api/template-render",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/request_profile_deletion",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_data_privacy_deletion_job"
+      ],
+      "operation_command": "request_profile_deletion",
+      "path": "/api/data-privacy-deletion-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Data Privacy"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/send_campaign",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_campaign_send_job"
+      ],
+      "operation_command": "send_campaign",
+      "path": "/api/campaign-send-jobs",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Jobs",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/tag_campaigns",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "add_campaigns_to_tag",
+        "create_tag_relationships_campaign",
+        "create_tag_relationships_campaigns"
+      ],
+      "operation_command": "tag_campaigns",
+      "path": "/api/tags/{id}/relationships/campaigns",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/tag_flows",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "add_flows_to_tag",
+        "create_tag_relationships_flow",
+        "create_tag_relationships_flows"
+      ],
+      "operation_command": "tag_flows",
+      "path": "/api/tags/{id}/relationships/flows",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/tag_lists",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "add_lists_to_tag",
+        "create_tag_relationships_list",
+        "create_tag_relationships_lists"
+      ],
+      "operation_command": "tag_lists",
+      "path": "/api/tags/{id}/relationships/lists",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/tag_segments",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "add_segments_to_tag",
+        "create_tag_relationships_segment",
+        "create_tag_relationships_segments"
+      ],
+      "operation_command": "tag_segments",
+      "path": "/api/tags/{id}/relationships/segments",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/unregister_client_push_token",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_client_push_token_unregister"
+      ],
+      "operation_command": "unregister_client_push_token",
+      "path": "/client/push-token-unregister",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": true,
+      "subtag": "",
+      "tags": [
+        "Client"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_campaign",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_campaign",
+      "path": "/api/campaigns/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_campaign_message",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_campaign_message",
+      "path": "/api/campaign-messages/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Messages",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_catalog_category",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_catalog_category",
+      "path": "/api/catalog-categories/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_catalog_item",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_catalog_item",
+      "path": "/api/catalog-items/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_catalog_variant",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_catalog_variant",
+      "path": "/api/catalog-variants/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Variants",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_categories_for_catalog_item",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [
+        "update_catalog_item_relationships_categories"
+      ],
+      "operation_command": "update_categories_for_catalog_item",
+      "path": "/api/catalog-items/{id}/relationships/categories",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Items",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_coupon",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_coupon",
+      "path": "/api/coupons/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_coupon_code",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_coupon_code",
+      "path": "/api/coupon-codes/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Coupons"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_custom_metric",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_custom_metric",
+      "path": "/api/custom-metrics/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Custom Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_flow",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_flow",
+      "path": "/api/flows/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_flow_action",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_flow_action",
+      "path": "/api/flow-actions/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Flows"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_image",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_image",
+      "path": "/api/images/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Images"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_image_for_campaign_message",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [
+        "update_campaign_message_relationships_image"
+      ],
+      "operation_command": "update_image_for_campaign_message",
+      "path": "/api/campaign-messages/{id}/relationships/image",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Messages",
+      "tags": [
+        "Campaigns"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_items_for_catalog_category",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [
+        "update_catalog_category_relationships_items"
+      ],
+      "operation_command": "update_items_for_catalog_category",
+      "path": "/api/catalog-categories/{id}/relationships/items",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Categories",
+      "tags": [
+        "Catalogs"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_list",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_list",
+      "path": "/api/lists/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_mapped_metric",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_mapped_metric",
+      "path": "/api/mapped-metrics/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Mapped Metrics",
+      "tags": [
+        "Metrics"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_profile",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_profile",
+      "path": "/api/profiles/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Profiles"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_review",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_review",
+      "path": "/api/reviews/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Reviews"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_segment",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_segment",
+      "path": "/api/segments/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Segments"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_tag",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_tag",
+      "path": "/api/tags/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_tag_group",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_tag_group",
+      "path": "/api/tag-groups/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Tag Groups",
+      "tags": [
+        "Tags"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_template",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_template",
+      "path": "/api/templates/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_tracking_setting",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_tracking_setting",
+      "path": "/api/tracking-settings/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Tracking Settings"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_universal_content",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [
+        "update_template_universal_content"
+      ],
+      "operation_command": "update_universal_content",
+      "path": "/api/template-universal-content/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "Universal Content",
+      "tags": [
+        "Templates"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_web_feed",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_web_feed",
+      "path": "/api/web-feeds/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Web Feeds"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/update_webhook",
+      "has_multipart_request": false,
+      "method": "PATCH",
+      "operation_aliases": [],
+      "operation_command": "update_webhook",
+      "path": "/api/webhooks/{id}",
+      "required_path_params": [
+        "id"
+      ],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Webhooks"
+      ]
+    },
+    {
+      "content_types": [
+        "multipart/form-data"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/upload_image_from_file",
+      "has_multipart_request": true,
+      "method": "POST",
+      "operation_aliases": [
+        "create_image_upload"
+      ],
+      "operation_command": "upload_image_from_file",
+      "path": "/api/image-upload",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Images"
+      ]
+    },
+    {
+      "content_types": [
+        "application/vnd.api+json"
+      ],
+      "doc_url": "https://developers.klaviyo.com/en/reference/upload_image_from_url",
+      "has_multipart_request": false,
+      "method": "POST",
+      "operation_aliases": [
+        "create_image"
+      ],
+      "operation_command": "upload_image_from_url",
+      "path": "/api/images",
+      "required_path_params": [],
+      "required_request_body": true,
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Images"
+      ]
+    }
+  ],
+  "source": "https://raw.githubusercontent.com/klaviyo/openapi/2026-04-15/openapi/stable/apis",
+  "source_revision": "2026-04-15",
+  "source_type": "OpenAPI"
+}

@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "place-actions.locations.place-action-links.delete",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessplaceactions.googleapis.com",
+    "command": "google-business-profile-safe-cli place-actions locations place-action-links delete --name locations/abc/placeActionLinks/xyz",
+    "selector": "locations/abc/placeActionLinks/xyz",
+    "risk_level": "high",
+    "risk_reasons": [
+      "Place action link deletion is irreversible."
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "place-actions.locations.place-action-links.delete",
+        "selector": "locations/abc/placeActionLinks/xyz",
+        "mask": "name",
+        "body_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "verification_plan": [
+      "Read back the same place action link with get; expected result is HTTP 404 (not found)."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/abc/placeActionLinks/xyz",
+      "mask": "name",
+      "body_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mask_fingerprint": "82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89"
+    }
+  }
+}

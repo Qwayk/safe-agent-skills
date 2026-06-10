@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "error_type": "ValidationError",
+  "error": "Missing DYNADOT_API_BASE_URL"
+}

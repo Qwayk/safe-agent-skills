@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "media-upload-v1.media.upload",
+  "receipt": {
+    "tool": "google-business-profile-safe-agent-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/media_upload.plan.json media-upload-v1 media upload --resource-name locations/123/media/abc --media-json-file /tmp/media.json",
+    "selector": "locations/123/media/abc",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "media-upload-v1.media.upload",
+      "request": {
+        "method": "POST",
+        "host": "https://mybusiness.googleapis.com",
+        "path": "v1/media/locations/123/media/abc"
+      },
+      "response": {
+        "resourceName": "locations/123/media/abc"
+      },
+      "note": "No direct read-back verification is available for media upload in this slice; response resourceName matched requested resource name."
+    },
+    "diff_applied": [
+      "resourceName"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

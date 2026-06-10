@@ -1,0 +1,52 @@
+{
+  "ok": true,
+  "pack_dir": "./out/google-ads-pack",
+  "data_quality": {
+    "required_group_failed": false,
+    "tables_present": [
+      "ad_daily_metrics"
+    ],
+    "truncated_tables": []
+  },
+  "tables_missing": [
+    "keyword_daily_metrics",
+    "landing_pages_daily",
+    "placements_daily",
+    "search_terms_daily"
+  ],
+  "tables_used": [
+    "ad_daily_metrics"
+  ],
+  "summary": {
+    "ad_daily_metrics": {
+      "row_count": 1,
+      "totals": {
+        "clicks": 10,
+        "conversions": 3.0,
+        "conversions_value": 120.0,
+        "cost_micros": 5000000,
+        "cpa_micros": 1666666,
+        "impressions": 100
+      }
+    },
+    "customer_id": "123",
+    "preset": "analysis_pack_v2",
+    "since": "2026-01-01",
+    "until": "2026-01-31"
+  },
+  "recommendations": {
+    "ads": {
+      "top_winners": [],
+      "waste_no_conversions": []
+    },
+    "candidate_keywords_to_pause": [],
+    "candidate_landing_pages_to_review": [],
+    "candidate_negative_keywords": [],
+    "candidate_placements_to_review": []
+  },
+  "notes": [
+    "This report is best-effort and purely offline (it reads the exported pack).",
+    "Review candidate negative keywords carefully; exclude brand and high-intent terms when appropriate."
+  ]
+}
+

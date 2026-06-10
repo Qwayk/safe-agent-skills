@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "base_url": "https://api.mercury.com/api/v1",
+  "auth_scheme": "bearer",
+  "organization": {
+    "id": "org_redacted",
+    "name": "Redacted Org"
+  }
+}

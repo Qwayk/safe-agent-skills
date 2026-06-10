@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "operation": "legacy-v49.accounts.locations.reviews.list",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusiness.googleapis.com",
+    "path": "v4/accounts/123/locations/456/reviews",
+    "params": {
+      "pageSize": 20,
+      "orderBy": "rating desc"
+    }
+  },
+  "response": {
+    "reviews": [
+      {
+        "name": "accounts/123/locations/456/reviews/review-123",
+        "reviewId": "review-123",
+        "starRating": "FIVE",
+        "comment": "Great service and clean store.",
+        "reviewReply": {
+          "comment": "Thanks for your feedback."
+        }
+      }
+    ],
+    "averageRating": 4.8,
+    "totalReviewCount": 37
+  }
+}

@@ -1,0 +1,14 @@
+# SmartCampaignSuggestService (Google Ads API v22)
+
+Command shape:
+- `google-ads-api-tool smart-campaign-suggest-service <method-kebab> --in request.json`
+
+Notes:
+- Requests are JSON objects that map to the RPC request message for the chosen method.
+- Unknown fields are rejected (strict JSON→protobuf parsing).
+- Write methods are plan-first by default; add `--apply` only after explicit approval (see `docs/safety_model.md`).
+
+## Methods
+- `suggest-keyword-themes` — `SmartCampaignSuggestService.SuggestKeywordThemes` (read; unary) — request: `SuggestKeywordThemesRequest` → response: `SuggestKeywordThemesResponse`
+- `suggest-smart-campaign-ad` — `SmartCampaignSuggestService.SuggestSmartCampaignAd` (read; unary) — request: `SuggestSmartCampaignAdRequest` → response: `SuggestSmartCampaignAdResponse`
+- `suggest-smart-campaign-budget-options` — `SmartCampaignSuggestService.SuggestSmartCampaignBudgetOptions` (read; unary) — request: `SuggestSmartCampaignBudgetOptionsRequest` → response: `SuggestSmartCampaignBudgetOptionsResponse`

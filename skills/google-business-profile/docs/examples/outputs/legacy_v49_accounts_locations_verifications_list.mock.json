@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "operation": "legacy-v49.accounts.locations.verifications.list",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusiness.googleapis.com",
+    "path": "v4/accounts/123/locations/456/verifications",
+    "params": {
+      "pageSize": 20,
+      "pageToken": "next-page"
+    }
+  },
+  "response": {
+    "verifications": [
+      {
+        "name": "accounts/123/locations/456/verifications/verify-001",
+        "method": "ADDRESS",
+        "state": "PENDING",
+        "createTime": "2026-06-04T00:00:00Z"
+      }
+    ],
+    "nextPageToken": "next-page-2"
+  }
+}

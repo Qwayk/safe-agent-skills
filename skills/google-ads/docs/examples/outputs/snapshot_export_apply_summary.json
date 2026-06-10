@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "out_dir": "./out/google-ads-pack",
+  "manifest_path": "./out/google-ads-pack/manifest.json",
+  "errors_path": "./out/google-ads-pack/errors/errors.jsonl",
+  "partial_success": false,
+  "warnings": []
+}
+

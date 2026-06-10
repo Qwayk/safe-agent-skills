@@ -1,0 +1,16 @@
+{
+  "tool": "skimlinks-safe-cli",
+  "version": "0.1.0",
+  "applied_at_utc": "2026-06-08T00:00:00Z",
+  "env_fingerprint": "skimlinks:publisher-redacted:domain-redacted",
+  "command": "skimlinks-safe-cli link-wrapper build --id 123X456 --url https://merchant.example/product",
+  "selector": "Link Wrapper URL construction",
+  "changed": false,
+  "verification": {
+    "ok": true,
+    "details": "The command built a URL locally and did not open or follow it"
+  },
+  "diff_applied": [],
+  "backups": [],
+  "rollback_plan": null
+}

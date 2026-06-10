@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "verifications.verification-tokens.generate",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessverifications.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --verification-token-out /tmp/verification-token.json --receipt-out /tmp/verifications.verification_tokens_generate.receipt.json --plan-in /tmp/verifications.verification_tokens_generate.plan.json verifications verification-tokens generate --location-id 123456",
+    "selector": "123456",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "verifications.verification-tokens.generate",
+      "request": {
+        "method": "POST",
+        "host": "https://mybusinessverifications.googleapis.com",
+        "path": "v1/verificationTokens:generate",
+        "body": {
+          "locationId": "123456"
+        }
+      },
+      "response": {
+        "result": "SUCCEEDED",
+        "instantVerificationToken": "[redacted]"
+      },
+      "token_output_path": "/tmp/verification-token.json",
+      "token_output_sha256": "3f78f2aeb6a6eacf194c1bd632b1a8d88072b6da20f9a6d19403f836f3ffe4fc"
+    },
+    "diff_applied": [
+      "result"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "accounts": {
+    "accounts": [
+      {
+        "id": "acct_redacted",
+        "name": "Operating (redacted)",
+        "kind": "checking",
+        "status": "active"
+      },
+      {
+        "id": "acct_redacted_2",
+        "name": "Savings (redacted)",
+        "kind": "savings",
+        "status": "active"
+      }
+    ]
+  }
+}

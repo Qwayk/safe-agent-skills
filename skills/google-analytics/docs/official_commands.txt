@@ -1,0 +1,188 @@
+ga4-api-tool admin v1alpha account-summaries list
+ga4-api-tool admin v1alpha accounts access-bindings batch-create
+ga4-api-tool admin v1alpha accounts access-bindings batch-delete
+ga4-api-tool admin v1alpha accounts access-bindings batch-get
+ga4-api-tool admin v1alpha accounts access-bindings batch-update
+ga4-api-tool admin v1alpha accounts access-bindings create
+ga4-api-tool admin v1alpha accounts access-bindings delete
+ga4-api-tool admin v1alpha accounts access-bindings get
+ga4-api-tool admin v1alpha accounts access-bindings list
+ga4-api-tool admin v1alpha accounts access-bindings patch
+ga4-api-tool admin v1alpha accounts delete
+ga4-api-tool admin v1alpha accounts get
+ga4-api-tool admin v1alpha accounts get-data-sharing-settings
+ga4-api-tool admin v1alpha accounts list
+ga4-api-tool admin v1alpha accounts patch
+ga4-api-tool admin v1alpha accounts provision-account-ticket
+ga4-api-tool admin v1alpha accounts run-access-report
+ga4-api-tool admin v1alpha accounts search-change-history-events
+ga4-api-tool admin v1alpha properties access-bindings batch-create
+ga4-api-tool admin v1alpha properties access-bindings batch-delete
+ga4-api-tool admin v1alpha properties access-bindings batch-get
+ga4-api-tool admin v1alpha properties access-bindings batch-update
+ga4-api-tool admin v1alpha properties access-bindings create
+ga4-api-tool admin v1alpha properties access-bindings delete
+ga4-api-tool admin v1alpha properties access-bindings get
+ga4-api-tool admin v1alpha properties access-bindings list
+ga4-api-tool admin v1alpha properties access-bindings patch
+ga4-api-tool admin v1alpha properties acknowledge-user-data-collection
+ga4-api-tool admin v1alpha properties ad-sense-links create
+ga4-api-tool admin v1alpha properties ad-sense-links delete
+ga4-api-tool admin v1alpha properties ad-sense-links get
+ga4-api-tool admin v1alpha properties ad-sense-links list
+ga4-api-tool admin v1alpha properties audiences archive
+ga4-api-tool admin v1alpha properties audiences create
+ga4-api-tool admin v1alpha properties audiences get
+ga4-api-tool admin v1alpha properties audiences list
+ga4-api-tool admin v1alpha properties audiences patch
+ga4-api-tool admin v1alpha properties big-query-links create
+ga4-api-tool admin v1alpha properties big-query-links delete
+ga4-api-tool admin v1alpha properties big-query-links get
+ga4-api-tool admin v1alpha properties big-query-links list
+ga4-api-tool admin v1alpha properties big-query-links patch
+ga4-api-tool admin v1alpha properties calculated-metrics create
+ga4-api-tool admin v1alpha properties calculated-metrics delete
+ga4-api-tool admin v1alpha properties calculated-metrics get
+ga4-api-tool admin v1alpha properties calculated-metrics list
+ga4-api-tool admin v1alpha properties calculated-metrics patch
+ga4-api-tool admin v1alpha properties channel-groups create
+ga4-api-tool admin v1alpha properties channel-groups delete
+ga4-api-tool admin v1alpha properties channel-groups get
+ga4-api-tool admin v1alpha properties channel-groups list
+ga4-api-tool admin v1alpha properties channel-groups patch
+ga4-api-tool admin v1alpha properties conversion-events create
+ga4-api-tool admin v1alpha properties conversion-events delete
+ga4-api-tool admin v1alpha properties conversion-events get
+ga4-api-tool admin v1alpha properties conversion-events list
+ga4-api-tool admin v1alpha properties conversion-events patch
+ga4-api-tool admin v1alpha properties create
+ga4-api-tool admin v1alpha properties create-rollup-property
+ga4-api-tool admin v1alpha properties custom-dimensions archive
+ga4-api-tool admin v1alpha properties custom-dimensions create
+ga4-api-tool admin v1alpha properties custom-dimensions get
+ga4-api-tool admin v1alpha properties custom-dimensions list
+ga4-api-tool admin v1alpha properties custom-dimensions patch
+ga4-api-tool admin v1alpha properties custom-metrics archive
+ga4-api-tool admin v1alpha properties custom-metrics create
+ga4-api-tool admin v1alpha properties custom-metrics get
+ga4-api-tool admin v1alpha properties custom-metrics list
+ga4-api-tool admin v1alpha properties custom-metrics patch
+ga4-api-tool admin v1alpha properties data-streams create
+ga4-api-tool admin v1alpha properties data-streams delete
+ga4-api-tool admin v1alpha properties data-streams event-create-rules create
+ga4-api-tool admin v1alpha properties data-streams event-create-rules delete
+ga4-api-tool admin v1alpha properties data-streams event-create-rules get
+ga4-api-tool admin v1alpha properties data-streams event-create-rules list
+ga4-api-tool admin v1alpha properties data-streams event-create-rules patch
+ga4-api-tool admin v1alpha properties data-streams event-edit-rules create
+ga4-api-tool admin v1alpha properties data-streams event-edit-rules delete
+ga4-api-tool admin v1alpha properties data-streams event-edit-rules get
+ga4-api-tool admin v1alpha properties data-streams event-edit-rules list
+ga4-api-tool admin v1alpha properties data-streams event-edit-rules patch
+ga4-api-tool admin v1alpha properties data-streams event-edit-rules reorder
+ga4-api-tool admin v1alpha properties data-streams get
+ga4-api-tool admin v1alpha properties data-streams get-data-redaction-settings
+ga4-api-tool admin v1alpha properties data-streams get-enhanced-measurement-settings
+ga4-api-tool admin v1alpha properties data-streams get-global-site-tag
+ga4-api-tool admin v1alpha properties data-streams list
+ga4-api-tool admin v1alpha properties data-streams measurement-protocol-secrets create
+ga4-api-tool admin v1alpha properties data-streams measurement-protocol-secrets delete
+ga4-api-tool admin v1alpha properties data-streams measurement-protocol-secrets get
+ga4-api-tool admin v1alpha properties data-streams measurement-protocol-secrets list
+ga4-api-tool admin v1alpha properties data-streams measurement-protocol-secrets patch
+ga4-api-tool admin v1alpha properties data-streams patch
+ga4-api-tool admin v1alpha properties data-streams s-k-ad-network-conversion-value-schema create
+ga4-api-tool admin v1alpha properties data-streams s-k-ad-network-conversion-value-schema delete
+ga4-api-tool admin v1alpha properties data-streams s-k-ad-network-conversion-value-schema get
+ga4-api-tool admin v1alpha properties data-streams s-k-ad-network-conversion-value-schema list
+ga4-api-tool admin v1alpha properties data-streams s-k-ad-network-conversion-value-schema patch
+ga4-api-tool admin v1alpha properties data-streams update-data-redaction-settings
+ga4-api-tool admin v1alpha properties data-streams update-enhanced-measurement-settings
+ga4-api-tool admin v1alpha properties delete
+ga4-api-tool admin v1alpha properties display-video360-advertiser-link-proposals approve
+ga4-api-tool admin v1alpha properties display-video360-advertiser-link-proposals cancel
+ga4-api-tool admin v1alpha properties display-video360-advertiser-link-proposals create
+ga4-api-tool admin v1alpha properties display-video360-advertiser-link-proposals delete
+ga4-api-tool admin v1alpha properties display-video360-advertiser-link-proposals get
+ga4-api-tool admin v1alpha properties display-video360-advertiser-link-proposals list
+ga4-api-tool admin v1alpha properties display-video360-advertiser-links create
+ga4-api-tool admin v1alpha properties display-video360-advertiser-links delete
+ga4-api-tool admin v1alpha properties display-video360-advertiser-links get
+ga4-api-tool admin v1alpha properties display-video360-advertiser-links list
+ga4-api-tool admin v1alpha properties display-video360-advertiser-links patch
+ga4-api-tool admin v1alpha properties expanded-data-sets create
+ga4-api-tool admin v1alpha properties expanded-data-sets delete
+ga4-api-tool admin v1alpha properties expanded-data-sets get
+ga4-api-tool admin v1alpha properties expanded-data-sets list
+ga4-api-tool admin v1alpha properties expanded-data-sets patch
+ga4-api-tool admin v1alpha properties firebase-links create
+ga4-api-tool admin v1alpha properties firebase-links delete
+ga4-api-tool admin v1alpha properties firebase-links list
+ga4-api-tool admin v1alpha properties get
+ga4-api-tool admin v1alpha properties get-attribution-settings
+ga4-api-tool admin v1alpha properties get-data-retention-settings
+ga4-api-tool admin v1alpha properties get-google-signals-settings
+ga4-api-tool admin v1alpha properties get-reporting-identity-settings
+ga4-api-tool admin v1alpha properties google-ads-links create
+ga4-api-tool admin v1alpha properties google-ads-links delete
+ga4-api-tool admin v1alpha properties google-ads-links list
+ga4-api-tool admin v1alpha properties google-ads-links patch
+ga4-api-tool admin v1alpha properties key-events create
+ga4-api-tool admin v1alpha properties key-events delete
+ga4-api-tool admin v1alpha properties key-events get
+ga4-api-tool admin v1alpha properties key-events list
+ga4-api-tool admin v1alpha properties key-events patch
+ga4-api-tool admin v1alpha properties list
+ga4-api-tool admin v1alpha properties patch
+ga4-api-tool admin v1alpha properties provision-subproperty
+ga4-api-tool admin v1alpha properties reporting-data-annotations create
+ga4-api-tool admin v1alpha properties reporting-data-annotations delete
+ga4-api-tool admin v1alpha properties reporting-data-annotations get
+ga4-api-tool admin v1alpha properties reporting-data-annotations list
+ga4-api-tool admin v1alpha properties reporting-data-annotations patch
+ga4-api-tool admin v1alpha properties rollup-property-source-links create
+ga4-api-tool admin v1alpha properties rollup-property-source-links delete
+ga4-api-tool admin v1alpha properties rollup-property-source-links get
+ga4-api-tool admin v1alpha properties rollup-property-source-links list
+ga4-api-tool admin v1alpha properties run-access-report
+ga4-api-tool admin v1alpha properties search-ads360-links create
+ga4-api-tool admin v1alpha properties search-ads360-links delete
+ga4-api-tool admin v1alpha properties search-ads360-links get
+ga4-api-tool admin v1alpha properties search-ads360-links list
+ga4-api-tool admin v1alpha properties search-ads360-links patch
+ga4-api-tool admin v1alpha properties submit-user-deletion
+ga4-api-tool admin v1alpha properties subproperty-event-filters create
+ga4-api-tool admin v1alpha properties subproperty-event-filters delete
+ga4-api-tool admin v1alpha properties subproperty-event-filters get
+ga4-api-tool admin v1alpha properties subproperty-event-filters list
+ga4-api-tool admin v1alpha properties subproperty-event-filters patch
+ga4-api-tool admin v1alpha properties subproperty-sync-configs get
+ga4-api-tool admin v1alpha properties subproperty-sync-configs list
+ga4-api-tool admin v1alpha properties subproperty-sync-configs patch
+ga4-api-tool admin v1alpha properties update-attribution-settings
+ga4-api-tool admin v1alpha properties update-data-retention-settings
+ga4-api-tool admin v1alpha properties update-google-signals-settings
+ga4-api-tool data v1alpha properties audience-lists create
+ga4-api-tool data v1alpha properties audience-lists get
+ga4-api-tool data v1alpha properties audience-lists list
+ga4-api-tool data v1alpha properties audience-lists query
+ga4-api-tool data v1alpha properties get-property-quotas-snapshot
+ga4-api-tool data v1alpha properties recurring-audience-lists create
+ga4-api-tool data v1alpha properties recurring-audience-lists get
+ga4-api-tool data v1alpha properties recurring-audience-lists list
+ga4-api-tool data v1alpha properties report-tasks create
+ga4-api-tool data v1alpha properties report-tasks get
+ga4-api-tool data v1alpha properties report-tasks list
+ga4-api-tool data v1alpha properties report-tasks query
+ga4-api-tool data v1alpha properties run-funnel-report
+ga4-api-tool data v1beta properties audience-exports create
+ga4-api-tool data v1beta properties audience-exports get
+ga4-api-tool data v1beta properties audience-exports list
+ga4-api-tool data v1beta properties audience-exports query
+ga4-api-tool data v1beta properties batch-run-pivot-reports
+ga4-api-tool data v1beta properties batch-run-reports
+ga4-api-tool data v1beta properties check-compatibility
+ga4-api-tool data v1beta properties get-metadata
+ga4-api-tool data v1beta properties run-pivot-report
+ga4-api-tool data v1beta properties run-realtime-report
+ga4-api-tool data v1beta properties run-report

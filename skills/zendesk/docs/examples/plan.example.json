@@ -1,0 +1,62 @@
+{
+  "kind": "zendesk.http_plan.v1",
+  "tool": "zendesk-api-tool",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-03-05T00:00:00Z",
+  "env_fingerprint": "https://acme.zendesk.com",
+  "command": "zendesk-api-tool --output json --env-file .env --plan-out plan.json api autocomplete-tags --q-query password-reset",
+  "auth": {
+    "mode": "api_token_basic",
+    "configured": true
+  },
+  "operation": {
+    "id": "AutocompleteTags",
+    "command": "api autocomplete-tags",
+    "method": "GET",
+    "path_template": "/api/v2/autocomplete/tags.json",
+    "path": "/api/v2/autocomplete/tags.json"
+  },
+  "request": {
+    "method": "GET",
+    "url": "https://acme.zendesk.com/api/v2/autocomplete/tags.json",
+    "path": "/api/v2/autocomplete/tags.json",
+    "query": [
+      [
+        "query",
+        "password-reset"
+      ]
+    ],
+    "json_body": null,
+    "json_body_sha256": null,
+    "body_file": null,
+    "file_upload": null
+  },
+  "headers": {
+    "Authorization": "***REDACTED***"
+  },
+  "risk": {
+    "level": "low",
+    "reasons": [
+      "read-like HTTP method: GET"
+    ],
+    "requirements": {
+      "apply": false,
+      "yes": false,
+      "plan_in": false,
+      "ack_irreversible": false
+    }
+  },
+  "before_state": {
+    "required": false,
+    "supported": false,
+    "statement": "Read operation; no before-state capture required."
+  },
+  "recovery": {
+    "automatic_rollback": false,
+    "backups": [],
+    "snapshots": [],
+    "rollback_plan": null,
+    "restore_note": "No automatic rollback, snapshots, or backups are created. If a restore action is available, run a separate explicit restore command as its own command."
+  },
+  "stable_hash": "example-only"
+}

@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "legacy-v49.accounts.locations.media.create",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/legacy_media_create.plan.json legacy-v49 accounts locations media create --parent accounts/123/locations/456 --media-item-file /tmp/media_item.json",
+    "selector": "accounts/123/locations/456",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "legacy-v49.accounts.locations.media.create",
+      "request": {
+        "method": "POST",
+        "host": "https://mybusiness.googleapis.com",
+        "path": "v4/accounts/123/locations/456/media",
+        "body": {
+          "mediaFormat": "PHOTO",
+          "locationAssociation": {
+            "category": "COVER"
+          },
+          "dataRef": {
+            "resourceName": "GoogleProvidedValue"
+          }
+        }
+      },
+      "response": {
+        "mediaFormat": "PHOTO",
+        "locationAssociation": {
+          "category": "COVER"
+        },
+        "dataRef": {
+          "resourceName": "GoogleProvidedValue"
+        }
+      },
+      "note": "No direct read-back verification is available for this legacy media create; response returned a matching media reference."
+    },
+    "diff_applied": [
+      "mediaItemDataRef"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

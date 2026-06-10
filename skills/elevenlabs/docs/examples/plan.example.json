@@ -1,0 +1,88 @@
+{
+  "tool": "elevenlabs-api-tool",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-06-04T13:09:01Z",
+  "env_fingerprint": "https://api.elevenlabs.io",
+  "command": "elevenlabs-api-tool --output json --env-file .env.example tts synthesize --voice-id voice-123 --text hello --out ./out.mp3",
+  "operation": "text_to_speech",
+  "section": "Text-to-speech",
+  "endpoint": "POST /v1/text-to-speech/{voice_id}",
+  "doc_url": "https://elevenlabs.io/docs/api-reference/text-to-speech/convert",
+  "selector": {
+    "kind": "tts.synthesize",
+    "value": "voice-123"
+  },
+  "risk_level": "high",
+  "risk_reasons": [
+    "write",
+    "spend_money",
+    "binary_output"
+  ],
+  "preconditions": [
+    "API key configured via ELEVENLABS_API_KEY",
+    "Base URL matches the intended environment"
+  ],
+  "baseline": {
+    "env_fingerprint": "https://api.elevenlabs.io",
+    "operation": "text_to_speech",
+    "selector": {
+      "kind": "tts.synthesize",
+      "value": "voice-123"
+    }
+  },
+  "request": {
+    "method": "POST",
+    "path": "/v1/text-to-speech/{voice_id}",
+    "params": {
+      "voice_id": "voice-123"
+    },
+    "json": {
+      "text": "hello",
+      "format": "mp3"
+    }
+  },
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "blocked",
+    "operation": "text_to_speech",
+    "target": {
+      "selector": {
+        "kind": "tts.synthesize",
+        "value": "voice-123"
+      },
+      "endpoint": "POST /v1/text-to-speech/{voice_id}"
+    },
+    "saved_path": null,
+    "provider_backup_id": null,
+    "reason": "This ElevenLabs write family does not yet capture the live resource state or provider recovery point before apply."
+  },
+  "proposed_changes": [
+    {
+      "description": "Synthesize text into audio for a chosen voice.",
+      "selector": {
+        "kind": "tts.synthesize",
+        "value": "voice-123"
+      }
+    }
+  ],
+  "verification_plan": {
+    "type": "no-snapshot-approval",
+    "status": "blocked-before-provider-write",
+    "notes": "Apply must require explicit no-snapshot approval before ElevenLabs API key use or HTTP until command-specific saved snapshot support is available."
+  },
+  "post_apply_verification_plan": {
+    "type": "write",
+    "notes": "Verify the output file or service state after apply."
+  },
+  "recovery": {
+    "automatic_rollback": false,
+    "end_state": "irreversible_and_clearly_labeled",
+    "strategy": "no_inverse",
+    "rollback_ready": false,
+    "backups": [],
+    "snapshots": [],
+    "rollback_plan": null,
+    "restore_note": "text_to_speech: no automated rollback is available for this command; it is treated as irreversible and needs manual cleanup if removal is required."
+  }
+}

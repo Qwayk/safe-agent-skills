@@ -1,0 +1,28 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "auth_mode": "personal",
+  "base_url": "http://127.0.0.1:8765",
+  "live_probe": {
+    "attempted": true,
+    "mode": "personal",
+    "ok": true,
+    "reason": null,
+    "status": 200
+  },
+  "ok": true,
+  "run_id": null,
+  "runs_index": "/tmp/figma_safe_agent_cli_proof/.state/runs/index.jsonl",
+  "token_present": true,
+  "token_source": "env",
+  "token_status": {
+    "oauth_token_json": {
+      "exists": false,
+      "expires_at_utc": null,
+      "fields": [],
+      "has_refresh_token": null,
+      "path": "/tmp/figma_safe_agent_cli_proof/.state/token.json"
+    }
+  }
+}

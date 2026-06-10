@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "error_type": "ValidationError",
+  "error": "Missing OAuth credentials. Run: gsc-api-tool auth login (expected credentials at /home/user/project/.state/gsc_oauth_credentials.json)"
+}

@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "operation": "programs.details",
+  "publisher_id": "12345",
+  "advertiser_id": "9001",
+  "program": {
+    "id": "9001",
+    "name": "Example Advertiser",
+    "status": "approved",
+    "countryCode": "US"
+  },
+  "request": {
+    "method": "GET",
+    "endpoint": "https://api.awin.com/publishers/12345/programmedetails",
+    "query": {
+      "required": [
+        "accessToken",
+        "advertiserId"
+      ],
+      "sent": [
+        "accessToken",
+        "advertiserId",
+        "relationship"
+      ]
+    },
+    "response_status": 200
+  },
+  "metadata": {
+    "auth_mode": "bearer",
+    "relationship": "any"
+  }
+}

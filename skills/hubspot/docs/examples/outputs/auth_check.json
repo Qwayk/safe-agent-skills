@@ -1,0 +1,13 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "ok": true,
+  "refused": true,
+  "refusal_type": "SafetyError",
+  "reasons": [
+    "Missing token. Set HUBSPOT_ACCESS_TOKEN or run auth token set --file token.json"
+  ],
+  "run_id": null,
+  "runs_index": "<env-dir>/.state/runs/index.jsonl"
+}

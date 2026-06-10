@@ -1,0 +1,14 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "dry_run": false,
+  "ok": true,
+  "reasons": [
+    "Refused: Microsoft Ads demo write requires explicit no-snapshot approval when no saved snapshot is available. Use the dry-run plan for review only; no write-like receipt was emitted."
+  ],
+  "refusal_type": "SafetyError",
+  "refused": true,
+  "run_id": null,
+  "runs_index": "examples/.state/runs/index.jsonl"
+}

@@ -1,0 +1,104 @@
+{
+  "command": "filter.ingredient",
+  "count": 13,
+  "found": true,
+  "meals": [
+    {
+      "idMeal": "53016",
+      "strArea": "United States",
+      "strCountry": "United States",
+      "strMeal": "Chick-Fil-A Sandwich",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/sbx7n71587673021.jpg"
+    },
+    {
+      "idMeal": "52850",
+      "strArea": "Moroccan",
+      "strCountry": "Morocco",
+      "strMeal": "Chicken Couscous",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/qxytrx1511304021.jpg"
+    },
+    {
+      "idMeal": "52818",
+      "strArea": "United States",
+      "strCountry": "United States",
+      "strMeal": "Chicken Fajita Mac and Cheese",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/qrqywr1503066605.jpg"
+    },
+    {
+      "idMeal": "52875",
+      "strArea": "British",
+      "strCountry": "United Kingdom",
+      "strMeal": "Chicken Ham and Leek Pie",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/xrrtss1511555269.jpg"
+    },
+    {
+      "idMeal": "53011",
+      "strArea": "Greek",
+      "strCountry": "Greece",
+      "strMeal": "Chicken Quinoa Greek Salad",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/k29viq1585565980.jpg"
+    },
+    {
+      "idMeal": "53218",
+      "strArea": "Saudi Arabian",
+      "strCountry": "Saudi Arabia",
+      "strMeal": "Chicken Shawarma with homemade garlic herb yoghurt sauce",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/hcg6l91763596970.jpg"
+    },
+    {
+      "idMeal": "52951",
+      "strArea": "Chinese",
+      "strCountry": "China",
+      "strMeal": "General Tsos Chicken",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/1529444113.jpg"
+    },
+    {
+      "idMeal": "52993",
+      "strArea": "United States",
+      "strCountry": "United States",
+      "strMeal": "Honey Balsamic Chicken with Crispy Broccoli & Potatoes",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/kvbotn1581012881.jpg"
+    },
+    {
+      "idMeal": "52820",
+      "strArea": "Japanese",
+      "strCountry": "Japan",
+      "strMeal": "Katsu Chicken curry",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/vwrpps1503068729.jpg"
+    },
+    {
+      "idMeal": "53192",
+      "strArea": "Thai",
+      "strCountry": "Thailand",
+      "strMeal": "Panang chicken curry (kaeng panang gai)",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/0dhtwr1763371444.jpg"
+    },
+    {
+      "idMeal": "52933",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Rappie Pie",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/ruwpww1511817242.jpg"
+    },
+    {
+      "idMeal": "53206",
+      "strArea": "Thai",
+      "strCountry": "Thailand",
+      "strMeal": "Thai chicken cakes with sweet chilli sauce",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/6s3i3p1763488540.jpg"
+    },
+    {
+      "idMeal": "53241",
+      "strArea": "Vietnamese",
+      "strCountry": "Vietnam",
+      "strMeal": "Vietnamese veg parcels",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/f698g91763768731.jpg"
+    }
+  ],
+  "ok": true,
+  "request": {
+    "ingredient": "chicken_breast"
+  },
+  "tool": "qwayk-themealdb-safe-agent-cli",
+  "version": "0.1.0"
+}

@@ -1,0 +1,71 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "ok": true,
+  "dry_run": true,
+  "command": "workers.logs.search",
+  "plan": {
+    "tool": "cloudflare-api-tool",
+    "version": "0.7.5",
+    "generated_at_utc": "2026-02-10T00:00:00Z",
+    "env_fingerprint": "https://api.cloudflare.com/client/v4",
+    "command": "cloudflare-api-tool --env-file /path/to/your/project/.env --project-dir /path/to/your/project --output json workers logs search --account-id acc1 --error-id 0123456789abcdef --out telemetry_query.json",
+    "selector": {
+      "account_id": "acc1",
+      "datasets": [],
+      "error_id": "0123456789abcdef",
+      "script_name": null,
+      "request_id_key": null,
+      "timeframe": {
+        "from_ms": 1739142000000,
+        "to_ms": 1739145600000
+      },
+      "limit": null,
+      "out": "telemetry_query.json",
+      "overwrite": false
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "This queries stored logs/events; results may include PII.",
+      "This writes the raw API response to a local file; results are never printed.",
+      "This is a read-like POST (no Cloudflare state changes expected)."
+    ],
+    "preconditions": [
+      "API token has least-privilege permissions needed for this operation.",
+      "Review this plan before applying."
+    ],
+    "request": {
+      "keys_discovery": {
+        "method": "POST",
+        "path": "/telemetry/keys",
+        "sensitivity": "sensitive_read",
+        "notes": "Used to auto-discover the request-id key when --request-id-key is not provided."
+      },
+      "query": {
+        "method": "POST",
+        "path": "/telemetry/query",
+        "sensitivity": "sensitive_read",
+        "notes": "Uses queryId='temporary' with filters + timeframe (see OpenAPI snapshot schema).",
+        "out": "telemetry_query.json"
+      }
+    },
+    "proposed_changes": [
+      {
+        "resource": "local_file",
+        "action": "write",
+        "path": "telemetry_query.json",
+        "reason": "workers_logs_search"
+      }
+    ],
+    "verification_plan": [
+      "Confirm output file exists and record size/sha256 locally."
+    ],
+    "notes": [
+      "Results may contain PII; output is file-only and never printed.",
+      "On apply, the tool will auto-discover a request-id key via telemetry keys; it may refuse if none is found."
+    ]
+  },
+  "run_id": "2026-02-10T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}

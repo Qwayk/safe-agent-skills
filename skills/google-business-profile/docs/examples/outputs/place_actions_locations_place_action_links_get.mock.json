@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "operation": "place-actions.locations.place-action-links.get",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinessplaceactions.googleapis.com",
+    "path": "v1/locations/abc/placeActionLinks/xyz",
+    "params": null
+  },
+  "response": {
+    "name": "locations/abc/placeActionLinks/xyz",
+    "uri": "https://example.com/reserve",
+    "placeActionType": "DINING_RESERVATION",
+    "isPreferred": true
+  }
+}

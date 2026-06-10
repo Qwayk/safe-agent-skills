@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "place-actions.locations.place-action-links.patch",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessplaceactions.googleapis.com",
+    "command": "google-business-profile-safe-cli place-actions locations place-action-links patch --name locations/abc/placeActionLinks/xyz --update-mask uri --place-action-link-file /tmp/place_action_link.json",
+    "selector": "locations/abc/placeActionLinks/xyz",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Place action link patch"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "place-actions.locations.place-action-links.patch",
+        "selector": "locations/abc/placeActionLinks/xyz",
+        "mask": "uri",
+        "body_fingerprint": "4e1ebcaeaf5cf1f3c0f0e3db1c7d16b5f6d4b0f7d5cf6bb7f3f0ea7cb0f5f5a58"
+      }
+    ],
+    "verification_plan": [
+      "Read back the place action link with get and require response.name equals request name."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/abc/placeActionLinks/xyz",
+      "mask": "uri",
+      "body_fingerprint": "4e1ebcaeaf5cf1f3c0f0e3db1c7d16b5f6d4b0f7d5cf6bb7f3f0ea7cb0f5f5a58",
+      "mask_fingerprint": "9c5ad6f2c0f6f6f9bfa2f4d4e6e0f8f8a8b7f3d1e2f2d8b4c4f6f3d4d5e5f5a7b"
+    }
+  }
+}

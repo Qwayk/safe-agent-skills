@@ -1,0 +1,44 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "legacy-v49.accounts.locations.transfer",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli legacy-v49 accounts locations transfer --name accounts/123/locations/456 --to-account accounts/999",
+    "selector": "accounts/123/locations/456",
+    "risk_level": "high",
+    "risk_reasons": [
+      "Legacy v4.9 location transfer changes account ownership for a location."
+    ],
+    "preconditions": [
+      "OAuth access",
+      "Google still permits this deprecated v4.9 method for the target account."
+    ],
+    "proposed_changes": [
+      {
+        "operation": "legacy-v49.accounts.locations.transfer",
+        "selector": "accounts/123/locations/456",
+        "mask": "name,to_account",
+        "body_fingerprint": "6e991b58be4a6bd4b5c7a24f4ee328c7c56f95d6e7a95abbe0975b83d0bf0a33"
+      }
+    ],
+    "verification_plan": [
+      "List source and destination account locations with readMask=name. Transfer succeeds only if the business-info location disappears from source and appears in destination."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "accounts/123/locations/456",
+      "body_fingerprint": "6e991b58be4a6bd4b5c7a24f4ee328c7c56f95d6e7a95abbe0975b83d0bf0a33",
+      "mask": "name,to_account",
+      "mask_fingerprint": "0143a8b2d1a9d59eb88c70dd532b3c2abfb982ffc9e479991b0648c08ac079ff"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

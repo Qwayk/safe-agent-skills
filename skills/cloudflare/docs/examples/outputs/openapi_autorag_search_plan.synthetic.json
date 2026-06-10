@@ -1,0 +1,65 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-16T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-16T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "command": "operations.call",
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "command": "cloudflare-api-tool --output json operations autorag autorag-config-search --path-param account_id=acc1 --path-param id=rag1 --body-json-file autorag_search_body.json",
+    "env_fingerprint": "https://api.cloudflare.com/client/v4",
+    "generated_at_utc": "2026-02-16T00:00:00Z",
+    "notes": [],
+    "preconditions": [
+      "API token has least-privilege permissions needed for this operation.",
+      "Path params and request body (if any) are correct.",
+      "For non-GET operations and file-only outputs: review the plan output before applying."
+    ],
+    "proposed_changes": [
+      {
+        "action": "call",
+        "method": "POST",
+        "operation_id": "autorag-config-search",
+        "path": "/accounts/acc1/autorag/rags/rag1/search",
+        "resource": "openapi_operation",
+        "sensitivity": "sensitive_read"
+      }
+    ],
+    "request": {
+      "body_meta": {
+        "body_kind": "json",
+        "sha256": "c5fb1a1f64d70cb19fe5e219b9d523e70f71350db8f3a12e1982c38d71d6a1a2",
+        "size_bytes": 48,
+        "source": "autorag_search_body.json"
+      },
+      "content_type": null,
+      "method": "POST",
+      "operation_id": "autorag-config-search",
+      "out": null,
+      "path_resolved": "/accounts/acc1/autorag/rags/rag1/search",
+      "path_template": "/accounts/{account_id}/autorag/rags/{id}/search",
+      "query": {},
+      "sensitivity": "sensitive_read"
+    },
+    "risk_level": "medium",
+    "risk_reasons": [
+      "This endpoint uses a non-GET read-like operation (no state changes expected).",
+      "This endpoint may return code/values/tokens; output must be written to a file."
+    ],
+    "selector": {
+      "method": "POST",
+      "operation_id": "autorag-config-search",
+      "path_resolved": "/accounts/acc1/autorag/rags/rag1/search",
+      "path_template": "/accounts/{account_id}/autorag/rags/{id}/search",
+      "tags": "AutoRAG RAG Search"
+    },
+    "tool": "cloudflare-api-tool",
+    "verification_plan": [
+      "Best-effort verification: for many writes, the tool attempts a read-back GET when a matching endpoint exists in the snapshot. Otherwise it records API response success."
+    ],
+    "version": "0.7.6"
+  },
+  "run_id": "2026-02-16T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}
+

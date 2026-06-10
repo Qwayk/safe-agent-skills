@@ -1,0 +1,45 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "command": "accounts.members.list",
+  "count": 2,
+  "dry_run": false,
+  "ok": true,
+  "output_file": {
+    "out_path": "/path/to/your/project/account_members.json",
+    "out_rel": "account_members.json",
+    "sha256": "6f7dd91ec3d0cf9d0c2c04a8a7b8c6c7c034a3b380c94f5c3d5a61d0bd6514b8"
+  },
+  "receipt": {
+    "applied_at_utc": "2026-02-10T00:00:00Z",
+    "changed": true,
+    "command": "cloudflare-api-tool --env-file .env --project-dir . --output json --apply accounts members list --account-id acc_example --out ./account_members.json",
+    "diff_applied": [
+      {
+        "action": "written",
+        "path": "account_members.json",
+        "resource": "local_file",
+        "sha256": "6f7dd91ec3d0cf9d0c2c04a8a7b8c6c7c034a3b380c94f5c3d5a61d0bd6514b8"
+      }
+    ],
+    "env_fingerprint": "https://api.cloudflare.com/client/v4",
+    "notes": [],
+    "selector": {
+      "account_id": "acc_example",
+      "out": "account_members.json",
+      "status": null
+    },
+    "tool": "cloudflare-api-tool",
+    "verification": {
+      "details": {
+        "bytes_written": 1234,
+        "sha256": "6f7dd91ec3d0cf9d0c2c04a8a7b8c6c7c034a3b380c94f5c3d5a61d0bd6514b8"
+      },
+      "ok": true
+    },
+    "version": "0.7.3"
+  },
+  "run_id": "2026-02-10T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}

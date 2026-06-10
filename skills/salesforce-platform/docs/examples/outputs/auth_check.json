@@ -1,0 +1,10 @@
+{
+  "ok": false,
+  "error_type": "ValidationError",
+  "error": "Missing Salesforce access token. Set SALESFORCE_ACCESS_TOKEN or use auth token set.",
+  "instance_url": "https://example.my.salesforce.com",
+  "oauth_token": {
+    "exists": false,
+    "path": ".state/token.json"
+  }
+}

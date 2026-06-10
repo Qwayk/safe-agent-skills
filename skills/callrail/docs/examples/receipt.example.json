@@ -1,0 +1,48 @@
+{
+  "applied_at_utc": "2026-06-04T06:37:53Z",
+  "command": "tags create",
+  "env_fingerprint": "https://api.callrail.test",
+  "before_state": {
+    "approval_required": "--ack-no-snapshot",
+    "provider_backup_id": null,
+    "reason": "This CallRail write path does not save a useful before-state snapshot today. Review the exact request, then add --ack-no-snapshot if you approve applying without a saved snapshot.",
+    "required": true,
+    "saved_path": null,
+    "status": "no_snapshot_available",
+    "supported": false
+  },
+  "no_snapshot_approval": {
+    "acknowledged": true,
+    "flag": "--ack-no-snapshot",
+    "reason": "No useful CallRail before-state snapshot was saved for this write."
+  },
+  "request": {
+    "headers": {
+      "Authorization": "***REDACTED***"
+    },
+    "json": {
+      "color": "blue",
+      "name": "VIP Lead"
+    },
+    "method": "POST",
+    "url": "https://api.callrail.test/v3/a/acc_example/tags.json"
+  },
+  "response": {
+    "body": {
+      "color": "blue",
+      "id": "tag_123",
+      "name": "VIP Lead"
+    },
+    "headers": {
+      "content-type": "application/json"
+    },
+    "status": 201,
+    "url": "https://api.callrail.test/v3/a/acc_example/tags.json"
+  },
+  "tool": "qwayk-callrail-safe-agent-cli",
+  "verification": {
+    "notes": "CallRail API response captured for this applied write.",
+    "ok": true
+  },
+  "version": "0.1.0"
+}

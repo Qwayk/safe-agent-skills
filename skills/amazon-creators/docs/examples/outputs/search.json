@@ -1,0 +1,102 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "SearchItems",
+  "locale": "en_US",
+  "marketplace": "www.amazon.com",
+  "partner_tag": "example-partner",
+  "resources": [
+    "ItemInfo",
+    "Images",
+    "OffersV2",
+    "ParentAsin",
+    "VariationSummary"
+  ],
+  "request": {
+    "keywords": "creative writing",
+    "itemCount": 10,
+    "itemPage": 1
+  },
+  "items": [
+    {
+      "asin": "B0SEARCH1",
+      "title": "Guide to Creative Writing (2026 edition)",
+      "binding": "Hardcover",
+      "product_group": "Books",
+      "content_info": {
+        "format": "Illustrated reference",
+        "pages": 384
+      },
+      "technical_info": {
+        "language": "English"
+      },
+      "classifications": {
+        "binding": "Hardcover",
+        "productGroup": "Books"
+      },
+      "parent_asin": "B0PARENT456",
+      "variation_summary": {
+        "variationTheme": "Binding",
+        "numberOfVariations": 3
+      }
+    }
+  ],
+  "receipt": {
+    "tool": "amazon-creators-api-tool",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-03-24T12:00:00Z",
+    "env_fingerprint": "https://creatorsapi.amazon/catalog/v1",
+    "command": "amazon-creators-api-tool search --keywords \"creative writing\" --item-count 10 --item-page 1 --resource ItemInfo --resource Images --resource OffersV2 --resource ParentAsin --resource VariationSummary --apply",
+    "operation": "SearchItems",
+    "locale": "en_US",
+    "marketplace": "www.amazon.com",
+    "resources": [
+      "ItemInfo",
+      "Images",
+      "OffersV2",
+      "ParentAsin",
+      "VariationSummary"
+    ],
+    "selector": {
+      "operation": "SearchItems",
+      "locale": "en_US",
+      "marketplace": "www.amazon.com",
+      "resources": [
+        "ItemInfo",
+        "Images",
+        "OffersV2",
+        "ParentAsin",
+        "VariationSummary"
+      ],
+      "keywords": "creative writing",
+      "itemCount": 10,
+      "itemPage": 1
+    },
+    "request": {
+      "keywords": "creative writing",
+      "itemCount": 10,
+      "itemPage": 1
+    },
+    "payload": {
+      "resources": [
+        "ItemInfo",
+        "Images",
+        "OffersV2",
+        "ParentAsin",
+        "VariationSummary"
+      ],
+      "keywords": "creative writing",
+      "itemCount": 10,
+      "itemPage": 1,
+      "marketplace": "www.amazon.com",
+      "partnerTag": "example-partner"
+    },
+    "simplified_key": "items",
+    "simplified_count": 1,
+    "verification": {
+      "ok": true,
+      "details": "Applied catalog request"
+    }
+  },
+  "receipt_out": null
+}

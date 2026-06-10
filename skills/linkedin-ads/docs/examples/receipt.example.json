@@ -1,0 +1,13 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "ok": true,
+  "reasons": [
+    "Refused: LinkedIn Ads live write requires explicit no-snapshot approval when no saved snapshot is available for this operation. Use the dry-run plan for review only; no LinkedIn Ads write was sent."
+  ],
+  "refusal_type": "SafetyError",
+  "refused": true,
+  "run_id": null,
+  "runs_index": "examples/.state/runs/index.jsonl"
+}

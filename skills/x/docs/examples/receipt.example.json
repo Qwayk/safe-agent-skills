@@ -1,0 +1,39 @@
+{
+  "applied_operation": {
+    "method": "POST",
+    "operation_id": "createPosts",
+    "url": "https://api.x.com/2/tweets"
+  },
+  "before_state": {
+    "approval_required": "--ack-no-snapshot",
+    "provider_backup_id": null,
+    "provider_write": {
+      "method": "POST",
+      "operation_id": "createPosts",
+      "path": "/2/tweets",
+      "service": "X API"
+    },
+    "reason": "This source tool can build and review X write plans, but no reliable operation-specific before-state snapshot is available for this write.",
+    "required": true,
+    "saved_path": null,
+    "status": "no_snapshot_available",
+    "supported": false
+  },
+  "changed": null,
+  "http": {
+    "headers": {},
+    "status": 201
+  },
+  "no_snapshot_approval": {
+    "acknowledged": true,
+    "flag": "--ack-no-snapshot",
+    "reason": "No reliable before-state snapshot is available for this X write."
+  },
+  "tool": "x-api-tool",
+  "verification": {
+    "notes": "Automatic read-back verification is not implemented for this operation.",
+    "ok": null,
+    "supported": false
+  },
+  "version": "0.1.0"
+}

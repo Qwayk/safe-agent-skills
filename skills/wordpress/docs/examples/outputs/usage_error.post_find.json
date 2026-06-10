@@ -1,0 +1,6 @@
+{
+  "error": "the following arguments are required: --query",
+  "error_type": "ValidationError",
+  "ok": false,
+  "usage": "usage: wordpress-api-tool post find [-h] --query QUERY [--post-type POST_TYPE]\n                                    [--limit LIMIT]\n"
+}

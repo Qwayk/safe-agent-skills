@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "tool": "meta-ads-api-tool",
+  "kind": "example_plan",
+  "note": "Static review artifact only. This CLI is read-only (GET-only) and does not implement an apply/receipt mode for remote writes.",
+  "env_fingerprint": {
+    "base_url": "https://graph.facebook.com",
+    "api_version": "v24.0",
+    "ad_account_id": null
+  },
+  "command": "ad-accounts list",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v24.0/me/adaccounts",
+      "params": {
+        "fields": "id,name,account_status",
+        "limit": "100",
+        "summary": "true"
+      }
+    }
+  ]
+}

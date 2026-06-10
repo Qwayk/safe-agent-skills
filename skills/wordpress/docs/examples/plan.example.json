@@ -1,0 +1,39 @@
+{
+  "tool": "wordpress-api-tool",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-01-23T00:00:00Z",
+  "env_fingerprint": {
+    "base_url": "https://example.com"
+  },
+  "command": "wordpress-api-tool --output json --env-file .env --plan-out plan.json media set --id 123 --caption \"New caption\"",
+  "selector": {
+    "media_id": 123,
+    "source_url": "https://example.com/wp-content/uploads/2026/01/example.jpg"
+  },
+  "risk_level": "medium",
+  "risk_reasons": [
+    "Edits existing Media Library metadata"
+  ],
+  "preconditions": [
+    "You have permission to edit this media item",
+    "The media item exists and is accessible"
+  ],
+  "proposed_changes": {
+    "caption": {
+      "before": "Old caption",
+      "after": "New caption"
+    }
+  },
+  "before_state": {
+    "saved": true,
+    "path": "/tmp/example/.state/runs/2026-01-23T000000Z_example/before/media.set__id-123.json",
+    "kind": "json",
+    "captured_at_utc": "2026-01-23T00:00:00Z",
+    "restore_note": "Use this saved before-state as the source for a deliberate manual restore if you need to undo the change later."
+  },
+  "verification_plan": "After apply, re-fetch the media item and assert the edited fields match the requested values.",
+  "rollback": {
+    "supported": true,
+    "notes": "Use this saved before-state as the source for a deliberate manual restore if you need to undo the change later."
+  }
+}

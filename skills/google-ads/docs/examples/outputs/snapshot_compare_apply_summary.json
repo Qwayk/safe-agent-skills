@@ -1,0 +1,7 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "out_dir": "./out/compare",
+  "compare_summary_path": "./out/compare/compare_summary.json"
+}
+

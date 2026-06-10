@@ -1,0 +1,38 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "lodging.locations.update-lodging",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinesslodging.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/lodging_update.plan.json lodging locations update-lodging --name locations/123/lodging --update-mask roomCount --lodging-file /tmp/lodging.json",
+    "selector": "locations/123/lodging",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "lodging.locations.get-lodging",
+      "request": {
+        "method": "GET",
+        "host": "https://mybusinesslodging.googleapis.com",
+        "path": "v1/locations/123/lodging",
+        "params": {
+          "readMask": "roomCount"
+        }
+      },
+      "response": {
+        "name": "locations/123/lodging",
+        "roomCount": 8
+      },
+      "note": "Write verification read-back succeeded with matching lodging name."
+    },
+    "diff_applied": [
+      "roomCount"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

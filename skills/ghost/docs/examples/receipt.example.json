@@ -1,0 +1,119 @@
+{
+  "changed": true,
+  "dry_run": false,
+  "kind": "ghost.post.patch",
+  "ok": true,
+  "recovery": {
+    "end_state": "snapshot_plus_restore",
+    "strategy": "restore_from_local_snapshots",
+    "rollback_ready": true,
+    "rollback_plan": {
+      "type": "manual_restore_from_snapshot",
+      "artifacts_dir": "backup-snapshots",
+      "meta_paths": [
+        "backup-snapshots/example.com/2026-01-25/20260125-120000-123__post__POST_ID_REDACTED__example-post-slug__post.patch__meta.json"
+      ],
+      "notes": "Use the saved __before.json snapshot together with the matching __meta.json file to rebuild the prior state with a new reviewed write command."
+    },
+    "backups": [
+      {
+        "type": "snapshot_dir",
+        "path": "backup-snapshots"
+      }
+    ],
+    "snapshots": [
+      {
+        "kind": "post",
+        "resource_id": "POST_ID_REDACTED",
+        "slug": "example-post-slug",
+        "action": "post.patch",
+        "before": "backup-snapshots/example.com/2026-01-25/20260125-120000-123__post__POST_ID_REDACTED__example-post-slug__post.patch__before.json",
+        "after": "backup-snapshots/example.com/2026-01-25/20260125-120000-123__post__POST_ID_REDACTED__example-post-slug__post.patch__after.json",
+        "meta": "backup-snapshots/example.com/2026-01-25/20260125-120000-123__post__POST_ID_REDACTED__example-post-slug__post.patch__meta.json"
+      }
+    ],
+    "restore_note": "This write family keeps local snapshot files under backup-snapshots/ so you can restore from the saved before-state after apply."
+  },
+  "backups": [
+    {
+      "type": "snapshot_dir",
+      "path": "backup-snapshots"
+    }
+  ],
+  "rollback_plan": {
+    "type": "manual_restore_from_snapshot",
+    "artifacts_dir": "backup-snapshots",
+    "meta_paths": [
+      "backup-snapshots/example.com/2026-01-25/20260125-120000-123__post__POST_ID_REDACTED__example-post-slug__post.patch__meta.json"
+    ],
+    "notes": "Use the saved __before.json snapshot together with the matching __meta.json file to rebuild the prior state with a new reviewed write command."
+  },
+  "receipt": {
+    "target": {
+      "id": "POST_ID_REDACTED",
+      "slug": "example-post-slug"
+    },
+    "require_current": "draft",
+    "applied": [
+      {
+        "type": "ghost_admin_api",
+        "method": "PUT",
+        "path": "/posts/POST_ID_REDACTED/",
+        "status": "ok"
+      }
+    ],
+    "verification": {
+      "method": "read_back",
+      "note": "Re-fetched the post after apply and confirmed requested fields match."
+    },
+    "proof": {
+      "backup_snapshots_dir": "backup-snapshots/example.com/2026-01-25",
+      "run_dir": ".state/runs/RUN_ID_REDACTED"
+    },
+    "recovery": {
+      "end_state": "snapshot_plus_restore",
+      "strategy": "restore_from_local_snapshots",
+      "rollback_ready": true,
+      "rollback_plan": {
+        "type": "manual_restore_from_snapshot",
+        "artifacts_dir": "backup-snapshots",
+        "meta_paths": [
+          "backup-snapshots/example.com/2026-01-25/20260125-120000-123__post__POST_ID_REDACTED__example-post-slug__post.patch__meta.json"
+        ],
+        "notes": "Use the saved __before.json snapshot together with the matching __meta.json file to rebuild the prior state with a new reviewed write command."
+      },
+      "backups": [
+        {
+          "type": "snapshot_dir",
+          "path": "backup-snapshots"
+        }
+      ],
+      "snapshots": [
+        {
+          "kind": "post",
+          "resource_id": "POST_ID_REDACTED",
+          "slug": "example-post-slug",
+          "action": "post.patch",
+          "before": "backup-snapshots/example.com/2026-01-25/20260125-120000-123__post__POST_ID_REDACTED__example-post-slug__post.patch__before.json",
+          "after": "backup-snapshots/example.com/2026-01-25/20260125-120000-123__post__POST_ID_REDACTED__example-post-slug__post.patch__after.json",
+          "meta": "backup-snapshots/example.com/2026-01-25/20260125-120000-123__post__POST_ID_REDACTED__example-post-slug__post.patch__meta.json"
+        }
+      ],
+      "restore_note": "This write family keeps local snapshot files under backup-snapshots/ so you can restore from the saved before-state after apply."
+    },
+    "backups": [
+      {
+        "type": "snapshot_dir",
+        "path": "backup-snapshots"
+      }
+    ],
+    "rollback_plan": {
+      "type": "manual_restore_from_snapshot",
+      "artifacts_dir": "backup-snapshots",
+      "meta_paths": [
+        "backup-snapshots/example.com/2026-01-25/20260125-120000-123__post__POST_ID_REDACTED__example-post-slug__post.patch__meta.json"
+      ],
+      "notes": "Use the saved __before.json snapshot together with the matching __meta.json file to rebuild the prior state with a new reviewed write command."
+    }
+  }
+}

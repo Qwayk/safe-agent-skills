@@ -1,0 +1,26 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "ok": true,
+  "onboarding": {
+    "env_created": false,
+    "env_file": ".env",
+    "missing": [
+      "REDDIT_CLIENT_ID",
+      "REDDIT_REDIRECT_URI",
+      "REDDIT_CONTACT_USERNAME"
+    ],
+    "next_command": "qwayk-reddit-safe-agent-cli auth login",
+    "steps": [
+      "Copy .env.example to .env if you do not already have one.",
+      "In Reddit, create a Data API app and request access approval if you do not already have it.",
+      "Fill .env with your client id, redirect URI, and contact username.",
+      "Run: qwayk-reddit-safe-agent-cli auth login",
+      "Open the printed URL, approve the app, then run --live auth exchange-code with the redirect URL.",
+      "After that, run: qwayk-reddit-safe-agent-cli --live auth check"
+    ]
+  },
+  "run_id": null,
+  "runs_index": "./.state/runs/index.jsonl"
+}

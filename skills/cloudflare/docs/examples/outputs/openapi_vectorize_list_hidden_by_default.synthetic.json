@@ -1,0 +1,10 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "count": 0,
+  "ok": true,
+  "operations": [],
+  "run_id": null,
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}

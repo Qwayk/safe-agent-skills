@@ -1,0 +1,53 @@
+{
+  "baseline": {
+    "body_sha256": "23f56bb60dcb8c052d2023e35e5fc71773f49a524c9fdbb2ff2517701a9aace6",
+    "env_fingerprint": "https://shop.example.com/wp-json/wc/v3",
+    "method": "POST",
+    "operation": "coupons create",
+    "path": "/coupons",
+    "query": {}
+  },
+  "command": "qwayk-woocommerce-safe-agent-cli --env-file .env.example --output json coupons create --body-json {\"code\":\"SAVE10\",\"discount_type\":\"percent\",\"amount\":\"10\"}",
+  "env_fingerprint": "https://shop.example.com/wp-json/wc/v3",
+  "generated_at_utc": "2026-05-25T06:58:56Z",
+  "request": {
+    "body": {
+      "amount": "10",
+      "code": "SAVE10",
+      "discount_type": "percent"
+    },
+    "method": "POST",
+    "path": "/coupons",
+    "query": {}
+  },
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "no_snapshot_available",
+    "notes": "No saved before-state is available for this WooCommerce write. Apply may proceed only after explicit no-snapshot approval, and the receipt must record the recovery limit."
+  },
+  "required_flags": [
+    "--apply",
+    "--plan-in"
+  ],
+  "risk_level": "medium",
+  "risk_reasons": [
+    "post request"
+  ],
+  "rollback": {
+    "notes": "No WooCommerce snapshots, provider backups, or machine rollback plans are created by this tool, so there is no built-in undo.",
+    "supported": false
+  },
+  "selector": {
+    "method": "POST",
+    "operation": "coupons create",
+    "path": "/coupons"
+  },
+  "tool": "qwayk-woocommerce-safe-agent-cli",
+  "verification_plan": {
+    "type": "no-snapshot-approval",
+    "expected_outcome": "refused-before-provider-http",
+    "notes": "Review the dry-run plan only. Apply requires explicit no-snapshot approval before WooCommerce HTTP when no saved snapshot is available when no saved snapshot is available."
+  },
+  "version": "0.1.0"
+}

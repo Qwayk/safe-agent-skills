@@ -1,0 +1,19 @@
+{
+  "page": {
+    "id": "abcd1234",
+    "name": "Example Status"
+  },
+  "status": {
+    "indicator": "minor",
+    "description": "Minor Service Issues"
+  },
+  "components": [
+    {
+      "id": "comp1",
+      "name": "API",
+      "status": "partial_outage"
+    }
+  ],
+  "incidents": [],
+  "scheduled_maintenances": []
+}

@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "operation": "business-info.locations.attributes.get-google-updated",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinessbusinessinformation.googleapis.com",
+    "path": "v1/locations/abc/attributes:getGoogleUpdated"
+  },
+  "response": {
+    "name": "locations/abc/attributes",
+    "googleUpdated": {
+      "updateTime": "2026-06-04T12:00:00Z"
+    }
+  }
+}

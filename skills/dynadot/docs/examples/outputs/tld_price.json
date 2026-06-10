@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "tld_price",
+  "page": 1,
+  "page_size": 2,
+  "currency": "USD",
+  "out_path": null,
+  "dynadot": {
+    "command": "tld_price",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "PageIndex": "1",
+      "CountPerPage": "2",
+      "TldPriceList": [
+        {
+          "Tld": "com",
+          "Registration": "10.00",
+          "Renew": "10.00",
+          "Transfer": "10.00"
+        },
+        {
+          "Tld": "net",
+          "Registration": "12.00",
+          "Renew": "12.00",
+          "Transfer": "12.00"
+        }
+      ]
+    }
+  }
+}

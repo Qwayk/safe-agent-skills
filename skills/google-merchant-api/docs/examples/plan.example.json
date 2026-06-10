@@ -1,0 +1,93 @@
+{
+  "artifacts_dir": ".state/runs/2026-06-04T000040Z_example",
+  "audit_log": ".state/runs/2026-06-04T000040Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "body": {
+      "channel": "ONLINE",
+      "contentLanguage": "en",
+      "feedLabel": "US",
+      "offerId": "SKU-RED-123"
+    },
+    "before_state": {
+      "required": true,
+      "statement": "Google Merchant live writes are blocked when no saved snapshot is available for this command.",
+      "supported": false
+    },
+    "command": "google-merchant-api-tool accounts product-inputs insert",
+    "env_fingerprint": "http://example.invalid",
+    "family": "products_v1",
+    "generated_at_utc": "2026-06-04T03:26:37Z",
+    "has_body": true,
+    "http_method": "POST",
+    "method_id": "accounts.productInputs.insert",
+    "path": "products/v1/accounts/123456/productInputs:insert",
+    "path_params": {
+      "parent": "accounts/123456"
+    },
+    "preconditions": [
+      "Review the computed path, query, and request body before applying."
+    ],
+    "proposed_changes": [
+      {
+        "body": {
+          "channel": "ONLINE",
+          "contentLanguage": "en",
+          "feedLabel": "US",
+          "offerId": "SKU-RED-123"
+        },
+        "http_method": "POST",
+        "kind": "api-call",
+        "path": "products/v1/accounts/123456/productInputs:insert",
+        "query": {}
+      }
+    ],
+    "query": {},
+    "risk_level": "medium",
+    "risk_reasons": [
+      "write-operation",
+      "single-write"
+    ],
+    "rollback": {
+      "notes": "This tool does not generate a generic rollback plan for Merchant writes. Use the saved plan/receipt values to prepare a reverse change if needed.",
+      "supported": false
+    },
+    "selector": {
+      "family": "products_v1",
+      "method_id": "accounts.productInputs.insert",
+      "path_params": {
+        "parent": "accounts/123456"
+      },
+      "resource": "accounts/123456"
+    },
+    "tool": "google-merchant-api-tool",
+    "verification": {
+      "expected_status": "2xx",
+      "mode": "plan-match",
+      "notes": "Plan validation compares env_fingerprint, family, method, http_method, path, query, body, and risk_level."
+    },
+    "verification_plan": {
+      "expected_outcome": "refused-before-provider-http",
+      "mode": "no-snapshot-approval",
+      "notes": "Current Merchant writes require before-state capture, which is not supported yet. Apply attempts require explicit no-snapshot approval before credentials or provider HTTP, so no Google Merchant write is sent.",
+      "suggested_follow_up": "Add safe before-state capture support before attempting a live Merchant write."
+    },
+    "version": "0.1.0",
+    "write": true
+  },
+  "plan_out": ".state/runs/2026-06-04T000040Z_example/plan.json",
+  "risk_level": "medium",
+  "run_id": "2026-06-04T000040Z_example",
+  "runs_index": ".state/runs/index.jsonl",
+  "selector": {
+    "family": "products_v1",
+    "method_id": "accounts.productInputs.insert",
+    "path_params": {
+      "parent": "accounts/123456"
+    },
+    "resource": "accounts/123456"
+  },
+  "write_capable": true
+}

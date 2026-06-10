@@ -1,0 +1,54 @@
+{
+  "count": {
+    "a": 1,
+    "b": 1
+  },
+  "data": {
+    "a": [
+      {
+        "ad_id": "123",
+        "clicks": "10",
+        "date_start": "2026-01-01",
+        "date_stop": "2026-01-01",
+        "impressions": "1000",
+        "spend": "12.34"
+      }
+    ],
+    "b": [
+      {
+        "ad_id": "123",
+        "clicks": "12",
+        "date_start": "2026-01-08",
+        "date_stop": "2026-01-08",
+        "impressions": "1200",
+        "spend": "13.37"
+      }
+    ]
+  },
+  "insights_compare": {
+    "ad_account_id": "act_123",
+    "level": "ad",
+    "params_common": {
+      "fields": "ad_id,date_start,date_stop,impressions,clicks,spend",
+      "level": "ad",
+      "time_increment": "1"
+    },
+    "range_a": {
+      "since": "2026-01-01",
+      "until": "2026-01-07"
+    },
+    "range_b": {
+      "since": "2026-01-08",
+      "until": "2026-01-14"
+    }
+  },
+  "ok": true,
+  "pages_fetched": {
+    "a": 1,
+    "b": 1
+  },
+  "paging": {
+    "a": null,
+    "b": null
+  }
+}

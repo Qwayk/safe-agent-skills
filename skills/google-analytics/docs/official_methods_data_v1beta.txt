@@ -1,0 +1,11 @@
+analyticsdata.properties.audienceExports.create
+analyticsdata.properties.audienceExports.get
+analyticsdata.properties.audienceExports.list
+analyticsdata.properties.audienceExports.query
+analyticsdata.properties.batchRunPivotReports
+analyticsdata.properties.batchRunReports
+analyticsdata.properties.checkCompatibility
+analyticsdata.properties.getMetadata
+analyticsdata.properties.runPivotReport
+analyticsdata.properties.runRealtimeReport
+analyticsdata.properties.runReport

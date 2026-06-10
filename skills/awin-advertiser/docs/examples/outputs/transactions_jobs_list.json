@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "command": "transactions jobs list",
+  "advertiser_id": "123456",
+  "endpoint": "/advertisers/123456/transactions/jobs",
+  "method": "GET",
+  "status": 200,
+  "count": 2,
+  "jobs": [
+    {
+      "jobId": "job-001",
+      "status": "done"
+    },
+    {
+      "jobId": "job-002",
+      "status": "running"
+    }
+  ]
+}

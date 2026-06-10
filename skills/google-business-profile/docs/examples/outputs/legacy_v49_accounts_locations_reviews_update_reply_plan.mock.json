@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "legacy-v49.accounts.locations.reviews.update-reply",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli legacy-v49 accounts locations reviews update-reply --name accounts/123/locations/456/reviews/review-123 --reply-file /tmp/review_reply.json",
+    "selector": "accounts/123/locations/456/reviews/review-123",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Review reply write"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "legacy-v49.accounts.locations.reviews.update-reply",
+        "selector": "accounts/123/locations/456/reviews/review-123",
+        "mask": "reviewReply",
+        "body_fingerprint": "935656590f57b4d4832843aba2ad436fbbb2d03503929b335bc2acea32bde4d3"
+      }
+    ],
+    "verification_plan": [
+      "Get the review and verify reviewReply.comment equals the requested comment."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "accounts/123/locations/456/reviews/review-123",
+      "body_fingerprint": "935656590f57b4d4832843aba2ad436fbbb2d03503929b335bc2acea32bde4d3",
+      "mask": "reviewReply",
+      "mask_fingerprint": "41f310ac5e2c9ff26317f0eb44703ae8a4fb7a8b2b28444d128620399471ab3f"
+    }
+  },
+  "plan_path": null
+}

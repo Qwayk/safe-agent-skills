@@ -1,0 +1,30 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "dry_run": false,
+  "error": null,
+  "http": {
+    "status": 200,
+    "url": "http://127.0.0.1:41631/api/account/v1/accounts"
+  },
+  "ok": true,
+  "operation": {
+    "domain": "account-v1",
+    "http_path": "/api/account/v1/accounts",
+    "http_verb": "GET",
+    "path_params": {},
+    "rpc": "qdrant.cloud.account.v1.AccountService.ListAccounts"
+  },
+  "read": true,
+  "response": {
+    "items": []
+  },
+  "response_text": null,
+  "run_id": null,
+  "runs_index": "./.state/runs/index.jsonl",
+  "verification": {
+    "details": "HTTP status check (no provider-specific read-back).",
+    "ok": true
+  }
+}

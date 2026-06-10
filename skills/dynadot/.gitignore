@@ -1,0 +1,25 @@
+.env
+.env.*
+!.env.example
+.state/
+.venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+# Large local artifacts (never commit)
+domains.*.json
+domains.*.txt
+dynadot.readonly_audit.summary.json
+dynadot.readonly_domains_report.json
+*.diff.json
+name_servers.*.json
+name_servers.*.stdout.json
+auth_check.*.json
+plan.*.json
+receipt.*.json
+apply.*.stdout.json

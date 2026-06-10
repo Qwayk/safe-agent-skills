@@ -1,0 +1,62 @@
+{
+  "command": "stripe-api-tool --output json --env-file /tmp/tmp.YfqOhsiPIm/stripe.env api post-payment-intents --data amount=100 --data currency=usd",
+  "env_fingerprint": "https://api.stripe.com",
+  "generated_at_utc": "2026-03-05T05:28:19Z",
+  "headers": {
+    "authorization": "<REDACTED>",
+    "idempotency-key": "plan_78557af6c1e7a52c510ce5b9bc0c58a3"
+  },
+  "idempotency_key": "plan_78557af6c1e7a52c510ce5b9bc0c58a3",
+  "kind": "stripe.http_plan.v1",
+  "operation": {
+    "command": "api post-payment-intents",
+    "id": "PostPaymentIntents",
+    "method": "POST",
+    "path": "/v1/payment_intents",
+    "path_template": "/v1/payment_intents"
+  },
+  "request": {
+    "data": [
+      [
+        "amount",
+        "100"
+      ],
+      [
+        "currency",
+        "usd"
+      ]
+    ],
+    "files": [],
+    "method": "POST",
+    "path": "/v1/payment_intents",
+    "query": [],
+    "url": "https://api.stripe.com/v1/payment_intents"
+  },
+  "before_state": {
+    "notes": "No saved before-state or provider backup is available for this Stripe write. Apply may proceed only after explicit no-snapshot approval, and the receipt must record the recovery limit.",
+    "required": true,
+    "supported": false
+  },
+  "risk": {
+    "level": "high",
+    "reasons": [
+      "money-moving"
+    ],
+    "requirements": {
+      "ack_irreversible": false,
+      "ack_spend_money": true,
+      "apply": true,
+      "plan_in": true,
+      "yes": true
+    }
+  },
+  "stable_hash": "78557af6c1e7a52c510ce5b9bc0c58a35b23f5c21af984e3217fd5df2d0fbf37",
+  "stripe_account": null,
+  "stripe_version": null,
+  "tool": "stripe-api-tool",
+  "version": "0.1.0",
+  "rollback": {
+    "supported": false,
+    "notes": "No before-state snapshot is taken; no automatic rollback is available from this plan."
+  }
+}

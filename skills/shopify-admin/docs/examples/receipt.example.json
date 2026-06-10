@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "refusal_type": "SafetyError",
+  "refused": true,
+  "reasons": [
+    "Refused: Shopify mutation live apply requires explicit no-snapshot approval when no operation-specific saved snapshot is available. Use the dry-run plan for review only; no Shopify write was sent."
+  ]
+}

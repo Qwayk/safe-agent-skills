@@ -1,0 +1,21 @@
+{
+  "tool": "<tool>",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-01-01T00:00:00Z",
+  "env_fingerprint": "<REDACTED>",
+  "command": "<tool> <command> --dry-run",
+  "selector": "<resource-id-or-query>",
+  "risk_level": "low",
+  "risk_reasons": [
+    "Read-only operation"
+  ],
+  "preconditions": [],
+  "proposed_changes": [],
+  "verification_plan": [
+    "Read-only: no post-apply verification required"
+  ],
+  "rollback": {
+    "supported": false,
+    "notes": "No changes in dry-run/read-only plan"
+  }
+}

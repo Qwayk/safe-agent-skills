@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_listing_item",
+  "domain": "example.com",
+  "currency": "EUR",
+  "out_path": null,
+  "dynadot": {
+    "command": "get_listing_item",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "Domain": "example.com",
+      "Currency": "eur",
+      "Price": "199.00",
+      "StatusText": "active"
+    }
+  }
+}

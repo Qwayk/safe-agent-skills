@@ -1,0 +1,18 @@
+{
+  "action": "create",
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "dry_run": false,
+  "family": "orders",
+  "method": "POST",
+  "ok": true,
+  "path": "/v2/checkout/orders",
+  "reasons": [
+    "Refused: PayPal write requires explicit no-snapshot approval when no saved snapshot is available for this command. Use the dry-run plan for review only; no PayPal write was sent."
+  ],
+  "refusal_type": "SafetyError",
+  "refused": true,
+  "run_id": null,
+  "runs_index": ".state/runs/index.jsonl"
+}

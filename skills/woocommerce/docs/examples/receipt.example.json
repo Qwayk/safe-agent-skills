@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "refused": true,
+  "refusal_type": "SafetyError",
+  "reasons": [
+    "Refused: WooCommerce live write requires explicit no-snapshot approval when no saved snapshot is available for this operation. Use the dry-run plan for review only; no WooCommerce write was sent."
+  ],
+  "run_id": "2026-06-04T114138Z_32ecc9",
+  "artifacts_dir": ".state/runs/2026-06-04T114138Z_32ecc9",
+  "runs_index": ".state/runs/index.jsonl",
+  "audit_log": ".state/runs/2026-06-04T114138Z_32ecc9/audit.jsonl",
+  "audit_log_global": null
+}

@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_expired_closeout_domains",
+  "page": 1,
+  "page_size": 50,
+  "currency": "USD",
+  "domain": null,
+  "out_path": null,
+  "dynadot": {
+    "command": "get_expired_closeout_domains",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "ResponseCode": "0",
+      "Status": "success",
+      "Size": "0",
+      "CloseoutDomains": []
+    }
+  }
+}
+

@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "tool": "ga4-api-tool",
+  "version": "0.1.0",
+  "run_id": null,
+  "artifacts_dir": null,
+  "runs_index": ".state/runs/index.jsonl",
+  "audit_log": null,
+  "audit_log_global": null
+}

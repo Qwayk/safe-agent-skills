@@ -1,0 +1,536 @@
+syntax = "proto3";
+
+package qdrant.cloud.booking.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "qdrant/cloud/common/v1/common.proto";
+
+// BookingService is the API used to configure the booking settings (like packages objects).
+service BookingService {
+  // The API version of this service.
+  option (qdrant.cloud.common.v1.api_version) = {
+    major: 1
+    minor: 0
+    patch: 0
+  };
+  // Lists all packages known by the system, optional filtered.
+  // Required permissions:
+  // - None (authenticated only)
+  rpc ListPackages(ListPackagesRequest) returns (ListPackagesResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/booking/v1/accounts/{account_id}/packages"};
+    // log fields
+    option (common.v1.log_fields) = {
+      name: "cloud_provider_id"
+      field_expression: "cloud_provider_id"
+    };
+    option (common.v1.log_fields) = {
+      name: "cloud_provider_region_id"
+      field_expression: "cloud_provider_region_id"
+    };
+  }
+  // Gets the package identified by the given ID.
+  // Required permissions:
+  // - None (authenticated only)
+  rpc GetPackage(GetPackageRequest) returns (GetPackageResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/booking/v1/accounts/{account_id}/packages/{id}"};
+    // log fields
+    option (common.v1.log_fields) = {
+      name: "package_id"
+      field_expression: "id"
+    };
+  }
+  // buf:lint:ignore QDRANT_CLOUD_METHOD_OPTIONS
+  // Lists all public packages.
+  // Authentication not required
+  rpc ListGlobalPackages(ListGlobalPackagesRequest) returns (ListGlobalPackagesResponse) {
+    // authentication not required
+    option (qdrant.cloud.common.v1.requires_authentication) = false;
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/booking/v1/packages"};
+    // log fields
+    option (common.v1.log_fields) = {
+      name: "cloud_provider_id"
+      field_expression: "cloud_provider_id"
+    };
+    option (common.v1.log_fields) = {
+      name: "cloud_provider_region_id"
+      field_expression: "cloud_provider_region_id"
+    };
+  }
+  // Gets a price quote for a cluster configuration.
+  // Calculates pricing information including hourly costs,
+  // and any applicable discounts for the specified cluster configuration.
+  // Required permissions:
+  // - write:clusters
+  rpc GetQuote(GetQuoteRequest) returns (GetQuoteResponse) {
+    // permissions
+    option (common.v1.permissions) = "write:clusters";
+    // gRPC Gateway REST call
+    option (google.api.http) = {
+      post: "/api/booking/v1/accounts/{account_id}/quote"
+      body: "*"
+    };
+  }
+
+  // Gets a price quote for a backup configuration.
+  // Calculates pricing information for storing a backup,
+  // based on the specified cloud provider, region, and backup size.
+  // Required permissions:
+  // - write:backups
+  rpc GetBackupQuote(GetBackupQuoteRequest) returns (GetBackupQuoteResponse) {
+    // permissions
+    option (common.v1.permissions) = "write:backups";
+    // gRPC Gateway REST call
+    option (google.api.http) = {
+      post: "/api/booking/v1/accounts/{account_id}/backup-quote"
+      body: "*"
+    };
+  }
+
+  // Gets the list of available inference models.
+  // Required permissions:
+  // - None (authenticated only)
+  rpc ListInferenceModels(ListInferenceModelsRequest) returns (ListInferenceModelsResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/booking/v1/accounts/{account_id}/inference-models"};
+  }
+
+  // Gets the list of available storage tiers for a particular region
+  // Required permissions:
+  // - None (authenticated only)
+  rpc ListStorageTierTypes(ListStorageTierTypesRequest) returns (ListStorageTierTypesResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // grpc Gateway REST call
+    option (google.api.http) = {get: "/api/booking/v1/accounts/{account_id}/storage-tiers"};
+  }
+}
+
+// ListPackagesRequest is the request for the ListPackages function
+message ListPackagesRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+  // Required field specifying the cloud provider where the cluster will be hosted.
+  // Must match one of the provider IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviders` method.
+  string cloud_provider_id = 2 [(buf.validate.field).string = {min_len: 3}];
+  // Filter specifying the cloud region where the cluster will be hosted.
+  // Must match one of the region IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviderRegions` method.
+  // This field can be omitted if `cloud_provider_id` is set to `hybrid`.
+  optional string cloud_provider_region_id = 3 [(buf.validate.field).string = {min_len: 1}];
+  option (buf.validate.message).cel = {
+    id: "list_packages.cloud_provider_region_id_present"
+    message: "cloud_provider_region_id is required when cloud_provider_id is not 'hybrid'"
+    expression: "this.cloud_provider_id == 'hybrid' || has(this.cloud_provider_region_id)"
+  };
+  // The status of the packages to filter.
+  // This is an optional field. If value is not set, only active packages are returned.
+  repeated PackageStatus statuses = 4;
+  // The minimum resource configuration required.
+  // This is an optional field. If set, only packages that meet or exceed the specified resource configuration are returned.
+  optional ResourceConfigurationFilter min_resources = 5;
+  // Filter packages by multi-AZ support.
+  // When true, only multi-AZ packages are returned.
+  // When false, all packages are returned except multi-AZ.
+  // When not set, all packages are returned.
+  optional bool multi_az = 6;
+  // Filter packages by GPU support.
+  // When true, only GPU packages are returned.
+  // When false, all packages are returned except GPU.
+  // When not set, all packages are returned.
+  optional bool gpu = 7;
+}
+
+// ListPackagesResponse is the response from the ListPackages function
+message ListPackagesResponse {
+  // The actual packages in this list
+  repeated Package items = 1;
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_REQUEST_FIELDS
+// ListGlobalPackagesRequest is the request for the ListGlobalPackages function
+message ListGlobalPackagesRequest {
+  // Mandatory filter specifying the cloud provider where the cluster will be hosted.
+  // Must match one of the provider IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListGlobalCloudProviders` method.
+  string cloud_provider_id = 1 [(buf.validate.field).string = {min_len: 3}];
+  // Filter specifying the cloud region where the cluster will be hosted.
+  // Must match one of the region IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListGlobalCloudProviderRegions` method.
+  // Field can be omitted, if cloud_provider_id is `hybrid`
+  optional string cloud_provider_region_id = 2 [(buf.validate.field).string = {min_len: 1}];
+  option (buf.validate.message).cel = {
+    id: "list_global_packages.cloud_provider_region_id_present"
+    message: "cloud_provider_region_id is required when cloud_provider_id is not 'hybrid'"
+    expression: "this.cloud_provider_id == 'hybrid' || has(this.cloud_provider_region_id)"
+  };
+  // The minimum resource configuration required.
+  // This is an optional field. If set, only packages that meet or exceed the specified resource configuration are returned.
+  optional ResourceConfigurationFilter min_resources = 3;
+  // Filter packages by GPU support.
+  // When true, only GPU packages are returned.
+  // When false, all packages are returned except GPU.
+  // When not set, all packages are returned.
+  optional bool gpu = 4;
+}
+
+// ListPackagesResponse is the response from the ListPackages function
+message ListGlobalPackagesResponse {
+  // The actual packages in this list
+  repeated Package items = 1;
+}
+
+// GetPackageRequest is the request for the GetPackage function
+message GetPackageRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+  // The unique identifier of the package.
+  // A unique string ID assigned to each package.
+  string id = 2 [(buf.validate.field).string = {uuid: true}];
+  // Required field specifying the cloud provider where the cluster will be hosted.
+  // Must match one of the provider IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviders` method.
+  string cloud_provider_id = 3 [(buf.validate.field).string = {min_len: 3}];
+  // Filter specifying the cloud region where the cluster will be hosted.
+  // Must match one of the region IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviderRegions` method.
+  // This field can be omitted if `cloud_provider_id` is set to `hybrid`.
+  optional string cloud_provider_region_id = 4 [(buf.validate.field).string = {min_len: 1}];
+  option (buf.validate.message).cel = {
+    id: "list_packages.cloud_provider_region_id_present"
+    message: "cloud_provider_region_id is required when cloud_provider_id is not 'hybrid'"
+    expression: "this.cloud_provider_id == 'hybrid' || has(this.cloud_provider_region_id)"
+  };
+}
+
+// GetPackageResponse is the response from the GetPackage function
+message GetPackageResponse {
+  // The actual package
+  Package package = 1 [(buf.validate.field).required = true];
+}
+
+// PackageStatus defines the valid states a package can be in.
+enum PackageStatus {
+  // Unspecified package status.
+  PACKAGE_STATUS_UNSPECIFIED = 0;
+  // The package is active and available for use.
+  PACKAGE_STATUS_ACTIVE = 1;
+  // The package is deactivated.
+  PACKAGE_STATUS_DEACTIVATED = 2;
+}
+
+// PackageTier defines the valid tiers a package can be in.
+enum PackageTier {
+  // Unspecified package tier.
+  PACKAGE_TIER_STATUS_UNSPECIFIED = 0;
+  // Standard tier.
+  PACKAGE_TIER_STANDARD = 1;
+  // Premium tier.
+  PACKAGE_TIER_PREMIUM = 2;
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_ENTITY_FIELDS
+// Package represents a single package.
+// A package is a configuration (CPU/Memory/Disk size) for a cluster with a price.
+message Package {
+  // The unique identifier of the package.
+  // A unique string ID assigned to each package.
+  string id = 1 [(buf.validate.field).string = {uuid: true}];
+  // The name of the package.
+  // A human-readable identifier for the package.
+  string name = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 64
+    pattern: "^[a-zA-Z0-9-_]+$"
+  }];
+  // Specifies if this is a free or paid package.
+  // Must be either "free" or "paid".
+  string type = 3 [(buf.validate.field).string = {
+    in: [
+      "free",
+      "paid"
+    ]
+  }];
+  // The resource configuration associated with the package
+  ResourceConfiguration resource_configuration = 4;
+  // The currency of the prices.
+  // Specifies the currency in which the prices are denominated.
+  // Must be a 3-letter ISO 4217 currency code (e.g., "USD").
+  string currency = 5 [(buf.validate.field).string = {pattern: "^[A-Z]{3}$"}];
+  // The unit price per hour in millicents, in integer format.
+  // Represents the cost per hour for a single unit of the resource.
+  // You will be billed hourly for the resources you use. Partial hours are rounded up and billed as full hours.
+  int32 unit_int_price_per_hour = 6 [(buf.validate.field).int32.gte = 0];
+  // The status of the package.
+  // Indicates the current status of the package.
+  PackageStatus status = 7 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // The tier of the package.
+  PackageTier tier = 9 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // Optional additional resources that can be added to the cluster.
+  // if not set, additional resources are not available for this package.
+  // Currently, only `DISK` is supported.
+  optional AvailableAdditionalResources available_additional_resources = 8;
+  // Available storage tier configurations and prices.
+  // Always includes at least COST_OPTIMISED storage tier configuration
+  repeated AvailableStoragePerformanceTierConfigurations available_storage_tier_configurations = 10 [(buf.validate.field).repeated = {min_items: 1}];
+  // Whether this package supports multi-availability zone deployment.
+  // When a cluster uses this package, nodes are spread across 3 zones for high availability.
+  bool multi_az = 11;
+}
+
+// AvailableAdditionalResources represents additional resources that can be added to the cluster.
+message AvailableAdditionalResources {
+  // The unit price per hour in millicents, in integer format.
+  // Represents the cost per hour for a single unit(GiB) of the resource.
+  // You will be billed hourly for the resources you use. Partial hours are rounded up and billed as full hours.
+  uint32 disk_price_per_hour = 1;
+}
+
+// AvailableStoragePerformanceTierConfigurations represents available storage tier configurations for given package
+// region and provider.
+message AvailableStoragePerformanceTierConfigurations {
+  // Represents performance tier type.
+  qdrant.cloud.common.v1.StorageTierType storage_tier_type = 1;
+  // Represents additional cost per hour in millicents for given region/provider and pricing tier.
+  uint32 price_per_hour = 2;
+}
+
+// ResourceConfiguration defines the resource configuration for a package.
+message ResourceConfiguration {
+  // The amount of RAM (e.g., "1GiB")
+  string ram = 1 [(buf.validate.field).string.min_len = 1];
+  // The amount of CPU (e.g., "1000m" (1 vCPU))
+  string cpu = 2 [(buf.validate.field).string.min_len = 1];
+  // The amount of disk (e.g., "100GiB")
+  string disk = 3 [(buf.validate.field).string.min_len = 1];
+  // The amount of GPU (e.g., "1000m" (1 vGPU))
+  // This is an optional field, if it is not set no GPU is provided.
+  optional string gpu = 4 [(buf.validate.field).string.min_len = 1];
+}
+
+// ResourceConfigurationFilter defines the resource configuration filter for listing packages.
+message ResourceConfigurationFilter {
+  // The amount of RAM (e.g., "1GiB")
+  optional string ram = 1 [(buf.validate.field).string.min_len = 1];
+  // The amount of CPU (e.g., "1000m" (1 vCPU))
+  optional string cpu = 2 [(buf.validate.field).string.min_len = 1];
+  // The amount of disk (e.g., "100GiB")
+  optional string disk = 3 [(buf.validate.field).string.min_len = 1];
+  // The amount of GPU (e.g., "1000m" (1 vGPU))
+  optional string gpu = 4 [(buf.validate.field).string.min_len = 1];
+}
+
+// GetQuoteRequest is the request for the GetQuote function
+message GetQuoteRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+  // The cloud provider where the cluster will be hosted.
+  // Must match one of the provider IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviders` method.
+  string cloud_provider_id = 2 [(buf.validate.field).string = {min_len: 3}];
+  // The cloud region where the cluster will be hosted.
+  // Must match one of the region IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviderRegions` method.
+  // This field can be omitted if `cloud_provider_id` is set to `hybrid`.
+  optional string cloud_provider_region_id = 3 [(buf.validate.field).string = {min_len: 1}];
+  option (buf.validate.message).cel = {
+    id: "get_quote.cloud_provider_region_id_present"
+    message: "cloud_provider_region_id is required when cloud_provider_id is not 'hybrid'"
+    expression: "this.cloud_provider_id == 'hybrid' || has(this.cloud_provider_region_id)"
+  };
+  // The number of nodes in a cluster.
+  // This should be a number >= 1.
+  // This is a required field.
+  uint32 number_of_nodes = 4 [(buf.validate.field).uint32 = {gte: 1}];
+  // The package identifier used to configure the resources of the cluster.
+  // Use `qdrant.cloud.booking.v1.BookingService.ListPackages` to select one.
+  // This is a required field.
+  string package_id = 5 [(buf.validate.field).string = {uuid: true}];
+  // The additional disk storage in GiB on top of the selected package.
+  // This is an optional field, if not specified additional disk is 0.
+  uint32 additional_disk_gib = 6 [(buf.validate.field).uint32.gte = 0];
+  // The storage tier for the cluster.
+  // This is an optional field, if not specified it defaults to Cost Optimised.
+  optional qdrant.cloud.common.v1.StorageTierType storage_tier_type = 7;
+}
+
+// GetQuoteResponse is the response from the GetQuote function
+message GetQuoteResponse {
+  // The currency of the prices.
+  // Specifies the currency in which the prices are denominated.
+  // Must be a 3-letter ISO 4217 currency code (e.g., "USD").
+  string currency = 1 [(buf.validate.field).string = {pattern: "^[A-Z]{3}$"}];
+  // The original price per hour in millicents, before any discounts.
+  int64 original_price_per_hour = 2 [(buf.validate.field).int64.gte = 0];
+  // The discounted price per hour in millicents, after applying discounts.
+  // If no discounts are applied, this will be the same as original_price_per_hour.
+  int64 discounted_price_per_hour = 3 [(buf.validate.field).int64.gte = 0];
+  // The percentage of discount applied (e.g., 10.0 for 10% discount).
+  // If no discounts are applied, this will be 0.0.
+  double discount_percentage = 4 [(buf.validate.field).double = {
+    gte: 0.0
+    lte: 100.0
+  }];
+}
+
+// GetBackupQuoteRequest is the request for the GetBackupQuote function
+message GetBackupQuoteRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+  // The cloud provider where the backup will be stored.
+  // Must match one of the provider IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviders` method.
+  string cloud_provider_id = 2 [(buf.validate.field).string = {min_len: 3}];
+  // The cloud region where the backup will be stored.
+  // Must match one of the region IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviderRegions` method.
+  // This field can be omitted if `cloud_provider_id` is set to `hybrid`.
+  optional string cloud_provider_region_id = 4 [(buf.validate.field).string = {min_len: 1}];
+  option (buf.validate.message).cel = {
+    id: "get_backup_quote.cloud_provider_region_id_present"
+    message: "cloud_provider_region_id is required when cloud_provider_id is not 'hybrid'"
+    expression: "this.cloud_provider_id == 'hybrid' || has(this.cloud_provider_region_id)"
+  };
+  // The size of the backup in GiB.
+  // This is an optional field. If not set, defaults to 1 GiB.
+  // The response will include the total price per hour for the specified (or default) backup size.
+  optional uint32 backup_size_gib = 5 [(buf.validate.field).uint32.gt = 0];
+}
+
+// GetBackupQuoteResponse is the response from the GetBackupQuote function
+message GetBackupQuoteResponse {
+  // The currency of the prices.
+  // Specifies the currency in which the prices are denominated.
+  // Must be a 3-letter ISO 4217 currency code (e.g., "USD").
+  string currency = 1 [(buf.validate.field).string = {pattern: "^[A-Z]{3}$"}];
+  // The original price per hour in millicents, before any discounts.
+  // Represents the cost per hour for storing the backup of the requested size.
+  // You will be billed hourly for the backup storage you use. Partial hours are rounded up and billed as full hours.
+  int64 original_price_per_hour = 2 [(buf.validate.field).int64.gte = 0];
+  // The discounted price per hour in millicents, after applying discounts.
+  // If no discounts are applied, this will be the same as original_price_per_hour.
+  int64 discounted_price_per_hour = 3 [(buf.validate.field).int64.gte = 0];
+  // The percentage of discount applied (e.g., 10.0 for 10% discount).
+  // If no discounts are applied, this will be 0.0.
+  double discount_percentage = 4 [(buf.validate.field).double = {
+    gte: 0.0
+    lte: 100.0
+  }];
+}
+
+// ListInferenceModelsRequest is the request for the ListInferenceModels function
+message ListInferenceModelsRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+  // Required field specifying the cloud provider where the inference model is available.
+  // Must match one of the provider IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviders` method.
+  // This field cannot be set to `hybrid`.
+  string cloud_provider_id = 2 [(buf.validate.field).string = {min_len: 3}];
+  // Filter specifying the cloud region where the inference model is available.
+  // Must match one of the region IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviderRegions` method.
+  string cloud_provider_region_id = 3 [(buf.validate.field).string = {min_len: 1}];
+}
+
+// ListInferenceModelsResponse is the response from the ListInferenceModels function
+message ListInferenceModelsResponse {
+  // The actual inference models in this list
+  repeated InferenceModel items = 1;
+}
+
+// ListStorageTierTypesRequest is the request for the ListStorageTierTypes function
+message ListStorageTierTypesRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+  // Required field specifying the cloud provider where the storage tiers are available.
+  // Must match one of the provider IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviders` method.
+  string cloud_provider_id = 2 [(buf.validate.field).string = {min_len: 3}];
+  // Filter specifying the cloud region where the storage tiers are available.
+  // Must match one of the region IDs returned by the `qdrant.cloud.platform.v1.PlatformService.ListCloudProviderRegions` method.
+  string cloud_provider_region_id = 3 [(buf.validate.field).string = {min_len: 1}];
+}
+
+// ListStorageTierTypesResponse is the response from the ListStorageTierTypes function
+message ListStorageTierTypesResponse {
+  // A list of storage tiers. We are using list of object instead of list of the string to make it extensible for future.
+  repeated StorageTiers items = 1;
+}
+
+// VectorType defines the type of vector representation.
+enum VectorType {
+  // Unspecified vector type.
+  VECTOR_TYPE_UNSPECIFIED = 0;
+  // Dense vector representation.
+  VECTOR_TYPE_DENSE = 1;
+  // Sparse vector representation.
+  VECTOR_TYPE_SPARSE = 2;
+  // Multi vector representation.
+  VECTOR_TYPE_MULTI = 3;
+}
+
+// ModelModality defines the type of data the model processes.
+enum ModelModality {
+  // Unspecified ModelModality.
+  MODEL_MODALITY_UNSPECIFIED = 0;
+  // Text data.
+  MODEL_MODALITY_TEXT = 1;
+  // Image data.
+  MODEL_MODALITY_IMAGE = 2;
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_ENTITY_FIELDS
+// InferenceModel represents a single inference model available for use.
+message InferenceModel {
+  // The unique identifier of the inference model.
+  string id = 1 [(buf.validate.field).string = {uuid: true}];
+  // The name/identifier of the model (e.g., "cohere/*").
+  string name = 2 [(buf.validate.field).string = {min_len: 1}];
+  // The human-readable title of the model.
+  string title = 3 [(buf.validate.field).string = {min_len: 1}];
+  // A description of the model's capabilities and use cases.
+  string description = 4 [(buf.validate.field).string = {min_len: 1}];
+  // The type of vector representation (dense or sparse).
+  VectorType vector_type = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // The type of data the model processes (text or image).
+  ModelModality modality = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // The vendor/provider of the model (e.g., "OpenAI", "Cohere").
+  string vendor = 7 [(buf.validate.field).string = {min_len: 1}];
+  // The price per 1 million tokens processed by the model, in millicents.
+  // Some models may be free to use and have a price of 0.
+  uint32 unit_int_price = 8;
+  // Indicates whether this is an external model (requiring external API keys).
+  bool is_external = 9;
+  // The dimensionality of the output vectors.
+  // Optional field, as some models may not have a fixed dimensionality.
+  optional uint32 dimensionality = 10;
+  // The maximum number of tokens that can be processed per request.
+  // Optional field, as some models may not have a fixed limit.
+  optional uint32 max_tokens_per_request = 11;
+  // Optional URL to external documentation for the model.
+  // Only present for external models.
+  optional string external_docs_url = 12 [(buf.validate.field).string = {uri: true}];
+}
+
+// StorageTiers holds information related to a particular storage tier
+message StorageTiers {
+  // The type of the storage tier
+  qdrant.cloud.common.v1.StorageTierType storage_tier_type = 1;
+  // More information may be added in future. For example, IOPS and throughput amount, requirements etc.
+}

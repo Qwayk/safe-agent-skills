@@ -1,0 +1,20 @@
+{
+  "asin": "B000000000",
+  "count": 3,
+  "items": [
+    {
+      "asin": "B000000000"
+    },
+    {
+      "asin": "B000000001"
+    },
+    {
+      "asin": "B000000002"
+    }
+  ],
+  "ok": true,
+  "request_id": "EXAMPLE_REQUEST_ID",
+  "variation_count": 3,
+  "variation_page": 1
+}
+

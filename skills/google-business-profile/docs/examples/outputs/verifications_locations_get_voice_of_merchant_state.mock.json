@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "operation": "verifications.locations.get-voice-of-merchant-state",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinessverifications.googleapis.com",
+    "path": "v1/locations/123/VoiceOfMerchantState"
+  },
+  "response": {
+    "hasVoiceOfMerchant": true,
+    "hasBusinessAuthority": true,
+    "verify": {
+      "hasPendingVerification": false
+    }
+  }
+}

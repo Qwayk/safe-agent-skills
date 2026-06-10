@@ -1,0 +1,24 @@
+{
+  "base_url": "https://status.example.com",
+  "data": {
+    "components": [
+      {
+        "id": "comp1",
+        "name": "API",
+        "status": "partial_outage"
+      }
+    ],
+    "incidents": [],
+    "page": {
+      "id": "abcd1234",
+      "name": "Example Status"
+    },
+    "scheduled_maintenances": [],
+    "status": {
+      "description": "Minor Service Issues",
+      "indicator": "minor"
+    }
+  },
+  "endpoint": "/api/v2/summary.json",
+  "ok": true
+}

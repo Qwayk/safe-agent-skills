@@ -1,0 +1,155 @@
+{
+  "ok": true,
+  "preset": {
+    "preset_schema_version": 1,
+    "name": "analysis_pack_v1",
+    "description": "Starter analysis-pack preset for cross-channel ad exploration (read-only). Includes core entities + daily performance by ad.",
+    "join_map": {
+      "customer.id": {
+        "description": "Google Ads customer id (numeric).",
+        "fields": [
+          "customer.id"
+        ]
+      },
+      "campaign.resource_name": {
+        "description": "Campaign stable identifier (resource name).",
+        "fields": [
+          "campaign.resource_name"
+        ]
+      },
+      "campaign.id": {
+        "description": "Campaign numeric id.",
+        "fields": [
+          "campaign.id"
+        ]
+      },
+      "ad_group.resource_name": {
+        "description": "Ad group stable identifier (resource name).",
+        "fields": [
+          "ad_group.resource_name"
+        ]
+      },
+      "ad_group.id": {
+        "description": "Ad group numeric id.",
+        "fields": [
+          "ad_group.id"
+        ]
+      },
+      "ad_group_ad.resource_name": {
+        "description": "Ad group ad stable identifier (resource name).",
+        "fields": [
+          "ad_group_ad.resource_name"
+        ]
+      },
+      "ad.id": {
+        "description": "Ad numeric id.",
+        "fields": [
+          "ad_group_ad.ad.id"
+        ]
+      },
+      "asset_group.resource_name": {
+        "description": "Asset group stable identifier (resource name). Useful for Performance Max (PMax).",
+        "fields": [
+          "asset_group.resource_name"
+        ]
+      },
+      "asset_group.id": {
+        "description": "Asset group numeric id. Useful for Performance Max (PMax).",
+        "fields": [
+          "asset_group.id"
+        ]
+      },
+      "segments.date": {
+        "description": "Daily segment date (YYYY-MM-DD).",
+        "fields": [
+          "segments.date"
+        ]
+      }
+    },
+    "query_groups": [
+      {
+        "group_id": "campaigns",
+        "required": true,
+        "requires_date_range": false,
+        "output": "campaigns.jsonl",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id"
+        ],
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, campaign.name, campaign.status, campaign.advertising_channel_type, campaign.advertising_channel_sub_type FROM campaign WHERE campaign.status != 'REMOVED'"
+        }
+      },
+      {
+        "group_id": "ad_groups",
+        "required": true,
+        "requires_date_range": false,
+        "output": "ad_groups.jsonl",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id"
+        ],
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group.name, ad_group.status, ad_group.type FROM ad_group WHERE ad_group.status != 'REMOVED'"
+        }
+      },
+      {
+        "group_id": "ad_group_ads",
+        "required": true,
+        "requires_date_range": false,
+        "output": "ad_group_ads.jsonl",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "ad_group_ad.resource_name",
+          "ad.id"
+        ],
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_ad.resource_name, ad_group_ad.status, ad_group_ad.ad.id, ad_group_ad.ad.type, ad_group_ad.ad.final_urls, ad_group_ad.ad.expanded_text_ad.headline_part1, ad_group_ad.ad.expanded_text_ad.headline_part2, ad_group_ad.ad.expanded_text_ad.headline_part3, ad_group_ad.ad.expanded_text_ad.description, ad_group_ad.ad.expanded_text_ad.description2, ad_group_ad.ad.responsive_search_ad.headlines, ad_group_ad.ad.responsive_search_ad.descriptions, ad_group_ad.ad.responsive_display_ad.headlines, ad_group_ad.ad.responsive_display_ad.descriptions, ad_group_ad.ad.responsive_display_ad.long_headline FROM ad_group_ad WHERE ad_group_ad.status != 'REMOVED'"
+        }
+      },
+      {
+        "group_id": "ad_daily_metrics",
+        "required": true,
+        "output": "ad_daily_metrics.jsonl",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "ad_group_ad.resource_name",
+          "ad.id",
+          "segments.date"
+        ],
+        "max_rows_default": 250000,
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_ad.resource_name, ad_group_ad.ad.id, segments.date, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM ad_group_ad WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        }
+      },
+      {
+        "group_id": "asset_groups",
+        "required": false,
+        "requires_date_range": false,
+        "output": "asset_groups.jsonl",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "asset_group.resource_name",
+          "asset_group.id"
+        ],
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, asset_group.id, asset_group.resource_name, asset_group.name, asset_group.status FROM asset_group WHERE asset_group.status != 'REMOVED'"
+        }
+      }
+    ]
+  }
+}

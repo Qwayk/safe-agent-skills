@@ -1,0 +1,160 @@
+{
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "artifacts_preview": {
+      "receiver_domains_export": {
+        "command": "list_domain",
+        "count": 0,
+        "domains": [],
+        "pages": [
+          {
+            "count": 0,
+            "page_index": 1
+          }
+        ],
+        "paging": {
+          "attempted_pages": 1,
+          "max_pages": 200,
+          "stopped_reason": "empty_page"
+        }
+      },
+      "receiver_push_requests_raw": {
+        "ResponseCode": "0",
+        "Status": "success",
+        "pushDomainName": "[]"
+      },
+      "sender_domains_export": {
+        "command": "list_domain",
+        "count": 1,
+        "domains": [
+          "c.com"
+        ],
+        "pages": [
+          {
+            "count": 1,
+            "page_index": 1
+          },
+          {
+            "count": 0,
+            "page_index": 2
+          }
+        ],
+        "paging": {
+          "attempted_pages": 2,
+          "max_pages": 200,
+          "stopped_reason": "empty_page"
+        }
+      }
+    },
+    "baseline": {
+      "accept_max_batches": "",
+      "accept_sleep_between_batches_s": "0.0",
+      "availability_check_mode": "",
+      "continue_on_error": "0",
+      "desired_name_servers_comma": "ns1.example.net,ns2.example.net",
+      "filter_status": "active",
+      "max_domains": "",
+      "ns_max_batches": "",
+      "ns_sleep_between_batches_s": "0.0",
+      "ns_sleep_between_verifications_s": "0.0",
+      "presence_retries": "0",
+      "presence_sleep_s": "0.0",
+      "push_max_batches": "",
+      "push_sleep_between_batches_s": "0.0",
+      "push_unlock_domain_for_push": "1",
+      "receiver_env_fingerprint": "https://api.dynadot.com/api3.json",
+      "resume_receipt_sha256": "",
+      "selected_domains_comma": "c.com",
+      "sender_list_max_pages": "200",
+      "sender_list_page_size": "",
+      "sender_list_sleep_s": "0.0",
+      "sender_status_sleep_s": "0.0",
+      "sleep_after_accept_s": "0.0",
+      "sleep_after_push_s": "0.0",
+      "to_username": "receiver_push_username"
+    },
+    "command": "dynadot-api-tool --output json --plan-out plan.json --env-file sender.env transfer run --receiver-env-file receiver.env --to-push-username receiver_push_username --desired-ns ns1.example.net --desired-ns ns2.example.net",
+    "env_fingerprint": "https://api.dynadot.com/api3.json",
+    "generated_at_utc": "2026-02-12T00:00:00Z",
+    "preconditions": [
+      "env_fingerprint (sender) must match",
+      "receiver env_fingerprint must match",
+      "receiver push username must be correct",
+      "only domains with status=active are included"
+    ],
+    "preview": {
+      "plan": {
+        "desired_name_servers": [
+          "ns1.example.net",
+          "ns2.example.net"
+        ],
+        "need_push_count": 1,
+        "to_push_username": "receiver_push_username"
+      },
+      "receiver": {
+        "already_in_receiver_count": 0,
+        "pending_matching_count": 0,
+        "pending_push_requests_count": 0
+      },
+      "sender": {
+        "active_selected_count": 1,
+        "domains_count": 1,
+        "skipped_already_done_count": 0,
+        "status_counts": {
+          "active": 1
+        }
+      }
+    },
+    "proposed_changes": [
+      {
+        "accept": true,
+        "domain": "c.com",
+        "push": true,
+        "set_name_servers": true
+      }
+    ],
+    "risk_level": "high",
+    "risk_reasons": [
+      "domain-transfer"
+    ],
+    "rollback": {
+      "notes": "Domain pushes and accept actions are not safely auto-reversible.",
+      "supported": false
+    },
+    "recovery": {
+      "end_state": "irreversible_and_clearly_labeled",
+      "backups": [],
+      "snapshots": [],
+      "rollback_plan": null
+    },
+    "selector": {
+      "kind": "transfer.run",
+      "value": "receiver_push_username"
+    },
+    "tool": "dynadot-api-tool",
+    "post_apply_verification_plan": {
+      "notes": "Verify push requests are cleared, domains appear in receiver list, and name servers match desired values.",
+      "type": "read-back"
+    },
+    "verification_plan": {
+      "notes": "Apply requires explicit no-snapshot approval before Dynadot HTTP when no useful before-state can be saved.",
+      "type": "no-snapshot-approval"
+    },
+    "before_state": {
+      "required": true,
+      "supported": false,
+      "status": "no_snapshot_available",
+      "selector": {
+        "kind": "transfer.run",
+        "value": "receiver_push_username"
+      },
+      "storage": null,
+      "saved_at_utc": null,
+      "reason": "Refused: missing explicit no-snapshot approval for a Dynadot write with no reliable before-state snapshot. Review the dry-run plan, then rerun with --ack-no-snapshot if you approve applying without a snapshot.",
+      "notes": "No combined sender/receiver before-state snapshot is available in this example; approved apply may continue after explicit no-snapshot approval."
+    },
+    "version": "0.4.1"
+  },
+  "plan_out": "plan.json"
+}

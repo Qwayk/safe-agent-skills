@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "command": "transactions by-ids",
+  "advertiser_id": "123456",
+  "endpoint": "/advertisers/123456/transactions",
+  "method": "GET",
+  "status": 200,
+  "query": {
+    "ids": "trx-001,trx-002",
+    "timezone": "UTC",
+    "showBasketProducts": "true"
+  },
+  "count": 2,
+  "transactions": [
+    {
+      "id": "trx-001",
+      "status": "approved"
+    },
+    {
+      "id": "trx-002",
+      "status": "pending"
+    }
+  ]
+}

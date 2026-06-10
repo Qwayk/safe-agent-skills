@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "search",
+  "count": 2,
+  "show_price": true,
+  "currency": "USD",
+  "out_path": null,
+  "dynadot": {
+    "command": "search",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "SearchResult": [
+        {
+          "DomainName": "example.com",
+          "Available": "yes",
+          "Currency": "USD",
+          "Price": "10.00"
+        },
+        {
+          "DomainName": "example.net",
+          "Available": "no"
+        }
+      ]
+    }
+  }
+}

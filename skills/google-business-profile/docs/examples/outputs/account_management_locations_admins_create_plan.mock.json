@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "account-management.locations.admins.create",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessaccountmanagement.googleapis.com",
+    "command": "google-business-profile-safe-cli account-management locations admins create --parent locations/abc --admin-file /tmp/location_admin.json",
+    "selector": "locations/abc",
+    "risk_level": "high",
+    "risk_reasons": [
+      "Location admin creation changes access for a location."
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "account-management.locations.admins.create",
+        "selector": "locations/abc",
+        "mask": "admin,role",
+        "body_fingerprint": "7e750a37c74e160fa16a8c2accdf4bf3a633e20a196929237b9ae2127048233a"
+      }
+    ],
+    "verification_plan": [
+      "Read back the admin list from locations.admins.list and confirm the admin appears with the requested role."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/abc",
+      "body_fingerprint": "7e750a37c74e160fa16a8c2accdf4bf3a633e20a196929237b9ae2127048233a",
+      "mask": "admin,role",
+      "mask_fingerprint": "59070f8421c9891b533fc251172edaf012b0b1560369f9818e9b24b4beb71e64"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

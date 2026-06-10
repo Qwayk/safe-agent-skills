@@ -1,0 +1,14 @@
+{
+  "api_key_present": false,
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "base_url": "https://a.klaviyo.com",
+  "company_id_present": false,
+  "env_fingerprint": "a603fcc8c7c2621834c0074a8e1d4eaa1773155e5f36da19108c9e2fbf6b457c",
+  "live_allowed": false,
+  "live_checked": false,
+  "ok": true,
+  "run_id": null,
+  "runs_index": ".state/runs/index.jsonl"
+}

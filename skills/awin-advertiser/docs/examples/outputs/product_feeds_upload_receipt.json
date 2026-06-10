@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "product-feeds upload",
+  "advertiser_id": "123456",
+  "endpoint": "/advertisers/123456/awinfeeds/retail/en_GB/products",
+  "method": "POST",
+  "status": 200,
+  "product_count": 2,
+  "result": {
+    "response_status": 200
+  },
+  "receipt": {
+    "tool": "awin-advertiser-safe-cli",
+    "version": "0.1.1",
+    "applied_at_utc": "2026-06-09T00:00:00Z",
+    "env_fingerprint": "https://api.awin.com",
+    "command": "awin-advertiser-safe-cli product-feeds upload --advertiser-id 123456 --vertical retail --locale en_GB --feed-file examples/feed.jsonl --apply --yes --ack-irreversible --plan-in examples/product_feeds_plan.json --receipt-out examples/product_feeds_receipt.json",
+    "selector": {
+      "advertiser_id": "123456",
+      "endpoint": "advertisers/123456/awinfeeds/retail/en_GB/products"
+    },
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "details": {
+        "response_status": 200,
+        "product_count": 2
+      }
+    },
+    "diff_applied": [
+      {
+        "resource": "product_feeds",
+        "action": "uploaded",
+        "advertiser_id": "123456",
+        "product_count": 2
+      }
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "receipt_out": "examples/product_feeds_receipt.json"
+}

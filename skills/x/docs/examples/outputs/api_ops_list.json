@@ -1,0 +1,1460 @@
+{
+  "count": 156,
+  "ok": true,
+  "ops": [
+    {
+      "method": "GET",
+      "operation_id": "activityStream",
+      "path": "/2/activity/stream",
+      "security": "BearerToken{}",
+      "tags": [
+        "Activity",
+        "Stream"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "addListsMember",
+      "path": "/2/lists/{id}/members",
+      "security": "OAuth2UserToken{list.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "addUserPublicKey",
+      "path": "/2/users/{id}/public_keys",
+      "security": "OAuth2UserToken{dm.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "appendMediaUpload",
+      "path": "/2/media/upload/{id}/append",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Media"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "blockUsersDms",
+      "path": "/2/users/{id}/dm/block",
+      "security": "OAuth2UserToken{dm.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "chatMediaDownload",
+      "path": "/2/chat/media/{conversation_id}/{media_hash_key}",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "chatMediaUploadAppend",
+      "path": "/2/chat/media/upload/{id}/append",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "chatMediaUploadFinalize",
+      "path": "/2/chat/media/upload/{id}/finalize",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "chatMediaUploadInitialize",
+      "path": "/2/chat/media/upload/initialize",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createAccountActivityReplayJob",
+      "path": "/2/account_activity/replay/webhooks/{webhook_id}/subscriptions/all",
+      "security": "BearerToken{}",
+      "tags": [
+        "Account Activity"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createAccountActivitySubscription",
+      "path": "/2/account_activity/webhooks/{webhook_id}/subscriptions/all",
+      "security": "OAuth2UserToken{dm.read,dm.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Account Activity"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createActivitySubscription",
+      "path": "/2/activity/subscriptions",
+      "security": "BearerToken{}||OAuth2UserToken{dm.read,tweet.read}||UserToken{}",
+      "tags": [
+        "Activity",
+        "Stream"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createCommunityNotes",
+      "path": "/2/notes",
+      "security": "OAuth2UserToken{tweet.write}||UserToken{}",
+      "tags": [
+        "Community Notes"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createComplianceJobs",
+      "path": "/2/compliance/jobs",
+      "security": "BearerToken{}",
+      "tags": [
+        "Compliance"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createDirectMessagesByConversationId",
+      "path": "/2/dm_conversations/{dm_conversation_id}/messages",
+      "security": "OAuth2UserToken{dm.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Direct Messages"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createDirectMessagesByParticipantId",
+      "path": "/2/dm_conversations/with/{participant_id}/messages",
+      "security": "OAuth2UserToken{dm.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Direct Messages"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createDirectMessagesConversation",
+      "path": "/2/dm_conversations",
+      "security": "OAuth2UserToken{dm.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Direct Messages"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createLists",
+      "path": "/2/lists",
+      "security": "OAuth2UserToken{list.read,list.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createMediaMetadata",
+      "path": "/2/media/metadata",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Media"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createMediaSubtitles",
+      "path": "/2/media/subtitles",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Media"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createPosts",
+      "path": "/2/tweets",
+      "security": "OAuth2UserToken{tweet.read,tweet.write,users.read}||UserToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createUsersBookmark",
+      "path": "/2/users/{id}/bookmarks",
+      "security": "OAuth2UserToken{bookmark.write,tweet.read,users.read}",
+      "tags": [
+        "Bookmarks",
+        "Users"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createWebhookReplayJob",
+      "path": "/2/webhooks/replay",
+      "security": "BearerToken{}",
+      "tags": [
+        "Webhooks"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createWebhooks",
+      "path": "/2/webhooks",
+      "security": "BearerToken{}||UserToken{}",
+      "tags": [
+        "Webhooks"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "createWebhooksStreamLink",
+      "path": "/2/tweets/search/webhooks/{webhook_id}",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Webhooks"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteAccountActivitySubscription",
+      "path": "/2/account_activity/webhooks/{webhook_id}/subscriptions/{user_id}/all",
+      "security": "BearerToken{}",
+      "tags": [
+        "Account Activity"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteActivitySubscription",
+      "path": "/2/activity/subscriptions/{subscription_id}",
+      "security": "BearerToken{}",
+      "tags": [
+        "Activity"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteAllConnections",
+      "path": "/2/connections/all",
+      "security": "BearerToken{}",
+      "tags": [
+        "Connections"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteCommunityNotes",
+      "path": "/2/notes/{id}",
+      "security": "OAuth2UserToken{tweet.write}||UserToken{}",
+      "tags": [
+        "Community Notes"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteConnectionsByEndpoint",
+      "path": "/2/connections/{endpoint_id}",
+      "security": "BearerToken{}",
+      "tags": [
+        "Connections"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteConnectionsByUuids",
+      "path": "/2/connections",
+      "security": "BearerToken{}",
+      "tags": [
+        "Connections"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteDirectMessagesEvents",
+      "path": "/2/dm_events/{event_id}",
+      "security": "OAuth2UserToken{dm.read,dm.write}||UserToken{}",
+      "tags": [
+        "Direct Messages"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteLists",
+      "path": "/2/lists/{id}",
+      "security": "OAuth2UserToken{list.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteMediaSubtitles",
+      "path": "/2/media/subtitles",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Media"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deletePosts",
+      "path": "/2/tweets/{id}",
+      "security": "OAuth2UserToken{tweet.read,tweet.write,users.read}||UserToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteUsersBookmark",
+      "path": "/2/users/{id}/bookmarks/{tweet_id}",
+      "security": "OAuth2UserToken{bookmark.write,tweet.read,users.read}",
+      "tags": [
+        "Bookmarks",
+        "Users"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteWebhooks",
+      "path": "/2/webhooks/{webhook_id}",
+      "security": "BearerToken{}||UserToken{}",
+      "tags": [
+        "Webhooks"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "deleteWebhooksStreamLink",
+      "path": "/2/tweets/search/webhooks/{webhook_id}",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Webhooks"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "evaluateCommunityNotes",
+      "path": "/2/evaluate_note",
+      "security": "OAuth2UserToken{tweet.write}||UserToken{}",
+      "tags": [
+        "Community Notes"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "finalizeMediaUpload",
+      "path": "/2/media/upload/{id}/finalize",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Media"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "followList",
+      "path": "/2/users/{id}/followed_lists",
+      "security": "OAuth2UserToken{list.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists",
+        "Users"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "followUser",
+      "path": "/2/users/{id}/following",
+      "security": "OAuth2UserToken{follows.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getAccountActivitySubscriptionCount",
+      "path": "/2/account_activity/subscriptions/count",
+      "security": "BearerToken{}",
+      "tags": [
+        "Account Activity"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getAccountActivitySubscriptions",
+      "path": "/2/account_activity/webhooks/{webhook_id}/subscriptions/all/list",
+      "security": "BearerToken{}",
+      "tags": [
+        "Account Activity"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getActivitySubscriptions",
+      "path": "/2/activity/subscriptions",
+      "security": "BearerToken{}",
+      "tags": [
+        "Activity"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getChatConversation",
+      "path": "/2/chat/conversations/{conversation_id}",
+      "security": "OAuth2UserToken{dm.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getChatConversations",
+      "path": "/2/chat/conversations",
+      "security": "OAuth2UserToken{dm.read,users.read}||UserToken{}",
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getCommunitiesById",
+      "path": "/2/communities/{id}",
+      "security": "BearerToken{}||OAuth2UserToken{list.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Communities"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getComplianceJobs",
+      "path": "/2/compliance/jobs",
+      "security": "BearerToken{}",
+      "tags": [
+        "Compliance"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getComplianceJobsById",
+      "path": "/2/compliance/jobs/{id}",
+      "security": "BearerToken{}",
+      "tags": [
+        "Compliance"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getConnectionHistory",
+      "path": "/2/connections",
+      "security": "BearerToken{}",
+      "tags": [
+        "Connections"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getDirectMessagesEvents",
+      "path": "/2/dm_events",
+      "security": "OAuth2UserToken{dm.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Direct Messages"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getDirectMessagesEventsByConversationId",
+      "path": "/2/dm_conversations/{id}/dm_events",
+      "security": "OAuth2UserToken{dm.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Direct Messages"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getDirectMessagesEventsById",
+      "path": "/2/dm_events/{event_id}",
+      "security": "OAuth2UserToken{dm.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Direct Messages"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getDirectMessagesEventsByParticipantId",
+      "path": "/2/dm_conversations/with/{participant_id}/dm_events",
+      "security": "OAuth2UserToken{dm.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Direct Messages"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getInsights28Hr",
+      "path": "/2/insights/28hr",
+      "security": "OAuth2UserToken{tweet.read}||UserToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getInsightsHistorical",
+      "path": "/2/insights/historical",
+      "security": "OAuth2UserToken{tweet.read}||UserToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getListsById",
+      "path": "/2/lists/{id}",
+      "security": "BearerToken{}||OAuth2UserToken{list.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getListsFollowers",
+      "path": "/2/lists/{id}/followers",
+      "security": "BearerToken{}||OAuth2UserToken{list.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getListsMembers",
+      "path": "/2/lists/{id}/members",
+      "security": "BearerToken{}||OAuth2UserToken{list.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getListsPosts",
+      "path": "/2/lists/{id}/tweets",
+      "security": "BearerToken{}||OAuth2UserToken{list.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getMediaAnalytics",
+      "path": "/2/media/analytics",
+      "security": "OAuth2UserToken{tweet.read}||UserToken{}",
+      "tags": [
+        "Media"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getMediaByMediaKey",
+      "path": "/2/media/{media_key}",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read}||UserToken{}",
+      "tags": [
+        "Media"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getMediaByMediaKeys",
+      "path": "/2/media",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read}||UserToken{}",
+      "tags": [
+        "Media"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getMediaUploadStatus",
+      "path": "/2/media/upload",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Media"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getNews",
+      "path": "/2/news/{id}",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "News"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getOpenApiSpec",
+      "path": "/2/openapi.json",
+      "security": "none",
+      "tags": [
+        "General"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getPostsAnalytics",
+      "path": "/2/tweets/analytics",
+      "security": "OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getPostsById",
+      "path": "/2/tweets/{id}",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getPostsByIds",
+      "path": "/2/tweets",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getPostsCountsAll",
+      "path": "/2/tweets/counts/all",
+      "security": "BearerToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getPostsCountsRecent",
+      "path": "/2/tweets/counts/recent",
+      "security": "BearerToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getPostsLikingUsers",
+      "path": "/2/tweets/{id}/liking_users",
+      "security": "OAuth2UserToken{like.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getPostsQuotedPosts",
+      "path": "/2/tweets/{id}/quote_tweets",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getPostsRepostedBy",
+      "path": "/2/tweets/{id}/retweeted_by",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getPostsReposts",
+      "path": "/2/tweets/{id}/retweets",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getRuleCounts",
+      "path": "/2/tweets/search/stream/rules/counts",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getRules",
+      "path": "/2/tweets/search/stream/rules",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getSpacesBuyers",
+      "path": "/2/spaces/{id}/buyers",
+      "security": "OAuth2UserToken{space.read,tweet.read,users.read}",
+      "tags": [
+        "Spaces",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getSpacesByCreatorIds",
+      "path": "/2/spaces/by/creator_ids",
+      "security": "BearerToken{}||OAuth2UserToken{space.read,tweet.read,users.read}",
+      "tags": [
+        "Spaces"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getSpacesById",
+      "path": "/2/spaces/{id}",
+      "security": "BearerToken{}||OAuth2UserToken{space.read,tweet.read,users.read}",
+      "tags": [
+        "Spaces"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getSpacesByIds",
+      "path": "/2/spaces",
+      "security": "BearerToken{}||OAuth2UserToken{space.read,tweet.read,users.read}",
+      "tags": [
+        "Spaces"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getSpacesPosts",
+      "path": "/2/spaces/{id}/tweets",
+      "security": "BearerToken{}||OAuth2UserToken{space.read,tweet.read,users.read}",
+      "tags": [
+        "Spaces",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getTrendsByWoeid",
+      "path": "/2/trends/by/woeid/{woeid}",
+      "security": "BearerToken{}",
+      "tags": [
+        "Trends"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getTrendsPersonalizedTrends",
+      "path": "/2/users/personalized_trends",
+      "security": "OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Trends"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsage",
+      "path": "/2/usage/tweets",
+      "security": "BearerToken{}",
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUserPublicKeys",
+      "path": "/2/users/{id}/public_keys",
+      "security": "OAuth2UserToken{dm.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersAffiliates",
+      "path": "/2/users/{id}/affiliates",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersBlocking",
+      "path": "/2/users/{id}/blocking",
+      "security": "OAuth2UserToken{block.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersBookmarkFolders",
+      "path": "/2/users/{id}/bookmarks/folders",
+      "security": "OAuth2UserToken{bookmark.read,users.read}",
+      "tags": [
+        "Bookmarks",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersBookmarks",
+      "path": "/2/users/{id}/bookmarks",
+      "security": "OAuth2UserToken{bookmark.read,tweet.read,users.read}",
+      "tags": [
+        "Bookmarks",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersBookmarksByFolderId",
+      "path": "/2/users/{id}/bookmarks/folders/{folder_id}",
+      "security": "OAuth2UserToken{bookmark.read,tweet.read,users.read}",
+      "tags": [
+        "Bookmarks",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersById",
+      "path": "/2/users/{id}",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersByIds",
+      "path": "/2/users",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersByUsername",
+      "path": "/2/users/by/username/{username}",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersByUsernames",
+      "path": "/2/users/by",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersFollowedLists",
+      "path": "/2/users/{id}/followed_lists",
+      "security": "BearerToken{}||OAuth2UserToken{list.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersFollowers",
+      "path": "/2/users/{id}/followers",
+      "security": "BearerToken{}||OAuth2UserToken{follows.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersFollowing",
+      "path": "/2/users/{id}/following",
+      "security": "BearerToken{}||OAuth2UserToken{follows.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersLikedPosts",
+      "path": "/2/users/{id}/liked_tweets",
+      "security": "OAuth2UserToken{like.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersListMemberships",
+      "path": "/2/users/{id}/list_memberships",
+      "security": "BearerToken{}||OAuth2UserToken{list.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersMe",
+      "path": "/2/users/me",
+      "security": "OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersMentions",
+      "path": "/2/users/{id}/mentions",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersMuting",
+      "path": "/2/users/{id}/muting",
+      "security": "OAuth2UserToken{mute.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersOwnedLists",
+      "path": "/2/users/{id}/owned_lists",
+      "security": "BearerToken{}||OAuth2UserToken{list.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersPinnedLists",
+      "path": "/2/users/{id}/pinned_lists",
+      "security": "OAuth2UserToken{list.read,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersPosts",
+      "path": "/2/users/{id}/tweets",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersRepostsOfMe",
+      "path": "/2/users/reposts_of_me",
+      "security": "OAuth2UserToken{timeline.read,tweet.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getUsersTimeline",
+      "path": "/2/users/{id}/timelines/reverse_chronological",
+      "security": "OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getWebhooks",
+      "path": "/2/webhooks",
+      "security": "BearerToken{}",
+      "tags": [
+        "Webhooks"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "getWebhooksStreamLinks",
+      "path": "/2/tweets/search/webhooks",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Webhooks"
+      ]
+    },
+    {
+      "method": "PUT",
+      "operation_id": "hidePostsReply",
+      "path": "/2/tweets/{tweet_id}/hidden",
+      "security": "OAuth2UserToken{tweet.moderate.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "initializeMediaUpload",
+      "path": "/2/media/upload/initialize",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Media"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "likePost",
+      "path": "/2/users/{id}/likes",
+      "security": "OAuth2UserToken{like.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets",
+        "Users"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "markChatConversationRead",
+      "path": "/2/chat/conversations/{conversation_id}/read",
+      "security": "OAuth2UserToken{dm.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "mediaUpload",
+      "path": "/2/media/upload",
+      "security": "OAuth2UserToken{media.write}||UserToken{}",
+      "tags": [
+        "Media"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "muteUser",
+      "path": "/2/users/{id}/muting",
+      "security": "OAuth2UserToken{mute.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "pinList",
+      "path": "/2/users/{id}/pinned_lists",
+      "security": "OAuth2UserToken{list.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists",
+        "Users"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "removeListsMemberByUserId",
+      "path": "/2/lists/{id}/members/{user_id}",
+      "security": "OAuth2UserToken{list.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "repostPost",
+      "path": "/2/users/{id}/retweets",
+      "security": "OAuth2UserToken{tweet.read,tweet.write,users.read}||UserToken{}",
+      "tags": [
+        "Tweets",
+        "Users"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "searchCommunities",
+      "path": "/2/communities/search",
+      "security": "OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Communities"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "searchCommunityNotesWritten",
+      "path": "/2/notes/search/notes_written",
+      "security": "OAuth2UserToken{tweet.read}||UserToken{}",
+      "tags": [
+        "Community Notes"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "searchEligiblePosts",
+      "path": "/2/notes/search/posts_eligible_for_notes",
+      "security": "OAuth2UserToken{tweet.read}||UserToken{}",
+      "tags": [
+        "Community Notes"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "searchNews",
+      "path": "/2/news/search",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}",
+      "tags": [
+        "News"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "searchPostsAll",
+      "path": "/2/tweets/search/all",
+      "security": "BearerToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "searchPostsRecent",
+      "path": "/2/tweets/search/recent",
+      "security": "BearerToken{}||OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "searchSpaces",
+      "path": "/2/spaces/search",
+      "security": "BearerToken{}||OAuth2UserToken{space.read,tweet.read,users.read}",
+      "tags": [
+        "Spaces"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "searchUsers",
+      "path": "/2/users/search",
+      "security": "OAuth2UserToken{tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "sendChatMessage",
+      "path": "/2/chat/conversations/{conversation_id}/messages",
+      "security": "OAuth2UserToken{dm.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "sendChatTypingIndicator",
+      "path": "/2/chat/conversations/{conversation_id}/typing",
+      "security": "OAuth2UserToken{dm.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Chat"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamLabelsCompliance",
+      "path": "/2/tweets/label/stream",
+      "security": "BearerToken{}",
+      "tags": [
+        "Compliance",
+        "Stream"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamLikesCompliance",
+      "path": "/2/likes/compliance/stream",
+      "security": "BearerToken{}",
+      "tags": [
+        "Compliance",
+        "Stream"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamLikesFirehose",
+      "path": "/2/likes/firehose/stream",
+      "security": "BearerToken{}",
+      "tags": [
+        "Likes",
+        "Stream"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamLikesSample10",
+      "path": "/2/likes/sample10/stream",
+      "security": "BearerToken{}",
+      "tags": [
+        "Likes",
+        "Stream"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamPosts",
+      "path": "/2/tweets/search/stream",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamPostsCompliance",
+      "path": "/2/tweets/compliance/stream",
+      "security": "BearerToken{}",
+      "tags": [
+        "Compliance",
+        "Stream"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamPostsFirehose",
+      "path": "/2/tweets/firehose/stream",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamPostsFirehoseEn",
+      "path": "/2/tweets/firehose/stream/lang/en",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamPostsFirehoseJa",
+      "path": "/2/tweets/firehose/stream/lang/ja",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamPostsFirehoseKo",
+      "path": "/2/tweets/firehose/stream/lang/ko",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamPostsFirehosePt",
+      "path": "/2/tweets/firehose/stream/lang/pt",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamPostsSample",
+      "path": "/2/tweets/sample/stream",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamPostsSample10",
+      "path": "/2/tweets/sample10/stream",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "streamUsersCompliance",
+      "path": "/2/users/compliance/stream",
+      "security": "BearerToken{}",
+      "tags": [
+        "Compliance",
+        "Stream"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "unblockUsersDms",
+      "path": "/2/users/{id}/dm/unblock",
+      "security": "OAuth2UserToken{dm.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "unfollowList",
+      "path": "/2/users/{id}/followed_lists/{list_id}",
+      "security": "OAuth2UserToken{list.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists",
+        "Users"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "unfollowUser",
+      "path": "/2/users/{source_user_id}/following/{target_user_id}",
+      "security": "OAuth2UserToken{follows.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "unlikePost",
+      "path": "/2/users/{id}/likes/{tweet_id}",
+      "security": "OAuth2UserToken{like.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Tweets",
+        "Users"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "unmuteUser",
+      "path": "/2/users/{source_user_id}/muting/{target_user_id}",
+      "security": "OAuth2UserToken{mute.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Users"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "unpinList",
+      "path": "/2/users/{id}/pinned_lists/{list_id}",
+      "security": "OAuth2UserToken{list.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists",
+        "Users"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "operation_id": "unrepostPost",
+      "path": "/2/users/{id}/retweets/{source_tweet_id}",
+      "security": "OAuth2UserToken{tweet.read,tweet.write,users.read}||UserToken{}",
+      "tags": [
+        "Tweets",
+        "Users"
+      ]
+    },
+    {
+      "method": "PUT",
+      "operation_id": "updateActivitySubscription",
+      "path": "/2/activity/subscriptions/{subscription_id}",
+      "security": "BearerToken{}",
+      "tags": [
+        "Activity"
+      ]
+    },
+    {
+      "method": "PUT",
+      "operation_id": "updateLists",
+      "path": "/2/lists/{id}",
+      "security": "OAuth2UserToken{list.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Lists"
+      ]
+    },
+    {
+      "method": "POST",
+      "operation_id": "updateRules",
+      "path": "/2/tweets/search/stream/rules",
+      "security": "BearerToken{}",
+      "tags": [
+        "Stream",
+        "Tweets"
+      ]
+    },
+    {
+      "method": "GET",
+      "operation_id": "validateAccountActivitySubscription",
+      "path": "/2/account_activity/webhooks/{webhook_id}/subscriptions/all",
+      "security": "OAuth2UserToken{dm.read,dm.write,tweet.read,users.read}||UserToken{}",
+      "tags": [
+        "Account Activity"
+      ]
+    },
+    {
+      "method": "PUT",
+      "operation_id": "validateWebhooks",
+      "path": "/2/webhooks/{webhook_id}",
+      "security": "BearerToken{}||UserToken{}",
+      "tags": [
+        "Webhooks"
+      ]
+    }
+  ]
+}

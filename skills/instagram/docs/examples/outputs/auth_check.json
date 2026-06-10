@@ -1,0 +1,10 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "error": "Missing access token. Run auth token set or auth code exchange.",
+  "error_type": "ValidationError",
+  "ok": false,
+  "run_id": null,
+  "runs_index": "<tool-root>/.state/runs/index.jsonl"
+}

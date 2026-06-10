@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "legacy-v49.accounts.locations.reviews.delete-reply",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli legacy-v49 accounts locations reviews delete-reply --name accounts/123/locations/456/reviews/review-123",
+    "selector": "accounts/123/locations/456/reviews/review-123",
+    "risk_level": "high",
+    "risk_reasons": [
+      "Review reply deletion"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "legacy-v49.accounts.locations.reviews.delete-reply",
+        "selector": "accounts/123/locations/456/reviews/review-123",
+        "mask": "reviewReply",
+        "body_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      }
+    ],
+    "verification_plan": [
+      "Get the review and verify reviewReply is absent."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "accounts/123/locations/456/reviews/review-123",
+      "body_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mask": "reviewReply",
+      "mask_fingerprint": "41f310ac5e2c9ff26317f0eb44703ae8a4fb7a8b2b28444d128620399471ab3f"
+    }
+  },
+  "plan_path": null
+}

@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "tool": "google-ads-api-tool",
+  "version": "0.1.0",
+  "authenticated": true,
+  "customer_count": 1,
+  "customer_ids": ["YOUR_CUSTOMER_ID"],
+  "resource_names": ["customers/YOUR_CUSTOMER_ID"],
+  "auth": {
+    "developer_token_masked": "AB***WXYZ",
+    "client_id_masked": "12***apps.example.invalid",
+    "login_customer_id": null
+  },
+  "warnings": []
+}

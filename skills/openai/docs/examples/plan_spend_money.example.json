@@ -1,0 +1,77 @@
+{
+  "tool": "openai-api-tool",
+  "version": "0.1.0",
+  "dry_run": true,
+  "env_fingerprint": "https://api.openai.com/v1",
+  "operation": {
+    "operation_command": "createModeration",
+    "method": "POST",
+    "path_template": "/moderations",
+    "path_filled": "/moderations",
+    "url": "https://api.openai.com/v1/moderations",
+    "doc_url": "https://developers.openai.com/api/reference/resources/moderations/methods/create",
+    "missing_path_params": []
+  },
+  "inputs": {
+    "path": {},
+    "query": {},
+    "body": {
+      "input": "Example text to moderate"
+    },
+    "files": {}
+  },
+  "requirements": {
+    "missing_required": []
+  },
+  "metadata": {
+    "tags": [
+      "Moderations"
+    ],
+    "beta_header": null
+  },
+  "classification": {
+    "method": "POST",
+    "is_read": false,
+    "is_write": true,
+    "spend_money": true,
+    "irreversible": false,
+    "tags": [
+      "Moderations"
+    ],
+    "gates": {
+      "apply": true,
+      "live": true,
+      "plan_in": true,
+      "yes": true,
+      "ack_spend_money": true,
+      "ack_irreversible": false
+    }
+  },
+  "recovery": {
+    "automatic_rollback": false,
+    "backups": [],
+    "snapshots": [],
+    "rollback_plan": null,
+    "restore_note": "No built-in rollback, snapshots, or provider restore are available in this CLI. If rollback is needed, run a separate explicit restore action through API calls."
+  },
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "blocked",
+    "operation": "createModeration",
+    "target": "https://api.openai.com/v1/moderations",
+    "saved_path": null,
+    "provider_backup_id": null,
+    "reason": "This write family does not yet capture the live OpenAI state before apply. The safe action is to stop before any provider write."
+  },
+  "verification_plan": {
+    "type": "no-snapshot-approval",
+    "status": "blocked-before-provider-write",
+    "notes": "Apply must require explicit no-snapshot approval before OpenAI API key use or HTTP until command-specific saved snapshot support is available."
+  },
+  "post_apply_verification_plan": {
+    "type": "read-back",
+    "notes": "Future behavior after before-state support: apply the write and verify with a read-back or documented idempotence check."
+  },
+  "plan_hash": "9cfc29e4386b302f0b6b14659065f9d94db499640dde6dc50ace1c6f425b1091"
+}

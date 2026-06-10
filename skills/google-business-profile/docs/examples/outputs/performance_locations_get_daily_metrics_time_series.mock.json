@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "operation": "performance.locations.get-daily-metrics-time-series",
+  "request": {
+    "method": "GET",
+    "host": "https://businessprofileperformance.googleapis.com",
+    "path": "v1/locations/123:getDailyMetricsTimeSeries",
+    "params": {
+      "dailyMetric": "DAILY_ORDERS",
+      "dailyRange.startDate.year": 2025,
+      "dailyRange.startDate.month": 1,
+      "dailyRange.startDate.day": 1,
+      "dailyRange.endDate.year": 2025,
+      "dailyRange.endDate.month": 1,
+      "dailyRange.endDate.day": 31
+    }
+  },
+  "response": {
+    "timeSeries": {
+      "datedValues": [
+        {
+          "date": {
+            "year": 2025,
+            "month": 1,
+            "day": 1
+          },
+          "value": "8"
+        }
+      ]
+    }
+  }
+}

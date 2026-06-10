@@ -1,0 +1,38 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "legacy-v49.accounts.locations.verifications.complete",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/legacy_verification_complete.plan.json --receipt-out /tmp/legacy_verification_complete.receipt.json legacy-v49 accounts locations verifications complete --name accounts/123/locations/456/verifications/verify-001 --pin-file /tmp/pin.txt",
+    "selector": "accounts/123/locations/456/verifications/verify-001",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "legacy-v49.accounts.locations.verifications.list",
+      "request": {
+        "method": "GET",
+        "host": "https://mybusiness.googleapis.com",
+        "path": "v4/accounts/123/locations/456/verifications",
+        "params": {}
+      },
+      "response": {
+        "verifications": [
+          {
+            "name": "accounts/123/locations/456/verifications/verify-001",
+            "state": "COMPLETED"
+          }
+        ]
+      }
+    },
+    "diff_applied": [
+      "state"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "receipt_path": null
+}

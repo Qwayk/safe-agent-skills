@@ -1,0 +1,64 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "command": "operations.call",
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "command": "cloudflare-api-tool --env-file /path/to/your/project/.env --output json email-routing rules create --zone-id <your_zone_id> --body-json-file ./body.json",
+    "env_fingerprint": "http://example.invalid/client/v4",
+    "generated_at_utc": "2026-02-10T00:00:00Z",
+    "notes": [],
+    "preconditions": [
+      "API token has least-privilege permissions needed for this operation.",
+      "Path params and request body (if any) are correct.",
+      "For non-GET operations and file-only outputs: review the plan output before applying."
+    ],
+    "proposed_changes": [
+      {
+        "action": "call",
+        "method": "POST",
+        "operation_id": "email-routing-routing-rules-create-routing-rule",
+        "path": "/zones/<your_zone_id>/email/routing/rules",
+        "resource": "openapi_operation",
+        "sensitivity": "sensitive_read"
+      }
+    ],
+    "request": {
+      "body_meta": {
+        "body_kind": "json",
+        "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "size_bytes": 2,
+        "source": "./body.json"
+      },
+      "content_type": null,
+      "method": "POST",
+      "operation_id": "email-routing-routing-rules-create-routing-rule",
+      "out": null,
+      "path_resolved": "/zones/<your_zone_id>/email/routing/rules",
+      "path_template": "/zones/{zone_id}/email/routing/rules",
+      "query": {},
+      "sensitivity": "sensitive_read"
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "This is a Cloudflare API write.",
+      "This endpoint may return code/values/tokens; output must be written to a file."
+    ],
+    "selector": {
+      "method": "POST",
+      "operation_id": "email-routing-routing-rules-create-routing-rule",
+      "path_resolved": "/zones/<your_zone_id>/email/routing/rules",
+      "path_template": "/zones/{zone_id}/email/routing/rules",
+      "tags": "Email Routing routing rules"
+    },
+    "tool": "cloudflare-api-tool",
+    "verification_plan": [
+      "Best-effort verification: for many writes, the tool attempts a read-back GET when a matching endpoint exists in the snapshot. Otherwise it records API response success."
+    ],
+    "version": "0.7.3"
+  },
+  "run_id": "2026-02-10T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}

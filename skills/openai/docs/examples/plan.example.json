@@ -1,0 +1,45 @@
+{
+  "tool": "openai-api-tool",
+  "version": "0.1.0",
+  "dry_run": true,
+  "env_fingerprint": "https://api.openai.com/v1",
+  "operation": {
+    "operation_command": "ListContainers",
+    "method": "GET",
+    "path_template": "/containers",
+    "path_filled": "/containers",
+    "url": "https://api.openai.com/v1/containers",
+    "doc_url": "https://developers.openai.com/api/reference/resources/containers/methods/list",
+    "missing_path_params": []
+  },
+  "inputs": {
+    "path": {},
+    "query": {},
+    "body": null,
+    "files": {}
+  },
+  "requirements": {
+    "missing_required": []
+  },
+  "metadata": {
+    "tags": [],
+    "beta_header": null
+  },
+  "classification": {
+    "method": "GET",
+    "is_read": true,
+    "is_write": false,
+    "spend_money": false,
+    "irreversible": false,
+    "tags": [],
+    "gates": {
+      "apply": false,
+      "live": false,
+      "plan_in": false,
+      "yes": false,
+      "ack_spend_money": false,
+      "ack_irreversible": false
+    }
+  },
+  "plan_hash": "a6f1c7a7f2d85cf3e8af830057c08d74651b81e6152f1a17aac7021b69fabb93"
+}

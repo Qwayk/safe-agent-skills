@@ -1,0 +1,72 @@
+{
+  "tool": "unsplash-api-tool",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-01-22T00:00:00Z",
+  "env_fingerprint": "https://api.unsplash.com",
+  "command": "unsplash-api-tool photos download --id Dwu85P9SOIk --dest downloads/Dwu85P9SOIk.jpg",
+  "selector": {
+    "kind": "photo",
+    "value": "Dwu85P9SOIk"
+  },
+  "risk_level": "medium",
+  "risk_reasons": [
+    "Triggers Unsplash download tracking endpoint",
+    "May write a file to disk"
+  ],
+  "preconditions": [
+    "env_fingerprint must match",
+    "photo id must match"
+  ],
+  "baseline": {
+    "env_fingerprint": "https://api.unsplash.com",
+    "photo_id": "Dwu85P9SOIk",
+    "dest": "downloads/Dwu85P9SOIk.jpg",
+    "overwrite": false
+  },
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "blocked",
+    "reason": "Unsplash download tracking is a provider-side write-like event. This source tool does not yet save real before-state for that endpoint.",
+    "provider_write": {
+      "method": "GET",
+      "endpoint": "/photos/Dwu85P9SOIk/download",
+      "tracks_download": true
+    },
+    "local_state": {
+      "dest": "downloads/Dwu85P9SOIk.jpg",
+      "overwrite": false
+    }
+  },
+  "proposed_changes": [
+    {
+      "action": "GET /photos/:id/download",
+      "notes": "Unsplash download tracking endpoint (required for compliance)"
+    },
+    {
+      "action": "write file",
+      "notes": "Download the binary file from the returned `url` and write it to disk.",
+      "overwrite": false,
+      "path": "downloads/Dwu85P9SOIk.jpg"
+    }
+  ],
+  "verification_plan": {
+    "status": "blocked_before_apply",
+    "steps": [
+      "Confirm no Unsplash provider write endpoint was called.",
+      "Confirm no local destination file was written by the write flow.",
+      "Confirm no successful write receipt was emitted."
+    ],
+    "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply."
+  },
+  "recovery": {
+    "end_state": "irreversible_and_clearly_labeled",
+    "strategy": "no_inverse",
+    "rollback_ready": false,
+    "automatic_rollback": false,
+    "backups": [],
+    "snapshots": [],
+    "rollback_plan": null,
+    "restore_note": "Unsplash download tracking cannot be rolled back by this CLI. If a local file was written, delete it manually."
+  }
+}

@@ -1,0 +1,13 @@
+analyticsdata.properties.audienceLists.create
+analyticsdata.properties.audienceLists.get
+analyticsdata.properties.audienceLists.list
+analyticsdata.properties.audienceLists.query
+analyticsdata.properties.getPropertyQuotasSnapshot
+analyticsdata.properties.recurringAudienceLists.create
+analyticsdata.properties.recurringAudienceLists.get
+analyticsdata.properties.recurringAudienceLists.list
+analyticsdata.properties.reportTasks.create
+analyticsdata.properties.reportTasks.get
+analyticsdata.properties.reportTasks.list
+analyticsdata.properties.reportTasks.query
+analyticsdata.properties.runFunnelReport

@@ -1,0 +1,35 @@
+{
+  "preset": "analysis_pack_v1",
+  "customer_id": "YOUR_CUSTOMER_ID",
+  "since": "2026-01-01",
+  "until": "2026-01-31",
+  "segmentation": "base",
+  "include_optional": true,
+  "groups": [
+    {
+      "group_id": "campaigns",
+      "template_variant": "base",
+      "query": "SELECT customer.id, campaign.id, campaign.resource_name, campaign.name, campaign.status, campaign.advertising_channel_type, campaign.advertising_channel_sub_type FROM campaign WHERE campaign.status != 'REMOVED'"
+    },
+    {
+      "group_id": "ad_groups",
+      "template_variant": "base",
+      "query": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group.name, ad_group.status, ad_group.type FROM ad_group WHERE ad_group.status != 'REMOVED'"
+    },
+    {
+      "group_id": "ad_group_ads",
+      "template_variant": "base",
+      "query": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_ad.resource_name, ad_group_ad.status, ad_group_ad.ad.id, ad_group_ad.ad.type, ad_group_ad.ad.final_urls, ad_group_ad.ad.expanded_text_ad.headline_part1, ad_group_ad.ad.expanded_text_ad.headline_part2, ad_group_ad.ad.expanded_text_ad.headline_part3, ad_group_ad.ad.expanded_text_ad.description, ad_group_ad.ad.expanded_text_ad.description2, ad_group_ad.ad.responsive_search_ad.headlines, ad_group_ad.ad.responsive_search_ad.descriptions, ad_group_ad.ad.responsive_display_ad.headlines, ad_group_ad.ad.responsive_display_ad.descriptions, ad_group_ad.ad.responsive_display_ad.long_headline FROM ad_group_ad WHERE ad_group_ad.status != 'REMOVED'"
+    },
+    {
+      "group_id": "ad_daily_metrics",
+      "template_variant": "base",
+      "query": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_ad.resource_name, ad_group_ad.ad.id, segments.date, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM ad_group_ad WHERE segments.date >= '2026-01-01' AND segments.date <= '2026-01-31'"
+    },
+    {
+      "group_id": "asset_groups",
+      "template_variant": "base",
+      "query": "SELECT customer.id, campaign.id, campaign.resource_name, asset_group.id, asset_group.resource_name, asset_group.name, asset_group.status FROM asset_group WHERE asset_group.status != 'REMOVED'"
+    }
+  ]
+}

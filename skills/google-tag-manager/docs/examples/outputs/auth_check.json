@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "error_type": "ValidationError",
+  "error": "Missing required env var(s) for oauth_refresh_token: GTM_OAUTH_CLIENT_ID, GTM_OAUTH_CLIENT_SECRET, GTM_OAUTH_REFRESH_TOKEN"
+}

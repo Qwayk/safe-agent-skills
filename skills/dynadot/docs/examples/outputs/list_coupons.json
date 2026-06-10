@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "list_coupons",
+  "coupon_type": "registration",
+  "out_path": null,
+  "dynadot": {
+    "command": "list_coupons",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "CouponList": [
+        {
+          "CouponCode": "REG10",
+          "CouponType": "registration",
+          "Discount": "10%"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "count": 1,
+  "item_page": 1,
+  "items": [
+    {
+      "affiliate_url": "https://www.amazon.com/dp/B000000000/?tag=example-20",
+      "asin": "B000000000",
+      "images": {
+        "large": {
+          "height": 1000,
+          "url": "https://images.example.invalid/large.jpg",
+          "width": 1000
+        },
+        "medium": {
+          "height": 500,
+          "url": "https://images.example.invalid/medium.jpg",
+          "width": 500
+        },
+        "small": {
+          "height": 160,
+          "url": "https://images.example.invalid/small.jpg",
+          "width": 160
+        }
+      },
+      "title": "Example Product Title (synthetic)"
+    }
+  ],
+  "limit": 1,
+  "ok": true,
+  "query": "wireless earbuds",
+  "request_id": "00000000-0000-0000-0000-000000000000",
+  "search_index": "All"
+}
+
