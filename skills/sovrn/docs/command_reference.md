@@ -1,23 +1,20 @@
 # Command reference
 
-This page is a technical reference (it includes CLI commands).
-If you’re non-technical, start with `docs/use_cases.md` and `docs/onboarding.md`.
+Use this page when you already want exact Sovrn commands.
 
-## Onboarding
+If you want the non-technical path first, start with [What you can do](use_cases.md) and [Connect your account](onboarding.md).
+
+## Good first commands
 
 - `sovrn-safe-cli onboarding [--no-write-env]`
-
-## Auth
-
 - `sovrn-safe-cli --output json --version`
 - `sovrn-safe-cli auth check`
 
-Current note:
-- `auth check` currently validates local Sovrn config presence only
-- use the real `commerce` and `advertising` commands for live vendor calls
-- the exact locked surface is tracked in `docs/api_coverage.md`
+`auth check` validates local Sovrn config presence only.
+Use the real `commerce` or `advertising` commands for live vendor proof.
+The locked shipped surface is tracked in [API coverage](api_coverage.md).
 
-## Commerce
+## Commerce reads
 
 - `sovrn-safe-cli commerce campaigns get --search PRIMARY`
 - `sovrn-safe-cli commerce links check --url https://example.com/product`
@@ -36,7 +33,7 @@ Current note:
 - `sovrn-safe-cli commerce products recommend --page-url article-123 --content "gift guide copy"`
 - `sovrn-safe-cli commerce comparisons prices search --market usd_en --plainlink https://merchant.example/item`
 
-## Advertising
+## Advertising reads
 
 - `sovrn-safe-cli advertising reports account get --start 2026-01-01T00:00:00Z --end 2026-01-02T00:00:00Z --metrics publisherRevenue --dimensions auction`
 - `sovrn-safe-cli advertising reports bid get --start 2026-01-01T00:00:00Z --end 2026-01-02T00:00:00Z --metrics publisherRevenue --dimensions advertiser`
@@ -45,11 +42,11 @@ Current note:
 - `sovrn-safe-cli advertising reports domain-bid get --domain-name example.com --start 2026-01-01T00:00:00Z --end 2026-01-02T00:00:00Z --metrics publisherRevenue --dimensions advertiser`
 - `sovrn-safe-cli advertising reports custom get --start 2026-01-01T00:00:00Z --end 2026-01-02T00:00:00Z --metrics publisherRevenue --dimensions domain --granularity day`
 
-## Runs (history)
+## Local runs and history
 
-The current official Sovrn surface in this tool is read-only. That means normal endpoint commands do not create run-history folders yet.
+The shipped Sovrn surface is read-only, so normal endpoint commands do not create run-history folders today.
 
-The local history helpers still exist because the repo standard requires them for future write-capable additions or local audit review.
+The local history helpers still exist for local audit review and any future write-capable additions.
 
 Optional flags:
 - `--run-id <id>`: set a specific run id (otherwise the tool generates one)

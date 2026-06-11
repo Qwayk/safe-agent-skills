@@ -1,14 +1,12 @@
-# Proof pack
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+Use this page when you want the shortest honest answer to one question: what has really been proved for this Sovrn skill so far?
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run these commands yourself. They are here so you or your agent can audit what ran, what came back, and what still is not proved live yet.
 
 Rules:
-- Never include secrets (client secrets, site keys, Authorization headers).
-- Use obvious redactions/placeholder values in examples.
+- Never include secrets.
+- Use obvious redactions or placeholders in examples.
 - Keep this file short and factual.
 
 ## Last verified
@@ -19,24 +17,24 @@ Rules:
 - Provider API version (if applicable): `See the live endpoint docs in docs/references.md`
 - Environment: `Local build review only. Live vendor proof not captured yet.`
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
-1) Create venv + install:
+1. Create venv and install:
 - `python3 -m venv .venv`
 - `.venv/bin/python -m pip install -e .`
 
-2) Version (no `.env` required):
+2. Version check with no `.env` required:
 - `sovrn-safe-cli --output json --version`
 
-3) Auth/config check (read-only):
+3. Local auth check:
 - `sovrn-safe-cli --output json auth check`
 
-4) One representative Commerce read query:
+4. One representative Commerce read query:
 - `sovrn-safe-cli --output json commerce campaigns get --search PRIMARY`
 
-5) One representative Advertising read query:
+5. One representative Advertising read query:
 - `sovrn-safe-cli --output json advertising reports account get --start 2026-01-01T00:00:00Z --end 2026-01-02T00:00:00Z --metrics publisherRevenue --dimensions auction`
 
 ## Example outputs (redacted)

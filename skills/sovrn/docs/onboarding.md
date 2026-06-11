@@ -1,21 +1,21 @@
-# Onboarding (non-technical)
+# Connect your Sovrn account
 
 This tool runs on your computer and connects to Sovrn using local credentials that stay in your own `.env` file.
 
 You do not need to be technical. You can ask an AI agent to run checks, reports, and discovery work for you.
 
-Important:
+Keep these points in mind:
 - This shipped surface is read-only.
 - It does not make live changes to your Sovrn account.
 - Your `.env` file contains secrets. Keep it private and never paste it into chat.
 
-## Step 1: Create the local `.env` file (on your machine)
+## Step 1: Create the local `.env` file
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
-3) Fill the Sovrn fields you want to use first.
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
+3. Fill the Sovrn fields you want to use first.
 
 ## Step 2: Get the Sovrn values
 
@@ -47,9 +47,9 @@ You can fill all four values now, or start with only the product area you need f
 2. Copy the publisher ID that matches your reporting account.
 3. Paste it into `SOVRN_ADVERTISING_PUBLISHER_ID`.
 
-## Step 3: What to ask your AI agent (examples)
+## Step 3: Ask for a safe first check
 
-These are plain-English requests that fit the real shipped surface.
+These are plain-English requests that fit the real shipped surface:
 
 - “Confirm the tool is connected, then show me which Sovrn command bundles are ready.”
 - “Check whether these product URLs can be monetized before we use them.”

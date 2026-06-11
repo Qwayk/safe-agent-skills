@@ -30,3 +30,23 @@ class TestDocsFormatting(unittest.TestCase):
         if bad_lines:
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
+
+    def test_public_docs_do_not_leak_private_workspace_paths(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        files = [
+            root / "docs" / "proof.md",
+            root / "docs" / "examples" / "outputs" / "version.json",
+            root / "docs" / "examples" / "outputs" / "auth_check.json",
+            root / "docs" / "examples" / "outputs" / "commerce_campaigns_invalid_secret.json",
+        ]
+        forbidden = [
+            "/home/" + "ubuntu/",
+            "api" + "-tools-for-ai-agents",
+            "pro" + "jects/" + "qwayk-skills-control-room/",
+            "api" + "-tools/" + "qwayk-sovrn-safe-agent-cli/",
+        ]
+        for path in files:
+            text = path.read_text(encoding="utf-8")
+            for needle in forbidden:
+                with self.subTest(path=path.name, needle=needle):
+                    self.assertNotIn(needle, text)

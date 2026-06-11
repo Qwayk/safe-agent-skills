@@ -15,7 +15,6 @@ Use this page when you want the right Sovrn doc quickly.
 - [Authentication details](authentication.md)
 - [Configuration](configuration.md)
 - [Troubleshooting](troubleshooting.md)
-- [Technical architecture](architecture.md)
 
 ## Proof and references
 
@@ -23,3 +22,4 @@ Use this page when you want the right Sovrn doc quickly.
 - [API coverage](api_coverage.md)
 - [Source references](references.md)
 - [Examples](examples/outputs/)
+- [Technical architecture](architecture.md)

@@ -1,43 +1,40 @@
-# Safety model
+# How this skill stays safe
 
-Rules:
-- Keep the shipped surface honest about what the official Sovrn APIs really support.
-- Never flatten the real auth split into one fake credential model.
-- Never log secrets.
-- Refuse when unsure; do not guess.
+This skill is careful in a different way from a write-capable skill.
 
-## What safety means in this tool today
+The main job here is not slowing down before a destructive change. The main job is keeping a read-only Sovrn tool honest about what it can query, which credential type each command needs, and what still is not proved live yet.
 
-Right now the official command surface is read-only. Safety mostly means:
+## What safety means here
 
-- the command names match official Sovrn endpoints
-- the auth rules match the official docs
-- output and audit logs redact keys
-- browser-only JavaScript docs and MCP beta docs are not over-claimed as shipped CLI coverage
+- The shipped command names match real Sovrn Commerce and Advertising endpoints.
+- The tool keeps the real auth split visible instead of pretending one key can do every job.
+- Secrets stay redacted in output and logs.
+- Browser-only JavaScript docs and MCP beta docs are not presented as shipped CLI coverage.
+- If local setup is incomplete, the tool should say that clearly instead of guessing.
 
-## Read-only proof
+## Read-only proof loop
 
-For the current read-only commands, the main proof loop is:
+For the current read-only surface, the clean proof loop is:
 
-1. Confirm local config with `auth check`.
-2. Run a real endpoint command.
-3. Inspect the returned JSON plus the official coverage ledger.
-4. Save redacted examples in committed docs when they become stable.
+1. Confirm local readiness with `auth check`.
+2. Run a real Commerce or Advertising read command.
+3. Inspect the returned JSON and the coverage ledger.
+4. Save redacted examples in committed docs when the output is stable enough to keep.
 
-## Future write-capable rule
+## If this tool ever gains writes later
 
-If official write-capable Sovrn endpoints are ever added later, the tool must return to the normal repo pattern:
+If official write-capable Sovrn endpoints are added later, the tool must return to the normal repo safety pattern:
 
 1. Dry-run by default.
 2. Require explicit apply flags.
 3. Verify after the change.
 4. Save plans and receipts without secrets.
 
-## Run history
+## Local run history
 
-The local run-history helpers remain in place for future write-capable additions:
+The local run-history helpers stay in place for local audit review and future write-capable additions:
 
 - `.state/runs/<run_id>/`
 - `.state/runs/index.jsonl`
 
-These are for local audit and future proof work. Read-only commands do not create new run folders right now.
+Read-only commands do not create new run folders today.

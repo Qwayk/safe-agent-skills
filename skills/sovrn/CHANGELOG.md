@@ -14,12 +14,14 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Redacted proof examples for version output, local auth shape, and a live invalid-secret Commerce response.
 - Expanded validation coverage to 31 passing tests, including command wiring, auth honesty, redaction, rate-limit hint checks, and coverage-sync protection.
 - A live-proof capture guide for the remaining success-example step.
+- A publish-ready README contract test plus a public-doc path-leak guard for the Sovrn first-screen docs and proof files.
 
 ### Changed
 - Scaffold docs and runtime now use the real Sovrn auth split instead of the old generic token model.
 - Coverage docs now mark the mapped CLI surface as implemented, not only planned.
 - `auth check` now reports real command-bundle readiness instead of treating any single configured value as enough.
 - Front-door docs, proof paths, and examples now match the shipped read-only Sovrn surface and use the repo-standard `docs/examples/outputs/` layout.
+- Rebuilt the README and the first-screen user docs into the public skill pattern so Sovrn now starts with a user-first opening, a clear safe first ask, and human doc navigation instead of the old split layout.
 
 ### Fixed
 - Base CLI runtime: ensure argument/usage errors in `--output json` mode emit exactly one JSON error object (no argparse usage text).

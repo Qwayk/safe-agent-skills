@@ -17,7 +17,6 @@ class TestCliJsonParseErrors(unittest.TestCase):
         payload = json.loads(buf.getvalue())
         self.assertFalse(payload["ok"])
         self.assertEqual(payload["error_type"], "ValidationError")
-
     def test_missing_required_subcommand_is_json_error(self) -> None:
         # `auth` requires a subcommand.
         buf = io.StringIO()
