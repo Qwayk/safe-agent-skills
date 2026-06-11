@@ -2,7 +2,7 @@
 
 Purpose:
 - Make “all capabilities” measurable (no guessing about what’s implemented).
-- Give the Manager a single main reference for review/approval.
+- Give the Manager a single source of truth for review/approval.
 - Help customers quickly see what the tool can and cannot do.
 
 Rules:
@@ -20,7 +20,7 @@ Rules:
 - Current write contract: all shipped Dynadot write families plan only, then require explicit no-snapshot approval before Dynadot HTTP until command-specific saved snapshot support is available.
 - Write plans expose `before_state.required: true`, `before_state.supported: false`, and `before_state.status: no_snapshot_available`.
 - Plans expose the no-recovery contract through `recovery`, with `end_state`, `backups: []`, `snapshots: []`, and `rollback_plan: null`.
-- Current write apply does not produce a receipt.
+- Approved supported writes can produce receipts with `--receipt-out`, and apply runs also save local run artifacts.
 
 ## Command coverage ledger (official docs)
 

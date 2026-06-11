@@ -3,35 +3,41 @@
 Use this page when you want ideas for real Dynadot jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## Domain portfolio review
 
-Most no‑code tools are great for *single events* (“when X happens, do Y”). A safe agent CLI is built for:
+- "List all my active domains and flag anything expiring in the next 30 or 60 days."
+- "Show my account balance, coupons, and recent order status."
+- "Export my current contacts, DNS, and name server setup to files."
 
-- Bulk work on existing libraries (hundreds/thousands of records)
-- Preview-first changes (dry-run -> explicit apply attempt -> explicit no-snapshot approval today)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Audit artifacts (plans/refusals/logs) you can keep for proof and debugging
+## Domain moves and transfers
 
-## Common use cases (examples)
+- "Preview a push of these domains to another Dynadot account, but do not apply yet."
+- "Run the guided transfer plan from sender to receiver and show me the full sequence before any live step."
+- "Check incoming push requests on the receiver side and show what is ready to accept."
 
-- “Pull a report of the things that match these rules, and export it to a file.”
-- “Plan a push of hundreds of domains to another Dynadot account, then show why apply requires explicit no-snapshot approval when no saved snapshot is available.”
-- “Find the right targets safely (avoid guessing), then propose changes for review.”
-- “Plan a large set of metadata edits from a spreadsheet, then confirm the tool requires explicit no-snapshot approval before writing.”
-- “Do a safe, repeatable transformation across many items, and prove it’s complete.”
+## Name server and DNS change planning
 
-More Dynadot-specific examples:
-- “Show me all my domains, and flag anything expiring soon.”
-- “For these domains, show current name servers and DNS, then propose what to change.”
-- “Turn WHOIS privacy on/off for this list of domains (preview first; apply requires explicit no-snapshot approval).”
-- “Monitor marketplace listings / auctions and export a daily report.”
-- “Generate transfer auth codes (treat them as sensitive) and save them to a private file.”
+- "Export current name servers for these domains and build a diff against the target."
+- "Preview a bulk name server migration and show batch pacing before anything goes live."
+- "Verify the read-back results after the approved name server change."
 
-## What you’ll see from the agent (trust + safety)
+## Account and policy changes
+
+- "Preview WHOIS privacy changes for this domain list."
+- "Plan forwarding, renew-option, folder, or contact changes across many domains."
+- "Review these job rows from a CSV and show which changes are safe to plan first."
+
+## Pricing, auctions, and marketplace research
+
+- "Show current TLD prices for these extensions."
+- "List open auctions, closeouts, or backorders that match my filters."
+- "Export marketplace listings and auction details for review."
+
+## What you'll see from the agent
 
 When you ask for a change, the agent should:
 
-1) Show a dry-run preview of what would change.
-2) Try apply only after explicit confirmation.
-3) Confirm the explicit no-snapshot approval and that nothing changed.
-4) Point to any saved proof artifacts.
+1. Start with the read-only facts or a dry-run plan.
+2. Tell you if the job is monetary, irreversible, or missing a saved before-state.
+3. Apply only after explicit approval.
+4. Leave a receipt or a clear refusal you can review later.

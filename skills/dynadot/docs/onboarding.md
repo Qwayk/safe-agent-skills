@@ -1,62 +1,57 @@
 # Onboarding (non-technical)
 
-This tool runs on your computer, and connects to a vendor API using an API key/token that you store locally.
+This tool runs on your computer and connects to your Dynadot account using an API key that you keep locally.
 
-You do not need to be technical. You can simply ask an AI agent to do work, and the agent will run the tool for you and report back with a preview, the needed approval, and the receipt or exact blocker when changes are requested.
+You do not need to be technical. You can ask an AI agent to do the work, and the agent will show a preview first, explain any approval it needs, and then give you a receipt or a clear blocker.
 
 Important:
 - Your `.env` file contains secrets. Keep it private and never paste it into chat.
 
-## Step 1: Create the local `.env` file (on your machine)
+## Step 1) Get your Dynadot API key
+
+In Dynadot:
+
+1. Sign in to your account.
+2. Open **Tools -> API**.
+3. Create or reveal your API key.
+4. If you have a stable IP, add an IP whitelist too.
+5. Copy the key and keep it ready for your local `.env` file.
+
+## Step 2) Fill the local `.env` file
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
-3) Fill these fields:
-   - `DYNADOT_API_KEY` (required): your Dynadot API key.
-   - `DYNADOT_API_BASE_URL` (recommended to keep default): `https://api.dynadot.com/api3.json`
-   - `DYNADOT_TIMEOUT_S` (optional): request timeout in seconds (default is fine for most users).
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
+3. Fill these fields:
+   - `DYNADOT_API_KEY` with your real Dynadot API key
+   - `DYNADOT_API_BASE_URL` and keep the default unless Dynadot tells you otherwise
+   - `DYNADOT_TIMEOUT_S` only if you need a different timeout
 
-## Step 2: Get the API key/token (tool-specific)
+## Step 3) Know the extra values some jobs need
 
-How to get a Dynadot API key (high-level, no secrets):
+- Domain pushes use a **Push Username**. Ask the receiver for that exact Dynadot push username first.
+- Guided transfer runs between two Dynadot accounts need two local env files:
+  - sender account as `--env-file`
+  - receiver account as `--receiver-env-file`
+- Transfer auth codes are sensitive. Save them to a local file instead of pasting them into chat.
 
-1) Log in to Dynadot.
-2) Go to **Tools → API**.
-3) Create (or view) your API key.
-4) (Optional but recommended) set an **IP whitelist** if you have a stable IP.
-5) Copy the API key and paste it into your `.env` as `DYNADOT_API_KEY=...`.
+## Step 4) What to ask your AI agent
 
-Important note for domain pushes:
-- Dynadot uses a **Push Username** for pushes. This is not always the same as the person’s login username/email.
-- Make sure the receiver gives you their **Push Username**.
+These are plain-English requests. The safest path is always: read first, preview next, apply only after review.
 
-Important note for transfers between two Dynadot accounts:
-- You will need **two** `.env` files (one per Dynadot account).
-- You run the transfer workflow using the sender as `--env-file`, and you pass the receiver using `--receiver-env-file`.
+- "Check the Dynadot tool is connected and show me my active domains."
+- "Flag anything expiring soon and tell me what needs attention first."
+- "Preview a push of these domains to another Dynadot account, but do not apply anything yet."
+- "Show me a name server diff for these domains before any bulk change."
+- "Plan the transfer run and explain whether this job needs no-snapshot approval before it can go live."
 
-Rules:
-- Use short numbered steps (no jargon).
-- Tell the user exactly what to copy/paste into which `.env` field.
-- Never instruct the user to paste secrets into chat.
-- If the vendor UI offers multiple key types, explicitly name the one required (example: “Admin API key”, not “Content API key”).
+## If something fails
 
-## Step 3: What to ask your AI agent (examples)
+Common causes:
+- missing or wrong values in `.env`
+- API key restrictions or IP whitelist mismatch
+- wrong receiver push username
+- sender and receiver env files mixed up during a transfer workflow
 
-These are plain-English requests. The agent should start with a read-only check, then show a preview before applying changes.
-
-- “Confirm the tool is connected, then show me what it can do on my account.”
-- “Find the right targets safely (avoid guessing), then propose changes for my review.”
-- “Apply these metadata updates from a spreadsheet and give me a receipt of what changed.”
-- “Do a dry-run preview first. Only apply after I approve.”
-- “Do a dry-run preview first and tell me whether a saved before-state, no-snapshot approval, or a true blocker applies.”
-
-## Step 4: If something fails
-
-The most common issues are:
-- Missing/incorrect values in `.env`
-- Wrong key type (example: read-only key vs admin key)
-- Network/auth restrictions in the vendor account
-
-The real tool should explain common errors in `docs/troubleshooting.md`.
+See [Troubleshooting](troubleshooting.md) for symptoms and fixes.
