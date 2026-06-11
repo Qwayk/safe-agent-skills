@@ -1,5 +1,7 @@
 # Plausible
 
+**Capability:** Reads + careful changes
+
 Use this skill when you want your agent to answer real Plausible questions without guessing from raw docs.
 
 You can hand your agent jobs like weekly traffic and conversion reports, Stats query validation, signup or membership funnel analysis, and careful site or event changes.
@@ -7,6 +9,8 @@ You can hand your agent jobs like weekly traffic and conversion reports, Stats q
 Read work stays simple. Riskier work slows down on purpose: site changes start as dry-run plans, destructive actions need extra approval, and event sends need explicit approval because they write analytics data that cannot be undone automatically.
 
 A good first ask is: "Show me what changed in traffic, sources, and goal conversions over the last 7 days."
+
+Install slug: `plausible`
 
 ## What this skill helps with
 
@@ -86,10 +90,15 @@ This skill covers:
 
 ## Helpful docs
 
-- `docs/use_cases.md`
-- `docs/onboarding.md`
-- `docs/safety_model.md`
-- `docs/quickstart.md`
-- `docs/command_reference.md`
-- `docs/proof.md`
-- `docs/api_coverage.md`
+If you want the easiest path first:
+
+- [What you can do with Plausible](docs/use_cases.md)
+- [Connect your Plausible account](docs/onboarding.md)
+- [How this skill stays safe](docs/safety_model.md)
+
+If you want commands and proof:
+
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)

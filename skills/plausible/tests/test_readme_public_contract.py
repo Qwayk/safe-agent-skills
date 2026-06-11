@@ -21,3 +21,25 @@ class TestReadmePublicContract(unittest.TestCase):
         ]
         for section in required_sections:
             self.assertIn(section, text)
+
+    def test_helpful_docs_stay_human_facing(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "README.md").read_text(encoding="utf-8")
+
+        self.assertIn("## Helpful docs", text)
+        self.assertIn("[What you can do with Plausible](docs/use_cases.md)", text)
+        self.assertIn("[Connect your Plausible account](docs/onboarding.md)", text)
+        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
+        self.assertIn("[Command guide](docs/command_reference.md)", text)
+        self.assertIn("[Proof and verification](docs/proof.md)", text)
+        self.assertNotIn("- `docs/use_cases.md`", text)
+        self.assertNotIn("- `docs/onboarding.md`", text)
+
+    def test_quickstart_opens_with_human_links(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "quickstart.md").read_text(encoding="utf-8")
+
+        self.assertIn("[What you can do](use_cases.md)", text)
+        self.assertIn("[Connect your account](onboarding.md)", text)
+        self.assertNotIn("`docs/use_cases.md`", text)
+        self.assertNotIn("`docs/onboarding.md`", text)

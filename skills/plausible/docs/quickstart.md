@@ -1,8 +1,6 @@
 # Quickstart
 
-If you’re non-technical, start with:
-- `docs/use_cases.md`
-- `docs/onboarding.md`
+If you're non-technical, start with [What you can do](use_cases.md) and [Connect your account](onboarding.md).
 
 This page is a technical reference (it includes CLI commands).
 
@@ -39,9 +37,6 @@ python3 -m plausible_api_tool --env-file .env auth check
 ```bash
 python3 -m plausible_api_tool --env-file .env stats goals list --date-range 30d --limit 25
 ```
-
-5) Optional: copy the project playbook template into your project folder:
-- `docs/project_playbook_template.md`
 
 ## Useful read-only shortcuts
 

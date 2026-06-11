@@ -37,4 +37,4 @@ Common causes:
 - Wrong base URL (self-hosted vs cloud)
 - Wrong site ID/domain mismatches
 
-See `docs/troubleshooting.md` for symptoms and fixes.
+See [Troubleshooting](troubleshooting.md) for symptoms and fixes.
