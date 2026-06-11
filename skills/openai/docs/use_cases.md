@@ -1,29 +1,30 @@
 # Use cases
 
 Use this page when you want ideas for real OpenAI jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+If you need setup first, start with [Connect your OpenAI access](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## Common use cases
 
-Most no‑code tools are great for *single events* (“when X happens, do Y”). A safe agent CLI is built for:
+- "Check my OpenAI setup and confirm which live reads are safe to run first."
+- "List the available OpenAI operations and help me find the right one for this job."
+- "Review models, files, assistants, threads, vector stores, or usage before we change anything."
+- "Check project or organization access before we plan a real change."
+- "Prepare a careful plan for a file upload, response call, vector store update, or other write."
+- "Show me the review steps for a spend-money action before anything goes live."
+- "Build a reviewed plan for batch or fine-tune work and save it so I can check it first."
 
-- Bulk work on existing libraries (hundreds/thousands of records)
-- Preview-first changes (dry-run → review → safe apply attempt)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Audit artifacts (plans/refusals/read receipts/logs) you can keep for proof and debugging
+## Why this skill is more useful than raw docs
 
-## Common use cases (examples)
+This skill gives your agent a safer path through real OpenAI API work.
 
-- “Pull a report of the things that match these rules, and export it to a file.”
-- “Find the right targets safely (avoid guessing), then propose changes for review.”
-- “Prepare a large set of small metadata edits from a spreadsheet, then stop safely before provider writes when no saved snapshot is available.”
-- “Do a safe, repeatable transformation across many items, and prove it’s complete.”
+- It can start with local operation discovery before any live network call.
+- It can keep all live reads behind `--live` so nothing reaches the API by accident.
+- It can show a dry-run plan before risky, spend-money, or irreversible actions.
+- It can leave plans, receipts, run history, docs, and tests in one place so you can inspect what happened.
+- It can record when a write needed explicit no-snapshot approval because there was no useful saved before-state.
 
-## What you’ll see from the agent (trust + safety)
+## What this skill intentionally does not promise
 
-When you ask for a change, the agent should:
-
-1) Show a dry-run preview of what would change.
-2) Attempt write apply only after explicit confirmation.
-3) Require explicit no-snapshot approval before OpenAI HTTP if the write still lacks before-state support.
-4) Provide the plan/refusal proof paths.
+- It does not promise a built-in undo path for every OpenAI write.
+- It does not treat spend-money actions like cheap or harmless reads.
+- It does not guess the right operation or payload when the target is unclear.

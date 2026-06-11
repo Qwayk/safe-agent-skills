@@ -1,43 +1,75 @@
-# Onboarding (non-technical)
+# Onboarding
 
-This CLI runs locally and needs an OpenAI API key for live reads. Current writes create reviewable plans, then require explicit no-snapshot approval before OpenAI HTTP when no saved snapshot is available.
+Use this page when you want the shortest safe setup path for OpenAI.
 
-Important: keep your `.env` file private and never paste it into chat.
+This tool runs locally and needs an OpenAI API key for live reads or writes.
+Keep your `.env` file private, and never paste keys into chat or shell history notes.
 
-## Step 1: Create the `.env` file
+## Step 1: Create the local `.env` file
 
-1) Copy `.env.example` to `.env` in the tool folder.
-2) Fill the following keys with values from your OpenAI account:
-   - `OPENAI_API_BASE_URL`: `https://api.openai.com/v1` or the private endpoint your org provides.
-   - `OPENAI_API_KEY`: the key you created for API access (use the same one you use for `curl https://api.openai.com/v1/models`).
-   - `OPENAI_ORGANIZATION_ID`: optional, include it if your admin enforces org scoping.
-   - `OPENAI_PROJECT_ID`: optional, include it if you only want to act within a specific OpenAI project.
-   - `OPENAI_TIMEOUT_S`: optional request timeout in seconds (default `30`).
+In the tool folder:
+
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
+3. Fill the fields you need:
+
+```text
+OPENAI_API_BASE_URL=https://api.openai.com/v1
+OPENAI_API_KEY=
+OPENAI_ORGANIZATION_ID=
+OPENAI_PROJECT_ID=
+OPENAI_TIMEOUT_S=30
+```
+
+If you want the tool to create the starter file for you, run:
+
+```bash
+openai-api-tool onboarding
+```
 
 ## Step 2: Get an OpenAI API key
 
-1) Log in to https://platform.openai.com/.
-2) Open the “API keys” page from the left nav.
-3) Click “Create new secret key”, give it a descriptive name, and copy the value immediately.
-4) Paste the key value into the `OPENAI_API_KEY` field in `.env`. Do not paste it anywhere else.
+1. Sign in to [platform.openai.com](https://platform.openai.com/).
+2. Open the API keys page.
+3. Create a new secret key and copy it immediately.
+4. Paste it into `OPENAI_API_KEY` in `.env`.
 
-If your account uses org/project scoping, copy the matching values from the “Organizations” or “Projects” pages into `OPENAI_ORGANIZATION_ID`/`OPENAI_PROJECT_ID`.
+If your account uses organization or project scoping, copy those IDs into the matching `.env` fields too.
 
-## Step 3: Run the first check
+## Step 3: Check setup before real work
 
-1) With the `.env` file populated, run `openai-api-tool --output json --version`. It should print the CLI version without contacting the network.
-2) Ask the AI agent to run `openai-api-tool auth check --output json` to verify credentials (the agent will do this for you before any other command).
+Ask your agent to start with safe checks like:
 
-## Step 4: What to ask your AI agent (examples)
+- "Check the OpenAI skill is configured."
+- "List the available operations before we run anything live."
+- "Show me which live reads are safe to run first."
 
-Ask the agent to:
-- “List the available OpenAI operations, show me a dry-run plan for one, and tell me which flags would be needed for an apply attempt.”
-- “Inspect my files bucket, show me a plan for uploading a file, and save the plan to `plan.json` so I can review.”
-- “Prepare a spend-money operation plan, require `--ack-spend-money`, and confirm the current apply attempt will require explicit no-snapshot approval before OpenAI HTTP.”
+If you want to run the first checks yourself:
+
+```bash
+openai-api-tool --output json --version
+openai-api-tool api ops list
+openai-api-tool --output json --live auth check
+```
+
+The first two checks stay local. The last one is your first real OpenAI network read.
+
+## Step 4: First requests to give your agent
+
+These are good first requests in plain English:
+
+- "List the available OpenAI operations and find the right one for this job."
+- "Review my models, files, or usage safely first."
+- "Prepare the write plan first and show me the approval steps."
+- "For any spend-money action, save the plan and make me review it before apply."
 
 ## Step 5: If something fails
 
-Common issues:
-- Missing/incorrect `.env` values. Re-run `openai-api-tool auth check --output json` to confirm the local config shape.
-- API key lacks the necessary role. Check your OpenAI admin console and create an admin key if needed.
-- Network restrictions. Confirm the CLI can access `https://api.openai.com` from the machine before running with `--live`.
+The most common setup problems are:
+
+- the API key is missing or wrong
+- the organization or project ID is wrong for this account
+- the machine cannot reach the OpenAI API
+- the action needs more permissions or billing access than this key has
+
+Use [Troubleshooting](troubleshooting.md) if the first checks fail.
