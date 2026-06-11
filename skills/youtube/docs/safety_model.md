@@ -1,107 +1,57 @@
-# Safety model
+# How this skill stays safe
 
-Rules:
-- Dry-run by default; write-capable commands make reviewable plans first.
-- Confirmed write apply requires real before-state, provider-backup data, or explicit no-snapshot approval before the write.
-- Refuse when unsure; do not guess.
-- Batch write jobs require `--apply` and `--yes`, then refuse for the same before-state reason.
-- Never log secrets.
-- For API methods, use explicit per-method commands: `youtube-api-tool api <resource.method>` (no generic dispatcher).
-- For media downloads, save to a file (never dump raw/binary bodies into JSON output).
+Use this page when you want to know what the YouTube skill will do right away, what it will slow down on purpose, and where the real approval gates are.
 
-## Two-layer safety (recommended)
+## Safe by default
 
-There are two kinds of safety:
+- API calls are plan-only by default.
+- Live provider reads need explicit `--live`.
+- `channels resolve` is also plan-only unless you add `--live`.
+- `channels export --live` writes only local dataset files under `--out-dir`; it does not change YouTube state.
+- Captions and other media downloads must use `--download-to` so binary data goes to a file, not into JSON output.
+- Secrets are redacted from logs, JSON output, and audit artifacts.
 
-1) Mechanical correctness (the tool)
-- For write-capable commands, the tool now stops before provider writes, uploads, token writes, demo/job writes, or receipt output unless saved snapshot support is available.
-- The refusal includes a verification plan that proves nothing was changed.
+## What slows down on purpose
 
-2) Intent alignment (a reviewer)
-- A reviewer checks that the planned change matches the goal and context.
-- This is best done by a human or a smart agent (we recommend Codex).
+- Non-GET API calls start as dry-run plans first.
+- Uploads start as dry-run plans first.
+- Auth login and token-set flows start as dry-run plans first.
+- Demo writes and write jobs also start as dry-run plans first.
+- When there is no saved before-state, higher-risk actions need `--ack-no-snapshot` before the tool can try the write.
+- Delete methods also need `--ack-irreversible`.
 
-The tool should stay deterministic; the review is outside the tool.
+## What the approval flags mean
 
-## Plan -> Review -> Approve No-Snapshot When Needed
+- `--live` means "run the real read or the approved local export now."
+- `--apply --yes` means "I reviewed the plan and want the write attempt to continue."
+- `--ack-no-snapshot` means "I understand there may be no saved before-state to roll back from."
+- `--ack-irreversible` means "I understand this delete or one-way action may not be reversible."
 
-Recommended workflow for writes:
+## What is still planning-only today
 
-1) Generate a plan (dry-run).
-2) Review the plan (human/Codex).
-3) If a user confirms apply, the tool requires explicit no-snapshot approval before the write unless command-specific before-state/provider backup support exists.
-4) Review the refusal and confirm there was no provider write, upload, token write, or success receipt.
+- `youtube-api-tool auth login --console` validates your OAuth setup and builds the plan, but it does not write `.state/token.json` yet.
+- `youtube-api-tool auth token set --file token.json` also stops at the plan/refusal step today.
 
-## Plans and receipts (recommended)
+That means OAuth setup can still be inspected safely, but token writing is not automated by this build yet.
 
-For write-capable commands, treat the dry-run output as a **plan**:
-- what will change
-- what must be true to apply safely (preconditions)
-- how verification will happen
-- recovery contract for post-change handling
+## Local file safety
 
-After a blocked apply, output a **refusal**:
-- why nothing changed
-- the plan that would have been applied
-- how to verify that no provider write, upload, token write, or success receipt happened
-- recovery contract for what is not recoverable in this runtime
+- `channels export --live` refuses a non-empty output folder unless you choose `--overwrite`, `--yes`, or `--resume`.
+- Downloads only write to the exact file path you give with `--download-to`.
+- Local run history stays under `.state/runs/` so the proof is easy to inspect later.
 
-Plans, refusals, receipts, and audit logs must never include secrets.
+## What proof it leaves behind
 
-### Plan/receipt files (recommended v2 flags)
+- Dry-run plans can be saved with `--plan-out`.
+- Commands that really apply can save receipts with `--receipt-out` when the command supports it.
+- Blocked apply attempts return a refusal that explains why nothing changed.
+- Plans, refusals, receipts, and audit logs must stay secret-safe.
 
-If a command supports writes, it should also support file outputs:
-- `--plan-out <path>`: write the dry-run plan JSON to a file (for review)
-- `--plan-in <path>`: attempt from a saved plan file (currently refuses for write-capable commands when no saved snapshot is available)
-- `--receipt-out <path>`: write a post-apply receipt only for flows that actually apply; blocked write applies must not create a success receipt
+## The practical review loop
 
-This makes the workflow repeatable in CI and easier to review.
+For anything risky, the expected flow is:
 
-## Run history (recommended for customer-ready tools)
-
-For write-capable commands, this template automatically writes a local run folder (gitignored):
-- `.state/runs/<run_id>/`
-
-It also appends a simple history row to:
-- `.state/runs/index.jsonl`
-
-These live next to your `--env-file` (usually next to your `.env` file), so you can always find them.
-
-This is designed for vibe coders:
-- You can ask your agent “what happened last time?” and it can use `runs list/show`.
-- You don’t need to manually browse folders.
-
-Rules:
-- These artifacts must never include secrets.
-- Plans/refusals/receipts/audit logs are proof of what happened and how it was verified.
-
-## Risk levels (guideline)
-
-- Low: create new drafts; small safe edits.
-- Medium: edit an existing draft; single-resource updates.
-- High: edit published content; status changes; deletes; batch.
-- Irreversible: actions that cannot realistically be undone (example: analytics events, licensing downloads).
-
-High/irreversible actions should require an explicit plan + confirmation.
-
-For irreversible actions, consider an extra acknowledgement flag:
-- `--ack-irreversible`
-
-## Drift detection (recommended for plan apply)
-
-If you support applying from a saved plan file, refuse if the target changed since the plan was created.
-Examples:
-- `updated_at` / `modified_gmt`
-- a content hash
-
-## Rollback (recommended default)
-
-- Do not auto-rollback silently.
-- If verification fails and automatic recovery is possible, generate a recovery plan and require explicit apply.
-- If automatic recovery is not possible, mark the action as irreversible and state that contract explicitly.
-
-In this runtime, write actions require explicit no-snapshot approval before apply and remain explicit no-recovery:
-- `end_state` is `irreversible_and_clearly_labeled`
-- `automatic_rollback` is false
-- `backups`, `snapshots`, and `rollback_plan` are empty/`null`
-- no provider restore is available
+1. Generate the dry-run plan.
+2. Review the channel, method, payload, file path, and risk.
+3. Approve the exact live flags only if the plan still looks right.
+4. Check the receipt or refusal so you know what really happened.

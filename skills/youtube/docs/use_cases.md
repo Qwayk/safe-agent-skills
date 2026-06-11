@@ -1,40 +1,53 @@
-# Use cases
+# What you can do with YouTube
 
 Use this page when you want ideas for real YouTube jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+If you need setup first, start with [Connect your YouTube account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## Why this skill is useful
 
-Most no‑code tools are great for *single events* (“when X happens, do Y”). A safe agent CLI is built for:
+Most no-code automation works best on one small trigger. This skill is built for the bigger YouTube jobs that usually get messy:
 
-- Bulk work on existing channels and libraries (hundreds/thousands of items)
-- Preview-first changes (plan/dry-run -> explicit approval when needed -> receipt or honest blocker)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Audit artifacts (plans/refusals/logs) you can keep for proof and debugging
+- channel research across many videos, playlists, and captions
+- safe preview-first changes instead of instant blind writes
+- official API reads instead of brittle scraping guesses
+- proof you can keep: plans, refusals, receipts, and export files
 
-## Common YouTube use cases (examples)
+## Common YouTube use cases
 
-- Reporting and inventory
-  - “List the latest uploads on this channel, including titles and publish dates, then export a CSV.”
-  - “Find videos with a specific keyword in the title/description and summarize what needs updating.”
-- Video publishing and metadata updates
-  - “Plan a private video upload with a draft title/description, then show me the approval needed before any upload happens.”
-  - “Preview title/description/tag updates from a spreadsheet, then confirm whether before-state, no-snapshot approval, or a true blocker applies.”
-- Playlists and organization
-  - “Plan a new playlist and video order, then wait for my approval before anything changes.”
-  - “Audit playlists: find duplicates, missing videos, or incorrect ordering and propose fixes.”
-- Comments and moderation
-  - “Pull recent comment threads for these videos and flag anything that violates the policy.”
-  - “Plan templated replies to comments, then confirm the write attempt requires explicit no-snapshot approval before posting.”
-- Captions and localization
-  - “Download captions for these videos for a localization workflow.”
-  - “Plan updated caption track uploads, then confirm no upload endpoint is called.”
+### Channel research and reporting
 
-## What you’ll see from the agent (trust + safety)
+- “Resolve this channel from the handle, then show the latest uploads and total public video count.”
+- “Search this channel for videos about a topic and summarize what needs updating.”
+- “Export the full public video library for this channel into a local dataset I can review.”
+
+### Publishing and metadata work
+
+- “Plan a private video upload with this title, description, and file path, then stop for approval.”
+- “Preview title, tag, or description updates from a spreadsheet before anything changes.”
+- “Check which videos are missing a clear call to action or a needed link.”
+
+### Playlists and organization
+
+- “Plan a new playlist and the first set of videos to add.”
+- “Audit playlists for duplicates, missing videos, or weak ordering.”
+- “Compare channel sections or playlist naming so we can clean them up later.”
+
+### Captions and localization
+
+- “Download captions for these videos into local files for translation.”
+- “Plan caption uploads or replacements, then show me the exact approval gate before any write.”
+- “Find videos that are missing captions or language coverage.”
+
+### Comments and moderation
+
+- “Pull the recent comment threads for these videos and flag likely moderation issues.”
+- “Plan a reply or moderation action, but stop before posting anything.”
+
+## What you should expect from the agent
 
 When you ask for a change, the agent should:
 
-1) Show a dry-run preview of what would change.
-2) Attempt only after explicit confirmation.
-3) Require explicit no-snapshot approval before provider writes/uploads when no saved snapshot is available.
-4) Provide a receipt or short refusal summary and point to saved proof.
+1. Start with a safe read or a dry-run plan.
+2. Tell you clearly whether the action is just a local export, a live read, or a real YouTube write.
+3. Ask for explicit approval before uploads, non-GET writes, or other higher-risk changes.
+4. Finish with proof: a receipt, a refusal that proves nothing changed, or saved local export files.

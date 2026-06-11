@@ -1,7 +1,7 @@
 # Command reference
 
 Use this page when you need the exact YouTube command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+If you want the plain-English path first, start with [What you can do with YouTube](use_cases.md), [Connect your YouTube account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 
@@ -39,11 +39,11 @@ If you want the plain-English path first, start with [What you can do](use_cases
   - For delete methods: `youtube-api-tool --apply --yes --ack-irreversible --plan-in plan.json api <resource.method>`
   - When using `--plan-in`, do not pass request-building flags (`--params-*`, `--body-*`, `--upload-*`, `--download-*`, `--paginate`, `--max-pages`).
 - Upload (mediaUpload methods only; minimum: `videos.insert`):
-  - `youtube-api-tool api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file video.mp4`
-  - `youtube-api-tool --apply --yes api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file video.mp4` (requires explicit no-snapshot approval before upload endpoint use)
+  - `youtube-api-tool api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file /path/to/existing-video.mp4`
+  - `youtube-api-tool --apply --yes api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file /path/to/existing-video.mp4` (requires explicit no-snapshot approval before upload endpoint use)
   - Resumable uploads:
-    - `youtube-api-tool api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file video.mp4 --upload-protocol resumable`
-    - `youtube-api-tool --apply --yes api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file video.mp4 --upload-protocol resumable` (requires explicit no-snapshot approval before upload session creation)
+    - `youtube-api-tool api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file /path/to/existing-video.mp4 --upload-protocol resumable`
+    - `youtube-api-tool --apply --yes api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file /path/to/existing-video.mp4 --upload-protocol resumable` (requires explicit no-snapshot approval before upload session creation)
 
 ## Channels (first-class workflows)
 

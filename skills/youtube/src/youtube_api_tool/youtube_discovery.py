@@ -7,7 +7,6 @@ from typing import Any, Iterable
 
 
 def tool_root_dir() -> Path:
-    # .../this skill folder/src/youtube_api_tool/youtube_discovery.py
     return Path(__file__).resolve().parents[2]
 
 

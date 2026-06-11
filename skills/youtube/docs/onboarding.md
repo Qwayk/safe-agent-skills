@@ -1,84 +1,75 @@
-# Onboarding (non-technical)
+# Connect your YouTube account
 
-This tool runs on your computer, and connects to the YouTube Data API v3 using an API key and/or OAuth token that you store locally.
+This tool runs on your computer and connects to the **YouTube Data API v3** using credentials you keep locally.
 
-You do not need to be technical. You can simply ask an AI agent to do work, and the agent will run the tool for you and report back with a preview. For write attempts, the current tool requires explicit no-snapshot approval before changing YouTube when no saved snapshot is available.
+You do not need to be technical. You can ask an AI agent to do the work, and the agent should come back with a safe read, a dry-run plan for higher-risk actions, and proof of what really happened.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+Keep these private:
+- your `.env` file
+- your OAuth client secrets file
+- your local `.state/token.json` file if you already have one
 
-## Step 1: Create the local `.env` file (on your machine)
+## Step 1: Choose the access mode you need
+
+- **API key** is enough for many public read-only requests.
+- **OAuth** is needed for private reads, uploads, and most write-capable actions.
+
+If you are unsure, start with OAuth so the skill can cover more of the real YouTube surface later.
+
+## Step 2: Create the credentials in Google Cloud
+
+Open Google Cloud Console, select or create a project, and enable **YouTube Data API v3**.
+
+### Option A: API key for public reads
+
+1. Go to **APIs & Services -> Credentials**.
+2. Create an API key.
+3. Keep it private for your local `.env` file.
+
+### Option B: OAuth for private reads and writes
+
+1. Go to **APIs & Services -> Credentials**.
+2. Create an **OAuth client ID**.
+3. Choose **Desktop app**.
+4. Download the client secrets JSON file to your machine.
+
+## Step 3: Fill the local `.env` file
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
-3) Set at least one auth option:
-   - API key (limited, mostly read-only): `YOUTUBE_API_KEY=...`
-   - OAuth client secrets path (needed to plan OAuth login): `YOUTUBE_OAUTH_CLIENT_SECRETS_FILE=/absolute/path/to/client_secrets.json`
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
+3. Fill what you need:
+   - `YOUTUBE_API_KEY=...` for public reads
+   - `YOUTUBE_OAUTH_CLIENT_SECRETS_FILE=/absolute/path/to/client_secrets.json` for OAuth
+   - optional scope override only when you really need a different scope set
 
-Notes:
-- Do not commit `.env`.
-- OAuth tokens are stored under `.state/token.json` (gitignored).
+Keep the default base URL unless you have a very unusual setup.
 
-## Step 2: Get the API key/token (tool-specific)
+## Step 4: Know the current OAuth limit in this build
 
-You can use either an API key (limited, mostly read-only) or OAuth (recommended).
+This part matters:
 
-### Option A: OAuth (Desktop app) + blocked `auth login` plan
+- `youtube-api-tool auth login --console` validates the OAuth setup and builds the write plan, but it does **not** write `.state/token.json` yet.
+- `youtube-api-tool auth token set --file token.json` also stops at the plan/refusal step today.
 
-1) Open Google Cloud Console and select/create a project.
-2) Enable the **YouTube Data API v3** for that project.
-3) Go to **APIs & Services → Credentials** and create an **OAuth client ID**:
-   - Application type: **Desktop app** (installed app)
-4) Download the client secrets JSON file to your machine.
-5) In your `.env`, set:
+If you already have a valid token JSON from a separate approved flow, place it at `.state/token.json` next to your `.env` so the read-only token checks can see it.
 
-```bash
-YOUTUBE_OAUTH_CLIENT_SECRETS_FILE=/absolute/path/to/client_secrets.json
-```
+## Step 5: Ask for safe first checks
 
-6) Run the login plan/refusal (console flow is the intended mode when token writing is later re-enabled):
+These are good first requests for your agent:
 
-```bash
-youtube-api-tool auth login --console
-```
+- “Confirm the YouTube skill is connected and show me the safe read options first.”
+- “Resolve this channel from the handle and show the latest uploads.”
+- “Plan a channel export to a local folder, but do not write anything yet.”
+- “Plan a video upload and stop before any upload or metadata change happens.”
 
-7) Confirm no token was written by this blocked flow:
-
-```bash
-youtube-api-tool auth token status
-youtube-api-tool auth check
-```
-
-### Option B (optional): API key (for some public reads)
-
-1) In Google Cloud Console: **APIs & Services → Credentials**.
-2) Create an **API key**.
-3) In your `.env`, set:
-
-```bash
-YOUTUBE_API_KEY=YOUR_API_KEY
-```
-
-Note:
-- OAuth is still required for many endpoints (including uploads).
-- The tool never prints API keys or OAuth tokens to stdout/stderr/audit logs.
-
-## Step 3: What to ask your AI agent (examples)
-
-These are plain-English requests. The agent should start with a read-only check, then show a preview before applying changes.
-
-- “Confirm the tool is connected, then show me what it can do on my account.”
-- “Find the right targets safely (avoid guessing), then propose changes for my review.”
-- “Preview these metadata updates from a spreadsheet and confirm the tool requires explicit no-snapshot approval before changing YouTube.”
-- “Do a dry-run preview first. Only attempt after I approve, and confirm nothing changed.”
-
-## Step 4: If something fails
+## If something fails
 
 The most common issues are:
-- Missing/incorrect values in `.env`
-- Using an API key for an endpoint that requires OAuth
-- Missing OAuth consent/scopes for the requested action
+- missing or wrong values in `.env`
+- using an API key for an endpoint that really needs OAuth
+- missing scopes or channel permissions
+- expecting the built-in OAuth helpers to write the token file automatically in this build
 
-See: `docs/troubleshooting.md`.
+See [Troubleshooting](troubleshooting.md) for the usual error paths and fixes.

@@ -1,65 +1,62 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Provide small, verifiable evidence of behavior (offline where possible).
-- Point to committed redacted outputs and the pinned discovery snapshot.
-- Write apply requires explicit no-snapshot approval before provider writes, uploads, token writes, demo/job writes, or success receipts when before-state/provider-backup support is not available.
-- Recovery is explicit in plans/refusals; this tool does not create recoverability mechanisms (no backups/snapshots/provider restore).
+Use this page when you want the shortest honest answer to one question: what has really been proved for this YouTube skill so far?
+
+You do not need to run these commands yourself. They are here so you or your agent can audit what ran, what came back, and what still depends on local auth, scopes, or approvals.
 
 Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Keep examples deterministic and reviewable.
+- Never include secrets.
+- Use obvious redactions or placeholders in examples.
+- Keep this file short, factual, and easy to verify.
 
-## Last verified (UTC)
+## Last verified
 
-- Date (UTC): 2026-06-04
-- Verified by: Codex
-- Tool version: 0.1.0
-- Provider API: YouTube Data API v3 (pinned discovery snapshot)
-- Base URL (default): https://www.googleapis.com
-- Latest local verification: `54` unit tests passed, compile check passed, version/example JSON checks passed, and write apply refusal smokes passed.
+Date (UTC): 2026-06-11
+Verified by: Codex YouTube README rebuild and source gate pass
+Tool version: 0.1.0
+Provider API: YouTube Data API v3 pinned discovery snapshot
+Base URL (default): https://www.googleapis.com
+Latest local verification: `60` unit tests passed, the focused docs/README subset passed `7` tests, and the version, auth check, search-list plan, channel-resolve plan, channel-export plan, upload-plan, and captions-download plan smokes all passed.
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
-1) Create venv + install:
+1. Create venv and install:
 - `python3 -m venv .venv`
 - `.venv/bin/python -m pip install -e .`
 
-2) Version:
+2. Version check with no `.env` required:
 - `youtube-api-tool --output json --version`
 
-3) Pinned discovery inventory:
+3. Pinned method inventory:
 - `youtube-api-tool methods list`
 
-4) Local auth/config check:
+4. Local auth/config check:
 - `youtube-api-tool --output json auth check`
 
-5) Plan a method call (no network):
+5. Plan a representative read (no network):
 - `youtube-api-tool --output json api search.list --params-json '{"part":"snippet","q":"cats","maxResults":5}'`
 
-6) Plan channel resolution (no network):
+6. Plan channel resolution:
 - `youtube-api-tool --output json channels resolve --channel @GoogleDevelopers`
 
-7) Plan channel export (no network):
+7. Plan channel export:
 - `youtube-api-tool --output json channels export --channel @GoogleDevelopers --out-dir ./channel_export`
 
-8) Plan an upload call (no network; never embeds bytes):
-- `youtube-api-tool --output json api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{"snippet":{"title":"Example"},"status":{"privacyStatus":"private"}}' --upload-file ./video.mp4`
+8. Plan an upload without uploading bytes:
+- `youtube-api-tool --output json api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{"snippet":{"title":"Example"},"status":{"privacyStatus":"private"}}' --upload-file /path/to/existing-video.mp4`
 
-9) Confirm a write/upload apply requires the right safety gate before provider access:
-- `youtube-api-tool --output json --apply --yes api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{"snippet":{"title":"Example"},"status":{"privacyStatus":"private"}}' --upload-file ./video.mp4`
-
-10) Plan a media download call (no network; shows how downloads are saved to a file on live runs):
+9. Plan a caption download path:
 - `youtube-api-tool --output json api captions.download --params-json '{"id":"CAPTION_TRACK_ID"}' --download-to ./captions.vtt`
 
-Optional (requires credentials; executes live reads):
+Optional live reads when credentials are ready:
 - `youtube-api-tool --output json api search.list --params-json '{"part":"snippet","q":"cats","maxResults":5}' --live`
-- `youtube-api-tool --output json api search.list --params-json '{"part":"snippet","q":"cats","maxResults":5}' --live --paginate --max-pages 2`
+- `youtube-api-tool --output json channels resolve --channel @GoogleDevelopers --live`
 
-## Committed redacted example outputs
+## Example outputs (redacted)
 
+These files are committed:
 - `docs/examples/outputs/version.json`
 - `docs/examples/outputs/auth_check.json`
 - `docs/examples/outputs/methods_list.json`
@@ -72,13 +69,15 @@ Optional (requires credentials; executes live reads):
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json`
 
-## Pinned inventory artifacts
+## What can go wrong (and how we verify)
 
-- `docs/official_discovery_youtube_v3_rest.json`
-- `docs/official_methods.txt`
+- **Wrong auth mode** -> API key is not enough for many private or write-capable actions; verify by checking `auth check` plus one representative live GET read.
+- **OAuth helper expectation mismatch** -> `auth login` and `auth token set` still stop at plan/refusal today; verify by checking the refusal output and confirming no `.state/token.json` write happened.
+- **Ambiguous channel target** -> `channels resolve --live` can return multiple candidates and require `--pick`; verify by checking the returned candidates before export or write planning.
+- **Non-empty export folder** -> `channels export --live` refuses unsafe local output reuse unless you choose `--overwrite`, `--yes`, or `--resume`.
+- **Write safety drift** -> verify uploads and non-GET writes still start as plans, and confirm the approval gates stay explicit before risky actions.
 
 ## Links
 
-- Sources: `docs/references.md`
-- Coverage ledger: `docs/api_coverage.md`
-- Debug history: `docs/engineering_notes.md`
+- Sources used: `docs/references.md`
+- Coverage source of truth: `docs/api_coverage.md`

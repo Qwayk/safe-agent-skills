@@ -18,14 +18,17 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - First-class channel workflows:
   - `youtube-api-tool channels resolve` (resolve channelId from URL/handle/username/query; safe refusal when selection is required).
   - `youtube-api-tool channels export` (export an analysis-ready dataset of all public channel videos using only YouTube Data API v3).
+- Public README contract checks for the source skill page and quickstart opening.
 
 ### Changed
 - Non-GET API calls, media uploads, auth login/token set, demo writes, and write jobs now produce reviewable plans and require explicit no-snapshot approval before provider/local writes when before-state/provider-backup support is not available.
 - Renamed tool identity to `youtube-api-tool` / `youtube_api_tool` and updated docs/tests accordingly.
 - HTTP logging and errors redact secret-bearing URLs/headers (query params like `key=` and Authorization).
 - Removed the generic dispatcher `youtube-api-tool api call --method ...` and replaced it with explicit per-method commands: `youtube-api-tool api <resource.method> ...`.
+- Rebuilt the public README opening and user-facing docs for clearer setup, safety, proof, and YouTube-first task framing.
 
 ### Fixed
 - Ensure argument/usage errors in `--output json` mode emit exactly one JSON error object (no argparse usage text).
+- Removed the public proof-page link to source-only helper notes.
 
 ### Removed
