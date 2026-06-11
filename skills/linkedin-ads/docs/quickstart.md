@@ -1,5 +1,9 @@
 # Quickstart
 
+If you want the human path first, start with [What you can do with LinkedIn Ads](use_cases.md), [Connect your LinkedIn Ads account](onboarding.md), and [How this skill stays safe](safety_model.md).
+
+This page is the technical reference for install, setup, approval checks, and first LinkedIn Ads commands.
+
 ## 1) Install
 
 From the tool folder:
@@ -61,4 +65,10 @@ Then apply only after review:
 linkedin-ads-api-tool --output json --apply --ack-irreversible ad-accounts create --body-json '{"name":"Sample account"}'
 ```
 
-If you do not have a token, read and dry-run plans still work for non-read operations.
+If you do not have a token, dry-run plans still work for non-read operations, but live LinkedIn reads will not.
+
+## 6) Helpful next references
+
+- [Command reference](command_reference.md)
+- [Authentication details](authentication.md)
+- [API coverage](api_coverage.md)
