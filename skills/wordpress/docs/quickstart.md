@@ -1,14 +1,12 @@
 # Quickstart
 
-If you’re non-technical, start with:
-- `docs/use_cases.md` (ideas)
-- `docs/onboarding.md` (setup)
+If you want the human path first, start with [What you can do with WordPress](use_cases.md), [Connect your WordPress site](onboarding.md), and [How this skill stays safe](safety_model.md).
 
-This page is a technical reference (it includes CLI commands).
+This page is the technical reference for install, setup, and first WordPress commands.
 
 ## Install
 
-From the repo root:
+From the skill folder:
 
 ```bash
 python3 -m venv .venv
