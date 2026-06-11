@@ -1,53 +1,66 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-## Last reviewed
+Use this page when you want the clearest proof story for TikTok Marketing.
 
-- Date (UTC): `2026-06-04`
+This repo does not rely on live TikTok ad accounts for normal proof. The evidence here comes from the local suite, the pinned official manifest, the committed redacted examples, and the explicit live-gating and no-snapshot behavior.
+
+## What is already proved
+
+- The pinned TikTok Marketing operation surface loads and registers correctly.
+- The tool exposes `240` named operations from the pinned official manifest.
+- `auth check` works as the dedicated live credential helper.
+- Dry-run plans, multipart planning, refusal behavior, and run history are covered locally.
+- Current write-like operations still require explicit no-snapshot approval when real saved before-state is missing.
+
+## Last checked
+
+- Local docs and contract alignment rechecked: **2026-06-11 UTC**
+- Local suite and proof baseline: **2026-06-04 UTC**
 - Tool version: `0.1.0`
-- Provider API version: pinned manifest `official_operations_v1_2026-05-24.json`
-- Environment: `https://business-api.tiktok.com` base URL
+- Provider surface: pinned manifest `official_operations_v1_2026-05-24.json`
 
-## Local tested (no external network)
+No live TikTok credentials are stored here, so this proof pack stays local-first and redacted on purpose.
 
-These checks were verified locally in this repo:
+## Core validation
 
-You don't need to run these commands yourself... they exist for auditing and proof.
+From the tool folder:
 
-- `python3 -m venv .venv`
-- `.venv/bin/python -m pip install -e '.[dev]'`
-- `.venv/bin/python -m unittest -q`
-- `.venv/bin/tiktok-marketing-api-tool --output json --version`
-- `.venv/bin/tiktok-marketing-api-tool --env-file examples/example.env --output json api ops list --method GET`
-- `python3 -m unittest -q` with `PYTHONPATH=src`
-- `--output json --version`
-- `api ops list` returning 240 operations from the pinned manifest
-- `api ops show --op <operation_command>`
-- read-plan generation for `campaign-get`
-- multipart plan/refusal flow for `bc-image-upload` with no provider HTTP on apply
-- `auth check` with token file fallback and mocked HTTP response
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e '.[dev]'
+.venv/bin/python -m unittest -q
+.venv/bin/tiktok-marketing-api-tool --output json --version
+.venv/bin/tiktok-marketing-api-tool --output json api ops list
+```
 
-## Live-unverified / access-gated
-
-These require valid TikTok credentials and access to live endpoints:
-
-- `auth check` against the live auth endpoint.
-- Any read `api` call with `--live`.
-- Future write operations with real before-state support.
-
-For a fresh environment, these are expected to return auth/network errors until config is complete.
-
-## Committed example outputs
-
-These are redacted representative examples from the current runtime. For live-only paths, the examples were produced with mocked provider responses instead of a live TikTok account.
+## Committed examples
 
 - `docs/examples/outputs/version.json`
 - `docs/examples/outputs/auth_check.json`
 - `docs/examples/plan.example.json`
-- `docs/examples/receipt.example.json` (missing-approval refusal example; approved apply emits a receipt that records no-snapshot approval)
+- `docs/examples/receipt.example.json`
 
-## What can go wrong
+The current `receipt.example.json` is still a missing-approval refusal example, not a claim that the current write-like operations already have rollback support.
 
-- **Invalid app/token settings** → run `onboarding` and `auth check`; verify required env values.
-- **Missing required inputs** → check error type `ValidationError` or refusal reasons and re-run with full params.
-- **Write safety drift** → write applies should refuse with `before_state.status="blocked"` when no saved snapshot is available.
-- **Provider success shape mismatch** → this tool treats non-zero TikTok `code` values as failures even on HTTP 200 responses.
+## What can still go wrong
+
+- wrong app credentials
+- expired or missing token
+- missing advertiser permissions
+- wrong request JSON shape for a specific operation
+- write-like operations that still have no real saved before-state
+
+## How to verify the risky parts
+
+- If auth fails, check app credentials, token source, and advertiser access first.
+- If a read plan looks wrong, inspect the pinned operation and the query or body JSON before using `--live`.
+- If a write-like operation refuses, confirm it stopped before provider HTTP.
+- If a future approved write path succeeds, confirm the proof output records the no-snapshot approval and recovery limit.
+
+## Intentional limits
+
+Not covered on purpose:
+
+- generic rollback claims for current write-like operations
+- hidden live reads through the broad `api` surface
+- fake proof of live advertiser access when real credentials are missing

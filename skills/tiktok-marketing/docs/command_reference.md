@@ -1,7 +1,7 @@
 # Command reference
 
 Use this page when you need the exact TikTok Marketing command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+If you want the plain-English path first, start with [What you can do with TikTok Marketing](use_cases.md), [Connect your TikTok Marketing account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

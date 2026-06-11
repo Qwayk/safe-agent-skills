@@ -1,39 +1,69 @@
-# Onboarding
+# Connect your TikTok Marketing account
 
-This tool runs on your computer and uses local TikTok credentials.
+Use this page when you want the shortest safe setup path for TikTok Marketing work.
 
-1. Create the local env file:
-   - Run `tiktok-marketing-api-tool --output json onboarding`
-   - Or copy `.env.example` to `.env`
-2. Fill these values in `.env`:
-   - `TIKTOK_MARKETING_API_BASE_URL=https://business-api.tiktok.com`
-   - `TIKTOK_MARKETING_APP_ID`
-   - `TIKTOK_MARKETING_APP_SECRET`
-   - `TIKTOK_MARKETING_ACCESS_TOKEN`
-3. Run the live read-only auth check:
+This skill runs on your machine and uses local TikTok app credentials plus a token. You do not need to write code, but you do need the right advertiser access for the operations you want.
+
+Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
+
+## What you need
+
+- `TIKTOK_MARKETING_APP_ID`
+- `TIKTOK_MARKETING_APP_SECRET`
+- `TIKTOK_MARKETING_ACCESS_TOKEN`, or a local `.state/token.json` token file
+- The right advertiser permissions for the live operations you want to use
+
+## Step 1) Create the local `.env` file
+
+The easiest path is one of these:
+
+1. run `tiktok-marketing-api-tool --output json onboarding`
+2. or copy `.env.example` to `.env`
+
+Then fill:
+
+- `TIKTOK_MARKETING_API_BASE_URL=https://business-api.tiktok.com`
+- `TIKTOK_MARKETING_APP_ID`
+- `TIKTOK_MARKETING_APP_SECRET`
+- `TIKTOK_MARKETING_ACCESS_TOKEN`
+
+## Step 2) Use the token-file path only if you need it
+
+If you want token-file auth instead of an env token:
 
 ```bash
+tiktok-marketing-api-tool --output json auth token set --file token.json
+tiktok-marketing-api-tool --output json auth token status
+```
+
+`auth check` uses `.state/token.json` only when `TIKTOK_MARKETING_ACCESS_TOKEN` is missing.
+
+## Step 3) Run the first safe checks
+
+These are the best first commands:
+
+```bash
+tiktok-marketing-api-tool --output json --version
 tiktok-marketing-api-tool --output json auth check
+tiktok-marketing-api-tool --output json api ops list
+tiktok-marketing-api-tool --output json api ops show --op oauth2-advertiser-get
 ```
 
-4. Discover the API surface:
-   - `tiktok-marketing-api-tool --output json api ops list`
-   - `tiktok-marketing-api-tool --output json api ops show --op oauth2-advertiser-get`
-5. Build a safe first plan:
+The important truth here is that `auth check` is already a live helper. It does not need `--live`. The broader `api` surface still uses `--live` for real provider reads.
 
-```bash
-tiktok-marketing-api-tool --output json --plan-out plan.json api campaign-get --query-json query.json
-```
+## What to ask your agent next
 
-If auth fails:
+- "Can you check if my TikTok Marketing access settings are valid before I run anything else?"
+- "Can you draft one safe campaign or advertiser read for me to review first?"
+- "Can you show me the exact pinned operation before we try a live TikTok read?"
 
-- Re-check `TIKTOK_MARKETING_APP_ID` and `TIKTOK_MARKETING_APP_SECRET`
-- Store a token file with `auth token set --file token.json` if needed
-- Re-check token scope or advertiser permissions
+## If something fails
 
-## What to ask your AI agent (examples)
+The most common causes are:
 
-- "Can you set up this tool and tell me what values I need from TikTok?"
-- "Can you check if my access settings are valid before I run anything live?"
-- "Can you draft a plan for one read-only campaign report I can review first?"
-- "Can you explain the next safe step if setup is missing?"
+- wrong or missing app credentials
+- expired or missing token
+- missing advertiser permissions
+- missing required request JSON for the operation you picked
+
+Use [Troubleshooting](troubleshooting.md) if the auth check or the first planned read fails.

@@ -1,27 +1,50 @@
-# Use cases
+# What you can do with TikTok Marketing
 
-Use this page when you want ideas for real TikTok Marketing jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Use this page when you want ideas for real TikTok Marketing work to hand to your agent.
+If you need setup first, start with [Connect your TikTok Marketing account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is useful
+## A good first ask
 
-This tool is useful for:
+"Check the TikTok Marketing skill is configured, tell me whether auth works, and help me plan one safe campaign or advertiser read first."
 
-- Exporting data for review without guessing, using dry-run first.
-- Making many API checks and updates in a controlled order.
-- Keeping proof for each step with plans, refusal outputs, and run history.
+## Common TikTok Marketing jobs
 
-## Common use cases (examples)
+### Auth and access checks
 
-- "Pull a report of items that match rules and export it to a file."
+- "Check whether my TikTok Marketing app credentials and token work."
+- "Show me whether the advertiser access looks valid before I try anything else."
+- "Tell me which live read is the safest first proof that the setup is working."
+
+### Campaign and ad review
+
+- "Pull a simple campaign summary for this week."
+- "Show me the current ad group and ad state before we plan changes."
+- "Review advertiser or campaign data first so we do not guess the target."
+
+### Report and asset planning
+
+- "Plan a report task and show me the request before anything runs live."
+- "Prepare the safe first plan for an image or video upload flow."
+- "Show me the exact pinned operation for this TikTok job before we try it."
+
+### Careful change planning
+
 - "Show exactly what API call would run before any live write."
-- "Attempt a reviewed write plan and confirm the apply path records explicit no-snapshot approval before provider HTTP when no saved snapshot is available."
-- "Check existing assets, then propose safe changes across many items."
+- "Prepare a reviewed campaign or ad change plan and tell me what approvals it still needs."
+- "Confirm the write path would record explicit no-snapshot approval before provider HTTP."
 
-## What you’ll see from the agent (trust + safety)
+## Why this skill is useful
 
-When you ask for a change, the agent should:
+- It gives your agent a pinned, explicit TikTok Marketing command surface instead of raw API guessing.
+- It helps you review campaigns, ads, and advertiser context before you attempt a live change.
+- It keeps proof for each step with plans, refusal outputs, and run history.
 
-1) Show a dry-run preview of what would happen.
-2) Attempt writes only after explicit confirmation and required flags.
-3) Return the explicit no-snapshot approval and point to saved proof artifacts.
+## What you should expect from the agent
+
+For normal read work, the agent should confirm access first, then gather the right advertiser or campaign data.
+
+For write-like work, the agent should:
+
+1. show the dry-run plan first
+2. explain the required write gates and no-snapshot limit
+3. attempt live apply only after explicit approval

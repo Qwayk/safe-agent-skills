@@ -1,52 +1,58 @@
-# Safety model
+# How this skill stays safe
 
-## Core safety rules
+This skill is careful by default.
 
-- Dry-run by default.
-- All API calls start from a plan.
-- Read-like operations (`GET`, `HEAD`) run only with `--live`.
-- Write-like operations (`POST`, `PUT`, `PATCH`, `DELETE`) are plan-first and refuse execution unless all required flags are present:
-  - `--live`
-  - `--apply`
-  - `--plan-in`
-  - `--yes`
-  - `--ack-irreversible`
-- After those gates pass, API writes without saved before-state or provider backup require explicit no-snapshot approval and record `before_state.status="no_snapshot_available"`.
-- Never send secrets in output.
+The safest first step is an auth check plus one reviewed read plan before you try anything broader.
 
-## Refusal and failure behavior
+## What stays simple
 
-- If required inputs are missing, the tool returns `refused` with clear reasons.
-- Missing tokens or missing required fields fail before live reads. writes require explicit no-snapshot approval before provider HTTP.
-- Apply paths require environment fingerprint and plan consistency checks.
+- onboarding and local config
+- `api ops list`
+- `api ops show --op ...`
+- dry-run plans
 
-## Verification
+Those steps do not change TikTok data.
 
-Write verification checks the receipt for recorded no-snapshot approval or confirms a missing-approval refusal.
+## What needs extra care
 
-- Missing-approval write refusals include `verification_plan.status="blocked_before_apply"`.
-- A successful write receipt must not be emitted while before-state support is missing.
-- If a command adds explicit read-back later, docs should be updated for that command.
+Current write-like operations are still plan-first because broad saved before-state support is not there yet.
 
-## Rollback model
+That means:
 
-- Current TikTok Marketing write families should be treated as `irreversible_and_clearly_labeled`.
-- The tool saves plans, refusal outputs, and run history for review, but it does not create rollback helpers, backups, snapshots, or provider restore flows.
-- If a write apply is refused, confirm no provider HTTP happened and the receipt records no-snapshot approval, or missing approval refused before provider HTTP.
+- the broad `api` surface needs `--live` for real provider reads
+- write-like operations start with a dry-run plan
+- apply attempts need the normal write gates
+- writes without real saved before-state also need explicit no-snapshot approval before provider HTTP
 
-## Runs and audit artifacts
+## One important exception
 
-Run artifacts are real behavior for write-capable commands:
+`auth check` is a real live helper even without `--live`.
 
-- `.state/runs/<run_id>/`
-- `.state/runs/index.jsonl`
+It validates your current credentials against `oauth2-advertiser-get`, so it is the safest first live proof that the setup works.
 
-Set `--no-artifacts` to disable writing these files.
+## What this skill does not promise
 
-## Plan and receipt files
+- no raw request bridge
+- no hidden live calls through the broad `api` surface
+- no generic rollback
+- no broad saved before-state support for current write-like operations
 
-- `--plan-out <path>` writes a review plan.
-- `--plan-in <path>` is required for write apply attempts.
-- `--receipt-out <path>` is for approved write receipts; missing-approval refusals do not write it.
+The tool should say those limits plainly before any live write is allowed.
 
-Plans and refusal outputs are redacted and must not include secret values.
+## Local proof and run history
+
+This skill can save:
+
+- dry-run plans with `--plan-out`
+- local run history under `.state/runs`
+- refusal output that proves a write stopped before provider HTTP
+
+Those artifacts are meant to help review what happened later. They must not contain secrets.
+
+## Recommended workflow with an AI agent
+
+1. Run `auth check` first.
+2. Inspect the pinned operation surface before choosing a real API call.
+3. Build the dry-run plan first.
+4. Use live provider reads only when the target and request are clear.
+5. Attempt writes only after explicit approval and no-snapshot acceptance when needed.

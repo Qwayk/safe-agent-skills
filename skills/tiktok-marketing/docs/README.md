@@ -2,13 +2,13 @@
 
 Use this page when you want the right TikTok Marketing doc quickly.
 
-## Start here
+## Start here first
 
-- [What you can do](use_cases.md)
-- [Connect your account](onboarding.md)
-- [How this stays safe](safety_model.md)
+- [What you can do with TikTok Marketing](use_cases.md)
+- [Connect your TikTok Marketing account](onboarding.md)
+- [How this skill stays safe](safety_model.md)
 
-## Commands and setup
+## Helpful docs
 
 - [Quickstart](quickstart.md)
 - [Command reference](command_reference.md)
@@ -16,9 +16,9 @@ Use this page when you want the right TikTok Marketing doc quickly.
 - [Configuration](configuration.md)
 - [Troubleshooting](troubleshooting.md)
 
-## Proof and references
+## Proof and deeper references
 
-- [Proof pack](proof.md)
+- [Proof and verification](proof.md)
 - [API coverage](api_coverage.md)
 - [Source references](references.md)
 - [Examples](examples/)
