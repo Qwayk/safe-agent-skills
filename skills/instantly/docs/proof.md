@@ -1,15 +1,8 @@
-# Proof pack (publish-ready evidence)
+# Proof pack
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+Use this page when you want proof that the Instantly skill was tested, or when you want a short list of safe checks to re-run.
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
-
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions/placeholder values in examples.
-- Keep this file short and factual.
+You do not need to run all of these commands yourself. They exist so you, your reviewer, or your agent can audit behavior and prove what happened.
 
 ## Last verified
 
@@ -62,5 +55,5 @@ This repo change set is designed to be safe for CI:
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
+- Coverage source of truth: `docs/api_coverage.md`
 - Debug history: `docs/engineering_notes.md`

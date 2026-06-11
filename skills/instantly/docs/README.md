@@ -1,12 +1,13 @@
 # Instantly docs
 
 Use this page when you want the right Instantly doc quickly.
+If you only need the first safe path, use the first three links below.
 
 ## Start here
 
-- [What you can do](use_cases.md)
-- [Connect your account](onboarding.md)
-- [How this stays safe](safety_model.md)
+- [What you can do with Instantly](use_cases.md)
+- [Connect your Instantly account](onboarding.md)
+- [How this skill stays safe](safety_model.md)
 
 ## Commands and setup
 

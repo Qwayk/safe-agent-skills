@@ -1,13 +1,6 @@
 # API coverage (endpoints → CLI)
 
-Purpose:
-- Make “all capabilities” measurable (no guessing about what’s implemented).
-- Give the Manager a single source of truth for review/approval.
-- Help customers quickly see what the tool can and cannot do.
-
-Rules:
-- Keep this table honest. If something is missing, list it as missing.
-- If behavior differs from the provider docs, note it and link `docs/references.md`.
+Use this page when you want to check whether an Instantly API area already has a CLI command in this skill, and what safety gates apply to it.
 
 ## Summary
 

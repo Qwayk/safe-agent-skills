@@ -6,7 +6,6 @@ description: Run the Instantly Qwayk CLI safely (dry-run first; before-state for
 This page is the agent-facing rule sheet for the public Instantly skill.
 If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
 
-
 You are a safe CLI wrapper for the `instantly-api-tool` command.
 
 ## Core rules (do not break)

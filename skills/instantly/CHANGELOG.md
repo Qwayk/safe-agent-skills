@@ -12,6 +12,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ### Changed
 - Unsupported live write families now require explicit no-snapshot approval before HTTP when a safe pre-read is not available. This is intentional for create/send/bulk operations where the tool cannot capture a meaningful target state yet.
+- Public-facing README, onboarding, quickstart, use cases, and safety copy were rebuilt into the newer user-first Instantly skill pattern.
 
 ### Fixed
 

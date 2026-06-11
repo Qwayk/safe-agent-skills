@@ -1,51 +1,59 @@
-# Onboarding (non-technical)
+# Connect your Instantly account
 
-This tool runs on your computer, and connects to a vendor API using an API key/token that you store locally.
+This tool runs on your computer and connects to Instantly with a local API key that stays in your `.env` file.
 
-You do not need to be technical. You can simply ask an AI agent to do work, and the agent will run the tool for you and report back with a preview + receipt.
+You do not need to be technical. You can ask your agent to do the work for you, but the agent still needs the right Instantly API key on your machine first.
 
 Important:
 - Your `.env` file contains secrets. Keep it private and never paste it into chat.
 
-## Step 1: Create the local `.env` file (on your machine)
+## Step 1) Create your local `.env` file
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
-3) Fill the required fields:
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
+3. Fill the required fields:
    - `INSTANTLY_API_BASE_URL=https://api.instantly.ai/api/v2`
-   - `INSTANTLY_API_KEY=...` (your Instantly API key)
+   - `INSTANTLY_API_KEY=...`
    - `INSTANTLY_TIMEOUT_S=30` (optional)
 
-## Step 2: Get the API key/token (tool-specific)
+## Step 2) Create the Instantly API key
 
 Create an API key in Instantly:
 
-1) Open Instantly settings → Integrations: `https://app.instantly.ai/app/settings/integrations`
-2) Click **API Keys** in the left sidebar.
-3) Click **Create API Key**.
-4) Give it a name and select scopes you want this tool to use.
-5) Click **Create**, then copy the API key (it’s only shown once).
-6) Paste it into your local `.env` file:
-   - `INSTANTLY_API_KEY=<your key>`
+1. Open Instantly settings → Integrations: `https://app.instantly.ai/app/settings/integrations`
+2. Click **API Keys** in the left sidebar.
+3. Click **Create API Key**.
+4. Give it a name and select only the scopes you really need.
+5. Click **Create**, then copy the API key. Instantly only shows it once.
+6. Paste it into your local `.env` file as `INSTANTLY_API_KEY=<your key>`.
 
 Never paste the API key into chat.
 
-## Step 3: What to ask your AI agent (examples)
+## Step 3) Ask for a safe connection check first
 
-These are plain-English requests. The agent should start with a read-only check, then show a preview before applying changes.
+Before any real work, ask your agent to confirm the connection first.
 
-- “Confirm the tool is connected, then show me what it can do on my account.”
-- “Find the right targets safely (avoid guessing), then propose changes for my review.”
-- “Apply these metadata updates from a spreadsheet and give me a receipt of what changed.”
-- “Do a dry-run preview first. Only apply after I approve.”
+Example:
 
-## Step 4: If something fails
+- "Check that my Instantly skill is connected, then show me my active campaigns and the safest review-first jobs to start with."
+
+## Step 4) Ask for the real job
+
+These plain-English requests fit the normal safe workflow:
+
+- "Pull my campaign analytics for the last 7 days and flag what changed."
+- "Review my sending accounts and tell me which warmup or vitals issues need attention."
+- "Preview moving these leads into another campaign, but stop before apply."
+- "Review my webhooks and show me what looks stale or risky."
+- "Do a dry-run preview first. Only apply after I approve."
+
+## If something fails
 
 The most common issues are:
 - Missing/incorrect values in `.env`
-- Wrong key type (example: read-only key vs admin key)
+- Wrong API key or missing scopes
 - Network/auth restrictions in the vendor account
 
-The real tool should explain common errors in `docs/troubleshooting.md`.
+See [Troubleshooting](troubleshooting.md) for common fixes.

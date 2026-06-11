@@ -1,87 +1,106 @@
-# instantly-api-tool
+# Instantly
 
-## Simplicity lock
+**Capability:** Reads + careful changes
 
-Build and change this area in the simplest way possible.
+Use this skill when you want your agent to review Instantly campaigns, accounts, leads, deliverability, and workspace settings without guessing from raw docs.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand it jobs like campaign health reviews, warmup or account-vitals checks, lead list cleanup, webhook reviews, inbox placement analysis, and careful Instantly changes that need a dry-run first.
 
-Safety-first CLI for the **Instantly API v2** (Qwayk style): dry-run by default, explicit apply gates for writes, before-state capture for supported live writes, and a plan/receipt workflow for agent review.
+Read work stays simple. Riskier Instantly changes slow down on purpose: the tool checks auth, discovers the right IDs first, builds dry-run plans, verifies supported writes after apply, and saves proof. Some supported live writes save before-state first, while create, send, bulk, and other no-pre-read families need explicit no-snapshot approval before HTTP.
 
-This tool does not offer machine rollback or restore today. Supported live writes save the previous API response under `.state/runs/<run_id>/before/` before applying. Unsupported live writes refuse until a safe pre-read is added.
+A good first ask is: "Check my Instantly connection, list my active campaigns and key account health signals, and show me the safest place to start."
 
-Supported command families (high level):
-- Workspace: `whoami`, `health`
-- Workspace admin: `workspace get-current|patch-current|create|change-owner|whitelabel-domain ...` (`create` is requires explicit no-snapshot approval when no saved snapshot is available)
-- Accounts: `accounts list|get|create|patch|delete|warmup-enable|warmup-disable|pause|resume|mark-fixed|move|test-vitals|ctd-status` (note: `list|get|ctd-status` are sensitive reads; require `--apply --yes` and write response to a receipt file only)
-- Workspace billing: `workspace-billing plan-details|subscription-details`
-- Workspace members: `workspace-members list|get|create|patch|delete`
-- Workspace group members: `workspace-group-members list|admin|get|create|delete`
-- OAuth: `oauth google-init|microsoft-init|session-status`
-- API keys: `api-keys list|create|delete` (**secret-safe**: raw key material is stored locally under `.state/` only)
-- DFY email account orders: `dfy-email-account-orders list-orders|list-accounts|create-order|cancel-accounts|check-domains|similar-domains|prewarmed-domains`
-- CRM actions: `crm-actions list-phone-numbers|delete-phone-number`
-- Campaigns: `campaigns list|get|create|patch|delete|activate|pause|sending-status|search-by-contact|count-launched|share|create-from-export|export|duplicate|add-variables` (`create`, `create-from-export`, and `duplicate` are requires explicit no-snapshot approval when no saved snapshot is available)
-- Subsequences: `subsequences list|get|create|patch|delete|sending-status|pause|resume|duplicate`
-- Analytics: `analytics warmup|accounts-daily|account-vitals|campaigns|campaigns-overview|campaigns-daily|campaign-steps`
-- Leads: `leads list|get|create|patch|add-bulk|update-interest-status|remove-from-subsequence|bulk-assign|move|move-to-subsequence|delete|bulk-delete|merge` (note: `create` and `add-bulk` are requires explicit no-snapshot approval when no saved snapshot is available; many lead ops are high-risk and require `--apply --yes`; destructive actions require a plan-file workflow)
-- Lead organization:
-  - `lead-lists list|get|create|patch|delete` (`create` is requires explicit no-snapshot approval when no saved snapshot is available)
-  - `lead-labels list|get|create|patch|delete` (`create` is requires explicit no-snapshot approval when no saved snapshot is available)
-  - `custom-tags list|get|create|patch|delete|toggle-resource` (`create` and `toggle-resource` are requires explicit no-snapshot approval when no saved snapshot is available)
-  - `custom-tag-mappings list`
-- Mappings: `account-campaign-mappings get`
-- Webhooks: `webhooks list|get|event-types|create|patch|delete|test|resume`, `webhook-events list|get|summary|summary-by-date` (`create` and `test` are requires explicit no-snapshot approval when no saved snapshot is available)
-- Inbox placement: `inbox-placement tests|analytics|reports` (`tests create` is requires explicit no-snapshot approval when no saved snapshot is available)
-- Email verification: `email-verification status|create` (`create` is requires explicit no-snapshot approval when no saved snapshot is available)
-- Audit log: `audit-log list` (raw items hidden by default; use `--include-items --out <path>` for file-only raw output)
-- Emails: `emails list|get|unread-count|patch|forward|delete` (`forward` is requires explicit no-snapshot approval when no saved snapshot is available; delete is destructive + plan-in gated)
-- Threads: `threads mark-as-read|reply` (live apply requires explicit no-snapshot approval when no saved snapshot is available)
-- Do-not-contact: `do-not-contact list|get|create|patch|delete` (`create` is requires explicit no-snapshot approval when no saved snapshot is available)
-- Supersearch enrichment: `supersearch-enrichment get|history|create|patch-settings|run|enrich-leads|ai|count-leads|preview-leads` (`patch-settings` can apply with before-state; `create`, `run`, `enrich-leads`, and `ai` are requires explicit no-snapshot approval when no saved snapshot is available)
-- Background jobs: `background-jobs list|get`
+## Start here first
 
-## For non-technical users: Start here (no coding)
+- Want ideas for real Instantly work? [What you can do with Instantly](docs/use_cases.md)
+- Need setup? [Connect your Instantly account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-Start with:
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-- Use cases (ideas + benefits): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model (how we prevent mistakes): `docs/safety_model.md`
-- Agent skill prompt and install notes are included with this package.
+## What this skill helps with
 
-## For technical users: Start here (CLI)
+- Review workspace health, campaign status, and deliverability signals.
+- Audit campaigns, lead lists, lead labels, custom tags, and subsequences before changing them.
+- Check account warmup, vitals, and other sensitive account details with file-only handling when the response can contain secrets or account internals.
+- Plan or apply careful campaign, lead, webhook, and workspace changes with review-first safety.
+- Run analytics, inbox placement, and webhook-event reports so you can understand what is happening before you change anything.
 
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
+## What access this skill needs
 
-Minimal examples:
+- An Instantly API key.
+- A local `.env` file with your Instantly base URL and API key.
+- The smallest Instantly scopes you can use for the job.
+- A lower-risk workspace is recommended first for bulk or irreversible changes.
+
+## Install and first run
+
+Install slug: `instantly`
+
+Ask your agent to install the `instantly` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
 
 ```bash
-instantly-api-tool --output json --version
-instantly-api-tool --output json onboarding
-instantly-api-tool --output json auth check
-
-# Dry-run plan for a write:
-instantly-api-tool --output json campaigns create --file examples/campaign_create.json
-
-# Apply a supported write (saves before-state when possible; some commands require --yes):
-instantly-api-tool --output json --apply campaigns activate --campaign-id CAMPAIGN_ID
-
-# Irreversible reply workflow (plan-first; live apply requires explicit no-snapshot approval when no saved snapshot is available):
-instantly-api-tool --output json threads reply --thread-id THREAD_ID --reply-to-uuid REPLY_TO_UUID --message \"Hi!\"  # dry-run plan
-instantly-api-tool --output json --plan-out plan.json threads reply --thread-id THREAD_ID --reply-to-uuid REPLY_TO_UUID --message \"Hi!\"  # write plan.json
+npx skills add Qwayk/safe-agent-skills@instantly -g -y
 ```
 
-## Proof pack (customer-ready)
+Then try a safe first ask like:
 
-- `docs/proof.md`
-- `docs/api_coverage.md`
-- `docs/examples/`
+```text
+Connect the Instantly skill to my account, confirm auth, and show me my active campaigns, lead health, and the safest review-first jobs to start with.
+```
+
+## How this skill stays safe
+
+- Read-only reporting stays separate from live changes.
+- Sensitive reads and returned secrets never print raw values to chat or stdout. They stay in local files or receipts only.
+- Write workflows start with dry-run plans.
+- Supported live writes save before-state under `.state/runs/<run_id>/before/`.
+- High-risk batch or destructive actions need extra approval, and some delete or irreversible applies also need a reviewed `--plan-in` file.
+- If Instantly does not expose a safe pre-read for a write family, the tool requires explicit no-snapshot approval instead of pretending it has a rollback path.
+
+## What it covers today
+
+This skill covers:
+
+- workspace health, admin, billing, and membership review
+- campaigns, subsequences, leads, lead lists, lead labels, and custom tags
+- analytics, inbox placement, email verification, webhook events, and background jobs
+- accounts, API keys, DFY account orders, and CRM phone actions
+- careful email, thread, webhook, and supersearch-enrichment workflows
+
+## What happens before live changes
+
+- The agent checks auth and discovers the right IDs first.
+- The tool shows a dry-run plan before the write.
+- You review the target, payload, and risk level.
+- Sensitive reads need explicit apply approval and write their raw result to local proof files instead of stdout.
+- High-risk batch or destructive actions need `--yes`.
+- Some deletes and irreversible actions also need a reviewed `--plan-in` file.
+- Create, send, reply, and other no-pre-read families need explicit no-snapshot approval when the tool cannot save useful before-state first.
+
+## What proof it leaves behind
+
+- Write-capable commands save plan, receipt, audit, and summary files under `.state/runs/`.
+- Supported live writes save before-state under `.state/runs/<run_id>/before/`.
+- Secret-bearing outputs stay in local `.state/sensitive/` files instead of chat or stdout.
+- The docs, tests, and redacted example artifacts all live in this repo.
+
+## Limits
+
+- This tool does not have built-in rollback or restore.
+- Some reads are intentionally file-only because they can contain sensitive account details or secrets.
+- Some create, send, bulk, and irreversible families still have no safe before-state path, so they need explicit no-snapshot approval.
+- You still need valid Instantly scopes for real account work.
+
+## Helpful docs
+
+- [Browse all Instantly docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Proof pack](docs/proof.md)
+- [API coverage](docs/api_coverage.md)
+- [Jobs and batch work](docs/jobs_and_batches.md)

@@ -1,16 +1,23 @@
-# Safety model
+# How this skill stays safe
 
-Rules:
+Instantly work can touch live campaigns, leads, accounts, replies, deliverability tests, webhooks, and workspace settings, so this tool is built to slow down before risky actions.
+
+## Default behavior
+
 - Dry-run by default; no writes unless `--apply`.
-- Verify after write (read-back or idempotence).
-- Refuse when unsure; do not guess.
-- High-risk/batch writes require `--apply` and `--yes` (example: supported `leads move` with explicit lead IDs).
-- Irreversible writes require `--apply --yes --ack-irreversible` where live apply is supported; unsupported irreversible writes stay plan-only.
-- Delete and irreversible apply require a reviewed plan file via `--plan-in`.
+- Verify after write when the API exposes a safe read-back path.
+- Refuse when unsure instead of guessing.
+- Sensitive reads and returned secrets stay file-only instead of chat or stdout.
 - Supported live writes capture before-state under `.state/runs/<run_id>/before/` before applying.
-- Unsupported live writes refuse until a safe pre-read exists for that write family.
-- This tool does not have any inverse action or machine restore path for writes.
+- This tool does not have a machine rollback or restore path.
 - Never log secrets.
+
+## Extra approval for riskier actions
+
+- High-risk or batch writes require `--apply` and `--yes`.
+- Delete and irreversible apply require a reviewed plan file via `--plan-in`.
+- Irreversible writes require `--apply --yes --ack-irreversible` where live apply is supported.
+- Unsupported live writes need explicit no-snapshot approval before HTTP when a safe pre-read does not exist yet.
 
 ## Two-layer safety (recommended)
 
