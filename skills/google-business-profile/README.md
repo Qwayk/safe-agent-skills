@@ -1,61 +1,105 @@
-# Google Business Profile Safe CLI
+# Google Business Profile
 
-This tool gives AI agents and operators a safe, explicit command surface for Google Business Profile work across accounts, locations, reviews, media, notifications, verifications, performance, place actions, lodging, and the official legacy `v4.9` methods that still matter.
-It is wired for Google OAuth installed-app login and local, non-secret onboarding.
-Reads can run through the explicit command families. Write commands still produce review plans, but current live write apply requires explicit no-snapshot approval before Google Business Profile HTTP until per-command before-state capture exists.
+**Capability:** Reads + careful changes
 
-## For non-technical users: start here
+Use this skill when you want your agent to review Google Business Profile accounts, locations, reviews, media, verifications, and performance without guessing from raw docs.
 
-- `docs/use_cases.md`
-- `docs/onboarding.md`
-- `docs/safety_model.md`
+You can hand your agent jobs like location audits, missing-info reviews, review reply prep, media update plans, verification work, notification changes, and careful account or location changes.
 
-Plain-English example requests:
+Read work stays simple. Riskier work slows down on purpose: read commands can run live, write-capable actions start as dry-run plans, many apply paths require a reviewed plan file, and live writes need explicit no-snapshot approval when the tool cannot save useful before-state first.
 
-- “Show me every Google Business Profile location in this account and flag anything missing key details.”
-- “Prepare a safe update for these location details, then wait for my approval before applying it.”
-- “List recent reviews for this location and draft or update the owner reply safely.”
-- “Complete this verification using the PIN file I saved, then prove the status changed.”
-- “Show me proof for the last change, including the verification result and saved receipt.”
+A good first ask is: "Check the Google Business Profile skill is connected, list my accounts and locations, and show me what looks incomplete before we plan any changes."
 
-## For technical users: CLI references
+## Start here first
 
-- `docs/quickstart.md`
-- `docs/command_reference.md`
-- `docs/configuration.md`
-- `docs/authentication.md`
+- Want ideas for real Google Business Profile work? [What you can do with Google Business Profile](docs/use_cases.md)
+- Need setup? [Connect your Google Business Profile access](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-## Shipped command surface
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-The live CLI currently includes:
+## What this skill helps with
 
-- `google-business-profile-safe-cli onboarding`
-- `google-business-profile-safe-cli auth login|check|token ...`
-- `google-business-profile-safe-cli runs ...`
-- `google-business-profile-safe-cli account-management ...`
-- `google-business-profile-safe-cli business-info ...`
-- `google-business-profile-safe-cli notifications accounts ...`
-- `google-business-profile-safe-cli media-upload-v1 media upload`
-- `google-business-profile-safe-cli business-calls locations ...`
-- `google-business-profile-safe-cli place-actions ...`
-- `google-business-profile-safe-cli lodging locations ...`
-- `google-business-profile-safe-cli performance locations ...`
-- `google-business-profile-safe-cli verifications ...`
-- `google-business-profile-safe-cli legacy-v49 accounts locations reviews ...`
-- `google-business-profile-safe-cli legacy-v49 accounts locations verifications ...`
-- `google-business-profile-safe-cli legacy-v49 accounts locations transfer`
-- `google-business-profile-safe-cli legacy-v49 accounts locations media start-upload`
-- `google-business-profile-safe-cli legacy-v49 accounts locations media create`
+- Review accounts, locations, categories, attributes, and Google-updated location details.
+- Plan careful location edits, attribute updates, account changes, and notification setting changes.
+- Review or manage admins, invitations, transfers, and account structure updates.
+- Review reviews, media, verification status, place action links, lodging details, and business call settings.
+- Pull location performance metrics and keyword impression data.
 
-Write commands stay dry-run by default. Apply runs use explicit safety gates such as `--apply`, `--plan-in`, `--yes`, and `--ack-irreversible` when the operation needs them. Secret-like inputs stay file-based where that is safer, such as `--pin-file`, `--verification-token-file`, and `--trusted-partner-token-file`.
+## What access this skill needs
 
-## Trust and proof
+- Google OAuth client credentials stored locally in `.env` and local state files.
+- A Google account with the Business Profile permissions needed for the locations you want to review or change.
+- Account IDs, location IDs, or full resource names for many read and write requests.
+- Extra approval for high-risk location transfers, deletes, review reply deletes, and similar actions.
 
-- Coverage main reference: `docs/api_coverage.md`
-- Machine-readable inventory: `docs/official_inventory.json`
-- Local proof pack: `docs/proof.md`
-- Redacted examples: `docs/examples/outputs/`
+## Install and first run
 
-The coverage ledger stays honest about what is already shipped, what still remains in the official boundary, and any method that is gated, discontinued, or intentionally not shipping.
+Install slug: `google-business-profile`
 
-Current write-side slices cover `account-management`, `business-info`, `notifications`, `business-calls`, `place-actions`, `verifications`, `lodging`, `media-upload-v1`, and the legacy `v4.9` reviews, transfer, and media follow-up commands. The remaining official boundary is tracked in `docs/api_coverage.md` and `docs/official_inventory.json`.
+Ask your agent to install the `google-business-profile` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
+
+```bash
+npx skills add Qwayk/safe-agent-skills@google-business-profile -g -y
+```
+
+Then try a safe first ask like:
+
+```text
+Connect the Google Business Profile skill, list my accounts and locations, and show me what is safe to review before we plan any live changes.
+```
+
+## How this skill stays safe
+
+- Read commands can run live right away.
+- Write-capable actions start as dry-run plans first.
+- Many apply paths require `--plan-in`, and some also require `--yes` or `--ack-irreversible`.
+- When no saved before-state exists, live writes also need `--ack-no-snapshot`.
+- PINs, verification tokens, and other secret-like inputs stay file-based where that is safer.
+- Many write flows verify success by reading the new state back after the change.
+- The docs, tests, coverage notes, and source code are all here in one place.
+
+## What it covers today
+
+This skill covers:
+
+- account-management, business-info, notifications, business-calls, place-actions, performance, lodging, and verifications
+- media upload and media follow-up flows
+- legacy v4.9 review, verification, transfer, and media commands that still matter in real GBP work
+- local run history and proof files for review
+
+## What happens before live changes
+
+- The agent should show the dry-run plan first.
+- You review the account, location, payload, permissions, and recovery limits.
+- Safe reads can run immediately.
+- Many writes need `--apply --plan-in`.
+- Higher-risk or destructive actions can also require `--yes` and `--ack-irreversible`.
+- Writes without saved before-state also need `--ack-no-snapshot`.
+
+## What proof it leaves behind
+
+- Dry-run plans can be saved with `--plan-out`.
+- Approved applies can save receipts with `--receipt-out`.
+- Many write flows verify success by reading the new state back after apply.
+- Local run history can be reviewed with `runs list` and `runs show`.
+- The docs, tests, examples, and API coverage ledger are all in this repo.
+
+## Limits
+
+- Many live writes still do not have saved before-state or a built-in undo path.
+- You still need valid OAuth setup and Google Business Profile permissions for real account work.
+- Some older Google Business Profile flows still live under legacy `v4.9` commands because Google still requires them.
+- The shipped surface is broad, but it still follows the command set documented in this repo instead of every possible Google Business Profile action.
+
+## Helpful docs
+
+- [Browse all Google Business Profile docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)

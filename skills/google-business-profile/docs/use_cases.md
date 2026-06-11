@@ -1,29 +1,29 @@
 # Use cases
 
 Use this page when you want ideas for real Google Business Profile jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+If you need setup first, start with [Connect your Google Business Profile access](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## Common use cases
 
-Most no‑code tools are great for *single events* (“when X happens, do Y”). A safe agent CLI is built for:
+- "List all my accounts and locations, and flag anything with missing basics."
+- "Review this location's categories, attributes, hours, phone details, and Google-updated fields."
+- "Show me recent reviews and prepare a safe reply plan before anything is posted."
+- "Check verification status and tell me what is blocking this location from being fully verified."
+- "Plan a careful location update, attribute change, or notification-setting change, and show me the review steps before live apply."
+- "Review admins, invitations, or transfer steps before we change account access."
+- "Check media, place action links, lodging details, business call settings, and performance signals for this location."
 
-- Bulk work on existing libraries (hundreds/thousands of records)
-- Preview-first changes (dry-run → explicit apply → verification)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Audit artifacts (plans/receipts/logs) you can keep for proof and debugging
+## Why this skill is more useful than raw docs
 
-## Common use cases (examples)
+This skill gives your agent a safer path through real Google Business Profile work.
 
-- “Pull a report of the things that match these rules, and export it to a file.”
-- “Find the right targets safely (avoid guessing), then propose changes for review.”
-- “Apply a large set of small metadata edits from a spreadsheet, with verification and a receipt.”
-- “Do a safe, repeatable transformation across many items, and prove it’s complete.”
+- It can start with live reads instead of guessing from documentation.
+- It can show a dry-run plan before risky account or location changes.
+- It can slow destructive or high-risk work down with extra approval steps.
+- It can leave plans, receipts, run history, docs, and tests in one place so you can inspect what happened.
 
-## What you’ll see from the agent (trust + safety)
+## What this skill intentionally does not promise
 
-When you ask for a change, the agent should:
-
-1) Show a dry-run preview of what would change.
-2) Apply only after explicit confirmation.
-3) Verify after apply (read-back or idempotence).
-4) Provide a short receipt and point to any saved proof artifacts.
+- It does not promise a built-in undo path for every Google Business Profile write.
+- It does not hide older legacy command surfaces when Google still requires them.
+- It does not guess which account, location, review, or verification target you meant when the target is unclear.
