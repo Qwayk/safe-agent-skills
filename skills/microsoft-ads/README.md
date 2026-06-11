@@ -1,59 +1,107 @@
-# msads-api-tool
+# Microsoft Ads
 
-## Simplicity lock
+**Capability:** Reads + careful changes
 
-Build and change this area in the simplest way possible.
+Use this skill when you want your agent to review Microsoft Ads accounts, reports, audiences, and planned changes without guessing from raw docs.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand your agent jobs like account or campaign review, keyword and bid research, performance reporting, bulk export workflows, customer-management checks, and careful Microsoft Ads write plans for service operations or jobs.
 
-Safety-first CLI for the Microsoft Advertising API (Microsoft Ads) v13.
+Read work stays simple. Riskier work slows down on purpose: no network call happens without `--live`, writes start as dry-run plans, higher-risk changes can require a reviewed `--plan-in` plus `--yes`, delete-like actions need extra approval, and live writes still need explicit no-snapshot approval when useful before-state cannot be saved first.
 
-Design goals:
-- Explicit commands: one named CLI command per v13 service operation (no generic/raw request bridge).
-- No network by default: live API calls require `--live`.
-- Dry-run by default: write-like operations create plans, but current write applies require explicit no-snapshot approval before SOAP HTTP until safe before-state capture exists.
+A good first ask is: "Check the Microsoft Ads skill is configured, confirm live access, and show me the safest reporting or account review steps to start with."
 
-## For non-technical users: Start here (no coding)
+## Start here first
 
-Start with:
+- Want ideas for real Microsoft Ads work? [What you can do with Microsoft Ads](docs/use_cases.md)
+- Need setup? [Connect your Microsoft Ads account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-- Use cases (ideas + benefits): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model (how we prevent mistakes): `docs/safety_model.md`
-- Agent skill prompt and install notes are included with this package.
-- Coverage ledger (“100%” mapping): `docs/api_coverage.md`
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-Examples of what you can ask your agent (plain English, no commands):
+## What this skill helps with
 
-- “Estimate keyword volume and suggested bids for these keywords, then export the results.”
-- “Pull my account performance metrics report for the last 30 days and save it as JSON.”
-- “Find Microsoft Ads recommendations that are safe to review, then show me a preview plan and the approval gate for a real write attempt.”
-- “Bulk-edit campaign and ad group names from this spreadsheet, with a dry-run preview and proof that no write was sent yet.”
-- “Download my campaigns and keywords to a file so we can analyze them offline.”
+- Check local Microsoft Ads setup and confirm live access safely.
+- Review campaigns, accounts, reports, recommendations, audiences, and customer-management data.
+- Run keyword, bid, and audience-estimate research before you change anything.
+- Prepare careful campaign-management, bulk, reporting, ad-insight, or customer-management write plans.
+- Review higher-risk budget, bid, delete-like, or batch actions before anything goes live.
 
-## For technical users: Start here (CLI)
+## What access this skill needs
 
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
+- A Microsoft Advertising developer token in `.env`.
+- A local OAuth token JSON stored with `msads-api-tool auth token set --file token.json`.
+- Optional customer or account IDs if you want default targets in `.env`.
+- `--live` for real Microsoft Ads network calls, even for reads.
+- Extra approval for higher-risk, irreversible, or no-snapshot write actions.
 
-Minimal examples:
+## Install and first run
+
+Install slug: `microsoft-ads`
+
+Ask your agent to install the `microsoft-ads` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
 
 ```bash
-msads-api-tool --output json --version
-msads-api-tool onboarding
-msads-api-tool --output json --live auth check
-msads-api-tool --output json campaign-management get-campaigns-by-account-id --request-json request.json
+npx skills add Qwayk/safe-agent-skills@microsoft-ads -g -y
 ```
 
-## Proof pack (customer-ready)
+Then try a safe first ask like:
 
-- `docs/proof.md`
-- `docs/api_coverage.md`
-- `docs/examples/`
+```text
+Connect the Microsoft Ads skill, confirm live access, and show me the safest account, campaign, or reporting reads to start with.
+```
+
+## How this skill stays safe
+
+- No network call happens without `--live`, even for reads.
+- Write-capable operations start as dry-run plans first.
+- Higher-risk actions can require `--yes` and a reviewed `--plan-in`.
+- Delete-like actions can also require `--ack-irreversible`.
+- When no saved before-state exists, live writes also need `--ack-no-snapshot` before SOAP HTTP.
+- Developer tokens, OAuth tokens, plans, receipts, and run artifacts stay redacted so secrets do not leak.
+- Plans, refusals, receipts, run history, docs, and tests stay together so you can inspect what the agent used and what happened.
+
+## What it covers today
+
+This skill covers:
+
+- campaign-management, bulk, reporting, ad-insight, and customer-management service operations
+- local onboarding, auth checks, token status, token refresh, jobs, and run history
+- explicit Microsoft Ads v13 commands instead of a generic raw-request bridge
+- local proof files for plans, refusals, receipts, and run summaries
+
+## What happens before live changes
+
+- The agent should show the dry-run plan first.
+- You review the target account, request body, risk level, and recovery limits.
+- Live reads still need `--live`.
+- Write-capable actions need `--live --apply`.
+- Higher-risk writes can also require `--yes --plan-in`.
+- Delete-like actions can also require `--ack-irreversible`.
+- Writes without saved before-state also need `--ack-no-snapshot`.
+
+## What proof it leaves behind
+
+- Dry-run plans can be saved with `--plan-out`.
+- Approved applies can save receipts with `--receipt-out`.
+- Local run history can be reviewed with `runs list` and `runs show`.
+- Refusals and audit logs show when a provider write did not happen because approval or another safety check was missing.
+- The docs, tests, examples, and API coverage ledger are all in this repo.
+
+## Limits
+
+- Many live writes still do not have saved before-state or a built-in undo path.
+- Some workflows still need customer IDs, account IDs, or request JSON prepared first.
+- You still need a valid developer token, OAuth token, and the right Microsoft Ads permissions for real account work.
+- Bulk and reporting workflows still depend on Microsoft processing time, quotas, and account-level access.
+
+## Helpful docs
+
+- [Browse all Microsoft Ads docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)
