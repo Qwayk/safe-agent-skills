@@ -1,13 +1,15 @@
 # Proof pack
 
-Date (UTC): 2026-06-04
+Date (UTC): 2026-06-11
+
+You do not need to run these commands yourself for normal use. They are here for auditing, verification, and proof.
 
 ## Verification status
 
 - Scope: this environment.
 - Local tests are real and green.
 - Local command outputs are real command runs with no secrets.
-- Live write proof is intentionally requires explicit no-snapshot approval before Klaviyo HTTP when no saved snapshot is available.
+- Live write proof intentionally requires explicit no-snapshot approval before Klaviyo HTTP when no saved snapshot is available.
 - API coverage shipped: `308` stable operations, `87` beta operations excluded by product choice.
 - Stable surface file: `docs/official_operations_v1_2026-05-25.json`.
 
@@ -18,7 +20,7 @@ From tool root:
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -e .
-.venv/bin/python -m unittest -q  # 23 tests, OK
+.venv/bin/python -m unittest -q  # 27 tests, OK
 .venv/bin/klaviyo-safe-agent-cli --output json --version
 .venv/bin/klaviyo-safe-agent-cli --output json onboarding --no-write-env
 .venv/bin/klaviyo-safe-agent-cli --output json --env-file .env.example auth check

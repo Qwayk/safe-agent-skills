@@ -1,23 +1,27 @@
 # Safety model
 
-Rules:
+Use this page when you want the exact safety rules behind the Klaviyo skill.
+
+## Core rules
+
 - Dry-run by default.
 - Real calls need `--live`.
 - Reads can run live with `--live`.
-- Writes also need `--apply`, then require explicit no-snapshot approval before Klaviyo HTTP when safe before-state capture is not available.
-- High-impact writes also need `--plan-in` and `--yes`, then still require explicit no-snapshot approval before Klaviyo HTTP.
-- No secrets in output, audit logs, or artifacts.
+- Writes also need `--apply`.
+- High-impact writes also need `--plan-in` and `--yes`.
+- Current Klaviyo write families do not save before-state snapshots, so approved live writes also need `--ack-no-snapshot`.
+- No secrets are printed in output, audit logs, or artifacts.
 - Plans always include `plan.no_recovery`.
-- Write plans include `before_state.required: true` and `before_state.supported: false` when safe saved snapshot support is not available.
-- No automatic rollback is available for writes; there are no snapshots, no provider backups, and no automatic restore in this tool.
+- Write plans mark `before_state.required: true` and `before_state.supported: false`.
+- No automatic rollback is available for writes. There are no snapshots, no provider backups, and no automatic restore in this tool.
 
 ## Safe operation flow
 
-1) Build plan first (default)
-2) Review plan output and proof artifacts
-3) Require explicit no-snapshot approval when no useful before-state can be saved
-4) Apply approved supported writes, or refuse only for a real blocker such as missing approval, unclear target, missing credentials, or failed safety checks
-5) Store the plan, receipt or refusal summary, and proof artifacts
+1. Build the plan first.
+2. Review the plan output and proof artifacts.
+3. Confirm the recovery limit when no useful before-state can be saved.
+4. Apply only after the required gates are present.
+5. Store the plan, receipt or refusal summary, and proof artifacts.
 
 ## Gate names used for every write
 
@@ -39,6 +43,7 @@ These require `--yes` and `--plan-in` when running with `--live --apply`.
 ## Run history
 
 For write-capable commands, local run artifacts can include:
+
 - `plan.json`
 - `receipt.json` is written for approved supported writes; refusals for missing approval or failed safety checks do not write it
 - `audit.jsonl`

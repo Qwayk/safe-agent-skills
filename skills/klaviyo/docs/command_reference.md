@@ -1,7 +1,7 @@
 # Command reference
 
 Use this page when you need the exact Klaviyo command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+If you want the plain-English path first, start with [What you can do with Klaviyo](use_cases.md), [Connect your Klaviyo account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 
@@ -31,10 +31,11 @@ Each stable operation is a direct subcommand:
 ## Safety and run flags for API operations
 
 - `--live` is required before any real HTTP call.
-- Reads can run live with `--live`.
-- `--apply` is required for writes, but current write apply attempts require explicit no-snapshot approval before Klaviyo HTTP when no saved snapshot is available.
+- Reads can run live with `--live` and do not need `--apply`.
+- `--apply` is required for writes.
+- Current write apply attempts also require explicit `--ack-no-snapshot` approval before Klaviyo HTTP because no saved snapshot is created for writes today.
 - High-impact write operations also require `--plan-in` and `--yes`.
-- Plan-first and proof-first: create plan output with `--plan-out` first, review it, and do not expect live writes yet.
+- Plan first: create plan output with `--plan-out` first, review it, and only then decide whether to apply.
 - This tool does not create snapshots, provider backups, or automatic rollback for writes.
 - Dry-run plans include `before_state` and `plan.no_recovery`.
 

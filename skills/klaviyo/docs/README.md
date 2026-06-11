@@ -1,12 +1,13 @@
 # Klaviyo docs
 
 Use this page when you want the right Klaviyo doc quickly.
+If you only need the first safe path, use the first three links below.
 
 ## Start here
 
-- [What you can do](use_cases.md)
-- [Connect your account](onboarding.md)
-- [How this stays safe](safety_model.md)
+- [What you can do with Klaviyo](use_cases.md)
+- [Connect your Klaviyo account](onboarding.md)
+- [How this skill stays safe](safety_model.md)
 
 ## Commands and setup
 
@@ -18,7 +19,7 @@ Use this page when you want the right Klaviyo doc quickly.
 
 ## Proof and references
 
-- [Proof pack](proof.md)
+- [Proof and verification](proof.md)
 - [API coverage](api_coverage.md)
 - [Source references](references.md)
 - [Examples](examples/)

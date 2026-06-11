@@ -11,6 +11,7 @@ This tool follows Keep a Changelog style.
 - Initial shipped Klaviyo safe CLI now covers `308` stable operations from revision `2026-04-15`.
 - Product scope is documented as stable-only, with `87` beta operations excluded by product choice.
 - The shipped wrapper `klaviyo-safe-cli` is documented for agent runtimes.
+- Added a README public contract test so the source README keeps the publish-ready skill-page shape.
 
 ### Changed
 - Changed write apply behavior so Klaviyo writes require safe before-state capture or explicit no-snapshot approval before Klaviyo HTTP, and approved supported writes emit receipts with recovery limits.
@@ -19,6 +20,7 @@ This tool follows Keep a Changelog style.
 - Documented the real command surface: `onboarding`, `auth check`, `api ops list/show`, explicit `api <operation_command>`, and `runs list/show`.
 - Documented the real safety gates: dry-run by default, `--live` for real calls, `--apply` for writes, and `--plan-in --yes` for high-impact writes.
 - Added a concrete maintenance validation flow with venv recreate, editable install, unit tests, and smoke checks.
+- Rebuilt the README, onboarding, quickstart, command reference, safety model, and proof pages into the user-first public skill pattern used by the stronger Qwayk skill pages.
 
 ### Fixed
 - Fixed the old write apply path that could produce receipts without a before-state snapshot or provider backup.
