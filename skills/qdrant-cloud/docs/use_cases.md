@@ -1,29 +1,57 @@
-# Use cases
+# What you can do with Qdrant Cloud
 
-Use this page when you want ideas for real Qdrant Cloud jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Use this page when you want ideas for real Qdrant Cloud work to hand to your agent.
+If you need setup first, start with [Connect your Qdrant Cloud account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## A good first ask
 
-Most no‑code tools are great for *single events* (“when X happens, do Y”). A safe agent CLI is built for:
+"Check the Qdrant Cloud skill is configured, list my accounts and clusters, and tell me what is safe to review before we plan any changes."
 
-- Bulk work on existing libraries (hundreds/thousands of records)
-- Preview-first changes (dry-run -> safe refusal for ordinary writes, or explicit provider backup/restore apply)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Audit artifacts (plans/refusals/provider receipts/logs) you can keep for proof and debugging
+## Common Qdrant Cloud jobs
 
-## Common use cases (examples)
+### Account and cluster review
 
-- “Pull a report of the things that match these rules, and export it to a file.”
-- “Find the right targets safely (avoid guessing), then propose changes for review.”
-- “Prepare a large set of small metadata edits from a spreadsheet, then prove the tool requires explicit no-snapshot approval before a live write when no saved snapshot is available.”
-- “Do a safe, repeatable transformation across many items, and prove it’s complete.”
+- "List my accounts, clusters, and releases so I can review what is running."
+- "Show me packages, regions, and quotas before we plan a cluster change."
+- "Export a clean inventory of clusters, backups, and backup schedules."
 
-## What you’ll see from the agent (trust + safety)
+### Backup and recovery review
 
-When you ask for a change, the agent should:
+- "List my backups and backup schedules, then tell me which recovery options exist."
+- "Prepare a restore-backup plan for this backup without changing anything yet."
+- "Show me whether create-cluster-from-backup is the safer path for this recovery job."
 
-1) Show a dry-run preview of what would change.
-2) Apply only after explicit confirmation.
-3) Refuse ordinary writes before Qdrant Cloud HTTP unless before-state or provider-backup capture exists.
-4) For provider backup/restore, verify after apply and point to saved proof artifacts.
+### Access, keys, and permissions
+
+- "Review management keys, database API keys, roles, and account members."
+- "List effective permissions for this account before we change access."
+- "Check user roles for this account and point out anything surprising."
+
+### Billing and monitoring
+
+- "Show me invoices, discounts, payment methods, and monthly metering for this account."
+- "Pull cluster summary metrics, usage metrics, or logs for this cluster."
+- "Export cluster events so I can review recent incidents or changes."
+
+### Careful change planning
+
+- "Plan this cluster change first and show me exactly what needs approval."
+- "Preview a payment or billing change and tell me if it needs spend approval."
+- "Show the refusal path first when a write still has no saved before-state."
+
+## Why this skill is useful
+
+- It gives your agent a safer front door to the Qdrant Cloud control plane than raw API guessing.
+- It lets you review infrastructure, access, backups, and billing in one place.
+- It keeps ordinary writes in plan-first mode when there is no saved before-state or provider backup yet.
+
+## What you should expect from the agent
+
+For normal review work, the agent should gather the right reads and summarize what matters.
+
+For change work, the agent should:
+
+1. show the dry-run plan first
+2. explain whether the change needs `--live`, `--apply`, or extra approval flags
+3. tell you when no-snapshot approval is still required
+4. keep provider backup and restore workflows separate from ordinary writes

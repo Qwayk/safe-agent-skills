@@ -1,52 +1,69 @@
-# Onboarding (non-technical)
+# Connect your Qdrant Cloud account
 
-This tool runs on your computer, and connects to a vendor API using an API key/token that you store locally.
+Use this page when you want the shortest safe setup path for Qdrant Cloud work.
 
-You do not need to be technical. You can simply ask an AI agent to do work, and the agent will run the tool for you and report back with a preview, a safe refusal for ordinary writes, or a provider backup/restore receipt when that exact workflow is approved.
+This skill runs on your machine and uses a Qdrant Cloud management API key that you store locally. You do not need to write code, but you do need the right key and the right account or cluster IDs for deeper jobs.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
 
-## Step 1: Create the local `.env` file (on your machine)
+## What you need
+
+- A Qdrant Cloud management API key.
+- The account ID for most real account, cluster, IAM, billing, or backup work.
+- Cluster IDs, backup IDs, or other resource IDs when you move past the first inventory checks.
+
+## Step 1) Create the local `.env` file
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
-3) Fill the required fields (the real tool must document exactly which ones).
+1. Copy `.env.example` to `.env`.
+2. Add `QDRANT_CLOUD_API_KEY`.
+3. If the key contains shell-special characters like `|`, wrap it in single quotes.
+4. If your real env file lives elsewhere, plan to use `--env-file /full/path/to/.env`.
 
-If an API key contains shell-special characters such as `|`, wrap the value in single quotes:
+Example:
 
 ```env
 QDRANT_CLOUD_API_KEY='your_real_key_here'
 ```
 
-If you keep the real `.env` outside this tool folder, ask the agent to use `--env-file /full/path/to/.env`.
+## Step 2) Check optional settings only if you need them
 
-## Step 2: Get the API key/token (tool-specific)
+Most people can leave the defaults alone.
 
-When you copy this template to build a real tool, replace this section with exact “where to click” UI steps.
+Optional settings:
 
-Rules:
-- Use short numbered steps (no jargon).
-- Tell the user exactly what to copy/paste into which `.env` field.
-- Never instruct the user to paste secrets into chat.
-- If the vendor UI offers multiple key types, explicitly name the one required (example: “Admin API key”, not “Content API key”).
+- `QDRANT_CLOUD_API_BASE_URL`
+- `QDRANT_CLOUD_TIMEOUT_S`
 
-## Step 3: What to ask your AI agent (examples)
+You only need those if your environment requires a different base URL or timeout.
 
-These are plain-English requests. The agent should start with a read-only check, then show a preview before applying changes.
+## Step 3) Run the first safe checks
 
-- “Confirm the tool is connected, then show me what it can do on my account.”
-- “Find the right targets safely (avoid guessing), then propose changes for my review.”
-- “Prepare these metadata updates from a spreadsheet and tell me what approval they need before any live write.”
-- “Do a dry-run preview first. Only apply after I approve.”
+These are the best first commands:
 
-## Step 4: If something fails
+```bash
+qdrant-cloud-api-tool --output json --version
+qdrant-cloud-api-tool --output json auth check
+qdrant-cloud-api-tool --output json --live auth check
+qdrant-cloud-api-tool --output json --live account-v1 list-accounts
+```
 
-The most common issues are:
-- Missing/incorrect values in `.env`
-- Wrong key type (example: read-only key vs admin key)
-- Network/auth restrictions in the vendor account
+The offline `auth check` confirms config shape. The `--live` checks confirm that the key works against the real API.
 
-The real tool should explain common errors in `docs/troubleshooting.md`.
+## What to ask your agent next
+
+- "Confirm the Qdrant Cloud skill is connected, then list my accounts and clusters."
+- "Show me backups, backup schedules, and cluster recovery options for this account."
+- "Preview this cluster or billing change and tell me what approval it needs before anything goes live."
+
+## If something fails
+
+The most common causes are:
+
+- the key is missing or incorrect
+- the wrong env file is being used
+- the API key needs different account access
+- `--live` was missing on a real API read
+
+Use [Troubleshooting](troubleshooting.md) if the live auth check or account list fails.

@@ -1,107 +1,65 @@
-# Safety model
+# How this skill stays safe
 
-Rules:
-- No network by default; add `--live` to allow any real HTTP request.
-- Dry-run by default; ordinary writes produce plans and then require explicit no-snapshot approval before Qdrant Cloud HTTP.
-- Provider backup/restore commands can apply live after the normal gates because they are explicit recovery workflows.
-- Refuse when unsure; do not guess.
-- Higher-risk writes require `--yes` and additional acknowledgements.
-- Never log secrets.
+This skill is careful by default.
 
-## Two-layer safety (recommended)
+The safest first step is a simple live inventory read like account, cluster, or backup review before you plan any change.
 
-There are two kinds of safety:
+## What stays simple
 
-1) Mechanical correctness (the tool)
-- Plans show the request, risk gates, recovery contract, and `safety.before_state`.
-- Ordinary write apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available until before-state or provider-backup capture exists.
-- Provider backup/restore receipts show the explicit provider workflow and best-effort verification.
+- offline config checks
+- live account reads
+- live cluster and backup reads
+- live billing, IAM, and monitoring reads
 
-2) Intent alignment (a reviewer)
-- A reviewer checks that the planned change matches the goal and context.
-- This is best done by a human or a smart agent (we recommend Codex).
+Those flows still need the right API key, but they do not change Qdrant Cloud resources.
 
-The tool should stay deterministic; the review is outside the tool.
+## What needs extra care
 
-## Plan -> Review -> Apply Refusal
+Current ordinary writes are still plan-first because many operations do not have saved before-state or provider backup capture yet.
 
-Recommended workflow for ordinary writes:
+That means:
 
-1) Generate a plan (dry-run).
-2) Review the plan (human/Codex).
-3) Request apply with `--live --apply` (and `--yes` for risky actions).
-4) Confirm the tool requires explicit no-snapshot approval before Qdrant Cloud HTTP when no saved snapshot is available.
+- nothing reaches the real API unless you add `--live`
+- the default path for a write is a dry-run plan
+- confirmed apply needs `--live --apply`
+- higher-risk work can also need `--yes`
+- destructive work can also need `--ack-irreversible`
+- billing or payment work can also need `--ack-spend-money`
+- ordinary writes without saved before-state or provider backup also need explicit no-snapshot approval before Qdrant Cloud HTTP
 
-For provider backup/restore workflows, review the plan first, then apply only the explicit backup/restore command.
+## What this skill does not promise
 
-## Plans, refusals, and provider receipts
+- no generic rollback
+- no hidden network calls
+- no automatic restore for ordinary writes
+- no saved before-state for every write family
 
-For write-capable commands, treat the dry-run output as a **plan**:
-- what will change
-- what must be true to apply safely (preconditions)
-- whether `safety.before_state` is supported for this operation
+The tool should say those limits plainly before any live write is allowed.
 
-Current ordinary write apply outputs a safe **refusal** instead of a receipt because no Qdrant Cloud write is sent.
+## The narrow recovery exception
 
-Provider backup/restore apply can output a **receipt**:
-- which backup/restore action was requested
-- what verification ran and whether it passed
-- the explicit recovery contract
+These workflows are different because they are already explicit provider recovery paths:
 
-Plans, refusals, and receipts must never include secrets.
+- `create-backup`
+- `restore-backup`
+- `create-cluster-from-backup`
 
-### Plan/refusal/receipt files (recommended v2 flags)
+They still need the normal gates, but they are not the same as pretending a normal write has automatic rollback.
 
-If a command supports writes, it should also support file outputs:
-- `--plan-out <path>`: write the dry-run plan JSON to a file (for review)
-- `--plan-in <path>`: apply from a saved plan file (for high-risk/batch)
-- `--receipt-out <path>`: write provider backup/restore receipts; ordinary write apply refuses and does not create a receipt
+## Local files and proof
 
-This makes the workflow repeatable in CI and easier to review.
+This skill can save:
 
-## Run history (recommended for customer-ready tools)
+- dry-run plans with `--plan-out`
+- provider backup or restore receipts with `--receipt-out`
+- local run history under `.state/runs`
 
-For write-capable commands, this template automatically writes a local run folder (gitignored):
-- `.state/runs/<run_id>/`
+Those files are meant to help review what happened later. They must not contain secrets.
 
-It also appends a simple history row to:
-- `.state/runs/index.jsonl`
+## Recommended workflow with an AI agent
 
-These live next to your `--env-file` (usually next to your `.env` file), so you can always find them.
-
-This is designed for vibe coders:
-- You can ask your agent “what happened last time?” and it can use `runs list/show`.
-- You don’t need to manually browse folders.
-
-Rules:
-- These artifacts must never include secrets.
-- Plans, refusals, provider receipts, and audit logs are proof of what happened.
-
-## Risk levels (guideline)
-
-- Low: create new drafts; small safe edits.
-- Medium: edit an existing draft; single-resource updates.
-- High: edit published content; status changes; deletes; batch.
-- Irreversible: actions that cannot realistically be undone (example: analytics events, licensing downloads).
-
-High/irreversible actions should require an explicit plan + confirmation.
-
-For irreversible actions, consider an extra acknowledgement flag:
-- `--ack-irreversible`
-
-For money-moving / billing actions, require an explicit acknowledgement:
-- `--ack-spend-money`
-
-## Drift detection (recommended for plan apply)
-
-If you support applying from a saved plan file, refuse if the target changed since the plan was created.
-Examples:
-- `updated_at` / `modified_gmt`
-- a content hash
-
-## Recovery contract (recommended default)
-
-- Every write now includes a recovery contract so the output is explicit.
-- `no-recovery`: ordinary writes are not paired with automatic or implicit recovery, and current ordinary apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available.
-- `provider-backup-restore`: backup/restore calls are provider-native recovery commands and must be run explicitly.
-- For any contract, do not run recovery implicitly. If recovery is needed, follow the explicit workflow.
+1. Start with a live read that proves the account and target IDs are correct.
+2. If you need a change, review the dry-run plan first.
+3. Check whether the action also needs destructive, spend, or no-snapshot approval.
+4. Keep provider backup and restore workflows separate from ordinary writes.
+5. Save the plan, refusal, or receipt when you want an audit trail.

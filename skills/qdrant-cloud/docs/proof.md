@@ -1,62 +1,69 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Capture minimal, customer-auditable evidence: what ran, what came back, and what safety gates exist.
+Use this page when you want the clearest proof story for Qdrant Cloud.
 
-Rules:
-- Never include secrets (API keys/tokens, Authorization headers).
-- Keep examples redacted and deterministic.
+This repo does not rely on live Qdrant Cloud credentials for normal proof. The evidence here comes from the local suite, the committed redacted examples, and the explicit live-gating and write-gating behavior.
 
-## Last verified
+## What is already proved
 
-- Date (UTC): 2026-06-04
-- Verified by: Codex + Spark builder review (offline stub)
-- Tool version: 0.1.0
-- Inventory version: `v1` (from vendored `qdrant-cloud-public-api` protos)
-- Environment: offline local stub (no real Qdrant Cloud calls in this repo task)
+- The command surface is explicit and inventory-backed.
+- No real Qdrant Cloud network call happens unless `--live` is present.
+- Ordinary writes stay plan-first and require explicit no-snapshot approval when no saved before-state or provider backup exists.
+- Provider backup and restore workflows keep a separate recovery contract from ordinary writes.
+- The committed examples show version, read, plan, refusal, and provider-backup receipt shapes.
 
-## Smoke checks (copy/paste)
+## Last checked
 
-Run inside the tool folder:
+- Local docs and contract alignment rechecked: **2026-06-11 UTC**
+- Local suite and example proof baseline: **2026-06-04 UTC**
+- Tool version: `0.1.0`
+- Inventory version: `v1`
 
-1) Create venv + install:
-- `python3 -m venv .venv`
-- `.venv/bin/python -m pip install -e .`
+No live Qdrant Cloud credentials are stored here, so this proof pack stays local-first and redacted on purpose.
 
-2) Version (no `.env` required):
-- `qdrant-cloud-api-tool --output json --version`
+## Core validation
 
-3) Auth/config check:
-- `qdrant-cloud-api-tool --output json auth check`
-- `qdrant-cloud-api-tool --output json --live auth check`
+From the tool folder:
 
-4) Generate offline example outputs (local stub):
-- `python3 scripts/generate_example_outputs.py`
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e .
+.venv/bin/python -m unittest -q
+qdrant-cloud-api-tool --output json --version
+qdrant-cloud-api-tool --output json auth check
+python3 scripts/generate_example_outputs.py
+```
 
-5) One provider-backup recovery plan example (no network):
-- `qdrant-cloud-api-tool --output json cluster-backup-v1 restore-backup --account-id 00000000-0000-0000-0000-000000000000 --backup-id 11111111-1111-1111-1111-111111111111 --request-json docs/examples/backup_restore.request.example.json --plan-out backup_restore.plan.json`
-
-2026-06-04 Codex validation: focused safety suite 10 tests OK; full suite 20 tests OK; docs formatting 2 tests OK; version smoke passed; example generator passed; committed JSON examples parsed.
-
-## Example outputs (committed, redacted)
+## Committed examples
 
 - `docs/examples/outputs/version.json`
 - `docs/examples/outputs/read.example.json`
 - `docs/examples/plan.example.json`
-- `docs/examples/receipt.example.json` (ordinary write refusal example; old filename kept)
+- `docs/examples/receipt.example.json`
 - `docs/examples/backup_restore.plan.example.json`
 - `docs/examples/backup_restore.receipt.example.json`
 
-## What can go wrong (and how we verify)
+The current `receipt.example.json` is still an ordinary-write refusal example, not a claim that every live write path already has recovery support.
 
-- **Forgot `--live`** → apply refuses as a safe no-op (`refused=true`).
-- **Missing high-risk acknowledgements** → DELETE and payment/billing actions refuse unless required flags are present.
-- **Plan drift** → `--plan-in` apply refuses if env or request hash differs from the reviewed plan.
-- **Ordinary write safety drift** → write apply requires explicit no-snapshot approval before Qdrant Cloud HTTP when no saved snapshot is available until `safety.before_state.supported` is true or provider-backup capture exists for that operation.
-- **Recovery contract mismatch** → plan/refusal/provider receipt includes explicit safety fields; ordinary writes are `no-recovery`, backup/restore family is `provider-backup-restore`.
-- **Wrong recovery family assumption** → verify backup/restore examples use the provider-backup contract while ordinary create/update examples stay `no-recovery` and require explicit no-snapshot approval before provider HTTP.
+## What can still go wrong
 
-## Links
+- missing `--live` on a real API read
+- missing or wrong API key
+- wrong account ID, cluster ID, or backup ID
+- missing destructive or spend acknowledgements
+- ordinary writes that still have no saved before-state or provider backup
 
-- Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
+## How to verify the risky parts
+
+- If a live read fails, check the key, account scope, and whether `--live` was present.
+- If an ordinary write refuses, confirm the refusal happened before Qdrant Cloud HTTP.
+- If a plan is being reviewed, check the account, cluster, request payload, and recovery contract.
+- If a provider backup or restore workflow is used, check the receipt and the verification fields after apply.
+
+## Intentional limits
+
+Not covered on purpose:
+
+- generic rollback claims for ordinary writes
+- hidden live network calls
+- fake recovery promises where the product does not expose a real recovery path

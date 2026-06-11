@@ -17,6 +17,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Clarified setup docs and agent instructions to quote `QDRANT_CLOUD_API_KEY` when needed and prefer `--env-file` when the real `.env` lives outside the tool folder.
 - Ordinary write apply now requires operation-specific before-state, provider-backup capture, or explicit no-snapshot approval before Qdrant Cloud HTTP.
 - The provider backup/restore live exception is narrowed to `create-backup`, `restore-backup`, and `create-cluster-from-backup`.
+- Public-facing README, docs index, onboarding, quickstart, safety copy, use cases, and proof docs were rebuilt into the newer user-first Qdrant Cloud skill pattern, and the README contract test was added.
 
 ### Fixed
 
