@@ -33,7 +33,7 @@ pinterest-api-tool auth check
 ### “localhost refused to connect” after “Give access”
 
 That is expected if your redirect URI is `http://localhost/` and you don’t have a local server.
-The old next step was to exchange the public code with the CLI, but that helper currently requires explicit no-snapshot approval before local token writes:
+The old next step was to exchange the copied code with the CLI, but that helper currently requires explicit no-snapshot approval before local token writes:
 
 ```bash
 pinterest-api-tool auth code exchange --code YOUR_CODE --continuous-refresh

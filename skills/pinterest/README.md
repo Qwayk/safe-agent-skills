@@ -1,64 +1,113 @@
-# Pinterest API tool (read-mostly v1)
+# Pinterest
 
-## Simplicity lock
+**Capability:** Reads + careful changes
 
-Build and change this area in the simplest way possible.
+Use this skill when you want your agent to review what is in your Pinterest account, spot issues, and plan careful changes without guessing from raw docs.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand your agent jobs like board and pin inventory snapshots, section reviews, top-pin or account analytics, ads account checks, catalog or feed diagnostics, and planned pin or board changes.
 
-Safe CLI for Pinterest API v5 operations:
-- Inventory: boards, board sections, pins, board pins
-- Ads (read-only): ad accounts, campaigns, ad groups, ads, aggregated analytics
-- Catalogs (read-only): catalogs, feeds, feed processing results, product groups, product group products, item issues, reports/stats
-- Analytics: account + top pins + pin analytics (if your scopes allow it)
-- Audit snapshot: writes JSON files locally (no Pinterest writes)
-- Pin link hygiene: plan link canonicalization; confirmed apply currently requires explicit no-snapshot approval before Pinterest writes when no saved snapshot is available
+Read work is the easy path here. Snapshots and audits can run from read-only Pinterest calls plus local JSON output. Riskier work slows down on purpose: write families start as dry-run plans, and confirmed apply still needs explicit no-snapshot approval before live Pinterest writes because saved before-state support is not there yet.
 
-## For non-technical users: Start here (no coding)
+A good first ask is: "Check the Pinterest skill is configured, export a snapshot of my boards and pins, and tell me what changed before we plan any updates."
 
-Start with these docs:
+## Start here first
 
-- Use cases (ideas + benefits): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model (how we prevent mistakes): `docs/safety_model.md`
+- Want ideas for real Pinterest work? [What you can do with Pinterest](docs/use_cases.md)
+- Need setup? [Connect your Pinterest account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-What you can ask an AI agent to do (examples):
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-- “Audit my Pinterest account and export a snapshot (boards, pins, sections) to a folder.”
-- “Show me my top pins and basic analytics (if my account/scopes allow it).”
-- “Plan a ‘pin link cleanup’ for these pins and show me the preview.”
+## What this skill helps with
 
-Core safety rules (high level):
+- Export board, section, and pin inventory snapshots for review or audits.
+- Check account analytics, top pins, ads structure, and aggregated ads performance when your account has access.
+- Review catalogs, feeds, processing results, product groups, and item issues before anyone tries to fix them live.
+- Preview pin-link cleanup or other write plans before anything changes live.
+- Save plans, refusals, receipts, and audit snapshots for later review.
 
-- Read-mostly: inventory and audits do not write to Pinterest.
-- Write surfaces are plan-first right now: dry-run plans are reviewable, and confirmed apply attempts require explicit no-snapshot approval before provider writes or successful receipts when no saved snapshot is available.
+## What access this skill needs
 
-## For technical users: Start here (CLI)
+- A Pinterest access token, or the app ID, app secret, and refresh token for longer-lived access.
+- The Pinterest scopes needed for the endpoints you want to use.
+- An ad account ID for ads or catalogs work.
+- A business ID for Business Access inventory.
+- A local output folder when you want audit snapshots or exports saved to your machine.
 
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
+For most people, a simple access token plus a read-only snapshot is the safest place to start.
 
-Minimal examples:
+## Install and first run
+
+Install slug: `pinterest`
+
+Ask your agent to install the `pinterest` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
 
 ```bash
-pinterest-api-tool --version
-pinterest-api-tool auth check
-pinterest-api-tool boards list --limit 1
+npx skills add Qwayk/safe-agent-skills@pinterest -g -y
 ```
 
-## Proof pack (customer-ready)
+Then try a safe first ask like:
 
-- `docs/proof.md`
-- `docs/api_coverage.md`
-- `docs/examples/`
+```text
+Check the Pinterest skill is configured, export a snapshot of my boards and pins, and tell me if anything looks unusual before we plan any changes.
+```
 
-## Agent skill prompt
+## How this skill stays safe
 
-- Agent skill prompt and install notes are included with this package.
+- Inventory, analytics, ads reads, and catalog reads can stay read-only to Pinterest.
+- `audit snapshot` writes JSON files locally from read-only Pinterest calls.
+- Remote write families start as dry-run plans first.
+- Confirmed apply still needs `--apply --yes`, plus any extra acknowledgement flags for irreversible, spend-sensitive, or high-volume work.
+- When no saved before-state exists, apply also needs explicit no-snapshot approval before Pinterest writes, local token writes, report outputs, or successful write receipts.
+- The tool does not claim rollback or provider backup support for those live write paths today.
+- Docs, tests, examples, and API coverage all live in this repo so you can inspect what the agent is using.
+
+## What it covers today
+
+This skill covers:
+
+- boards, board sections, pins, board pins, and inventory snapshots
+- user account, business access, and lookup resources
+- ads account reads, ads structure reads, and aggregated ads analytics
+- catalog reads, feed diagnostics, and catalog reporting
+- plan-first write families for boards, sections, pins, ads, catalogs, reports, and jobs
+- pin-link hygiene planning and apply with explicit no-snapshot approval
+
+## What happens before live changes
+
+- The agent should show the dry-run plan first.
+- You review the target account, object IDs, payload, and risk level.
+- Read-only snapshots and inventory reads can run without a Pinterest write.
+- Remote write families need `--apply --yes`.
+- Riskier operations can also need flags like `--ack-irreversible`, `--ack-spend`, or `--ack-volume`.
+- Writes without saved before-state also need `--ack-no-snapshot` before live Pinterest HTTP.
+
+## What proof it leaves behind
+
+- Audit snapshots save structured JSON files locally.
+- Dry-run plans can be saved and reviewed before apply.
+- Refusals make it clear when missing approval stopped the write before Pinterest HTTP.
+- Apply receipts can be saved when a write path is actually allowed.
+- The docs, tests, proof pack, committed examples, and API coverage ledger all stay in this repo so you can inspect what the agent relied on.
+
+## Limits
+
+- Many Pinterest analytics, ads, and catalogs endpoints need extra scopes, account roles, or account tier.
+- Live write families still do not have saved before-state, rollback, or provider backup support today.
+- Auth helper writes and some job/report outputs also need explicit no-snapshot approval before local token or output writes.
+- This skill is safest when you start with one snapshot or one reviewed write plan before larger work.
+
+## Helpful docs
+
+- [Browse all Pinterest docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Authentication details](docs/authentication.md)
+- [Configuration](docs/configuration.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)

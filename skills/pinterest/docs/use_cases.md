@@ -1,52 +1,51 @@
-# Use cases
+# What you can do with Pinterest
 
-Use this page when you want ideas for real Pinterest jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Use this page when you want ideas for real Pinterest work to hand to your agent.
+If you need setup first, start with [Connect your Pinterest account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## A good first ask
 
-No‑code tools can do simple scheduled exports. This tool is built for:
+"Check the Pinterest skill is configured, export a snapshot of my boards and pins, and tell me if anything looks unusual before we plan changes."
 
-- Deep inventory snapshots (boards, sections, pins) with stable JSON exports
-- Repeatable audits you can re-run and compare over time
-- Safety-gated write planning (link hygiene and other write families require explicit no-snapshot approval before live changes for now)
+## Common Pinterest jobs
 
-## Common use cases (examples)
+### Inventory and audits
 
-### Inventory and audits (read-only to Pinterest)
+- "Export a full snapshot of my boards, sections, and pins into a folder."
+- "Generate a boards summary so I can review board privacy, section counts, and pin counts."
+- "Create a repeatable audit snapshot so I can compare account structure over time."
 
-- “Export a full snapshot of my account (boards, sections, pins) into a folder.”
-- “Generate a ‘boards summary’ report (board privacy, section counts, pin counts).”
-- “Create a periodic audit snapshot so I can track changes over time.”
+### Analytics and performance review
 
-### Ads performance snapshots (read-only)
+- "Show me my top pins and account analytics for the last 90 days if my account supports it."
+- "Export my ads account structure so I can review campaigns, ad groups, and ads with my team."
+- "Pull aggregated ads analytics for this date range so I can spot performance changes."
 
-- “Export my ad account structure (campaigns, ad groups, ads) to a folder so I can review it with my team.”
-- “Take a weekly ‘ads inventory snapshot’ so I can detect unexpected changes in campaigns or ad group settings.”
-- “Export aggregated ads analytics (no user-level/event-level data) for a date range so I can spot performance changes.”
+### Catalog and feed diagnostics
 
-Note: Ads endpoints require access to a Pinterest ad account and may require additional scopes/tiers.
+- "List my catalogs and feeds, then show the latest processing results."
+- "Export product group products and item issues so I can diagnose catalog problems."
+- "Show me catalog reports or stats for this ad account."
 
-### Catalog health and feeds (read-only)
+### Careful change planning
 
-- “List my product catalogs and feeds, and export their processing results so I can spot feed issues.”
-- “Create a recurring ‘catalogs snapshot’ so I can track feed changes and product group configuration over time.”
-- “Export product group products + item issues so I can identify catalog ingestion problems.”
-- “List catalog reports / stats (if enabled for my account/scopes).”
+- "Plan a pin-link cleanup for these pins and show me exactly what would change."
+- "Preview the write steps for a board, pin, ad, or feed change before anything goes live."
+- "Show the missing-approval refusal first so I can confirm nothing writes without approval."
 
-### Analytics (read-only)
+## Why this skill is useful
 
-- “Show me my top pins and account analytics for the last 90 days (if enabled for my account/scopes).”
+- It gives you stable inventory snapshots instead of one-off screenshots or manual exports.
+- It helps your agent inspect Pinterest account structure before it suggests changes.
+- It keeps risky write work in plan-first mode when there is no saved before-state yet.
 
-### Pin link hygiene planning
+## What you should expect from the agent
 
-- “Plan link canonicalization for these pins and show me exactly what would change.”
-- “Show the missing-approval refusal for a confirmed apply attempt so I can see that no Pinterest write happened without approval.”
+For normal reads and snapshots, the agent should fetch the data and summarize what matters.
 
-## What you’ll see from the agent (trust + safety)
+For write-capable operations, the agent should:
 
-For write operations, the agent should:
-
-1) Produce a plan (dry-run).
-2) Explain the no-snapshot limit when no saved snapshot is available.
-3) Apply only after explicit no-snapshot approval, or confirm that a missing-approval refusal sent no Pinterest write.
+1. produce a dry-run plan first
+2. explain the no-snapshot limit clearly
+3. wait for explicit approval before any live Pinterest write
+4. show refusal output when a missing approval stopped the write before Pinterest HTTP

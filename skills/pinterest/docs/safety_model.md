@@ -1,37 +1,71 @@
-# Safety model
+# How this skill stays safe
 
-This tool is read-mostly. It can read Pinterest data and write requested local exports, but current Pinterest write families are plan-and-approve-with-no-snapshot-warning when no saved snapshot is available.
+This skill is read-mostly today.
 
-Core rules:
-- Default write-family behavior is a dry-run plan or read-only preview. No Pinterest provider write is sent.
-- Dry-run plans include `before_state.required: true`, `before_state.supported: false`, and `before_state.status: "no_snapshot_available"`.
-- Confirmed apply attempts still require `--apply --yes`.
-- Destructive operations additionally require `--ack-irreversible`.
-- Ads operations that can increase spend additionally require `--ack-spend`.
-- Operations that can trigger significant remote work, like feed ingest or report jobs, additionally require `--ack-volume`.
-- After all required flags are present, the tool requires explicit no-snapshot approval before Pinterest provider writes, local token writes, report receipts/downloads, job output, or successful write receipts.
-- The tool has no built-in rollback, restore, or provider backup path for remote writes.
+The safest starting point is a simple boards-and-pins snapshot before you plan any live account change.
 
-Allowed local outputs:
-- `audit snapshot` writes JSON files locally after read-only Pinterest calls.
-- `pins links plan` writes a local plan file from prior pin data.
-- Optional `--log-file` writes redacted JSONL audit events.
+## What stays simple
 
-Blocked local setup writes:
-- `auth login`, `auth code exchange`, and `auth token set` require explicit no-snapshot approval before token exchange, `.state/token.json` writes, or `.env` updates.
-- For reads today, use a manually configured `.env` token or refresh-token values.
+- inventory reads
+- analytics reads
+- ads reads
+- catalog reads
+- audit snapshots built from read-only Pinterest calls
 
-Write-capable families now covered by the explicit no-snapshot approval:
-- Boards: `boards create|update|delete|ensure`.
-- Board sections: `board-sections create|update|delete|ensure`.
-- Pins: `pins create|update|delete|save|ensure`.
-- Pin link hygiene: `pins links apply`.
-- Ads: `ads campaigns create|update|pause|resume`, `ads ad-groups create|update|pause|resume`, and `ads ads create|update|pause|resume`.
-- Catalogs: `catalogs create` and `catalogs feeds create|update|ingest`.
-- Ads reports: `ads reports create` and `ads reports run`.
-- Batch jobs: `jobs run` for remote-write rows such as `ads.reports.run`.
+Those flows do not send Pinterest writes.
 
-What must be added before live apply can be allowed:
-- Command-specific before-state capture or a provider-backed backup ID.
-- A verification plan tied to the saved before-state.
-- Clear rollback status. For Pinterest this may remain `automatic_rollback: false`, but the lack of rollback must be explicit before any live write is allowed.
+## What needs extra care
+
+Current remote write families are still plan-first because they do not have saved before-state support yet.
+
+That means:
+
+- the default path is a dry-run plan or read-only preview
+- confirmed apply still needs `--apply --yes`
+- destructive work can also need `--ack-irreversible`
+- spend-sensitive work can also need `--ack-spend`
+- high-volume or remote-work-triggering commands can also need `--ack-volume`
+- no-snapshot paths also need explicit no-snapshot approval before live Pinterest HTTP
+
+## What this skill does not promise
+
+- no rollback
+- no restore
+- no provider backup
+- no saved before-state for current live write families
+
+The tool should say those limits plainly before any live Pinterest write is allowed.
+
+## Local writes that are allowed
+
+- `audit snapshot` can write JSON files locally after read-only Pinterest calls
+- `pins links plan` can write a local plan file
+- optional `--log-file` can write redacted JSONL audit events
+
+## Local writes that still need no-snapshot approval
+
+- `auth login`
+- `auth code exchange`
+- `auth token set`
+- report outputs, receipts, or job output that only happen after a write path
+
+Those flows can write token state or other local files without a saved before-state, so they still need explicit no-snapshot approval first.
+
+## Write families that stay plan-first
+
+- boards
+- board sections
+- pins
+- pin-link apply
+- ads campaign, ad-group, and ad writes
+- catalog create and feed write flows
+- ads report creation and run flows
+- batch jobs that include remote-write rows
+
+## Recommended workflow with an AI agent
+
+1. Start with a small read or audit snapshot.
+2. If you need a change, review the dry-run plan first.
+3. Check whether the command needs irreversible, spend, volume, or no-snapshot approval.
+4. Approve only when the target, payload, and limits are clear.
+5. Save the plan, refusal, or receipt when you want an audit trail.

@@ -1,35 +1,62 @@
-# Onboarding (non-technical)
+# Connect your Pinterest account
 
-This tool runs on your computer and connects to Pinterest using an access token (and optionally a refresh token) that you store locally.
+Use this page when you want the shortest safe setup path for Pinterest work.
 
-You do not need to be technical. You can ask an AI agent to do the work, and the agent will run the tool for you and report back with previews, snapshots, and safety refusals when a write would be unsafe.
+This skill runs on your machine and uses Pinterest credentials you store locally. You do not need to write code, but you do need the right Pinterest token and scopes for the work you want.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
 
-## Step 1) Choose an auth method
+## What you need
 
-You have two options:
+- A Pinterest access token for the fastest first test, or the app ID, app secret, and refresh token for longer-lived access.
+- The Pinterest scopes needed for inventory, analytics, ads, or catalogs.
+- An ad account ID if you want ads or catalogs work.
+- A business ID if you want Business Access inventory.
 
-1) A short‑lived access token (fastest for a first test)
-2) A refresh-token workflow (recommended for ongoing use)
+## Step 1) Choose the auth path
 
-The exact step-by-step is in `docs/authentication.md`.
+You have two normal options:
 
-## Step 2) Fill the local `.env` file (on your machine)
+1. a short-lived access token for the fastest first check
+2. refresh-token auth for ongoing use
 
-In the tool folder, copy `.env.example` to `.env` and fill the values described in `docs/configuration.md`.
+The full step-by-step lives in [Authentication details](authentication.md).
 
-## Step 3) What to ask your AI agent (examples)
+## Step 2) Fill the local `.env` file
 
-- “Confirm the tool is connected, then export an audit snapshot of my boards and pins into a folder.”
-- “If analytics endpoints fail, re-run the snapshot without analytics and explain what permission is missing.”
-- “Plan a pin link cleanup for these pins and show me the preview.”
+In the tool folder:
+
+1. Copy `.env.example` to `.env`.
+2. Fill the values from [Configuration](configuration.md).
+3. If you only want a fast first read test, start with the access token path.
+4. If you want a longer-lived setup, fill the app and refresh-token values too.
+
+## Step 3) Run the first safe checks
+
+These are the best first commands:
+
+```bash
+pinterest-api-tool --output json --version
+pinterest-api-tool --output json auth check
+pinterest-api-tool --output json boards list --limit 1
+```
+
+If those commands work, the setup is good enough to start inventory snapshots or analytics checks.
+
+For most people, the best next step is one board read and one audit snapshot before anything more advanced.
+
+## What to ask your agent next
+
+- "Confirm the Pinterest skill is connected, then export an audit snapshot of my boards and pins."
+- "If analytics fails, rerun the snapshot without analytics and explain which permission is missing."
+- "Preview a pin-link cleanup plan for these pins before any change goes live."
 
 ## If something fails
 
-Common causes:
-- Expired access token (short-lived tokens)
-- Missing/insufficient scopes (analytics often requires extra permissions)
+The most common causes are:
 
-See `docs/troubleshooting.md` for symptoms and fixes.
+- an expired access token
+- missing scopes
+- missing ad-account or business access for the endpoints you want
+
+Use [Troubleshooting](troubleshooting.md) if the auth check or first board read fails.

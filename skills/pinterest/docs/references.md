@@ -84,7 +84,7 @@ Last verified (UTC): 2026-02-03
 - Catalog reports: https://developers.pinterest.com/docs/api/v5/#operation/catalogs_reports/list
 - Catalog reports stats: https://developers.pinterest.com/docs/api/v5/#operation/catalogs_reports/stats
 
-## (writes) — API v5 operation IDs
+## Phase B (writes) — API v5 operation IDs
 
 Boards + sections + pins:
 - Boards create: https://developers.pinterest.com/docs/api/v5/#operation/boards/create

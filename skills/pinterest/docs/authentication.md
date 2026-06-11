@@ -28,7 +28,7 @@ Store these in `.env`:
 
 ### How to get a refresh token
 
-today, use a manually provisioned refresh token from your Pinterest developer/OAuth setup and store it in `.env`.
+For now, use a manually provisioned refresh token from your Pinterest developer/OAuth setup and store it in `.env`.
 
 Important:
 - `auth login`, `auth code exchange`, and `auth token set` are present in the CLI, but they currently require explicit no-snapshot approval before token exchange, `.state/token.json` writes, or `.env` updates.

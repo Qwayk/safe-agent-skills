@@ -6,8 +6,8 @@ Notes:
 - The “Scopes” column is a reminder only. **Confirm required scopes in the Pinterest developer UI** (and the official docs), since scope names/requirements can change.
 - Reference links point to the official Pinterest API v5 docs (operation IDs).
 - Write coverage is split into:
-  - : read-only surfaces (inventory + analytics + ads/catalog reads).
-  - : safety-gated write plans and blocked apply refusals (plan → explicit attempt → require explicit no-snapshot approval before write).
+  - Phase A: read-only surfaces (inventory + analytics + ads/catalog reads).
+  - Phase B: safety-gated write plans and blocked apply refusals (plan → explicit attempt → require explicit no-snapshot approval before write).
 
 ## Inventory + account
 
@@ -144,7 +144,7 @@ Notes:
 |---|---|---|---|
 | `pins links apply --plan ...` | Dry-run: `GET /pins/{pin_id}` preview. Apply attempt: requires explicit no-snapshot approval before `PATCH /pins/{pin_id}`. | Dry-run preview includes a before-state contract that requires explicit no-snapshot approval; confirmed apply requires `--apply --yes`, then requires explicit no-snapshot approval before write. | https://developers.pinterest.com/docs/api/v5/#operation/pins/update |
 
-## — Writes (planned/implemented)
+## Phase B — Writes (planned/implemented)
 
 Safety model (all commands in this section):
 - Dry-run by default (prints a deterministic plan or read-only preview; no remote writes).

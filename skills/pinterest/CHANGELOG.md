@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Customer-first install instructions in `README.md` and `docs/quickstart.md` (minimal editable install first; dev extras optional).
 - In `--output json` mode (default), usage/parse errors and `--version` now emit exactly one JSON object to stdout.
 - Ads/Catalogs write commands now take JSON bodies via `--body-file` (with `--json` kept as a backwards-compatible alias).
+- Public-facing README, docs index, onboarding, quickstart, safety copy, use cases, and proof docs were rebuilt into the newer user-first Pinterest skill pattern, and the README contract test was added.
 
 ### Fixed
 
