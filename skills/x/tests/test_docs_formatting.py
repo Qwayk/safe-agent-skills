@@ -52,3 +52,13 @@ class TestDocsFormatting(unittest.TestCase):
             for needle in forbidden:
                 with self.subTest(path=path.name, needle=needle):
                     self.assertNotIn(needle, text)
+
+    def test_public_docs_do_not_link_source_only_helper_notes(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "proof.md").read_text(encoding="utf-8")
+
+        self.assertNotIn("engineering_notes.md", text)
+        self.assertNotIn("plan_review_prompt.md", text)
+        self.assertNotIn("receipt_review_prompt.md", text)
+        self.assertNotIn("skills_wrappers.md", text)
+        self.assertNotIn("agent_extension.md", text)

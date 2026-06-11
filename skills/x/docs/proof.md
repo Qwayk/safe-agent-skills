@@ -11,8 +11,8 @@ Rules:
 
 ## Last verified
 
-Date (UTC): 2026-06-07
-Verified by: Codex final practical snapshot repair pass
+Date (UTC): 2026-06-11
+Verified by: Codex README rebuild and source gate cleanup pass
 Tool version: 0.1.0
 Provider API version (from pinned OpenAPI snapshot): 2.159
 Environment: local tests with mocked provider writes / base URL example: https://api.x.com/2
@@ -67,4 +67,3 @@ These files are committed:
 
 - Sources used: `docs/references.md`
 - Coverage source of truth: `docs/api_coverage.md`
-- Debug history: `docs/engineering_notes.md`
