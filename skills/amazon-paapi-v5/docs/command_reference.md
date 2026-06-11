@@ -1,7 +1,7 @@
 # Command reference
 
 Use this page when you need the exact Amazon PA-API v5 command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+If you want the plain-English path first, start with [What you can do with Amazon Product Advertising API](use_cases.md), [Connect your Amazon Associates credentials](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Auth
 

@@ -1,27 +1,35 @@
-# Use cases
+# What you can do with Amazon Product Advertising API
 
-Use this page when you want ideas for real Amazon PA-API v5 jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Use this page when you want ideas for real Amazon Product Advertising work to hand to your agent.
+If you need setup first, start with [Connect your Amazon Associates credentials](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+This skill is best for structured product research and affiliate-link work. It gives your agent real Amazon catalog data instead of page scraping guesses.
 
-No‑code tools can store affiliate links. This tool is built for repeatable product research workflows:
+## Common jobs this skill is good at
 
-- Fast bulk searches and retrieval (titles, images, key metadata)
-- Deterministic outputs for automation (stable JSON shapes)
-- Batch jobs from spreadsheets
+- Find candidate products for a niche, gift guide, comparison page, or shortlist.
+- Fetch exact product details for a known set of ASINs.
+- Clean up raw Amazon product URLs and resolve them into ASINs first.
+- Build affiliate links from the ASINs you already trust.
+- Check browse nodes or category IDs before a larger research pass.
+- Run a CSV batch file for repeatable research work.
 
-## Common use cases (examples)
+## Real example asks
 
-- “Find 30 products for ‘X’ and shortlist the best 10 with images.”
-- “Fetch product details for these ASINs and export a clean JSON/CSV report.”
-- “Resolve a list of Amazon URLs into ASINs and build clean affiliate links.”
-- “Run a batch job from a CSV and give me a receipt of what succeeded/failed.”
+- "Search Amazon for cast iron skillets and give me 10 products worth reviewing."
+- "Fetch product details for these ASINs and give me a clean structured summary."
+- "Resolve these Amazon links into ASINs and build affiliate links for each one."
+- "Run this CSV batch file and tell me which rows worked and which rows failed."
 
-## What you’ll see from the agent (trust + safety)
+## Why this is useful
 
-This tool is read-only. The agent should still provide:
+- The output stays structured and machine-readable, so your agent can sort or compare results more safely.
+- The tool is read-only, so the agent can research without changing anything in Amazon.
+- Batch work is built in when you need repeatable catalog pulls instead of one-off manual searches.
 
-- A short description of what was queried
-- Where outputs were saved (if exported)
-- Any errors/refusals (for invalid URLs, missing credentials, etc.)
+## What a careful run should look like
+
+- Start with a small sample query or one ASIN first.
+- Confirm the marketplace and credentials are correct.
+- Expand to a bigger pull only after the first result looks right.
+- Save the output when you want a review trail or reusable dataset.

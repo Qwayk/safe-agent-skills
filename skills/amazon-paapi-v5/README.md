@@ -1,60 +1,104 @@
-# amazon-pa-api-tool (Amazon PA‑API v5)
+# Amazon Product Advertising API
 
-## Simplicity lock
+**Capability:** Read-only
 
-Build and change this area in the simplest way possible.
+Use this skill when you want your agent to research Amazon products, resolve ASINs, build affiliate links, and run careful catalog lookups without guessing from raw docs.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand your agent jobs like niche research, exact product-detail fetches, Amazon URL cleanup, affiliate link generation, browse-node checks, and spreadsheet-driven batch pulls.
 
-Read-only CLI for the Amazon Product Advertising API (PA‑API v5).
+This skill stays simple on purpose: it reads Amazon Product Advertising API data only. It does not create, edit, or delete anything in Amazon. The main risk here is not a bad write. It is wasted requests, wrong marketplace settings, or a batch that is larger than you meant to run.
 
-## For non-technical users: Start here (no coding)
+A good first ask is: "Check the Amazon Product Advertising skill is configured, search for a small set of products for my niche, and build clean affiliate links for the best matches."
 
-Start with these docs:
+## Start here first
 
-- Use cases (ideas + benefits): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model (how we prevent mistakes): `docs/safety_model.md`
+- Want ideas for real Amazon research work? [What you can do with Amazon Product Advertising API](docs/use_cases.md)
+- Need setup? [Connect your Amazon Associates credentials](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-What you can ask an AI agent to do (examples):
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-- “Find 20 candidate products for ‘X’ and give me a shortlist with titles and images.”
-- “Resolve these Amazon URLs into ASINs and build clean affiliate links.”
-- “Create a batch job from my spreadsheet and produce a report of results.”
+## What this skill helps with
 
-## Scope and safety (by design)
+- Search Amazon products by keyword for research, shortlist building, and content planning.
+- Fetch product details for known ASINs.
+- Resolve Amazon product URLs into clean ASINs before you reuse them.
+- Build affiliate links from known ASINs.
+- Check browse nodes and category IDs.
+- Run CSV batch jobs for repeated research pulls.
 
-- This tool is **read-only** to Amazon APIs.
-- `--apply` exists for consistency across tools but does not enable external writes here.
+## What access this skill needs
 
-## For technical users: Start here (CLI)
+- An Amazon Product Advertising API access key ID.
+- An Amazon Product Advertising API secret access key.
+- Your Amazon Associates partner tag.
+- The right host, region, and marketplace for the Amazon store you want to query.
 
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
+## Install and first run
 
-Minimal examples:
+Install slug: `amazon-paapi-v5`
+
+Ask your agent to install the `amazon-paapi-v5` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
 
 ```bash
-amazon-pa-api-tool --version
-amazon-pa-api-tool auth check
-amazon-pa-api-tool product search --query "test" --limit 1
+npx skills add Qwayk/safe-agent-skills@amazon-paapi-v5 -g -y
 ```
 
-## Proof pack (customer-ready)
+Then try a safe first ask like:
 
-- `docs/proof.md`
-- `docs/api_coverage.md`
-- `docs/examples/`
+```text
+Check the Amazon Product Advertising skill is configured, search for 5 products related to cast iron skillets, and build clean affiliate links for the best matches.
+```
 
-## Agent skill prompt
+## How this skill stays safe
 
-If you use an agent runtime that supports “skills” (example: Codex), this tool ships a minimal safe wrapper:
+- It is read-only to Amazon by design.
+- It refuses remote writes. `--apply` exists only for cross-tool consistency and does not enable Amazon writes here.
+- Large multi-request fetches still need `--yes`, so a big batch does not run by accident.
+- Commands keep machine-readable JSON output and avoid printing secrets.
+- Docs, tests, examples, proof files, and API coverage all live in this repo.
 
-- Agent skill prompt and install notes are included with this package.
+## What it covers today
+
+This skill covers:
+
+- `auth check`
+- `product search`
+- `product get`
+- `product variations`
+- `product resolve`
+- `link build`
+- `browse get`
+- `jobs run` for CSV-based research batches
+
+## What happens before a real change
+
+This skill does not change anything in Amazon. It reads product and browse data and returns structured output that you can review or save locally.
+
+## What proof it leaves behind
+
+- Commands return machine-readable JSON that you can save or review.
+- Batch jobs return one summary JSON object so it is clear what ran and what failed.
+- The proof pack includes redacted example outputs for the main command shapes.
+- The docs, tests, and API coverage ledger are all in this repo.
+
+## Limits
+
+- No creates, updates, deletes, or other remote Amazon writes.
+- Live reads still need valid PA-API credentials and a real Associates setup.
+- Region, host, or marketplace mismatches can still block otherwise valid requests.
+- Larger multi-request reads may need `--yes` before they run.
+
+## Helpful docs
+
+- [Browse all Amazon Product Advertising docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Jobs and batch guide](docs/jobs_and_batches.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)

@@ -1,11 +1,11 @@
-# Amazon PA-API v5 docs
+# Amazon Product Advertising API docs
 
-Use this page when you want the right Amazon PA-API v5 doc quickly.
+Use this page when you want the right Amazon Product Advertising API doc quickly.
 
 ## Start here
 
 - [What you can do](use_cases.md)
-- [Connect your account](onboarding.md)
+- [Connect your Amazon Associates credentials](onboarding.md)
 - [How this stays read-only](safety_model.md)
 
 ## Commands and setup

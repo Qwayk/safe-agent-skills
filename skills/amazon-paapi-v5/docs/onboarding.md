@@ -1,32 +1,54 @@
-# Onboarding (non-technical)
+# Connect your Amazon Associates credentials
 
-This tool runs on your computer and connects to the Amazon Product Advertising API (PA‑API v5) using credentials you store locally.
+Use this page when you want the shortest safe setup path for Amazon Product Advertising API work.
 
-You do not need to be technical. You can ask an AI agent to do the work, and the agent will run the tool for you and report back with results.
+This skill runs on your machine and uses credentials you store locally. You do not need to write code, but you do need real Amazon Associates and PA-API access.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
 
-## Step 1) Get PA‑API credentials (Amazon Associates)
+## What you need
 
-PA‑API access typically requires an Amazon Associates account and API credentials. The exact steps can change by region.
+- An Amazon Product Advertising API access key ID.
+- An Amazon Product Advertising API secret access key.
+- Your Amazon Associates partner tag.
+- The right Amazon host, region, and marketplace for your store if you are not using Amazon US defaults.
 
-## Step 2) Fill the local `.env` file (on your machine)
+## Step 1) Get your Amazon Associates and PA-API access
 
-In the tool folder, copy `.env.example` to `.env` and fill the required keys listed in that file.
+PA-API access usually comes from your Amazon Associates setup. The exact screen names can vary by region, so collect the access key, secret key, and partner tag from the Amazon side first.
 
-## Step 3) What to ask your AI agent (examples)
+## Step 2) Fill the local `.env` file
 
-- “Confirm the tool is connected, then search for 20 products for ‘X’ and give me a shortlist with images.”
-- “Resolve these Amazon URLs into ASINs and build clean affiliate links.”
-- “Run this CSV job and export results to a file.”
+In the tool folder:
+
+1. Copy `.env.example` to `.env`.
+2. Fill in your access key ID, secret access key, and partner tag.
+3. If you use a non-US Amazon store, also update the host, region, and marketplace values.
+
+## Step 3) Run the first safe checks
+
+These are the best first commands:
+
+```bash
+amazon-pa-api-tool --output json --version
+amazon-pa-api-tool --output json auth check
+amazon-pa-api-tool --output json product search --query "cast iron skillet" --limit 3
+```
+
+If the auth check passes and the sample search looks right, the setup is good enough to start real work.
+
+## What to ask your agent next
+
+- "Check the Amazon Product Advertising skill is connected, then search for 10 products in my niche."
+- "Resolve these Amazon links into ASINs and build affiliate links for them."
+- "Run this CSV research job and give me a summary of what worked."
 
 ## If something fails
 
-Common causes:
-- Missing/invalid credentials
-- Region/marketplace mismatch
-- API access not enabled for the account
+The most common causes are:
 
-See `docs/troubleshooting.md` for symptoms and fixes.
+- missing or invalid credentials
+- the wrong host, region, or marketplace
+- PA-API access not enabled for the account
 
+Use [Troubleshooting](troubleshooting.md) if the auth check or first search fails.

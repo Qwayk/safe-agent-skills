@@ -1,51 +1,81 @@
 # Quickstart
 
-If you’re non-technical, start with:
-- `docs/use_cases.md`
-- `docs/onboarding.md`
+Want the short non-technical path first? Start with [What you can do with Amazon Product Advertising API](use_cases.md), [Connect your Amazon Associates credentials](onboarding.md), and [How this skill stays safe](safety_model.md).
 
-This page is a technical reference (it includes CLI commands).
+This page is for the exact commands.
 
 Requires: **Python 3.12+**.
 
-1) Install (minimal)
+## 1) Install
 
 ```bash
-python3 --version  # must be 3.12+
+python3 --version
 python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 ```
 
-Optional (contributors): install dev extras:
+Optional dev extras:
 
 ```bash
 .venv/bin/python -m pip install -e '.[dev]'
 ```
 
-2) Configure
+## 2) Configure
 
-Copy `.env.example` → `.env` and fill your values.
+Copy `.env.example` to `.env`, then fill:
 
-3) Smoke test
+- `AMAZON_PA_ACCESS_KEY_ID`
+- `AMAZON_PA_SECRET_ACCESS_KEY`
+- `AMAZON_PA_PARTNER_TAG`
+
+If you are not using Amazon US, also update:
+
+- `AMAZON_PA_HOST`
+- `AMAZON_PA_REGION`
+- `AMAZON_PA_MARKETPLACE`
+
+## 3) First safe checks
 
 ```bash
-amazon-pa-api-tool auth check
+amazon-pa-api-tool --output json --version
+amazon-pa-api-tool --output json auth check
+amazon-pa-api-tool --output json product search --query "cast iron skillet" --limit 3
 ```
 
-If you want to run without creating a real `.env` yet, you can point at `.env.example`:
+## 4) Common next commands
+
+Fetch known ASIN details:
 
 ```bash
-amazon-pa-api-tool --env-file .env.example auth check
+amazon-pa-api-tool --output json product get --asin B000000000
 ```
 
-Optional: include the raw PA-API response in output:
+Build an affiliate link:
 
 ```bash
-amazon-pa-api-tool --include-raw product search --query "air fryer" --limit 3
+amazon-pa-api-tool --output json link build --asin B000000000
 ```
 
-If you are not using an editable install, you can run via module:
+Resolve an Amazon URL into an ASIN:
 
 ```bash
-PYTHONPATH=src python3 -m amazon_pa_api_tool auth check
+amazon-pa-api-tool --output json product resolve --url "https://www.amazon.com/dp/B000000000/"
+```
+
+Run a CSV batch job:
+
+```bash
+amazon-pa-api-tool --output json jobs run --file jobs.csv
+```
+
+## 5) Large read guard
+
+Some multi-ID reads can expand into multiple PA-API requests. When that happens, the tool requires `--yes` before it runs the larger request set.
+
+## 6) Module fallback
+
+If you are not using an editable install, you can run:
+
+```bash
+PYTHONPATH=src python3 -m amazon_pa_api_tool --output json auth check
 ```
