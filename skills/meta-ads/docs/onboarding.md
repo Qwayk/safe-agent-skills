@@ -69,5 +69,6 @@ meta-ads-api-tool --output json ad-accounts list --fields id,name
 - “List my ad accounts and show id + name.”
 - “For ad account act_123…, list campaigns with id, name, status.”
 - “Pull campaign insights for January 2026: impressions, clicks, spend.”
+- “Export a snapshot pack for this ad account and show me where the files were written.”
 
 If the request is a write/mutation (pause ads, set budget), the agent should refuse and explain this tool is read-only.

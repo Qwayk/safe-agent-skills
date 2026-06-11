@@ -1,5 +1,7 @@
 # Quickstart
 
+If you want the human path first, start with [What you can do with Meta Ads](use_cases.md), [Connect your Meta Ads account](onboarding.md), and [How this skill stays safe](safety_model.md).
+
 ## 1) Install (editable)
 
 From this folder:
@@ -37,3 +39,5 @@ meta-ads-api-tool --output json insights compare --ad-account-id act_<id> --leve
 meta-ads-api-tool --output json creatives anatomy --creative-id <creative_id>
 meta-ads-api-tool --output json previews get --creative-id <creative_id> --ad-format DESKTOP_FEED_STANDARD
 ```
+
+This page is the technical reference for install, setup, auth checks, and first Meta Ads commands.

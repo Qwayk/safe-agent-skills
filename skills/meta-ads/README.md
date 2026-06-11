@@ -1,59 +1,103 @@
-# Meta Ads API tool (read-only)
+# Meta Ads
 
-## Simplicity lock
+**Capability:** Read-only
 
-Build and change this area in the simplest way possible.
+Use this skill when you want your agent to review Meta ad accounts, campaigns, ad sets, ads, creatives, previews, and insights without guessing from raw docs.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand your agent jobs like account inventory checks, campaign and ad status reviews, date-range performance pulls, winning-ad analysis, creative anatomy review, and snapshot exports for deeper reporting work.
 
-This is a safety-first CLI for Meta Ads (Marketing API) reporting and inventory.
+This skill stays simple on purpose: it is GET-only and read-only. It does not create, pause, update, or delete anything in Meta Ads, so the safe path is to inspect the account clearly and leave any live changes to a different tool or a human.
 
-Key idea: **GET-only**. This tool refuses non-GET requests and does not implement any remote writes.
+A good first ask is: "Check the Meta Ads skill is connected, list my ad accounts, show one campaign performance report, and export a small snapshot pack."
 
-## Start here (non-technical)
+## Start here first
 
-- Use cases: `docs/use_cases.md`
-- Media-buyer quickstart: `docs/media_buyer_quickstart.md`
-- Winning ads workbook: `docs/winning_ads_workbook.md`
-- Onboarding (how to get a token + account id): `docs/onboarding.md`
-- Safety model: `docs/safety_model.md`
-- Proof pack (what we verified + examples): `docs/proof.md`
+- Want ideas for real Meta Ads work? [What you can do with Meta Ads](docs/use_cases.md)
+- Need setup? [Connect your Meta Ads account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-## Quickstart (CLI)
+If you want more guided reporting paths after that, use the [Media buyer quickstart](docs/media_buyer_quickstart.md) and the [Winning ads workbook](docs/winning_ads_workbook.md).
+
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
+
+## What this skill helps with
+
+- List ad accounts, campaigns, ad sets, ads, creatives, images, videos, and other read-only Meta Ads inventory.
+- Pull insights at account, campaign, ad set, or ad level.
+- Compare two date ranges with matching settings to spot fatigue, promotion effects, or creative changes.
+- Export analysis-ready snapshot packs with manifests and JSONL tables.
+- Download creative assets during snapshot export when you opt in explicitly.
+- Inspect creative anatomy and fetch creative previews for ad review work.
+
+## What access this skill needs
+
+- A Meta access token with `ads_read`.
+- Your Meta ad account ID for the most useful reporting flows.
+- Enough account access in Meta Business Manager or Ads Manager to read the account you want.
+
+## Install and first run
+
+Install slug: `meta-ads`
+
+Ask your agent to install the `meta-ads` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
 
 ```bash
-meta-ads-api-tool --output json --version
-meta-ads-api-tool onboarding
-meta-ads-api-tool --output json auth check
+npx skills add Qwayk/safe-agent-skills@meta-ads -g -y
 ```
 
-## What you can do (read-only)
+Then try a safe first ask like:
 
-- List/get ad accounts, campaigns, ad sets, ads, creatives, images, and videos
-- Pull insights at account/campaign/adset/ad level (GET-only)
-- Compare two date ranges with identical settings (`insights compare`)
-- Export analysis-ready snapshot packs (manifest + JSONL tables) via `snapshot export`
-- Opt-in creative asset downloads during snapshot export (`--download-assets`)
-- Extract a normalized creative “anatomy” (`creatives anatomy`) and fetch creative previews (`previews get`)
-- Discover built-in workflow presets (`presets list/show`)
+```text
+Check the Meta Ads skill is connected, list my ad accounts, show one campaign performance report, and export a small snapshot pack.
+```
 
-## Docs index
+## How this skill stays safe
 
-- Docs home: `docs/README.md`
-- Command reference: `docs/command_reference.md`
-- Presets reference: `docs/presets_reference.md`
-- Snapshot export: `docs/snapshot_export.md`
-- Agent recipes: `docs/agent_recipes.md`
-- Configuration: `docs/configuration.md`
-- API coverage ledger: `docs/api_coverage.md`
+- It is GET-only and read-only by design.
+- It refuses non-GET Meta requests and does not implement remote writes.
+- Pagination stays deterministic so repeated reads are easier to verify.
+- Token redaction stays on for stdout, stderr, and verbose logs.
+- Snapshot export downloads creative assets only when you opt in.
+- Docs, tests, proof files, and the API coverage ledger all live in this repo.
 
-## Agent skill prompt
+## What it covers today
 
-If your agent runtime supports “skills”, use:
-- Agent skill prompt and install notes are included with this package.
+This skill covers:
+
+- inventory reads for ad accounts, campaigns, ad sets, ads, creatives, images, and videos
+- Meta insights pulls, date-range comparisons, and presets
+- snapshot export for analysis-ready reporting packs
+- creative anatomy inspection and creative preview fetches
+
+## What happens before a real change
+
+This skill does not change anything in Meta Ads. It reads account data, reports what it found, and can export local reporting files when you ask for them.
+
+## What proof it leaves behind
+
+- JSON output can be saved from the commands you run.
+- Snapshot export leaves a manifest plus JSONL tables.
+- The proof pack includes redacted example outputs and verified command shapes.
+- The docs, tests, and API coverage ledger are all in this repo.
+
+## Limits
+
+- No creates, updates, pauses, deletes, or other remote Meta Ads writes.
+- Live reads still depend on a valid token and real Meta account access.
+- Some useful ad-review work can still need local interpretation after the raw export is produced.
+- This tool only helps with reporting, inventory, and analysis flows.
+
+## Helpful docs
+
+- [Browse all Meta Ads docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Media buyer quickstart](docs/media_buyer_quickstart.md)
+- [Winning ads workbook](docs/winning_ads_workbook.md)
+- [Snapshot export guide](docs/snapshot_export.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)
