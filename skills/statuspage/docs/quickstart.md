@@ -1,10 +1,8 @@
 # Quickstart
 
-If you are non-technical, start with:
-- `docs/use_cases.md`
-- `docs/onboarding.md`
+If you want the plain-English path first, start with [What you can do with Statuspage](use_cases.md), [Use a public Statuspage URL](onboarding.md), and [How this skill stays safe](safety_model.md).
 
-This page is the shortest direct CLI path for this read-only tool.
+This page is the shortest direct CLI path for this read-only skill.
 
 ## Install
 
@@ -37,6 +35,8 @@ statuspage-api-tool --output json status get
 ```bash
 statuspage-api-tool --output json auth check
 ```
+
+`auth check` is informational only here. It confirms that this skill does not need credentials for the normal public-page flow.
 
 ## Version
 

@@ -1,12 +1,12 @@
 # Proof / verification
 
-This page shows how to verify the tool and inspect what it does.
+This page shows how to verify the skill and inspect what it does.
 Most users will not need to run these commands themselves.
-They are here so you, your reviewer, or your agent can inspect the same path behind the tool.
+They are here so you, your reviewer, or your agent can inspect the same path behind the skill.
 
 ## Last verified
 
-- Date (UTC): 2026-01-26
+- Date (UTC): 2026-06-11
 
 ## Intended environment
 
@@ -24,6 +24,8 @@ python3 -m unittest -q
 ```bash
 statuspage-api-tool --output json --base-url https://status.atlassian.com status get
 ```
+
+The live smoke is read-only and checks the real public page path.
 
 ## Examples (committed)
 

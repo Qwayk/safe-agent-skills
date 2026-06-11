@@ -1,11 +1,14 @@
 # Safety model
 
-This page explains the simple safety promise for this tool.
+This page explains the simple safety promise for this skill.
 It is built to check a public page and stay out of private account actions.
 
-This tool is read-only:
-- It only performs `GET` requests to public Status API endpoints.
-- It does not implement `--apply/--yes` or plan/receipt flows.
+This skill is read-only:
+
+- It only performs `GET` requests to public Statuspage API endpoints.
+- It does not sign in or call private admin actions.
+- It does not implement `--apply`, `--yes`, or plan/receipt flows because there are no writes here.
+- The main safety question is whether you pointed the agent at the right public page, not whether a risky change might run.
 
 ## Output contract
 

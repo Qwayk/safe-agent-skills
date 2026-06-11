@@ -1,19 +1,22 @@
 # Use cases
 
 Use this page when you want ideas for real Statuspage jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+If you need setup first, start with [Use a public Statuspage URL](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is useful (vs typical no‑code automation)
+## Why this is useful
 
-No‑code tools can ping an endpoint, but this tool is built for:
+This skill is useful when:
 
-- Consistent status snapshots (stable JSON shapes)
-- Easy auditing (proof docs + example outputs)
-- Fast scripting and agent-run workflows (you don’t need to run commands yourself)
+- you want one clean answer instead of reading a vendor status page by hand
+- you want the same status check repeated across several public pages
+- you want stable JSON output for reports, handoffs, or automation
+- you want proof, examples, and coverage notes in the same repo as the skill page
 
-## Common use cases (examples)
+## Common use cases
 
-- “Summarize current status in plain English.”
-- “List active incidents and the latest updates.”
-- “List scheduled maintenances and their time windows.”
-- “Create a daily snapshot report (read-only).”
+- "Check this vendor's status page before we start the deploy."
+- "Summarize current status in plain English."
+- "List open incidents and the latest updates."
+- "List scheduled maintenance and the time windows."
+- "Check whether any listed component is degraded."
+- "Create a daily read-only status snapshot for handoff."

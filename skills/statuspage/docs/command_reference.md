@@ -1,12 +1,11 @@
 # Command reference
 
-Use this page when you need the exact Statuspage command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+Use this page when you need the exact Statuspage command, flag, or behavior.
+If you want the plain-English path first, start with [What you can do with Statuspage](use_cases.md), [Use a public Statuspage URL](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Setup
 
-You need a target public status page.
-Use one of these:
+You need a target public status page. Use one of these:
 
 - pass `--base-url https://status.somevendor.com`
 - or keep `STATUSPAGE_BASE_URL=https://status.somevendor.com` in a local `.env`
@@ -19,6 +18,8 @@ Use one of these:
 ## Auth (informational)
 
 - `statuspage-api-tool auth check`
+
+This command does not call a remote auth endpoint. It explains that the normal public-page flow does not need credentials.
 
 ## Status
 

@@ -1,9 +1,8 @@
 # Onboarding
 
-This tool is read-only and does not need authentication for the normal public-page flow.
+This skill is read-only and does not need authentication for the normal public-page flow.
 
-You do not need to be technical.
-The shortest path is to give your agent the public status page URL and ask for the job you want done.
+The shortest path is to give your agent a public Statuspage URL and ask for the job you want done.
 
 ## Fastest first run
 

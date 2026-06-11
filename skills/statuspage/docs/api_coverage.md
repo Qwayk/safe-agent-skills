@@ -9,7 +9,7 @@ It is intentionally small and easy to review.
 - Provider: Statuspage (Atlassian)
 - API base URL: `<STATUSPAGE_BASE_URL>/api/v2/`
 - Auth: none (public endpoints)
-- Last audited (UTC): 2026-01-26
+- Last audited (UTC): 2026-06-11
 
 ## Coverage
 
