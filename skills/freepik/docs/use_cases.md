@@ -1,42 +1,52 @@
-# Use cases
+# What you can do with Freepik
 
 Use this page when you want ideas for real Freepik jobs to hand to your agent.
+
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## Common jobs
 
-No‑code tools are great for one-off triggers. This tool is built for safe, repeatable work when you need:
+### Find good candidates before any licensed download
 
-- High-volume asset discovery (hundreds/thousands of search results)
-- Preview-first selection (you approve IDs before any paid download/license)
-- A future durable license ledger (inventory CSV) with proof URLs and checksums once licensed apply is safely enabled
+- "Search for recipe photos for mushroom pasta and give me 50 options with preview links."
+- "Use `search photos --shortlist` to give me a compact list of candidates, then write a jobs CSV for the finalists."
+- "Filter to photos only, exclude AI best-effort, and summarize what you found."
+- "Find visually similar assets to this approved image ID so the final set keeps the same style."
 
-## Common use cases (examples)
+### Preview and narrow the shortlist
 
-### Asset discovery (read-only)
+- "Preview these five IDs so I can pick the final two."
+- "Check the resource details for these finalists and tell me which ones clearly pass the non-AI rule."
+- "Given this approved image ID, pull same-shoot or related options for extra angles."
 
-- “Search for recipe photos for ‘X’ and give me 50 options with preview links.”
-- “Use `search photos --shortlist` to give me a compact list of candidates, then write a jobs CSV for the finalists.”
-- “Filter to photos only, exclude AI (best-effort), and summarize what you found.”
-- “Find visually similar assets to this approved image ID (to keep a consistent style).”
+### Prepare careful download plans
 
-### Preview before licensing
+- "Create a dry-run plan for downloading these two approved IDs and show the expected file paths."
+- "Build the jobs CSV for the approved IDs only."
+- "Show me what no-snapshot approval a live download would still need before anything is applied."
 
-- “Download low-risk previews for a shortlist so I can choose final IDs.”
-- “Create a plan for downloading these 20 approved IDs, and show me the expected filenames and where they will be saved.”
-- “Given an approved image ID, export a ‘same shoot’ pack (`resource shoot-pack`) and generate a jobs CSV for later batch downloads.”
+### Finish approved downloads
 
-### Licensed download planning + refusal proof (explicit approval)
+- "Apply the download for this approved ID and show me the saved file, hash, and inventory row."
+- "Run the reviewed jobs CSV and stop if any row refuses."
+- "Use a dedicated downloads folder for this post and keep the inventory CSV updated."
 
-- “Prepare download plans only for the IDs I approved, then report the explicit no-snapshot approval.”
-- “Refuse downloads unless the resource detail clearly indicates non‑AI (fail closed).”
-- “Generate a ledger export so I can audit what was licensed and when.”
+## Why this skill is useful
 
-## What you’ll see from the agent (trust + safety)
+This skill is strongest when you want both of these things at the same time:
 
-When you ask for downloads, the agent should:
+- faster image discovery than manual browsing
+- more control than a loose automation or prompt-only workflow
 
-1) Show a dry-run preview (what would be downloaded and where).
-2) Try apply only after explicit confirmation (and extra confirmation for batch jobs).
-3) Report `refused=true` and `before_state.status=no_snapshot_available`.
-4) Confirm no file or inventory row was written.
+It helps your agent stay organized across search, preview, approval, and download instead of jumping straight to a licensed action.
+
+## What you should expect from the agent
+
+When you ask for licensed downloads, the agent should:
+
+1. Search, shortlist, or preview first.
+2. Show the dry-run plan for the exact IDs you approved.
+3. Ask for explicit no-snapshot approval before a live licensed download.
+4. After approved apply, show the saved file path, hash, inventory row, and recovery contract.
+
+If you do not approve the live step, the job should stop at the plan.

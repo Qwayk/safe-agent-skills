@@ -1,78 +1,106 @@
-# freepik-api-tool
+# Freepik
 
-## Simplicity lock
+**Capability:** Reads + careful changes
 
-Build and change this area in the simplest way possible.
+Use this skill when you want your agent to search Freepik, build shortlists, check resource details, and handle licensed downloads without guessing from raw docs.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand it jobs like finding non-AI food photos, previewing finalists, checking same-shoot alternatives, preparing a careful download plan, or finishing approved downloads into a local folder and inventory CSV.
 
-Safe, reusable Freepik API CLI, designed for **preview-first** workflows and **license-ledger** downloads.
+Read work stays simple. Licensed downloads slow down on purpose: the tool should preview first, show the dry-run plan, and ask for explicit no-snapshot approval before a live download because Freepik can create a download or license record and this tool does not save a reliable before-state snapshot for that write.
 
-## For non-technical users: Start here (no coding)
+A good first ask is: "Find 20 non-AI pasta photos, show me the best previews, and prepare a careful download plan for the two I choose."
 
-Start with these docs:
+## Start here first
 
-- Use cases (ideas + benefits): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model (how we prevent mistakes): `docs/safety_model.md`
+- Want ideas for real Freepik work? [What you can do with Freepik](docs/use_cases.md)
+- Need setup? [Connect your Freepik account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-What you can ask an AI agent to do (examples):
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-- “Find 30 non‑AI recipe photos for ‘X’, show me previews, and let me pick the final IDs.”
-- “Prepare a safe dry-run plan for the IDs I approved, and show what live license/download approval would still require.”
-- “Generate a license ledger export for my accountant/audit trail.”
-- “Preview a batch download job from my spreadsheet; apply only after I approve.”
+## What this skill helps with
 
-Core safety rules (high level):
+- Search images or photos and build shortlists before you buy anything.
+- Preview selected assets before any licensed download.
+- Check resource details, related assets, and same-shoot candidates.
+- Generate local jobs CSV files for later batch download work.
+- Plan licensed downloads into your chosen downloads folder and inventory CSV.
+- Complete approved single or batch downloads after review.
 
-- Preview-first: search/preview → explicit approval → dry-run download plan
-- Downloads are dry-run by default, and current apply requires explicit no-snapshot approval before the licensed download endpoint when no saved snapshot is available.
-- Audit-friendly: future inventory ledger + checksums when licensed download apply is enabled safely.
+## What access this skill needs
 
-## Scope and permissions (by design)
+- A Freepik API key.
+- A local downloads folder and inventory CSV path if you want saved files and a license ledger.
+- Enough Freepik account access for the search or download volume you want to run.
 
-This tool is designed for safe asset discovery and licensed downloads:
+## Install and first run
 
-- Search and resource inspection are read-only.
-- Downloads are treated as high-signal actions. Current apply needs explicit no-snapshot approval before the Freepik download/license endpoint.
+Install slug: `freepik`
 
-Least-privilege recommendation:
+Ask your agent to install the `freepik` skill from `Qwayk/safe-agent-skills`.
 
-- Use a dedicated API key for this tool.
-- Prefer separate keys for testing vs production workflows.
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
 
-## For technical users: Start here (CLI)
-
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
-
-Minimal examples:
+If your host does not let the agent install skills directly, run:
 
 ```bash
-freepik-api-tool --version
-freepik-api-tool auth check
-freepik-api-tool search images --query "test" --limit 1
+npx skills add Qwayk/safe-agent-skills@freepik -g -y
 ```
 
-## Proof pack (customer-ready)
+Then try a safe first ask like:
 
-- `docs/proof.md`
-- `docs/api_coverage.md`
-- `docs/examples/`
+```text
+Connect the Freepik skill to my account, find 15 non-AI food photos for mushroom pasta, and show me the best previews before any download.
+```
 
-## Agent Skills wrapper
+## How this skill stays safe
 
-- Agent skill prompt and install notes are included with this package.
+- Search, resource checks, and preview work do not create licensed download records.
+- Licensed downloads start as dry-run plans.
+- Apply needs explicit no-snapshot approval with `--ack-no-snapshot` because this tool does not save a reliable before-state snapshot for Freepik licensed downloads.
+- Downloads fail closed if the detail response does not clearly show `is_ai_generated=false` and `has_prompt=false`.
+- Dedupe and overwrite guards refuse re-downloading the same asset or overwriting an existing file unless you force it.
+- Approved applies record the saved file, file hash, inventory row, and recovery contract so you can review what happened after the run.
 
-## Docs
+## What it covers today
 
-See:
-- `docs/README.md`
-- `docs/recipe_workflow_recipes.md` (recipe images: non‑AI + “discover similar”)
+This skill covers:
+
+- search images and photos
+- resource get, related, and shoot-pack
+- preview
+- download dry-runs
+- approved single downloads and batch download rows with explicit no-snapshot approval
+- local jobs CSV generation for later batch work
+
+## What happens before live changes
+
+- The agent should search and preview first.
+- You approve the exact resource ID, destination, and format.
+- The tool shows the dry-run plan before any licensed download.
+- Single live download needs `--apply`.
+- Batch live download needs `--apply --yes`.
+- Licensed download apply also needs `--ack-no-snapshot`.
+
+## What proof it leaves behind
+
+- Dry-run output includes the download plan, the no-snapshot before-state contract, and the after-apply verification plan.
+- Approved apply output includes the downloaded row, the no-snapshot approval record, verification details, and the irreversible recovery contract.
+- The inventory CSV records the file path, hash, license URL, and other saved metadata for approved downloads.
+- The docs, tests, and example outputs all live in this repo.
+
+## Limits
+
+- Licensed downloads do not have an automatic rollback path in this CLI.
+- Freepik AI flags are fail-closed for downloads, so missing or unclear flags cause refusal.
+- Preview saves and jobs CSV files are local-only helper writes and must be cleaned up manually if you no longer need them.
+- You still need valid Freepik API access for real account work.
+
+## Helpful docs
+
+- [Browse all Freepik docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Proof pack](docs/proof.md)
+- [API coverage](docs/api_coverage.md)
+- [Recipe workflow](docs/recipe_workflow_recipes.md)

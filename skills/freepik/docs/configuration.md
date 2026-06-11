@@ -31,4 +31,4 @@ Response parsing overrides (only if the API response shape changes):
 
 Notes:
 - `FREEPIK_*_JSONPATH` uses a simple dot/bracket syntax and is only needed if auto-detection fails.
-- If you set these, validate with a dry-run download plan and inspect the `no_snapshot_available` before_state output. Current apply requires explicit no-snapshot approval before licensed download when no saved snapshot is available.
+- If you set these, validate with a dry-run download plan and inspect the `no_snapshot_available` before-state output. Approved licensed download still needs explicit `--ack-no-snapshot` when no saved snapshot is available.

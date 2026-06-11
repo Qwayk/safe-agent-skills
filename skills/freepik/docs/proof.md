@@ -1,6 +1,6 @@
 # Proof pack
 
-Last verified (UTC): 2026-06-04
+Last verified (UTC): 2026-06-11
 
 This folder is the customer-ready “proof pack” for `freepik-api-tool`.
 
@@ -33,8 +33,10 @@ Requires API access (read-only):
 
 - Proof artifacts (committed): `docs/examples/plan.example.json`, `docs/examples/receipt.example.json`, `docs/examples/outputs/`.
 - JSON contract: see `docs/examples/outputs/parse_error.json` and `tests/test_cli_json_output_contract.py`.
-- Download safety: see `docs/examples/outputs/download.dry_run.json`, `docs/examples/receipt.example.json`, `tests/test_download_image_size.py`, and `tests/test_download_overwrite_guard.py`.
-- In current apply mode, confirm the output has `refused=true`, `before_state.status=no_snapshot_available`, and no destination file or inventory row was written.
+- Download safety: see `docs/examples/outputs/download.dry_run.json`, `docs/examples/receipt.example.json`, `tests/test_download_image_size.py`, `tests/test_download_overwrite_guard.py`, and `tests/test_download_ack_no_snapshot.py`.
+- Dry-run proof: confirm the output has `before_state.status=no_snapshot_available` and `before_state.approval_required=--ack-no-snapshot`.
+- Approved apply proof: confirm the output has `ok=true`, `no_snapshot_approval.acknowledged=true`, `verification.ok=true`, and a row with `file_path`, `sha256`, `download_url`, and `license_url`.
+- Missing approval proof: confirm that omitting `--ack-no-snapshot` returns `refused=true` before any licensed download endpoint, destination file write, or inventory row write.
 - Confirm outputs include `recovery`: `strategy=no_inverse`, `rollback_ready=false`, `automatic_rollback=false`, `backups=[]`, `snapshots=[]`, `rollback_plan=null`.
 - Local helper writes (for example `--write-jobs`, `preview --save-preview`) are not rolled back by this CLI; delete those files manually if needed.
 

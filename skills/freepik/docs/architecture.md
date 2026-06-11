@@ -11,5 +11,5 @@ Layers:
 Extending safely:
 - Add a new verb in `commands/`
 - Keep downloads dry-run by default.
-- Refuse licensed download apply before the Freepik download/license endpoint until real saved snapshot support is available.
-- When licensed apply is safely enabled later, verify inventory/audit logging before calling it done.
+- Licensed apply must keep explicit `--ack-no-snapshot` approval until real saved snapshot support exists.
+- Keep inventory and audit logging aligned with the real live-download behavior.

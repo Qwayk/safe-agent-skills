@@ -11,7 +11,7 @@ Important: “same photoshoot” is ultimately a **visual/manual** determination
 3) Verify non‑AI by `resource get` + by eye (migration rule: fail-closed; missing/unknown flags are rejected)
 4) Use `resource get` to look for “similar” candidates (`same_series` when present, else `suggested`)
 5) (Optional) Save extra previews and re-shortlist
-6) Prepare dry-run download plans for final picks. apply requires explicit no-snapshot approval before licensed download when no saved snapshot is available.
+6) Prepare dry-run download plans for final picks. Live licensed download needs explicit no-snapshot approval when no saved snapshot is available.
 
 ## Project integrations (optional)
 
@@ -86,9 +86,9 @@ freepik-api-tool download --id <ID> --format jpg \
   --out-dir <DOWNLOADS_DIR>/by-post/<post_slug> \
   --inventory <INVENTORY_CSV>
 
-freepik-api-tool --apply download --id <ID> --format jpg \
+freepik-api-tool --apply --ack-no-snapshot download --id <ID> --format jpg \
   --out-dir <DOWNLOADS_DIR>/by-post/<post_slug> \
   --inventory <INVENTORY_CSV>
 ```
 
-Without explicit no-snapshot approval, apply refuses before the Freepik download/license endpoint, binary fetch, or inventory write. Approved applies must record the no-snapshot limit in the receipt.
+Without explicit no-snapshot approval, apply refuses before the Freepik download/license endpoint, binary fetch, or inventory write. Approved applies return the no-snapshot approval record together with the file and inventory result.

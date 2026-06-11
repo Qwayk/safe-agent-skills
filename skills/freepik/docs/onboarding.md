@@ -1,37 +1,60 @@
-# Onboarding (non-technical)
+# Connect your account
 
-This tool runs on your computer and connects to the Freepik API using an API key that you store locally.
+This skill runs on your computer and connects to Freepik with an API key that stays in your local `.env` file.
 
-You do not need to be technical. You can ask an AI agent to do the work, and the agent will run the tool for you and report back with previews, dry-run plans, approved download receipts, or missing-approval refusals.
+You do not need to be technical. You can ask your agent to handle search, previews, download plans, and approved downloads for you.
 
 Important:
 - Your `.env` file contains secrets. Keep it private and never paste it into chat.
 
 ## Step 1) Get a Freepik API key
 
-In your Freepik account dashboard, find the API section and create an API key (the exact steps can change).
+Open your Freepik account dashboard, find the API section, and create an API key.
 
-## Step 2) Fill the local `.env` file (on your machine)
+The exact dashboard steps can change over time, so use Freepik's current account UI if the labels move.
 
-In the tool folder, copy `.env.example` to `.env` and fill:
+## Step 2) Fill your local `.env` file
 
-- `FREEPIK_API_BASE_URL` (keep the default unless Freepik support tells you otherwise)
-- `FREEPIK_API_KEY` (your API key)
+In the tool folder, copy `.env.example` to `.env` and fill these values:
 
-## Step 3) What to ask your AI agent (examples)
+- `FREEPIK_API_BASE_URL`
+- `FREEPIK_API_KEY`
 
-These are plain-English requests. The agent should show previews and dry-run plans before any licensed download.
+Keep the default base URL unless Freepik support tells you to use something else.
 
-- “Search for 40 recipe photos for ‘X’, exclude AI (best-effort), and give me a shortlist.”
-- “Preview the top 10 so I can pick the final IDs.”
-- “Prepare download plans only for the IDs I approved and report the safe explicit no-snapshot approval.”
-- “Preview a batch job from my spreadsheet; try apply only after I approve, and confirm no file or ledger row was written if the tool refuses.”
+## Step 3) Optional: choose your local output paths
+
+If you want stable local paths for downloaded files and the inventory CSV, create a small project config JSON and pass it with `--config`.
+
+Useful keys:
+
+- `downloads_dir`
+- `inventory_csv`
+
+## Step 4) Ask your agent to check access first
+
+Before any real work, ask for a safe auth check.
+
+Example:
+
+- "Check that my Freepik skill is connected, then show me a short photo search for mushroom pasta."
+
+## Step 5) Ask for the real job
+
+These plain-English requests fit the normal safe workflow:
+
+- "Search for 40 recipe photos for mushroom pasta, exclude AI best-effort, and give me a shortlist."
+- "Preview the top 10 so I can pick the final IDs."
+- "Prepare download plans only for the IDs I approved and show me the no-snapshot approval that live download would need."
+- "Use my jobs CSV to prepare a careful batch download pass, and only apply after I confirm the final list."
 
 ## If something fails
 
 Common causes:
-- Missing/invalid API key
-- Account plan limits (search/download quotas)
-- Freepik API changes (fields missing → the tool may refuse downloads for safety)
 
-See `docs/troubleshooting.md` for symptoms and fixes.
+- missing or invalid API key
+- Freepik plan or quota limits
+- missing AI flags on a resource detail response, which makes the tool refuse download for safety
+- missing `--ack-no-snapshot` on a licensed live download
+
+See [Troubleshooting](troubleshooting.md) for common fixes.

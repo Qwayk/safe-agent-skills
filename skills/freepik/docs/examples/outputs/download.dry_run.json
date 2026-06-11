@@ -2,12 +2,23 @@
   "dry_run": true,
   "plan": {
     "apply": false,
+    "resource_id": "123456",
+    "format": "jpg",
+    "license_url": "https://www.freepik.com/license/free/123456.pdf",
+    "resource_url": "https://www.freepik.com/free-photo/example_123456.htm",
+    "preview_url": "https://img.freepik.com/free-photo/example-preview.jpg",
+    "name": "Example asset name",
     "author": "Example author",
+    "is_ai_generated": false,
+    "has_prompt": false,
+    "image_size": "",
+    "note": "Dry-run does not call the Freepik download endpoint. Apply requires explicit no-snapshot approval because licensed downloads may create a provider record.",
     "before_state": {
       "required": true,
       "supported": false,
-      "status": "blocked",
-      "reason": "Licensed downloads may create a Freepik account download/license record and local files. This source tool does not yet save real before-state for those writes.",
+      "status": "no_snapshot_available",
+      "approval_required": "--ack-no-snapshot",
+      "reason": "Licensed downloads may create a Freepik account download/license record and local files. This source tool has no reliable before-state snapshot for those writes.",
       "provider_write": {
         "method": "GET",
         "endpoint": "/resources/123456/download/jpg",
@@ -22,35 +33,26 @@
         }
       }
     },
-    "format": "jpg",
-    "has_prompt": false,
-    "image_size": "",
-    "is_ai_generated": false,
     "license_url": "https://www.freepik.com/license/free/123456.pdf",
-    "name": "Example asset name",
-    "note": "Dry-run does not call the Freepik download endpoint. Current apply requires explicit no-snapshot approval before the licensed download endpoint when no saved snapshot is available.",
-    "preview_url": "https://img.freepik.com/free-photo/example-preview.jpg",
-    "resource_id": "123456",
     "resource_type": "photo",
-    "resource_url": "https://www.freepik.com/free-photo/example_123456.htm",
     "verification_plan": {
-      "status": "blocked_before_apply",
+      "status": "best_effort_after_apply",
       "steps": [
-        "Confirm no Freepik download/license endpoint was called.",
-        "Confirm no binary download was fetched.",
-        "Confirm no destination file or inventory row was written."
+        "Confirm the Freepik download/license endpoint returned a usable download URL.",
+        "Confirm the binary download was saved locally.",
+        "Confirm the destination file hash and inventory row were recorded."
       ],
-      "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing licensed downloads."
+      "approval_required": "--ack-no-snapshot"
     }
   },
   "recovery": {
+    "end_state": "irreversible_and_clearly_labeled",
+    "strategy": "no_inverse",
+    "rollback_ready": false,
     "automatic_rollback": false,
     "backups": [],
-    "end_state": "irreversible_and_clearly_labeled",
-    "rollback_plan": null,
-    "rollback_ready": false,
     "snapshots": [],
-    "strategy": "no_inverse",
+    "rollback_plan": null,
     "restore_note": "Licensed downloads and license records cannot be rolled back by this CLI. Local cleanup is manual."
   }
 }

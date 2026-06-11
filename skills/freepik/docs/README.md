@@ -6,7 +6,7 @@ Use this page when you want the right Freepik doc quickly.
 
 - [What you can do](use_cases.md)
 - [Connect your account](onboarding.md)
-- [How this stays safe](safety_model.md)
+- [How this skill stays safe](safety_model.md)
 
 ## Commands and setup
 
@@ -16,10 +16,15 @@ Use this page when you want the right Freepik doc quickly.
 - [Configuration](configuration.md)
 - [Troubleshooting](troubleshooting.md)
 
-## Proof and references
+## Workflows and proof
 
 - [Proof pack](proof.md)
 - [API coverage](api_coverage.md)
-- [Source references](references.md)
+- [Recipe workflow](recipe_workflow_recipes.md)
+- [Inventory schema](inventory_schema.md)
 - [Examples](examples/)
-- [Technical architecture](architecture.md)
+
+## Technical references
+
+- [Source references](references.md)
+- [Architecture](architecture.md)

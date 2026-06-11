@@ -1,6 +1,6 @@
 # Inventory schema (inventory CSV)
 
-The inventory is the future CSV license ledger. Current licensed download apply requires explicit no-snapshot approval before writing rows when no saved snapshot is available.
+The inventory CSV is the local license ledger written by approved Freepik downloads. Licensed apply still requires explicit no-snapshot approval before writing rows when no saved snapshot is available.
 
 Columns:
 - `downloaded_at_utc`: timestamp of download

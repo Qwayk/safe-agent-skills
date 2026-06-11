@@ -75,27 +75,40 @@ Notes:
 - `--save-preview` writes local preview files only and requires manual cleanup if you want to remove them.
 
 ## `download`
-Dry-run by default. `--apply` requires explicit no-snapshot approval before the Freepik download/license endpoint when no saved snapshot is available.
+Dry-run by default. Licensed live download also needs `--ack-no-snapshot` because no saved before-state snapshot is available for this write family.
 
 - Safety: refuses unless the resource detail explicitly includes `is_ai_generated=false` AND `has_prompt=false`.
 - `freepik-api-tool download --id ID --format FMT [--out-dir DIR] [--inventory PATH] [--post-slug SLUG] [--ghost-id ID] [--usage-role featured|body] [--image-size SIZE] [--download-url-jsonpath P] [--license-url-jsonpath P] [--force]`
 
+Approved single-download example:
+
+```bash
+freepik-api-tool --apply --ack-no-snapshot download --id ID --format jpg --out-dir downloads --inventory licensed-downloads-ledger.csv
+```
+
 Notes:
 - `--out-dir` and `--inventory` can be provided via `--config` using `downloads_dir` and `inventory_csv`.
-- `--image-size` is only supported by Freepik on the `/download` endpoint (no-format). apply requires explicit no-snapshot approval before reaching that endpoint.
-- `--post-slug/--ghost-id/--usage-role` are optional metadata fields for the future inventory ledger.
-- Dry-run output includes `preview_url`, `resource_url`, and `no_snapshot_available` before_state metadata so you can visually sanity-check the approved ID before any licensed download is enabled.
-- Download output includes a `recovery` block with `strategy=no_inverse`, `rollback_ready=false`, and `automatic_rollback=false`.
+- `--image-size` is only supported by Freepik on the `/download` endpoint (no-format). Approved apply still needs explicit no-snapshot approval before reaching that endpoint.
+- `--post-slug/--ghost-id/--usage-role` are optional metadata fields for the inventory CSV.
+- Dry-run output includes `preview_url`, `resource_url`, and `no_snapshot_available` before-state metadata so you can visually sanity-check the approved ID before live download.
+- Approved apply writes the file and inventory row, then returns `rows`, `no_snapshot_approval`, `verification`, and `recovery`.
+- If you omit `--ack-no-snapshot`, the tool refuses before the licensed download endpoint, file write, or inventory row write.
 
 ## `jobs`
-Batch downloads require `--apply --yes`, then require explicit no-snapshot approval before licensed download apply.
+Batch downloads require `--apply --yes`, and licensed download rows also need `--ack-no-snapshot`.
 
 - `freepik-api-tool jobs run --file jobs.csv [--out-dir DIR] [--inventory PATH] [--limit N]`
+
+Approved batch example:
+
+```bash
+freepik-api-tool --apply --yes --ack-no-snapshot jobs run --file jobs.csv --out-dir downloads --inventory licensed-downloads-ledger.csv
+```
 
 Notes:
 - `--out-dir` and `--inventory` can be provided via `--config` using `downloads_dir` and `inventory_csv`.
 - `jobs run` emits a single JSON summary.
-- Licensed download rows require explicit no-snapshot approval; approved applies write the file/inventory receipt, while missing approval writes only a refusal.
+- Licensed download rows require explicit no-snapshot approval. Approved rows write the local file and inventory row, while missing approval returns a refusal.
 - `jobs run` includes a `recovery` block with `strategy=no_inverse`, `rollback_ready=false`, and `automatic_rollback=false`.
 - Remote licensed writes are not reversible in this CLI. Local cleanup for helper files is manual.
 

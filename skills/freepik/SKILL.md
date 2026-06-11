@@ -53,12 +53,12 @@ Command examples (safe-by-default):
 Apply examples (only after explicit user confirmation):
 
 - Try a single licensed download apply:
-  - `freepik-api-tool --output json --apply download --id <RESOURCE_ID> --format jpg --out-dir <DIR> --inventory <CSV_PATH>`
-  - Without `--ack-no-snapshot`, current source behavior returns `refused=true` with `no_snapshot_available` before_state metadata instead of licensing/downloading.
+  - `freepik-api-tool --output json --apply --ack-no-snapshot download --id <RESOURCE_ID> --format jpg --out-dir <DIR> --inventory <CSV_PATH>`
+  - If the user wants review only, omit `--ack-no-snapshot` and the tool will refuse before licensed download.
 
 - Generate a jobs file (local-only; still read-only API calls):
   - `freepik-api-tool --output json search photos --query "QUERY" --limit 10 --exclude-ai --write-jobs jobs.csv --job-format jpg --job-image-size 2000px`
 
 - Apply a batch job (requires extra confirmation):
-  - `freepik-api-tool --output json --apply --yes jobs run --file jobs.csv --out-dir <DIR> --inventory <CSV_PATH>`
-  - Licensed rows need reviewed approval and `--ack-no-snapshot`; report the receipt or exact tool limitation after the approved attempt.
+  - `freepik-api-tool --output json --apply --yes --ack-no-snapshot jobs run --file jobs.csv --out-dir <DIR> --inventory <CSV_PATH>`
+  - Licensed rows need reviewed approval; report the saved files, inventory rows, or exact refusal after the attempt.
