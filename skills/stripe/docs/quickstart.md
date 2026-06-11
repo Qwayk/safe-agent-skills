@@ -1,10 +1,8 @@
 # Quickstart
 
-If you’re non-technical, start with:
-- `use_cases.md`
-- `onboarding.md`
+If you want the human path first, start with [What you can do with Stripe](use_cases.md), [Connect your Stripe account](onboarding.md), and [How this skill stays safe](safety_model.md).
 
-This page is a technical reference (it includes CLI commands).
+This page is the technical reference for install, setup, and first Stripe commands.
 
 1) Install (dev)
 

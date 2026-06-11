@@ -2,7 +2,7 @@
 
 This tool runs on your computer and connects to Stripe using an API key you store locally.
 
-You do not need to be technical. You can simply ask an AI agent to do work, and the agent will run the tool for you and report back with a safe preview.
+You do not need to be technical. You can ask an AI agent to do the Stripe work, and the agent will run the tool for you and report back with a safe preview before any risky action.
 
 Important:
 - Your `.env` file contains secrets. Keep it private and never paste it into chat.
@@ -30,14 +30,17 @@ Tip: you can also run `stripe-api-tool onboarding` and it will create `.env` for
 Notes:
 - Stripe has **test** and **live** keys. Use a test key first (it typically contains `_test_`).
 - Never paste your key into chat. Only paste it into your local `.env` file.
+- If you only need read or review work, a restricted key is the safest place to start.
 
 ## Step 3: What to ask your AI agent (examples)
 
 These are plain-English requests. The agent should start with a read-only check, then show a preview. If no saved before-state or provider backup is available for a Stripe write, the agent must say that clearly and ask for explicit no-snapshot approval before apply.
 
 - “Confirm the tool is connected, then show me what it can do on my account.”
-- “Find the right targets safely (avoid guessing), then propose changes for my review.”
+- “List recent customers, subscriptions, invoices, and payouts, then tell me what looks important.”
+- “Find the right targets safely, then propose changes for my review.”
 - “Draft metadata update plans from this spreadsheet and tell me what approval is needed before apply.”
+- “Prepare a refund or payout-related plan, but do not run anything live until I approve it.”
 - “Do a dry-run preview first, then ask before any Stripe API write runs.”
 
 ## Step 4: Smoke test
