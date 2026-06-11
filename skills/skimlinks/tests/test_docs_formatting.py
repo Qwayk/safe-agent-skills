@@ -41,3 +41,24 @@ class TestDocsFormatting(unittest.TestCase):
         self.assertIn("publisher_domain_id", coverage)
         self.assertIn("sort_desc", coverage)
         self.assertIn("`asc` or `desc`", coverage)
+
+    def test_public_docs_do_not_leak_private_workspace_paths(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        files = [
+            root / "docs" / "proof.md",
+            root / "docs" / "examples" / "outputs" / "version.json",
+            root / "docs" / "examples" / "outputs" / "auth_check_missing_config.json",
+            root / "docs" / "examples" / "outputs" / "product_key_missing_domain_id.json",
+            root / "docs" / "examples" / "outputs" / "link_wrapper_build.json",
+        ]
+        forbidden = [
+            "/home/" + "ubuntu/",
+            "api" + "-tools-for-ai-agents",
+            "pro" + "jects/" + "qwayk-skills-control-room/",
+            "api" + "-tools/" + "qwayk-skimlinks-safe-agent-cli/",
+        ]
+        for path in files:
+            text = path.read_text(encoding="utf-8")
+            for needle in forbidden:
+                with self.subTest(path=path.name, needle=needle):
+                    self.assertNotIn(needle, text)

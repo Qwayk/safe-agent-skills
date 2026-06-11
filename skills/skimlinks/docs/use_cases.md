@@ -1,9 +1,7 @@
-# Use cases
+# What you can do with Skimlinks
 
 Use this page when you want ideas for real Skimlinks jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
-
-This page is for non-technical users.
+If you need setup first, start with [Connect your Skimlinks account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 You can ask your agent to:
 
@@ -17,7 +15,8 @@ You can ask your agent to:
 - Look up Product Key details and alternatives for one product or many products.
 - Build official Link Wrapper URLs for links that need to be monetized outside browser JavaScript.
 
-Why this is safer than a generic automation:
+## Why this is safer than a generic automation
+
 - It uses official documented surfaces only.
 - It exposes named commands instead of a raw request box.
 - It keeps secrets out of output and logs.

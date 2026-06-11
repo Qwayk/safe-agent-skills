@@ -16,6 +16,6 @@
     "xcust": "order-789"
   },
   "run_id": null,
-  "runs_index": "/path/to/skimlinks-safe-cli/.state/runs/index.jsonl",
+  "runs_index": ".state/runs/index.jsonl",
   "wrapped_url": "https://go.skimresources.com/?id=123X456&url=https%3A%2F%2Fmerchant.example%2Fproduct%3Fsku%3Dabc&xcust=order-789&sref=https%3A%2F%2Fqwayk.example%2Fpost"
 }

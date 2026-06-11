@@ -4,7 +4,7 @@
   "audit_log_global": null,
   "ok": true,
   "run_id": null,
-  "runs_index": "/path/to/skimlinks-safe-cli/.state/runs/index.jsonl",
+  "runs_index": ".state/runs/index.jsonl",
   "tool": "skimlinks-safe-cli",
   "version": "0.1.0"
 }

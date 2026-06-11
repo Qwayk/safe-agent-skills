@@ -16,5 +16,5 @@
   "product_credentials_configured": false,
   "publisher_id_configured": false,
   "run_id": null,
-  "runs_index": "/path/to/skimlinks-safe-cli/.state/runs/index.jsonl"
+  "runs_index": ".state/runs/index.jsonl"
 }

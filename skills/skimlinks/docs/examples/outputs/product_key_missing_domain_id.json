@@ -6,5 +6,5 @@
   "error_type": "ValidationError",
   "ok": false,
   "run_id": null,
-  "runs_index": "/path/to/skimlinks-safe-cli/.state/runs/index.jsonl"
+  "runs_index": ".state/runs/index.jsonl"
 }

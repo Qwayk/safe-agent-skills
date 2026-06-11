@@ -1,8 +1,8 @@
-# Proof pack
+# Proof and verification
 
 You do not need to run these commands yourself. They exist so a reviewer can audit the tool.
 
-Last verified: **2026-06-08**
+Last verified: **2026-06-11**
 
 Tool version: `0.1.0`
 
@@ -21,10 +21,10 @@ Results:
 
 ```text
 Install: OK
-Unit tests: Ran 17 tests, OK
+Unit tests: Ran 23 tests, OK
 Ruff: All checks passed
 Mypy: Success, no issues found in 19 source files
-Scoped whitespace check: OK
+Git whitespace check: OK
 ```
 
 What was verified locally:
@@ -40,6 +40,8 @@ What was verified locally:
 - Product Key passes the official `sort_desc` string value `asc` or `desc` instead of a boolean.
 - Product Key docs coverage stays synced to the required publisher-domain and sort-direction contract.
 - Link Wrapper builds an encoded URL without clicking it.
+- README and quickstart opening contract now stay in the public-ready user-first shape.
+- Public proof docs and example outputs no longer leak private workspace paths.
 - Stale starter-tool terms are absent from the tool folder.
 
 Smoke commands:
@@ -57,7 +59,7 @@ Smoke results:
 - Auth check against `.env.example` failed safely because credentials are missing.
 - Link Wrapper returned an encoded `go.skimresources.com` URL and did not open it.
 
-Live Skimlinks API calls were not run because no real credentials are stored here.
+Live Skimlinks API calls were not run because no real credentials are stored in this repo.
 
 Redacted examples:
 - `docs/examples/outputs/version.json`
