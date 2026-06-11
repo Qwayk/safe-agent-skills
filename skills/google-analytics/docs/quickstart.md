@@ -1,12 +1,10 @@
 # Quickstart
 
-If you’re non-technical, start with:
-- `use_cases.md`
-- `onboarding.md`
+Want the short non-technical path first? Start with [What you can do](use_cases.md), [Connect your Google Analytics access](onboarding.md), and [How this skill stays safe](safety_model.md).
 
-This page is a technical reference (it includes CLI commands).
+This page is the CLI path when you already want exact commands.
 
-1) Install (dev)
+## 1. Install
 
 ```bash
 python3 -m venv .venv
@@ -14,60 +12,69 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-2) Configure
+## 2. Configure
 
-Copy `.env.example` → `.env` and fill your values.
+Copy `.env.example` to `.env` and fill your values.
 
-Tip: for a guided first-time setup, run:
+If you want the tool to create the starter file for you, run:
 
 ```bash
 ga4-api-tool onboarding
 ```
 
-3) Smoke test
+## 3. Smoke test
 
 ```bash
 ga4-api-tool auth check
 ```
 
-If you want a safe machine-readable version output (no `.env` required):
+If you want a safe machine-readable version output with no `.env` file:
 
 ```bash
 ga4-api-tool --output json --version
 ```
 
-If you want to run the template without creating a real `.env` yet, you can point at `.env.example`:
+If you want to confirm the network-backed auth path too, run:
 
 ```bash
-ga4-api-tool --env-file .env.example auth check
+ga4-api-tool --apply auth check
 ```
 
-4) Discovery method commands (reads execute; writes are dry-run by default)
+## 4. First safe reads
 
-All GA4 discovery methods are available as explicit commands:
+List the accounts and properties you can access:
 
-- `ga4-api-tool admin v1alpha ...`
-- `ga4-api-tool data v1beta ...`
-- `ga4-api-tool data v1alpha ...`
+```bash
+ga4-api-tool admin v1alpha account-summaries list
+```
 
-The full list is committed in `docs/official_commands.txt`.
-
-Example (read; executes the API call):
+Example report command shape:
 
 ```bash
 ga4-api-tool --env-file .env data v1beta properties run-report --property properties/123
 ```
 
-Example (write; dry-run plan, no network):
+## 5. Plan a write-capable change
+
+Write-capable GA4 admin commands start as dry-run plans by default:
 
 ```bash
 ga4-api-tool --env-file .env admin v1alpha accounts patch --name accounts/123 --body-json '{}'
 ```
 
-To request apply for a write, add `--apply` (and follow the risk gates in `docs/risk_gates.md`):
+## 6. Request apply only after review
+
+When no useful before-state can be saved, GA4 write apply needs explicit no-snapshot approval:
 
 ```bash
-ga4-api-tool --env-file .env --apply admin v1alpha accounts patch --name accounts/123 --body-json '{}'
+ga4-api-tool --env-file .env --apply --ack-no-snapshot admin v1alpha accounts patch --name accounts/123 --body-json '{}'
 ```
 
-When no useful before-state can be saved, write apply requires explicit no-snapshot approval before GA4 HTTP. Approved supported writes must create a receipt that records the recovery limit.
+Higher-risk writes can also require `--yes`, `--plan-in`, or `--ack-irreversible` depending on the command and risk level.
+
+## 7. Need the full command list?
+
+Use:
+
+- [Command reference](command_reference.md)
+- [All generated commands](official_commands.txt)

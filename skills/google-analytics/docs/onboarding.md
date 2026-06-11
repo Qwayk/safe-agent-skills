@@ -1,47 +1,64 @@
-# Onboarding (non-technical)
+# Onboarding
 
-This tool runs on your computer and connects to Google Analytics (GA4) using local credentials you store locally.
+Use this page when you want the shortest safe setup path for Google Analytics.
 
-You do not need to be technical. You can simply ask an AI agent to do work, and the agent will run the tool for you and report back with reads, previews, and safe refusals for write-like requests.
+This skill runs on your machine and uses local credentials you keep in `.env` or local token files.
+Do not paste secrets into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
-
-## Step 1: Create the local `.env` file (on your machine)
+## Step 1: Create the local `.env` file
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
-3) Pick an auth mode (`GA4_AUTH_MODE`) and fill the required fields for that mode (see `docs/authentication.md`).
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
+3. Pick the auth mode you want to use.
 
-## Step 2: Get credentials (GA4)
+If you want the tool to create the starter file for you, run:
 
-Common options:
-- `adc`: use Google’s Application Default Credentials (developer-friendly)
-- `service_account_json`: use a service account key JSON file
-- `oauth_refresh_token`: use an OAuth refresh token (keep it local)
+```bash
+ga4-api-tool onboarding
+```
 
-Rules:
-- Use short numbered steps (no jargon).
-- Tell the user exactly what to copy/paste into which `.env` field.
-- Never instruct the user to paste secrets into chat.
-- If there are multiple credential types, explicitly name the required one.
+## Step 2: Pick the Google auth mode that fits you
 
-## Step 3: What to ask your AI agent (examples)
+You can connect in three normal ways:
 
-These are plain-English requests. The agent should start with a read-only check, then show a preview before any write-like request.
+- `adc` if this machine already signs in through Google Cloud.
+- `service_account_json` if you have a Google service account key file.
+- `oauth_refresh_token` if you want to use a normal Google user account with a refresh token.
 
-- “Confirm the tool is connected, then show me what it can do on my account.”
-- “Find the right targets safely (avoid guessing), then propose changes for my review.”
-- “Create a dry-run plan first, then prove the tool requires explicit no-snapshot approval before GA4 writes.”
-- “Do a dry-run preview first. Do not send GA4 writes when no saved snapshot is available.”
+The exact fields for each mode are listed in [Authentication details](authentication.md).
 
-## Step 4: If something fails
+## Step 3: Check access before real work
 
-The most common issues are:
-- Missing/incorrect values in `.env`
-- Wrong key type (example: read-only key vs admin key)
-- Network/auth restrictions in the vendor account
+Ask your agent to start with safe checks like:
 
-The real tool should explain common errors in `docs/troubleshooting.md`.
+- "Check the Google Analytics skill is connected."
+- "List the accounts and properties I can access."
+- "Show me what is safe to review before we plan any changes."
+
+If you want to run the first checks yourself:
+
+```bash
+ga4-api-tool auth check
+ga4-api-tool admin v1alpha account-summaries list
+```
+
+## Step 4: First requests to give your agent
+
+These are good first requests in plain English:
+
+- "Show me the GA4 accounts and properties I can access."
+- "Run a safe report for the last 7 days and explain what stands out."
+- "Review this property's audiences, conversions, and custom definitions."
+- "Plan the change first and stop before any live GA4 write."
+
+## Step 5: If something fails
+
+The most common setup problems are:
+
+- the wrong auth mode in `.env`
+- missing Google permissions for the account or property you want
+- a bad service account path or refresh token setup
+
+Use [Troubleshooting](troubleshooting.md) if the first checks fail.

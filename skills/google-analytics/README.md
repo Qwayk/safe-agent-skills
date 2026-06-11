@@ -1,51 +1,107 @@
-# ga4-api-tool
+# Google Analytics
 
-## Simplicity lock
+**Capability:** Reads + careful changes
 
-Build and change this area in the simplest way possible.
+Use this skill when you want your agent to pull GA4 reports, inspect account and property setup, review access, and plan careful Google Analytics admin changes without guessing from raw docs.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand your agent jobs like property audits, last-7-days report checks, audience and conversion reviews, custom definition checks, data stream reviews, and careful GA4 admin changes.
 
-Safety-first CLI for Google Analytics (GA4), based on pinned discovery snapshots.
+Read work stays simple. Riskier work slows down on purpose: reports and discovery reads can run live, write-capable commands start as dry-run plans, and many GA4 writes need explicit no-snapshot approval because this tool does not yet save useful before-state for those changes.
 
-Key properties:
-- Explicit commands only (one CLI command per discovery method)
-- Dry-run by default for write-like discovery methods (prints a plan; no network)
-- Apply requests still enforce risk gates (`--yes`, `--plan-in`, `--ack-irreversible`), then require explicit no-snapshot approval before GA4 HTTP until before-state capture exists
-- Write plans are explicitly no-recovery and include `before_state.required=true`, `before_state.supported=false`
-- Plans, refusals, and audit logs are redacted (Measurement Protocol `secretValue` is always redacted)
+A good first ask is: "Check the Google Analytics skill is connected, list the accounts and properties I can access, and show me the safest report or review steps to start with."
 
-## For non-technical users: Start here (no coding)
+## Start here first
 
-Start with:
+- Want ideas for real Google Analytics work? [What you can do with Google Analytics](docs/use_cases.md)
+- Need setup? [Connect your Google Analytics access](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-- Use cases (ideas + benefits): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model (how we prevent mistakes): `docs/safety_model.md`
-- Agent skill prompt and install notes are included with this package.
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-## For technical users: Start here (CLI)
+## What this skill helps with
 
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
-- Full generated command list: `docs/official_commands.txt`
+- Run GA4 reports and metadata reads from the Analytics Data API.
+- Review accounts, properties, data streams, access bindings, and change history.
+- Check audiences, conversion events, custom dimensions, custom metrics, and other property settings.
+- Review product links like BigQuery, Firebase, AdSense, and Display & Video 360 connections.
+- Plan careful Analytics Admin changes before anything goes live.
 
-Minimal examples:
+## What access this skill needs
+
+- Google credentials stored locally in `.env`.
+- Access to the GA4 accounts or properties you want to inspect or change.
+- Property IDs or resource names for many report and admin requests.
+- Higher permissions for any admin changes you want to plan or apply.
+
+## Install and first run
+
+Install slug: `google-analytics`
+
+Ask your agent to install the `google-analytics` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
 
 ```bash
-ga4-api-tool --version
-ga4-api-tool auth check
+npx skills add Qwayk/safe-agent-skills@google-analytics -g -y
 ```
 
-## Proof pack (customer-ready)
+Then try a safe first ask like:
 
-- `docs/proof.md`
-- `docs/api_coverage.md`
-- `docs/examples/`
+```text
+Connect the Google Analytics skill, list the accounts and properties I can access, and show me a simple safe report or review path for the last 7 days.
+```
+
+## How this skill stays safe
+
+- Read-like reports and discovery commands can run live right away.
+- Write-capable commands start as dry-run plans first.
+- Higher-risk work can require extra confirmation flags like `--yes`, `--plan-in`, or `--ack-irreversible`.
+- When GA4 does not expose useful before-state for a write, live apply also needs `--ack-no-snapshot`.
+- Measurement Protocol secrets and other sensitive values stay redacted in plans, receipts, logs, and stdout.
+- The docs, tests, coverage notes, and source code are all here in one place.
+
+## What it covers today
+
+This skill covers:
+
+- Analytics Data API reports and metadata reads
+- Analytics Admin API account and property review
+- access reports and access-binding review
+- audiences, conversion events, custom definitions, data streams, and property settings
+- plan, review, and apply flows for write-capable GA4 admin commands
+- local run history and batch jobs for repeatable work
+
+## What happens before live changes
+
+- The agent should show the dry-run plan first.
+- You review the account, property, target, payload, and recovery limits.
+- Safe reads can run immediately.
+- Write-capable commands need `--apply`.
+- Higher-risk or batch apply can also require `--yes` and `--plan-in`.
+- Irreversible actions also need `--ack-irreversible`.
+- GA4 writes without saved before-state also need `--ack-no-snapshot`.
+
+## What proof it leaves behind
+
+- Dry-run plans can be saved with `--plan-out`.
+- Approved applies can save receipts with `--receipt-out`.
+- Missing-approval refusals stop before the live GA4 write and leave a clear refusal instead of a fake success.
+- Local run history can be reviewed with `runs list` and `runs show`.
+- The docs, tests, examples, and API coverage ledger are all in this repo.
+
+## Limits
+
+- Many GA4 writes still do not have saved before-state or a built-in undo path.
+- Some apply paths depend on extra permissions, reviewed plans, and explicit no-snapshot approval.
+- Live coverage follows the vendored GA4 discovery snapshots in this repo, not whatever Google may add later upstream.
+- You still need valid Google Analytics access for real account work.
+
+## Helpful docs
+
+- [Browse all Google Analytics docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)
