@@ -1,42 +1,107 @@
-# gsc-api-tool (Google Search Console SafeCLI)
+# Google Search Console
 
-## Simplicity lock
+**Capability:** Reads + careful changes
 
-Build and change this area in the simplest way possible.
+Use this skill when you want your agent to review Google Search Console performance, inspect URL coverage, check sites and sitemaps, and handle careful site or sitemap changes without guessing from raw docs.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand your agent jobs like verified-site inventories, last-28-day query and page reports, URL inspection summaries, sitemap submit or delete previews, and careful site add or delete plans.
 
-This is a safety-first CLI for the **Google Search Console API v1**, designed for non-technical users working with an AI agent.
-Writes are preview-first (dry-run plan by default), and destructive actions have extra safety gates.
+Read work stays simple. Riskier work slows down on purpose: the write-capable flows are limited to site add or delete and sitemap submit or delete, changes start as dry-run plans, and delete actions need extra irreversible approval before they can run.
 
-## For non-technical users: Start here (no coding)
+A good first ask is: "Check which Search Console sites I can access, show the top queries and pages for the last 28 days, and tell me if any sitemap or indexing issue needs attention before we change anything."
 
-Start with:
+## Start here first
 
-- Use cases (ideas + benefits): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model (how we prevent mistakes): `docs/safety_model.md`
+- Want ideas for real Search Console work? [What you can do with Google Search Console](docs/use_cases.md)
+- Need setup? [Connect your Google Search Console account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-## For technical users: Start here (CLI)
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
+## What this skill helps with
 
-Minimal examples:
+- List the Search Console sites your account can access.
+- Run Search Analytics reports by query, page, country, device, and date range.
+- Inspect a URL and summarize how Google sees its indexing status.
+- Review sitemaps and prepare careful submit or delete actions.
+- Add or remove site properties with plan-first safety gates.
+
+## What access this skill needs
+
+- A Google OAuth client secrets file or a service account file.
+- The right Search Console scope for the job: read-only or read and write.
+- A verified site or URL-prefix property when you want property-specific reports or URL inspection.
+- Service-account access granted inside Search Console if you use the service-account path.
+
+For most people, installed-app OAuth is the easiest starting point.
+
+## Install and first run
+
+Install slug: `google-search-console`
+
+Ask your agent to install the `google-search-console` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
 
 ```bash
-gsc-api-tool --version
-gsc-api-tool onboarding
+npx skills add Qwayk/safe-agent-skills@google-search-console -g -y
 ```
 
-## Proof pack (customer-ready)
+Then try a safe first ask like:
 
-- `docs/proof.md`
-- `docs/api_coverage.md`
+```text
+Check which Search Console sites I can access, show the top queries and pages for the last 28 days on this property, and stop before any changes.
+```
+
+## How this skill stays safe
+
+- It keeps one explicit command per supported Google method instead of exposing a generic raw bridge.
+- Writes are dry-run first and do not run live unless you pass `--apply`.
+- Write-capable flows are limited to site add or delete and sitemap submit or delete.
+- Delete actions are treated as irreversible and need extra approval gates.
+- Write-capable runs keep local proof under `.state/runs/` for review.
+- The tool verifies after write when it can, and it should label any weaker proof honestly.
+
+## What it covers today
+
+This skill covers:
+
+- auth checks and site discovery
+- Search Analytics reports
+- URL inspection reads
+- site add and delete
+- sitemap list, submit, and delete
+
+## What happens before live changes
+
+- The agent should show the dry-run plan first.
+- You review the site property or sitemap target before apply.
+- Read work can run immediately.
+- Live writes need `--apply`.
+- Irreversible deletes need `--yes --ack-irreversible --plan-in`.
+- After apply, the tool verifies the result and leaves a receipt or clearly labels any limit.
+
+## What proof it leaves behind
+
+- Dry-run output acts as the review plan for write-capable commands.
+- Apply output acts as the receipt.
+- Write-capable runs include `before_state`, and local artifacts can point to `before_state.json`.
+- Local run history lives under `.state/runs/` when artifacts are enabled.
+- The docs, tests, and API coverage notes are all in this repo.
+
+## Limits
+
+- Writes are intentionally limited to site add or delete and sitemap submit or delete.
+- Delete actions are irreversible and need extra approval.
+- You still need real Search Console access for the site or property you want to inspect.
+- Service accounts are not always the easiest auth path if the property access is not set up correctly.
+
+## Helpful docs
+
+- [Browse all Google Search Console docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)
