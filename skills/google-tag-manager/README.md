@@ -1,42 +1,108 @@
-# gtm-api-tool (Google Tag Manager API v2)
+# Google Tag Manager
 
-## Simplicity lock
+**Capability:** Reads + careful changes
 
-Build and change this area in the simplest way possible.
+Use this skill when you want your agent to review Google Tag Manager accounts, containers, workspaces, tags, triggers, variables, versions, and publish flow changes without guessing from raw docs.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand your agent jobs like account and container inventories, workspace reviews, tag and trigger checks, variable cleanup plans, version comparisons, publish readiness checks, and careful GTM API changes that should be previewed before they go live.
 
-Customer-ready, safety-first CLI for the Google Tag Manager API v2.
+Read work stays simple. Riskier work slows down on purpose: writes are dry-run first, higher-risk and publish-like actions need saved-plan review, irreversible delete actions need extra approval, and some mutating families are refused for live apply if the API does not expose the matching pre-read needed for safe before-state capture.
 
-## For non-technical users: Start here (no coding)
+A good first ask is: "List my GTM accounts, containers, and workspaces, review the tags, triggers, and variables in this container, and stop before any changes."
 
-Start with:
+## Start here first
 
-- Use cases (ideas + benefits): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model (how we prevent mistakes): `docs/safety_model.md`
+- Want ideas for real GTM work? [What you can do with Google Tag Manager](docs/use_cases.md)
+- Need setup? [Connect your Google Tag Manager account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-## For technical users: Start here (CLI)
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
+## What this skill helps with
 
-Minimal examples:
+- List GTM accounts, containers, workspaces, and environments.
+- Review tags, triggers, variables, folders, templates, and clients before a change.
+- Compare versions and inspect publish-related state.
+- Build careful plans for GTM API writes across the supported discovery surface.
+- Verify many writes with a matching `GET` check after apply when the API supports that path.
+
+## What access this skill needs
+
+- One Google auth mode: ADC, OAuth refresh token, or service-account JSON.
+- Access to the GTM account or container you want to inspect or change.
+- Broader scopes if you want full read and write coverage instead of read-only review.
+
+For most local users, ADC is the shortest starting path.
+
+## Install and first run
+
+Install slug: `google-tag-manager`
+
+Ask your agent to install the `google-tag-manager` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
 
 ```bash
-gtm-api-tool --version
-gtm-api-tool auth check
+npx skills add Qwayk/safe-agent-skills@google-tag-manager -g -y
 ```
 
-## Proof pack (customer-ready)
+Then try a safe first ask like:
 
-- Write plans and receipts now show recovery for write methods as either `rollback_by_inverse_action` or `irreversible_and_clearly_labeled`.
-- `docs/proof.md`
-- `docs/api_coverage.md`
+```text
+List my GTM accounts, containers, and workspaces, review the tags, triggers, and variables in this container, and stop before any changes.
+```
+
+## How this skill stays safe
+
+- It keeps one explicit command per supported GTM discovery method instead of exposing a generic raw bridge.
+- Writes stay dry-run first and do not run live unless you pass `--apply`.
+- Medium-risk writes need `--apply`.
+- Higher-risk publish, linking, move, or batch-like actions need `--apply --yes --plan-in`.
+- Irreversible deletes also need `--ack-irreversible`.
+- For supported write families, the tool pre-reads before-state when the GTM discovery surface exposes the matching `GET`; when it cannot, live apply is refused for that family.
+
+## What it covers today
+
+This skill covers:
+
+- auth checks and GTM account discovery
+- explicit GTM API v2 methods across the supported discovery surface
+- reads and careful writes for accounts, containers, workspaces, tags, triggers, variables, versions, environments, folders, templates, and related GTM resources
+- plan and receipt output with risk, recovery, and verification details
+
+## What happens before live changes
+
+- The agent should show the dry-run plan first.
+- You review the GTM account, container, workspace, or resource target before apply.
+- Read work can run immediately.
+- Medium-risk writes need `--apply`.
+- Higher-risk writes need `--apply --yes --plan-in`.
+- Irreversible deletes need `--apply --yes --ack-irreversible --plan-in`.
+- If GTM does not expose the pre-read needed for safe before-state capture, live apply is refused for that method family.
+
+## What proof it leaves behind
+
+- Dry-run output acts as the review plan.
+- Apply output acts as the receipt.
+- Plans and receipts include recovery as either `rollback_by_inverse_action` or `irreversible_and_clearly_labeled`.
+- Supported write families can include `before_state` and a saved `before_state.json` artifact.
+- Local run history lives under `.state/runs/` when artifacts are enabled.
+- The docs, tests, and API coverage notes are all in this repo.
+
+## Limits
+
+- The tool does not promise generic undo, snapshot rollback, or backup restore.
+- Some GTM mutating families stay plan-only when the API does not expose the matching read path needed for safe live apply.
+- Publish-like changes are treated as higher risk and need saved-plan review.
+- You still need real GTM access for the accounts and containers you want to inspect or change.
+
+## Helpful docs
+
+- [Browse all Google Tag Manager docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Authentication details](docs/authentication.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)
