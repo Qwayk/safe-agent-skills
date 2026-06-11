@@ -1,36 +1,29 @@
 # Use cases
 
 Use this page when you want ideas for real Instagram jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+If you need setup first, start with [Connect your Instagram access](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Common read tasks
+## Common use cases
 
-- check which Instagram account the current token reaches
-- list recent media, stories, tags, live media, and comments
-- pull account or media insights
-- inspect mentions before replying
-- check the remaining publishing quota
+- "Show which Instagram professional account this token reaches and list my latest media."
+- "Pull account or media insights for these posts and explain what stands out."
+- "Check my publish quota and confirm whether this post is safe to schedule next."
+- "Prepare a publish plan for this image, reel, or carousel before anything goes live."
+- "Show recent comments and suggest which ones to reply to, hide, or delete."
+- "Review mentions before we reply."
+- "Prepare a message or private reply, but show me the plan first."
 
-## Common write tasks
+## Why this skill is more useful than raw docs
 
-- preview creating a publish container for an image, reel, or carousel
-- preview publishing a prepared container after review
-- preview turning comments on or off for a media item
-- preview replies to comments or mentions
-- preview hiding or deleting a bad comment
-- preview sending a message or private reply
+This skill gives your agent a safer path through real Instagram work.
 
-## Good requests to give your agent
+- It can start with live reads instead of guessing from documentation.
+- It can show a dry-run plan before risky publish, comment, mention, message, or token actions.
+- It can slow destructive or higher-risk work down with extra confirmation steps.
+- It can leave plans, receipts, run history, docs, and tests in one place so you can inspect what happened.
 
-- "Check the Instagram account and list my latest media."
-- "Prepare a dry run for publishing this image with this caption."
-- "Show recent comments and suggest which ones to hide."
-- "Pull media insights for these post IDs."
-- "Reply to this mention, but show me the plan first."
+## What this skill intentionally does not promise
 
-## What makes it safe
-
-- reads and writes use explicit named commands
-- writes create dry-run plans first; when no saved snapshot is available, apply needs explicit no-snapshot approval and a receipt that records the recovery limit
-- risky writes need extra approval flags
-- write runs save local plans and receipts under `.state/runs/`
+- It does not promise a built-in undo path for every Instagram write.
+- It does not claim every Meta Instagram surface.
+- It does not guess which account, media item, comment, message, or mention target you meant when the target is unclear.
