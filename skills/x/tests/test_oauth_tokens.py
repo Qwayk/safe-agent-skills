@@ -5,7 +5,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from x_api_tool.oauth_tokens import get_token_status, read_token_json, redact_token_dict, write_token_from_file
+from x_api_tool.oauth_tokens import (
+    get_token_status,
+    read_token_json,
+    redact_token_dict,
+    write_token_from_file,
+)
 
 
 class TestOAuthTokens(unittest.TestCase):

@@ -7,11 +7,15 @@ import time
 from pathlib import Path
 from typing import Any
 
+from .commands.write_safety import (
+    before_state_refusal_verification_plan,
+    blocked_before_state,
+    rollback_contract,
+)
 from .errors import SafetyError, ValidationError
 from .http import redact_headers, redact_query_params, redact_url
-from .openapi_inventory import OperationSpec, extract_operations, load_openapi_snapshot
 from .oauth_tokens import read_token_json, token_path_for_env_file
-from .commands.write_safety import before_state_refusal_verification_plan, blocked_before_state, rollback_contract
+from .openapi_inventory import OperationSpec, extract_operations, load_openapi_snapshot
 
 
 def _utc_now() -> str:
@@ -318,7 +322,8 @@ def validate_plan_for_apply(plan: dict[str, Any], *, op_id: str, ctx_base_url: s
     env = plan.get("env_fingerprint")
     if str(env or "") != str(ctx_base_url):
         raise SafetyError("Refused: plan env_fingerprint does not match current environment")
-    op = plan.get("operation") if isinstance(plan.get("operation"), dict) else {}
+    operation_raw = plan.get("operation")
+    op: dict[str, Any] = operation_raw if isinstance(operation_raw, dict) else {}
     plan_op_id = str(op.get("operation_id") or "").strip()
     if plan_op_id != op_id:
         raise SafetyError("Refused: plan operation_id does not match requested operation")

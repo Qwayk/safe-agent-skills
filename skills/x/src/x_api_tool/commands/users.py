@@ -3,8 +3,12 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from ..api_dispatch import build_api_call_plan, load_operations_from_pinned_snapshot, operations_by_id
-from ..api_dispatch import join_base_url_and_path
+from ..api_dispatch import (
+    build_api_call_plan,
+    join_base_url_and_path,
+    load_operations_from_pinned_snapshot,
+    operations_by_id,
+)
 from ..errors import SafetyError, ValidationError
 from ..http import HttpClient, redact_url
 from ..oauth_tokens import read_token_json, token_path_for_env_file
@@ -59,7 +63,8 @@ def cmd_users_resolve(args: Any, ctx: dict[str, Any]) -> int:
         ctx["out"].emit(out)
         return 0
 
-    auth_obj = plan.get("auth") if isinstance(plan.get("auth"), dict) else {}
+    auth_raw = plan.get("auth")
+    auth_obj: dict[str, Any] = auth_raw if isinstance(auth_raw, dict) else {}
     auth_mode = str(auth_obj.get("mode") or "").strip()
     if auth_mode == "bearer":
         token = ctx["cfg"].token
@@ -79,10 +84,13 @@ def cmd_users_resolve(args: Any, ctx: dict[str, Any]) -> int:
     if token:
         headers["Authorization"] = f"Bearer {token}"
 
-    op_obj = plan.get("operation") if isinstance(plan.get("operation"), dict) else {}
+    operation_raw = plan.get("operation")
+    op_obj: dict[str, Any] = operation_raw if isinstance(operation_raw, dict) else {}
     filled_path = str(op_obj.get("path_filled") or "").strip()
     url = join_base_url_and_path(str(ctx["cfg"].base_url), filled_path)
-    query = (plan.get("inputs") or {}).get("query") if isinstance(plan.get("inputs"), dict) else {}
+    inputs_raw = plan.get("inputs")
+    inputs: dict[str, Any] = inputs_raw if isinstance(inputs_raw, dict) else {}
+    query = inputs.get("query")
     if not isinstance(query, dict):
         query = {}
 

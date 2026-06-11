@@ -5,7 +5,6 @@ import time
 from pathlib import Path
 from typing import Any, TextIO
 
-
 _REDACT_KEYS = {
     "authorization",
     "password",

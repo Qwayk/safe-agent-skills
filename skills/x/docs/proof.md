@@ -1,14 +1,12 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+Use this page when you want the shortest honest answer to one question: what has really been proved for this X skill so far?
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run these commands yourself. They are here so you or your agent can audit what ran, what came back, and what still depends on local auth, scopes, or approvals.
 
 Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions/placeholder values in examples.
+- Never include secrets.
+- Use obvious redactions or placeholders in examples.
 - Keep this file short and factual.
 
 ## Last verified
@@ -19,37 +17,37 @@ Tool version: 0.1.0
 Provider API version (from pinned OpenAPI snapshot): 2.159
 Environment: local tests with mocked provider writes / base URL example: https://api.x.com/2
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
-1) Create venv + install:
+1. Create venv and install:
 - `python3 -m venv .venv`
 - `.venv/bin/python -m pip install -e .`
 
-2) Version (no `.env` required):
+2. Version check with no `.env` required:
 - `x-api-tool --output json --no-provenance --version`
 
-3) Auth/config check (read-only):
+3. Local auth check:
 - `x-api-tool --output json --env-file .env --no-provenance auth check`
 
-Optional (requires OAuth user token; performs a minimal live read):
+Optional live read check (requires an OAuth user token):
 - `x-api-tool --output json --env-file .env --no-provenance --live auth check`
 
-4) One representative offline read query (no network; uses `.env.example`):
+4. One representative offline read query:
 - `x-api-tool --output json --env-file .env.example --no-provenance api ops list`
 
-5) One representative offline plan build (no network; no local artifacts):
+5. One representative offline write plan:
 - `x-api-tool --output json --env-file .env.example --no-provenance --no-artifacts api createPosts --auth none --body-json '{}'`
 
-6) One representative write approval shape (mocked in tests; run live only with real approval):
+6. One representative write approval shape:
 - `x-api-tool --output json --env-file .env.example --no-provenance --no-artifacts --apply --yes --receipt-out /tmp/x-receipt-should-not-exist.json api createPosts --auth none --body-json '{}'`
 - Expected without `--ack-no-snapshot`: `refused=true` and no provider write.
 - Expected with `--ack-no-snapshot`: the approved write path runs and the receipt records `before_state.status=no_snapshot_available`.
 
 ## Example outputs (redacted)
 
-These files are committed (unlike `.state/`):
+These files are committed:
 - `docs/examples/outputs/version.json`
 - `docs/examples/outputs/auth_check.json`
 - `docs/examples/outputs/api_ops_list.json`
@@ -68,5 +66,5 @@ These files are committed (unlike `.state/`):
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
+- Coverage source of truth: `docs/api_coverage.md`
 - Debug history: `docs/engineering_notes.md`

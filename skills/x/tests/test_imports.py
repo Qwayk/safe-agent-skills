@@ -2,16 +2,15 @@ from __future__ import annotations
 
 import importlib
 import pkgutil
+import tomllib
 import unittest
 from pathlib import Path
-
-import tomllib
 
 
 def _load_project_name(root: Path) -> str:
     pyproject = root / "pyproject.toml"
     data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
-    return str(((data.get("project") or {}).get("name") or "")).strip()
+    return str((data.get("project") or {}).get("name") or "").strip()
 
 
 class TestImports(unittest.TestCase):

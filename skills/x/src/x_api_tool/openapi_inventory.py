@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import dataclasses
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 
 @dataclasses.dataclass(frozen=True)
@@ -48,7 +49,7 @@ def load_openapi_snapshot(path: Path) -> dict[str, Any]:
     return obj
 
 
-def _merge_parameters(*param_lists: Iterable[Any]) -> list[dict[str, Any]]:
+def _merge_parameters(*param_lists: Iterable[Any] | None) -> list[dict[str, Any]]:
     merged: list[dict[str, Any]] = []
     seen: set[tuple[str, str]] = set()
     for raw_list in param_lists:

@@ -13,7 +13,13 @@ from ..api_dispatch import openapi_snapshot_path
 from ..errors import SafetyError, ValidationError
 from ..http import HttpClient
 from ..json_files import write_json_file
-from ..oauth_tokens import get_token_status, read_token_json, redact_token_dict, token_path_for_env_file, write_token_from_file
+from ..oauth_tokens import (
+    get_token_status,
+    read_token_json,
+    redact_token_dict,
+    token_path_for_env_file,
+    write_token_from_file,
+)
 from .write_safety import (
     before_state_refusal_verification_plan,
     blocked_before_state,

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 BEFORE_STATE_REFUSAL_REASON = (
     "Refused: this X write has no reliable before-state snapshot. "
     "Review the dry-run plan, then rerun with --ack-no-snapshot if you approve applying without a snapshot."

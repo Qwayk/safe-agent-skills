@@ -3,9 +3,10 @@ from __future__ import annotations
 import csv
 import hashlib
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from ..errors import SafetyError, ValidationError
 from ..json_files import read_json_file, write_json_file
@@ -122,6 +123,7 @@ def _validate_plan_for_apply(plan: dict[str, Any], *, ctx: dict[str, Any]) -> No
 
 
 def cmd_jobs_run(args: Any, ctx: dict[str, Any]) -> int:
+    job_file_path: Path | None = None
     try:
         plan_in = ctx.get("plan_in")
         if plan_in:
@@ -154,7 +156,6 @@ def cmd_jobs_run(args: Any, ctx: dict[str, Any]) -> int:
                 if not isinstance(row_input, dict):
                     raise ValidationError("Plan proposed_changes items must include an input object")
                 rows.append({k: ("" if v is None else str(v)) for k, v in row_input.items()})
-            job_file_path = None
         else:
             if not getattr(args, "file", None):
                 raise ValidationError("Missing --file (or provide --plan-in)")

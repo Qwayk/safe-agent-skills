@@ -12,10 +12,9 @@ from ..api_dispatch import (
     validate_plan_for_apply,
 )
 from ..errors import SafetyError, ValidationError
-from ..http import HttpClient
-from ..http import redact_url
+from ..http import HttpClient, redact_url
 from ..json_files import read_json_file, write_json_file
-from ..oauth_tokens import token_path_for_env_file, read_token_json
+from ..oauth_tokens import read_token_json, token_path_for_env_file
 from .write_safety import ensure_blocked_apply_contract, refusal_output
 
 
@@ -190,7 +189,9 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if plan_out else None
 
-    method = str(plan.get("operation", {}).get("method") or "").upper()
+    operation_raw = plan.get("operation")
+    plan_operation: dict[str, Any] = operation_raw if isinstance(operation_raw, dict) else {}
+    method = str(plan_operation.get("method") or "").upper()
     if not method:
         raise ValidationError("Plan missing operation.method")
 
@@ -220,7 +221,7 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
                 "service": "X API",
                 "operation_id": op_id,
                 "method": method,
-                "path": str(plan.get("operation", {}).get("path_template") or ""),
+                "path": str(plan_operation.get("path_template") or ""),
             },
             requires_ack_irreversible=method == "DELETE",
         )
@@ -232,22 +233,25 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
         will_execute = True
 
     # Prepare live request from plan.
-    op_obj = plan.get("operation") if isinstance(plan.get("operation"), dict) else {}
-    url = str(op_obj.get("url") or "").strip()
+    op_obj = plan_operation
     # plan stores redacted url; rebuild the real url from cfg + filled path.
     path_filled = str(op_obj.get("path_filled") or "").strip()
     if not path_filled:
         raise ValidationError("Plan missing operation.path_filled")
     real_url = join_base_url_and_path(str(ctx["cfg"].base_url), path_filled)
 
-    inputs = plan.get("inputs") if isinstance(plan.get("inputs"), dict) else {}
-    path_inputs = inputs.get("path") if isinstance(inputs.get("path"), dict) else {}
-    query_inputs = inputs.get("query") if isinstance(inputs.get("query"), dict) else {}
-    body_inputs = inputs.get("body") if isinstance(inputs.get("body"), dict) else None
-    file_inputs = inputs.get("files") if isinstance(inputs.get("files"), dict) else {}
+    inputs_raw = plan.get("inputs")
+    inputs: dict[str, Any] = inputs_raw if isinstance(inputs_raw, dict) else {}
+    query_inputs_raw = inputs.get("query")
+    query_inputs: dict[str, Any] = query_inputs_raw if isinstance(query_inputs_raw, dict) else {}
+    body_inputs_raw = inputs.get("body")
+    body_inputs = body_inputs_raw if isinstance(body_inputs_raw, dict) else None
+    file_inputs_raw = inputs.get("files")
+    file_inputs = file_inputs_raw if isinstance(file_inputs_raw, dict) else {}
 
     # Auth selection (do not store secrets in outputs).
-    auth_obj = plan.get("auth") if isinstance(plan.get("auth"), dict) else {}
+    auth_raw = plan.get("auth")
+    auth_obj: dict[str, Any] = auth_raw if isinstance(auth_raw, dict) else {}
     auth_mode = str(auth_obj.get("mode") or "").strip()
     if auth_mode == "none":
         token = None

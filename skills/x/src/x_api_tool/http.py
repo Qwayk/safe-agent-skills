@@ -9,7 +9,6 @@ from typing import Any
 
 import requests
 
-
 _SENSITIVE_QUERY_KEYS = {
     "access_token",
     "oauth_token",

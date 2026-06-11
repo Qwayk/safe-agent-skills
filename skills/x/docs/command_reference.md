@@ -1,14 +1,11 @@
 # Command reference
 
 Use this page when you need the exact X command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+If you want the plain-English path first, start with [What you can do with X](use_cases.md), [Connect your X account](onboarding.md), and [Quickstart](quickstart.md).
 
-## Onboarding
+## Good first commands
 
 - `x-api-tool onboarding [--no-write-env]`
-
-## Auth
-
 - `x-api-tool --output json --version`
 - `x-api-tool auth check`
 - `x-api-tool --live auth check` (optional live read: validates OAuth user token by calling `GET /2/users/me`)
@@ -17,7 +14,7 @@ If you want the plain-English path first, start with [What you can do](use_cases
 - `x-api-tool auth pkce start` (plan-only by default; apply with `--apply --yes --ack-no-snapshot`)
 - `x-api-tool auth pkce finish --redirect-url '<paste redirect url here>'` (apply with `--apply --yes --ack-no-snapshot`)
 
-## OpenAPI operations (explicit)
+## Explicit OpenAPI operations
 
 - `x-api-tool api ops list [--tag <tag>] [--security-scheme <scheme>]`
 - `x-api-tool api <operationId> [--auth auto|app|user|none] [--path k=v] [--query k=v] [--body-json '{...}']`
@@ -25,12 +22,12 @@ If you want the plain-English path first, start with [What you can do](use_cases
 - `x-api-tool --apply --yes --ack-no-snapshot api <operationId> ...` (write apply when no saved snapshot is available)
 - `x-api-tool --apply --yes --ack-no-snapshot --ack-irreversible api <operationId> ...` (DELETE apply when no saved snapshot is available)
 
-## Users
+## User helpers
 
 - `x-api-tool users resolve --username <name>`
 - `x-api-tool --live users resolve --username <name> [--include-receives-your-dm]`
 
-## DMs
+## DM helpers
 
 - `x-api-tool --live dm can-send --to-username <name>`
   - Returns a simple yes/no style result for “does this user receive DMs from *your sender account* right now?”
@@ -42,12 +39,12 @@ If you want the plain-English path first, start with [What you can do](use_cases
 - `x-api-tool --apply --yes --ack-no-snapshot --plan-in plan.json dm bulk-send --csv job.csv --opt-out-line 'Reply STOP to opt out.' --min-delay-s 1.0`
   - `--min-delay-s` is used only after the required approvals and policy checks pass.
 
-## Jobs
+## Jobs and batches
 
 - `x-api-tool jobs run --file jobs.csv [--limit N] [--plan-out plan.json]`
 - `x-api-tool --apply --yes --plan-in plan.json jobs run --file jobs.csv` (`write.ping` is template-only and refuses instead of pretending to write)
 
-## Runs (history)
+## Local runs and history
 
 Write-capable commands automatically save proof artifacts under `.state/runs/` and append an index row to `.state/runs/index.jsonl`.
 
@@ -61,7 +58,7 @@ Optional flags:
 - `x-api-tool runs list [--limit 20]`
 - `x-api-tool runs show --run-id 2026-01-19T104512Z_a3f91c`
 
-## Demo (plan/refusal workflow examples)
+## Demo safety examples
 
 - `x-api-tool demo read`
 - `x-api-tool demo write --selector demo-resource [--plan-out plan.json]`

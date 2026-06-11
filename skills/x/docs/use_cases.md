@@ -1,29 +1,44 @@
-# Use cases
+# What you can do with X
 
-Use this page when you want ideas for real X jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Use this page when you want real X jobs to hand to your agent.
 
-## Why this is powerful (vs typical no‑code automation)
+This skill is strongest for work like:
 
-Most no‑code tools are great for *single events* (“when X happens, do Y”). A safe agent CLI is built for:
+- checking which X auth mode is ready and which account it reaches
+- looking up users, posts, mentions, lists, trends, or Spaces through explicit X API v2 reads
+- planning careful write actions like posts, follows, likes, bookmarks, or list changes before anything goes live
+- checking whether a DM can be sent, then planning one safe DM or a policy-checked bulk DM run
+- running repeatable CSV jobs with the same review-first safety pattern
 
-- Bulk work on existing libraries (hundreds/thousands of records)
-- Preview-first changes (dry-run -> explicit approval when needed -> receipt or honest blocker)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Audit records (plans/refusals/logs) you can keep for proof and debugging
+## Where this skill is especially useful
 
-## Common use cases (examples)
+Most no-code tools are best when you already know the exact event and just want a trigger or export.
 
-- “Pull a report of the things that match these rules, and export it to a file.”
-- “Find the right targets safely (avoid guessing), then propose changes for review.”
-- “Plan a large set of small metadata edits from a spreadsheet, then apply only after explicit no-snapshot approval when no saved snapshot is available.”
-- “Do a safe, repeatable transformation across many items, and prove it’s complete.”
+This skill is better when you need:
 
-## What you’ll see from the agent (trust + safety)
+- exact X API v2 coverage you can inspect
+- safer planning before a post, DM, or endpoint write
+- clear proof of what was planned, applied, refused, or blocked
+- one place to review auth, safety rules, docs, tests, and example outputs
 
-When you ask for a change, the agent should:
+## Real examples
 
-1) Show a dry-run preview of what would change.
-2) Try apply only after explicit confirmation.
-3) Require explicit no-snapshot approval before the write if before-state support is missing.
-4) Point to the saved plan, receipt, or refusal records.
+- “Check my account, list my recent mentions, and show the safest live reads I can run first.”
+- “Resolve these usernames, find the right accounts, and stop before any write.”
+- “Plan a DM to this user, but do not send it until I review the plan.”
+- “Prepare a bulk DM CSV run and block anything missing consent evidence or an opt-out line.”
+- “Show me the exact X API operation for this task and build the safest plan first.”
+
+## Who it helps most
+
+- growth or outreach teams using DMs carefully
+- ops teams that need repeatable X API work without hidden behavior
+- creators or brand teams that want safer post and moderation planning
+- AI-agent workflows that need explicit X API commands instead of a generic raw-request bridge
+
+## Honest limits
+
+- Most write-capable paths still do not have automatic rollback.
+- DMs still depend on recipient settings and sender-account status.
+- Some X endpoints still depend on scopes, app review, or product access outside this repo.
+- Demo writes and `jobs write.ping` are safety examples only, not real provider writes.

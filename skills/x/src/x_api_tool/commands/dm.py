@@ -10,7 +10,12 @@ from typing import Any
 
 import requests
 
-from ..api_dispatch import build_api_call_plan, join_base_url_and_path, load_operations_from_pinned_snapshot, operations_by_id
+from ..api_dispatch import (
+    build_api_call_plan,
+    join_base_url_and_path,
+    load_operations_from_pinned_snapshot,
+    operations_by_id,
+)
 from ..errors import SafetyError, ValidationError
 from ..http import HttpClient, redact_url
 from ..json_files import read_json_file, write_json_file
@@ -129,7 +134,8 @@ def _resolve_user_id_live(*, username: str, ctx: dict[str, Any]) -> str:
         query_pairs=None,
         file_pairs=None,
     )
-    auth_obj = plan.get("auth") if isinstance(plan.get("auth"), dict) else {}
+    auth_raw = plan.get("auth")
+    auth_obj: dict[str, Any] = auth_raw if isinstance(auth_raw, dict) else {}
     auth_mode = str(auth_obj.get("mode") or "").strip()
     if auth_mode == "bearer":
         token = ctx["cfg"].token
@@ -143,9 +149,13 @@ def _resolve_user_id_live(*, username: str, ctx: dict[str, Any]) -> str:
         raise SafetyError("Refused: this operation requires an unsupported auth mode (UserToken)")
 
     headers = {"Authorization": f"Bearer {token}"} if token else {}
-    filled_path = str(plan.get("operation", {}).get("path_filled") or "").strip()
+    operation_raw = plan.get("operation")
+    operation: dict[str, Any] = operation_raw if isinstance(operation_raw, dict) else {}
+    filled_path = str(operation.get("path_filled") or "").strip()
     url = join_base_url_and_path(str(ctx["cfg"].base_url), filled_path)
-    query = (plan.get("inputs") or {}).get("query") if isinstance(plan.get("inputs"), dict) else {}
+    inputs_raw = plan.get("inputs")
+    inputs: dict[str, Any] = inputs_raw if isinstance(inputs_raw, dict) else {}
+    query = inputs.get("query")
     if not isinstance(query, dict):
         query = {}
 
@@ -200,7 +210,8 @@ def cmd_dm_can_send(args: Any, ctx: dict[str, Any]) -> int:
         return 0
 
     # Live check.
-    auth_obj = plan.get("auth") if isinstance(plan.get("auth"), dict) else {}
+    auth_raw = plan.get("auth")
+    auth_obj: dict[str, Any] = auth_raw if isinstance(auth_raw, dict) else {}
     auth_mode = str(auth_obj.get("mode") or "").strip()
     if auth_mode == "bearer":
         token = ctx["cfg"].token
@@ -214,9 +225,13 @@ def cmd_dm_can_send(args: Any, ctx: dict[str, Any]) -> int:
         raise SafetyError("Refused: this operation requires an unsupported auth mode (UserToken)")
 
     headers = {"Authorization": f"Bearer {token}"} if token else {}
-    filled_path = str(plan.get("operation", {}).get("path_filled") or "").strip()
+    operation_raw = plan.get("operation")
+    operation: dict[str, Any] = operation_raw if isinstance(operation_raw, dict) else {}
+    filled_path = str(operation.get("path_filled") or "").strip()
     url = join_base_url_and_path(str(ctx["cfg"].base_url), filled_path)
-    query = (plan.get("inputs") or {}).get("query") if isinstance(plan.get("inputs"), dict) else {}
+    inputs_raw = plan.get("inputs")
+    inputs: dict[str, Any] = inputs_raw if isinstance(inputs_raw, dict) else {}
+    query = inputs.get("query")
     if not isinstance(query, dict):
         query = {}
 
@@ -483,6 +498,9 @@ def cmd_dm_bulk_send(args: Any, ctx: dict[str, Any]) -> int:
         ctx["out"].emit(out)
         return 0
 
+    plan_items_raw = plan.get("items")
+    plan_items = [item for item in plan_items_raw if isinstance(item, dict)] if isinstance(plan_items_raw, list) else []
+
     plan = ensure_blocked_apply_contract(
         plan,
         action="dm.bulk_send",
@@ -490,12 +508,12 @@ def cmd_dm_bulk_send(args: Any, ctx: dict[str, Any]) -> int:
             "service": "X API",
             "operation_id": "createDirectMessagesByParticipantId",
             "method": "POST",
-            "count": len(plan.get("items") or []),
+            "count": len(plan_items),
         },
     )
     if not bool(ctx.get("ack_no_snapshot")):
         out = refusal_output(plan=plan)
-        ctx["audit"].write("dm.bulk_send.refused", {"reasons": out["reasons"], "count": len(plan.get("items") or [])})
+        ctx["audit"].write("dm.bulk_send.refused", {"reasons": out["reasons"], "count": len(plan_items)})
         ctx["out"].emit(out)
         return 0
 
