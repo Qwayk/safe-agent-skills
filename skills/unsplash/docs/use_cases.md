@@ -1,34 +1,44 @@
-# Use cases
+# What you can do with Unsplash
 
-Use this page when you want ideas for real Unsplash jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Use this page when you want ideas for real Unsplash work to hand to your agent.
+If you need setup first, start with [Connect your Unsplash access key](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## A good first ask
 
-No‑code tools are great for “when X happens, do Y”. This tool is built for safe image research and repeatable workflows:
+"Check the Unsplash skill is configured, find 20 photos for my topic, and build a shortlist before we plan any downloads."
 
-- High-volume discovery (search, topics, collections)
-- Consistent selection (shortlists with rationale)
-- Compliance-friendly download planning (tracking requires explicit no-snapshot approval when no saved snapshot is available)
-- Refusal proof you can keep for auditing what did and did not happen
+## Common Unsplash jobs
 
-## Common use cases (examples)
+### Photo research and shortlist building
 
-### Image discovery
+- "Find 50 photos for this topic and shortlist the best 10 with links and short notes."
+- "Build one hero image plus 3 supporting images with a consistent style."
+- "Search creator portfolios, collections, and topics for a more curated set."
 
-- “Find 50 photos for ‘X’ and shortlist the best 10 with links and notes.”
-- “Find a consistent set: one hero image plus 3 supporting images (same style).”
-- “Explore a topic/collection and propose a shortlist.”
+### Selection and statistics review
 
-### Downloads (explicit approval)
+- "Compare these photo IDs and tell me which ones look strongest for a homepage hero."
+- "Pull user or photo statistics before we choose final images."
+- "Export a repeatable JSON pull so I can review the same search again later."
 
-- “Plan downloading these approved photo IDs into a local folder (no download until I approve).”
-- “Try apply only after I approve, then show the explicit no-snapshot approval.”
+### Careful download planning
 
-## What you’ll see from the agent (trust + safety)
+- "Plan downloading these approved photo IDs into a folder, but do not download anything yet."
+- "Show me whether the current apply would need no-snapshot approval before download tracking."
+- "Try the approved download only after I confirm the destination path and overwrite rules."
+
+## Why this skill is useful
+
+- It gives your agent a clean Unsplash research surface instead of making it guess from raw docs.
+- It helps you keep image research organized across search, topics, collections, and creator pages.
+- It keeps the download path explicit, so tracking and local file writes do not happen by accident.
+
+## What you should expect from the agent
+
+For normal research work, the agent should confirm access first, then gather a shortlist or export in a way that is easy to review.
 
 For downloads, the agent should:
 
-1) Show a dry-run plan (what would be downloaded and where).
-2) Try apply only after explicit confirmation.
-3) Confirm `refused=true`, `before_state.status=no_snapshot_available`, and no tracking endpoint or local file write happened.
+1. show the dry-run plan first
+2. confirm the destination path and overwrite risk
+3. attempt apply only after explicit approval and the required no-snapshot acknowledgement

@@ -42,3 +42,4 @@ def load_project_config(config_path: str | None) -> tuple[dict[str, Any], Path |
         else:
             out[k] = v
     return out, base_dir
+

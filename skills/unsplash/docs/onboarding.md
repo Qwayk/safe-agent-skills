@@ -1,33 +1,52 @@
-# Onboarding (non-technical)
+# Connect your Unsplash access key
 
-This tool runs on your computer and uses the Unsplash API with an **Access Key** (Client‑ID auth).
+Use this page when you want the shortest safe setup path for Unsplash work.
 
-You do not need to be technical. You can ask an AI agent to do the work, and the agent will run the tool for you and report back with previews, plans, and missing-approval refusals for tracked writes.
+This skill runs on your machine and uses the Unsplash API with an Access Key. You do not need to write code, but you do need a valid key before the agent can do real Unsplash reads.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
 
-## Step 1) Get an Unsplash Access Key
+## What you need
 
-In your Unsplash developer dashboard, create an application and copy the **Access Key** (the exact UI can change).
+- `UNSPLASH_ACCESS_KEY`
+- the default Unsplash API base URL unless you intentionally changed it
+- a local output path only when you want exports or downloads written to your machine
 
-## Step 2) Fill the local `.env` file (on your machine)
+## Step 1) Create the local `.env` file
 
-In the tool folder, copy `.env.example` to `.env` and fill:
+The easiest path is one of these:
+
+1. run `unsplash-api-tool --output json onboarding`
+2. or copy `.env.example` to `.env`
+
+Then fill:
 
 - `UNSPLASH_API_BASE_URL=https://api.unsplash.com`
-- `UNSPLASH_ACCESS_KEY=...`
+- `UNSPLASH_ACCESS_KEY`
 
-## Step 3) What to ask your AI agent (examples)
+## Step 2) Run the first safe checks
 
-- “Confirm the tool is connected, then find 30 photos for ‘X’ and shortlist the best 10.”
-- “Plan downloading these approved photo IDs into a folder (no download until I approve).”
-- “Try apply for the approved IDs and show the explicit no-snapshot approval.”
+These are the best first commands:
+
+```bash
+unsplash-api-tool --output json --version
+unsplash-api-tool --output json auth check
+unsplash-api-tool --output json photos search --query "minimal home office" --per-page 3
+unsplash-api-tool --output json stats total
+```
+
+## What to ask your agent next
+
+- "Can you confirm the Unsplash skill is connected and build a shortlist for my topic?"
+- "Can you show me the safest first export or research pull before we plan any downloads?"
+- "Can you plan downloading these approved photo IDs without applying yet?"
 
 ## If something fails
 
-Common causes:
-- Missing/invalid access key
-- Rate limits
+The most common causes are:
 
-See `docs/troubleshooting.md` for symptoms and fixes.
+- missing or invalid Access Key
+- rate limits
+- a search or filter that does not match real Unsplash data
+
+Use [Troubleshooting](troubleshooting.md) if the auth check or the first search fails.

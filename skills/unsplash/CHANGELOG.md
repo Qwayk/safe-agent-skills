@@ -16,6 +16,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Tracked write applies now require explicit no-snapshot approval before Unsplash download-tracking HTTP, local file writes, jobs write rows, or demo stub receipts when real before-state support is not available. Dry-run plans include `no_snapshot_available` before_state metadata.
 - Docs: clarify scope as “photos-first” (includes collections/topics/users/search read endpoints).
 - Pagination: enforce `--per-page <= 30` consistently across list/search/export commands (per Unsplash docs maximum).
+- Public-facing README, docs index, onboarding, quickstart, safety copy, use cases, and proof docs were rebuilt into the newer user-first Unsplash skill pattern, and the README contract test was added.
 
 ### Fixed
 - CLI: ensure argument/usage errors in `--output json` mode emit exactly one JSON error object (no argparse usage text).
