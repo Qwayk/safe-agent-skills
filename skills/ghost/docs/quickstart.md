@@ -1,56 +1,107 @@
 # Quickstart
 
-If you’re non-technical, start with:
-- `docs/use_cases.md`
-- `docs/onboarding.md`
+Use this page when you want the exact Ghost commands.
+If you want the simpler path first, start with [What you can do](use_cases.md) and [Connect your Ghost account](onboarding.md).
 
-This page is a technical reference (it includes CLI commands).
-
-First-time setup helper (recommended):
-
-```bash
-ghost-api-tool onboarding
-```
-
-## Install (minimal)
+## 1) Install
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 ```
 
-Optional (contributors): install dev extras:
+Optional dev extras:
 
 ```bash
 .venv/bin/python -m pip install -e '.[dev]'
 ```
 
-## Configure
+## 2) Run onboarding and fill local config
 
-Copy `.env.example` to `.env` and fill in:
+The setup helper is the easiest starting point:
+
+```bash
+ghost-api-tool onboarding
+```
+
+Then copy `.env.example` to `.env` if needed and fill:
+
 - `GHOST_ADMIN_API_URL`
 - `GHOST_ADMIN_API_KEY`
 - `GHOST_ACCEPT_VERSION`
 
+If you also want public read-only Content API commands, add:
+
+- `GHOST_CONTENT_API_URL`
+- `GHOST_CONTENT_API_KEY`
+
 Never commit `.env`.
 
-Tip (v2 tool artifacts): run from the tool folder (or pass `--env-file .env`) so the tool-managed folders `.state/` and `backup-snapshots/` land next to your env file and are gitignored.
+Admin API values are required for management work and writes.
+Content API values are optional and only needed for the read-only `ghost-api-tool content ...` commands.
 
-Important: project outputs (exported reports/CSVs, one-off patch JSON files, screenshots, etc.) should live under your project folder (example: `<PROJECT_DIR>/...`), not inside the tool folder.
+Useful path tip:
 
-Tip: if you keep project files outside the tool repo, pass `--project-dir <PROJECT_DIR>` so commands that create local outputs (or read local helper files) can resolve paths consistently.
+- Keep project outputs like reports, CSVs, and patch files under your real project folder, not inside the tool folder.
+- If those files live elsewhere, pass `--project-dir <PROJECT_DIR>` so local paths resolve cleanly.
 
-## Smoke test
+## 3) Check auth
 
 ```bash
 ghost-api-tool auth check
 ```
 
-If you need more debug info from `/site/`, run:
+If you want extra site detail:
 
 ```bash
 ghost-api-tool auth check --full-site
 ```
+
+## 4) Run safe reads first
+
+Admin API read:
+
+```bash
+ghost-api-tool post find --limit 1
+ghost-api-tool tag list --limit 10 --include-count
+```
+
+Public Content API read:
+
+```bash
+ghost-api-tool content settings get
+ghost-api-tool content posts list --limit 1 --page 1
+```
+
+## 5) Preview a careful change
+
+Preview a safe tag cleanup:
+
+```bash
+ghost-api-tool tag delete-zero
+```
+
+Or preview a post patch with a saved plan:
+
+```bash
+ghost-api-tool post patch --slug YOUR-POST-SLUG --file seo.patch.json --require-current draft --plan-out plan.json
+```
+
+## 6) Apply only after review
+
+Example destructive cleanup:
+
+```bash
+ghost-api-tool --apply --yes tag delete-zero
+```
+
+Example planned post patch:
+
+```bash
+ghost-api-tool --apply post patch --slug YOUR-POST-SLUG --file seo.patch.json --require-current draft --plan-in plan.json --receipt-out receipt.json
+```
+
+Higher-risk or irreversible Ghost actions can also need extra acknowledgements like `--ack-irreversible`, explicit no-snapshot approval, or a saved plan review before apply.
 
 ## Useful read-only audits
 

@@ -1,10 +1,10 @@
 # Proof pack
 
-Last verified (UTC): 2026-06-01
+Last verified (UTC): 2026-06-11
 
-This folder is the customer-ready “proof pack” for `ghost-api-tool`.
+Use this page when you want proof that the Ghost skill was tested, or when you want a short list of safe checks to re-run.
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run all of these commands yourself. They exist so you, your reviewer, or your agent can audit behavior and prove what happened.
 
 ## Smoke commands
 

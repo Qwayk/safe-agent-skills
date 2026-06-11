@@ -1,57 +1,54 @@
-# Use cases
+# What you can do with Ghost
 
 Use this page when you want ideas for real Ghost jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+If you need setup first, start with [Connect your Ghost account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this helps with a live Ghost site
+## Common jobs
 
-Ghost work is usually not one simple trigger. It often means reviewing a live content library, planning changes carefully, and keeping proof of what changed:
+### Audit and reporting
 
-- Bulk analysis and exports (hundreds/thousands of posts)
-- Preview-first workflows (dry-run → explicit apply → verification)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Proof artifacts (plans/receipts/logs and backups) you can keep for auditing
+- "Give me a report of my posts: status, publish dates, authors, tags, and reading time."
+- "Export email delivery stats for my posts so I can see what was sent and what performed."
+- "Find posts missing key metadata like description, featured image, alt text, or tag coverage."
+- "List my public posts, pages, and tags through the Content API so I can audit what is visible without using an Admin key."
 
-## Common use cases (examples)
+### Site cleanup and content improvement
 
-### Content discovery and reporting
+- "Audit internal links and show me broken links, orphans, and candidate hub pages."
+- "Audit tags, then preview a cleanup of duplicate or unused tags."
+- "Prepare a safe metadata or body patch for this post, but stop at the plan until I approve."
+- "Check whether this post is Lexical or Mobiledoc before suggesting the edit path."
 
-- “Give me a report of my posts: status, publish dates, authors, tags, and reading time.”
-- “Export email delivery stats for my posts so I can see what was sent and what performed.”
-- “Find posts missing key metadata (title/description/featured image) and list them.”
-- “List my public posts/pages/tags using the Content API (read-only, no Admin key) so I can build a sitemap or audit what’s visible.”
+### Membership and newsletter work
 
-### Site audits (read-only)
+- "Export member engagement so I can understand retention and activity."
+- "Preview changes to member labels or newsletter subscriptions before applying them."
+- "List my membership tiers and summarize what is public versus hidden."
+- "Create or update an offer, but keep a receipt so we can review it later."
 
-- “Audit internal links and show me broken links, orphans, and candidate hub pages.”
-- “Audit tags: find duplicates, unused tags, and suspicious tag sprawl.”
-- “Audit author attribution across posts and produce a clean report.”
+### Higher-impact operations
 
-### Membership / newsletter operations (careful)
+- "Upload a new theme zip and show me the plan before activation."
+- "Set up or update a webhook with careful proof because Ghost does not let us list webhooks later."
+- "Prepare a batch job or import plan, but do not apply it until I review the exact steps."
 
-- “Export member engagement so I can understand retention and activity.”
-- “Preview changes to member labels or newsletter subscriptions; apply only after I approve.”
+## Why this skill is useful
 
-### Membership pricing and promotions (careful)
+Ghost work is rarely one tiny API call. It usually means reading the current site carefully, previewing the change, and leaving proof behind.
 
-- “List my membership tiers and summarize what’s public vs hidden.”
-- “Create a new tier or update pricing/benefits, but only after I approve a preview.”
-- “Create or update an offer (like a seasonal discount) and keep a local receipt so we can update or delete it later.”
+This skill is strongest when you want:
 
-### Safe cleanups (explicit approval)
+- one tool that can handle both reporting and careful site changes
+- safer edits than a loose prompt-only workflow
+- proof after the work runs, not just a claim that it worked
 
-- “Preview deleting tags that have zero posts (no changes until I approve).”
+If your site has older imported posts, also expect the agent to check whether the body is `Lexical` or `Mobiledoc` before choosing the edit path.
 
-### Site operations (high-impact)
-
-- “Upload a new theme zip and show me what would change before activating it.”
-- “Set up a webhook for a specific event, but treat it as high-risk because Ghost doesn’t let us list webhooks later.”
-
-## What you’ll see from the agent (trust + safety)
+## What you should expect from the agent
 
 When you ask for changes, the agent should:
 
-1) Show a dry-run preview of what would change.
-2) Apply only after explicit confirmation (and extra confirmations for destructive actions).
-3) Verify after apply (read-back).
-4) Provide a short receipt and point to saved proof artifacts and backups.
+1. Read the current state first.
+2. Show a dry-run plan of what would change.
+3. Apply only after explicit approval and any required extra acknowledgements.
+4. Verify after apply and point you to the saved proof files.

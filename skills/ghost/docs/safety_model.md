@@ -1,24 +1,36 @@
-# Safety model
+# How this skill stays safe
 
-Rules:
+Ghost changes can affect live content, memberships, pricing, email delivery, themes, and webhooks, so this tool is built to slow down before risky actions.
+
+## Default behavior
+
 - Dry-run by default; no writes unless `--apply`.
 - Safety refusals are safe no-ops: `ok:true refused:true` with exit code `0`.
-- Verify after write: re-fetch and assert.
-- Refuse when unsure: no guessing edits.
-- Batch jobs need plan-first review. Mixed row writes require saved before-state where practical, explicit no-snapshot approval where supported, or a safe refusal for real blockers.
-- Destructive actions require `--apply` and `--yes` (example: deleting tags/pages/posts).
-- Status changes require `--apply` and `--yes` (publishing/unpublishing/scheduling).
-- Irreversible actions require `--apply --ack-irreversible` (example: actions that can trigger email delivery).
-- Theme activation requires saved before-state where practical, or explicit no-snapshot approval with a clear receipt when no useful before-state can be saved.
-- Webhook create/update/delete has no Ghost read-back endpoint. Where apply is supported, it needs explicit no-snapshot approval and local ledger proof; otherwise it should stop with a clear blocker reason.
-- Snapshot-backed write families save JSON snapshots under `backup-snapshots/` next to your `--env-file`.
-- Some write families need explicit no-snapshot approval or a real blocker reason because this CLI cannot always save the needed before-state.
+- Verify after write: re-fetch and assert where Ghost exposes a safe read-back path.
+- Refuse when unsure instead of guessing an edit.
 - Never log secrets.
-- Member emails are redacted in CLI output by default. Use `member ... --include-emails` or `member ... --raw` only when you explicitly need it.
+- Member emails are redacted in CLI output by default.
 
-## v2 plan/receipt + run artifacts
+## Extra approval for riskier actions
 
-For write-capable commands (including dry-run planning), the tool creates a `run_id` and saves proof artifacts under `.state/` next to your `--env-file`:
+- Batch jobs need plan-first review.
+- Destructive actions require `--apply` and `--yes`.
+- Status changes require `--apply` and `--yes`.
+- Irreversible actions require `--apply --ack-irreversible`.
+- Theme activation needs saved before-state where practical, or explicit no-snapshot approval with a clear receipt when no useful before-state can be saved.
+- Webhook create, update, and delete do not have a Ghost read-back endpoint, so they need clearer proof and may need explicit no-snapshot approval or a real blocker.
+
+## Recovery truth
+
+- Snapshot-backed write families save JSON snapshots under `backup-snapshots/` next to your `--env-file`.
+- Some write families need explicit no-snapshot approval or a real blocker because this CLI cannot always save the needed before-state.
+- The tool uses two recovery stories only:
+  - `snapshot_plus_restore`
+  - `irreversible_and_clearly_labeled`
+
+## Saved proof files
+
+For write-capable commands, including dry-run planning, the tool creates a `run_id` and saves proof artifacts under `.state/` next to your `--env-file`:
 
 - `.state/runs/<run_id>/plan.json` (always for write-capable commands)
 - `.state/runs/<run_id>/receipt.json` (apply only)

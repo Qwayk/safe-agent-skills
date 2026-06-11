@@ -6,7 +6,6 @@ description: Run ghost-api-tool with dry-run by default and explicit apply/verif
 This page is the agent-facing rule sheet for the public Ghost skill.
 If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
 
-
 You are a safe wrapper for the Ghost Qwayk CLI (`ghost-api-tool`).
 
 Core rules (do not break):

@@ -1,76 +1,108 @@
-# ghost-api-tool
+# Ghost
 
-## Simplicity lock
+**Capability:** Reads + careful changes
 
-Build and change this area in the simplest way possible.
+Use this skill when you want your agent to inspect a Ghost site, report what matters, and make careful changes without guessing from raw docs.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand it jobs like content audits, internal link checks, post and page fixes, member and newsletter exports, careful tag cleanup, pricing or offer updates, and high-impact theme or webhook work that needs extra review.
 
-`ghost-api-tool` is a safety-first CLI for managing content, members, and site data through the **Ghost Admin API**.
-It also supports read-only access to public content via the **Ghost Content API** (no Admin key required).
+Read work stays simple. Riskier Ghost changes slow down on purpose: the tool reads current state first, builds dry-run plans, verifies after write, and saves proof. Many update families keep local snapshot evidence, while higher-risk families need extra acknowledgements or explicit no-snapshot approval when Ghost does not expose the same safe before-state or read-back path.
 
-## For non-technical users: Start here (no coding)
+A good first ask is: "Audit my Ghost posts, tags, and broken internal links, then show me the highest-risk issues before changing anything."
 
-Start with these docs:
+## Start here first
 
-- Use cases (ideas + benefits): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model (how we prevent mistakes): `docs/safety_model.md`
+- Want ideas for real Ghost work? [What you can do with Ghost](docs/use_cases.md)
+- Need setup? [Connect your Ghost account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-What you can ask an AI agent to do (examples):
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-- “Audit my site and tell me what looks risky or inconsistent (tags, authors, broken links, missing metadata).”
-- “Export a report of posts and email delivery stats so I can see what performed.”
-- “Export member engagement (and keep emails redacted unless I explicitly approve otherwise).”
-- “Find internal linking gaps and generate a report (no changes).”
-- “Preview a safe cleanup of unused tags; apply only after I approve.”
+## What this skill helps with
 
-Core safety rules (high level):
+- Audit posts, pages, tags, authors, and broken internal links.
+- Export content, member, newsletter, and email performance reports.
+- Read public content through the Ghost Content API without an Admin key.
+- Patch posts and pages carefully, including metadata and body-edit workflows.
+- Clean up tags, update tiers or offers, and manage member or newsletter settings.
+- Plan or apply higher-impact theme and webhook changes with stricter review.
 
-- Preview-first: dry-run → explicit apply → verification
-- Refuse when unsure (no guessing)
-- Audit-friendly: plans/receipts/logs + backups for write workflows
+## What access this skill needs
 
-Supported areas (high level):
-- Posts/pages (including copy + safe patch workflows)
-- Tags (audit + cleanup + create/update)
-- Membership tiers + offers (create/update)
-- Themes (upload + high-impact activation with extra safety)
-- Webhooks (create/update/delete with local receipts; secrets redacted)
-- Public content reads (Content API): posts/pages/tags/authors/tiers/settings (read-only)
+- A Ghost Admin API URL and Admin API key for management work and writes.
+- A Ghost Content API URL and Content API key if you want lower-risk public read-only content commands.
+- A local `.env` file for those credentials.
+- Staging access is strongly recommended for risky site changes.
 
-## Scope and permissions (by design)
+## Install and first run
 
-This tool focuses on **content + membership + site reporting workflows**.
+Install slug: `ghost`
 
-Least-privilege recommendations:
+Ask your agent to install the `ghost` skill from `Qwayk/safe-agent-skills`.
 
-- Create a dedicated Ghost **Custom Integration** for this tool (instead of using personal keys).
-- Use staging first for risky workflows.
-- Don’t paste keys into chat; keep them only in your local `.env`.
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
 
-## For technical users: Start here (CLI)
-
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
-
-Minimal examples:
+If your host does not let the agent install skills directly, run:
 
 ```bash
-ghost-api-tool --version
-ghost-api-tool auth check
-ghost-api-tool post find --limit 1
-ghost-api-tool content settings get
+npx skills add Qwayk/safe-agent-skills@ghost -g -y
 ```
 
-## Proof pack (customer-ready)
+Then try a safe first ask like:
 
-- `docs/proof.md`
-- `docs/api_coverage.md`
+```text
+Connect the Ghost skill to my site, confirm auth, then audit my latest posts, tags, and broken internal links without changing anything.
+```
+
+## How this skill stays safe
+
+- Read-only audits and reports do not change your Ghost site.
+- Write workflows start with dry-run plans.
+- Many update families save local snapshot evidence before apply.
+- Higher-risk applies can require saved plan review, `--yes`, `--ack-irreversible`, or explicit no-snapshot approval depending on the action.
+- The tool verifies many edits by read-back or idempotence instead of trusting the write blindly.
+- If Ghost does not give a safe read-back path for a family, the tool should use clearer ledger proof or stop instead of pretending the action is fully reversible.
+
+## What it covers today
+
+This skill covers:
+
+- Ghost Admin API management work
+- Ghost Content API read-only public content work
+- post and page patch, status, copy, audit, and body-edit workflows
+- tags, tiers, offers, members, and newsletters
+- theme, webhook, image, and batch-job planning with stricter safety
+
+## What happens before live changes
+
+- The agent reads the current state first.
+- The tool shows a dry-run plan before the write.
+- You review the target, payload, and risk level.
+- Destructive or status-changing actions need `--yes`.
+- Email-triggering or other irreversible actions need `--ack-irreversible`.
+- Some higher-risk applies also need a saved plan review or explicit no-snapshot approval.
+
+## What proof it leaves behind
+
+- Write-capable commands save plan, receipt, audit, and summary files under `.state/runs/`.
+- Snapshot-backed families save local evidence under `backup-snapshots/`.
+- Many write families verify by read-back or idempotence after apply.
+- Ghost webhook proof stays ledger-based because Ghost does not expose a webhook get or list endpoint.
+- The docs, tests, and redacted example artifacts all live in this repo.
+
+## Limits
+
+- Ghost sites can mix Lexical and Mobiledoc content, so the correct edit family matters.
+- Not every Ghost write family has the same before-state or read-back path.
+- Some higher-impact families need extra acknowledgements or stay more limited than normal update flows.
+- You still need valid Ghost access for real site work.
+
+## Helpful docs
+
+- [Browse all Ghost docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Proof pack](docs/proof.md)
+- [API coverage](docs/api_coverage.md)
+- [Ghost content format notes](docs/content_lexical_mode.md)
+- [Jobs and batch work](docs/jobs_and_batches.md)

@@ -1,5 +1,7 @@
 # API coverage (endpoints → CLI)
 
+Use this page when you want to check whether a Ghost API area already has a CLI command in this skill, and what safety gates apply to it.
+
 ## Ghost Admin API
 
 Summary:
@@ -7,7 +9,7 @@ Summary:
 - API base URL (default): `GHOST_ADMIN_API_URL` (must include `/ghost/api/admin/`)
 - Auth method: Admin API key → JWT (`Authorization: Ghost <token>`)
 - Versioning: `Accept-Version: <version>` (from `GHOST_ACCEPT_VERSION`)
-- Last audited (UTC): 2026-06-01
+- Last audited (UTC): 2026-06-11
 
 Notes:
 - Many commands are “transforms” that ultimately update a post/page payload via `PUT /posts/{id}/` or `PUT /pages/{id}/`.
@@ -67,7 +69,7 @@ Summary:
 - API base URL (default): `GHOST_CONTENT_API_URL` (must include `/ghost/api/content/`)
 - Auth method: Content API key via query param (`?key=...`)
 - Versioning: `Accept-Version: <version>` (from `GHOST_ACCEPT_VERSION`)
-- Last audited (UTC): 2026-06-01
+- Last audited (UTC): 2026-06-11
 
 Notes:
 - This command family is read-only by design.

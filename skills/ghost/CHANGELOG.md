@@ -15,6 +15,8 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ### Changed
 - Docs: `docs/quickstart.md` now shows the minimal customer install first, with dev extras optional.
+- Public-facing README, onboarding, quickstart, use cases, and safety copy were rebuilt into the newer user-first Ghost skill pattern, and README contract tests were added.
+- The public Ghost docs now call out Admin API versus Content API more clearly and surface the Ghost content-format notes earlier so users do not miss the Lexical versus Mobiledoc split.
 
 ## [0.1.0] - 2025-12-22
 
