@@ -1,10 +1,8 @@
 # Quickstart
 
-If you’re non-technical, start with:
-- `use_cases.md`
-- `onboarding.md`
+Want the short non-technical path first? Start with [What you can do](use_cases.md) and [Connect your Shopify Admin account](onboarding.md).
 
-This page is a technical reference (it includes CLI commands).
+This page is the CLI path when you already want exact commands.
 
 1) Install (dev)
 
