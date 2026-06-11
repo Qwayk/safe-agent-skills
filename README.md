@@ -1,4 +1,4 @@
-# Qwayk skills
+# Qwayk Safe Agent Skills
 
 Give your AI agent real product work, with more review before risky changes.
 
