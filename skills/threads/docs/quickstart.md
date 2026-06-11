@@ -1,6 +1,6 @@
 # Quickstart
 
-If you want the simplest setup steps, read `docs/onboarding.md`.
+If you want the human path first, start with [What you can do with Threads](use_cases.md), [Connect your Threads account](onboarding.md), and [How this skill stays safe](safety_model.md).
 
 This page is the short technical path.
 
@@ -21,7 +21,7 @@ threads-api-tool --output json auth authorize-url --scope threads_basic
 threads-api-tool --output json --plan-out /tmp/threads-auth.plan.json auth code exchange --code <authorization_code>
 ```
 
-The current apply attempt requires explicit no-snapshot approval before token exchange or local token-file writes. Use a manually configured `THREADS_API_TOKEN` for reads when no saved snapshot is available for auth writes.
+Token exchange and local token-file writes need explicit no-snapshot approval when no saved snapshot exists. If you only need reads first, you can use a manually configured `THREADS_API_TOKEN`.
 
 4. Confirm the CLI works.
 
@@ -37,3 +37,5 @@ threads-api-tool --output json profiles me
 ```bash
 threads-api-tool --output json --plan-out /tmp/threads.plan.json posts create-text --threads-user-id <id> --text "Draft"
 ```
+
+If you later choose to apply a write, review the plan first and expect extra approval for no-snapshot actions. Delete actions also need `--yes --ack-irreversible`.

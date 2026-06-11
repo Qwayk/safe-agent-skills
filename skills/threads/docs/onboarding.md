@@ -1,4 +1,4 @@
-# Onboarding
+# Onboarding (non-technical)
 
 This tool uses local `.env` settings and the official Threads OAuth + Graph APIs.
 
@@ -47,7 +47,9 @@ Add extra Threads permissions only when you need them:
 threads-api-tool --output json --plan-out /tmp/threads-auth.plan.json auth code exchange --code <authorization_code>
 ```
 
-The current apply command requires explicit no-snapshot approval before token exchange or `.state/token.json` writes. Use a manually configured `THREADS_API_TOKEN` for reads when no saved snapshot is available for auth writes.
+If you want the tool to exchange and save the token for you, review the plan first. Token exchange and `.state/token.json` writes need explicit no-snapshot approval when no saved snapshot exists.
+
+If you only want read access first, you can also place a valid `THREADS_API_TOKEN` in your local config and skip token-writing flows for now.
 
 ## Step 4: Confirm setup
 
@@ -55,6 +57,13 @@ The current apply command requires explicit no-snapshot approval before token ex
 threads-api-tool --output json auth check
 threads-api-tool --output json auth token status
 ```
+
+## Step 5: What to ask your AI agent first
+
+- “Check the Threads skill is connected and show my profile.”
+- “List my recent owned posts and tell me how much posting room is left.”
+- “Look up this public Threads account and list recent posts.”
+- “Prepare a post or reply action, but stop before any live write.”
 
 ## What this CLI does not do
 
