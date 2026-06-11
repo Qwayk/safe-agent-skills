@@ -2,7 +2,7 @@
 
 Purpose:
 - Make “all capabilities” measurable (no guessing about what’s implemented).
-- Give the Manager a single main reference for review/approval.
+- Give the Manager a single source of truth for review/approval.
 - Help customers quickly see what the tool can and cannot do.
 
 Rules:

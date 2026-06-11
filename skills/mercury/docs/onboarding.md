@@ -1,52 +1,60 @@
-# Onboarding (non-technical)
+# Connect your Mercury API token
 
-This tool runs on your computer and connects to the Mercury API using an API token that you store locally.
+Use this page when you want the shortest safe setup path for Mercury work.
 
-You do not need to be technical. You can simply ask an AI agent to do work, and the agent will run the tool for you and report back with a preview + receipt.
+This skill runs on your machine and uses an API token that you store locally. You do not need to write code, but you do need real Mercury API access.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
 
-## Step 1: Create the local `.env` file (on your machine)
+## What you need
+
+- A Mercury API token.
+- The right Mercury base URL for production or sandbox.
+- A local place to save files if you plan to export or download anything.
+
+## Step 1) Get the Mercury API token
+
+In Mercury, create or copy the API token you want this skill to use.
+
+If Mercury lets you choose scopes or permissions, choose the most limited option that still supports the reads you need.
+
+Even if Mercury does not offer a read-only token, this skill still refuses non-GET remote requests.
+
+## Step 2) Fill the local `.env` file
 
 In the tool folder:
 
-1) Run `mercury-api-tool onboarding` (recommended), or copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
-3) Fill the required fields:
-   - `MERCURY_API_BASE_URL=https://api.mercury.com/api/v1` (prod) or `https://api-sandbox.mercury.com/api/v1` (sandbox)
-   - `MERCURY_API_TOKEN=secret-token:...` (keep private)
-   - `MERCURY_AUTH_SCHEME=bearer` (default; or `basic`)
+1. Run `mercury-api-tool onboarding`, or copy `.env.example` to `.env`.
+2. Fill in your token.
+3. Confirm the base URL is correct:
+   - production: `https://api.mercury.com/api/v1`
+   - sandbox: `https://api-sandbox.mercury.com/api/v1`
+4. Leave `MERCURY_AUTH_SCHEME=bearer` unless your setup really needs `basic`.
 
-## Step 2: Get the API key/token (tool-specific)
+## Step 3) Run the first safe checks
 
-In your Mercury dashboard, create an API token.
+These are the best first commands:
 
-Steps (keep it simple):
-1) Open Mercury → Settings.
-2) Find the API / Developer section (API tokens).
-3) Create a new API token and copy it.
-4) Paste it into your local `.env` file as `MERCURY_API_TOKEN=...` (never share it).
+```bash
+mercury-api-tool --output json --version
+mercury-api-tool --output json auth check
+mercury-api-tool --output json accounts list
+```
 
-If Mercury offers token permissions/scopes:
-- Choose **read-only** or the **least privileged** option.
+If the auth check passes and the account list looks right, the setup is good enough to start real work.
 
-Even if Mercury does not offer read-only tokens:
-- This tool still refuses non-GET requests, but the token is still sensitive and must be protected.
+## What to ask your agent next
 
-## Step 3: What to ask your AI agent (examples)
+- "Check the Mercury skill is connected, then list my accounts and balances."
+- "Preview a CSV export of this month's transactions for bookkeeping."
+- "Find the invoice I need and prepare a PDF download plan."
 
-These are plain-English requests. The agent should start with a read-only check, then show a preview before writing any local files.
+## If something fails
 
-- “Confirm the tool is connected, then show me what it can do on my account.”
-- “Export my transactions to a local CSV for bookkeeping, but do a dry-run plan first.”
-- “Download invoice PDFs locally (dry-run first, then apply).”
+The most common causes are:
 
-## Step 4: If something fails
+- a missing or invalid token
+- the wrong base URL
+- Mercury-side network or account restrictions
 
-The most common issues are:
-- Missing/incorrect values in `.env`
-- Network/auth restrictions in the Mercury account
-- Using the wrong environment base URL (prod vs sandbox)
-
-The real tool should explain common errors in `docs/troubleshooting.md`.
+Use [Troubleshooting](troubleshooting.md) if the auth check or first account read fails.

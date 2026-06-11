@@ -1,44 +1,43 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+Use this page when you want the clearest proof story for Mercury.
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run these commands yourself, but they are here so you or your agent can audit what was checked and what the committed examples mean.
 
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions/placeholder values in examples.
-- Keep this file short and factual.
+## What is already proved
 
-## Last verified
+- Mercury is read-only in this skill by design. Non-GET Mercury requests are refused.
+- Local exports and downloads stay dry-run first and need `--apply` before any file write.
+- Overwrites need `--yes`.
+- Signed attachment URLs are redacted from JSON output and run artifacts.
 
-- Date (UTC): 2026-01-29
-- Verified by: agent-orchestrator Worker
-- Tool version: 0.1.0
-- Provider API version (if applicable): Mercury API v1
-- Environment: prod or sandbox (set via `MERCURY_API_BASE_URL`)
+## Last checked
 
-## Smoke checks (copy/paste)
+- Local docs and contract alignment rechecked: **2026-06-11 UTC**
+- Provider smoke evidence in committed examples: **2026-01-29 UTC**
+- Tool version: `0.1.0`
+- Provider API version: Mercury API v1
+
+The provider smoke date is older because no live Mercury credentials are stored in this repo. The local suite and committed examples are the proof we can recheck safely here.
+
+## Core smoke checks
 
 Run inside the tool folder:
 
-1) Create venv + install:
-- `python3 -m venv .venv`
-- `.venv/bin/python -m pip install -e .`
+1. Create a venv and install:
+   - `python3 -m venv .venv`
+   - `.venv/bin/python -m pip install -e .`
+2. Version check:
+   - `mercury-api-tool --output json --version`
+3. Auth and config check:
+   - `mercury-api-tool --output json auth check`
+4. One representative read:
+   - `mercury-api-tool --output json accounts list`
 
-2) Version (no `.env` required):
-- `mercury-api-tool --output json --version`
+## Committed example outputs
 
-3) Auth/config check (read-only):
-- `mercury-api-tool --output json auth check`
+These redacted example files are committed and safe to inspect:
 
-4) One representative read query:
-- `mercury-api-tool --output json accounts list`
-
-## Example outputs (redacted)
-
-These files are committed (unlike `.state/`):
 - `docs/examples/outputs/version.json`
 - `docs/examples/outputs/auth_check.json`
 - `docs/examples/outputs/accounts_list.json`
@@ -47,16 +46,22 @@ These files are committed (unlike `.state/`):
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json`
 
-## What can go wrong (and how we verify)
+## What can still go wrong
 
-- **Invalid API token / wrong environment (prod vs sandbox)** → verify with `auth check` returning `ok=false` and a clear error type; confirm nothing changed in Mercury (GET-only tool).
-- **Rate limiting** → verify the CLI surfaces a clear, non-secret error; confirm it does not retry-storm.
-- **Pagination surprises** → verify exports/reports cap paging with `--max-pages` and that outputs clearly indicate what was fetched.
-- **Local file safety drift** (exports/downloads) → verify local writes require `--apply` (and `--yes` for overwrite), and `--plan-in` refuses if arguments/output path don’t match the reviewed plan.
-- **Signed URL leakage (attachments)** → verify signed URLs are redacted from JSON outputs/plans/receipts and from verbose HTTP logs (query strings stripped).
+- invalid token or wrong base URL
+- Mercury-side permission limits
+- large exports with the wrong filters or too many pages
+- wrong output path for a local export or download
+- accidental overwrite of an existing local file
 
-## Links
+## How to verify the risky parts
 
-- Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
-- Debug history: `docs/engineering_notes.md`
+- Invalid token or wrong environment: `auth check` should fail clearly, and nothing changes in Mercury.
+- Export or download safety: local file writes must still require `--apply`, and overwrites must still require `--yes`.
+- Signed URL secrecy: attachment URLs should stay redacted in outputs, plans, receipts, and logs.
+- Pagination restraint: exports and reports should still respect their page or limit controls.
+
+## Related docs
+
+- [API coverage](api_coverage.md)
+- [Source references](references.md)

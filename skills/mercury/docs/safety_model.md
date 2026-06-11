@@ -1,92 +1,72 @@
-# Safety model
+# How this skill stays safe
 
-Rules:
-- Mercury API requests are **GET-only** (any non-GET is refused by design).
-- The tool **never changes anything inside Mercury**.
-- Local file writes (exports/downloads) are **dry-run by default** and require `--apply`.
-- Overwriting an existing output file requires `--yes`.
-- Verify local outputs after apply (file exists and is non-empty).
-- Never log secrets (tokens/Authorization headers).
-- Signed download URLs (for attachments) are treated as sensitive:
-  - They are redacted from JSON outputs, plans, receipts, and verbose logs.
+Mercury access is intentionally read-only here.
 
-## Two-layer safety (recommended)
+## What this skill will never do
 
-There are two kinds of safety:
+- create, edit, delete, approve, or send anything in Mercury
+- turn `--apply` into a Mercury write
+- print secrets into stdout, stderr, plans, receipts, or logs
 
-1) Mechanical correctness (the tool)
-- For read-only API calls: the tool refuses to guess (it surfaces errors clearly).
-- For local exports/downloads: the tool verifies the file(s) were written successfully.
+## What this skill does safely
 
-2) Intent alignment (a reviewer)
-- A reviewer checks that the planned change matches the goal and context.
-- This is best done by a human or a smart agent (we recommend Codex).
+- read Mercury API v1 data through GET requests only
+- refuse any non-GET Mercury request by design
+- preview local exports and downloads before any file is written
+- require `--apply` for local file writes
+- require `--yes` before overwriting an existing file
+- verify that a written file exists and is non-empty after apply
+- redact signed download URLs from outputs, plans, receipts, and verbose logs
 
-The tool should stay deterministic; the review is outside the tool.
+## The real risk to watch
 
-## Plan → Review → Apply → Verify
+The main risk is not a bad Mercury write, because this skill does not write to Mercury.
 
-Recommended workflow for exports/downloads (local file writes):
+The real risks are:
 
-1) Generate a plan (dry-run).
-2) Review the plan (human/Codex).
-3) Apply with `--apply` (and `--yes` for risky actions).
-4) Verify the local file(s) were written and produce a receipt for review.
+- exporting the wrong date range or account
+- downloading to the wrong path
+- overwriting a file you wanted to keep
+- exposing a sensitive attachment URL
 
-## Plans and receipts (recommended)
+## Recommended workflow with an AI agent
 
-For exports/downloads, treat the dry-run output as a **plan**:
-- what will change
-- what must be true to apply safely (preconditions)
-- how verification will happen
+1. Run `auth check`.
+2. Do one small read first so you know the account and scope look right.
+3. If you need a local export or download, review the dry-run plan first.
+4. Apply only after the path, filters, and file type look right.
+5. Check the receipt or run history if you want an audit trail.
 
-After apply, output a **receipt**:
-- what actually changed
-- what verification ran (local file checks) and whether it passed
-- pointers to backups/snapshots when available
+## Plans, receipts, and run history
 
-Plans/receipts must never include secrets.
+For local exports and downloads, the dry-run output is the plan.
 
-### Plan/receipt files (recommended v2 flags)
+You can also save it explicitly with:
 
-Exports/downloads support file outputs:
-- `--plan-out <path>`: write the dry-run plan JSON to a file (for review)
-- `--plan-in <path>`: apply from a saved plan file (for high-risk/batch)
-- `--receipt-out <path>`: write the post-apply receipt JSON to a file (for audit)
+- `--plan-out <path>`
 
-This makes the workflow repeatable in CI and easier to review.
+After apply, you can save the receipt with:
 
-## Run history (recommended for customer-ready tools)
+- `--receipt-out <path>`
 
-For exports/downloads (local file writes), this tool automatically writes a local run folder (gitignored):
+Exports and downloads also create local run history under:
+
 - `.state/runs/<run_id>/`
-
-It also appends a simple history row to:
 - `.state/runs/index.jsonl`
 
-These live next to your `--env-file` (usually next to your `.env` file), so you can always find them.
+These files are local proof of what was reviewed, what was written, and how it was verified.
 
-This is designed for vibe coders:
-- You can ask your agent “what happened last time?” and it can use `runs list/show`.
-- You don’t need to manually browse folders.
+## Risk levels
 
-Rules:
-- These artifacts must never include secrets.
-- Plans/receipts/audit logs are proof of what happened and how it was verified.
+- Low: normal Mercury reads
+- Medium: writing a new local export or download file
+- High: overwriting an existing local file
 
-## Risk levels (guideline)
+## Recovery story
 
-- Low: read-only API queries (no side effects).
-- Medium: write a new local export/download file.
-- High: overwrite existing local files (requires `--yes`).
+There is no Mercury rollback story here because this skill does not change Mercury.
 
-## Drift detection (recommended for plan apply)
+For local file writes, recovery is usually simple:
 
-If you support applying from a saved plan file, refuse if the current arguments/output path differ from the reviewed plan.
-Examples:
-- output path differs
-- filters differ (date range, accountId, etc.)
-
-## Rollback (recommended default)
-
-- For local file writes: rollback is typically “delete the file(s)” (manual).
+- keep the file if it is the result you wanted
+- delete the file manually if it is not

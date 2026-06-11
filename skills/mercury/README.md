@@ -1,51 +1,110 @@
-# mercury-api-tool
+# Mercury
 
-## Simplicity lock
+**Capability:** Read-only
 
-Build and change this area in the simplest way possible.
+Use this skill when you want your agent to review Mercury accounts, transactions, statements, invoices, and other finance records without guessing from raw docs.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand your agent jobs like account reviews, transaction exports for bookkeeping, statement and invoice downloads, customer and recipient lookups, event checks, and treasury or journal-entry review.
 
-Safety-first, read-only Mercury API v1 CLI designed for AI agents and non-technical users.
+This skill stays read-only against Mercury on purpose. It does not change Mercury data. The only writes it can do are local file exports or downloads on your own machine, and those start as dry-run plans before any file is written.
 
-Scope:
-- Mercury API v1 GET endpoints (refuses non-GET by design).
-- Safe local exports (JSON/CSV) and downloads (PDFs) gated behind `--apply` (and `--yes` for overwrite).
+A good first ask is: "Check the Mercury skill is configured, list my accounts, and preview a transaction export for bookkeeping without writing any files yet."
 
-## For non-technical users: Start here (no coding)
+## Start here first
 
-Start with:
+- Want ideas for real Mercury work? [What you can do with Mercury](docs/use_cases.md)
+- Need setup? [Connect your Mercury API token](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-- Use cases (ideas + benefits): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model (how we prevent mistakes): `docs/safety_model.md`
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-## For technical users: Start here (CLI)
+## What this skill helps with
 
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
+- Review Mercury accounts, balances, cards, transactions, users, and recipients.
+- Export transaction history to JSON or CSV for bookkeeping or audits.
+- Download statement PDFs, invoice PDFs, and invoice attachments to your machine.
+- Check customers, invoices, webhooks, events, treasury activity, and journal entries.
+- Run a transactions summary report without changing anything in Mercury.
 
-Minimal examples:
+## What access this skill needs
+
+- A Mercury API token stored locally in your `.env` file.
+- The right Mercury base URL for production or sandbox.
+- A local output path when you want exports or downloads saved to your machine.
+
+## Install and first run
+
+Install slug: `mercury`
+
+Ask your agent to install the `mercury` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
 
 ```bash
-mercury-api-tool --version
-mercury-api-tool auth check
-mercury-api-tool accounts list
+npx skills add Qwayk/safe-agent-skills@mercury -g -y
 ```
 
-## Proof pack (customer-ready)
+Then try a safe first ask like:
 
-- `docs/proof.md`
-- `docs/api_coverage.md`
-- `docs/examples/`
+```text
+Check the Mercury skill is configured, list my accounts, and preview a CSV export of this month's transactions without writing any files yet.
+```
 
-## Agent skill prompt
+## How this skill stays safe
 
-- Agent skill prompt and install notes are included with this package.
+- It refuses all non-GET Mercury API requests.
+- It never changes anything inside Mercury.
+- Local exports and downloads start as dry-run plans first.
+- Local file writes need `--apply`, and overwriting an existing file also needs `--yes`.
+- Signed attachment URLs are treated as sensitive and redacted from outputs, plans, receipts, and logs.
+- The docs, tests, examples, and API coverage ledger all live in this repo so you can inspect what the agent is using.
+
+## What it covers today
+
+This skill covers:
+
+- organization, account, card, transaction, user, recipient, category, credit, and event reads
+- customer, invoice, invoice-attachment, and statement reads
+- treasury, webhook, and books journal-entry reads
+- local transaction exports to JSON or CSV
+- local downloads for invoices, statements, and invoice attachments
+- a local transactions summary report
+
+## What happens before a real change
+
+This skill does not change Mercury itself.
+
+When a task needs a local export or download:
+
+- the agent should show the dry-run plan first
+- you review the output path, filters, and file type
+- the local write only happens after `--apply`
+- overwriting an existing file also needs `--yes`
+- after apply, the tool verifies the file exists and returns a receipt
+
+## What proof it leaves behind
+
+- Normal reads return machine-readable JSON you can save or review.
+- Export and download plans can be saved with `--plan-out`.
+- Apply receipts can be saved with `--receipt-out`.
+- Exports and downloads also write local run history under `.state/runs/`.
+- The proof pack includes committed redacted examples, tests, and the API coverage ledger.
+
+## Limits
+
+- No Mercury creates, edits, deletes, approvals, or other non-GET remote actions.
+- Real Mercury account work still needs a valid API token and the correct base URL.
+- Exports and downloads write only to your local machine, not back into Mercury.
+- Large exports can still pull more data than you meant to if you skip careful filters or page limits.
+
+## Helpful docs
+
+- [Browse all Mercury docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Jobs and batch guide](docs/jobs_and_batches.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)

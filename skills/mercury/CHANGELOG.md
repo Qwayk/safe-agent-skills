@@ -16,6 +16,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 ### Changed
 - Read-only commands now emit minimal JSON by default (no run/artifact path provenance); exports/downloads still include run history + proof paths.
 - Docs and committed examples updated to be Mercury-specific and consistent with “no Mercury writes”.
+- Public-facing README, docs index, onboarding, quickstart, safety copy, use cases, and proof docs were rebuilt into the newer user-first Mercury skill pattern, and the README contract test was added.
 
 ### Fixed
 - JSON output contract for argparse errors (exactly one JSON object; no argparse usage text).
