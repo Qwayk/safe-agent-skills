@@ -1,55 +1,93 @@
-# Onboarding (non-technical)
+# Onboarding
 
-Use this flow first to start using the tool safely.
+Use this page when you want the shortest safe setup path for Google Merchant Center.
 
-## Step 1: Copy the local config file
+This tool runs locally and needs one Merchant auth mode in `.env`.
+Keep your `.env` file, service-account file, and OAuth token files private, and never paste them into chat.
 
-1. In this folder, run:
-   - `cp .env.example .env`
-2. Open `.env` and set one auth mode:
-   - `GOOGLE_MERCHANT_API_AUTH_MODE=service_account_json` for service-account access (simplest own-account path)
-   - `GOOGLE_MERCHANT_API_AUTH_MODE=oauth_refresh_token` for client-account access
-   - `GOOGLE_MERCHANT_API_AUTH_MODE=adc` if running on Google-hosted systems only (optional helper)
-3. Set `GOOGLE_MERCHANT_API_BASE_URL`.
-4. Keep `.env` private and never paste it in chat.
+## Step 1: Create the local `.env` file
 
-## Step 2: First safe auth check
+In the tool folder:
 
-Use this first before API calls:
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
+3. Pick one auth mode:
 
-- `google-merchant-api-tool --output json auth check`
+```text
+GOOGLE_MERCHANT_API_AUTH_MODE=service_account_json
+```
 
-This command only validates credentials and prints a redacted status.
+Use:
 
-## Step 3: Start with reads and write previews
+- `service_account_json` for own-account access
+- `oauth_refresh_token` for client-account access
+- `adc` only when you intentionally want Google Application Default Credentials
 
-The tool starts in dry-run mode for writes. Current `--apply` write attempts require explicit no-snapshot approval when no useful before-state can be captured; approved supported writes can proceed and produce receipts with recovery limits.
+## Step 2: Fill the fields for your auth mode
 
-Examples:
-- `google-merchant-api-tool accounts list`
-- `google-merchant-api-tool accounts products list --parent accounts/123456`
-- `google-merchant-api-tool accounts product-inputs insert --parent accounts/123456 --body-file product.json` (preview-first)
+Common fields:
 
-## What to ask your AI agent (examples)
+```text
+GOOGLE_MERCHANT_API_BASE_URL=https://merchantapi.googleapis.com
+GOOGLE_MERCHANT_API_GCP_PROJECT_ID=
+GOOGLE_MERCHANT_API_MERCHANT_CENTER_ACCOUNT_ID=
+```
 
-- Ask for a safe first check and a short action plan:
-  "Can you check if the tool is connected and then map my Merchant structure before I ask for changes?"
-- Ask for a catalog discovery summary:
-  "Can you list the top 5 account-level checks I should run before editing products?"
-- Ask for a low-risk improvement set:
-  "Find policy or feed issues in my account and group them by fix type."
-- Ask for a staging workflow:
-  "Run a full dry-run for a title/price update and show me the plan, needed approval, and receipt path."
+If you use service-account access, fill:
 
-## Step 4: Auth field map
+```text
+GOOGLE_MERCHANT_API_SERVICE_ACCOUNT_JSON=
+```
 
-- `GOOGLE_MERCHANT_API_SERVICE_ACCOUNT_JSON` for service account mode
-- `GOOGLE_MERCHANT_API_OAUTH_REFRESH_TOKEN` for OAuth refresh-token mode
-- `GOOGLE_MERCHANT_API_OAUTH_CLIENT_ID` and `GOOGLE_MERCHANT_API_OAUTH_CLIENT_SECRET` for OAuth mode
+If you use OAuth refresh-token access, fill:
 
-## Common setup errors
+```text
+GOOGLE_MERCHANT_API_OAUTH_REFRESH_TOKEN=
+GOOGLE_MERCHANT_API_OAUTH_CLIENT_ID=
+GOOGLE_MERCHANT_API_OAUTH_CLIENT_SECRET=
+GOOGLE_MERCHANT_API_OAUTH_TOKEN_URI=
+```
 
-- Missing `.env` values (for example `GOOGLE_MERCHANT_API_BASE_URL` or auth fields).
-- Wrong auth mode for the account setup.
-- OAuth token file has placeholder values.
-- Token mode missing client credentials.
+If you want the tool to create the starter file for you, run:
+
+```bash
+google-merchant-api-tool onboarding
+```
+
+## Step 3: Check setup before real work
+
+Ask your agent to start with safe checks like:
+
+- "Check the Google Merchant Center skill is configured."
+- "List the Merchant account paths that are safe to review first."
+- "Show me the safest product, issue, or report reads before we plan changes."
+
+If you want to run the first checks yourself:
+
+```bash
+google-merchant-api-tool --output json --version
+google-merchant-api-tool --output json auth check
+google-merchant-api-tool --output json accounts list
+```
+
+The first two checks stay local or configuration-only. The third command is a real Merchant read.
+
+## Step 4: First requests to give your agent
+
+These are good first requests in plain English:
+
+- "Review my Merchant accounts or products safely first."
+- "Find issue clusters or disapproved products before we edit anything."
+- "Prepare the write plan first and show me the approval steps."
+- "For any higher-risk or irreversible change, save the plan and make me review it before apply."
+
+## Step 5: If something fails
+
+The most common setup problems are:
+
+- the wrong auth mode is selected
+- a service-account or OAuth file path is missing or wrong
+- OAuth mode is missing client credentials
+- the Merchant account ID or GCP project ID is wrong for this job
+
+Use [Troubleshooting](troubleshooting.md) if the first checks fail.

@@ -1,59 +1,105 @@
-# Google Merchant API Safe Agent CLI
+# Google Merchant Center
 
-This tool gives AI agents a safe, explicit, customer-ready way to work with the official Google Merchant API from a local machine.
+**Capability:** Reads + careful changes
 
-## For non-technical users: start here (no coding)
+Use this skill when you want your agent to review Google Merchant Center data, check catalog health, and plan Merchant API changes without guessing from raw docs.
 
-- [Use cases](docs/use_cases.md)
-- [Onboarding setup](docs/onboarding.md)
-- [Safety model](docs/safety_model.md)
+You can hand your agent jobs like account review, product and promotion checks, issue discovery, report searches, feed or data-source review, and careful Merchant write plans for product inputs, conversion sources, regions, services, and other documented surfaces.
 
-Plain-English requests you can give your agent:
+Read work stays simple. Riskier work slows down on purpose: reads and local auth checks can run directly, writes start as dry-run plans, higher-risk or irreversible changes can require a reviewed `--plan-in` plus `--yes`, and live writes still need explicit no-snapshot approval when useful before-state cannot be saved first.
 
-- "Check whether my Merchant API access is ready."
-- "Show me what Merchant actions this tool can do today."
-- "Draft a safe preview to add one product input for account 123456."
-- "Show me the proof from my last Merchant write."
+A good first ask is: "Check the Google Merchant Center skill is configured, list my accounts or products safely, and show me the safest review steps before we plan any changes."
 
-## What ships in this release
+## Start here first
 
-- local helper commands: `onboarding`, `auth`, and `runs`
-- `224` explicit Merchant commands across `19` official families
-- stable `v1` families first (`12` families, `124` commands)
-- official active `v1alpha` families that are still documented today (`98` discovery-backed alpha commands plus `2` reference-only alpha commands)
-- `docs/api_coverage.md` lists every official documented Merchant operation, including what ships and what is only accounted for
+- Want ideas for real Merchant work? [What you can do with Google Merchant Center](docs/use_cases.md)
+- Need setup? [Connect your Google Merchant Center account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-This tool does not ship API-key auth. Own-account access uses service accounts. Client-account access uses OAuth 2.0.
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-Current write behavior: write commands still generate dry-run plans, and live Merchant writes require explicit no-snapshot approval before credentials or provider HTTP when no saved snapshot is available.
+## What this skill helps with
 
-The committed proof in this repo is honest but not fully live-proved yet in this exact workspace. See `docs/proof.md` for the current live vs local boundary.
+- Check local Merchant auth setup and confirm which account path you are using.
+- Review accounts, products, product inputs, promotions, issues, quotas, and reports.
+- Find disapproved products, feed problems, missing fields, or risky catalog changes before you edit anything.
+- Prepare careful write plans for product inputs, conversion sources, regions, services, data sources, and other Merchant surfaces.
+- Review higher-risk, irreversible, or batch-style Merchant changes before anything goes live.
 
-## For technical users: start here (CLI)
+## What access this skill needs
 
+- One Merchant auth mode in `.env`: service account, OAuth refresh token, or ADC.
+- Service-account JSON for own-account access, or OAuth refresh-token credentials for client-account access.
+- Optional Merchant Center account ID or GCP project ID defaults in `.env`.
+- Extra approval for higher-risk, irreversible, or no-snapshot write actions.
+
+## Install and first run
+
+Install slug: `google-merchant-api`
+
+Ask your agent to install the `google-merchant-api` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
+
+```bash
+npx skills add Qwayk/safe-agent-skills@google-merchant-api -g -y
+```
+
+Then try a safe first ask like:
+
+```text
+Connect the Google Merchant Center skill, check my auth setup, and show me the safest account, catalog, or issue-review reads to start with.
+```
+
+## How this skill stays safe
+
+- Reads and local auth checks can run directly.
+- Write-capable operations start as dry-run plans first.
+- Higher-risk writes can require `--yes` and a reviewed `--plan-in`.
+- Irreversible actions can also require `--ack-irreversible`.
+- When no saved before-state exists, live writes also need `--ack-no-snapshot` before credentials or Google HTTP.
+- Plans, refusals, receipts, and logs stay secret-safe.
+- Plans, run history, docs, tests, and coverage notes stay together so you can inspect what the agent used and what happened.
+
+## What it covers today
+
+This skill covers:
+
+- Merchant account, product, promotion, report, quota, issue-resolution, inventory, conversion, data-source, and notification surfaces
+- local onboarding, auth checks, token helpers, jobs, and run history
+- explicit Merchant commands instead of a generic raw-request bridge
+- local proof files for plans, refusals, receipts, and run summaries
+
+## What happens before live changes
+
+- The agent should show the dry-run plan first.
+- You review the target account, request body, risk level, and recovery limits.
+- Medium writes need `--apply`.
+- Higher-risk writes can also require `--yes --plan-in`.
+- Irreversible writes can also require `--ack-irreversible`.
+- Writes without saved before-state also need `--ack-no-snapshot`.
+
+## What proof it leaves behind
+
+- Dry-run plans can be saved with `--plan-out`.
+- Approved applies can save receipts with `--receipt-out`.
+- Local run history can be reviewed with `runs list` and `runs show`.
+- Refusals and audit logs show when a provider write did not happen because approval or another safety check was missing.
+- The docs, tests, examples, and API coverage ledger are all in this repo.
+
+## Limits
+
+- Many live writes still do not have saved before-state or a built-in undo path.
+- This tool does not support API-key auth. It supports service-account, OAuth refresh-token, or ADC paths only.
+- Some Merchant workflows still need an exact account ID, product name, or request JSON prepared first.
+- You still need the right Merchant Center access and Google permissions for real account work.
+
+## Helpful docs
+
+- [Browse all Google Merchant docs](docs/README.md)
 - [Quickstart](docs/quickstart.md)
-- [Command reference](docs/command_reference.md)
-- [Proof pack](docs/proof.md)
-
-Example commands:
-
-- `google-merchant-api-tool --output json auth check`
-- `google-merchant-api-tool --output json accounts list`
-- `google-merchant-api-tool --output json accounts product-inputs insert --parent accounts/123456 --body-json '{"channel":"ONLINE","contentLanguage":"en","offerId":"SKU-RED-123","feedLabel":"US"}'`
-- `google-merchant-api-tool --output json --apply accounts product-inputs insert --parent accounts/123456 --body-json '{"channel":"ONLINE","contentLanguage":"en","offerId":"SKU-RED-123","feedLabel":"US"}'` stops safely when required approval is missing; with the required no-snapshot approval, supported writes can proceed and produce a receipt.
-- `google-merchant-api-tool --output json --apply --yes --plan-in reviewed-plan.json --ack-irreversible accounts conversion-sources delete --name accounts/123456/conversionSources/abc`
-
-## Safety at a glance
-
-- writes are dry-run by default
-- write plans mark before-state capture as required and currently unsupported
-- `--apply` write attempts require explicit no-snapshot approval before provider HTTP when no saved snapshot is available
-- high-risk and irreversible writes still require `--apply --yes --plan-in` before reaching the no-snapshot approval gate
-- `DELETE` applies also require `--ack-irreversible`
-- local run folders save plans, approval-gate audit logs, and summaries under `.state/runs/`
-
-## Naming decision
-
-The customer-facing skill wrapper uses the requested name `google-merchant-api-safe-cli`.
-
-The internal Python package and console command stay `google_merchant_api_tool` and `google-merchant-api-tool` in this release on purpose. That was kept as an intentional compatibility choice so the customer-ready repo does not break its import paths, console entry point, tests, or committed proof examples in one large rename. The decision is tracked in `docs/engineering_notes.md` and the workspace memory files. Any future rename should be handled as an explicit breaking-change slice, not as silent drift.
+- [Command guide](docs/command_reference.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)

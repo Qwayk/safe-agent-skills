@@ -1,32 +1,29 @@
 # Use cases
 
-Use this page when you want ideas for real Google Merchant API jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
-
-## Merchant outcomes this tool is built for
-
-This tool is best for Merchant workflows that need bulk-safe changes and proof.
-
-- Inventory health check before changing prices, labels, stock, or taxes.
-- Feed quality review to find policy or disapproved products.
-- Safe campaign prep by finding product sets, countries, and promotions in one pass.
-- Large updates with a dry-run first, then a current safety refusal if apply is attempted.
+Use this page when you want ideas for real Google Merchant Center jobs to hand to your agent.
+If you need setup first, start with [Connect your Google Merchant Center account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Common use cases
 
-- “Show me the top 20 disapproved products and group them by rejection reason.”
-- “Find products with missing `targetCountry` data, then propose a fix plan.”
-- “Build a clean list of active promotions by country before I ask for edits.”
+- "Check my Merchant setup and show me the safest reads to run first."
+- "List my accounts, products, or promotions before we change anything."
+- "Find disapproved products or issue clusters and group them by fix type."
+- "Review feed, data-source, or region settings before we plan edits."
+- "Prepare a product-input or conversion-source change plan and make me review it first."
+- "Show me the approval path for a higher-risk or irreversible Merchant change before anything goes live."
 
-### Discovery and targeting example
+## Why this skill is more useful than raw docs
 
-Example prompt for targeting work:
-- “Help me discover products that are currently available in the US and in the `women` segment, then return 3 groups: healthy, risky, and review-needed.”
+This skill gives your agent a safer path through real Merchant API work.
 
-## What you’ll see from the agent
+- It can help you discover Merchant accounts, products, issues, and reports without making the first step technical.
+- It can show a dry-run plan before risky writes.
+- It can keep the write approval story honest when no useful before-state exists.
+- It can leave plans, refusals, receipts, run history, docs, and tests in one place so you can inspect what happened.
+- It can help with both own-account and client-account access without turning the page into a setup maze first.
 
-When you ask for a change, the agent should give:
-1. A dry-run plan first.
-2. A clear before-state note in the plan.
-3. A refusal result if apply is attempted.
-4. A short proof file location for the plan, refusal audit, and run summary.
+## What this skill intentionally does not promise
+
+- It does not promise a built-in undo path for every Merchant write.
+- It does not guess the right Merchant account, product name, or request body when the target is unclear.
+- It does not offer API-key auth.
