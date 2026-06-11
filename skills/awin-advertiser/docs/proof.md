@@ -1,8 +1,8 @@
-# Proof pack
+# Proof and verification
 
 ## Last verified
 
-- Date (UTC): 2026-06-09
+- Date (UTC): 2026-06-11
 - Tool version: 0.1.1
 - Base URL: `https://api.awin.com`
 
@@ -10,7 +10,7 @@
 
 Run in this folder:
 
-You don’t need to run these commands yourself. They exist for auditing and proof.
+You do not need to run these commands yourself. They exist for auditing and proof.
 
 1. `python3 -m venv .venv`
 2. `.venv/bin/python -m pip install -e .`
@@ -45,7 +45,8 @@ You don’t need to run these commands yourself. They exist for auditing and pro
 - `publishers`, `transactions`, `transactions batch validate`, `reports publisher`, and `reports campaign` use both `Authorization: Bearer <token>` and `accessToken=<token>` query.
   - For batch validate, the endpoint docs are ambiguous because they show an `accessToken` header label; this tool resolves that by adding the token both in `Authorization` and query for deterministic behavior in this tool.
 - `offers create` and `product-feeds upload` are Bearer-only (no `accessToken` query param).
-- `conversion orders create` uses `x-api-key: <AWIN_API_TOKEN>` only and runs in dry-run mode by default.
+- `conversion orders create` uses the same `AWIN_API_TOKEN`, but the official endpoint expects it as `x-api-key` and runs in dry-run mode by default.
 - The smoke commands above are the local audit baseline for this shipped version. They do not mean live provider verification already happened.
 - If required env values are missing, read commands return `blocked: true` and `setup_needed: true` when auth context is unavailable.
 - Write requires `--apply --yes --ack-irreversible --plan-in` and supports `--plan-out` and `--receipt-out`.
+- Current write families leave plans and receipts, but they do not promise a broad saved before-state or automatic restore path.

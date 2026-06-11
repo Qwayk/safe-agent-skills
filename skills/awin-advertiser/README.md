@@ -1,46 +1,108 @@
 # Awin Advertiser
 
-Use this skill when you want your AI agent to review Awin advertiser activity, inspect publisher and transaction data, and prepare advertiser-side validation, offer, feed, or conversion work through explicit commands and review-first safety.
+**Capability:** Reads + careful changes
 
-Install slug: `awin-advertiser`
+Use this skill when you want your agent to review Awin advertiser activity, inspect publisher and transaction data, and prepare advertiser-side validation, offer, feed, or conversion work without guessing from raw docs.
 
-## For non-technical users: Start here
+You can hand your agent jobs like publisher performance reviews, transaction checks, campaign or publisher reports, transaction batch validation, offer drafts, product-feed upload prep, and conversion-order planning.
 
-- [What you can ask the agent to do](docs/use_cases.md)
-- [Connect your Awin advertiser account](docs/onboarding.md)
-- [How this skill stays safe](docs/safety_model.md)
+Read work stays explicit. Riskier advertiser actions slow down on purpose: write families start as dry-run plans, live apply needs the normal review gates, and current writes leave plans and receipts but do not promise a broad saved before-state or automatic restore. There is no raw request bridge.
 
-Example requests you can ask the AI agent:
+A good first ask is: "Check the Awin Advertiser skill is configured, show me which publishers drove results recently, and help me plan the safest next advertiser action."
 
-- "Show me which publishers drove results last month."
-- "Check whether this Awin token is connected correctly before we do anything else."
-- "Preview a batch of transaction approvals before applying them."
-- "Prepare a product-feed upload safely and show me the proof files."
-- "Create an offer draft and stop before anything goes live."
+## Start here first
+
+- Want ideas for real Awin advertiser work? [What you can do with Awin Advertiser](docs/use_cases.md)
+- Need setup? [Connect your Awin advertiser account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
+
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
+
+## What this skill helps with
+
+- Check that an Awin advertiser account is connected before anyone tries a live advertiser change.
+- Review publishers, campaigns, and transactions to see what is driving results.
+- Look up transaction jobs and known transaction IDs when you need follow-up.
+- Dry-run transaction batch validation before any approval, decline, or amend request is sent.
+- Prepare offer creation, product-feed uploads, and conversion orders with a review step first.
 
 ## What access this skill needs
 
-- Most advertiser checks and advertiser-side updates use the normal Awin advertiser token.
-- Conversion orders use the separate Awin Conversion API key.
-- Live advertiser proof still depends on Awin advertiser API access being enabled for the account.
+- `AWIN_API_TOKEN`
+- `AWIN_ADVERTISER_ID`
+- JSON or JSONL input files for batch validation, offers, feeds, or conversion orders when you do those jobs
+- The same `AWIN_API_TOKEN` also covers conversion orders, but that official endpoint uses a different auth style under the hood
+
+## Install and first run
+
+Install slug: `awin-advertiser`
+
+Ask your agent to install the `awin-advertiser` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
+
+```bash
+npx skills add Qwayk/safe-agent-skills@awin-advertiser -g -y
+```
+
+Then try a safe first ask like:
+
+```text
+Check the Awin Advertiser skill is configured, show me which publishers drove results last month, and stop before any live advertiser write.
+```
+
+## How this skill stays safe
+
+- Read commands do not change the Awin account.
+- Write commands start as dry-run plans by default.
+- Live writes need `--apply --yes --ack-irreversible --plan-in`.
+- Plans and receipts can be saved with `--plan-out` and `--receipt-out`.
+- Current write families leave a review trail, but they do not promise a broad saved before-state or automatic restore path.
+- There is no raw request bridge.
+
+## What it covers today
+
+This skill covers:
+
+- auth and advertiser connectivity checks
+- publisher lookups
+- transaction reads and transaction-job status checks
+- publisher and campaign reports
+- transaction batch validation
+- offer creation
+- product-feed uploads
+- conversion-order posting
 
 ## What happens before live changes
 
-- Publisher lookups, transaction checks, reports, and transaction-job status checks are read-only.
-- Transaction batch validation, offers, product-feed uploads, and conversion orders start with a dry-run plan.
-- Live apply requires explicit approval with the reviewed plan file.
-- Irreversible sends stay explicit and leave a receipt.
-- There is no raw request bridge.
+- The agent should show the dry-run plan first.
+- You review the advertiser ID, target action, and any input file paths.
+- Read commands can run immediately.
+- Live writes need `--apply --yes --ack-irreversible --plan-in`.
+- After apply, the tool can write a receipt for the final result.
 
-## For technical users: Start here
+## What proof it leaves behind
 
+- Dry-run plans can be saved with `--plan-out`.
+- Apply receipts can be saved with `--receipt-out`.
+- Local run history can capture the command, result, and artifact paths.
+- The docs, tests, examples, and API coverage ledger all live in this repo.
+
+## Limits
+
+- No raw request bridge.
+- Live Awin advertiser proof is not stored in this repo because no real credentials are committed here.
+- Current write families do not provide a broad saved before-state or one-click restore.
+- Auth details differ by endpoint family, so the skill keeps those mappings explicit instead of pretending one rule fits every Awin endpoint.
+
+## Helpful docs
+
+- [Browse all Awin advertiser docs](docs/README.md)
 - [Quickstart](docs/quickstart.md)
-- [Command reference](docs/command_reference.md)
+- [Command guide](docs/command_reference.md)
+- [Authentication details](docs/authentication.md)
 - [Configuration](docs/configuration.md)
-- [Authentication](docs/authentication.md)
-- [API coverage](docs/api_coverage.md)
 - [Proof and verification](docs/proof.md)
-
-## Verification note
-
-The shipped Awin advertiser command families are implemented and locally tested in this skill folder. Live Awin advertiser proof is still pending because no real credentials are stored here and advertiser API access is still plan-gated.
+- [API coverage](docs/api_coverage.md)

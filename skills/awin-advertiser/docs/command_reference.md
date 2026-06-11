@@ -1,6 +1,7 @@
 # Command reference
 
-Technical reference: this page is command-heavy. If you want the plain-English path, start with [use_cases.md](use_cases.md) and [onboarding.md](onboarding.md).
+Use this page when you need the exact Awin Advertiser command, flag, or write gate.
+If you want the plain-English path first, start with [What you can do with Awin Advertiser](use_cases.md), [Connect your Awin advertiser account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 
@@ -47,6 +48,7 @@ Technical reference: this page is command-heavy. If you want the plain-English p
 - `--plan-in <path>` required with `--apply`; command output plan must pass drift checks
 - `--plan-out <path>` writes a dry-run plan JSON
 - `--receipt-out <path>` writes a write receipt JSON
+- current write families do not promise a broad saved before-state or automatic restore path
 
 ### Conversion write support
 

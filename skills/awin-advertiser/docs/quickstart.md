@@ -1,6 +1,6 @@
 # Quickstart
 
-Technical reference: this page uses CLI commands. If you want the non-technical path, start with [use_cases.md](use_cases.md) and [onboarding.md](onboarding.md).
+If you want the plain-English path first, start with [What you can do with Awin Advertiser](use_cases.md), [Connect your Awin advertiser account](onboarding.md), and [How this skill stays safe](safety_model.md).
 
 ## Install and validate
 
@@ -18,6 +18,8 @@ awin-advertiser-safe-cli --output json onboarding
 awin-advertiser-safe-cli --output json auth check
 ```
 
+`auth check` is the safest first live check because it uses the advertiser publishers endpoint to confirm the token and advertiser ID work together.
+
 ## Common read examples
 
 ```bash
@@ -34,8 +36,8 @@ awin-advertiser-safe-cli --output json offers create --advertiser-id 123456 --of
 awin-advertiser-safe-cli --output json product-feeds upload --advertiser-id 123456 --vertical retail --locale en_GB --feed-file /path/to/feed.jsonl --plan-out feed-plan.json
 ```
 
-## Next technical references
+## Next references
 
-- [command_reference.md](command_reference.md)
-- [api_coverage.md](api_coverage.md)
-- [proof.md](proof.md)
+- [Command reference](command_reference.md)
+- [API coverage](api_coverage.md)
+- [Proof and verification](proof.md)

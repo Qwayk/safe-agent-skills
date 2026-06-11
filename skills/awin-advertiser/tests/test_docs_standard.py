@@ -24,18 +24,20 @@ class TestDocsStandard(unittest.TestCase):
 
     def test_readme_is_non_technical_first(self) -> None:
         text = (self.root / "README.md").read_text(encoding="utf-8")
-        self.assertIn("## For non-technical users: Start here (no coding)", text)
-        self.assertIn("## For technical users: Start here (CLI)", text)
-        self.assertIn("docs/use_cases.md", text)
-        self.assertIn("docs/safety_model.md", text)
+        self.assertIn("## Start here first", text)
+        self.assertIn("## Install and first run", text)
+        self.assertIn("## Helpful docs", text)
+        self.assertIn("[What you can do with Awin Advertiser](docs/use_cases.md)", text)
+        self.assertIn("[Connect your Awin advertiser account](docs/onboarding.md)", text)
+        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
 
     def test_docs_readme_lists_required_order(self) -> None:
         text = (self.docs / "README.md").read_text(encoding="utf-8")
-        use_cases_idx = text.index("use_cases.md")
-        onboarding_idx = text.index("onboarding.md")
-        safety_idx = text.index("safety_model.md")
-        quickstart_idx = text.index("quickstart.md")
-        command_idx = text.index("command_reference.md")
+        use_cases_idx = text.index("[What you can do with Awin Advertiser](use_cases.md)")
+        onboarding_idx = text.index("[Connect your Awin advertiser account](onboarding.md)")
+        safety_idx = text.index("[How this skill stays safe](safety_model.md)")
+        quickstart_idx = text.index("[Quickstart](quickstart.md)")
+        command_idx = text.index("[Command reference](command_reference.md)")
         self.assertLess(use_cases_idx, onboarding_idx)
         self.assertLess(onboarding_idx, safety_idx)
         self.assertLess(safety_idx, quickstart_idx)
@@ -47,10 +49,11 @@ class TestDocsStandard(unittest.TestCase):
         command_reference = (self.docs / "command_reference.md").read_text(encoding="utf-8")
         proof = (self.docs / "proof.md").read_text(encoding="utf-8")
 
-        self.assertIn("What to ask your AI agent (examples)", onboarding)
-        self.assertIn("Technical reference", quickstart)
-        self.assertIn("Technical reference", command_reference)
-        self.assertIn("You don’t need to run these commands yourself", proof)
+        self.assertIn("## What to ask your agent", onboarding)
+        self.assertIn("[What you can do with Awin Advertiser](use_cases.md)", quickstart)
+        self.assertIn("[Connect your Awin advertiser account](onboarding.md)", quickstart)
+        self.assertIn("[What you can do with Awin Advertiser](use_cases.md)", command_reference)
+        self.assertIn("You do not need to run these commands yourself", proof)
 
     def test_api_coverage_lists_all_provider_backed_commands(self) -> None:
         parser = build_parser()

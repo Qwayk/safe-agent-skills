@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+- Rebuilt the public-facing Awin Advertiser README and the main user docs into the newer user-first skill pattern, and added the README contract test.
+
 ## [0.1.1] - 2026-06-09
 
 ### Added

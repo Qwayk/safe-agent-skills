@@ -1,33 +1,27 @@
 # Use cases
 
-This page is for non-technical users. It explains what the tool can help with and what kind of requests you can give your AI agent.
+Use this page when you want ideas for real Awin advertiser work to hand to your agent.
+If you need setup first, start with [Connect your Awin advertiser account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## What you can do
+## Why this is useful
 
-- Check that an Awin advertiser account is connected before doing any real work.
-- Review which publishers, campaigns, and transactions are driving results.
-- Look up specific transactions by date range or by known ids.
-- Preview a transaction-validation batch before anything is applied.
-- Prepare new offers and product-feed uploads with a dry-run first.
-- Prepare conversion-order posting with a clear proof trail.
+This skill is useful when:
 
-## Why this is better than typical no-code automation
+- you want advertiser reviews and reads before anyone touches a live Awin account
+- you want dry-run plans before risky advertiser actions
+- you want stable command boundaries instead of one broad hidden automation
+- you want proof files and receipts left behind for review later
 
-- It previews risky write actions before apply instead of hiding them inside a live automation.
-- It keeps commands explicit, so each action has a clear boundary.
-- It saves proof files and receipts, which makes reviews easier later.
-- It works well for bulk jobs such as transaction-validation batches and product-feed uploads.
-- It supports discovery work, not just blind updates.
+## Common use cases
 
-## Discovery and targeting example
+- "Show me which publishers drove results last month."
+- "Check whether this Awin token is connected correctly before we do anything else."
+- "Find these transaction IDs and tell me whether they need follow-up."
+- "Review this transaction batch and stop before anything is applied."
+- "Prepare an offer draft and explain the proof files before we do anything live."
+- "Check this product-feed file before we upload it."
+- "Help me plan conversion order posting safely with a preview first."
 
-Ask your AI agent to start by showing which publishers or campaigns drove performance in a recent date range. That helps you decide where to focus before you approve, decline, amend, or upload anything.
+## Good first review path
 
-## Example requests for your AI agent
-
-- “Show me the publishers that mattered most for this advertiser last month.”
-- “Find these transaction ids and tell me whether they need follow-up.”
-- “Review this batch of transaction actions and stop before anything is applied.”
-- “Prepare an offer creation dry-run and explain the proof files.”
-- “Check this product-feed file before we upload it.”
-- “Help me post conversion orders safely with a preview first.”
+Start by checking auth, then review recent publisher or campaign results, and only then move into any write-like advertiser task such as batch validation, offers, feeds, or conversion orders.
