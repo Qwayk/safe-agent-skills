@@ -1,0 +1,51 @@
+{
+  "baseline": {
+    "api_version": "2026-01",
+    "operation": "appUninstall",
+    "operation_kind": "mutation",
+    "selection_hash_sha256": "d5f730042a8bbb5973f4a8246b1b2f7a20ec7e0fe2e68d7d2385146b1fc1b401",
+    "shop_domain": "example.myshopify.com",
+    "vars_hash_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "command": "shopify-admin-api-tool mutation app-uninstall",
+  "env_fingerprint": "example.myshopify.com|2026-01",
+  "generated_at_utc": "2026-03-04T00:00:00Z",
+  "request": {
+    "graphql": {
+      "document": "mutation appUninstall {\n  appUninstall { __typename }\n}\n",
+      "return_gql_type": "AppUninstallPayload",
+      "selection_set": "{ __typename }",
+      "variables_redacted": {}
+    }
+  },
+  "before_state": {
+    "notes": "Shopify Admin mutations are broad and store-specific. This tool requires explicit no-snapshot approval until a safe pre-mutation read path exists for the requested operation.",
+    "required": true,
+    "supported": false
+  },
+  "required_flags": [
+    "--apply",
+    "--yes",
+    "--plan-in",
+    "--ack-irreversible"
+  ],
+  "risk_level": "irreversible",
+  "risk_reasons": [
+    "name_contains_irreversible_marker"
+  ],
+  "rollback": {
+    "notes": "This tool does not create backups or restore points and does not auto-rollback.",
+    "supported": false
+  },
+  "selector": {
+    "kind": "shopify_admin_graphql",
+    "operation": "appUninstall",
+    "operation_kind": "mutation"
+  },
+  "tool": "shopify-admin-api-tool",
+  "verification_plan": {
+    "notes": "Live mutation apply requires explicit no-snapshot approval when no operation-specific saved snapshot is available.",
+    "type": "graphql"
+  },
+  "version": "0.1.0"
+}

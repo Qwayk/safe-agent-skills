@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "business-info.locations.patch",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessbusinessinformation.googleapis.com",
+    "command": "google-business-profile-safe-cli business-info locations patch --name locations/abc --update-mask title,storeCode --location-file /tmp/location.json",
+    "selector": "locations/abc",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Location metadata update"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "business-info.locations.patch",
+        "selector": "locations/abc",
+        "mask": "title,storeCode",
+        "body_fingerprint": "a211278e704288e35d723a1939c0638182f6f5c04e46291c711c4d9483afee1b"
+      }
+    ],
+    "verification_plan": [
+      "Read back the location using locations get and readMask if verification is practical."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/abc",
+      "mask": "title,storeCode",
+      "body_fingerprint": "a211278e704288e35d723a1939c0638182f6f5c04e46291c711c4d9483afee1b",
+      "mask_fingerprint": "22d6a82323f49cbec14f40a90df223479bf7bef2f355f252163205880906cda4"
+    }
+  }
+}

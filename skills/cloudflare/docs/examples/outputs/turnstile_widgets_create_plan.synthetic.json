@@ -1,0 +1,67 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "command": "operations.call",
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "command": "cloudflare-api-tool --env-file /path/to/your/project/.env --output json turnstile widgets create --account-id <your_account_id> --body-json-file /path/to/your/project/body.json",
+    "env_fingerprint": "https://api.cloudflare.com/client/v4",
+    "generated_at_utc": "2026-02-10T00:00:00Z",
+    "notes": [
+      "This endpoint is classified as secret-bearing. Apply requires: --apply --yes --ack-irreversible and a safe file output (--project-dir + --out)."
+    ],
+    "preconditions": [
+      "API token has least-privilege permissions needed for this operation.",
+      "Path params and request body (if any) are correct.",
+      "For non-GET operations and file-only outputs: review the plan output before applying."
+    ],
+    "proposed_changes": [
+      {
+        "action": "call",
+        "method": "POST",
+        "operation_id": null,
+        "path": "/accounts/<your_account_id>/challenges/widgets",
+        "resource": "openapi_operation",
+        "sensitivity": "sensitive_write_result"
+      }
+    ],
+    "request": {
+      "body_meta": {
+        "body_kind": "json",
+        "sha256": "<sha256>",
+        "size_bytes": 2,
+        "source": "/path/to/your/project/body.json"
+      },
+      "content_type": null,
+      "method": "POST",
+      "operation_id": null,
+      "out": null,
+      "path_resolved": "/accounts/<your_account_id>/challenges/widgets",
+      "path_template": "/accounts/{account_id}/challenges/widgets",
+      "query": {},
+      "sensitivity": "sensitive_write_result"
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "This is a Cloudflare API write.",
+      "This endpoint may return a secret/token (often shown once)."
+    ],
+    "selector": {
+      "method": "POST",
+      "operation_id": null,
+      "path_resolved": "/accounts/<your_account_id>/challenges/widgets",
+      "path_template": "/accounts/{account_id}/challenges/widgets",
+      "tags": "Turnstile"
+    },
+    "tool": "cloudflare-api-tool",
+    "verification_plan": [
+      "Best-effort verification: for many writes, the tool attempts a read-back GET when a matching endpoint exists in the snapshot. Otherwise it records API response success."
+    ],
+    "version": "0.7.0"
+  },
+  "run_id": "2026-02-10T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}
+

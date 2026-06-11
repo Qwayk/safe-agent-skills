@@ -1,0 +1,45 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "count": 3,
+  "ok": true,
+  "operations": [
+    {
+      "api_token_groups": "com.cloudflare.api.account.aig",
+      "area": "ai_gateway",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "aig-config-list-gateway",
+      "path_template": "/accounts/{account_id}/ai-gateway/gateways",
+      "sensitivity": "none",
+      "summary": "List Gateways",
+      "tags": "AI Gateway Gateways"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.aig",
+      "area": "ai_gateway",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "aig-config-list-gateway-logs",
+      "path_template": "/accounts/{account_id}/ai-gateway/gateways/{gateway_id}/logs",
+      "sensitivity": "sensitive_read",
+      "summary": "List Gateway Logs",
+      "tags": "AI Gateway Logs"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.aig",
+      "area": "ai_gateway",
+      "deprecated": false,
+      "method": "PUT",
+      "operation_id": "aig-config-update-providers",
+      "path_template": "/accounts/{account_id}/ai-gateway/gateways/{gateway_id}/provider_configs/{id}",
+      "sensitivity": "sensitive_write_result",
+      "summary": "Update a Provider Configs",
+      "tags": "AI Gateway Provider Configs"
+    }
+  ],
+  "run_id": null,
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}
+

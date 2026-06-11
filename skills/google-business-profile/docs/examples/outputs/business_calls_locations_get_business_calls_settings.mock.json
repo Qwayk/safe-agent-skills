@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "operation": "business-calls.locations.get-business-calls-settings",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinessbusinesscalls.googleapis.com",
+    "path": "v1/locations/123/businesscallssettings"
+  },
+  "response": {
+    "name": "locations/123/businesscallssettings",
+    "businessCallsEnabled": true
+  }
+}

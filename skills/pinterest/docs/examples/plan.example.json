@@ -1,0 +1,75 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "action": "boards.delete",
+  "generated_at_utc": "2026-06-04T00:00:00Z",
+  "apply_requires": [
+    "--apply",
+    "--yes"
+  ],
+  "acks_required": [
+    "ack-irreversible"
+  ],
+  "request": {
+    "board_id": "1234567890"
+  },
+  "operations": [
+    {
+      "method": "GET",
+      "path": "/boards/1234567890"
+    },
+    {
+      "method": "DELETE",
+      "path": "/boards/1234567890"
+    },
+    {
+      "method": "GET",
+      "path": "/boards/1234567890"
+    }
+  ],
+  "warnings": [],
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "blocked",
+    "saved_path": null,
+    "provider_backup_id": null,
+    "reason": "This source tool can build and review Pinterest write plans, but it does not yet save operation-specific before-state or provider backup data before applying them.",
+    "provider_write": {
+      "service": "Pinterest API",
+      "action": "boards.delete",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/boards/1234567890"
+        },
+        {
+          "method": "DELETE",
+          "path": "/boards/1234567890"
+        },
+        {
+          "method": "GET",
+          "path": "/boards/1234567890"
+        }
+      ]
+    }
+  },
+  "verification_plan": {
+    "status": "blocked_before_apply",
+    "steps": [
+      "Confirm no Pinterest provider write endpoint was called.",
+      "Confirm no local token file, report receipt, or download output was written by the write flow.",
+      "Confirm no successful write receipt was emitted."
+    ],
+    "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply."
+  },
+  "rollback": {
+    "supported": false,
+    "mode": "irreversible_and_clearly_labeled",
+    "automatic_rollback": false,
+    "acks_required": [
+      "ack-irreversible"
+    ],
+    "notes": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current Pinterest write families as irreversible_and_clearly_labeled and use the saved plan and refusal output for manual follow-up only."
+  }
+}

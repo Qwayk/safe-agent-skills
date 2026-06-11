@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "instantly-api-tool"
+version = "0.6.0"
+description = "Instantly API v2 safe agent CLI (dry-run by default)."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "requests>=2.31.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.8.0",
+  "ruff>=0.6.0",
+  "types-requests>=2.31.0.0",
+]
+
+[project.scripts]
+instantly-api-tool = "instantly_api_tool.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["instantly_api_tool*"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+exclude = [".venv", "build", "dist", "src/**.egg-info"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "src"
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+check_untyped_defs = true
+show_error_codes = true
+pretty = false
+exclude = "(^\\.venv/|^build/|^dist/|^src/.*\\.egg-info/)"

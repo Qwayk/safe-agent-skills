@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "operation": "business-info.locations.get",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinessbusinessinformation.googleapis.com",
+    "path": "v1/locations/LOCATION_ID",
+    "params": {
+      "readMask": "name,title,storeCode"
+    }
+  },
+  "response": {
+    "name": "locations/LOCATION_ID",
+    "title": "Example Coffee Shop",
+    "storeCode": "STORE_001"
+  }
+}

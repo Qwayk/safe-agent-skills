@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "operation": "transactions.list",
+  "publisher_id": "12345",
+  "transactions": [
+    {
+      "id": 1001,
+      "status": "approved",
+      "amount": {
+        "amount": 39.99,
+        "currency": "GBP"
+      }
+    }
+  ],
+  "request": {
+    "method": "GET",
+    "endpoint": "https://api.awin.com/publishers/12345/transactions/",
+    "query": {
+      "required": [
+        "accessToken",
+        "startDate",
+        "endDate",
+        "timezone"
+      ],
+      "sent": [
+        "accessToken",
+        "advertiserId",
+        "dateType",
+        "endDate",
+        "showBasketProducts",
+        "startDate",
+        "status",
+        "timezone"
+      ]
+    },
+    "response_status": 200
+  },
+  "metadata": {
+    "advertiser_ids": [
+      "500"
+    ],
+    "date_type": "transaction",
+    "end_date": "2026-06-02T00:00:00Z",
+    "show_basket_products": true,
+    "start_date": "2026-06-01T00:00:00Z",
+    "status": "approved",
+    "timezone": "UTC"
+  }
+}

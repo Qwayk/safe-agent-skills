@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "account_info",
+  "out_path": null,
+  "dynadot": {
+    "command": "account_info",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "UserName": "example_user",
+      "Email": "user@example.com",
+      "AccountType": "standard"
+    }
+  }
+}

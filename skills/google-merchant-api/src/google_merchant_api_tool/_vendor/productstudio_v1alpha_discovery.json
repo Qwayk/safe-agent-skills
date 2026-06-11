@@ -1,0 +1,762 @@
+{
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "basePath": "",
+  "name": "merchantapi",
+  "ownerDomain": "google.com",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+  },
+  "rootUrl": "https://merchantapi.googleapis.com/",
+  "schemas": {
+    "GenerateProductImageBackgroundRequest": {
+      "id": "GenerateProductImageBackgroundRequest",
+      "description": "Request message for the GenerateProductImageBackground method.",
+      "type": "object",
+      "properties": {
+        "outputConfig": {
+          "description": "Optional. Configuration for how the output image should be returned.",
+          "$ref": "OutputImageConfig"
+        },
+        "inputImage": {
+          "description": "Required. The input image.",
+          "$ref": "InputImage"
+        },
+        "config": {
+          "description": "Required. Configuration parameters for the generation of the background.",
+          "$ref": "GenerateImageBackgroundConfig"
+        }
+      }
+    },
+    "OutputImageConfig": {
+      "id": "OutputImageConfig",
+      "description": "Configuration for how the output image should be returned.",
+      "type": "object",
+      "properties": {
+        "returnImageUri": {
+          "description": "Optional. If true, returns the output images as serving uris instead of bytes.",
+          "type": "boolean"
+        }
+      }
+    },
+    "InputImage": {
+      "id": "InputImage",
+      "description": "Represents an input image.",
+      "type": "object",
+      "properties": {
+        "imageUri": {
+          "description": "Public uri of the image.",
+          "type": "string"
+        },
+        "imageBytes": {
+          "description": "Raw image bytes.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "GenerateImageBackgroundConfig": {
+      "id": "GenerateImageBackgroundConfig",
+      "description": "Client provided input configuration for generating the background.",
+      "type": "object",
+      "properties": {
+        "productDescription": {
+          "description": "Required. Example: \"Hat on a baseball field\" \"Hat\" = product description Description of product.",
+          "type": "string"
+        },
+        "backgroundDescription": {
+          "description": "Required. Example: \"Hat on a baseball field\" \"on a baseball field\" = background description Description of wanted background.",
+          "type": "string"
+        }
+      }
+    },
+    "GenerateProductImageBackgroundResponse": {
+      "id": "GenerateProductImageBackgroundResponse",
+      "description": "Response message for the GenerateProductImageBackground method.",
+      "type": "object",
+      "properties": {
+        "generatedImage": {
+          "description": "The generated output image.",
+          "$ref": "GeneratedImage"
+        }
+      }
+    },
+    "GeneratedImage": {
+      "id": "GeneratedImage",
+      "description": "Represents a generated image object.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Generally web-requestable URI of the generated image. This is a temporary URI and will expire after 29 days. A URI may not be populated immediately after generation. Use get or list api using image_id to get the URI.",
+          "type": "string"
+        },
+        "imageBytes": {
+          "description": "Raw bytes for the image.",
+          "type": "string",
+          "format": "byte"
+        },
+        "name": {
+          "description": "Identifier. The unique key for the image.",
+          "type": "string"
+        },
+        "generationTime": {
+          "description": "The timestamp when the image was generated.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "RemoveProductImageBackgroundRequest": {
+      "id": "RemoveProductImageBackgroundRequest",
+      "description": "Request message for the RemoveProductImageBackground method.",
+      "type": "object",
+      "properties": {
+        "outputConfig": {
+          "description": "Optional. Configuration for how the output image should be returned.",
+          "$ref": "OutputImageConfig"
+        },
+        "inputImage": {
+          "description": "Required. The input image.",
+          "$ref": "InputImage"
+        },
+        "config": {
+          "description": "Optional. Configuration parameters for the removal of the background.",
+          "$ref": "RemoveImageBackgroundConfig"
+        }
+      }
+    },
+    "RemoveImageBackgroundConfig": {
+      "id": "RemoveImageBackgroundConfig",
+      "description": "Client provided input configuration for removing the background.",
+      "type": "object",
+      "properties": {
+        "backgroundColor": {
+          "description": "Optional. If set, the result of background removal will be an RGB image with this given color as the background, instead of an RGBA 4-channel transparent image.",
+          "$ref": "RgbColor"
+        }
+      }
+    },
+    "RgbColor": {
+      "id": "RgbColor",
+      "description": "Represents a color in RGB format.",
+      "type": "object",
+      "properties": {
+        "red": {
+          "description": "Optional. Values in [0, 255].",
+          "type": "integer",
+          "format": "int32"
+        },
+        "green": {
+          "description": "Optional. Values in [0, 255].",
+          "type": "integer",
+          "format": "int32"
+        },
+        "blue": {
+          "description": "Optional. Values in [0, 255].",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "RemoveProductImageBackgroundResponse": {
+      "id": "RemoveProductImageBackgroundResponse",
+      "description": "Response message for the RemoveProductImageBackground method.",
+      "type": "object",
+      "properties": {
+        "generatedImage": {
+          "description": "The generated output image.",
+          "$ref": "GeneratedImage"
+        }
+      }
+    },
+    "UpscaleProductImageRequest": {
+      "id": "UpscaleProductImageRequest",
+      "description": "Request message for the UpscaleProductImage method.",
+      "type": "object",
+      "properties": {
+        "outputConfig": {
+          "description": "Optional. Configuration for how the output image should be returned.",
+          "$ref": "OutputImageConfig"
+        },
+        "inputImage": {
+          "description": "Required. The input image.",
+          "$ref": "InputImage"
+        }
+      }
+    },
+    "UpscaleProductImageResponse": {
+      "id": "UpscaleProductImageResponse",
+      "description": "Response message for the UpscaleProductImage method.",
+      "type": "object",
+      "properties": {
+        "generatedImage": {
+          "description": "The generated output image.",
+          "$ref": "GeneratedImage"
+        }
+      }
+    },
+    "GenerateProductTextSuggestionsRequest": {
+      "id": "GenerateProductTextSuggestionsRequest",
+      "description": "Request message for the GenerateProductTextSuggestions method.",
+      "type": "object",
+      "properties": {
+        "productInfo": {
+          "description": "Required. Available information about the product. Used to inform the genAI models.",
+          "$ref": "ProductInfo"
+        },
+        "outputSpec": {
+          "description": "Optional. Configuration parameters that directly influence what content is generated, and how that content is rendered in the final response.",
+          "$ref": "OutputSpec"
+        },
+        "titleExamples": {
+          "description": "Optional. Provide some hand-crafted examples of title improvements that are unique to your use case. This is a general tool that handles multiple product categories, but your brand identity may require custom functionality. Feel free to specify that here.",
+          "type": "array",
+          "items": {
+            "$ref": "TitleExample"
+          }
+        }
+      }
+    },
+    "ProductInfo": {
+      "id": "ProductInfo",
+      "description": "Available information about the product. Used to inform the genAI models.",
+      "type": "object",
+      "properties": {
+        "productAttributes": {
+          "description": "Required. A mapping of all available product attributes. This may include title, description, brand, gender, color, size, etc.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "productImage": {
+          "description": "Optional. Image associated with the product.",
+          "$ref": "Image"
+        }
+      }
+    },
+    "Image": {
+      "id": "Image",
+      "description": "Product image represented as bytes directly or a URI.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Generally web-requestable URI.",
+          "type": "string"
+        },
+        "data": {
+          "description": "Raw bytes for the image.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "OutputSpec": {
+      "id": "OutputSpec",
+      "description": "Configuration parameters that directly influence what content is generated, and how that content is rendered in the final response.",
+      "type": "object",
+      "properties": {
+        "workflowId": {
+          "description": "Optional. The workflow to execute for the provided product data. Workflows may populate the response's title, description, or both. Currently supported workflow_ids are: \"title\", \"description\", and \"tide\"",
+          "type": "string"
+        },
+        "tone": {
+          "description": "Optional. The tone of the output generated text. Supported tones are: \"playful\", \"formal\", \"persuasive\", and \"conversational\"",
+          "type": "string"
+        },
+        "editorialChanges": {
+          "description": "Optional. Any editorial changes for the generated product data. For example, replace Small with \"S\", do not modify color if already present.",
+          "type": "string"
+        },
+        "targetLanguage": {
+          "description": "Optional. The language for output titles/descriptions. For example. 'German', 'es', 'FR'. Default is 'en'.",
+          "type": "string"
+        },
+        "attributeOrder": {
+          "description": "Optional. The order that generated attributes should be placed in the generated title. Eg., if the attribute order is [\"brand\", \"product\", \"size\"], the generated title will have brand first, followed by the product name, and then size information after that.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "attributeSeparator": {
+          "description": "Optional. Character used to separate attributes in the generated title. For example, '|', '-', ','.",
+          "type": "string"
+        }
+      }
+    },
+    "TitleExample": {
+      "id": "TitleExample",
+      "description": "A hand-crafted example of a product title improvement. These examples are provided to the AI to improve its quality and guide it towards required outputs.",
+      "type": "object",
+      "properties": {
+        "productInfo": {
+          "description": "Required. A map containing all existing product information. For example: {\"title\": \"dress\", \"description\": \"A red dress\", \"brand\": \"Dresses4All\"} Any information that you might use to populate your product feed.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "category": {
+          "description": "Required. The product's category. This helps the AI understand when certain examples are more relevant than others.",
+          "type": "string"
+        },
+        "titleFormat": {
+          "description": "Required. The attributes or approximate attributes that make up the title. For example, title \"Google GShoe M\" title_format can be \"brand | product | size\".",
+          "type": "string"
+        },
+        "finalProductInfo": {
+          "description": "Required. A map in the same format as product_info but with all improvements included. For example, {\"brand\": \"Dresses4All\", \"product\": \"dress\", \"color\": \"red\", ...}. The order of attributes in this map may be used to guide the order in which they appear in the final generated title. For instance, the above will become: Dresses4All dress | red",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GenerateProductTextSuggestionsResponse": {
+      "id": "GenerateProductTextSuggestionsResponse",
+      "description": "Response message for the GenerateProductTextSuggestions method.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "description": "Generated title suggestion.",
+          "$ref": "ProductTextGenerationSuggestion"
+        },
+        "description": {
+          "description": "Generated description suggestion.",
+          "$ref": "ProductTextGenerationSuggestion"
+        },
+        "attributes": {
+          "description": "Any other generated attributes.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Additional info that clients may want to audit surrounding the generation.",
+          "$ref": "ProductTextGenerationMetadata"
+        }
+      }
+    },
+    "ProductTextGenerationSuggestion": {
+      "id": "ProductTextGenerationSuggestion",
+      "description": "Text generated for a product, optionally including its quality score.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "The text generated",
+          "type": "string"
+        },
+        "score": {
+          "description": "The quality score associated with the generation. Heuristic implemented according to the feedgen team's implementation styles.",
+          "type": "number",
+          "format": "float"
+        },
+        "changeSummary": {
+          "description": "A brief summarization of all the changes that have been made.",
+          "type": "string"
+        }
+      }
+    },
+    "ProductTextGenerationMetadata": {
+      "id": "ProductTextGenerationMetadata",
+      "description": "Wrapper data type for any metadata associated with text generation.",
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "description": "Metadata is a pretty loose concept. The data is modeled as a map here to indicate that there is no guaranteed structure to the output past a simple K:V association. The first use-case is to track words added/removed/changed in generations.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        }
+      }
+    },
+    "ProductStatusChangeMessage": {
+      "id": "ProductStatusChangeMessage",
+      "description": "The message that the merchant will receive to notify about product status change event",
+      "type": "object",
+      "properties": {
+        "account": {
+          "description": "The target account that owns the entity that changed. Format : `accounts/{merchant_id}`",
+          "type": "string"
+        },
+        "managingAccount": {
+          "description": "The account that manages the merchant's account. can be the same as merchant id if it is standalone account. Format : `accounts/{service_provider_id}`",
+          "type": "string"
+        },
+        "resourceType": {
+          "description": "The resource that changed, in this case it will always be `Product`.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified resource",
+            "Resource type : product",
+            "Account service"
+          ],
+          "enum": [
+            "RESOURCE_UNSPECIFIED",
+            "PRODUCT",
+            "ACCOUNT_SERVICE"
+          ]
+        },
+        "attribute": {
+          "description": "The attribute in the resource that changed, in this case it will be always `Status`.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified attribute",
+            "Status of the changed entity"
+          ],
+          "enum": [
+            "ATTRIBUTE_UNSPECIFIED",
+            "STATUS"
+          ]
+        },
+        "changes": {
+          "description": "A message to describe the change that happened to the product",
+          "type": "array",
+          "items": {
+            "$ref": "ProductChange"
+          }
+        },
+        "resourceId": {
+          "description": "The product id.",
+          "type": "string"
+        },
+        "resource": {
+          "description": "The product name. Format: `accounts/{account}/products/{product}`",
+          "type": "string"
+        },
+        "expirationTime": {
+          "description": "Optional. The product expiration time. This field will not be set if the notification is sent for a product deletion event.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "eventTime": {
+          "description": "The time at which the event was generated. If you want to order the notification messages you receive you should rely on this field not on the order of receiving the notifications.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ProductChange": {
+      "id": "ProductChange",
+      "description": "The change that happened to the product including old value, new value, country code as the region code and reporting context.",
+      "type": "object",
+      "properties": {
+        "oldValue": {
+          "description": "The old value of the changed resource or attribute. If empty, it means that the product was created. Will have one of these values : (`approved`, `pending`, `disapproved`, ``)",
+          "type": "string"
+        },
+        "newValue": {
+          "description": "The new value of the changed resource or attribute. If empty, it means that the product was deleted. Will have one of these values : (`approved`, `pending`, `disapproved`, ``)",
+          "type": "string"
+        },
+        "regionCode": {
+          "description": "Countries that have the change (if applicable). Represented in the ISO 3166 format.",
+          "type": "string"
+        },
+        "reportingContext": {
+          "description": "Reporting contexts that have the change (if applicable). Currently this field supports only (`SHOPPING_ADS`, `LOCAL_INVENTORY_ADS`, `YOUTUBE_SHOPPING`, `YOUTUBE_CHECKOUT`, `YOUTUBE_AFFILIATE`) from the enum value [ReportingContextEnum](/merchant/api/reference/rest/Shared.Types/ReportingContextEnum)",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "[Shopping ads](https://support.google.com/merchants/answer/6149970).",
+            "Deprecated: Use `DEMAND_GEN_ADS` instead. [Discovery and Demand Gen ads](https://support.google.com/merchants/answer/13389785).",
+            "[Demand Gen ads](https://support.google.com/merchants/answer/13389785).",
+            "[Demand Gen ads on Discover surface](https://support.google.com/merchants/answer/13389785).",
+            "[Video ads](https://support.google.com/google-ads/answer/6340491).",
+            "[Display ads](https://support.google.com/merchants/answer/6069387).",
+            "[Local inventory ads](https://support.google.com/merchants/answer/3271956).",
+            "[Vehicle inventory ads](https://support.google.com/merchants/answer/11544533).",
+            "[Free product listings](https://support.google.com/merchants/answer/9199328).",
+            "[Free product listings on UCP checkout](https://developers.google.com/merchant/ucp).",
+            "[Free local product listings](https://support.google.com/merchants/answer/9825611).",
+            "[Free local vehicle listings](https://support.google.com/merchants/answer/11544533).",
+            "[Youtube Affiliate](https://support.google.com/youtube/answer/13376398).",
+            "[YouTube Shopping](https://support.google.com/merchants/answer/13478370).",
+            "[Cloud retail](https://cloud.google.com/solutions/retail).",
+            "[Local cloud retail](https://cloud.google.com/solutions/retail).",
+            "[Product Reviews](https://support.google.com/merchants/answer/14620732).",
+            "[Merchant Reviews](https://developers.google.com/merchant-review-feeds).",
+            "YouTube Checkout ."
+          ],
+          "enumDeprecated": [
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "enum": [
+            "REPORTING_CONTEXT_ENUM_UNSPECIFIED",
+            "SHOPPING_ADS",
+            "DISCOVERY_ADS",
+            "DEMAND_GEN_ADS",
+            "DEMAND_GEN_ADS_DISCOVER_SURFACE",
+            "VIDEO_ADS",
+            "DISPLAY_ADS",
+            "LOCAL_INVENTORY_ADS",
+            "VEHICLE_INVENTORY_ADS",
+            "FREE_LISTINGS",
+            "FREE_LISTINGS_UCP_CHECKOUT",
+            "FREE_LOCAL_LISTINGS",
+            "FREE_LOCAL_VEHICLE_LISTINGS",
+            "YOUTUBE_AFFILIATE",
+            "YOUTUBE_SHOPPING",
+            "CLOUD_RETAIL",
+            "LOCAL_CLOUD_RETAIL",
+            "PRODUCT_REVIEWS",
+            "MERCHANT_REVIEWS",
+            "YOUTUBE_CHECKOUT"
+          ]
+        }
+      }
+    }
+  },
+  "documentationLink": "https://developers.google.com/merchant/api",
+  "batchPath": "batch",
+  "ownerName": "Google",
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "fullyEncodeReservedExpansion": true,
+  "version": "productstudio_v1alpha",
+  "canonicalName": "Merchant",
+  "revision": "20260603",
+  "id": "merchantapi:productstudio_v1alpha",
+  "resources": {
+    "accounts": {
+      "resources": {
+        "generatedImages": {
+          "methods": {
+            "generateProductImageBackground": {
+              "id": "merchantapi.accounts.generatedImages.generateProductImageBackground",
+              "path": "productstudio/v1alpha/{+name}/generatedImages:generateProductImageBackground",
+              "flatPath": "productstudio/v1alpha/accounts/{accountsId}/generatedImages:generateProductImageBackground",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The account for which to generate an image. This acts as a container for the request and does not affect the generation itself. Format: accounts/{account}",
+                  "pattern": "^accounts/[^/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GenerateProductImageBackgroundRequest"
+              },
+              "response": {
+                "$ref": "GenerateProductImageBackgroundResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/content"
+              ],
+              "description": "GenerateProductImageBackground generates a new image where the background of the original image is replaced by an AI generated scene based on provided product information and a text prompt."
+            },
+            "removeProductImageBackground": {
+              "id": "merchantapi.accounts.generatedImages.removeProductImageBackground",
+              "path": "productstudio/v1alpha/{+name}/generatedImages:removeProductImageBackground",
+              "flatPath": "productstudio/v1alpha/accounts/{accountsId}/generatedImages:removeProductImageBackground",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The account for which to generate an image. This acts as a container for the request and does not affect the generation itself. Format: accounts/{account}",
+                  "pattern": "^accounts/[^/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "RemoveProductImageBackgroundRequest"
+              },
+              "response": {
+                "$ref": "RemoveProductImageBackgroundResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/content"
+              ],
+              "description": "RemoveProductImageBackground generates a new image where the background of the original image is removed."
+            },
+            "upscaleProductImage": {
+              "id": "merchantapi.accounts.generatedImages.upscaleProductImage",
+              "path": "productstudio/v1alpha/{+name}/generatedImages:upscaleProductImage",
+              "flatPath": "productstudio/v1alpha/accounts/{accountsId}/generatedImages:upscaleProductImage",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The account for which to generate an image. This acts as a container for the request and does not affect the generation itself. Format: accounts/{account}",
+                  "pattern": "^accounts/[^/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "UpscaleProductImageRequest"
+              },
+              "response": {
+                "$ref": "UpscaleProductImageResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/content"
+              ],
+              "description": "UpscaleProductImage generates a new image where the resolution of the original image is enhanced."
+            }
+          }
+        },
+        "textSuggestions": {
+          "methods": {
+            "generateProductTextSuggestions": {
+              "id": "merchantapi.accounts.textSuggestions.generateProductTextSuggestions",
+              "path": "productstudio/v1alpha/{+name}:generateProductTextSuggestions",
+              "flatPath": "productstudio/v1alpha/accounts/{accountsId}:generateProductTextSuggestions",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the account to generate text suggestions for. This acts as a container for the request and does not affect the generation itself, as this is a stateless API. Format: accounts/{account}",
+                  "pattern": "^accounts/[^/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GenerateProductTextSuggestionsRequest"
+              },
+              "response": {
+                "$ref": "GenerateProductTextSuggestionsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/content"
+              ],
+              "description": "GenerateProductTextSuggestions generates a set of candidate text completions (e.g., product titles, descriptions) based on provided product information. This endpoint leverages GenAI models to create suggestions for improving existing product text or generating new content."
+            }
+          }
+        }
+      }
+    }
+  },
+  "servicePath": "",
+  "description": "Programmatically manage your Merchant Center Accounts.",
+  "title": "Merchant API",
+  "protocol": "rest",
+  "mtlsRootUrl": "https://merchantapi.mtls.googleapis.com/",
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/content": {
+          "description": "Manage your product listings and accounts for Google Shopping"
+        }
+      }
+    }
+  },
+  "baseUrl": "https://merchantapi.googleapis.com/",
+  "version_module": true
+}

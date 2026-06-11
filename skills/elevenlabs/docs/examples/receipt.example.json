@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "refused": true,
+  "reasons": [
+    "Refused: ElevenLabs write apply requires explicit no-snapshot approval until this command saves real before-state before provider writes"
+  ],
+  "refusal_type": "SafetyError",
+  "plan": {
+    "tool": "elevenlabs-api-tool",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T13:09:07Z",
+    "env_fingerprint": "https://api.elevenlabs.io",
+    "command": "elevenlabs-api-tool --output json --env-file .env.example --live --apply --ack-spend-money tts synthesize --voice-id voice-123 --text hello --out ./out.mp3",
+    "operation": "text_to_speech",
+    "section": "Text-to-speech",
+    "endpoint": "POST /v1/text-to-speech/{voice_id}",
+    "selector": {
+      "kind": "tts.synthesize",
+      "value": "voice-123"
+    },
+    "before_state": {
+      "required": true,
+      "supported": false,
+      "status": "blocked",
+      "operation": "text_to_speech",
+      "target": {
+        "selector": {
+          "kind": "tts.synthesize",
+          "value": "voice-123"
+        },
+        "endpoint": "POST /v1/text-to-speech/{voice_id}"
+      },
+      "saved_path": null,
+      "provider_backup_id": null,
+      "reason": "This ElevenLabs write family does not yet capture the live resource state or provider recovery point before apply."
+    },
+    "verification_plan": {
+      "type": "no-snapshot-approval",
+      "status": "blocked-before-provider-write",
+      "notes": "Apply must require explicit no-snapshot approval before ElevenLabs API key use or HTTP until command-specific saved snapshot support is available."
+    },
+    "recovery": {
+      "automatic_rollback": false,
+      "end_state": "irreversible_and_clearly_labeled",
+      "strategy": "no_inverse",
+      "rollback_ready": false,
+      "backups": [],
+      "snapshots": [],
+      "rollback_plan": null,
+      "restore_note": "text_to_speech: no automated rollback is available for this command; it is treated as irreversible and needs manual cleanup if removal is required."
+    }
+  },
+  "verification_plan": {
+    "type": "no-snapshot-approval",
+    "status": "blocked-before-provider-write",
+    "notes": "Apply must require explicit no-snapshot approval before ElevenLabs API key use or HTTP until command-specific saved snapshot support is available."
+  }
+}

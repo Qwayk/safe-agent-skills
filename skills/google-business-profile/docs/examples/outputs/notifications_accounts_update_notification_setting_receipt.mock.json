@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "notifications.accounts.update-notification-setting",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessnotifications.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/notifications_update_notification_setting.plan.json notifications accounts update-notification-setting --name accounts/123/notificationSetting --update-mask emailNotifications --notification-setting-file /tmp/notification_setting.json",
+    "selector": "accounts/123/notificationSetting",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "notifications.accounts.get-notification-setting",
+      "request": {
+        "method": "GET",
+        "host": "https://mybusinessnotifications.googleapis.com",
+        "path": "v1/accounts/123/notificationSetting"
+      },
+      "response": {
+        "name": "accounts/123/notificationSetting",
+        "emailNotifications": {
+          "enabled": false
+        }
+      }
+    },
+    "diff_applied": [
+      "emailNotifications"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  }
+}

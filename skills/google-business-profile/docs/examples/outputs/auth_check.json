@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "error_type": "ValidationError",
+  "error": "Missing configuration: <REDACTED/PLACEHOLDER>"
+}

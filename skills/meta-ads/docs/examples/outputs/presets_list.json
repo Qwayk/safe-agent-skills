@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "presets": [
+    {
+      "description": "Core ecommerce reporting at ad level (spend + purchases + ROAS) plus minimal inventory context.",
+      "id": "ecom_core",
+      "label": "Ecommerce (core)",
+      "use_case_tags": ["ecommerce", "performance", "roas"]
+    },
+    {
+      "description": "Lead-gen reporting at ad level (leads + CPL) plus minimal inventory context.",
+      "id": "leadgen_core",
+      "label": "Lead gen (core)",
+      "use_case_tags": ["lead_gen", "performance", "cpl"]
+    },
+    {
+      "description": "A maximal, analysis-friendly preset intended for snapshot exports. May require extra permissions.",
+      "id": "maximal_firehose",
+      "label": "Maximal (firehose)",
+      "use_case_tags": ["maximal", "diagnostics", "creative_fatigue", "reporting"]
+    }
+  ],
+  "presets_list": {
+    "count": 3,
+    "schema_version": "1"
+  }
+}

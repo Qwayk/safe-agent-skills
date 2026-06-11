@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "account-management.accounts.invitations.accept",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessaccountmanagement.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/account_management_accounts_invitations_accept_plan.mock.json --yes --receipt-out /tmp/account_management_accounts_invitations_accept_receipt.mock.json account-management accounts invitations accept --name accounts/123/invitations/inv-001",
+    "selector": "accounts/123/invitations/inv-001",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "account-management.accounts.invitations.list",
+      "request": {
+        "method": "GET",
+        "host": "https://mybusinessaccountmanagement.googleapis.com",
+        "path": "v1/accounts/123/invitations",
+        "params": {}
+      },
+      "response": {
+        "invitations": []
+      },
+      "note": "Follow-up list confirmed invitation is no longer present."
+    },
+    "diff_applied": [
+      "name"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  }
+}

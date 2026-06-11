@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "amazon-pa-api-tool"
+version = "0.1.0"
+description = "Amazon Product Advertising API (PA-API v5) CLI (Amazon-only; read-only)."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "requests>=2.31.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.8.0",
+  "ruff>=0.6.0",
+  "types-requests>=2.31.0.0",
+]
+
+[project.scripts]
+amazon-pa-api-tool = "amazon_pa_api_tool.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+exclude = [".venv", "build", "dist", "src/**.egg-info"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+check_untyped_defs = true
+show_error_codes = true
+pretty = false
+exclude = "(^\\.venv/|^build/|^dist/|^src/.*\\.egg-info/)"

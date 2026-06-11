@@ -1,0 +1,14 @@
+{
+  "tool": "google-ads-api-tool",
+  "version": "0.1.0",
+  "applied_at_utc": "2026-02-03T00:00:00Z",
+  "env_fingerprint": "<REDACTED>",
+  "command": "google-ads-api-tool gaql --customer-id YOUR_CUSTOMER_ID --query \"SELECT customer.id FROM customer LIMIT 1\" --limit 1",
+  "selector": "customer:YOUR_CUSTOMER_ID",
+  "changed": false,
+  "verification": {
+    "ok": null,
+    "details": "Not applicable for this example"
+  },
+  "diff_applied": []
+}

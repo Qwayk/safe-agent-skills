@@ -1,0 +1,21 @@
+{
+  "tool": "skimlinks-safe-cli",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-06-08T00:00:00Z",
+  "env_fingerprint": "skimlinks:publisher-redacted:domain-redacted",
+  "command": "skimlinks-safe-cli merchant merchants list --search example --limit 10",
+  "selector": "Merchant API search: example",
+  "risk_level": "low",
+  "risk_reasons": [
+    "Read-only operation"
+  ],
+  "preconditions": [],
+  "proposed_changes": [],
+  "verification_plan": [
+    "Confirm the response is JSON and no access_token appears in output"
+  ],
+  "rollback": {
+    "supported": false,
+    "notes": "No account changes are made by this command"
+  }
+}

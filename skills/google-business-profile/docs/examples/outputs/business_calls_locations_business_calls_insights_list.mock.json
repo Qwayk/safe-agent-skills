@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "operation": "business-calls.locations.business-calls-insights.list",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinessbusinesscalls.googleapis.com",
+    "path": "v1/locations/123/businesscallsinsights",
+    "params": {
+      "pageSize": 20,
+      "pageToken": "",
+      "filter": "metric=CALLS_ANSWERED"
+    }
+  },
+  "response": {
+    "businessCallsInsights": [
+      {
+        "metric": "CALLS_ANSWERED",
+        "count": 42,
+        "name": "locations/123/businesscallsinsights"
+      }
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "ok": true,
+  "operation": "reports.campaign",
+  "publisher_id": "12345",
+  "report": {
+    "body": [
+      {
+        "date": "2026-06-01",
+        "advertiserId": 500,
+        "advertiserName": "Example Advertiser",
+        "campaign": "summer-sale",
+        "quantity": {
+          "approved": 4,
+          "total": 4
+        },
+        "saleAmount": {
+          "approved": 199.95,
+          "total": 199.95
+        }
+      }
+    ]
+  },
+  "request": {
+    "method": "GET",
+    "endpoint": "https://api.awin.com/publishers/12345/reports/campaign",
+    "query": {
+      "required": [
+        "accessToken",
+        "startDate",
+        "endDate",
+        "region",
+        "timezone"
+      ],
+      "sent": [
+        "accessToken",
+        "advertiserIds",
+        "campaign",
+        "dateType",
+        "endDate",
+        "includeNumbersWithoutCampaign",
+        "interval",
+        "region",
+        "startDate",
+        "timezone"
+      ]
+    },
+    "response_status": 200
+  },
+  "metadata": {
+    "advertiser_ids": [
+      "500"
+    ],
+    "campaign": "summer",
+    "date_type": "transaction",
+    "end_date": "2026-06-02",
+    "include_numbers_without_campaign": true,
+    "interval": "day",
+    "region": "GB",
+    "start_date": "2026-06-01",
+    "timezone": "UTC"
+  }
+}

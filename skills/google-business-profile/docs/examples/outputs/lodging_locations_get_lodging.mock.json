@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "operation": "lodging.locations.get-lodging",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinesslodging.googleapis.com",
+    "path": "v1/locations/123/lodging",
+    "params": {
+      "readMask": "name,roomCount"
+    }
+  },
+  "response": {
+    "name": "locations/123/lodging",
+    "roomCount": 8,
+    "building": {
+      "guestAmenities": [
+        "WiFi"
+      ]
+    }
+  }
+}

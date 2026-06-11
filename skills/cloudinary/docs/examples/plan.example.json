@@ -1,0 +1,65 @@
+{
+  "tool": "cloudinary-safe-agent-cli",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-06-04T00:00:00Z",
+  "env_fingerprint": "product=api.cloudinary.com/demo-cloud|account=api.cloudinary.com/demo-account",
+  "command": "cloudinary-safe-agent-cli --output json --plan-out plans/delete-folder.json operations admin folders-delete-folder --path-param folder=archive/old",
+  "selector": {
+    "area": "admin",
+    "op_key": "folders-delete-folder",
+    "operation_id": "folders-delete-folder"
+  },
+  "risk_level": "high",
+  "risk_reasons": [
+    "admin",
+    "write-operation"
+  ],
+  "baseline": {
+    "env_fingerprint": "product=api.cloudinary.com/demo-cloud|account=api.cloudinary.com/demo-account",
+    "method": "DELETE",
+    "path": "/folders/archive%2Fold",
+    "query": {},
+    "auth_scope": "product_basic"
+  },
+  "request_plan": {
+    "input_style": "json_or_form",
+    "path": "/folders/archive%2Fold",
+    "query": {},
+    "fixed_form_fields": {},
+    "form_fields": {},
+    "body_json_present": false,
+    "multipart_present": false,
+    "out_path": null
+  },
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "blocked",
+    "operation": "folders-delete-folder",
+    "target": {
+      "area": "admin",
+      "op_key": "folders-delete-folder",
+      "method": "DELETE",
+      "path": "/folders/archive%2Fold"
+    },
+    "saved_path": null,
+    "provider_backup_id": null,
+    "reason": "This Cloudinary write family does not yet capture the live resource state or create a provider backup before apply."
+  },
+  "recovery": {
+    "automatic_rollback": false,
+    "backups": [],
+    "snapshots": [],
+    "rollback_plan": null,
+    "restore_note": "This write path has not saved or recorded a Cloudinary backup before apply. Use explicit Cloudinary backup or restore endpoints only after a separate review."
+  },
+  "verification_plan": {
+    "method": "no-snapshot-approval",
+    "status": "blocked-before-provider-write",
+    "notes": "Apply must require explicit no-snapshot approval before Cloudinary credentials are used for the write and before Cloudinary HTTP until command-specific saved snapshot support is available."
+  },
+  "post_apply_verification_plan": {
+    "method": "best_effort_read_back",
+    "notes": "The runner uses same-path GET read-back when available, otherwise it falls back to API success and Cloudinary identifiers when possible."
+  }
+}

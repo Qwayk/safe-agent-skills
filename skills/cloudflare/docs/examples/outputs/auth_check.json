@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "command": "auth.check",
+  "base_url": "https://api.cloudflare.com/client/v4",
+  "token_present": true,
+  "run_id": null,
+  "artifacts_dir": null,
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl",
+  "audit_log": null,
+  "audit_log_global": null,
+  "result": {
+    "status": "active"
+  }
+}

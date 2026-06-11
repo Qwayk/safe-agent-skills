@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "business-calls.locations.update-business-calls-settings",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessbusinesscalls.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/business_calls_settings_update.plan.json business-calls locations update-business-calls-settings --name locations/123/businesscallssettings --update-mask businessCallsEnabled --business-calls-settings-file /tmp/business_calls_settings.json",
+    "selector": "locations/123/businesscallssettings",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "business-calls.locations.get-business-calls-settings",
+      "request": {
+        "method": "GET",
+        "host": "https://mybusinessbusinesscalls.googleapis.com",
+        "path": "v1/locations/123/businesscallssettings"
+      },
+      "response": {
+        "name": "locations/123/businesscallssettings",
+        "businessCallsEnabled": true
+      },
+      "note": "Write verification read-back succeeded with matching business calls settings name."
+    },
+    "diff_applied": [
+      "businessCallsEnabled"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

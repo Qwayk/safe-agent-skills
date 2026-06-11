@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "refused": true,
+  "refusal_type": "SafetyError",
+  "reasons": [
+    "Refused: HubSpot live write requires explicit no-snapshot approval when no saved snapshot is available. Use the dry-run plan for review only; no HubSpot write was sent."
+  ],
+  "run_id": "2026-06-04T000000Z_example",
+  "artifacts_dir": ".state/runs/2026-06-04T000000Z_example",
+  "runs_index": ".state/runs/index.jsonl",
+  "audit_log": ".state/runs/2026-06-04T000000Z_example/audit.jsonl"
+}

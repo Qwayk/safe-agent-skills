@@ -1,0 +1,33 @@
+{
+  "api_version": "v1",
+  "data": {
+    "content_length": "123",
+    "content_type": "application/octet-stream",
+    "download": "redirect-metadata-only",
+    "location": "https://downloads.test.pipedrive.com/file.zip",
+    "path": "/files/12345/download"
+  },
+  "http": {
+    "method": "HEAD",
+    "status": 302,
+    "url": "https://example.pipedrive.com/api/v1/files/12345/download"
+  },
+  "operation": "GET /files/{id}/download",
+  "pagination": {
+    "fetched_pages": 1,
+    "has_more": false,
+    "mode": "none",
+    "next_cursor": null,
+    "requested_pages": 1
+  },
+  "request": {
+    "path": "/files/12345/download",
+    "path_parameters": {
+      "id": "12345"
+    },
+    "query": {}
+  },
+  "response": {
+    "binary": true
+  }
+}

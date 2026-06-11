@@ -1,0 +1,10 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "ok": true,
+  "run_id": null,
+  "runs_index": "<workspace>/.state/runs/index.jsonl",
+  "tool": "figma-safe-agent-cli",
+  "version": "0.1.0"
+}

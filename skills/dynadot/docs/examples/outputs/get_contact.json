@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_contact",
+  "contact_id": "123",
+  "out_path": null,
+  "dynadot": {
+    "command": "get_contact",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "ContactInfo": {
+        "ContactId": "123",
+        "FirstName": "Example",
+        "LastName": "User",
+        "Email": "user@example.com"
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "command": "accounts.members.add",
+  "dry_run": false,
+  "member_id": "m_example_1",
+  "ok": true,
+  "receipt": {
+    "applied_at_utc": "2026-02-10T00:00:00Z",
+    "changed": true,
+    "command": "cloudflare-api-tool --env-file .env --output json --apply --yes accounts members add --account-id acc_example --email <REDACTED_EMAIL> --role-id role_example --status pending",
+    "diff_applied": [
+      {
+        "account_id": "acc_example",
+        "action": "added",
+        "member_id": "m_example_1",
+        "resource": "account_member",
+        "role_ids": [
+          "role_example"
+        ],
+        "status": "pending"
+      }
+    ],
+    "env_fingerprint": "https://api.cloudflare.com/client/v4",
+    "notes": [],
+    "selector": {
+      "account_id": "acc_example",
+      "email_sha256": "405340cd9ac94b08b93800aee3f0db2dd673256bc318987e51e177eb53cca1b2",
+      "role_ids": [
+        "role_example"
+      ],
+      "status": "pending"
+    },
+    "tool": "cloudflare-api-tool",
+    "verification": {
+      "details": {
+        "expected_role_ids": [
+          "role_example"
+        ],
+        "expected_status": "pending",
+        "got_role_ids": [
+          "role_example"
+        ],
+        "got_status": "pending",
+        "member_id": "m_example_1"
+      },
+      "method": "read_back_get",
+      "ok": true
+    },
+    "version": "0.7.3"
+  },
+  "run_id": "2026-02-10T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}

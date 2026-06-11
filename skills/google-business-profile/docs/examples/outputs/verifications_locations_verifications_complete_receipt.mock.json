@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "verifications.locations.verifications.complete",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessverifications.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply verifications locations verifications complete --name locations/abc/verifications/verify-001 --pin-file /tmp/pin.txt",
+    "selector": "locations/abc/verifications/verify-001",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "verifications.locations.verifications.list",
+      "request": {
+        "method": "GET",
+        "host": "https://mybusinessverifications.googleapis.com",
+        "path": "v1/locations/abc/verifications",
+        "params": {}
+      },
+      "response": {
+        "verifications": [
+          {
+            "name": "locations/abc/verifications/verify-001",
+            "state": "COMPLETED"
+          }
+        ]
+      }
+    },
+    "diff_applied": [
+      "state"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  }
+}

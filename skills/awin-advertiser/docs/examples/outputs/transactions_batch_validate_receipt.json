@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "transactions batch validate",
+  "advertiser_id": "123456",
+  "endpoint": "/advertisers/123456/transactions/batch",
+  "method": "POST",
+  "status": 200,
+  "action_count": 2,
+  "action_breakdown": {
+    "approve": 1,
+    "amend": 1
+  },
+  "result": {
+    "response_status": 200
+  },
+  "receipt": {
+    "tool": "awin-advertiser-safe-cli",
+    "version": "0.1.1",
+    "applied_at_utc": "2026-06-09T00:00:00Z",
+    "env_fingerprint": "https://api.awin.com",
+    "command": "awin-advertiser-safe-cli transactions batch validate --advertiser-id 123456 --batch-file examples/transactions_batch.json --apply --yes --ack-irreversible --plan-in examples/transactions_batch_validate_plan.json --receipt-out examples/transactions_batch_validate_receipt.json",
+    "selector": {
+      "advertiser_id": "123456",
+      "endpoint": "advertisers/123456/transactions/batch"
+    },
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "details": {
+        "response_status": 200,
+        "batch_action_count": 2,
+        "action_breakdown": {
+          "approve": 1,
+          "amend": 1
+        }
+      }
+    },
+    "diff_applied": [
+      {
+        "resource": "transactions",
+        "action": "batch_validate",
+        "advertiser_id": "123456",
+        "batch_action_count": 2,
+        "action_breakdown": {
+          "approve": 1,
+          "amend": 1
+        }
+      }
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "receipt_out": "examples/transactions_batch_validate_receipt.json"
+}

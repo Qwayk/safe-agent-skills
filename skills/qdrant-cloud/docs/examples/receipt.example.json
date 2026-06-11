@@ -1,0 +1,21 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "dry_run": false,
+  "ok": true,
+  "operation": {
+    "domain": "account-v1",
+    "http_path": "/api/account/v1/accounts",
+    "http_verb": "POST",
+    "rpc": "qdrant.cloud.account.v1.AccountService.CreateAccount"
+  },
+  "plan_out": null,
+  "reasons": [
+    "Refused: missing explicit no-snapshot approval for a Qdrant Cloud write with no saved before-state or provider backup. Review the dry-run plan, then rerun with the required approval if you accept the recovery limit."
+  ],
+  "refusal_type": "SafetyError",
+  "refused": true,
+  "run_id": null,
+  "runs_index": "./.state/runs/index.jsonl"
+}

@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "verifications.locations.verify",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessverifications.googleapis.com",
+    "command": "google-business-profile-safe-cli verifications locations verify --name locations/abc --method ADDRESS --language-code en-US --context-file /tmp/context.json",
+    "selector": "locations/abc",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Location verification initiation"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "verifications.locations.verify",
+        "selector": "locations/abc",
+        "mask": "name",
+        "body_fingerprint": "0c82b849ee150893aa581b0523413d49f94f3a387f1e19edc382800451cdce4b"
+      }
+    ],
+    "verification_plan": [
+      "Call verifications list on the parent location and confirm the created verification name is present."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/abc",
+      "mask": "name",
+      "body_fingerprint": "0c82b849ee150893aa581b0523413d49f94f3a387f1e19edc382800451cdce4b",
+      "mask_fingerprint": "2d3b5e8a4f4f0f6a1dd4f3d2f8a4b6c5d5b8f0a3e0bb95c4f6f8d4e3c8f3f2f1f"
+    }
+  }
+}

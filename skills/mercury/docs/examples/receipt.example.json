@@ -1,0 +1,25 @@
+{
+  "tool": "mercury-api-tool",
+  "version": "0.1.0",
+  "applied_at_utc": "2026-01-01T00:00:00Z",
+  "env_fingerprint": "https://api.mercury.com/api/v1",
+  "action": "transactions.export",
+  "changed": true,
+  "files_written": [
+    {
+      "path": "transactions.csv",
+      "bytes": 12345
+    }
+  ],
+  "counts": {
+    "transactions": 250
+  },
+  "verification": {
+    "ok": true
+  },
+  "backups": [],
+  "rollback_plan": {
+    "supported": false,
+    "notes": "Delete local files to rollback."
+  }
+}

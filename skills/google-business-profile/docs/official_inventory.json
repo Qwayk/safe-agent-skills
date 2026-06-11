@@ -1,0 +1,1276 @@
+{
+  "last_audited_utc": "2026-06-04T10:46:20Z",
+  "tool_name": "google-business-profile-safe-cli",
+  "command_shape": "google-business-profile-safe-cli <family> <resource path parts> <method>",
+  "families": [
+    {
+      "slug": "account-management",
+      "label": "Business Profile Account Management API",
+      "official_version": "v1.1",
+      "source_kind": [
+        "discovery",
+        "rest"
+      ],
+      "source_urls": [
+        "https://developers.google.com/my-business/reference/accountmanagement/rest",
+        "https://mybusinessaccountmanagement.googleapis.com/$discovery/rest?version=v1"
+      ],
+      "default_flags": [
+        "planned",
+        "access-gated",
+        "live-unverified"
+      ],
+      "notes": "Google approval and API enablement are required before live use. Shipped account-admins and location-admins slices are intentionally limited. `accounts.admins` uses invitee `admin` with `OWNER` or `MANAGER`; `locations.admins` allows exactly one identity field: `admin` (invitee email) or `account` and supports `OWNER`, `MANAGER`, or `SITE_MANAGER`.",
+      "operations": [
+        {
+          "method_id": "accounts.create",
+          "http_method": "POST",
+          "path": "v1/accounts",
+          "planned_command": "google-business-profile-safe-cli account-management accounts create",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.get",
+          "http_method": "GET",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli account-management accounts get",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.list",
+          "http_method": "GET",
+          "path": "v1/accounts",
+          "planned_command": "google-business-profile-safe-cli account-management accounts list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.patch",
+          "http_method": "PATCH",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli account-management accounts patch",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.admins.create",
+          "http_method": "POST",
+          "path": "v1/{+parent}/admins",
+          "planned_command": "google-business-profile-safe-cli account-management accounts admins create",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.admins.delete",
+          "http_method": "DELETE",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli account-management accounts admins delete",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.admins.list",
+          "http_method": "GET",
+          "path": "v1/{+parent}/admins",
+          "planned_command": "google-business-profile-safe-cli account-management accounts admins list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.admins.patch",
+          "http_method": "PATCH",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli account-management accounts admins patch",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.invitations.accept",
+          "http_method": "POST",
+          "path": "v1/{+name}:accept",
+          "planned_command": "google-business-profile-safe-cli account-management accounts invitations accept",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.invitations.decline",
+          "http_method": "POST",
+          "path": "v1/{+name}:decline",
+          "planned_command": "google-business-profile-safe-cli account-management accounts invitations decline",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.invitations.list",
+          "http_method": "GET",
+          "path": "v1/{+parent}/invitations",
+          "planned_command": "google-business-profile-safe-cli account-management accounts invitations list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.transfer",
+          "http_method": "POST",
+          "path": "v1/{+name}:transfer",
+          "planned_command": "google-business-profile-safe-cli account-management locations transfer",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.admins.create",
+          "http_method": "POST",
+          "path": "v1/{+parent}/admins",
+          "planned_command": "google-business-profile-safe-cli account-management locations admins create",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.admins.delete",
+          "http_method": "DELETE",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli account-management locations admins delete",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.admins.list",
+          "http_method": "GET",
+          "path": "v1/{+parent}/admins",
+          "planned_command": "google-business-profile-safe-cli account-management locations admins list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.admins.patch",
+          "http_method": "PATCH",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli account-management locations admins patch",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "business-info",
+      "label": "Business Information API",
+      "official_version": "v1",
+      "source_kind": [
+        "discovery",
+        "rest"
+      ],
+      "source_urls": [
+        "https://developers.google.com/my-business/reference/businessinformation/rest",
+        "https://mybusinessbusinessinformation.googleapis.com/$discovery/rest?version=v1"
+      ],
+      "default_flags": [
+        "planned",
+        "access-gated",
+        "live-unverified"
+      ],
+      "notes": "Core location, attributes, categories, chains, and Google location search surface.",
+      "operations": [
+        {
+          "method_id": "accounts.locations.create",
+          "http_method": "POST",
+          "path": "v1/{+parent}/locations",
+          "planned_command": "google-business-profile-safe-cli business-info accounts locations create",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.list",
+          "http_method": "GET",
+          "path": "v1/{+parent}/locations",
+          "planned_command": "google-business-profile-safe-cli business-info accounts locations list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "attributes.list",
+          "http_method": "GET",
+          "path": "v1/attributes",
+          "planned_command": "google-business-profile-safe-cli business-info attributes list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "categories.batchGet",
+          "http_method": "GET",
+          "path": "v1/categories:batchGet",
+          "planned_command": "google-business-profile-safe-cli business-info categories batch-get",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "categories.list",
+          "http_method": "GET",
+          "path": "v1/categories",
+          "planned_command": "google-business-profile-safe-cli business-info categories list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "chains.get",
+          "http_method": "GET",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli business-info chains get",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "chains.search",
+          "http_method": "GET",
+          "path": "v1/chains:search",
+          "planned_command": "google-business-profile-safe-cli business-info chains search",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "googleLocations.search",
+          "http_method": "POST",
+          "path": "v1/googleLocations:search",
+          "planned_command": "google-business-profile-safe-cli business-info google-locations search",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.delete",
+          "http_method": "DELETE",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli business-info locations delete",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.get",
+          "http_method": "GET",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli business-info locations get",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.getAttributes",
+          "http_method": "GET",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli business-info locations get-attributes",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.getGoogleUpdated",
+          "http_method": "GET",
+          "path": "v1/{+name}:getGoogleUpdated",
+          "planned_command": "google-business-profile-safe-cli business-info locations get-google-updated",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.patch",
+          "http_method": "PATCH",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli business-info locations patch",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.updateAttributes",
+          "http_method": "PATCH",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli business-info locations update-attributes",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.attributes.getGoogleUpdated",
+          "http_method": "GET",
+          "path": "v1/{+name}:getGoogleUpdated",
+          "planned_command": "google-business-profile-safe-cli business-info locations attributes get-google-updated",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "lodging",
+      "label": "Lodging API",
+      "official_version": "v1.2",
+      "source_kind": [
+        "discovery",
+        "rest"
+      ],
+      "source_urls": [
+        "https://developers.google.com/my-business/reference/lodging/rest",
+        "https://mybusinesslodging.googleapis.com/$discovery/rest?version=v1"
+      ],
+      "default_flags": [
+        "planned",
+        "access-gated",
+        "live-unverified"
+      ],
+      "notes": "Lodging-only structured location data.",
+      "operations": [
+        {
+          "method_id": "locations.getLodging",
+          "http_method": "GET",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli lodging locations get-lodging",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.updateLodging",
+          "http_method": "PATCH",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli lodging locations update-lodging",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.lodging.getGoogleUpdated",
+          "http_method": "GET",
+          "path": "v1/{+name}:getGoogleUpdated",
+          "planned_command": "google-business-profile-safe-cli lodging locations lodging get-google-updated",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "notifications",
+      "label": "Notifications API",
+      "official_version": "v1.2",
+      "source_kind": [
+        "discovery",
+        "rest"
+      ],
+      "source_urls": [
+        "https://developers.google.com/my-business/reference/notifications/rest",
+        "https://mybusinessnotifications.googleapis.com/$discovery/rest?version=v1"
+      ],
+      "default_flags": [
+        "planned",
+        "access-gated",
+        "live-unverified"
+      ],
+      "notes": "Notifications still depend on Pub/Sub setup outside the method surface.",
+      "operations": [
+        {
+          "method_id": "accounts.getNotificationSetting",
+          "http_method": "GET",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli notifications accounts get-notification-setting",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.updateNotificationSetting",
+          "http_method": "PATCH",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli notifications accounts update-notification-setting",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "performance",
+      "label": "Performance API",
+      "official_version": "v1",
+      "source_kind": [
+        "discovery",
+        "rest"
+      ],
+      "source_urls": [
+        "https://developers.google.com/my-business/reference/performance/rest",
+        "https://businessprofileperformance.googleapis.com/$discovery/rest?version=v1"
+      ],
+      "default_flags": [
+        "planned",
+        "access-gated",
+        "live-unverified"
+      ],
+      "notes": "Business Profile insights and search keyword performance.",
+      "operations": [
+        {
+          "method_id": "locations.fetchMultiDailyMetricsTimeSeries",
+          "http_method": "GET",
+          "path": "v1/{+location}:fetchMultiDailyMetricsTimeSeries",
+          "planned_command": "google-business-profile-safe-cli performance locations fetch-multi-daily-metrics-time-series",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.getDailyMetricsTimeSeries",
+          "http_method": "GET",
+          "path": "v1/{+name}:getDailyMetricsTimeSeries",
+          "planned_command": "google-business-profile-safe-cli performance locations get-daily-metrics-time-series",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.searchkeywords.impressions.monthly.list",
+          "http_method": "GET",
+          "path": "v1/{+parent}/searchkeywords/impressions/monthly",
+          "planned_command": "google-business-profile-safe-cli performance locations search-keywords impressions monthly list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "place-actions",
+      "label": "Place Actions API",
+      "official_version": "v1",
+      "source_kind": [
+        "discovery",
+        "rest"
+      ],
+      "source_urls": [
+        "https://developers.google.com/my-business/reference/placeactions/rest",
+        "https://mybusinessplaceactions.googleapis.com/$discovery/rest?version=v1"
+      ],
+      "default_flags": [
+        "planned",
+        "access-gated",
+        "live-unverified"
+      ],
+      "notes": "Action link CRUD plus place action type metadata.",
+      "operations": [
+        {
+          "method_id": "locations.placeActionLinks.create",
+          "http_method": "POST",
+          "path": "v1/{+parent}/placeActionLinks",
+          "planned_command": "google-business-profile-safe-cli place-actions locations place-action-links create",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.placeActionLinks.delete",
+          "http_method": "DELETE",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli place-actions locations place-action-links delete",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.placeActionLinks.get",
+          "http_method": "GET",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli place-actions locations place-action-links get",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.placeActionLinks.list",
+          "http_method": "GET",
+          "path": "v1/{+parent}/placeActionLinks",
+          "planned_command": "google-business-profile-safe-cli place-actions locations place-action-links list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.placeActionLinks.patch",
+          "http_method": "PATCH",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli place-actions locations place-action-links patch",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "placeActionTypeMetadata.list",
+          "http_method": "GET",
+          "path": "v1/placeActionTypeMetadata",
+          "planned_command": "google-business-profile-safe-cli place-actions place-action-type-metadata list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "qanda",
+      "label": "Q&A API",
+      "official_version": "v1",
+      "source_kind": [
+        "discovery",
+        "rest",
+        "change-log"
+      ],
+      "source_urls": [
+        "https://developers.google.com/my-business/reference/qanda/rest",
+        "https://developers.google.com/my-business/content/qanda/change-log",
+        "https://mybusinessqanda.googleapis.com/$discovery/rest?version=v1"
+      ],
+      "default_flags": [
+        "provider-discontinued",
+        "not-shipping",
+        "live-unverified"
+      ],
+      "notes": "Google discontinued this API on 2025-11-03. Keep it accounted for, but do not treat it as a live-shippable command surface.",
+      "operations": [
+        {
+          "method_id": "locations.questions.create",
+          "http_method": "POST",
+          "path": "v1/{+parent}",
+          "planned_command": "google-business-profile-safe-cli qanda locations questions create"
+        },
+        {
+          "method_id": "locations.questions.delete",
+          "http_method": "DELETE",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli qanda locations questions delete"
+        },
+        {
+          "method_id": "locations.questions.list",
+          "http_method": "GET",
+          "path": "v1/{+parent}",
+          "planned_command": "google-business-profile-safe-cli qanda locations questions list"
+        },
+        {
+          "method_id": "locations.questions.patch",
+          "http_method": "PATCH",
+          "path": "v1/{+name}",
+          "planned_command": "google-business-profile-safe-cli qanda locations questions patch"
+        },
+        {
+          "method_id": "locations.questions.answers.delete",
+          "http_method": "DELETE",
+          "path": "v1/{+name}/answers:delete",
+          "planned_command": "google-business-profile-safe-cli qanda locations questions answers delete"
+        },
+        {
+          "method_id": "locations.questions.answers.list",
+          "http_method": "GET",
+          "path": "v1/{+parent}/answers",
+          "planned_command": "google-business-profile-safe-cli qanda locations questions answers list"
+        },
+        {
+          "method_id": "locations.questions.answers.upsert",
+          "http_method": "POST",
+          "path": "v1/{+parent}/answers:upsert",
+          "planned_command": "google-business-profile-safe-cli qanda locations questions answers upsert"
+        }
+      ]
+    },
+    {
+      "slug": "verifications",
+      "label": "Verifications API",
+      "official_version": "v1",
+      "source_kind": [
+        "discovery",
+        "rest"
+      ],
+      "source_urls": [
+        "https://developers.google.com/my-business/reference/verifications/rest",
+        "https://mybusinessverifications.googleapis.com/$discovery/rest?version=v1"
+      ],
+      "default_flags": [
+        "planned",
+        "access-gated",
+        "live-unverified"
+      ],
+      "notes": "The discovery document exposes verification token generation beyond the normal REST overview.",
+      "operations": [
+        {
+          "method_id": "locations.fetchVerificationOptions",
+          "http_method": "POST",
+          "path": "v1/{+location}:fetchVerificationOptions",
+          "planned_command": "google-business-profile-safe-cli verifications locations fetch-verification-options",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.getVoiceOfMerchantState",
+          "http_method": "GET",
+          "path": "v1/{+name}/VoiceOfMerchantState",
+          "planned_command": "google-business-profile-safe-cli verifications locations get-voice-of-merchant-state",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.verify",
+          "http_method": "POST",
+          "path": "v1/{+name}:verify",
+          "planned_command": "google-business-profile-safe-cli verifications locations verify",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.verifications.complete",
+          "http_method": "POST",
+          "path": "v1/{+name}:complete",
+          "planned_command": "google-business-profile-safe-cli verifications locations verifications complete",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.verifications.list",
+          "http_method": "GET",
+          "path": "v1/{+parent}/verifications",
+          "planned_command": "google-business-profile-safe-cli verifications locations verifications list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "verificationTokens.generate",
+          "http_method": "POST",
+          "path": "v1/verificationTokens:generate",
+          "planned_command": "google-business-profile-safe-cli verifications verification-tokens generate",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified",
+            "discovery-only"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "business-calls",
+      "label": "Business Calls API",
+      "official_version": "v1",
+      "source_kind": [
+        "rest"
+      ],
+      "source_urls": [
+        "https://developers.google.com/my-business/reference/businesscalls/rest",
+        "https://mybusinessbusinesscalls.googleapis.com/$discovery/rest?version=v1"
+      ],
+      "default_flags": [
+        "planned",
+        "access-gated",
+        "live-unverified"
+      ],
+      "notes": "The docs list a discovery URL, but that path should be rechecked at implementation time because live discovery fetches may not behave like the other family endpoints.",
+      "operations": [
+        {
+          "method_id": "locations.getBusinesscallssettings",
+          "http_method": "GET",
+          "path": "/v1/{name=locations/*/businesscallssettings}",
+          "planned_command": "google-business-profile-safe-cli business-calls locations get-business-calls-settings",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.updateBusinesscallssettings",
+          "http_method": "PATCH",
+          "path": "/v1/{businessCallsSettings.name=locations/*/businesscallssettings}",
+          "planned_command": "google-business-profile-safe-cli business-calls locations update-business-calls-settings",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "locations.businesscallsinsights.list",
+          "http_method": "GET",
+          "path": "/v1/{parent=locations/*}/businesscallsinsights",
+          "planned_command": "google-business-profile-safe-cli business-calls locations business-calls-insights list",
+          "flags": [
+            "implemented",
+            "access-gated",
+            "live-unverified"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "media-upload-v1",
+      "label": "Media upload v1",
+      "official_version": "v1",
+      "source_kind": [
+        "rest"
+      ],
+      "source_urls": [
+        "https://developers.google.com/my-business/reference/rest/v1/media/upload"
+      ],
+      "default_flags": [
+        "planned",
+        "live-unverified"
+      ],
+      "notes": "The same method page documents both metadata and binary upload URIs.",
+      "operations": [
+        {
+          "method_id": "media.upload",
+          "http_method": "POST",
+          "path": "/v1/media/{resourceName=**} and /upload/v1/media/{resourceName=**}",
+          "planned_command": "google-business-profile-safe-cli media-upload-v1 media upload",
+          "flags": [
+            "implemented",
+            "live-unverified"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "legacy-v49",
+      "label": "Google My Business API v4.9",
+      "official_version": "v4.9",
+      "source_kind": [
+        "rest"
+      ],
+      "source_urls": [
+        "https://developers.google.com/my-business/reference/rest"
+      ],
+      "default_flags": [
+        "planned",
+        "legacy-v49",
+        "live-unverified"
+      ],
+      "notes": "This is the remaining official legacy surface. Method-page deprecation notes should win over overview wording when the docs disagree.",
+      "operations": [
+        {
+          "method_id": "accounts.create",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts create"
+        },
+        {
+          "method_id": "accounts.deleteNotifications",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts delete-notifications"
+        },
+        {
+          "method_id": "accounts.generateAccountNumber",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts generate-account-number"
+        },
+        {
+          "method_id": "accounts.get",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts get"
+        },
+        {
+          "method_id": "accounts.getNotifications",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts get-notifications"
+        },
+        {
+          "method_id": "accounts.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts list"
+        },
+        {
+          "method_id": "accounts.listRecommendGoogleLocations",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts list-recommend-google-locations"
+        },
+        {
+          "method_id": "accounts.update",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts update"
+        },
+        {
+          "method_id": "accounts.updateNotifications",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts update-notifications"
+        },
+        {
+          "method_id": "accounts.admins.create",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts admins create"
+        },
+        {
+          "method_id": "accounts.admins.delete",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts admins delete"
+        },
+        {
+          "method_id": "accounts.admins.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts admins list"
+        },
+        {
+          "method_id": "accounts.admins.patch",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts admins patch"
+        },
+        {
+          "method_id": "accounts.invitations.accept",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts invitations accept"
+        },
+        {
+          "method_id": "accounts.invitations.decline",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts invitations decline"
+        },
+        {
+          "method_id": "accounts.invitations.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts invitations list"
+        },
+        {
+          "method_id": "accounts.locations.associate",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations associate"
+        },
+        {
+          "method_id": "accounts.locations.batchGet",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations batch-get"
+        },
+        {
+          "method_id": "accounts.locations.batchGetReviews",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations batch-get-reviews"
+        },
+        {
+          "method_id": "accounts.locations.clearAssociation",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations clear-association"
+        },
+        {
+          "method_id": "accounts.locations.create",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations create"
+        },
+        {
+          "method_id": "accounts.locations.delete",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations delete"
+        },
+        {
+          "method_id": "accounts.locations.fetchVerificationOptions",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations fetch-verification-options"
+        },
+        {
+          "method_id": "accounts.locations.findMatches",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations find-matches"
+        },
+        {
+          "method_id": "accounts.locations.get",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations get"
+        },
+        {
+          "method_id": "accounts.locations.getFoodMenus",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations get-food-menus"
+        },
+        {
+          "method_id": "accounts.locations.getGoogleUpdated",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations get-google-updated"
+        },
+        {
+          "method_id": "accounts.locations.getHealthProviderAttributes",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations get-health-provider-attributes"
+        },
+        {
+          "method_id": "accounts.locations.getServiceList",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations get-service-list"
+        },
+        {
+          "method_id": "accounts.locations.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations list"
+        },
+        {
+          "method_id": "accounts.locations.patch",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations patch"
+        },
+        {
+          "method_id": "accounts.locations.reportInsights",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations report-insights"
+        },
+        {
+          "method_id": "accounts.locations.transfer",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations transfer",
+          "flags": [
+            "implemented",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.updateFoodMenus",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations update-food-menus"
+        },
+        {
+          "method_id": "accounts.locations.updateHealthProviderAttributes",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations update-health-provider-attributes"
+        },
+        {
+          "method_id": "accounts.locations.updateServiceList",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations update-service-list"
+        },
+        {
+          "method_id": "accounts.locations.verify",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations verify"
+        },
+        {
+          "method_id": "accounts.locations.admins.create",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations admins create"
+        },
+        {
+          "method_id": "accounts.locations.admins.delete",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations admins delete"
+        },
+        {
+          "method_id": "accounts.locations.admins.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations admins list"
+        },
+        {
+          "method_id": "accounts.locations.admins.patch",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations admins patch"
+        },
+        {
+          "method_id": "accounts.locations.followers.getMetadata",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations followers get-metadata"
+        },
+        {
+          "method_id": "accounts.locations.insuranceNetworks.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations insurance-networks list"
+        },
+        {
+          "method_id": "accounts.locations.localPosts.create",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations local-posts create"
+        },
+        {
+          "method_id": "accounts.locations.localPosts.delete",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations local-posts delete"
+        },
+        {
+          "method_id": "accounts.locations.localPosts.get",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations local-posts get"
+        },
+        {
+          "method_id": "accounts.locations.localPosts.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations local-posts list"
+        },
+        {
+          "method_id": "accounts.locations.localPosts.patch",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations local-posts patch"
+        },
+        {
+          "method_id": "accounts.locations.localPosts.reportInsights",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations local-posts report-insights"
+        },
+        {
+          "method_id": "accounts.locations.media.create",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations media create",
+          "flags": [
+            "implemented",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.media.delete",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations media delete"
+        },
+        {
+          "method_id": "accounts.locations.media.get",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations media get"
+        },
+        {
+          "method_id": "accounts.locations.media.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations media list"
+        },
+        {
+          "method_id": "accounts.locations.media.patch",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations media patch"
+        },
+        {
+          "method_id": "accounts.locations.media.startUpload",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations media start-upload",
+          "flags": [
+            "implemented",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.media.customers.get",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations media customers get"
+        },
+        {
+          "method_id": "accounts.locations.media.customers.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations media customers list"
+        },
+        {
+          "method_id": "accounts.locations.questions.create",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations questions create",
+          "flags": [
+            "provider-discontinued",
+            "not-shipping",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.questions.delete",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations questions delete",
+          "flags": [
+            "provider-discontinued",
+            "not-shipping",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.questions.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations questions list",
+          "flags": [
+            "provider-discontinued",
+            "not-shipping",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.questions.patch",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations questions patch",
+          "flags": [
+            "provider-discontinued",
+            "not-shipping",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.questions.answers.delete",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations questions answers delete",
+          "flags": [
+            "provider-discontinued",
+            "not-shipping",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.questions.answers.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations questions answers list",
+          "flags": [
+            "provider-discontinued",
+            "not-shipping",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.questions.answers.upsert",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations questions answers upsert",
+          "flags": [
+            "provider-discontinued",
+            "not-shipping",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.reviews.deleteReply",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations reviews delete-reply",
+          "flags": [
+            "implemented",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.reviews.get",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations reviews get",
+          "flags": [
+            "implemented",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.reviews.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations reviews list",
+          "flags": [
+            "implemented",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.reviews.updateReply",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations reviews update-reply",
+          "flags": [
+            "implemented",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.verifications.complete",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations verifications complete",
+          "flags": [
+            "implemented",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "accounts.locations.verifications.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 accounts locations verifications list",
+          "flags": [
+            "implemented",
+            "legacy-v49",
+            "live-unverified"
+          ]
+        },
+        {
+          "method_id": "attributes.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 attributes list"
+        },
+        {
+          "method_id": "categories.batchGet",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 categories batch-get"
+        },
+        {
+          "method_id": "categories.list",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 categories list"
+        },
+        {
+          "method_id": "chains.get",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 chains get"
+        },
+        {
+          "method_id": "chains.search",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 chains search"
+        },
+        {
+          "method_id": "googleLocations.report",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 google-locations report"
+        },
+        {
+          "method_id": "googleLocations.search",
+          "planned_command": "google-business-profile-safe-cli legacy-v49 google-locations search"
+        }
+      ]
+    }
+  ]
+}

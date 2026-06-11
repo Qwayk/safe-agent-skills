@@ -1,0 +1,89 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "count": 7,
+  "ok": true,
+  "operations": [
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "autorag",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "autorag-config-ai-search",
+      "path_template": "/accounts/{account_id}/autorag/rags/{id}/ai-search",
+      "sensitivity": "sensitive_read",
+      "summary": "AI Search",
+      "tags": "AutoRAG RAG Search"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "autorag",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "autorag-config-files",
+      "path_template": "/accounts/{account_id}/autorag/rags/{id}/files",
+      "sensitivity": "sensitive_read",
+      "summary": "Files",
+      "tags": "AutoRAG RAG"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "autorag",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "autorag-config-list-jobs",
+      "path_template": "/accounts/{account_id}/autorag/rags/{id}/jobs",
+      "sensitivity": "sensitive_read",
+      "summary": "List Jobs",
+      "tags": "AutoRAG Jobs"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "autorag",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "autorag-config-get-job",
+      "path_template": "/accounts/{account_id}/autorag/rags/{id}/jobs/{job_id}",
+      "sensitivity": "sensitive_read",
+      "summary": "Get a Job Details",
+      "tags": "AutoRAG Jobs"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "autorag",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "autorag-config-list-job-logs",
+      "path_template": "/accounts/{account_id}/autorag/rags/{id}/jobs/{job_id}/logs",
+      "sensitivity": "sensitive_read",
+      "summary": "List Job Logs",
+      "tags": "AutoRAG Jobs"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "autorag",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "autorag-config-search",
+      "path_template": "/accounts/{account_id}/autorag/rags/{id}/search",
+      "sensitivity": "sensitive_read",
+      "summary": "Search",
+      "tags": "AutoRAG RAG Search"
+    },
+    {
+      "api_token_groups": "com.cloudflare.api.account.rag",
+      "area": "autorag",
+      "deprecated": false,
+      "method": "PATCH",
+      "operation_id": "autorag-config-sync",
+      "path_template": "/accounts/{account_id}/autorag/rags/{id}/sync",
+      "sensitivity": "sensitive_read",
+      "summary": "Sync",
+      "tags": "AutoRAG RAG"
+    }
+  ],
+  "run_id": null,
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}
+

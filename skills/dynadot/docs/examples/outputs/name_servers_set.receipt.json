@@ -1,0 +1,61 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "refused": true,
+  "reasons": [
+    "Refused: missing explicit no-snapshot approval for a Dynadot write with no reliable before-state snapshot. Review the dry-run plan, then rerun with --ack-no-snapshot if you approve applying without a snapshot."
+  ],
+  "refusal_type": "SafetyError",
+  "count": 1,
+  "errors": 0,
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "no_snapshot_available",
+    "selector": {
+      "kind": "domains.name_servers.set",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "storage": null,
+    "saved_at_utc": null,
+    "reason": "Refused: missing explicit no-snapshot approval for a Dynadot write with no reliable before-state snapshot. Review the dry-run plan, then rerun with --ack-no-snapshot if you approve applying without a snapshot.",
+    "notes": "No combined saved get_ns snapshot is available in this example; approved apply may continue after explicit no-snapshot approval."
+  },
+  "plan": {
+    "tool": "dynadot-api-tool",
+    "version": "0.5.0",
+    "env_fingerprint": "https://api.dynadot.com/api3.json",
+    "command": "dynadot-api-tool --apply --yes --plan-in plan.json domains name-servers set --diff-in name_servers.diff.json",
+    "selector": {
+      "kind": "domains.name_servers.set",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "name-server-change"
+    ],
+    "verification_plan": {
+      "notes": "Apply requires explicit no-snapshot approval before Dynadot HTTP when no useful before-state can be saved.",
+      "type": "no-snapshot-approval"
+    },
+    "before_state": {
+      "required": true,
+      "supported": false,
+      "status": "no_snapshot_available",
+      "selector": {
+        "kind": "domains.name_servers.set",
+        "value": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "storage": null,
+      "saved_at_utc": null,
+      "reason": "Refused: missing explicit no-snapshot approval for a Dynadot write with no reliable before-state snapshot. Review the dry-run plan, then rerun with --ack-no-snapshot if you approve applying without a snapshot.",
+      "notes": "No combined saved get_ns snapshot is available in this example; approved apply may continue after explicit no-snapshot approval."
+    },
+    "recovery": {
+      "end_state": "irreversible_and_clearly_labeled",
+      "backups": [],
+      "snapshots": [],
+      "rollback_plan": null
+    }
+  }
+}

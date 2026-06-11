@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "operation": "account-management.accounts.list",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinessaccountmanagement.googleapis.com",
+    "path": "v1/accounts",
+    "params": {
+      "filter": "type=USER_GROUP",
+      "pageSize": 20
+    }
+  },
+  "response": {
+    "accounts": [
+      {
+        "name": "accounts/ACCOUNT_ID",
+        "accountName": "Example Location Group",
+        "type": "LOCATION_GROUP"
+      }
+    ]
+  }
+}

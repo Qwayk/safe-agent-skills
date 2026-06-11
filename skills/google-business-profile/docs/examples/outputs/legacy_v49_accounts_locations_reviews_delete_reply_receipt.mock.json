@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "legacy-v49.accounts.locations.reviews.delete-reply",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/legacy_review_reply_delete.plan.json --yes --receipt-out /tmp/legacy_review_reply_delete.receipt.json legacy-v49 accounts locations reviews delete-reply --name accounts/123/locations/456/reviews/review-123",
+    "selector": "accounts/123/locations/456/reviews/review-123",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "legacy-v49.accounts.locations.reviews.delete-reply",
+      "request": {
+        "method": "GET",
+        "host": "https://mybusiness.googleapis.com",
+        "path": "v4/accounts/123/locations/456/reviews/review-123",
+        "params": {}
+      },
+      "response": {
+        "name": "accounts/123/locations/456/reviews/review-123",
+        "reviewId": "review-123",
+        "starRating": "FOUR",
+        "comment": "Helpful staff and quick pickup."
+      },
+      "note": "Legacy review reply follow-up verification succeeded: reviewReply is absent."
+    },
+    "diff_applied": [
+      "reviewReply"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "receipt_path": null
+}

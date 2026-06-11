@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "operation": "place-actions.place-action-type-metadata.list",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinessplaceactions.googleapis.com",
+    "path": "v1/placeActionTypeMetadata",
+    "params": {
+      "languageCode": "en-US",
+      "pageSize": 20
+    }
+  },
+  "response": {
+    "placeActionTypeMetadata": [
+      {
+        "placeActionType": "DINING_RESERVATION",
+        "displayName": "Dining Reservation"
+      }
+    ]
+  }
+}

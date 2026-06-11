@@ -1,0 +1,30 @@
+{
+  "tool": "instantly-api-tool",
+  "version": "0.6.0",
+  "applied_at_utc": "2026-02-19T00:00:00Z",
+  "env_fingerprint": "https://api.instantly.ai/api/v2",
+  "command": "instantly-api-tool --apply campaigns pause --campaign-id CAMPAIGN_ID",
+  "selector": {
+    "kind": "campaigns.pause",
+    "value": "CAMPAIGN_ID"
+  },
+  "changed": true,
+  "verification": {
+    "ok": true,
+    "details": {
+      "type": "campaign-get",
+      "campaign_id": "CAMPAIGN_ID"
+    }
+  },
+  "result": {
+    "operation_result": {
+      "ok": true
+    },
+    "verified_campaign": {
+      "id": "CAMPAIGN_ID",
+      "status": "paused"
+    }
+  },
+  "backups": [],
+  "rollback_plan": null
+}

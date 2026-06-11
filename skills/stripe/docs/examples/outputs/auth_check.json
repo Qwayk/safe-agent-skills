@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "stripe_api_key_present": true,
+  "stripe_api_key_type": "restricted",
+  "stripe_api_key_mode": "test",
+  "stripe_version_override": null,
+  "stripe_account_allowlist_configured": false,
+  "stripe_account_allowlist_count": 0,
+  "oauth_token": {
+    "exists": false,
+    "path": ".state/token.json"
+  }
+}

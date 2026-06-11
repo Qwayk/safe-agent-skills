@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "account-management.locations.admins.delete",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessaccountmanagement.googleapis.com",
+    "command": "google-business-profile-safe-cli account-management locations admins delete --name locations/abc/admins/admin-456",
+    "selector": "locations/abc/admins/admin-456",
+    "risk_level": "high",
+    "risk_reasons": [
+      "Location admin deletion can change location access."
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "account-management.locations.admins.delete",
+        "selector": "locations/abc/admins/admin-456",
+        "mask": "name",
+        "body_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      }
+    ],
+    "verification_plan": [
+      "Read back the admin list from locations.admins.list and confirm the admin no longer appears."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/abc/admins/admin-456",
+      "body_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "mask": "name",
+      "mask_fingerprint": "82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

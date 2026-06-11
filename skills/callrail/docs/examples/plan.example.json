@@ -1,0 +1,46 @@
+{
+  "command": "tags create",
+  "env_fingerprint": "https://api.callrail.test",
+  "generated_at_utc": "2026-06-04T06:37:53Z",
+  "notes": "Dry-run plan only. Add --apply to execute this action later.",
+  "before_state": {
+    "approval_required": "--ack-no-snapshot",
+    "provider_backup_id": null,
+    "reason": "This CallRail write path does not save a useful before-state snapshot today. Review the exact request, then add --ack-no-snapshot if you approve applying without a saved snapshot.",
+    "required": true,
+    "saved_path": null,
+    "status": "no_snapshot_available",
+    "supported": false
+  },
+  "request": {
+    "headers": {
+      "Authorization": "***REDACTED***"
+    },
+    "json": {
+      "color": "blue",
+      "name": "VIP Lead"
+    },
+    "method": "POST",
+    "url": "https://api.callrail.test/v3/a/acc_example/tags.json"
+  },
+  "risk_level": "medium",
+  "risk_reasons": [
+    "dry-run-no-apply"
+  ],
+  "rollback": {
+    "automatic_rollback": false,
+    "notes": "No generic CallRail rollback is available without a saved before-state snapshot.",
+    "supported": false
+  },
+  "tool": "qwayk-callrail-safe-agent-cli",
+  "verification_plan": {
+    "approval_required": "--ack-no-snapshot",
+    "status": "best_effort_after_apply",
+    "steps": [
+      "Record the CallRail API response in the receipt.",
+      "Run the best available follow-up read when the API exposes one for the target.",
+      "Record that no saved before-state snapshot was available for automatic rollback."
+    ]
+  },
+  "version": "0.1.0"
+}

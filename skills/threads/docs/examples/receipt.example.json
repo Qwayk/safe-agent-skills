@@ -1,0 +1,96 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "refused": true,
+  "reasons": [
+    "Refused: Threads write apply requires explicit no-snapshot approval until this command saves real before-state before provider writes, local token writes, demo/job writes, or receipt output"
+  ],
+  "refusal_type": "SafetyError",
+  "plan": {
+    "baseline": {
+      "env_fingerprint": "https://graph.threads.net"
+    },
+    "before_state": {
+      "provider_backup_id": null,
+      "provider_write": {
+        "action": "posts.create-text",
+        "proposed_changes": [
+          {
+            "action": "create_post",
+            "payload": {
+              "media_type": "TEXT",
+              "text": "Draft"
+            },
+            "user": "demo-user"
+          }
+        ],
+        "service": "Threads Graph API"
+      },
+      "reason": "This source tool can build and review Threads write plans, but it does not yet save operation-specific before-state or provider backup data before applying them.",
+      "required": true,
+      "saved_path": null,
+      "status": "blocked",
+      "supported": false
+    },
+    "command": "threads-api-tool --output json --apply posts create-text --threads-user-id demo-user --text Draft",
+    "command_id": "posts.create-text",
+    "env_fingerprint": "https://graph.threads.net",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "preconditions": [
+      "dry-run reviewed by user"
+    ],
+    "proposed_changes": [
+      {
+        "action": "create_post",
+        "payload": {
+          "media_type": "TEXT",
+          "text": "Draft"
+        },
+        "user": "demo-user"
+      }
+    ],
+    "risk_level": "medium",
+    "risk_reasons": [
+      "write-operation"
+    ],
+    "rollback": {
+      "automatic_rollback": false,
+      "mode": "irreversible_and_clearly_labeled",
+      "notes": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current Threads write families as irreversible_and_clearly_labeled and use the saved plan and refusal output for manual follow-up only.",
+      "requires_ack_irreversible": false,
+      "supported": false
+    },
+    "selector": {
+      "kind": "posts.create-text",
+      "threads_media_id": "<auto>",
+      "threads_user_id": "demo-user"
+    },
+    "tool": "threads-api-tool",
+    "verification_plan": {
+      "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply.",
+      "status": "blocked_before_apply",
+      "steps": [
+        "Confirm no Threads provider write endpoint was called.",
+        "Confirm no local token file, demo/job receipt, or write output was created by the write flow.",
+        "Confirm no successful write receipt was emitted."
+      ]
+    },
+    "version": "0.1.0"
+  },
+  "rollback": {
+    "automatic_rollback": false,
+    "mode": "irreversible_and_clearly_labeled",
+    "notes": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current Threads write families as irreversible_and_clearly_labeled and use the saved plan and refusal output for manual follow-up only.",
+    "requires_ack_irreversible": false,
+    "supported": false
+  },
+  "verification_plan": {
+    "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply.",
+    "status": "blocked_before_apply",
+    "steps": [
+      "Confirm no Threads provider write endpoint was called.",
+      "Confirm no local token file, demo/job receipt, or write output was created by the write flow.",
+      "Confirm no successful write receipt was emitted."
+    ]
+  }
+}

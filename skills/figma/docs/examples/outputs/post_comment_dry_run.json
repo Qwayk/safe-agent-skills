@@ -1,0 +1,63 @@
+{
+  "dry_run": true,
+  "ok": true,
+  "operation": {
+    "area": "comments",
+    "op_key": "post-comment",
+    "title": "Add comment",
+    "method": "POST",
+    "path_template": "/v1/files/{file_key}/comments",
+    "safety": {
+      "mode": "write",
+      "requires_yes": true,
+      "requires_ack_irreversible": false,
+      "live_verification_note": "Pending live verification once this operation is wired into the runtime and auth mode is connected"
+    }
+  },
+  "request": {
+    "method": "POST",
+    "path": "/v1/files/file_123/comments",
+    "url": "http://127.0.0.1:8765/v1/files/file_123/comments",
+    "query": {},
+    "body": {
+      "comment": "Hello from the local proof stub"
+    },
+    "headers": {},
+    "verification_note": "Write operation is in dry-run mode; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available until operation-specific saved snapshot support is available."
+  },
+  "plan": {
+    "operation_id": "comments:post-comment",
+    "method": "POST",
+    "path": "/v1/files/file_123/comments",
+    "url": "http://127.0.0.1:8765/v1/files/file_123/comments",
+    "query": {},
+    "body": {
+      "comment": "Hello from the local proof stub"
+    },
+    "env_fingerprint": "http://127.0.0.1:8765|personal",
+    "verification_note": "Write operation is in dry-run mode; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available until operation-specific saved snapshot support is available.",
+    "before_state": {
+      "required": true,
+      "supported": false,
+      "status": "blocked",
+      "operation": "comments:post-comment",
+      "target": {
+        "method": "POST",
+        "path": "/v1/files/file_123/comments",
+        "path_params": {
+          "file_key": "file_123"
+        },
+        "query": {}
+      },
+      "saved_path": null,
+      "provider_backup_id": null,
+      "reason": "This Figma write family does not yet capture the live resource state or provider recovery point before apply."
+    },
+    "verification_plan": {
+      "type": "no-snapshot-approval",
+      "status": "blocked-before-provider-write",
+      "notes": "Apply must require explicit no-snapshot approval before Figma token use or HTTP until operation-specific saved snapshot support is available."
+    }
+  },
+  "verification_note": "Write operation is in dry-run mode; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available until operation-specific saved snapshot support is available."
+}

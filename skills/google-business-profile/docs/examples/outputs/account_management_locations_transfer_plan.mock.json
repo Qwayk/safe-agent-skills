@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "account-management.locations.transfer",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessaccountmanagement.googleapis.com",
+    "command": "google-business-profile-safe-cli account-management locations transfer --name locations/abc --source-account accounts/111 --destination-account accounts/222",
+    "selector": "locations/abc",
+    "risk_level": "high",
+    "risk_reasons": [
+      "Location transfer changes account ownership for a location."
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "account-management.locations.transfer",
+        "selector": "locations/abc",
+        "mask": "name,source_account,destination_account",
+        "body_fingerprint": "8ae6fda5ce7d3e744a54786a2cde4507d6a86e49633f60b16ac65be7f7e6eabf"
+      }
+    ],
+    "verification_plan": [
+      "List source and destination account locations with readMask=name. Transfer succeeds only if location disappears from source and appears in destination."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/abc",
+      "body_fingerprint": "8ae6fda5ce7d3e744a54786a2cde4507d6a86e49633f60b16ac65be7f7e6eabf",
+      "mask": "name,source_account,destination_account",
+      "mask_fingerprint": "896751fae41d06fa1a0eeaeabd14a7aadda7f0bea7afebaa43add809730ab25e"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

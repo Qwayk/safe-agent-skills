@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_auction_bids",
+  "page": 1,
+  "page_size": 25,
+  "currency": "USD",
+  "out_path": null,
+  "dynadot": {
+    "command": "get_auction_bids",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "BidCount": "0",
+      "Bids": []
+    }
+  }
+}

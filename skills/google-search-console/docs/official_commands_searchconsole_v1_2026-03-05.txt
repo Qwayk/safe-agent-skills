@@ -1,0 +1,11 @@
+url-inspection index inspect
+url-testing-tools mobile-friendly-test run
+searchanalytics query
+sitemaps delete
+sitemaps get
+sitemaps list
+sitemaps submit
+sites add
+sites delete
+sites get
+sites list

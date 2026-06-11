@@ -1,0 +1,37 @@
+{
+  "tool": "google-business-profile-safe-cli",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-06-04T00:00:00Z",
+  "env_fingerprint": "https://mybusinessverifications.googleapis.com",
+  "command": "google-business-profile-safe-cli verifications verification-tokens generate --location-id 123456",
+  "selector": "123456",
+  "risk_level": "low",
+  "risk_reasons": [
+    "Generate instant verification token for a location."
+  ],
+  "preconditions": [
+    "OAuth access"
+  ],
+  "proposed_changes": [
+    {
+      "operation": "verifications.verification-tokens.generate",
+      "selector": "123456",
+      "mask": "locationId",
+      "body_fingerprint": "e33e9a3e91ece350c5bbf1e44bc68cecfd54296909872570727c4f4a59a02358"
+    }
+  ],
+  "verification_plan": [
+    "No direct read-back API is exposed for this method in this slice.",
+    "Apply is considered successful only when result is SUCCEEDED and token is present in response."
+  ],
+  "rollback": {
+    "supported": false,
+    "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+  },
+  "baseline": {
+    "selector": "123456",
+    "mask": "locationId",
+    "body_fingerprint": "e33e9a3e91ece350c5bbf1e44bc68cecfd54296909872570727c4f4a59a02358",
+    "mask_fingerprint": "d492596fdc07425c3e4cad67207ac73d82e443de89fdd883ec9e9bcaab4d9fe2"
+  }
+}

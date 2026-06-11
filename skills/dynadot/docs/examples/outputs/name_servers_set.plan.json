@@ -1,0 +1,120 @@
+{
+  "count": 1,
+  "availability_check": {
+    "available_count": 2,
+    "missing": []
+  },
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "baseline": {
+      "availability_check_mode": "",
+      "continue_on_error": "0",
+      "desired_name_servers_comma": "ns1.example.net,ns2.example.net",
+      "diff_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "domains_comma": "c.com",
+      "max_batches": "",
+      "max_domains": "",
+      "resume_receipt_sha256": "",
+      "sleep_between_batches_s": "0.0",
+      "sleep_between_verifications_s": ""
+    },
+    "command": "dynadot-api-tool --plan-out plan.json domains name-servers set --diff-in name_servers.diff.json",
+    "env_fingerprint": "https://api.dynadot.com/api3.json",
+    "generated_at_utc": "2026-02-11T00:00:00Z",
+    "preconditions": [
+      "env_fingerprint must match",
+      "diff_sha256 must match the reviewed diff file",
+      "desired name servers must be correct"
+    ],
+    "preview": {
+      "availability_check_mode": "warn",
+      "chunk_size": 100,
+      "continue_on_error": false,
+      "count": 1,
+      "desired_name_servers": [
+        "ns1.example.net",
+        "ns2.example.net"
+      ],
+      "diff_in": "name_servers.diff.json",
+      "diff_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "max_batches": null,
+      "planned_batches": 1,
+      "planned_domains": 1,
+      "skipped_already_done_count": 0,
+      "sleep_between_batches_s": 0.0,
+      "sleep_between_verifications_s": 0.0,
+      "total_batches": 1
+    },
+    "proposed_changes": [
+      {
+        "domain": "c.com",
+        "to_name_servers": [
+          "ns1.example.net",
+          "ns2.example.net"
+        ]
+      }
+    ],
+    "risk_level": "high",
+    "risk_reasons": [
+      "name-server-change"
+    ],
+    "rollback": {
+      "notes": "Name server changes are not safely auto-reversible without a known previous state for each domain.",
+      "supported": false
+    },
+    "recovery": {
+      "end_state": "irreversible_and_clearly_labeled",
+      "backups": [],
+      "snapshots": [],
+      "rollback_plan": null
+    },
+    "selector": {
+      "kind": "domains.name_servers.set",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "tool": "dynadot-api-tool",
+    "post_apply_verification_plan": {
+      "notes": "After set_ns, re-fetch get_ns for each domain and confirm it matches desired name servers.",
+      "type": "read-back"
+    },
+    "verification_plan": {
+      "notes": "Apply requires explicit no-snapshot approval before Dynadot HTTP when no useful before-state can be saved.",
+      "type": "no-snapshot-approval"
+    },
+    "before_state": {
+      "required": true,
+      "supported": false,
+      "status": "no_snapshot_available",
+      "selector": {
+        "kind": "domains.name_servers.set",
+        "value": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "storage": null,
+      "saved_at_utc": null,
+      "reason": "Refused: missing explicit no-snapshot approval for a Dynadot write with no reliable before-state snapshot. Review the dry-run plan, then rerun with --ack-no-snapshot if you approve applying without a snapshot.",
+      "notes": "No combined saved get_ns snapshot is available in this example; approved apply may continue after explicit no-snapshot approval."
+    },
+    "version": "0.4.1"
+  },
+  "plan_out": "plan.json",
+  "preview": {
+    "availability_check_mode": "warn",
+    "chunk_size": 100,
+    "continue_on_error": false,
+    "count": 1,
+    "desired_name_servers": [
+      "ns1.example.net",
+      "ns2.example.net"
+    ],
+    "diff_in": "name_servers.diff.json",
+    "diff_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "max_batches": null,
+    "planned_batches": 1,
+    "planned_domains": 1,
+    "skipped_already_done_count": 0,
+    "sleep_between_batches_s": 0.0,
+    "sleep_between_verifications_s": 0.0,
+    "total_batches": 1
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "command": "site goals ensure",
+  "env_fingerprint": {
+    "base_url": "https://plausible.io",
+    "site_id": "example.com"
+  },
+  "generated_at_utc": "2026-02-02T00:00:00Z",
+  "preconditions": [
+    "Reviewed this plan and confirmed the goal details are correct"
+  ],
+  "proposed_changes": [
+    {
+      "action": "plausible.sites.goals.ensure",
+      "payload": {
+        "display_name": "Signup",
+        "event_name": "signup",
+        "goal_type": "event",
+        "site_id": "example.com"
+      }
+    }
+  ],
+  "risk_level": "write",
+  "rollback": {
+    "notes": "Rollback requires deleting the goal by ID.",
+    "supported": true
+  },
+  "recovery": {
+    "end_state": "rollback_by_inverse_action",
+    "strategy": "plausible.sites.goals.delete",
+    "rollback_ready": false,
+    "rollback_plan": {
+      "action": "plausible.sites.goals.delete",
+      "target": {
+        "site_id": "example.com"
+      }
+    }
+  },
+  "selector": {
+    "display_name": "Signup",
+    "goal_type": "event",
+    "site_id": "example.com"
+  },
+  "tool": "plausible-api-tool",
+  "verification_plan": "GET /api/v1/sites/goals?site_id=example.com and confirm the goal exists.",
+  "version": "0.1.0"
+}

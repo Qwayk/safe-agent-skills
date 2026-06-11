@@ -1,0 +1,66 @@
+{
+  "artifacts_dir": ".state/runs/2026-05-25T100000Z_example",
+  "audit_log": ".state/runs/2026-05-25T100000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "classification": {
+      "gates": {
+        "apply": false,
+        "live": true,
+        "plan_in": false,
+        "yes": false
+      },
+      "high_impact": false,
+      "is_read": true,
+      "is_write": false,
+      "method": "GET"
+    },
+    "dry_run": true,
+    "env_fingerprint": "a603fcc8c7c2621834c0074a8e1d4eaa1773155e5f36da19108c9e2fbf6b457c",
+    "has_multipart_request": false,
+    "inputs": {
+      "body": {},
+      "files": {},
+      "path": {},
+      "query": {}
+    },
+    "operation": {
+      "content_types": [],
+      "doc_url": "https://developers.klaviyo.com/en/reference/get_accounts",
+      "has_multipart_request": false,
+      "method": "GET",
+      "operation_command": "get_accounts",
+      "path_filled": "/api/accounts",
+      "path_template": "/api/accounts",
+      "requires_company_id": false,
+      "subtag": "",
+      "tags": [
+        "Accounts"
+      ],
+      "url": "https://a.klaviyo.com/api/accounts"
+    },
+    "operation_aliases": [],
+    "plan_hash": "28676d3dd78a9e2780a4690a156a7c448e88d646d8a4727df894255601538267",
+    "before_state": {
+      "required": false,
+      "supported": false,
+      "statement": "Read operation; no before-state capture required."
+    },
+    "no_recovery": {
+      "automatic_rollback_available": false,
+      "snapshots_created": false,
+      "provider_backups": [],
+      "note": "No automatic rollback is available. No snapshots or provider backups are created."
+    },
+    "requirements": {
+      "missing_required": []
+    },
+    "tool": "klaviyo-safe-agent-cli",
+    "version": "0.1.0"
+  },
+  "plan_out": "docs/examples/outputs/plan.example.json",
+  "run_id": "2026-05-25T100000Z_example",
+  "runs_index": ".state/runs/index.jsonl"
+}

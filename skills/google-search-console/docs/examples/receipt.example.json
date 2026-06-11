@@ -1,0 +1,56 @@
+{
+  "method_id": "webmasters.sites.add",
+  "applied": true,
+  "ok": true,
+  "request": {
+    "has_body": false,
+    "http_method": "PUT",
+    "path": "webmasters/v3/sites/https%3A%2F%2Fexample.com%2F",
+    "query": null
+  },
+  "recovery": {
+    "end_state": "rollback_by_inverse_action",
+    "strategy": "sites.delete",
+    "rollback_plan": {
+      "http_method": "DELETE",
+      "method_id": "webmasters.sites.delete",
+      "path": "webmasters/v3/sites/https%3A%2F%2Fexample.com%2F"
+    },
+    "rollback_ready": true
+  },
+  "before_state": {
+    "before_state": {
+      "entry": {
+        "siteUrl": "https://example.com/"
+      },
+      "present": true,
+      "resource": "site",
+      "snapshot": {
+        "siteEntry": [
+          {
+            "siteUrl": "https://example.com/"
+          }
+        ]
+      },
+      "target": {
+        "site_url": "https://example.com/"
+      }
+    },
+    "captured_at_utc": "2026-03-05T12:00:00Z",
+    "method_id": "webmasters.sites.add",
+    "selector": "siteUrl=https://example.com/"
+  },
+  "before_state_path": ".state/runs/2026-03-05T120500Z_example/before_state.json",
+  "response": {
+    "json": {
+      "siteUrl": "https://example.com/",
+      "permissionLevel": "siteOwner"
+    },
+    "status": 200
+  },
+  "tool": "gsc-api-tool",
+  "verification": {
+    "site_present": true,
+    "verification_method_id": "webmasters.sites.list"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "account-management.accounts.admins.delete",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessaccountmanagement.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/account_management_accounts_admins_delete_plan.mock.json --yes --receipt-out /tmp/account_management_accounts_admins_delete_receipt.mock.json account-management accounts admins delete --name accounts/123/admins/admin-456",
+    "selector": "accounts/123/admins/admin-456",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "account-management.accounts.admins.list",
+      "request": {
+        "method": "GET",
+        "host": "https://mybusinessaccountmanagement.googleapis.com",
+        "path": "v1/accounts/123/admins"
+      },
+      "response": {
+        "admins": []
+      },
+      "note": "Follow-up list confirmed the admin no longer appears."
+    },
+    "diff_applied": [
+      "name"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

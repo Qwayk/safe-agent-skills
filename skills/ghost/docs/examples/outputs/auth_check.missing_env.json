@@ -1,0 +1,10 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "error": "Missing GHOST_ADMIN_API_URL. Create a local .env (copy .env.example) and set GHOST_ADMIN_API_URL to the exact Admin API base URL (must include /ghost/api/admin/).\n\nExample:\n- GHOST_ADMIN_API_URL=https://example.com/ghost/api/admin/\n\nTip: in Ghost Admin → Settings → Integrations → your custom integration, copy the “API URL” value (it can differ from your public website domain) and use that domain.\n\nQuick help: run `ghost-api-tool onboarding`.",
+  "error_type": "ValidationError",
+  "ok": false,
+  "run_id": null,
+  "runs_index": "/tmp/.state/runs/index.jsonl"
+}

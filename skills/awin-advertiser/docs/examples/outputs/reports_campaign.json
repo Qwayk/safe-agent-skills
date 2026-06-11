@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "command": "reports campaign",
+  "advertiser_id": "123456",
+  "endpoint": "/advertisers/123456/reports/campaign",
+  "method": "GET",
+  "status": 200,
+  "query": {
+    "startDate": "2026-06-01",
+    "endDate": "2026-06-08T23:59:59Z",
+    "campaign": "spring-2026",
+    "publisherIds": "pub-001,pub-002",
+    "includeNumbersWithoutCampaign": "true",
+    "interval": "month",
+    "timezone": "UTC"
+  },
+  "count": 2,
+  "report": [
+    {
+      "campaignId": "spr-001",
+      "campaign": "spring-2026",
+      "revenue": 500,
+      "clicks": 1200
+    },
+    {
+      "campaignId": "spr-002",
+      "campaign": "spring-2026",
+      "revenue": 320,
+      "clicks": 620
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "onboarding": {
+    "env_file": ".env",
+    "env_created": true,
+    "missing": [
+      "GOOGLE_ADS_DEVELOPER_TOKEN",
+      "GOOGLE_ADS_CLIENT_ID",
+      "GOOGLE_ADS_CLIENT_SECRET",
+      "GOOGLE_ADS_REFRESH_TOKEN"
+    ],
+    "next_command": "google-ads-api-tool --output json auth check",
+    "steps": [
+      "Copy .env.example \u2192 .env (local-only; do not commit it).",
+      "Create a Google Ads developer token (Google Ads UI) and an OAuth2 client (Google Cloud Console).",
+      "Generate a refresh token for the Google Ads API scope (do not paste it into chat).",
+      "Open .env and fill:",
+      "  - GOOGLE_ADS_DEVELOPER_TOKEN=YOUR_GOOGLE_ADS_DEVELOPER_TOKEN",
+      "  - GOOGLE_ADS_CLIENT_ID=YOUR_GOOGLE_ADS_CLIENT_ID",
+      "  - GOOGLE_ADS_CLIENT_SECRET=YOUR_GOOGLE_ADS_CLIENT_SECRET",
+      "  - GOOGLE_ADS_REFRESH_TOKEN=YOUR_GOOGLE_ADS_REFRESH_TOKEN",
+      "Optional (MCC/manager account): GOOGLE_ADS_LOGIN_CUSTOMER_ID=YOUR_MANAGER_CUSTOMER_ID",
+      "Run: google-ads-api-tool --output json auth check"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "tool": "instantly-api-tool",
+  "version": "0.6.0",
+  "generated_at_utc": "2026-02-19T00:00:00Z",
+  "env_fingerprint": "https://api.instantly.ai/api/v2",
+  "command": "instantly-api-tool campaigns activate --campaign-id CAMPAIGN_ID",
+  "selector": {
+    "kind": "campaigns.activate",
+    "value": "CAMPAIGN_ID"
+  },
+  "risk_level": "medium",
+  "risk_reasons": [
+    "campaign-activate"
+  ],
+  "preconditions": [
+    "plan env_fingerprint must match current environment"
+  ],
+  "baseline": {
+    "env_fingerprint": "https://api.instantly.ai/api/v2",
+    "campaign_id": "CAMPAIGN_ID"
+  },
+  "request": {
+    "method": "POST",
+    "path": "/campaigns/CAMPAIGN_ID/activate",
+    "body": {}
+  },
+  "verification_plan": {
+    "type": "read-back",
+    "notes": "GET campaign by id after apply."
+  },
+  "rollback": {
+    "supported": false,
+    "notes": "Writes in this tool are treated as irreversible. No machine rollback path is available."
+  }
+}

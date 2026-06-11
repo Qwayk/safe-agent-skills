@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "conversion orders create",
+  "advertiser_id": "123456",
+  "endpoint": "/s2s/advertiser/123456/orders",
+  "method": "POST",
+  "orders_count": 2,
+  "request_payload": {
+    "orders_count": 2,
+    "has_webhook": true
+  },
+  "plan": {
+    "tool": "awin-advertiser-safe-cli",
+    "version": "0.1.1",
+    "generated_at_utc": "2026-06-09T00:00:00Z",
+    "env_fingerprint": "https://api.awin.com",
+    "command": "awin-advertiser-safe-cli conversion orders create --advertiser-id 123456 --orders-file examples/jobs_with_write.json --webhook-url https://example.com/webhook --plan-out examples/conversion_plan.json",
+    "selector": {
+      "advertiser_id": "123456",
+      "endpoint": "s2s/advertiser/123456/orders",
+      "webhook_url": "https://example.com/webhook"
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "conversion orders create"
+    ],
+    "preconditions": [
+      "Dry-run only by default",
+      "Apply requires --apply --yes --ack-irreversible"
+    ],
+    "baseline": {
+      "env_fingerprint": "https://api.awin.com",
+      "orders_file": "examples/jobs_with_write.json",
+      "orders_file_sha256": "<REDACTED>",
+      "orders_count": 2
+    },
+    "proposed_changes": [
+      {
+        "resource": "conversion.orders",
+        "action": "create",
+        "advertiser_id": "123456",
+        "orders_count": 2
+      }
+    ],
+    "verification_plan": {
+      "type": "provider-response",
+      "notes": "Refuse only on transport or validation failure; review apply summary and receipt summary"
+    },
+    "rollback": {
+      "supported": false,
+      "notes": "No rollback endpoint is defined in current conversion API docs"
+    }
+  },
+  "plan_out": "examples/conversion_plan.json"
+}

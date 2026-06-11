@@ -1,0 +1,11 @@
+from __future__ import annotations
+
+import unittest
+
+from skimlinks_safe_agent_cli.output import Output
+
+
+class TestSmoke(unittest.TestCase):
+    def test_output_constructs(self) -> None:
+        out = Output(mode="json")
+        self.assertIsNotNone(out)

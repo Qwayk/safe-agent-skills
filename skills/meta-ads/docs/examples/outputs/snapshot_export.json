@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "snapshot_export": {
+    "ad_account_id": "act_123",
+    "assets_enabled": false,
+    "artifacts": {
+      "audit_log": ".state/runs/RUN1/audit.jsonl",
+      "run_dir": ".state/runs/RUN1",
+      "runs_index": ".state/runs/index.jsonl"
+    },
+    "errors_count": 0,
+    "manifest_path": "/abs/path/exports/meta_ads_snapshot_RUN1/manifest.json",
+    "out_dir": "/abs/path/exports/meta_ads_snapshot_RUN1",
+    "partial_success": false,
+    "preset_id": "ecom_core",
+    "run_id": "RUN1",
+    "tables": {
+      "ad_sets": {
+        "path": "/abs/path/exports/meta_ads_snapshot_RUN1/tables/ad_sets.jsonl",
+        "rows": 12
+      },
+      "ads": {
+        "path": "/abs/path/exports/meta_ads_snapshot_RUN1/tables/ads.jsonl",
+        "rows": 34
+      },
+      "campaigns": {
+        "path": "/abs/path/exports/meta_ads_snapshot_RUN1/tables/campaigns.jsonl",
+        "rows": 3
+      },
+      "creatives": {
+        "path": "/abs/path/exports/meta_ads_snapshot_RUN1/tables/creatives.jsonl",
+        "rows": 22
+      },
+      "insights": {
+        "path": "/abs/path/exports/meta_ads_snapshot_RUN1/tables/insights.jsonl",
+        "rows": 210
+      }
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "dry_run": false,
+  "before_state": {
+    "saved": [
+      {
+        "captured_at_utc": "2026-06-04T00:00:00Z",
+        "fields": [
+          "campaign.resource_name",
+          "campaign.status"
+        ],
+        "path": ".state/runs/RUN_ID/before/01_customers_1234567890_campaigns_111.json",
+        "resource_name": "customers/1234567890/campaigns/111",
+        "row_count": 1,
+        "table": "campaign"
+      }
+    ]
+  },
+  "ok": true,
+  "receipt": {
+    "api_version": "v22",
+    "before_state": {
+      "saved": [
+        {
+          "captured_at_utc": "2026-06-04T00:00:00Z",
+          "fields": [
+            "campaign.resource_name",
+            "campaign.status"
+          ],
+          "path": ".state/runs/RUN_ID/before/01_customers_1234567890_campaigns_111.json",
+          "resource_name": "customers/1234567890/campaigns/111",
+          "row_count": 1,
+          "table": "campaign"
+        }
+      ]
+    },
+    "customer_id": "1234567890",
+    "input_path": "mutate_campaigns_request.json",
+    "irreversible": false,
+    "kind": "google_ads_rpc_receipt",
+    "operations_count": 1,
+    "plan_fingerprint": "59744c01e36823c16cbd4f64fc5bed4e3f6355280c60bee31028b5e01623a934",
+    "plain_english_summary": {
+      "details": [
+        "Operations: 1 update",
+        "Risk: medium because write method",
+        "Verification: 1 resources, 0 fields checked"
+      ],
+      "headline": "1 Google Ads change for CampaignService.MutateCampaigns"
+    },
+    "response_digest": "e9571ffe2256bcf09c881e1f0eb0aec95c505aa3f781465d5c2252068369236f",
+    "response_summary": {
+      "resource_names": [
+        "customers/1234567890/campaigns/111"
+      ]
+    },
+    "risk": {
+      "level": "medium",
+      "reasons": [
+        "write method"
+      ]
+    },
+    "rpc": {
+      "method": "MutateCampaigns",
+      "service": "CampaignService"
+    },
+    "tool": "google-ads-api-tool",
+    "verification": {
+      "attempted": true,
+      "failed_resources": [],
+      "fully_verified": true,
+      "ok": true,
+      "resource_names": [
+        "customers/1234567890/campaigns/111"
+      ],
+      "skipped_fields": [],
+      "type": "gaql_readback",
+      "verified_fields": 0,
+      "verified_resources": 1
+    }
+  },
+  "rpc": {
+    "call_type": "unary_unary",
+    "method": "MutateCampaigns",
+    "python_method": "mutate_campaigns",
+    "request_type": "MutateCampaignsRequest",
+    "response_type": "MutateCampaignsResponse",
+    "rpc_path": "/google.ads.googleads.v22.services.CampaignService/MutateCampaigns",
+    "service": "CampaignService"
+  }
+}

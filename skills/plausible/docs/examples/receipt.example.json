@@ -1,0 +1,48 @@
+{
+  "applied_at_utc": "2026-02-02T00:00:05Z",
+  "changed": true,
+  "command": "site goals ensure",
+  "diff_applied": [
+    {
+      "action": "plausible.sites.goals.ensure",
+      "ensured": {
+        "display_name": "Signup",
+        "event_name": "signup",
+        "goal_type": "event",
+        "site_id": "example.com"
+      }
+    }
+  ],
+  "env_fingerprint": {
+    "base_url": "https://plausible.io",
+    "site_id": "example.com"
+  },
+  "rollback_plan": {
+    "notes": "Delete the goal by ID if needed.",
+    "supported": true
+  },
+  "recovery": {
+    "end_state": "rollback_by_inverse_action",
+    "strategy": "plausible.sites.goals.delete",
+    "rollback_ready": true,
+    "rollback_plan": {
+      "action": "plausible.sites.goals.delete",
+      "target": {
+        "site_id": "example.com",
+        "goal_id": "123"
+      }
+    }
+  },
+  "selector": {
+    "site_id": "example.com"
+  },
+  "tool": "plausible-api-tool",
+  "verification": {
+    "details": {
+      "check": "goals_list_contains",
+      "goal_id": "123"
+    },
+    "ok": true
+  },
+  "version": "0.1.0"
+}

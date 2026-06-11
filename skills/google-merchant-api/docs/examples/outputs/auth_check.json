@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "auth": {
+    "mode": "service_account_json"
+  },
+  "error": "GOOGLE_MERCHANT_API_SERVICE_ACCOUNT_JSON is required for service_account_json mode",
+  "error_type": "ValidationError"
+}

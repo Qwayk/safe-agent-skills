@@ -1,0 +1,59 @@
+{
+  "tool": "qwayk-salesforce-platform-safe-agent-cli",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-05-26T00:00:00Z",
+  "env_fingerprint": "https://example.my.salesforce.com",
+  "command": "qwayk-salesforce-platform-safe-agent-cli composite execute --body-file composite.json",
+  "selector": {
+    "family": "composite",
+    "action": "execute",
+    "path": "/services/data/v67.0/composite"
+  },
+  "risk_level": "high",
+  "risk_reasons": [
+    "bulk-or-operational-write",
+    "write"
+  ],
+  "request": {
+    "method": "POST",
+    "path": "/services/data/v67.0/composite",
+    "params": {},
+    "headers": {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      "Authorization": "***REDACTED***"
+    },
+    "body": {
+      "allOrNone": false,
+      "compositeRequest": []
+    },
+    "data_file": null,
+    "data_sha256": null
+  },
+  "baseline": {
+    "env_fingerprint": "https://example.my.salesforce.com",
+    "request_fingerprint": "<sha256>"
+  },
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "no_snapshot_available",
+    "notes": "No saved before-state is available for this Salesforce write. Apply may proceed only after explicit no-snapshot approval, and the receipt must record the recovery limit."
+  },
+  "verification_plan": {
+    "type": "no-snapshot-approval",
+    "expected_outcome": "receipt-records-no-snapshot-approval-or-real-blocker",
+    "notes": "Review the dry-run plan only. Apply requires explicit no-snapshot approval before Salesforce HTTP when no saved snapshot is available."
+  },
+  "rollback": {
+    "supported": false,
+    "notes": "No automatic rollback is available in this CLI. It does not create snapshots, backups, or a generated rollback plan."
+  },
+  "recovery": {
+    "automatic_rollback": false,
+    "backups": [],
+    "snapshots": [],
+    "rollback_plan": null,
+    "restore_note": "No automatic rollback, snapshots, or backups are created. If a restore action is available, run a separate explicit restore command as its own command."
+  }
+}

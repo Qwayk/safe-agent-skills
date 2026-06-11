@@ -1,0 +1,44 @@
+{
+  "dry_run": true,
+  "input_path": "mutate_campaigns_request.json",
+  "ok": true,
+  "plan": {
+    "api_version": "v22",
+    "customer_id": "1234567890",
+    "irreversible": false,
+    "kind": "google_ads_rpc_plan",
+    "operations_count": 1,
+    "plan_fingerprint": "59744c01e36823c16cbd4f64fc5bed4e3f6355280c60bee31028b5e01623a934",
+    "request_digest": "1df48539eadb39f9ece254a4d0d40da482002c2ec7c04216c048851c1d292939",
+    "request_summary": {
+      "operation_action_counts": {
+        "create": 1
+      },
+      "operations_count": 1,
+      "top_level_keys": [
+        "customer_id",
+        "operations"
+      ]
+    },
+    "risk": {
+      "level": "medium",
+      "reasons": [
+        "write method"
+      ]
+    },
+    "rpc": {
+      "method": "MutateCampaigns",
+      "service": "CampaignService"
+    },
+    "tool": "google-ads-api-tool"
+  },
+  "rpc": {
+    "call_type": "unary_unary",
+    "method": "MutateCampaigns",
+    "python_method": "mutate_campaigns",
+    "request_type": "MutateCampaignsRequest",
+    "response_type": "MutateCampaignsResponse",
+    "rpc_path": "/google.ads.googleads.v22.services.CampaignService/MutateCampaigns",
+    "service": "CampaignService"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "count": 1,
+  "data": [
+    {
+      "body": "<div>Preview HTML (token-redacted): https://example.com/?access_token=***REDACTED***</div>"
+    }
+  ],
+  "ok": true,
+  "pages_fetched": 1,
+  "paging": null,
+  "previews_get": {
+    "creative_id": "cr_1",
+    "params": {
+      "ad_format": "DESKTOP_FEED_STANDARD"
+    }
+  }
+}

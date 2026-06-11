@@ -1,0 +1,76 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "ok": true,
+  "dry_run": true,
+  "command": "workers.tails.stream",
+  "plan": {
+    "tool": "cloudflare-api-tool",
+    "version": "0.7.3",
+    "generated_at_utc": "2026-02-10T00:00:00Z",
+    "env_fingerprint": "https://api.cloudflare.com/client/v4",
+    "command": "cloudflare-api-tool --env-file /path/to/your/project/.env --output json workers tails stream --account-id acc1 --script-name s1 --duration-s 60 --out tail.jsonl",
+    "selector": {
+      "account_id": "acc1",
+      "script_name": "s1",
+      "duration_s": 60.0,
+      "out": "tail.jsonl",
+      "overwrite": false
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "This operation starts and deletes a tail (Cloudflare API write).",
+      "This operation writes tail events to a local file (may contain PII).",
+      "The Start Tail API returns a secret-bearing WebSocket URL; it must not be printed."
+    ],
+    "preconditions": [
+      "API token has least-privilege permissions needed for this operation.",
+      "Review this plan before applying."
+    ],
+    "request": {
+      "start_tail": {
+        "method": "POST",
+        "path": "/accounts/acc1/workers/scripts/s1/tails",
+        "sensitivity": "sensitive_write_result"
+      },
+      "delete_tail": {
+        "method": "DELETE",
+        "path_template": "/accounts/acc1/workers/scripts/s1/tails/{id}"
+      },
+      "stream": {
+        "duration_s": 60.0
+      },
+      "out": "tail.jsonl"
+    },
+    "proposed_changes": [
+      {
+        "resource": "workers_tail",
+        "action": "start",
+        "account_id": "acc1",
+        "script_name": "s1"
+      },
+      {
+        "resource": "local_file",
+        "action": "write",
+        "path": "tail.jsonl",
+        "reason": "workers_tails_stream"
+      },
+      {
+        "resource": "workers_tail",
+        "action": "delete",
+        "account_id": "acc1",
+        "script_name": "s1"
+      }
+    ],
+    "verification_plan": [
+      "Confirm output file exists and record size/sha256 locally.",
+      "Best-effort cleanup: attempt DELETE tail id in finally (even on errors)."
+    ],
+    "notes": [
+      "Tail event contents are never printed to stdout/stderr; they are written only to the output file."
+    ]
+  },
+  "run_id": "2026-02-10T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}

@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_listings",
+  "page": 1,
+  "page_size": 25,
+  "currency": "USD",
+  "exclude_pending_sale": true,
+  "show_other_registrar": false,
+  "out_path": null,
+  "dynadot": {
+    "command": "get_listings",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "ListingCount": "0",
+      "Listings": []
+    }
+  }
+}

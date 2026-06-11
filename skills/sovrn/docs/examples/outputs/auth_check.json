@@ -1,0 +1,38 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "auth_check": {
+    "command_bundles": {
+      "advertising_reporting_commands": false,
+      "commerce_secret_commands": false,
+      "commerce_site_key_commands": false,
+      "mixed_commerce_commands": false
+    },
+    "configured": {
+      "advertising_api_key": false,
+      "advertising_publisher_id": false,
+      "commerce_secret_key": false,
+      "commerce_site_api_key": false
+    },
+    "env_fingerprint": "commerce_secret=0|commerce_site_key=0|advertising_key=0|advertising_publisher=0",
+    "missing_recommended": [
+      "commerce_secret_key",
+      "commerce_site_api_key",
+      "advertising_api_key",
+      "advertising_publisher_id"
+    ],
+    "mode": "local-config-only",
+    "notes": [
+      "This check only validates local Sovrn config presence.",
+      "Advertising commands need both SOVRN_ADVERTISING_API_KEY and SOVRN_ADVERTISING_PUBLISHER_ID.",
+      "Mixed Commerce commands need both the Commerce secret key and the Commerce site API key.",
+      "Use the real commerce or advertising read commands for live vendor proof."
+    ],
+    "ready_for_any_sovrn_commands": false,
+    "ready_for_full_coverage": false
+  },
+  "ok": true,
+  "run_id": null,
+  "runs_index": "/path/to/.state/runs/index.jsonl"
+}

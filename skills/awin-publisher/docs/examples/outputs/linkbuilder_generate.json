@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "operation": "linkbuilder.generate",
+  "publisher_id": "12345",
+  "advertiser_id": 500,
+  "link": {
+    "url": "https://www.awin1.com/cread.php?awinmid=500&awinaffid=12345&clickref=summer-1",
+    "shortUrl": "https://tidd.ly/example"
+  },
+  "request": {
+    "method": "POST",
+    "endpoint": "https://api.awin.com/publishers/12345/linkbuilder/generate",
+    "query": {
+      "required": [
+        "accessToken"
+      ],
+      "sent": [
+        "accessToken"
+      ]
+    },
+    "body": {
+      "keys": [
+        "advertiserId",
+        "destinationUrl",
+        "parameters",
+        "shorten"
+      ],
+      "parameter_keys": [
+        "campaign",
+        "clickref"
+      ]
+    },
+    "response_status": 200
+  },
+  "metadata": {
+    "destination_url": "https://example.com/product",
+    "parameter_keys": [
+      "campaign",
+      "clickref"
+    ],
+    "shorten": true
+  }
+}

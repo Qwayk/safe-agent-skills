@@ -1,0 +1,62 @@
+{
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "before_state": {
+      "provider_backup_id": null,
+      "provider_write": {
+        "count": 2,
+        "method": "POST",
+        "operation_id": "createDirectMessagesByParticipantId",
+        "service": "X API"
+      },
+      "reason": "This source tool can build and review X write plans, but it does not yet save operation-specific before-state or provider backup data before applying them.",
+      "required": true,
+      "saved_path": null,
+      "status": "no_snapshot_available",
+      "supported": false
+    },
+    "count": 2,
+    "csv": "docs/examples/dm_bulk_send_example.csv",
+    "dry_run": true,
+    "env_fingerprint": "https://api.x.com/2",
+    "generated_at_utc": "2026-02-26T14:11:56Z",
+    "items": [
+      {
+        "intent_evidence": "User requested pricing details.",
+        "message": "Hi — sharing the info you asked for.\n\nReply STOP to opt out.",
+        "recipient": "alice",
+        "recipient_is_id": false,
+        "recipient_norm": "alice"
+      },
+      {
+        "intent_evidence": "User opted in on a call.",
+        "message": "Following up on your question.\n\nReply STOP to opt out.",
+        "recipient": "bob",
+        "recipient_is_id": false,
+        "recipient_norm": "bob"
+      }
+    ],
+    "kind": "dm.bulk_send",
+    "opt_out_line": "Reply STOP to opt out.",
+    "rollback": {
+      "automatic_rollback": false,
+      "mode": "irreversible_and_clearly_labeled",
+      "notes": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current X write families as irreversible_and_clearly_labeled and use the saved plan and receipt for manual follow-up.",
+      "requires_ack_irreversible": false,
+      "supported": false
+    },
+    "tool": "x-api-tool",
+    "verification_plan": {
+      "approval_required": "--ack-no-snapshot",
+      "status": "best_effort_after_apply",
+      "steps": [
+        "Record the X provider or token response in the receipt.",
+        "Record any local token, PKCE, demo/job receipt, or write output created by the flow.",
+        "Record explicit no-snapshot approval for write operations."
+      ]
+    },
+    "version": "0.1.0"
+  },
+  "plan_out": null
+}

@@ -1,0 +1,685 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "ok": true,
+  "preset": {
+    "description": "Maximal analysis pack (read-only). Adds many optional groups (time/network/conversion-action segmentation, landing pages, placements, RSA asset performance, budgets/settings) for deep diagnosis. Export with --include-optional for the full firehose.",
+    "join_map": {
+      "ad.id": {
+        "description": "Ad numeric id.",
+        "fields": [
+          "ad_group_ad.ad.id"
+        ]
+      },
+      "ad_group.id": {
+        "description": "Ad group numeric id.",
+        "fields": [
+          "ad_group.id"
+        ]
+      },
+      "ad_group.resource_name": {
+        "description": "Ad group stable identifier (resource name).",
+        "fields": [
+          "ad_group.resource_name"
+        ]
+      },
+      "ad_group_ad.resource_name": {
+        "description": "Ad group ad stable identifier (resource name).",
+        "fields": [
+          "ad_group_ad.resource_name"
+        ]
+      },
+      "ad_group_ad_asset_view.field_type": {
+        "description": "RSA asset field type (headline/description/etc.).",
+        "fields": [
+          "ad_group_ad_asset_view.field_type"
+        ]
+      },
+      "ad_group_ad_asset_view.performance_label": {
+        "description": "RSA asset performance label (where available).",
+        "fields": [
+          "ad_group_ad_asset_view.performance_label"
+        ]
+      },
+      "ad_group_criterion.resource_name": {
+        "description": "Ad group criterion stable identifier (resource name). Used for keywords and other criteria.",
+        "fields": [
+          "ad_group_criterion.resource_name"
+        ]
+      },
+      "age_range_view.resource_name": {
+        "description": "Age range view stable identifier (resource name).",
+        "fields": [
+          "age_range_view.resource_name"
+        ]
+      },
+      "asset.resource_name": {
+        "description": "Asset stable identifier (resource name). Useful for Performance Max assets and extensions.",
+        "fields": [
+          "asset.resource_name"
+        ]
+      },
+      "asset.type": {
+        "description": "Asset type (TEXT, IMAGE, YOUTUBE_VIDEO, etc.).",
+        "fields": [
+          "asset.type"
+        ]
+      },
+      "asset_group.id": {
+        "description": "Asset group numeric id. Useful for Performance Max (PMax).",
+        "fields": [
+          "asset_group.id"
+        ]
+      },
+      "asset_group.resource_name": {
+        "description": "Asset group stable identifier (resource name). Useful for Performance Max (PMax).",
+        "fields": [
+          "asset_group.resource_name"
+        ]
+      },
+      "asset_group_asset.field_type": {
+        "description": "Asset group field type (what role an asset plays in a PMax asset group).",
+        "fields": [
+          "asset_group_asset.field_type"
+        ]
+      },
+      "campaign.id": {
+        "description": "Campaign numeric id.",
+        "fields": [
+          "campaign.id"
+        ]
+      },
+      "campaign.resource_name": {
+        "description": "Campaign stable identifier (resource name).",
+        "fields": [
+          "campaign.resource_name"
+        ]
+      },
+      "campaign_budget.id": {
+        "description": "Campaign budget numeric id.",
+        "fields": [
+          "campaign_budget.id"
+        ]
+      },
+      "campaign_budget.resource_name": {
+        "description": "Campaign budget stable identifier (resource name).",
+        "fields": [
+          "campaign.campaign_budget",
+          "campaign_budget.resource_name"
+        ]
+      },
+      "customer.id": {
+        "description": "Google Ads customer id (numeric).",
+        "fields": [
+          "customer.id"
+        ]
+      },
+      "detail_placement_view.placement": {
+        "description": "Placement string (URL / app / YouTube channel/video), where available.",
+        "fields": [
+          "detail_placement_view.placement"
+        ]
+      },
+      "gender_view.resource_name": {
+        "description": "Gender view stable identifier (resource name).",
+        "fields": [
+          "gender_view.resource_name"
+        ]
+      },
+      "geographic_view.country_criterion_id": {
+        "description": "Country criterion id (when exporting via geographic_view).",
+        "fields": [
+          "geographic_view.country_criterion_id"
+        ]
+      },
+      "geographic_view.location_type": {
+        "description": "Geo view location type (presence vs interest).",
+        "fields": [
+          "geographic_view.location_type"
+        ]
+      },
+      "keyword.match_type": {
+        "description": "Keyword match type (when the criterion is a keyword).",
+        "fields": [
+          "ad_group_criterion.keyword.match_type"
+        ]
+      },
+      "keyword.text": {
+        "description": "Keyword text (when the criterion is a keyword).",
+        "fields": [
+          "ad_group_criterion.keyword.text"
+        ]
+      },
+      "landing_page_view.unexpanded_final_url": {
+        "description": "Landing page URL (unexpanded). Useful for diagnosing landing page winners.",
+        "fields": [
+          "landing_page_view.unexpanded_final_url"
+        ]
+      },
+      "search_term_view.search_term": {
+        "description": "Search term text (where available).",
+        "fields": [
+          "search_term_view.search_term"
+        ]
+      },
+      "segments.ad_network_type": {
+        "description": "Ad network type segment (e.g., SEARCH, CONTENT).",
+        "fields": [
+          "segments.ad_network_type"
+        ]
+      },
+      "segments.conversion_action": {
+        "description": "Conversion action resource name segment (for breakdowns).",
+        "fields": [
+          "segments.conversion_action"
+        ]
+      },
+      "segments.date": {
+        "description": "Daily segment date (YYYY-MM-DD).",
+        "fields": [
+          "segments.date"
+        ]
+      },
+      "segments.day_of_week": {
+        "description": "Day of week segment (MONDAY..SUNDAY).",
+        "fields": [
+          "segments.day_of_week"
+        ]
+      },
+      "segments.device": {
+        "description": "Device segment (DESKTOP, MOBILE, TABLET, CONNECTED_TV, OTHER).",
+        "fields": [
+          "segments.device"
+        ]
+      },
+      "segments.geo_target_city": {
+        "description": "City geo target segment (criterion id).",
+        "fields": [
+          "segments.geo_target_city"
+        ]
+      },
+      "segments.geo_target_country": {
+        "description": "Country geo target segment (criterion id).",
+        "fields": [
+          "segments.geo_target_country"
+        ]
+      },
+      "segments.geo_target_region": {
+        "description": "Region geo target segment (criterion id).",
+        "fields": [
+          "segments.geo_target_region"
+        ]
+      },
+      "segments.hour": {
+        "description": "Hour-of-day segment (0..23).",
+        "fields": [
+          "segments.hour"
+        ]
+      }
+    },
+    "name": "analysis_pack_max_v1",
+    "preset_schema_version": 1,
+    "query_groups": [
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, campaign.name, campaign.status, campaign.advertising_channel_type, campaign.advertising_channel_sub_type FROM campaign WHERE campaign.status != 'REMOVED'"
+        },
+        "group_id": "campaigns",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id"
+        ],
+        "output": "campaigns.jsonl",
+        "required": true,
+        "requires_date_range": false
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group.name, ad_group.status, ad_group.type FROM ad_group WHERE ad_group.status != 'REMOVED'"
+        },
+        "group_id": "ad_groups",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id"
+        ],
+        "output": "ad_groups.jsonl",
+        "required": true,
+        "requires_date_range": false
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_ad.resource_name, ad_group_ad.status, ad_group_ad.ad.id, ad_group_ad.ad.type, ad_group_ad.ad.final_urls, ad_group_ad.ad.expanded_text_ad.headline_part1, ad_group_ad.ad.expanded_text_ad.headline_part2, ad_group_ad.ad.expanded_text_ad.headline_part3, ad_group_ad.ad.expanded_text_ad.description, ad_group_ad.ad.expanded_text_ad.description2, ad_group_ad.ad.responsive_search_ad.headlines, ad_group_ad.ad.responsive_search_ad.descriptions, ad_group_ad.ad.responsive_display_ad.headlines, ad_group_ad.ad.responsive_display_ad.descriptions, ad_group_ad.ad.responsive_display_ad.long_headline FROM ad_group_ad WHERE ad_group_ad.status != 'REMOVED'"
+        },
+        "group_id": "ad_group_ads",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "ad_group_ad.resource_name",
+          "ad.id"
+        ],
+        "output": "ad_group_ads.jsonl",
+        "required": true,
+        "requires_date_range": false
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_ad.resource_name, ad_group_ad.ad.id, segments.date, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM ad_group_ad WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "ad_daily_metrics",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "ad_group_ad.resource_name",
+          "ad.id",
+          "segments.date"
+        ],
+        "max_rows_default": 250000,
+        "output": "ad_daily_metrics.jsonl",
+        "required": true,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, campaign.name, campaign.status, campaign.start_date_time, campaign.end_date_time, campaign.serving_status, campaign.bidding_strategy_type, campaign.campaign_budget, campaign.network_settings.target_google_search, campaign.network_settings.target_search_network, campaign.network_settings.target_content_network, campaign.network_settings.target_partner_search_network FROM campaign WHERE campaign.status != 'REMOVED'"
+        },
+        "group_id": "campaign_settings",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "campaign_budget.resource_name"
+        ],
+        "output": "campaign_settings.jsonl",
+        "required": false,
+        "requires_date_range": false
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign_budget.resource_name, campaign_budget.id, campaign_budget.name, campaign_budget.amount_micros, campaign_budget.delivery_method, campaign_budget.period, campaign_budget.type, campaign_budget.status FROM campaign_budget"
+        },
+        "group_id": "campaign_budgets",
+        "join_keys": [
+          "customer.id",
+          "campaign_budget.resource_name",
+          "campaign_budget.id"
+        ],
+        "output": "campaign_budgets.jsonl",
+        "required": false,
+        "requires_date_range": false
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, segments.date, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM campaign WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "campaign_daily_metrics",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "segments.date"
+        ],
+        "max_rows_default": 120000,
+        "output": "campaign_daily_metrics.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_ad.resource_name, ad_group_ad.ad.id, segments.date, segments.device, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM ad_group_ad WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "ad_daily_metrics_by_device",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "ad_group_ad.resource_name",
+          "ad.id",
+          "segments.date",
+          "segments.device"
+        ],
+        "max_rows_default": 300000,
+        "output": "ad_daily_metrics_by_device.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_ad.resource_name, ad_group_ad.ad.id, segments.date, segments.ad_network_type, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM ad_group_ad WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "ad_daily_metrics_by_network",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "ad_group_ad.resource_name",
+          "ad.id",
+          "segments.date",
+          "segments.ad_network_type"
+        ],
+        "max_rows_default": 250000,
+        "output": "ad_daily_metrics_by_network.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_ad.resource_name, ad_group_ad.ad.id, segments.date, segments.day_of_week, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM ad_group_ad WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "ad_daily_metrics_by_day_of_week",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "ad_group_ad.resource_name",
+          "ad.id",
+          "segments.date",
+          "segments.day_of_week"
+        ],
+        "max_rows_default": 250000,
+        "output": "ad_daily_metrics_by_day_of_week.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, segments.date, segments.hour, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM campaign WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "ad_daily_metrics_by_hour",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "segments.date",
+          "segments.hour"
+        ],
+        "max_rows_default": 250000,
+        "output": "ad_daily_metrics_by_hour.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_ad.resource_name, ad_group_ad.ad.id, segments.date, segments.conversion_action, metrics.conversions, metrics.conversions_value FROM ad_group_ad WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "ad_daily_conversions_by_action",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "ad_group_ad.resource_name",
+          "ad.id",
+          "segments.date",
+          "segments.conversion_action"
+        ],
+        "max_rows_default": 250000,
+        "output": "ad_daily_conversions_by_action.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, segments.date, geographic_view.location_type, geographic_view.country_criterion_id, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM geographic_view WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "ad_daily_metrics_by_country",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "segments.date",
+          "geographic_view.location_type",
+          "geographic_view.country_criterion_id"
+        ],
+        "max_rows_default": 80000,
+        "output": "ad_daily_metrics_by_country.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, segments.date, geographic_view.location_type, segments.geo_target_region, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM geographic_view WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "ad_daily_metrics_by_region",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "segments.date",
+          "geographic_view.location_type",
+          "segments.geo_target_region"
+        ],
+        "max_rows_default": 80000,
+        "output": "ad_daily_metrics_by_region.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, segments.date, geographic_view.location_type, segments.geo_target_city, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM geographic_view WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "ad_daily_metrics_by_city",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "segments.date",
+          "geographic_view.location_type",
+          "segments.geo_target_city"
+        ],
+        "max_rows_default": 80000,
+        "output": "ad_daily_metrics_by_city.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, segments.date, gender_view.resource_name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM gender_view WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "ad_daily_metrics_by_gender",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "segments.date",
+          "gender_view.resource_name"
+        ],
+        "max_rows_default": 80000,
+        "output": "ad_daily_metrics_by_gender.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, segments.date, age_range_view.resource_name, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM age_range_view WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "ad_daily_metrics_by_age_range",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "segments.date",
+          "age_range_view.resource_name"
+        ],
+        "max_rows_default": 80000,
+        "output": "ad_daily_metrics_by_age_range.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, segments.date, search_term_view.search_term, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM search_term_view WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "search_terms_daily",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "segments.date",
+          "search_term_view.search_term"
+        ],
+        "max_rows_default": 150000,
+        "output": "search_terms_daily.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_criterion.resource_name, ad_group_criterion.keyword.text, ad_group_criterion.keyword.match_type, segments.date, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM keyword_view WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "keyword_daily_metrics",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "ad_group_criterion.resource_name",
+          "segments.date",
+          "keyword.text",
+          "keyword.match_type"
+        ],
+        "max_rows_default": 150000,
+        "output": "keyword_daily_metrics.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, segments.date, landing_page_view.unexpanded_final_url, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM landing_page_view WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "landing_pages_daily",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "segments.date",
+          "landing_page_view.unexpanded_final_url"
+        ],
+        "max_rows_default": 120000,
+        "output": "landing_pages_daily.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, segments.date, detail_placement_view.placement, metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM detail_placement_view WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "placements_daily",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "segments.date",
+          "detail_placement_view.placement"
+        ],
+        "max_rows_default": 60000,
+        "output": "placements_daily.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, ad_group.id, ad_group.resource_name, ad_group_ad.resource_name, ad_group_ad.ad.id, segments.date, ad_group_ad_asset_view.field_type, ad_group_ad_asset_view.performance_label, asset.resource_name, asset.type, asset.text_asset.text FROM ad_group_ad_asset_view WHERE segments.date >= '{since}' AND segments.date <= '{until}'"
+        },
+        "group_id": "rsa_asset_performance",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "ad_group.resource_name",
+          "ad_group.id",
+          "ad_group_ad.resource_name",
+          "ad.id",
+          "segments.date",
+          "ad_group_ad_asset_view.field_type",
+          "ad_group_ad_asset_view.performance_label",
+          "asset.resource_name",
+          "asset.type"
+        ],
+        "max_rows_default": 200000,
+        "output": "rsa_asset_performance.jsonl",
+        "required": false,
+        "requires_date_range": true
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, asset_group.id, asset_group.resource_name, asset_group.name, asset_group.status FROM asset_group WHERE asset_group.status != 'REMOVED'"
+        },
+        "group_id": "asset_groups",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "asset_group.resource_name",
+          "asset_group.id"
+        ],
+        "output": "asset_groups.jsonl",
+        "required": false,
+        "requires_date_range": false
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT customer.id, campaign.id, campaign.resource_name, asset_group.id, asset_group.resource_name, asset.resource_name, asset.type, asset_group_asset.field_type FROM asset_group_asset WHERE asset_group_asset.status != 'REMOVED'"
+        },
+        "group_id": "asset_group_assets",
+        "join_keys": [
+          "customer.id",
+          "campaign.resource_name",
+          "campaign.id",
+          "asset_group.resource_name",
+          "asset_group.id",
+          "asset.resource_name",
+          "asset_group_asset.field_type"
+        ],
+        "max_rows_default": 200000,
+        "output": "asset_group_assets.jsonl",
+        "required": false,
+        "requires_date_range": false
+      },
+      {
+        "gaql_templates": {
+          "base": "SELECT asset.resource_name, asset.type, asset.name, asset.text_asset.text, asset.image_asset.full_size.url, asset.youtube_video_asset.youtube_video_id FROM asset"
+        },
+        "group_id": "assets",
+        "join_keys": [
+          "asset.resource_name",
+          "asset.type"
+        ],
+        "max_rows_default": 200000,
+        "output": "assets.jsonl",
+        "required": false,
+        "requires_date_range": false
+      }
+    ]
+  },
+  "run_id": null,
+  "runs_index": "./.state/runs/index.jsonl"
+}

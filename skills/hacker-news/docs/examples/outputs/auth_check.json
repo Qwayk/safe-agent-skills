@@ -1,0 +1,14 @@
+{
+  "api_root": "https://hacker-news.firebaseio.com/v0",
+  "data": {
+    "auth": {
+      "required": false,
+      "type": "none"
+    },
+    "maxitem": 48219429,
+    "note": "This tool uses public endpoints only. No secrets are needed."
+  },
+  "endpoint": "/v0/maxitem.json",
+  "ok": true,
+  "tool": "hacker-news-api-tool"
+}

@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "media-upload-v1.media.upload",
+  "plan": {
+    "tool": "google-business-profile-safe-agent-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli media-upload-v1 media upload --resource-name locations/123/media/abc --media-json-file /tmp/media.json",
+    "selector": "locations/123/media/abc",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Media metadata upload"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "media-upload-v1.media.upload",
+        "selector": "locations/123/media/abc",
+        "mask": "resourceName",
+        "body_fingerprint": "e581126bdfb2be0a7d5a476a6461fd9f942b02a7246995b5d394db1c2b374d6d"
+      }
+    ],
+    "verification_plan": [
+      "Upload response must include matching resourceName; no direct read-back verification is available in this slice."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/123/media/abc",
+      "mask": "resourceName",
+      "body_fingerprint": "e581126bdfb2be0a7d5a476a6461fd9f942b02a7246995b5d394db1c2b374d6d",
+      "mask_fingerprint": "191bf47b7a94bfdece380cb4c201a2615a9e165c914ef27cbd267c724c2f0a2c"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

@@ -1,0 +1,167 @@
+{
+  "command": "filter.area",
+  "count": 22,
+  "found": true,
+  "meals": [
+    {
+      "idMeal": "52928",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "BeaverTails",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/ryppsv1511815505.jpg"
+    },
+    {
+      "idMeal": "52965",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Breakfast Potatoes",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/1550441882.jpg"
+    },
+    {
+      "idMeal": "52923",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Canadian Butter Tarts",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/wpputp1511812960.jpg"
+    },
+    {
+      "idMeal": "53343",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Classic Tourtière",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/0sd7ac1764787957.jpg"
+    },
+    {
+      "idMeal": "53338",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Date squares",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/u4scbo1764446514.jpg"
+    },
+    {
+      "idMeal": "53342",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Figgy Duff",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/kzi6p51764787198.jpg"
+    },
+    {
+      "idMeal": "53341",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Flapper Pie",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/6ht8141764786479.jpg"
+    },
+    {
+      "idMeal": "53340",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Hodge Podge",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/xihv0c1764447887.jpg"
+    },
+    {
+      "idMeal": "53339",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Jam jam cookies",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/sktequ1764447186.jpg"
+    },
+    {
+      "idMeal": "53335",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Jiggs Dinner",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/z1tfnw1764443171.jpg"
+    },
+    {
+      "idMeal": "53336",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Molasses Baked Beans",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/9tddhg1764443699.jpg"
+    },
+    {
+      "idMeal": "52927",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Montreal Smoked Meat",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/uttupv1511815050.jpg"
+    },
+    {
+      "idMeal": "52924",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Nanaimo Bars",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/vwuprt1511813703.jpg"
+    },
+    {
+      "idMeal": "52930",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Pate Chinois",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/yyrrxr1511816289.jpg"
+    },
+    {
+      "idMeal": "52932",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Pouding chomeur",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/yqqqwu1511816912.jpg"
+    },
+    {
+      "idMeal": "52804",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Poutine",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/uuyrrx1487327597.jpg"
+    },
+    {
+      "idMeal": "52933",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Rappie Pie",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/ruwpww1511817242.jpg"
+    },
+    {
+      "idMeal": "53337",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Saskatoon Pie",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/5xdrkw1764444472.jpg"
+    },
+    {
+      "idMeal": "52925",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Split Pea Soup",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/xxtsvx1511814083.jpg"
+    },
+    {
+      "idMeal": "52931",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Sugar Pie",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/yrstur1511816601.jpg"
+    },
+    {
+      "idMeal": "52929",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Timbits",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/txsupu1511815755.jpg"
+    },
+    {
+      "idMeal": "52926",
+      "strArea": "Canadian",
+      "strCountry": "Canada",
+      "strMeal": "Tourtiere",
+      "strMealThumb": "https://www.themealdb.com/images/media/meals/ytpstt1511814614.jpg"
+    }
+  ],
+  "ok": true,
+  "request": {
+    "area": "Canadian"
+  },
+  "tool": "qwayk-themealdb-safe-agent-cli",
+  "version": "0.1.0"
+}

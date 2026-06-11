@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "command": "reports publisher",
+  "advertiser_id": "123456",
+  "endpoint": "/advertisers/123456/reports/publisher",
+  "method": "GET",
+  "status": 200,
+  "query": {
+    "startDate": "2026-06-01",
+    "endDate": "2026-06-08T23:59:59Z",
+    "dateType": "validation",
+    "timezone": "UTC"
+  },
+  "count": 2,
+  "report": [
+    {
+      "publisherId": "pub-001",
+      "revenue": 123.45,
+      "transactions": 54
+    },
+    {
+      "publisherId": "pub-002",
+      "revenue": 87.2,
+      "transactions": 21
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "tool": "google-ads-api-tool",
+  "tool_version": "0.6.0",
+  "generated_at_utc": "2026-03-02T00:00:00Z",
+  "preset": "analysis_pack_v1",
+  "customer_id": "YOUR_CUSTOMER_ID",
+  "since": "2026-01-01",
+  "until": "2026-01-31",
+  "segmentation": "base",
+  "join_map": {
+    "customer.id": {
+      "description": "Google Ads customer id (numeric).",
+      "fields": ["customer.id"]
+    },
+    "campaign.resource_name": {
+      "description": "Campaign stable identifier (resource name).",
+      "fields": ["campaign.resource_name"]
+    },
+    "campaign.id": {
+      "description": "Campaign numeric id.",
+      "fields": ["campaign.id"]
+    },
+    "ad_group.resource_name": {
+      "description": "Ad group stable identifier (resource name).",
+      "fields": ["ad_group.resource_name"]
+    },
+    "ad_group.id": {
+      "description": "Ad group numeric id.",
+      "fields": ["ad_group.id"]
+    },
+    "ad_group_ad.resource_name": {
+      "description": "Ad group ad stable identifier (resource name).",
+      "fields": ["ad_group_ad.resource_name"]
+    },
+    "ad.id": {
+      "description": "Ad numeric id.",
+      "fields": ["ad_group_ad.ad.id"]
+    },
+    "asset_group.resource_name": {
+      "description": "Asset group stable identifier (resource name). Useful for Performance Max (PMax).",
+      "fields": ["asset_group.resource_name"]
+    },
+    "asset_group.id": {
+      "description": "Asset group numeric id. Useful for Performance Max (PMax).",
+      "fields": ["asset_group.id"]
+    },
+    "segments.date": {
+      "description": "Daily segment date (YYYY-MM-DD).",
+      "fields": ["segments.date"]
+    }
+  },
+  "tables": [
+    {
+      "name": "campaigns",
+      "path": "tables/campaigns.jsonl",
+      "row_count": 1,
+      "truncated": false,
+      "join_keys": ["customer.id", "campaign.resource_name", "campaign.id"],
+      "source_group_id": "campaigns"
+    },
+    {
+      "name": "ad_groups",
+      "path": "tables/ad_groups.jsonl",
+      "row_count": 1,
+      "truncated": false,
+      "join_keys": ["customer.id", "campaign.resource_name", "campaign.id", "ad_group.resource_name", "ad_group.id"],
+      "source_group_id": "ad_groups"
+    },
+    {
+      "name": "ad_group_ads",
+      "path": "tables/ad_group_ads.jsonl",
+      "row_count": 1,
+      "truncated": false,
+      "join_keys": ["customer.id", "campaign.resource_name", "campaign.id", "ad_group.resource_name", "ad_group.id", "ad_group_ad.resource_name", "ad.id"],
+      "source_group_id": "ad_group_ads"
+    },
+    {
+      "name": "ad_daily_metrics",
+      "path": "tables/ad_daily_metrics.jsonl",
+      "row_count": 1,
+      "truncated": false,
+      "join_keys": ["customer.id", "campaign.resource_name", "campaign.id", "ad_group.resource_name", "ad_group.id", "ad_group_ad.resource_name", "ad.id", "segments.date"],
+      "source_group_id": "ad_daily_metrics"
+    },
+    {
+      "name": "asset_groups",
+      "path": "tables/asset_groups.jsonl",
+      "row_count": 1,
+      "truncated": false,
+      "join_keys": ["customer.id", "campaign.resource_name", "campaign.id", "asset_group.resource_name", "asset_group.id"],
+      "source_group_id": "asset_groups"
+    },
+    {
+      "name": "creative_anatomy",
+      "path": "tables/creative_anatomy.jsonl",
+      "row_count": 2,
+      "truncated": false,
+      "join_keys": ["customer.id", "campaign.resource_name", "campaign.id", "ad_group.resource_name", "ad_group.id", "ad_group_ad.resource_name", "ad.id", "asset_group.resource_name", "asset_group.id"],
+      "source_group_id": "__derived__:creative_anatomy"
+    }
+  ],
+  "groups": [
+    {
+      "group_id": "campaigns",
+      "required": true,
+      "status": "ok",
+      "error_count": 0,
+      "row_count": 1,
+      "truncated": false
+    },
+    {
+      "group_id": "ad_groups",
+      "required": true,
+      "status": "ok",
+      "error_count": 0,
+      "row_count": 1,
+      "truncated": false
+    },
+    {
+      "group_id": "ad_group_ads",
+      "required": true,
+      "status": "ok",
+      "error_count": 0,
+      "row_count": 1,
+      "truncated": false
+    },
+    {
+      "group_id": "ad_daily_metrics",
+      "required": true,
+      "status": "ok",
+      "error_count": 0,
+      "row_count": 1,
+      "truncated": false
+    },
+    {
+      "group_id": "asset_groups",
+      "required": false,
+      "status": "ok",
+      "error_count": 0,
+      "row_count": 1,
+      "truncated": false
+    }
+  ],
+  "warnings": [],
+  "errors_path": "errors/errors.jsonl",
+  "queries_path": "queries/queries.json"
+}

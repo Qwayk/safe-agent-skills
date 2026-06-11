@@ -1,0 +1,8 @@
+{
+  "date_range": "30d",
+  "dimensions": ["event:goal"],
+  "metrics": ["events", "visitors"],
+  "order_by": [["events", "desc"]],
+  "pagination": {"limit": 50, "offset": 0},
+  "site_id": "example.com"
+}

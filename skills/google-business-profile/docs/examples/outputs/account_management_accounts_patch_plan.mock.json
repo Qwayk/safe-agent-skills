@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "account-management.accounts.patch",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessaccountmanagement.googleapis.com",
+    "command": "google-business-profile-safe-cli account-management accounts patch --name accounts/123 --update-mask accountName --account-file /tmp/account.json",
+    "selector": "accounts/123",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Account patch updates accountName."
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "account-management.accounts.patch",
+        "selector": "accounts/123",
+        "mask": "accountName",
+        "body_fingerprint": "facad5c871cdd0fc184ba166788b47cb5c89839b21a4ad9129bfb2810682d788"
+      }
+    ],
+    "verification_plan": [
+      "Read back the account with accounts get."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "accounts/123",
+      "body_fingerprint": "facad5c871cdd0fc184ba166788b47cb5c89839b21a4ad9129bfb2810682d788",
+      "mask": "accountName",
+      "mask_fingerprint": "1f56a2058ff1f09f0069425a257d19fb97bceadaa763c09313f17a4e5f80cbac"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

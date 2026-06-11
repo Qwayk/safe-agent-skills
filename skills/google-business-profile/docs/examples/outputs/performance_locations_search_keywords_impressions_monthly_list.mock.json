@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "operation": "performance.locations.search-keywords.impressions.monthly.list",
+  "request": {
+    "method": "GET",
+    "host": "https://businessprofileperformance.googleapis.com",
+    "path": "v1/locations/123/searchkeywords/impressions/monthly",
+    "params": {
+      "monthlyRange.startMonth.year": 2025,
+      "monthlyRange.startMonth.month": 1,
+      "monthlyRange.endMonth.year": 2025,
+      "monthlyRange.endMonth.month": 3
+    }
+  },
+  "response": {
+    "searchKeywordsCounts": [
+      {
+        "searchKeyword": "coffee",
+        "insightsValue": {
+          "value": "123"
+        }
+      }
+    ]
+  }
+}

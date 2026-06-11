@@ -1,0 +1,5 @@
+{
+  "access_token": "YOUR_PINTEREST_ACCESS_TOKEN",
+  "refresh_token": "YOUR_PINTEREST_REFRESH_TOKEN",
+  "expires_at": 1700000000
+}

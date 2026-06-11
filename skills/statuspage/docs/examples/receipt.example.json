@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "tool": "statuspage-api-tool",
+  "kind": "example_receipt",
+  "note": "Static review artifact only. Example receipt derived from docs/examples/status.json.",
+  "request": {
+    "method": "GET",
+    "url": "https://status.example.com/api/v2/status.json"
+  },
+  "response": {
+    "status": 200,
+    "fixture_path": "docs/examples/status.json"
+  }
+}

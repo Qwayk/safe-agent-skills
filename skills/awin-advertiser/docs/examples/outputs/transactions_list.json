@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "command": "transactions list",
+  "advertiser_id": "123456",
+  "endpoint": "/advertisers/123456/transactions/",
+  "method": "GET",
+  "status": 200,
+  "query": {
+    "startDate": "2026-06-01T00:00:00Z",
+    "endDate": "2026-06-08T23:59:59Z",
+    "dateType": "transaction",
+    "publisherId": "p-001,p-002",
+    "status": "approved",
+    "timezone": "UTC",
+    "showBasketProducts": "true"
+  },
+  "count": 2,
+  "transactions": [
+    {
+      "id": "trx-001",
+      "status": "approved"
+    },
+    {
+      "id": "trx-002",
+      "status": "approved"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "response": {
+    "transactions": [
+      {
+        "id": "txn_redacted",
+        "accountId": "acct_redacted",
+        "amount": -42.17,
+        "currency": "USD",
+        "kind": "debit",
+        "status": "posted",
+        "postedAt": "2025-12-31T00:00:00Z",
+        "mercuryCategory": "software"
+      }
+    ],
+    "page": {
+      "nextPage": "next_page_cursor_redacted"
+    }
+  }
+}

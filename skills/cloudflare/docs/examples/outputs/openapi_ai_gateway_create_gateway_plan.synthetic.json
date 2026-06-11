@@ -1,0 +1,65 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-16T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-16T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "command": "operations.call",
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "command": "cloudflare-api-tool --env-file /path/to/your/project/.env --project-dir /path/to/your/project --output json operations ai_gateway aig-config-create-gateway --path-param account_id=acc1 --body-json-file gateway.json",
+    "env_fingerprint": "https://api.cloudflare.com/client/v4",
+    "generated_at_utc": "2026-02-16T00:00:00Z",
+    "notes": [],
+    "preconditions": [
+      "API token has least-privilege permissions needed for this operation.",
+      "Path params and request body (if any) are correct.",
+      "For non-GET operations and file-only outputs: review the plan output before applying."
+    ],
+    "proposed_changes": [
+      {
+        "action": "call",
+        "method": "POST",
+        "operation_id": "aig-config-create-gateway",
+        "path": "/accounts/acc1/ai-gateway/gateways",
+        "resource": "openapi_operation",
+        "sensitivity": "none"
+      }
+    ],
+    "request": {
+      "body_meta": {
+        "bytes_len": null,
+        "content_type": "application/json",
+        "kind": "json",
+        "multipart": false,
+        "source": "gateway.json"
+      },
+      "content_type": "application/json",
+      "method": "POST",
+      "operation_id": "aig-config-create-gateway",
+      "out": null,
+      "path_resolved": "/accounts/acc1/ai-gateway/gateways",
+      "path_template": "/accounts/{account_id}/ai-gateway/gateways",
+      "query": {},
+      "sensitivity": "none"
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "Write operation."
+    ],
+    "selector": {
+      "method": "POST",
+      "operation_id": "aig-config-create-gateway",
+      "path_resolved": "/accounts/acc1/ai-gateway/gateways",
+      "path_template": "/accounts/{account_id}/ai-gateway/gateways",
+      "tags": "AI Gateway Gateways"
+    },
+    "tool": "cloudflare-api-tool",
+    "verification_plan": [
+      "Best-effort verification: for many writes, the tool attempts a read-back GET when a matching endpoint exists in the snapshot. Otherwise it records API response success."
+    ],
+    "version": "0.7.6"
+  },
+  "run_id": "2026-02-16T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}
+

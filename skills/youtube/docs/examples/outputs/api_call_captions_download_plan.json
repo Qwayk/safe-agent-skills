@@ -1,0 +1,65 @@
+{
+  "artifacts_dir": ".state/runs/<REDACTED>",
+  "audit_log": ".state/runs/<REDACTED>/audit.jsonl",
+  "audit_log_global": null,
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "baseline": {
+      "env_fingerprint": "https://www.googleapis.com",
+      "request_fingerprint_sha256": "45237dfcfdb3d762b5599c4853b9f1281051ff8accc354c8e2a0d13e653a29a5"
+    },
+    "command": "youtube-api-tool --output json api captions.download --params-json {\"id\":\"CAPTION_TRACK_ID\"} --download-to ./captions.vtt",
+    "env_fingerprint": "https://www.googleapis.com",
+    "generated_at_utc": "2026-02-25T12:01:38Z",
+    "preconditions": [
+      "env_fingerprint must match",
+      "request_fingerprint must match"
+    ],
+    "proposed_changes": [],
+    "request": {
+      "body": null,
+      "download": {
+        "overwrite": false,
+        "to_path": "./captions.vtt"
+      },
+      "http_method": "GET",
+      "method": "captions.download",
+      "missing_required_params": [],
+      "params": {
+        "id": "CAPTION_TRACK_ID"
+      },
+      "path": "youtube/v3/captions/{id}",
+      "scopes": [
+        "https://www.googleapis.com/auth/youtube.force-ssl",
+        "https://www.googleapis.com/auth/youtubepartner"
+      ],
+      "upload": null
+    },
+    "risk_level": "low",
+    "risk_reasons": [
+      "Read-only method (GET)"
+    ],
+    "recovery": {
+      "end_state": "irreversible_and_clearly_labeled",
+      "automatic_rollback": false,
+      "backups": [],
+      "snapshots": [],
+      "rollback_plan": null,
+      "restore_note": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Use the saved plan and receipt for manual follow-up only."
+    },
+    "selector": {
+      "kind": "youtube_method",
+      "value": "captions.download"
+    },
+    "tool": "youtube-api-tool",
+    "verification_plan": {
+      "notes": "API method call: for writes, the tool attempts a best-effort read-back verification when possible; otherwise it falls back to HTTP-status verification.",
+      "type": "api_call"
+    },
+    "version": "0.1.0"
+  },
+  "plan_out": ".state/runs/<REDACTED>/plan.json",
+  "run_id": "<REDACTED>",
+  "runs_index": ".state/runs/index.jsonl"
+}

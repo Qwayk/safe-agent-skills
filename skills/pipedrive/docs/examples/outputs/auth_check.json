@@ -1,0 +1,31 @@
+{
+  "api_version": "v1",
+  "http": {
+    "method": "GET",
+    "status": 200,
+    "url": "https://api.test.pipedrive.com/api/v1/users/me"
+  },
+  "operation": "GET /api/v1/users/me",
+  "pagination": {
+    "fetched_pages": 1,
+    "has_more": false,
+    "mode": "none",
+    "next_cursor": null,
+    "requested_pages": 1
+  },
+  "request": {
+    "path": "/users/me",
+    "path_parameters": {},
+    "query": {}
+  },
+  "response": {
+    "binary": false
+  },
+  "data": [
+    {
+      "id": 12345,
+      "name": "redacted-user",
+      "email": "redacted@example.com"
+    }
+  ]
+}

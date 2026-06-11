@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "tool": "meta-ads-api-tool",
+  "kind": "example_receipt",
+  "note": "Static review artifact only. Example receipt derived from docs/examples/outputs/ad_accounts_list_paginated.json.",
+  "command": "ad-accounts list",
+  "request": {
+    "method": "GET",
+    "path": "/v24.0/me/adaccounts"
+  },
+  "response": {
+    "status": 200,
+    "fixture_path": "docs/examples/outputs/ad_accounts_list_paginated.json"
+  }
+}

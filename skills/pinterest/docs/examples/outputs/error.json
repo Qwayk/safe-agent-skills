@@ -1,0 +1,6 @@
+{
+  "error": "the following arguments are required: cmd",
+  "error_type": "ValidationError",
+  "ok": false
+}
+

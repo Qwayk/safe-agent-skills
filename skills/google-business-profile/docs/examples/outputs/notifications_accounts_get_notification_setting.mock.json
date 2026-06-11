@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "operation": "notifications.accounts.get-notification-setting",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinessnotifications.googleapis.com",
+    "path": "v1/accounts/123/notificationSetting"
+  },
+  "response": {
+    "name": "accounts/123/notificationSetting",
+    "notificationSetting": {
+      "emailNotifications": {
+        "enabled": true
+      }
+    }
+  }
+}

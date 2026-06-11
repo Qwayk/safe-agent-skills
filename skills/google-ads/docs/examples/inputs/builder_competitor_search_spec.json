@@ -1,0 +1,58 @@
+{
+  "customer_id": "1234567890",
+  "budget": {
+    "name": "Competitor Budget | Example",
+    "amount": "30"
+  },
+  "campaign": {
+    "name": "Competitor Campaign | Example",
+    "status": "PAUSED",
+    "max_clicks_cpc_ceiling_amount": "15"
+  },
+  "targeting": {
+    "locations": ["9059448"],
+    "languages": ["1000"],
+    "ad_schedule": [
+      {
+        "day_of_week": "MONDAY",
+        "start_hour": 7,
+        "end_hour": 19
+      }
+    ]
+  },
+  "campaign_negatives": [
+    "locked out"
+  ],
+  "ad_groups": [
+    {
+      "alias": "competitor_one",
+      "name": "Competitor One",
+      "keywords": [
+        {
+          "text": "competitor one",
+          "match_type": "EXACT"
+        },
+        {
+          "text": "competitor one sliding door repair",
+          "match_type": "EXACT"
+        }
+      ],
+      "ads": [
+        {
+          "final_urls": [
+            "https://example.com/repair"
+          ],
+          "headlines": [
+            "Sliding Door Repair",
+            "Repair First",
+            "Fast Local Help"
+          ],
+          "descriptions": [
+            "Sliding door repair across DFW.",
+            "Call for same-day help."
+          ]
+        }
+      ]
+    }
+  ]
+}

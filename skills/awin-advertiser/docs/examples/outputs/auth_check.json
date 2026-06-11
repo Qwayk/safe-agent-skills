@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "blocked": true,
+  "setup_needed": true,
+  "error_type": "SetupNeeded",
+  "error": "Missing AWIN_API_TOKEN",
+  "next_step": "Set AWIN_API_TOKEN in .env and run auth check again"
+}

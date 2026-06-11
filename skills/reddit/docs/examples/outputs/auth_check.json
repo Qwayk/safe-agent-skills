@@ -1,0 +1,10 @@
+{
+  "ok": false,
+  "error_type": "ValidationError",
+  "error": "Missing usable Reddit OAuth token. Run `qwayk-reddit-safe-agent-cli auth login` then `--live auth exchange-code`, or use `auth token set`.",
+  "run_id": null,
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "runs_index": "./examples/.state/runs/index.jsonl"
+}

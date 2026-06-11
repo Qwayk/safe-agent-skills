@@ -1,0 +1,26 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "customer_account_id_present": false,
+  "customer_id_present": false,
+  "developer_token_present": false,
+  "endpoints": {
+    "ad-insight": "https://adinsight.api.bingads.microsoft.com/Api/Advertiser/AdInsight/v13/AdInsightService.svc",
+    "bulk": "https://bulk.api.bingads.microsoft.com/Api/Advertiser/CampaignManagement/v13/BulkService.svc",
+    "campaign-management": "https://campaign.api.bingads.microsoft.com/Api/Advertiser/CampaignManagement/v13/CampaignManagementService.svc",
+    "customer-management": "https://clientcenter.api.bingads.microsoft.com/Api/CustomerManagement/v13/CustomerManagementService.svc",
+    "reporting": "https://reporting.api.bingads.microsoft.com/Api/Advertiser/Reporting/v13/ReportingService.svc"
+  },
+  "environment": "prod",
+  "live_checked": false,
+  "oauth_token": {
+    "access_token_present": false,
+    "exists": false,
+    "path": "examples/.state/token.json",
+    "refresh_token_present": false
+  },
+  "ok": true,
+  "run_id": null,
+  "runs_index": "examples/.state/runs/index.jsonl"
+}

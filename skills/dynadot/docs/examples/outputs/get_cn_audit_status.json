@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_cn_audit_status",
+  "contact_id": "testcontactid",
+  "gtld": false,
+  "out_path": null,
+  "dynadot": {
+    "command": "get_cn_audit_status",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "ResponseCode": "0",
+      "Status": "success",
+      "CnAuditStatus": "pass"
+    }
+  }
+}
+

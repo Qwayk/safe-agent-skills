@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "operation": "feeds.enhanced-download",
+  "publisher_id": "12345",
+  "advertiser_id": "500",
+  "download": {
+    "path": "/redacted/enhanced-feed.jsonl",
+    "bytes_written": 2450,
+    "sha256": "abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+    "content_type": "application/x-jsonlines",
+    "line_count": 12
+  },
+  "request": {
+    "method": "GET",
+    "endpoint": "https://api.awin.com/publishers/12345/awinfeeds/download/500-retail-en_GB.jsonl",
+    "response_status": 200
+  },
+  "metadata": {
+    "auth_mode": "bearer",
+    "locale": "en_GB",
+    "vertical": "retail"
+  }
+}

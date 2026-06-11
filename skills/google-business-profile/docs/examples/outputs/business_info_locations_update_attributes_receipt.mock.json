@@ -1,0 +1,39 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "business-info.locations.update-attributes",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessbusinessinformation.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply business-info locations update-attributes --name locations/abc/attributes --attribute-mask attributes/takeout --attributes-file /tmp/attributes.json",
+    "selector": "locations/abc/attributes",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "business-info.locations.get-attributes",
+      "request": {
+        "method": "GET",
+        "host": "https://mybusinessbusinessinformation.googleapis.com",
+        "path": "v1/locations/abc/attributes"
+      },
+      "response": {
+        "name": "locations/abc/attributes",
+        "attributes": [
+          {
+            "name": "attributes/takeout",
+            "values": [
+              true
+            ]
+          }
+        ]
+      }
+    },
+    "diff_applied": [
+      "attributes/takeout"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  }
+}

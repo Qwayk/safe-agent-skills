@@ -1,0 +1,98 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "GetBrowseNodes",
+  "locale": "en_US",
+  "marketplace": "www.amazon.com",
+  "partner_tag": "example-partner",
+  "resources": [
+    "BrowseNodes",
+    "BrowseNodeInfo"
+  ],
+  "request": {
+    "browseNodeIds": [
+      "172282"
+    ]
+  },
+  "browse_nodes": [
+    {
+      "node_id": "172282",
+      "name": "Graphic Novels",
+      "parent_node": "1000",
+      "ancestors": [
+        "1000",
+        "172282"
+      ],
+      "path": "/Books/Graphic+Novels",
+      "children": [
+        "172283"
+      ]
+    }
+  ],
+  "raw": {
+    "browseNodes": [
+      {
+        "id": "172282",
+        "displayName": "Graphic Novels",
+        "parentNode": "1000",
+        "ancestors": [
+          "1000",
+          "172282"
+        ],
+        "browseNodePath": "/Books/Graphic+Novels",
+        "children": [
+          "172283"
+        ]
+      }
+    ]
+  },
+  "receipt": {
+    "tool": "amazon-creators-api-tool",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-03-24T12:00:00Z",
+    "env_fingerprint": "https://creatorsapi.amazon/catalog/v1",
+    "command": "amazon-creators-api-tool browse-nodes describe --browse-node-id 172282 --include-raw --apply",
+    "operation": "GetBrowseNodes",
+    "locale": "en_US",
+    "marketplace": "www.amazon.com",
+    "resources": [
+      "BrowseNodes",
+      "BrowseNodeInfo"
+    ],
+    "selector": {
+      "operation": "GetBrowseNodes",
+      "locale": "en_US",
+      "marketplace": "www.amazon.com",
+      "resources": [
+        "BrowseNodes",
+        "BrowseNodeInfo"
+      ],
+      "browseNodeIds": [
+        "172282"
+      ]
+    },
+    "request": {
+      "browseNodeIds": [
+        "172282"
+      ]
+    },
+    "payload": {
+      "resources": [
+        "BrowseNodes",
+        "BrowseNodeInfo"
+      ],
+      "browseNodeIds": [
+        "172282"
+      ],
+      "marketplace": "www.amazon.com",
+      "partnerTag": "example-partner"
+    },
+    "simplified_key": "browse_nodes",
+    "simplified_count": 1,
+    "verification": {
+      "ok": true,
+      "details": "Applied catalog request"
+    }
+  },
+  "receipt_out": null
+}

@@ -1,0 +1,48 @@
+{
+  "tool": "gtm-api-tool",
+  "version": "0.1.0",
+  "applied_at_utc": "2026-03-02T00:00:05Z",
+  "env_fingerprint": "c2fd3b7f0d1f4a45a5b9dcb9e0b2a945e5c104832a1f3cf0c43b66b874d7c2a1",
+  "request_fingerprint": "5a0c8e01a9d3f57c7b19d2a62c89c37c6e9a78f1c2dc4d9f0ab3aa089f43ab8c",
+  "risk_level": "medium",
+  "request": {
+    "method_id": "tagmanager.accounts.containers.workspaces.create",
+    "http_method": "POST",
+    "path": "tagmanager/v2/accounts/0000000000/containers/0000000000/workspaces",
+    "path_params": {
+      "parent": "accounts/0000000000/containers/0000000000"
+    },
+    "query": {}
+  },
+  "response": {
+    "status": 200,
+    "url": "https://tagmanager.googleapis.com/tagmanager/v2/accounts/0000000000/containers/0000000000/workspaces",
+    "body": {
+      "name": "Example Workspace",
+      "path": "accounts/0000000000/containers/0000000000/workspaces/123"
+    }
+  },
+  "before_state": null,
+  "recovery": {
+    "end_state": "rollback_by_inverse_action",
+    "strategy": "delete_after_create",
+    "reason": "tagmanager.accounts.containers.workspaces.create can be rolled back by deleting the created resource.",
+    "rollback_ready": true,
+    "rollback_plan": {
+      "method_id": "tagmanager.accounts.containers.workspaces.delete",
+      "http_method": "DELETE",
+      "path": "tagmanager/v2/accounts/0000000000/containers/0000000000/workspaces/123"
+    }
+  },
+  "verification": {
+    "attempted": true,
+    "ok": true,
+    "details": {
+      "status": 200,
+      "url": "https://tagmanager.googleapis.com/tagmanager/v2/accounts/0000000000/containers/0000000000/workspaces/123",
+      "body": {
+        "path": "accounts/0000000000/containers/0000000000/workspaces/123"
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "lodging.locations.update-lodging",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinesslodging.googleapis.com",
+    "command": "google-business-profile-safe-cli lodging locations update-lodging --name locations/123/lodging --update-mask roomCount --lodging-file /tmp/lodging.json",
+    "selector": "locations/123/lodging",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Lodging metadata update"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "lodging.locations.update-lodging",
+        "selector": "locations/123/lodging",
+        "mask": "roomCount",
+        "body_fingerprint": "356b0b05eb803c83f99b838ac7b5914e6005f6a9bceb04134b4ab89a21a036c5"
+      }
+    ],
+    "verification_plan": [
+      "Read back the lodging resource with get-lodging and readMask from the update mask."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/123/lodging",
+      "mask": "roomCount",
+      "body_fingerprint": "356b0b05eb803c83f99b838ac7b5914e6005f6a9bceb04134b4ab89a21a036c5",
+      "mask_fingerprint": "3740da81966ea99fce1b883664a94a894a76206b9f11822deb2f4c068da7aa43"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

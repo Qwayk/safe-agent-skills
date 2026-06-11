@@ -1,0 +1,50 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-10T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "command": "accounts.members.add",
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "command": "cloudflare-api-tool --env-file .env accounts members add --account-id acc_example --email <REDACTED_EMAIL> --role-id role_example --status pending",
+    "env_fingerprint": "https://api.cloudflare.com/client/v4",
+    "generated_at_utc": "2026-02-10T00:00:00Z",
+    "notes": [
+      "PII safety: member emails are not written to stdout/stderr or audit logs."
+    ],
+    "preconditions": [
+      "API token has least-privilege permissions needed for this action."
+    ],
+    "proposed_changes": [
+      {
+        "account_id": "acc_example",
+        "action": "add",
+        "email_sha256": "405340cd9ac94b08b93800aee3f0db2dd673256bc318987e51e177eb53cca1b2",
+        "resource": "account_member",
+        "role_ids": [
+          "role_example"
+        ],
+        "status": "pending"
+      }
+    ],
+    "risk_level": "high",
+    "risk_reasons": [
+      "This grants Cloudflare account access to a person. Member email is treated as sensitive and never printed."
+    ],
+    "selector": {
+      "account_id": "acc_example",
+      "email_sha256": "405340cd9ac94b08b93800aee3f0db2dd673256bc318987e51e177eb53cca1b2",
+      "role_ids": [
+        "role_example"
+      ],
+      "status": "pending"
+    },
+    "tool": "cloudflare-api-tool",
+    "verification_plan": [
+      "Fetch member details and confirm role ids (and status if provided)."
+    ],
+    "version": "0.7.3"
+  },
+  "run_id": "2026-02-10T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}

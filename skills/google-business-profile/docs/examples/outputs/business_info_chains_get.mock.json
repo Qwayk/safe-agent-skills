@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "operation": "business-info.chains.get",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinessbusinessinformation.googleapis.com",
+    "path": "v1/chains/coffee-chain"
+  },
+  "response": {
+    "name": "chains/coffee-chain",
+    "title": "Coffee chain",
+    "numLocations": 42
+  }
+}

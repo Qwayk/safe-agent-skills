@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "offers create",
+  "advertiser_id": "123456",
+  "endpoint": "/promotion/advertiser/123456",
+  "method": "POST",
+  "status": 201,
+  "result": {
+    "response_status": 201
+  },
+  "receipt": {
+    "tool": "awin-advertiser-safe-cli",
+    "version": "0.1.1",
+    "applied_at_utc": "2026-06-09T00:00:00Z",
+    "env_fingerprint": "https://api.awin.com",
+    "command": "awin-advertiser-safe-cli offers create --advertiser-id 123456 --offer-file examples/offer_example.json --apply --yes --ack-irreversible --plan-in examples/offers_plan.json --receipt-out examples/offers_receipt.json",
+    "selector": {
+      "advertiser_id": "123456",
+      "endpoint": "promotion/advertiser/123456"
+    },
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "details": {
+        "response_status": 201
+      }
+    },
+    "diff_applied": [
+      {
+        "resource": "offers",
+        "action": "created",
+        "advertiser_id": "123456"
+      }
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "receipt_out": "examples/offers_receipt.json"
+}

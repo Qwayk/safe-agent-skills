@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "account-management.accounts.create",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessaccountmanagement.googleapis.com",
+    "command": "google-business-profile-safe-cli account-management accounts create --account-file /tmp/account.json",
+    "selector": "Example Account",
+    "risk_level": "high",
+    "risk_reasons": [
+      "Account creation changes account ownership and control state."
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "account-management.accounts.create",
+        "selector": "Example Account",
+        "mask": "accountName,primaryOwner,type",
+        "body_fingerprint": "ad5591a51b2e221b95a7787d754f1a65fb81d6996e1861754d214f6d2726d6e1"
+      }
+    ],
+    "verification_plan": [
+      "Read back the created account with accounts get."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "Example Account",
+      "body_fingerprint": "ad5591a51b2e221b95a7787d754f1a65fb81d6996e1861754d214f6d2726d6e1",
+      "mask": "accountName,primaryOwner,type",
+      "mask_fingerprint": "5a29ea72508026e79178a727b92076f30fc8da2b702ec73ce0d4ae561d84bde4"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

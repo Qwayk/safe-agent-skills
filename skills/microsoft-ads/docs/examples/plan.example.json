@@ -1,0 +1,53 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "baseline": {
+      "env_fingerprint": "msads:prod",
+      "selector": "demo-resource"
+    },
+    "before_state": {
+      "required": true,
+      "statement": "Demo write apply requires explicit no-snapshot approval when no saved snapshot is available.",
+      "supported": false
+    },
+    "command": "msads-api-tool --output json --no-artifacts --env-file examples/example.env demo write --selector demo-resource",
+    "env_fingerprint": "msads:prod",
+    "generated_at_utc": "2026-06-04T11:17:14Z",
+    "preconditions": [
+      "env_fingerprint must match",
+      "selector must match"
+    ],
+    "proposed_changes": [
+      {
+        "field": "demo_field",
+        "from": "<unknown>",
+        "to": "new_value"
+      }
+    ],
+    "risk_level": "medium",
+    "risk_reasons": [
+      "write-demo"
+    ],
+    "rollback": {
+      "notes": "Demo command has no rollback.",
+      "supported": false
+    },
+    "selector": {
+      "kind": "demo",
+      "value": "demo-resource"
+    },
+    "tool": "msads-api-tool",
+    "verification_plan": {
+      "notes": "Apply attempts require explicit no-snapshot approval before any write-like stub receipt is emitted.",
+      "type": "no-snapshot-approval"
+    },
+    "version": "0.1.0"
+  },
+  "plan_out": null,
+  "run_id": null,
+  "runs_index": "examples/.state/runs/index.jsonl"
+}

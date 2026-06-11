@@ -1,0 +1,52 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "count": 5,
+  "include_writes": true,
+  "ok": true,
+  "operations": [
+    {
+      "area": "files",
+      "method": "GET",
+      "op_key": "get-file",
+      "path_template": "/v1/files/{file_key}",
+      "safety": "read-only",
+      "title": "Get file JSON"
+    },
+    {
+      "area": "files",
+      "method": "GET",
+      "op_key": "get-file-nodes",
+      "path_template": "/v1/files/{file_key}/nodes",
+      "safety": "read-only",
+      "title": "Get file JSON for specific nodes"
+    },
+    {
+      "area": "files",
+      "method": "GET",
+      "op_key": "render-images",
+      "path_template": "/v1/images/{file_key}",
+      "safety": "read-only",
+      "title": "Render images of file nodes"
+    },
+    {
+      "area": "files",
+      "method": "GET",
+      "op_key": "get-image-fills",
+      "path_template": "/v1/files/{file_key}/images",
+      "safety": "read-only",
+      "title": "Get image fills"
+    },
+    {
+      "area": "files",
+      "method": "GET",
+      "op_key": "get-file-meta",
+      "path_template": "/v1/files/{file_key}/meta",
+      "safety": "read-only",
+      "title": "Get file metadata"
+    }
+  ],
+  "run_id": null,
+  "runs_index": "/tmp/figma_safe_agent_cli_proof/.state/runs/index.jsonl"
+}

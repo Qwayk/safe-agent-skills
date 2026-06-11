@@ -1,0 +1,22 @@
+{
+  "base_url": "https://status.example.com",
+  "data": {
+    "incidents": [
+      {
+        "created_at": "2026-01-01T00:00:00.000Z",
+        "id": "inc1",
+        "impact": "minor",
+        "name": "API latency",
+        "shortlink": "https://status.example.com/incidents/inc1",
+        "status": "investigating",
+        "updated_at": "2026-01-01T00:05:00.000Z"
+      }
+    ],
+    "page": {
+      "id": "abcd1234",
+      "name": "Example Status"
+    }
+  },
+  "endpoint": "/api/v2/incidents.json",
+  "ok": true
+}

@@ -1,0 +1,110 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "count": 11,
+  "ok": true,
+  "ops": [
+    {
+      "doc_url": "https://www.reddit.com/dev/api/#GET_api_v1_me",
+      "method": "GET",
+      "oauth_scope": "identity",
+      "operation_command": "get-api-v1-me",
+      "path": "/api/v1/me",
+      "required_path_params": [],
+      "section": "account"
+    },
+    {
+      "doc_url": "https://www.reddit.com/dev/api/#GET_api_v1_me_karma",
+      "method": "GET",
+      "oauth_scope": "mysubreddits",
+      "operation_command": "get-api-v1-me-karma",
+      "path": "/api/v1/me/karma",
+      "required_path_params": [],
+      "section": "account"
+    },
+    {
+      "doc_url": "https://www.reddit.com/dev/api/#GET_api_v1_me_prefs",
+      "method": "GET",
+      "oauth_scope": "identity",
+      "operation_command": "get-api-v1-me-prefs",
+      "path": "/api/v1/me/prefs",
+      "required_path_params": [],
+      "section": "account"
+    },
+    {
+      "doc_url": "https://www.reddit.com/dev/api/#PATCH_api_v1_me_prefs",
+      "method": "PATCH",
+      "oauth_scope": "account",
+      "operation_command": "patch-api-v1-me-prefs",
+      "path": "/api/v1/me/prefs",
+      "required_path_params": [],
+      "section": "account"
+    },
+    {
+      "doc_url": "https://www.reddit.com/dev/api/#GET_api_v1_me_trophies",
+      "method": "GET",
+      "oauth_scope": "identity",
+      "operation_command": "get-api-v1-me-trophies",
+      "path": "/api/v1/me/trophies",
+      "required_path_params": [],
+      "section": "account"
+    },
+    {
+      "doc_url": "https://www.reddit.com/dev/api/#GET_prefs_friends",
+      "method": "GET",
+      "oauth_scope": "read",
+      "operation_command": "get-prefs-friends",
+      "path": "/prefs/friends",
+      "required_path_params": [],
+      "section": "account"
+    },
+    {
+      "doc_url": "https://www.reddit.com/dev/api/#GET_prefs_blocked",
+      "method": "GET",
+      "oauth_scope": "read",
+      "operation_command": "get-prefs-blocked",
+      "path": "/prefs/blocked",
+      "required_path_params": [],
+      "section": "account"
+    },
+    {
+      "doc_url": "https://www.reddit.com/dev/api/#GET_prefs_messaging",
+      "method": "GET",
+      "oauth_scope": "read",
+      "operation_command": "get-prefs-messaging",
+      "path": "/prefs/messaging",
+      "required_path_params": [],
+      "section": "account"
+    },
+    {
+      "doc_url": "https://www.reddit.com/dev/api/#GET_prefs_trusted",
+      "method": "GET",
+      "oauth_scope": "read",
+      "operation_command": "get-prefs-trusted",
+      "path": "/prefs/trusted",
+      "required_path_params": [],
+      "section": "account"
+    },
+    {
+      "doc_url": "https://www.reddit.com/dev/api/#GET_api_v1_me_friends",
+      "method": "GET",
+      "oauth_scope": "read",
+      "operation_command": "get-api-v1-me-friends",
+      "path": "/api/v1/me/friends",
+      "required_path_params": [],
+      "section": "account"
+    },
+    {
+      "doc_url": "https://www.reddit.com/dev/api/#GET_api_v1_me_blocked",
+      "method": "GET",
+      "oauth_scope": "read",
+      "operation_command": "get-api-v1-me-blocked",
+      "path": "/api/v1/me/blocked",
+      "required_path_params": [],
+      "section": "account"
+    }
+  ],
+  "run_id": null,
+  "runs_index": "./.state/runs/index.jsonl"
+}

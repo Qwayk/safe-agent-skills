@@ -1,0 +1,834 @@
+syntax = "proto3";
+
+package qdrant.cloud.iam.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+// google/rpc/error_details is used implicitly, but we need this import to
+// generate the code.
+// buf:lint:ignore IMPORT_USED
+import "google/rpc/error_details.proto";
+import "qdrant/cloud/common/v1/common.proto";
+import "qdrant/cloud/event/v1/events.proto";
+
+// IAMService is the API used to configure IAM (identity and access management) objects.
+service IAMService {
+  // The API version of this service.
+  option (qdrant.cloud.common.v1.api_version) = {
+    major: 1
+    minor: 0
+    patch: 0
+  };
+  // Gets the authenticated user.
+  // Required permissions:
+  // - None (authenticated only)
+  rpc GetAuthenticatedUser(GetAuthenticatedUserRequest) returns (GetAuthenticatedUserResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // custom account-id expression
+    option (qdrant.cloud.common.v1.account_id_expression) = "";
+    // custom supported-actor-types expression. (Requires to be authenticated as a user)
+    option (qdrant.cloud.common.v1.supported_actor_types) = ACTOR_TYPE_USER;
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/iam/v1/users/me"};
+  }
+  // List users in the account identified by the given ID.
+  // Required permissions:
+  // - read:users
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
+    // permissions
+    option (common.v1.permissions) = "read:users";
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/iam/v1/accounts/{account_id}/users"};
+  }
+  // Updates the user identified by the given ID.
+  // Required permissions:
+  // - None (authenticated only)
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // custom account-id expression
+    option (qdrant.cloud.common.v1.account_id_expression) = "";
+    // gRPC Gateway REST call
+    option (google.api.http) = {
+      put: "/api/iam/v1/users/{user.id}"
+      body: "*"
+    };
+    // events
+    option (qdrant.cloud.event.v1.event_options) = {
+      event_type: EVENT_TYPE_UPDATED
+      resource_type: "user"
+      resource_id_field: "req.user.id"
+      resource_url_template: "/users/{req.user.id}"
+    };
+    // log fields
+    option (common.v1.log_fields) = {
+      name: "user_id"
+      field_expression: "user.id"
+    };
+  }
+  // Gets the profile of the authenticated user.
+  // Required permissions:
+  // - None (authenticated only)
+  rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // custom account-id expression
+    option (qdrant.cloud.common.v1.account_id_expression) = "";
+    // custom supported-actor-types expression. (Requires to be authenticated as a user)
+    option (qdrant.cloud.common.v1.supported_actor_types) = ACTOR_TYPE_USER;
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/iam/v1/users/me/profile"};
+  }
+  // Updates the profile of the authenticated user.
+  // Required permissions:
+  // - None (authenticated only)
+  rpc UpdateUserProfile(UpdateUserProfileRequest) returns (UpdateUserProfileResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // custom account-id expression
+    option (qdrant.cloud.common.v1.account_id_expression) = "";
+    // custom supported-actor-types expression. (Requires to be authenticated as a user)
+    option (qdrant.cloud.common.v1.supported_actor_types) = ACTOR_TYPE_USER;
+    // gRPC Gateway REST call
+    option (google.api.http) = {
+      put: "/api/iam/v1/users/me/profile"
+      body: "*"
+    };
+    // events
+    option (qdrant.cloud.event.v1.event_options) = {
+      event_type: EVENT_TYPE_UPDATED
+      resource_type: "user-profile"
+      resource_id_field: "req-md.qc-actor-id"
+      resource_url_template: "/users/{req-md.qc-actor-id}"
+    };
+  }
+  // Gets the authenticated user's consent status for a specific legal document.
+  // Required permissions:
+  // - None (authenticated only)
+  rpc GetUserConsent(GetUserConsentRequest) returns (GetUserConsentResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // custom account-id expression
+    option (qdrant.cloud.common.v1.account_id_expression) = "";
+    // custom supported-actor-types expression. (Requires to be authenticated as a user)
+    option (qdrant.cloud.common.v1.supported_actor_types) = ACTOR_TYPE_USER;
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/iam/v1/users/me/consent"};
+  }
+  // Records the authenticated user's consent for a legal document.
+  // Required permissions:
+  // - None (authenticated only)
+  rpc RecordUserConsent(RecordUserConsentRequest) returns (RecordUserConsentResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // custom account-id expression
+    option (qdrant.cloud.common.v1.account_id_expression) = "";
+    // custom supported-actor-types expression. (Requires to be authenticated as a user)
+    option (qdrant.cloud.common.v1.supported_actor_types) = ACTOR_TYPE_USER;
+    // gRPC Gateway REST call
+    option (google.api.http) = {
+      post: "/api/iam/v1/users/me/consent"
+      body: "*"
+    };
+    // events
+    option (qdrant.cloud.event.v1.event_options) = {
+      event_type: EVENT_TYPE_ACTION
+      action_type: "record-consent"
+      resource_type: "user"
+      resource_id_field: "req-md.qc-actor-id"
+      resource_url_template: "/users/{req-md.qc-actor-id}"
+      additional_context_fields: {
+        key: "document_type"
+        value: "req.document_type"
+      }
+    };
+  }
+  // Lists all permissions known in the system for the provided account.
+  // Note: If you want to get a list of permissions available for you, please use ListEffectivePermissions instead.
+  // Required permissions:
+  // - read:roles
+  rpc ListPermissions(ListPermissionsRequest) returns (ListPermissionsResponse) {
+    // permissions
+    option (common.v1.permissions) = "read:roles";
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/iam/v1/accounts/{account_id}/permissions"};
+  }
+  // Lists all roles in the account identified by the given ID.
+  // Required permissions:
+  // - read:roles
+  rpc ListRoles(ListRolesRequest) returns (ListRolesResponse) {
+    // permissions
+    option (common.v1.permissions) = "read:roles";
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/iam/v1/accounts/{account_id}/roles"};
+  }
+  // Gets a role for the account identified by the given ID.
+  // Required permissions:
+  // - read:roles
+  rpc GetRole(GetRoleRequest) returns (GetRoleResponse) {
+    // permissions
+    option (common.v1.permissions) = "read:roles";
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/iam/v1/accounts/{account_id}/roles/{role_id}"};
+    // log fields
+    option (common.v1.log_fields) = {
+      name: "role_id"
+      field_expression: "role_id"
+    };
+  }
+  // Creates a role for the account identified by the given ID.
+  // Note: The role_type must be ROLE_TYPE_CUSTOM.
+  // Required permissions:
+  // - write:roles
+  rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse) {
+    // permissions
+    option (common.v1.permissions) = "write:roles";
+    // custom account-id expression
+    option (qdrant.cloud.common.v1.account_id_expression) = "role.account_id";
+    // gRPC Gateway REST call
+    option (google.api.http) = {
+      post: "/api/iam/v1/accounts/{role.account_id}/roles"
+      body: "*"
+    };
+    // events
+    option (qdrant.cloud.event.v1.event_options) = {
+      event_type: EVENT_TYPE_CREATED
+      resource_type: "role"
+      resource_id_field: "resp.role.id"
+      resource_url_template: "/accounts/{req.role.account_id}/roles/{resp.role.id}"
+    };
+    // log fields
+    option (common.v1.log_fields) = {
+      name: "role_name"
+      field_expression: "role.name"
+    };
+  }
+  // Updates a role in the account identified by the given ID.
+  // Note: The role_type must be ROLE_TYPE_CUSTOM.
+  // Required permissions:
+  // - write:roles
+  rpc UpdateRole(UpdateRoleRequest) returns (UpdateRoleResponse) {
+    // permissions
+    option (common.v1.permissions) = "write:roles";
+    // custom account-id expression
+    option (qdrant.cloud.common.v1.account_id_expression) = "role.account_id";
+    // gRPC Gateway REST call
+    option (google.api.http) = {
+      put: "/api/iam/v1/accounts/{role.account_id}/roles/{role.id}"
+      body: "*"
+    };
+    // events
+    option (qdrant.cloud.event.v1.event_options) = {
+      event_type: EVENT_TYPE_UPDATED
+      resource_type: "role"
+      resource_id_field: "req.role.id"
+      resource_url_template: "/accounts/{req.role.account_id}/roles/{req.role.id}"
+    };
+    // log fields
+    option (common.v1.log_fields) = {
+      name: "role_id"
+      field_expression: "role.id"
+    };
+  }
+  // Deletes a role in the account identified by the given ID.
+  // Note: The role_type must be ROLE_TYPE_CUSTOM.
+  // Required permissions:
+  // - delete:roles
+  rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse) {
+    // permissions
+    option (common.v1.permissions) = "delete:roles";
+    // gRPC Gateway REST call
+    option (google.api.http) = {delete: "/api/iam/v1/accounts/{account_id}/roles/{role_id}"};
+    // events
+    option (qdrant.cloud.event.v1.event_options) = {
+      event_type: EVENT_TYPE_DELETED
+      resource_type: "role"
+      resource_id_field: "req.role_id"
+      resource_url_template: "/accounts/{req.account_id}/roles/{req.role_id}"
+    };
+    // log fields
+    option (common.v1.log_fields) = {
+      name: "role_id"
+      field_expression: "role_id"
+    };
+  }
+  // Lists the effective permissions for the authenticated user in the account identified by the given ID.
+  // Required permissions:
+  // - None (authenticated only)
+  rpc ListEffectivePermissions(ListEffectivePermissionsRequest) returns (ListEffectivePermissionsResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/iam/v1/accounts/{account_id}/effective-permissions"};
+  }
+
+  // List roles of the user identified by the given ID.
+  // Required permissions:
+  // - read:roles
+  rpc ListUserRoles(ListUserRolesRequest) returns (ListUserRolesResponse) {
+    // permissions
+    option (common.v1.permissions) = "read:roles";
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/iam/v1/accounts/{account_id}/users/{user_id}/roles"};
+    // log fields
+    option (common.v1.log_fields) = {
+      name: "user_id"
+      field_expression: "user_id"
+    };
+  }
+
+  // List users for the role identified by the given ID.
+  // Required permissions:
+  // - read:roles
+  rpc ListRoleUsers(ListRoleUsersRequest) returns (ListRoleUsersResponse) {
+    // permissions
+    option (common.v1.permissions) = "read:roles";
+    // gRPC Gateway REST call
+    option (google.api.http) = {get: "/api/iam/v1/accounts/{account_id}/roles/{role_id}/users"};
+    // log fields
+    option (common.v1.log_fields) = {
+      name: "role_id"
+      field_expression: "role_id"
+    };
+  }
+
+  // Assigns the provided roles to the user in the account identified by the given ID.
+  // Required permissions:
+  // - write:roles
+  rpc AssignUserRoles(AssignUserRolesRequest) returns (AssignUserRolesResponse) {
+    // permissions
+    option (common.v1.permissions) = "write:roles";
+    // gRPC Gateway REST call
+    option (google.api.http) = {
+      post: "/api/iam/v1/accounts/{account_id}/users/{user_id}/roles"
+      body: "*"
+    };
+    // events
+    option (qdrant.cloud.event.v1.event_options) = {
+      event_type: EVENT_TYPE_ACTION
+      action_type: "assign-roles"
+      resource_type: "user"
+      resource_id_field: "req.user_id"
+      resource_url_template: "/accounts/{req.account_id}/users/{req.user_id}/roles"
+    };
+    // log fields
+    option (common.v1.log_fields) = {
+      name: "user_id"
+      field_expression: "user_id"
+    };
+  }
+  // Logs out the authenticated user.
+  // Required permissions:
+  // - None (authenticated only)
+  rpc LogoutUser(LogoutUserRequest) returns (LogoutUserResponse) {
+    // permissions
+    option (common.v1.permissions) = "";
+    // custom account-id expression
+    option (qdrant.cloud.common.v1.account_id_expression) = "";
+    // custom supported-actor-types expression. (Requires to be authenticated as a user)
+    option (qdrant.cloud.common.v1.supported_actor_types) = ACTOR_TYPE_USER;
+    // gRPC Gateway REST call
+    option (google.api.http) = {post: "/api/iam/v1/users/me/logout"};
+    // events
+    option (qdrant.cloud.event.v1.event_options) = {
+      event_type: EVENT_TYPE_ACTION
+      action_type: "logout"
+      resource_type: "user"
+      resource_id_field: "req-md.qc-actor-id"
+      resource_url_template: "/users/{req-md.qc-actor-id}"
+    };
+  }
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_REQUEST_FIELDS
+// GetAuthenticatedUserRequest is the request for the GetAuthenticatedUser function
+message GetAuthenticatedUserRequest {
+  // Empty
+}
+
+// GetAuthenticatedUserResponse is the response from the GetAuthenticatedUser function
+message GetAuthenticatedUserResponse {
+  // The actual user.
+  User user = 1 [(buf.validate.field).required = true];
+}
+
+// ListUsersRequest is the request for the ListUsers function
+message ListUsersRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+}
+
+// ListUsersResponse is the response from the ListUsers function
+message ListUsersResponse {
+  // The actual users in this list.
+  repeated User items = 1;
+}
+
+// UpdateUserRequest is the request for the UpdateUser function.
+message UpdateUserRequest {
+  // The actual user.
+  User user = 1 [(buf.validate.field).required = true];
+  option (buf.validate.message).cel = {
+    id: "update_user.id_present"
+    message: "user.id is required for an update"
+    expression: "this.user.id != ''"
+  };
+}
+
+// UpdateUserResponse is the response from the UpdateUser function.
+message UpdateUserResponse {
+  // The actual user.
+  User user = 1 [(buf.validate.field).required = true];
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_REQUEST_FIELDS
+// GetUserConsentRequest is the request for the GetUserConsent function.
+message GetUserConsentRequest {
+  // The type of the legal document.
+  // This is a required field and cannot be UNSPECIFIED.
+  LegalDocumentType document_type = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+}
+
+// GetUserConsentResponse is the response from the GetUserConsent function.
+message GetUserConsentResponse {
+  // The user consent for the requested document type.
+  UserConsent user_consent = 1 [(buf.validate.field).required = true];
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_REQUEST_FIELDS
+// GetUserProfileRequest is the request for the GetUserProfile function.
+message GetUserProfileRequest {
+  // Empty
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_REQUEST_FIELDS
+// GetUserProfileResponse is the response from the GetUserProfile function.
+message GetUserProfileResponse {
+  // The actual user profile.
+  UserProfile user_profile = 1 [(buf.validate.field).required = true];
+}
+
+// UpdateUserProfileRequest is the request for the UpdateUserProfile function.
+message UpdateUserProfileRequest {
+  // The actual user profile.
+  UserProfile user_profile = 1 [(buf.validate.field).required = true];
+
+  option (buf.validate.message).cel = {
+    id: "update_user_profile.exclusive_name_field_selection"
+    message: "One of user_profile.given_name or user_profile.family_name must be set"
+    expression: "has(this.user_profile.given_name) || has(this.user_profile.family_name)"
+  };
+}
+
+// UpdateUserProfileResponse is the response from the UpdateUserProfile function.
+message UpdateUserProfileResponse {
+  // The actual user profile.
+  UserProfile user_profile = 1 [(buf.validate.field).required = true];
+}
+
+// RecordUserConsentRequest is the request for the RecordUserConsent function.
+message RecordUserConsentRequest {
+  // The type of the legal document.
+  // This is a required field and cannot be UNSPECIFIED.
+  LegalDocumentType document_type = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // The status update initiated by the user.
+  // This is a required field and cannot be UNSPECIFIED or PENDING.
+  UserConsentStatus status_update = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [
+      0,
+      3
+    ]
+  }];
+}
+
+// RecordUserConsentResponse is the response from the RecordUserConsent function.
+message RecordUserConsentResponse {
+  // Empty
+}
+
+// ListPermissionsRequest is the request for the ListPermissions function
+message ListPermissionsRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+}
+
+// ListPermissionsResponse is the response from the ListPermissions function
+message ListPermissionsResponse {
+  // The permissions known by the system.
+  repeated Permission permissions = 1 [(buf.validate.field).repeated.min_items = 1];
+}
+
+// ListRolesRequest is the request for the ListRoles function
+message ListRolesRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+}
+
+// ListRolesResponse is the response from the ListRoles function
+message ListRolesResponse {
+  // The actual roles in this list.
+  repeated Role items = 1;
+}
+
+// GetRoleRequest is the request for the GetRole function
+message GetRoleRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+  // The identifier of the role (in GUID format).
+  // This is a required field.
+  string role_id = 2 [(buf.validate.field).string = {uuid: true}];
+}
+
+// GetRoleResponse is the response from the GetRole function
+message GetRoleResponse {
+  // The actual role.
+  Role role = 1 [(buf.validate.field).required = true];
+}
+
+// CreateRoleRequest is the request for the CreateRole function.
+message CreateRoleRequest {
+  // The actual role.
+  Role role = 1 [(buf.validate.field).required = true];
+  option (buf.validate.message).cel = {
+    id: "create_role.role_type"
+    message: "role.role_type must be ROLE_TYPE_CUSTOM"
+    expression: "this.role.role_type == 2"
+  };
+  option (buf.validate.message).cel = {
+    id: "create_role.no_read_only_fields"
+    message: "read-only fields (id, created_at, last_modified_at) must not be set on create"
+    expression: "this.role.id == '' && !has(this.role.created_at) && !has(this.role.last_modified_at)"
+  };
+}
+
+// CreateRoleResponse is the response from the CreateRole function.
+message CreateRoleResponse {
+  // The actual role.
+  Role role = 1 [(buf.validate.field).required = true];
+}
+
+// UpdateRoleRequest is the request for the UpdateRole function.
+message UpdateRoleRequest {
+  // The actual role.
+  Role role = 1 [(buf.validate.field).required = true];
+  option (buf.validate.message).cel = {
+    id: "update_role.id_present"
+    message: "role.id is required for an update"
+    expression: "this.role.id != ''"
+  };
+  option (buf.validate.message).cel = {
+    id: "update_role.role_type"
+    message: "role.role_type must be ROLE_TYPE_CUSTOM"
+    expression: "this.role.role_type == 2"
+  };
+}
+
+// UpdateRoleResponse is the response from the UpdateRole function.
+message UpdateRoleResponse {
+  // The actual role.
+  Role role = 1 [(buf.validate.field).required = true];
+}
+
+// DeleteRoleRequest is the request for the DeleteRole function.
+message DeleteRoleRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+  // The identifier of the role (in GUID format).
+  // This is a required field.
+  string role_id = 2 [(buf.validate.field).string = {uuid: true}];
+}
+
+// DeleteRoleResponse is the response from the DeleteRole function.
+message DeleteRoleResponse {
+  // Empty
+}
+
+// ListEffectivePermissionsRequest is the request for the ListEffectivePermissions function
+message ListEffectivePermissionsRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+}
+
+// ListEffectivePermissionsResponse is the response from the ListEffectivePermissions function
+message ListEffectivePermissionsResponse {
+  // The effective permissions.
+  repeated Permission permissions = 1 [(buf.validate.field).repeated.min_items = 1];
+}
+
+// ListUserRolesRequest is the request for the ListUserRoles function
+message ListUserRolesRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+  // The identifier of the user (in GUID format).
+  // This user should be part of the provided account.
+  // This is a required field.
+  string user_id = 2 [(buf.validate.field).string = {uuid: true}];
+}
+
+// ListUserRolesResponse is the response from the ListUserRoles function
+message ListUserRolesResponse {
+  // The roles assigned to the user.
+  // If the user has no roles, this list will be empty.
+  repeated Role roles = 1;
+}
+
+// ListRoleUsersRequest is the request for the ListRoleUsers function
+message ListRoleUsersRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+  // The identifier of the role (in GUID format).
+  // This is a required field.
+  string role_id = 2 [(buf.validate.field).string = {uuid: true}];
+}
+
+// ListRoleUsersResponse is the response from the ListRoleUsers function
+message ListRoleUsersResponse {
+  // The users assigned to the role.
+  // If the role has no users, this list will be empty.
+  repeated User users = 1;
+}
+
+// AssignUserRolesRequest is the request for the AssignUserRoles function
+message AssignUserRolesRequest {
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 1 [(buf.validate.field).string = {uuid: true}];
+  // The identifier of the user (in GUID format).
+  // This user should be part of the provided account.
+  // This is a required field.
+  string user_id = 2 [(buf.validate.field).string = {uuid: true}];
+  // The roles to add to the provided user.
+  // If a role was already part of the user or the same role is provided multiple times, the role will be added exactly one time.
+  repeated string role_ids_to_add = 3 [(buf.validate.field).repeated.items.string = {uuid: true}];
+  // The roles to be deleted from the provided user.
+  // If a role is part of the role_ids_to_add this field takes precedence.
+  repeated string role_ids_to_delete = 4 [(buf.validate.field).repeated.items.string = {uuid: true}];
+  option (buf.validate.message).cel = {
+    id: "assign_user_roles.at_least_one"
+    message: "at least one role must be added or deleted"
+    expression: "this.role_ids_to_add.size() > 0 || this.role_ids_to_delete.size() > 0"
+  };
+}
+
+// AssignUserRolesResponse is the response from the AssignUserRoles function
+message AssignUserRolesResponse {
+  // Empty
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_ENTITY_FIELDS
+// A User represents a user in the Qdrant cloud.
+message User {
+  // Unique identifier for the user (in GUID format).
+  // This is a read-only field and will be available after the user is created.
+  string id = 1 [(buf.validate.field).string = {uuid: true}];
+  // The timestamp when the user was created.
+  // This is a read-only field and will be available after the user is created.
+  google.protobuf.Timestamp created_at = 2;
+  // The timestamp when the user was last updated.
+  // This is a read-only field and will be available after the user is created.
+  google.protobuf.Timestamp last_modified_at = 3;
+  option (buf.validate.message).cel = {
+    id: "user.last_modified_at"
+    message: "last_modified_at must be set if created_at is set and must be after or equal to created_at"
+    expression: "!has(this.created_at) || (has(this.last_modified_at) && this.last_modified_at >= this.created_at)"
+  };
+  // The email address of the user.
+  // This is a read-only field.
+  string email = 4 [(buf.validate.field).string = {email: true}];
+  // The status of the user.
+  // This is a read-only field.
+  UserStatus status = 5 [(buf.validate.field).enum.defined_only = true];
+  // The default account ID of the user (in GUID format).
+  // You should be member of the account when updating.
+  string default_account_id = 6 [(buf.validate.field).string = {uuid: true}];
+}
+
+// UserStatus defines the possible statuses of a user.
+enum UserStatus {
+  // Default, unspecified status.
+  USER_STATUS_UNSPECIFIED = 0;
+  // The user account is active and can be used.
+  USER_STATUS_ACTIVE = 1;
+  // The user account is blocked and cannot be used.
+  USER_STATUS_BLOCKED = 2;
+  // The user account has been marked for deletion or is deleted.
+  USER_STATUS_DELETED = 3;
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_ENTITY_FIELDS
+// A Permission represents a permission in the Qdrant cloud.
+message Permission {
+  // The permission value (e.g., "read:clusters").
+  string value = 1 [(buf.validate.field).string.min_len = 1];
+  // The category of the permission (e.g., "Cluster", "Account").
+  // Optional in requests; server populates it in responses.
+  optional string category = 2 [(buf.validate.field).string.min_len = 1];
+}
+
+// A Role represents a role in the Qdrant cloud.
+message Role {
+  // Unique identifier for the role (in GUID format).
+  // This is a read-only field and will be available after a role is created.
+  string id = 1;
+  option (buf.validate.message).cel = {
+    id: "role.id"
+    message: "value must be a valid UUID"
+    expression: "this.id.matches(\'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$\') || !has(this.created_at)"
+  };
+  // The timestamp when the role was created.
+  // This is a read-only field and will be available after a role is created.
+  google.protobuf.Timestamp created_at = 2;
+  // The timestamp when the role was last updated.
+  // This is a read-only field and will be available after a role is created.
+  google.protobuf.Timestamp last_modified_at = 3;
+  option (buf.validate.message).cel = {
+    id: "role.last_modified_at"
+    message: "last_modified_at must be set if created_at is set and must be after or equal to created_at"
+    expression: "!has(this.created_at) || (has(this.last_modified_at) && this.last_modified_at >= this.created_at)"
+  };
+  // The identifier of the account (in GUID format).
+  // This is a required field.
+  string account_id = 4 [(buf.validate.field).string = {uuid: true}];
+  // The name of the role.
+  // Name can only contain printable characters.
+  string name = 5 [(buf.validate.field).string = {
+    max_len: 64
+    min_len: 4
+    pattern: "^([^\\x00-\\x1F\\x7F])*$"
+  }];
+  // The human readable description of this role.
+  string description = 6 [(buf.validate.field).string = {max_len: 256}];
+  // The role type.
+  RoleType role_type = 7 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // The permissions associated with this role.
+  repeated Permission permissions = 8 [(buf.validate.field).repeated.min_items = 1];
+  // The sub-type of the system role.
+  // This field is set for system role only.
+  optional SystemRoleSubType sub_type = 9 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+}
+
+// RoleType specified the type of the role
+enum RoleType {
+  // The role type is unspecified.
+  ROLE_TYPE_UNSPECIFIED = 0;
+  // The role type is system.
+  // Note: system roles cannot be changed (create/update/delete).
+  ROLE_TYPE_SYSTEM = 1;
+  // The role type is custom defined.
+  ROLE_TYPE_CUSTOM = 2;
+}
+
+// SystemRoleSubType specified the sub-type of the system role
+enum SystemRoleSubType {
+  // The system role sub-type is unspecified.
+  SYSTEM_ROLE_SUB_TYPE_UNSPECIFIED = 0;
+  // The system role sub-type is owner.
+  SYSTEM_ROLE_SUB_TYPE_OWNER = 1;
+  // The system role sub-type is admin.
+  SYSTEM_ROLE_SUB_TYPE_ADMIN = 2;
+  // The system role sub-type is base.
+  SYSTEM_ROLE_SUB_TYPE_BASE = 3;
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_REQUEST_FIELDS
+// LogoutUserRequest is the request for the Logout function
+message LogoutUserRequest {
+  // Empty
+}
+
+// LogoutUserResponse is the response from the Logout function
+message LogoutUserResponse {
+  // Empty
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_ENTITY_FIELDS
+// User Profile represents profile information about a user.
+message UserProfile {
+  // The given name of the user.
+  optional string given_name = 3 [(buf.validate.field).string.min_len = 1];
+  // The family name of the user.
+  optional string family_name = 4 [(buf.validate.field).string.min_len = 1];
+  // Additional demographic information about the user.
+  optional UserDemographics demographics = 5;
+}
+
+// User Demographics represents demographic information about a user.
+message UserDemographics {
+  // The role of the user in their company.
+  optional string role_in_company = 1;
+  // Tags representing what the user uses Qdrant for.
+  repeated string usage_tags = 2;
+  // The use case description for using Qdrant.
+  optional string use_case = 3;
+}
+
+// buf:lint:ignore QDRANT_CLOUD_REQUIRED_ENTITY_FIELDS
+// User Consent represents the consent status of a user for a specific legal document.
+message UserConsent {
+  // The type of the legal document for which consent status is reported.
+  LegalDocumentType document_type = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // The latest consent status recorded from the user for this document type.
+  // Will be USER_CONSENT_STATUS_UNSPECIFIED if no status update has been recorded.
+  UserConsentStatus status = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  // Timestamp of the most recent status update.
+  // Unset if no status update has been recorded.
+  optional google.protobuf.Timestamp last_modified_at = 3;
+  // A convenience field indicating if the current status is an acceptance.
+  // True if status is USER_CONSENT_STATUS_ACCEPTED, false otherwise.
+  bool is_accepted = 4;
+}
+
+// LegalDocumentType specifies the type of a legal document.
+enum LegalDocumentType {
+  // Unspecified document type.
+  LEGAL_DOCUMENT_TYPE_UNSPECIFIED = 0;
+  // Terms of Service document.
+  LEGAL_DOCUMENT_TYPE_TERMS_OF_SERVICE = 1;
+  // Privacy Policy document.
+  LEGAL_DOCUMENT_TYPE_PRIVACY_POLICY = 2;
+  // Service Level Agreement document.
+  LEGAL_DOCUMENT_TYPE_SLA = 3;
+}
+
+// UserConsentStatus specifies the status from an user for a consent.
+enum UserConsentStatus {
+  // Unspecified consent status.
+  USER_CONSENT_STATUS_UNSPECIFIED = 0;
+  // The user accepted the consent.
+  USER_CONSENT_STATUS_ACCEPTED = 1;
+  // The user revoked the consent.
+  USER_CONSENT_STATUS_REVOKED = 2;
+  // The consent is pending action from the user.
+  // Pending consent means that the user got notified about the new version of the document. After a certain
+  // period of time, we auto accept pending consents depending on the document type.
+  USER_CONSENT_STATUS_PENDING = 3;
+}

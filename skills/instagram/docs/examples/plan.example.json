@@ -1,0 +1,63 @@
+{
+  "baseline": {
+    "env_fingerprint": "https://graph.instagram.com"
+  },
+  "before_state": {
+    "provider_backup_id": null,
+    "provider_write": {
+      "base_url": "https://graph.instagram.com",
+      "command": "media.publish",
+      "selector": {
+        "creation_id": "17890000000000000",
+        "ig_user_id": "17841400000000000",
+        "kind": "media.publish"
+      },
+      "service": "Instagram Graph API"
+    },
+    "reason": "This source tool can build and review Instagram write plans, but it does not yet save operation-specific before-state or provider backup data before applying them.",
+    "required": true,
+    "saved_path": null,
+    "status": "blocked",
+    "supported": false
+  },
+  "command": "instagram-api-tool --output json --env-file examples/example.env --no-artifacts media publish --ig-user-id 17841400000000000 --creation-id 17890000000000000",
+  "command_id": "media.publish",
+  "env_fingerprint": "https://graph.instagram.com",
+  "generated_at_utc": "2026-06-04T00:00:00Z",
+  "preconditions": [
+    "dry-run approved by user before apply"
+  ],
+  "proposed_changes": [
+    {
+      "action": "publish_container",
+      "creation_id": "17890000000000000",
+      "ig_user_id": "17841400000000000"
+    }
+  ],
+  "risk_level": "high",
+  "risk_reasons": [
+    "safe-dry-run"
+  ],
+  "rollback": {
+    "automatic_rollback": false,
+    "mode": "irreversible_and_clearly_labeled",
+    "notes": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current Instagram write families as irreversible_and_clearly_labeled and use the saved plan and refusal output for manual follow-up only.",
+    "supported": false
+  },
+  "selector": {
+    "creation_id": "17890000000000000",
+    "ig_user_id": "17841400000000000",
+    "kind": "media.publish"
+  },
+  "tool": "instagram-api-tool",
+  "verification_plan": {
+    "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply.",
+    "status": "blocked_before_apply",
+    "steps": [
+      "Confirm no Instagram provider write or auth exchange endpoint was called.",
+      "Confirm no local token file was written by the write flow.",
+      "Confirm no successful write receipt was emitted."
+    ]
+  },
+  "version": "0.1.0"
+}

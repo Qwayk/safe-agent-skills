@@ -1,0 +1,10 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "error": "Missing Product Key publisher domain ID. Set SKIMLINKS_PUBLISHER_DOMAIN_ID or pass --publisher-domain-id.",
+  "error_type": "ValidationError",
+  "ok": false,
+  "run_id": null,
+  "runs_index": "/path/to/skimlinks-safe-cli/.state/runs/index.jsonl"
+}

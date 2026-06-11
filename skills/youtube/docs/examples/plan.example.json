@@ -1,0 +1,66 @@
+{
+  "baseline": {
+    "env_fingerprint": "https://www.googleapis.com",
+    "selector": "demo-resource"
+  },
+  "before_state": {
+    "provider_backup_id": null,
+    "provider_write": {
+      "action": "demo.write",
+      "proposed_changes": [
+        {
+          "field": "demo_field",
+          "from": "<unknown>",
+          "to": "new_value"
+        }
+      ],
+      "service": "YouTube Data API v3"
+    },
+    "reason": "This source tool can build and review YouTube write plans, but it does not yet save operation-specific before-state or provider backup data before applying them.",
+    "required": true,
+    "saved_path": null,
+    "status": "blocked",
+    "supported": false
+  },
+  "command": "youtube-api-tool --output json demo write --selector demo-resource",
+  "env_fingerprint": "https://www.googleapis.com",
+  "generated_at_utc": "<REDACTED>",
+  "preconditions": [
+    "env_fingerprint must match",
+    "selector must match"
+  ],
+  "proposed_changes": [
+    {
+      "field": "demo_field",
+      "from": "<unknown>",
+      "to": "new_value"
+    }
+  ],
+  "risk_level": "medium",
+  "risk_reasons": [
+    "write-demo"
+  ],
+  "recovery": {
+    "automatic_rollback": false,
+    "backups": [],
+    "end_state": "irreversible_and_clearly_labeled",
+    "restore_note": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current YouTube write families as irreversible_and_clearly_labeled and use the saved plan and refusal output for manual follow-up only.",
+    "rollback_plan": null,
+    "snapshots": []
+  },
+  "selector": {
+    "kind": "demo",
+    "value": "demo-resource"
+  },
+  "tool": "youtube-api-tool",
+  "verification_plan": {
+    "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply.",
+    "status": "blocked_before_apply",
+    "steps": [
+      "Confirm no YouTube provider write or upload endpoint was called.",
+      "Confirm no OAuth login/token store, demo/job receipt, or write output was created by the write flow.",
+      "Confirm no successful write receipt was emitted."
+    ]
+  },
+  "version": "0.1.0"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "refusal_type": "SafetyError",
+  "refused": true,
+  "reasons": [
+    "Refused: Stripe live write requires explicit no-snapshot approval when no saved snapshot or provider backup is available. Use the dry-run plan for review only; no Stripe write was sent."
+  ]
+}

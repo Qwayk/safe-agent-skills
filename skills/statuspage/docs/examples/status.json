@@ -1,0 +1,10 @@
+{
+  "page": {
+    "id": "abcd1234",
+    "name": "Example Status"
+  },
+  "status": {
+    "indicator": "none",
+    "description": "All Systems Operational"
+  }
+}

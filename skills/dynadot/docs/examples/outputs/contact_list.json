@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "contact_list",
+  "out_path": null,
+  "dynadot": {
+    "command": "contact_list",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "ContactList": []
+    }
+  }
+}

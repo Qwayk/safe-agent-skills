@@ -1,0 +1,10 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "error": "PayPal auth check failed.",
+  "error_type": "ToolError",
+  "ok": false,
+  "run_id": null,
+  "runs_index": "/tmp/paypal-example/.state/runs/index.jsonl"
+}

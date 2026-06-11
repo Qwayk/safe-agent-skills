@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "account-management.accounts.create",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessaccountmanagement.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/account_management_accounts_create_plan.mock.json --receipt-out /tmp/account_management_accounts_create_receipt.mock.json account-management accounts create --account-file /tmp/account.json",
+    "selector": "accounts/created-001",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "account-management.accounts.get",
+      "request": {
+        "method": "GET",
+        "host": "https://mybusinessaccountmanagement.googleapis.com",
+        "path": "v1/accounts/created-001"
+      },
+      "response": {
+        "name": "accounts/created-001",
+        "accountName": "Example Account",
+        "type": "LOCATION_GROUP"
+      }
+    },
+    "diff_applied": [
+      "accountName",
+      "primaryOwner",
+      "type"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

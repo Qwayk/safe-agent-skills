@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "error_type": "ValidationError",
+  "error": "AWIN_API_TOKEN is required for auth check"
+}

@@ -1,0 +1,65 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-16T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-16T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "command": "operations.call",
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "command": "cloudflare-api-tool --output json operations ai_search ai-search-instance-search --path-param account_id=acc1 --path-param id=inst1 --body-json-file ai_search_search_body.json",
+    "env_fingerprint": "https://api.cloudflare.com/client/v4",
+    "generated_at_utc": "2026-02-16T00:00:00Z",
+    "notes": [],
+    "preconditions": [
+      "API token has least-privilege permissions needed for this operation.",
+      "Path params and request body (if any) are correct.",
+      "For non-GET operations and file-only outputs: review the plan output before applying."
+    ],
+    "proposed_changes": [
+      {
+        "action": "call",
+        "method": "POST",
+        "operation_id": "ai-search-instance-search",
+        "path": "/accounts/acc1/ai-search/instances/inst1/search",
+        "resource": "openapi_operation",
+        "sensitivity": "sensitive_read"
+      }
+    ],
+    "request": {
+      "body_meta": {
+        "body_kind": "json",
+        "sha256": "4f0476c44da638be2c9042d02f50cefd89291256eb6f957555fe14deb48a4c5c",
+        "size_bytes": 18,
+        "source": "ai_search_search_body.json"
+      },
+      "content_type": null,
+      "method": "POST",
+      "operation_id": "ai-search-instance-search",
+      "out": null,
+      "path_resolved": "/accounts/acc1/ai-search/instances/inst1/search",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/search",
+      "query": {},
+      "sensitivity": "sensitive_read"
+    },
+    "risk_level": "medium",
+    "risk_reasons": [
+      "This endpoint uses a non-GET read-like operation (no state changes expected).",
+      "This endpoint may return code/values/tokens; output must be written to a file."
+    ],
+    "selector": {
+      "method": "POST",
+      "operation_id": "ai-search-instance-search",
+      "path_resolved": "/accounts/acc1/ai-search/instances/inst1/search",
+      "path_template": "/accounts/{account_id}/ai-search/instances/{id}/search",
+      "tags": "AI Search Instances"
+    },
+    "tool": "cloudflare-api-tool",
+    "verification_plan": [
+      "Best-effort verification: for many writes, the tool attempts a read-back GET when a matching endpoint exists in the snapshot. Otherwise it records API response success."
+    ],
+    "version": "0.7.6"
+  },
+  "run_id": "2026-02-16T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}
+

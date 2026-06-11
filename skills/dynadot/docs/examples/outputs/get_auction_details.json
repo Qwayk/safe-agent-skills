@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_auction_details",
+  "domains": [
+    "example.com",
+    "other-example.com"
+  ],
+  "currency": "USD",
+  "out_path": null,
+  "dynadot": {
+    "command": "get_auction_details",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "AuctionDetailsCount": "2",
+      "AuctionDetails": []
+    }
+  }
+}

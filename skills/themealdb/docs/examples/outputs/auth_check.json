@@ -1,0 +1,17 @@
+{
+  "api": {
+    "base_url": "https://www.themealdb.com/api/json/v1",
+    "key_mode": "default_public_key",
+    "key_source": "default_public_key",
+    "timeout_s": 30.0
+  },
+  "command": "auth.check",
+  "connection": {
+    "category_count": 14,
+    "probe": "categories.php",
+    "status": "ok"
+  },
+  "ok": true,
+  "tool": "qwayk-themealdb-safe-agent-cli",
+  "version": "0.1.0"
+}

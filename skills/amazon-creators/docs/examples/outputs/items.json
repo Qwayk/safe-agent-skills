@@ -1,0 +1,95 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "GetItems",
+  "locale": "en_US",
+  "marketplace": "www.amazon.com",
+  "partner_tag": "example-partner",
+  "resources": [
+    "ItemInfo",
+    "Images"
+  ],
+  "request": {
+    "itemIds": [
+      "B0BOOK123"
+    ],
+    "itemIdType": "ASIN"
+  },
+  "items": [
+    {
+      "asin": "B0BOOK123",
+      "title": "Example Paperback & Kindle Bundle",
+      "binding": "Paperback",
+      "product_group": "Books",
+      "content_info": {
+        "pages": 416,
+        "format": "Illustrated novel"
+      },
+      "technical_info": {
+        "language": "English",
+        "publisher": "Acme Press"
+      },
+      "classifications": {
+        "binding": "Paperback",
+        "productGroup": "Books"
+      },
+      "parent_asin": "B0PARENT123",
+      "variation_summary": {
+        "variationTheme": "Format",
+        "numberOfVariations": 2
+      }
+    }
+  ],
+  "receipt": {
+    "tool": "amazon-creators-api-tool",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-03-24T12:00:00Z",
+    "env_fingerprint": "https://creatorsapi.amazon/catalog/v1",
+    "command": "amazon-creators-api-tool items get --item-id B0BOOK123 --resource ItemInfo --resource Images --apply",
+    "operation": "GetItems",
+    "locale": "en_US",
+    "marketplace": "www.amazon.com",
+    "resources": [
+      "ItemInfo",
+      "Images"
+    ],
+    "selector": {
+      "operation": "GetItems",
+      "locale": "en_US",
+      "marketplace": "www.amazon.com",
+      "resources": [
+        "ItemInfo",
+        "Images"
+      ],
+      "itemIds": [
+        "B0BOOK123"
+      ],
+      "itemIdType": "ASIN"
+    },
+    "request": {
+      "itemIds": [
+        "B0BOOK123"
+      ],
+      "itemIdType": "ASIN"
+    },
+    "payload": {
+      "resources": [
+        "ItemInfo",
+        "Images"
+      ],
+      "itemIds": [
+        "B0BOOK123"
+      ],
+      "itemIdType": "ASIN",
+      "marketplace": "www.amazon.com",
+      "partnerTag": "example-partner"
+    },
+    "simplified_key": "items",
+    "simplified_count": 1,
+    "verification": {
+      "ok": true,
+      "details": "Applied catalog request"
+    }
+  },
+  "receipt_out": null
+}

@@ -1,0 +1,14 @@
+{
+  "api_key_present": false,
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "base_url": "https://api.openai.com/v1",
+  "live_allowed": false,
+  "live_checked": false,
+  "ok": true,
+  "organization_id_present": false,
+  "project_id_present": false,
+  "run_id": null,
+  "runs_index": ".state/runs/index.jsonl"
+}

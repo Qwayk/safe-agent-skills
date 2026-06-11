@@ -1,0 +1,10 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "error": "Missing access token. Run auth code exchange or set THREADS_API_TOKEN.",
+  "error_type": "ValidationError",
+  "ok": false,
+  "run_id": null,
+  "runs_index": "./.state/runs/index.jsonl"
+}

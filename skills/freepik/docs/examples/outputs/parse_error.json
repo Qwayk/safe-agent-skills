@@ -1,0 +1,6 @@
+{
+  "error": "the following arguments are required: --id",
+  "error_type": "UsageError",
+  "ok": false
+}
+

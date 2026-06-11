@@ -1,0 +1,38 @@
+{
+  "tool": "cloudflare-api-tool",
+  "version": "0.5.0",
+  "applied_at_utc": "2026-02-05T00:01:00Z",
+  "env_fingerprint": "https://api.cloudflare.com/client/v4",
+  "command": "cloudflare-api-tool --apply --yes workers routes ensure --zone-id <your_zone_id> --pattern \"example.com/*\" --script-name example-worker",
+  "selector": {
+    "zone_id": "<your_zone_id>",
+    "pattern": "example.com/*",
+    "script_name": "example-worker"
+  },
+  "changed": true,
+  "verification": {
+    "ok": true,
+    "details": {
+      "routes_checked": true,
+      "matches": 1
+    }
+  },
+  "diff_applied": [
+    {
+      "resource": "workers_route",
+      "action": "created",
+      "zone_id": "<your_zone_id>",
+      "route_id": "<route_id>",
+      "pattern": "example.com/*",
+      "script_name": "example-worker"
+    }
+  ],
+  "rollback_plan": {
+    "supported": true,
+    "notes": "Rollback by updating the route to the previous script mapping."
+  },
+  "notes": [
+    "Example only (redacted identifiers).",
+    "This receipt contains no secrets."
+  ]
+}

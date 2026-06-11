@@ -1,0 +1,19 @@
+{
+  "api_key_present": false,
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "base_url": "https://www.googleapis.com",
+  "note": null,
+  "oauth_client_secrets_file": null,
+  "oauth_scopes": [
+    "https://www.googleapis.com/auth/youtube"
+  ],
+  "oauth_token": {
+    "exists": false,
+    "path": ".state/token.json"
+  },
+  "ok": true,
+  "run_id": null,
+  "runs_index": ".state/runs/index.jsonl"
+}

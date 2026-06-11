@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "operation": "business-info.categories.batch-get",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusinessbusinessinformation.googleapis.com",
+    "path": "v1/categories:batchGet",
+    "params": {
+      "names": [
+        "categories/coffee",
+        "categories/coffee2"
+      ],
+      "languageCode": "en",
+      "regionCode": "US",
+      "view": "FULL"
+    }
+  },
+  "response": {
+    "categories": [
+      {
+        "name": "categories/coffee",
+        "displayName": "Coffee shop",
+        "categoryType": "TYPE_RESTAURANT"
+      },
+      {
+        "name": "categories/coffee2",
+        "displayName": "Coffee and tea",
+        "categoryType": "TYPE_RESTAURANT"
+      }
+    ]
+  }
+}

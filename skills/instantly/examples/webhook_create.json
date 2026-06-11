@@ -1,0 +1,8 @@
+{
+  "url": "https://example.com/webhooks/instantly",
+  "events": [
+    "example.event"
+  ],
+  "notes": "Example input for instantly-api-tool webhooks create. Event type names must match Instantly."
+}
+

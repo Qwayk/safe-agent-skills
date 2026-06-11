@@ -1,0 +1,43 @@
+{
+  "action": "create",
+  "before_state": {
+    "notes": "No saved before-state is available for this PayPal write. Apply may proceed only after explicit no-snapshot approval, and the receipt must record the recovery limit.",
+    "required": true,
+    "status": "no_snapshot_available",
+    "supported": false
+  },
+  "command": "qwayk-paypal-safe-agent-cli orders create",
+  "env_fingerprint": "https://api-m.sandbox.paypal.com",
+  "family": "orders",
+  "generated_at_utc": "2026-06-04T12:15:23Z",
+  "has_body": true,
+  "method": "POST",
+  "notes": "Create order.",
+  "path": "/v2/checkout/orders",
+  "path_values": {},
+  "query": {},
+  "recovery": {
+    "automatic_rollback": false,
+    "backups": [],
+    "restore_note": "No automatic rollback, snapshots, backups, or generated rollback plan are provided. Recovery, if any, requires a separate explicit command.",
+    "rollback_plan": null,
+    "snapshots": [],
+    "verification_mode": "best-effort"
+  },
+  "require_ack": false,
+  "require_apply": true,
+  "require_plan_in": false,
+  "require_yes": false,
+  "risk_level": "medium",
+  "risk_reasons": [
+    "write-operation",
+    "live-unverified"
+  ],
+  "tool": "qwayk-paypal-safe-agent-cli",
+  "verification_plan": {
+    "expected_outcome": "refused-before-provider-http",
+    "notes": "Review the dry-run plan only. Apply requires explicit no-snapshot approval before PayPal HTTP when no saved snapshot is available for this command.",
+    "type": "no-snapshot-approval"
+  },
+  "version": "0.1.0"
+}

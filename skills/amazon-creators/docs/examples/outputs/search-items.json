@@ -1,0 +1,106 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "SearchItems",
+  "locale": "en_US",
+  "marketplace": "www.amazon.com",
+  "partner_tag": "example-partner",
+  "resources": [
+    "ItemInfo",
+    "SearchRefinements",
+    "Images"
+  ],
+  "request": {
+    "keywords": "illustrated novels",
+    "itemCount": 5,
+    "itemPage": 2
+  },
+  "items": [
+    {
+      "asin": "B0SEARCH2",
+      "title": "Illustrated Saga",
+      "binding": "Hardcover",
+      "product_group": "Books",
+      "classifications": {
+        "binding": "Hardcover",
+        "productGroup": "Books"
+      },
+      "parent_asin": "B0PARENT789",
+      "variation_summary": {
+        "variationTheme": "Format",
+        "numberOfVariations": 4
+      }
+    }
+  ],
+  "raw": {
+    "searchResult": {
+      "totalResults": 2,
+      "items": [
+        {
+          "asin": "B0SEARCH2",
+          "itemInfo": {
+            "title": {
+              "displayValue": "Illustrated Saga"
+            }
+          }
+        }
+      ],
+      "refinements": {
+        "browseNodeId": "1000",
+        "browseNodeName": "Books"
+      }
+    }
+  },
+  "receipt": {
+    "tool": "amazon-creators-api-tool",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-03-24T12:00:00Z",
+    "env_fingerprint": "https://creatorsapi.amazon/catalog/v1",
+    "command": "amazon-creators-api-tool search --keywords \"illustrated novels\" --item-count 5 --item-page 2 --resource ItemInfo --resource SearchRefinements --resource Images --apply",
+    "operation": "SearchItems",
+    "locale": "en_US",
+    "marketplace": "www.amazon.com",
+    "resources": [
+      "ItemInfo",
+      "SearchRefinements",
+      "Images"
+    ],
+    "selector": {
+      "operation": "SearchItems",
+      "locale": "en_US",
+      "marketplace": "www.amazon.com",
+      "resources": [
+        "ItemInfo",
+        "SearchRefinements",
+        "Images"
+      ],
+      "keywords": "illustrated novels",
+      "itemCount": 5,
+      "itemPage": 2
+    },
+    "request": {
+      "keywords": "illustrated novels",
+      "itemCount": 5,
+      "itemPage": 2
+    },
+    "payload": {
+      "resources": [
+        "ItemInfo",
+        "SearchRefinements",
+        "Images"
+      ],
+      "keywords": "illustrated novels",
+      "itemCount": 5,
+      "itemPage": 2,
+      "marketplace": "www.amazon.com",
+      "partnerTag": "example-partner"
+    },
+    "simplified_key": "items",
+    "simplified_count": 1,
+    "verification": {
+      "ok": true,
+      "details": "Applied catalog request"
+    }
+  },
+  "receipt_out": null
+}

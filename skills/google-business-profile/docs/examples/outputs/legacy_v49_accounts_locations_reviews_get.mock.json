@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "operation": "legacy-v49.accounts.locations.reviews.get",
+  "request": {
+    "method": "GET",
+    "host": "https://mybusiness.googleapis.com",
+    "path": "v4/accounts/123/locations/456/reviews/review-123",
+    "params": {}
+  },
+  "response": {
+    "name": "accounts/123/locations/456/reviews/review-123",
+    "reviewId": "review-123",
+    "starRating": "FOUR",
+    "comment": "Helpful staff and quick pickup.",
+    "reviewReply": {
+      "comment": "Thanks for your feedback.",
+      "updateTime": "2026-06-04T00:00:00Z"
+    }
+  }
+}

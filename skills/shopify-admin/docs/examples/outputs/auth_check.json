@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "shop_domain": "example.myshopify.com",
+  "api_version": "2026-01",
+  "endpoint": "https://example.myshopify.com/admin/api/2026-01/graphql.json",
+  "token_present": true,
+  "graphql": {
+    "http_status": 200,
+    "has_errors": false,
+    "shop_id_present": true
+  }
+}

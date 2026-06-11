@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "account-management.locations.admins.patch",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusinessaccountmanagement.googleapis.com",
+    "command": "google-business-profile-safe-cli account-management locations admins patch --name locations/abc/admins/admin-456 --update-mask role --admin-file /tmp/location_admin.json",
+    "selector": "locations/abc/admins/admin-456",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Location admin patch updates role."
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "account-management.locations.admins.patch",
+        "selector": "locations/abc/admins/admin-456",
+        "mask": "role",
+        "body_fingerprint": "bc338cb2a66fd983a35a3080d498f388ec3b23121aa0671972d9d7dfad7143a5"
+      }
+    ],
+    "verification_plan": [
+      "Read back the admin list from locations.admins.list and confirm the admin has the updated role."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "locations/abc/admins/admin-456",
+      "body_fingerprint": "bc338cb2a66fd983a35a3080d498f388ec3b23121aa0671972d9d7dfad7143a5",
+      "mask": "role",
+      "mask_fingerprint": "4b168d88dc872a7753c2bc35b36a2d4249487af55baf78f247f38cae2fe962da"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

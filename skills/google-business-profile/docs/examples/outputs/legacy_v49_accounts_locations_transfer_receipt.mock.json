@@ -1,0 +1,94 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "operation": "legacy-v49.accounts.locations.transfer",
+  "receipt": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "applied_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli --apply --plan-in /tmp/legacy_v49_accounts_locations_transfer_plan.mock.json --yes --ack-irreversible --receipt-out /tmp/legacy_v49_accounts_locations_transfer_receipt.mock.json legacy-v49 accounts locations transfer --name accounts/123/locations/456 --to-account accounts/999",
+    "selector": "accounts/123/locations/456",
+    "changed": true,
+    "verification": {
+      "ok": true,
+      "operation": "legacy-v49.accounts.locations.transfer",
+      "request": {
+        "source": {
+          "operation": "business-info.accounts.locations.list",
+          "method": "GET",
+          "host": "https://mybusinessbusinessinformation.googleapis.com",
+          "path": "v1/accounts/123/locations",
+          "params": {
+            "readMask": "name",
+            "pageSize": 200
+          }
+        },
+        "destination": {
+          "operation": "business-info.accounts.locations.list",
+          "method": "GET",
+          "host": "https://mybusinessbusinessinformation.googleapis.com",
+          "path": "v1/accounts/999/locations",
+          "params": {
+            "readMask": "name",
+            "pageSize": 200,
+            "pageToken": "page-2"
+          }
+        }
+      },
+      "response": {
+        "transfer": {
+          "name": "accounts/999/locations/456"
+        },
+        "source": {
+          "contains": false,
+          "operation": "business-info.accounts.locations.list",
+          "request": {
+            "operation": "business-info.accounts.locations.list",
+            "method": "GET",
+            "host": "https://mybusinessbusinessinformation.googleapis.com",
+            "path": "v1/accounts/123/locations",
+            "params": {
+              "readMask": "name",
+              "pageSize": 200
+            }
+          },
+          "response": {
+            "locations": []
+          }
+        },
+        "destination": {
+          "contains": true,
+          "operation": "business-info.accounts.locations.list",
+          "request": {
+            "operation": "business-info.accounts.locations.list",
+            "method": "GET",
+            "host": "https://mybusinessbusinessinformation.googleapis.com",
+            "path": "v1/accounts/999/locations",
+            "params": {
+              "readMask": "name",
+              "pageSize": 200,
+              "pageToken": "page-2"
+            }
+          },
+          "response": {
+            "locations": [
+              {
+                "name": "locations/456"
+              }
+            ]
+          }
+        }
+      },
+      "note": "Legacy v4.9 transfer read-back verification succeeded: source account no longer lists the location and destination now lists it."
+    },
+    "diff_applied": [
+      "name",
+      "to_account"
+    ],
+    "backups": [],
+    "rollback_plan": null
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

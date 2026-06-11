@@ -1,0 +1,8 @@
+# Example env file used for committed example outputs (no secrets).
+X_API_BASE_URL=https://api.x.com/2
+X_API_BEARER_TOKEN=
+X_API_OAUTH2_CLIENT_ID=
+X_API_OAUTH2_REDIRECT_URI=
+X_API_OAUTH2_SCOPES=users.read tweet.read
+X_API_TIMEOUT_S=30
+

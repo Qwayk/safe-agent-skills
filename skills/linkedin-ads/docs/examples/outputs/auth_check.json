@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "error": "Missing LinkedIn token. Set LINKEDIN_ADS_TOKEN/LINKEDIN_ADS_ACCESS_TOKEN or run onboarding/auth token set first.",
+  "error_type": "ValidationError"
+}

@@ -1,0 +1,10 @@
+{
+  "base_url": "https://api.x.com/2",
+  "env_token_present": false,
+  "live_allowed": false,
+  "oauth_token": {
+    "exists": false,
+    "path": null
+  },
+  "ok": true
+}

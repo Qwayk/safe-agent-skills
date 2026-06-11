@@ -1,0 +1,38 @@
+{
+  "tool": "awin-publisher-safe-cli",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-06-09T00:00:00Z",
+  "env_fingerprint": "https://api.awin.com",
+  "command": "awin-publisher-safe-cli --output json --plan-out proof-plan.json proof-of-purchase orders create --publisher-id 12345 --advertiser-id 9001 --orders-file orders.json",
+  "selector": {
+    "publisher_id": "12345",
+    "advertiser_id": "9001"
+  },
+  "risk_level": "high",
+  "risk_reasons": [
+    "remote-write",
+    "proof-of-purchase-orders"
+  ],
+  "baseline": {
+    "env_fingerprint": "https://api.awin.com",
+    "orders_file": "/redacted/orders.json",
+    "orders_file_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  },
+  "proposed_changes": [
+    {
+      "resource": "awin-proof-of-purchase-orders",
+      "action": "create",
+      "publisher_id": "12345",
+      "advertiser_id": "9001",
+      "orders_count": 2
+    }
+  ],
+  "verification_plan": {
+    "type": "provider-acceptance",
+    "notes": "Verify the API accepted the batch and review the returned payload for order-level errors."
+  },
+  "rollback": {
+    "supported": false,
+    "notes": "The provider docs do not define a rollback endpoint for submitted proof-of-purchase orders."
+  }
+}

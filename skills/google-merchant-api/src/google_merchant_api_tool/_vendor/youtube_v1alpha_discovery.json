@@ -1,0 +1,670 @@
+{
+  "version_module": true,
+  "canonicalName": "Merchant",
+  "description": "Programmatically manage your Merchant Center Accounts.",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+  },
+  "batchPath": "batch",
+  "ownerDomain": "google.com",
+  "kind": "discovery#restDescription",
+  "servicePath": "",
+  "mtlsRootUrl": "https://merchantapi.mtls.googleapis.com/",
+  "rootUrl": "https://merchantapi.googleapis.com/",
+  "baseUrl": "https://merchantapi.googleapis.com/",
+  "revision": "20260603",
+  "schemas": {
+    "CommissionGroup": {
+      "id": "CommissionGroup",
+      "description": "Youtube Affiliate Program commission group. A commission group defines a commission rate and the set of products it applies to.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Identifier. The name of the `CommissionGroup` resource. Format: `accounts/{account}/contracts/{contract}/commissionGroups/{commission_group}`",
+          "type": "string"
+        },
+        "productSelector": {
+          "description": "Required. Selects the products that this commission group applies to.",
+          "$ref": "ProductSelector"
+        },
+        "commissionRate": {
+          "description": "Required. Commission that will be paid for conversions that match this commission group.",
+          "$ref": "CommissionRate"
+        }
+      }
+    },
+    "ProductSelector": {
+      "id": "ProductSelector",
+      "description": "Selects which products a commission group applies to. At least one of the selectors must be set.",
+      "type": "object",
+      "properties": {
+        "categorySelector": {
+          "description": "Optional. Selects products by category.",
+          "$ref": "CategorySelector"
+        }
+      }
+    },
+    "CategorySelector": {
+      "id": "CategorySelector",
+      "description": "Category selector.",
+      "type": "object",
+      "properties": {
+        "categories": {
+          "description": "Required. The list of categories targeted by this selector. A maximum of 100 is allowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CommissionRate": {
+      "id": "CommissionRate",
+      "description": "Commission that will be paid for conversions that match a given commission group.",
+      "type": "object",
+      "properties": {
+        "ratedCommissionBasisPoints": {
+          "description": "Rated commission in basis points. For example: - 0.01% = 1 basis point. - 1% = 100 basis points. - 100% = 10000 basis points.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListCommissionGroupsResponse": {
+      "id": "ListCommissionGroupsResponse",
+      "description": "Response message for the `ListCommissionGroups` method.",
+      "type": "object",
+      "properties": {
+        "commissionGroups": {
+          "description": "The commission groups for the specified contract.",
+          "type": "array",
+          "items": {
+            "$ref": "CommissionGroup"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+      "type": "object",
+      "properties": {}
+    },
+    "Contract": {
+      "id": "Contract",
+      "description": "Youtube Affiliate Program contract. Contains information about the commission rates applied to creators in the program.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Identifier. The name of the `Contract` resource. Format: `accounts/{account}/contracts/{contract}`",
+          "type": "string"
+        },
+        "defaultCommission": {
+          "description": "Required. The default commission rate for the contract.",
+          "$ref": "CommissionRate"
+        }
+      }
+    },
+    "ListContractsResponse": {
+      "id": "ListContractsResponse",
+      "description": "Response message for the `ListContracts` method.",
+      "type": "object",
+      "properties": {
+        "contracts": {
+          "description": "The contracts for the specified account.",
+          "type": "array",
+          "items": {
+            "$ref": "Contract"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "ProductStatusChangeMessage": {
+      "id": "ProductStatusChangeMessage",
+      "description": "The message that the merchant will receive to notify about product status change event",
+      "type": "object",
+      "properties": {
+        "account": {
+          "description": "The target account that owns the entity that changed. Format : `accounts/{merchant_id}`",
+          "type": "string"
+        },
+        "managingAccount": {
+          "description": "The account that manages the merchant's account. can be the same as merchant id if it is standalone account. Format : `accounts/{service_provider_id}`",
+          "type": "string"
+        },
+        "resourceType": {
+          "description": "The resource that changed, in this case it will always be `Product`.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified resource",
+            "Resource type : product",
+            "Account service"
+          ],
+          "enum": [
+            "RESOURCE_UNSPECIFIED",
+            "PRODUCT",
+            "ACCOUNT_SERVICE"
+          ]
+        },
+        "attribute": {
+          "description": "The attribute in the resource that changed, in this case it will be always `Status`.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified attribute",
+            "Status of the changed entity"
+          ],
+          "enum": [
+            "ATTRIBUTE_UNSPECIFIED",
+            "STATUS"
+          ]
+        },
+        "changes": {
+          "description": "A message to describe the change that happened to the product",
+          "type": "array",
+          "items": {
+            "$ref": "ProductChange"
+          }
+        },
+        "resourceId": {
+          "description": "The product id.",
+          "type": "string"
+        },
+        "resource": {
+          "description": "The product name. Format: `accounts/{account}/products/{product}`",
+          "type": "string"
+        },
+        "expirationTime": {
+          "description": "Optional. The product expiration time. This field will not be set if the notification is sent for a product deletion event.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "eventTime": {
+          "description": "The time at which the event was generated. If you want to order the notification messages you receive you should rely on this field not on the order of receiving the notifications.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ProductChange": {
+      "id": "ProductChange",
+      "description": "The change that happened to the product including old value, new value, country code as the region code and reporting context.",
+      "type": "object",
+      "properties": {
+        "oldValue": {
+          "description": "The old value of the changed resource or attribute. If empty, it means that the product was created. Will have one of these values : (`approved`, `pending`, `disapproved`, ``)",
+          "type": "string"
+        },
+        "newValue": {
+          "description": "The new value of the changed resource or attribute. If empty, it means that the product was deleted. Will have one of these values : (`approved`, `pending`, `disapproved`, ``)",
+          "type": "string"
+        },
+        "regionCode": {
+          "description": "Countries that have the change (if applicable). Represented in the ISO 3166 format.",
+          "type": "string"
+        },
+        "reportingContext": {
+          "description": "Reporting contexts that have the change (if applicable). Currently this field supports only (`SHOPPING_ADS`, `LOCAL_INVENTORY_ADS`, `YOUTUBE_SHOPPING`, `YOUTUBE_CHECKOUT`, `YOUTUBE_AFFILIATE`) from the enum value [ReportingContextEnum](/merchant/api/reference/rest/Shared.Types/ReportingContextEnum)",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "[Shopping ads](https://support.google.com/merchants/answer/6149970).",
+            "Deprecated: Use `DEMAND_GEN_ADS` instead. [Discovery and Demand Gen ads](https://support.google.com/merchants/answer/13389785).",
+            "[Demand Gen ads](https://support.google.com/merchants/answer/13389785).",
+            "[Demand Gen ads on Discover surface](https://support.google.com/merchants/answer/13389785).",
+            "[Video ads](https://support.google.com/google-ads/answer/6340491).",
+            "[Display ads](https://support.google.com/merchants/answer/6069387).",
+            "[Local inventory ads](https://support.google.com/merchants/answer/3271956).",
+            "[Vehicle inventory ads](https://support.google.com/merchants/answer/11544533).",
+            "[Free product listings](https://support.google.com/merchants/answer/9199328).",
+            "[Free product listings on UCP checkout](https://developers.google.com/merchant/ucp).",
+            "[Free local product listings](https://support.google.com/merchants/answer/9825611).",
+            "[Free local vehicle listings](https://support.google.com/merchants/answer/11544533).",
+            "[Youtube Affiliate](https://support.google.com/youtube/answer/13376398).",
+            "[YouTube Shopping](https://support.google.com/merchants/answer/13478370).",
+            "[Cloud retail](https://cloud.google.com/solutions/retail).",
+            "[Local cloud retail](https://cloud.google.com/solutions/retail).",
+            "[Product Reviews](https://support.google.com/merchants/answer/14620732).",
+            "[Merchant Reviews](https://developers.google.com/merchant-review-feeds).",
+            "YouTube Checkout ."
+          ],
+          "enumDeprecated": [
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "enum": [
+            "REPORTING_CONTEXT_ENUM_UNSPECIFIED",
+            "SHOPPING_ADS",
+            "DISCOVERY_ADS",
+            "DEMAND_GEN_ADS",
+            "DEMAND_GEN_ADS_DISCOVER_SURFACE",
+            "VIDEO_ADS",
+            "DISPLAY_ADS",
+            "LOCAL_INVENTORY_ADS",
+            "VEHICLE_INVENTORY_ADS",
+            "FREE_LISTINGS",
+            "FREE_LISTINGS_UCP_CHECKOUT",
+            "FREE_LOCAL_LISTINGS",
+            "FREE_LOCAL_VEHICLE_LISTINGS",
+            "YOUTUBE_AFFILIATE",
+            "YOUTUBE_SHOPPING",
+            "CLOUD_RETAIL",
+            "LOCAL_CLOUD_RETAIL",
+            "PRODUCT_REVIEWS",
+            "MERCHANT_REVIEWS",
+            "YOUTUBE_CHECKOUT"
+          ]
+        }
+      }
+    }
+  },
+  "ownerName": "Google",
+  "resources": {
+    "accounts": {
+      "resources": {
+        "contracts": {
+          "methods": {
+            "get": {
+              "id": "merchantapi.accounts.contracts.get",
+              "path": "youtube/v1alpha/{+name}",
+              "flatPath": "youtube/v1alpha/accounts/{accountsId}/contracts/{contractsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the contract to retrieve. Format: `accounts/{account}/contracts/{contract}`",
+                  "pattern": "^accounts/[^/]+/contracts/[^/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Contract"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/content"
+              ],
+              "description": "Retrieves the specified contract."
+            },
+            "list": {
+              "id": "merchantapi.accounts.contracts.list",
+              "path": "youtube/v1alpha/{+parent}/contracts",
+              "flatPath": "youtube/v1alpha/accounts/{accountsId}/contracts",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The account to list contracts for. Format: `accounts/{account}`",
+                  "pattern": "^accounts/[^/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The maximum number of contracts to return. The service may return fewer than this value. If unspecified, at most 100 contracts will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional. A page token, received from a previous `ListContracts` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListContracts` must match the call that provided the page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListContractsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/content"
+              ],
+              "description": "Lists the contracts for a given account."
+            },
+            "create": {
+              "id": "merchantapi.accounts.contracts.create",
+              "path": "youtube/v1alpha/{+parent}/contracts",
+              "flatPath": "youtube/v1alpha/accounts/{accountsId}/contracts",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The parent account where this contract will be created. Format: `accounts/{account}`",
+                  "pattern": "^accounts/[^/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "Contract"
+              },
+              "response": {
+                "$ref": "Contract"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/content"
+              ],
+              "description": "Creates a new contract."
+            },
+            "patch": {
+              "id": "merchantapi.accounts.contracts.patch",
+              "path": "youtube/v1alpha/{+name}",
+              "flatPath": "youtube/v1alpha/accounts/{accountsId}/contracts/{contractsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Identifier. The name of the `Contract` resource. Format: `accounts/{account}/contracts/{contract}`",
+                  "pattern": "^accounts/[^/]+/contracts/[^/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Required. The list of fields to update. Fields specified in the update mask without a value specified in the body will be deleted from the contract. If update mask is set to `*`, all fields will be updated.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "Contract"
+              },
+              "response": {
+                "$ref": "Contract"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/content"
+              ],
+              "description": "Updates a given contract."
+            }
+          },
+          "resources": {
+            "commissionGroups": {
+              "methods": {
+                "get": {
+                  "id": "merchantapi.accounts.contracts.commissionGroups.get",
+                  "path": "youtube/v1alpha/{+name}",
+                  "flatPath": "youtube/v1alpha/accounts/{accountsId}/contracts/{contractsId}/commissionGroups/{commissionGroupsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the commission group to retrieve. Format: `accounts/{account}/contracts/{contract}/commissionGroups/{commission_group}`",
+                      "pattern": "^accounts/[^/]+/contracts/[^/]+/commissionGroups/[^/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "CommissionGroup"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/content"
+                  ],
+                  "description": "Retrieves the specified commission group."
+                },
+                "list": {
+                  "id": "merchantapi.accounts.contracts.commissionGroups.list",
+                  "path": "youtube/v1alpha/{+parent}/commissionGroups",
+                  "flatPath": "youtube/v1alpha/accounts/{accountsId}/contracts/{contractsId}/commissionGroups",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The contract to list commission groups for. Format: `accounts/{account}/contracts/{contract}`",
+                      "pattern": "^accounts/[^/]+/contracts/[^/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of commission groups to return. The service may return fewer than this value. If unspecified, at most 100 commission groups will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. A page token, received from a previous `ListCommissionGroups` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListCommissionGroups` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListCommissionGroupsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/content"
+                  ],
+                  "description": "Lists the commission groups for a given contract."
+                },
+                "create": {
+                  "id": "merchantapi.accounts.contracts.commissionGroups.create",
+                  "path": "youtube/v1alpha/{+parent}/commissionGroups",
+                  "flatPath": "youtube/v1alpha/accounts/{accountsId}/contracts/{contractsId}/commissionGroups",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent contract where this commission group will be created. Format: `accounts/{account}/contracts/{contract}`",
+                      "pattern": "^accounts/[^/]+/contracts/[^/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "CommissionGroup"
+                  },
+                  "response": {
+                    "$ref": "CommissionGroup"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/content"
+                  ],
+                  "description": "Creates a new commission group."
+                },
+                "patch": {
+                  "id": "merchantapi.accounts.contracts.commissionGroups.patch",
+                  "path": "youtube/v1alpha/{+name}",
+                  "flatPath": "youtube/v1alpha/accounts/{accountsId}/contracts/{contractsId}/commissionGroups/{commissionGroupsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Identifier. The name of the `CommissionGroup` resource. Format: `accounts/{account}/contracts/{contract}/commissionGroups/{commission_group}`",
+                      "pattern": "^accounts/[^/]+/contracts/[^/]+/commissionGroups/[^/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The list of fields to update. Fields specified in the update mask without a value specified in the body will be deleted from the commission group. If update mask is set to `*`, all fields will be updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CommissionGroup"
+                  },
+                  "response": {
+                    "$ref": "CommissionGroup"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/content"
+                  ],
+                  "description": "Updates a given commission group."
+                },
+                "delete": {
+                  "id": "merchantapi.accounts.contracts.commissionGroups.delete",
+                  "path": "youtube/v1alpha/{+name}",
+                  "flatPath": "youtube/v1alpha/accounts/{accountsId}/contracts/{contractsId}/commissionGroups/{commissionGroupsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the commission group to delete. Format: `accounts/{account}/contracts/{contract}/commissionGroups/{commission_group}`",
+                      "pattern": "^accounts/[^/]+/contracts/[^/]+/commissionGroups/[^/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/content"
+                  ],
+                  "description": "Deletes a given commission group."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullyEncodeReservedExpansion": true,
+  "documentationLink": "https://developers.google.com/merchant/api",
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/content": {
+          "description": "Manage your product listings and accounts for Google Shopping"
+        }
+      }
+    }
+  },
+  "title": "Merchant API",
+  "basePath": "",
+  "discoveryVersion": "v1",
+  "id": "merchantapi:youtube_v1alpha",
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "name": "merchantapi",
+  "protocol": "rest",
+  "version": "youtube_v1alpha"
+}

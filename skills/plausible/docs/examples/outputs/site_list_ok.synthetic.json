@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "response": {
+    "meta": {
+      "after": null,
+      "before": null,
+      "limit": 100
+    },
+    "sites": [
+      {
+        "domain": "example.com",
+        "timezone": "Etc/UTC"
+      },
+      {
+        "domain": "example.org",
+        "timezone": "Europe/London"
+      }
+    ]
+  }
+}

@@ -1,0 +1,7116 @@
+[
+  {
+    "operation": "GET /activities",
+    "api_version": "v2",
+    "path": "/activities",
+    "command_tokens": [
+      "activities",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "ids",
+        "flag": "ids",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "owner_id",
+        "flag": "owner-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "deal_id",
+        "flag": "deal-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "lead_id",
+        "flag": "lead-id",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "person_id",
+        "flag": "person-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "org_id",
+        "flag": "org-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "done",
+        "flag": "done",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "updated_since",
+        "flag": "updated-since",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "updated_until",
+        "flag": "updated-until",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "sort_by",
+        "flag": "sort-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "update_time",
+          "add_time",
+          "due_date"
+        ]
+      },
+      {
+        "name": "sort_direction",
+        "flag": "sort-direction",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      },
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "attendees"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /activities/{id}",
+    "api_version": "v2",
+    "path": "/activities/{id}",
+    "command_tokens": [
+      "activities",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "attendees"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /activityFields",
+    "api_version": "v2",
+    "path": "/activityFields",
+    "command_tokens": [
+      "activity-fields",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "ui_visibility"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /activityFields/{field_code}",
+    "api_version": "v2",
+    "path": "/activityFields/{field_code}",
+    "command_tokens": [
+      "activity-fields",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "field_code",
+        "flag": "field-code",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "ui_visibility"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /activityTypes",
+    "api_version": "v1",
+    "path": "/activityTypes",
+    "command_tokens": [
+      "activity-types",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /billing/subscriptions/addons",
+    "api_version": "v1",
+    "path": "/billing/subscriptions/addons",
+    "command_tokens": [
+      "billing",
+      "list-addons"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /boards",
+    "api_version": "v2",
+    "path": "/boards",
+    "command_tokens": [
+      "project-boards",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /boards/{id}",
+    "api_version": "v2",
+    "path": "/boards/{id}",
+    "command_tokens": [
+      "project-boards",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /callLogs",
+    "api_version": "v1",
+    "path": "/callLogs",
+    "command_tokens": [
+      "call-logs",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /callLogs/{id}",
+    "api_version": "v1",
+    "path": "/callLogs/{id}",
+    "command_tokens": [
+      "call-logs",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /currencies",
+    "api_version": "v1",
+    "path": "/currencies",
+    "command_tokens": [
+      "currencies",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "term",
+        "flag": "term",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /dealFields",
+    "api_version": "v2",
+    "path": "/dealFields",
+    "command_tokens": [
+      "deal-fields",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "ui_visibility",
+          "important_fields",
+          "required_fields",
+          "ui_visibility,important_fields",
+          "ui_visibility,required_fields",
+          "important_fields,required_fields",
+          "ui_visibility,important_fields,required_fields"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /dealFields/{field_code}",
+    "api_version": "v2",
+    "path": "/dealFields/{field_code}",
+    "command_tokens": [
+      "deal-fields",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "field_code",
+        "flag": "field-code",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "ui_visibility",
+          "important_fields",
+          "required_fields",
+          "ui_visibility,important_fields",
+          "ui_visibility,required_fields",
+          "important_fields,required_fields",
+          "ui_visibility,important_fields,required_fields"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /dealFields/{id}",
+    "api_version": "v1",
+    "path": "/dealFields/{id}",
+    "command_tokens": [
+      "deal-fields",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals",
+    "api_version": "v2",
+    "path": "/deals",
+    "command_tokens": [
+      "deals",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "ids",
+        "flag": "ids",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "owner_id",
+        "flag": "owner-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "person_id",
+        "flag": "person-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "org_id",
+        "flag": "org-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "pipeline_id",
+        "flag": "pipeline-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "stage_id",
+        "flag": "stage-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "status",
+        "flag": "status",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "open",
+          "won",
+          "lost",
+          "deleted"
+        ]
+      },
+      {
+        "name": "updated_since",
+        "flag": "updated-since",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "updated_until",
+        "flag": "updated-until",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "sort_by",
+        "flag": "sort-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "update_time",
+          "add_time"
+        ]
+      },
+      {
+        "name": "sort_direction",
+        "flag": "sort-direction",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      },
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "next_activity_id",
+          "last_activity_id",
+          "first_won_time",
+          "products_count",
+          "files_count",
+          "notes_count",
+          "followers_count",
+          "email_messages_count",
+          "activities_count",
+          "done_activities_count",
+          "undone_activities_count",
+          "participants_count",
+          "last_incoming_mail_time",
+          "last_outgoing_mail_time",
+          "smart_bcc_email",
+          "source_lead_id"
+        ]
+      },
+      {
+        "name": "custom_fields",
+        "flag": "custom-fields",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "include_option_labels",
+        "flag": "include-option-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "include_labels",
+        "flag": "include-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/archived",
+    "api_version": "v2",
+    "path": "/deals/archived",
+    "command_tokens": [
+      "deals",
+      "list-archived"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "ids",
+        "flag": "ids",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "owner_id",
+        "flag": "owner-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "person_id",
+        "flag": "person-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "org_id",
+        "flag": "org-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "pipeline_id",
+        "flag": "pipeline-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "stage_id",
+        "flag": "stage-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "status",
+        "flag": "status",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "open",
+          "won",
+          "lost",
+          "deleted"
+        ]
+      },
+      {
+        "name": "updated_since",
+        "flag": "updated-since",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "updated_until",
+        "flag": "updated-until",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "sort_by",
+        "flag": "sort-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "update_time",
+          "add_time"
+        ]
+      },
+      {
+        "name": "sort_direction",
+        "flag": "sort-direction",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      },
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "next_activity_id",
+          "last_activity_id",
+          "first_won_time",
+          "products_count",
+          "files_count",
+          "notes_count",
+          "followers_count",
+          "email_messages_count",
+          "activities_count",
+          "done_activities_count",
+          "undone_activities_count",
+          "participants_count",
+          "last_incoming_mail_time",
+          "last_outgoing_mail_time",
+          "smart_bcc_email",
+          "source_lead_id"
+        ]
+      },
+      {
+        "name": "custom_fields",
+        "flag": "custom-fields",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/installments",
+    "api_version": "v2",
+    "path": "/deals/installments",
+    "command_tokens": [
+      "deal-installments",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "deal_ids",
+        "flag": "deal-ids",
+        "required": true,
+        "type": "array",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort_by",
+        "flag": "sort-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "billing_date",
+          "deal_id"
+        ]
+      },
+      {
+        "name": "sort_direction",
+        "flag": "sort-direction",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/products",
+    "api_version": "v2",
+    "path": "/deals/products",
+    "command_tokens": [
+      "deal-products",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "deal_ids",
+        "flag": "deal-ids",
+        "required": true,
+        "type": "array",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort_by",
+        "flag": "sort-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "deal_id",
+          "add_time",
+          "update_time",
+          "order_nr"
+        ]
+      },
+      {
+        "name": "sort_direction",
+        "flag": "sort-direction",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/search",
+    "api_version": "v2",
+    "path": "/deals/search",
+    "command_tokens": [
+      "deals",
+      "search"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "term",
+        "flag": "term",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "fields",
+        "flag": "fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "custom_fields",
+          "notes",
+          "title"
+        ]
+      },
+      {
+        "name": "exact_match",
+        "flag": "exact-match",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "person_id",
+        "flag": "person-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "organization_id",
+        "flag": "organization-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "status",
+        "flag": "status",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "open",
+          "won",
+          "lost"
+        ]
+      },
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "deal.cc_email"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/summary",
+    "api_version": "v1",
+    "path": "/deals/summary",
+    "command_tokens": [
+      "deals",
+      "summary"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "status",
+        "flag": "status",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "open",
+          "won",
+          "lost"
+        ]
+      },
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "user_id",
+        "flag": "user-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "pipeline_id",
+        "flag": "pipeline-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "stage_id",
+        "flag": "stage-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/summary/archived",
+    "api_version": "v1",
+    "path": "/deals/summary/archived",
+    "command_tokens": [
+      "deals",
+      "summary-archived"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "status",
+        "flag": "status",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "open",
+          "won",
+          "lost"
+        ]
+      },
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "user_id",
+        "flag": "user-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "pipeline_id",
+        "flag": "pipeline-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "stage_id",
+        "flag": "stage-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/timeline",
+    "api_version": "v1",
+    "path": "/deals/timeline",
+    "command_tokens": [
+      "deals",
+      "timeline"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "start_date",
+        "flag": "start-date",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "interval",
+        "flag": "interval",
+        "required": true,
+        "type": "string",
+        "enum": [
+          "day",
+          "week",
+          "month",
+          "quarter"
+        ]
+      },
+      {
+        "name": "amount",
+        "flag": "amount",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "field_key",
+        "flag": "field-key",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "user_id",
+        "flag": "user-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "pipeline_id",
+        "flag": "pipeline-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "exclude_deals",
+        "flag": "exclude-deals",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "totals_convert_currency",
+        "flag": "totals-convert-currency",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/timeline/archived",
+    "api_version": "v1",
+    "path": "/deals/timeline/archived",
+    "command_tokens": [
+      "deals",
+      "timeline-archived"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "start_date",
+        "flag": "start-date",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "interval",
+        "flag": "interval",
+        "required": true,
+        "type": "string",
+        "enum": [
+          "day",
+          "week",
+          "month",
+          "quarter"
+        ]
+      },
+      {
+        "name": "amount",
+        "flag": "amount",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "field_key",
+        "flag": "field-key",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "user_id",
+        "flag": "user-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "pipeline_id",
+        "flag": "pipeline-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "exclude_deals",
+        "flag": "exclude-deals",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "totals_convert_currency",
+        "flag": "totals-convert-currency",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}",
+    "api_version": "v2",
+    "path": "/deals/{id}",
+    "command_tokens": [
+      "deals",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "next_activity_id",
+          "last_activity_id",
+          "first_won_time",
+          "products_count",
+          "files_count",
+          "notes_count",
+          "followers_count",
+          "email_messages_count",
+          "activities_count",
+          "done_activities_count",
+          "undone_activities_count",
+          "participants_count",
+          "last_incoming_mail_time",
+          "last_outgoing_mail_time",
+          "smart_bcc_email",
+          "source_lead_id"
+        ]
+      },
+      {
+        "name": "custom_fields",
+        "flag": "custom-fields",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "include_option_labels",
+        "flag": "include-option-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "include_labels",
+        "flag": "include-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/changelog",
+    "api_version": "v1",
+    "path": "/deals/{id}/changelog",
+    "command_tokens": [
+      "deals",
+      "changelog"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/convert/status/{conversion_id}",
+    "api_version": "v2",
+    "path": "/deals/{id}/convert/status/{conversion_id}",
+    "command_tokens": [
+      "deals",
+      "conversion-status"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "conversion_id",
+        "flag": "conversion-id",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/discounts",
+    "api_version": "v2",
+    "path": "/deals/{id}/discounts",
+    "command_tokens": [
+      "deals",
+      "discounts"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/files",
+    "api_version": "v1",
+    "path": "/deals/{id}/files",
+    "command_tokens": [
+      "deals",
+      "files"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort",
+        "flag": "sort",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/flow",
+    "api_version": "v1",
+    "path": "/deals/{id}/flow",
+    "command_tokens": [
+      "deals",
+      "flow"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "all_changes",
+        "flag": "all-changes",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "items",
+        "flag": "items",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/followers",
+    "api_version": "v2",
+    "path": "/deals/{id}/followers",
+    "command_tokens": [
+      "deals",
+      "followers"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/followers/changelog",
+    "api_version": "v2",
+    "path": "/deals/{id}/followers/changelog",
+    "command_tokens": [
+      "deals",
+      "followers-changelog"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/mailMessages",
+    "api_version": "v1",
+    "path": "/deals/{id}/mailMessages",
+    "command_tokens": [
+      "deals",
+      "mail-messages"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/participants",
+    "api_version": "v1",
+    "path": "/deals/{id}/participants",
+    "command_tokens": [
+      "deals",
+      "participants"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/participantsChangelog",
+    "api_version": "v1",
+    "path": "/deals/{id}/participantsChangelog",
+    "command_tokens": [
+      "deals",
+      "participants-changelog"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/permittedUsers",
+    "api_version": "v1",
+    "path": "/deals/{id}/permittedUsers",
+    "command_tokens": [
+      "deals",
+      "permitted-users"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /deals/{id}/products",
+    "api_version": "v2",
+    "path": "/deals/{id}/products",
+    "command_tokens": [
+      "deal-products",
+      "list-for-deal"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort_by",
+        "flag": "sort-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "add_time",
+          "update_time",
+          "order_nr"
+        ]
+      },
+      {
+        "name": "sort_direction",
+        "flag": "sort-direction",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /files",
+    "api_version": "v1",
+    "path": "/files",
+    "command_tokens": [
+      "files",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort",
+        "flag": "sort",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /files/{id}",
+    "api_version": "v1",
+    "path": "/files/{id}",
+    "command_tokens": [
+      "files",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /files/{id}/download",
+    "api_version": "v1",
+    "path": "/files/{id}/download",
+    "command_tokens": [
+      "files",
+      "download"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": true
+  },
+  {
+    "operation": "GET /filters",
+    "api_version": "v1",
+    "path": "/filters",
+    "command_tokens": [
+      "filters",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "type",
+        "flag": "type",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "deals",
+          "leads",
+          "org",
+          "people",
+          "products",
+          "activity",
+          "projects"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /filters/helpers",
+    "api_version": "v1",
+    "path": "/filters/helpers",
+    "command_tokens": [
+      "filters",
+      "helpers"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /filters/{id}",
+    "api_version": "v1",
+    "path": "/filters/{id}",
+    "command_tokens": [
+      "filters",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "include_field_code",
+        "flag": "include-field-code",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /goals/find",
+    "api_version": "v1",
+    "path": "/goals/find",
+    "command_tokens": [
+      "goals",
+      "search"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "type.name",
+        "flag": "type-name",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "deals_won",
+          "deals_progressed",
+          "activities_completed",
+          "activities_added",
+          "deals_started"
+        ]
+      },
+      {
+        "name": "title",
+        "flag": "title",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "is_active",
+        "flag": "is-active",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "assignee.id",
+        "flag": "assignee-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "assignee.type",
+        "flag": "assignee-type",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "person",
+          "company",
+          "team"
+        ]
+      },
+      {
+        "name": "expected_outcome.target",
+        "flag": "expected-outcome-target",
+        "required": false,
+        "type": "number",
+        "enum": null
+      },
+      {
+        "name": "expected_outcome.tracking_metric",
+        "flag": "expected-outcome-tracking-metric",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "quantity",
+          "sum"
+        ]
+      },
+      {
+        "name": "expected_outcome.currency_id",
+        "flag": "expected-outcome-currency-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "type.params.pipeline_id",
+        "flag": "type-params-pipeline-id",
+        "required": false,
+        "type": "array",
+        "enum": null
+      },
+      {
+        "name": "type.params.stage_id",
+        "flag": "type-params-stage-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "type.params.activity_type_id",
+        "flag": "type-params-activity-type-id",
+        "required": false,
+        "type": "array",
+        "enum": null
+      },
+      {
+        "name": "period.start",
+        "flag": "period-start",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "period.end",
+        "flag": "period-end",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /goals/{id}/results",
+    "api_version": "v1",
+    "path": "/goals/{id}/results",
+    "command_tokens": [
+      "goals",
+      "get-results"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "period.start",
+        "flag": "period-start",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "period.end",
+        "flag": "period-end",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /itemSearch",
+    "api_version": "v2",
+    "path": "/itemSearch",
+    "command_tokens": [
+      "item-search",
+      "search"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "term",
+        "flag": "term",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "item_types",
+        "flag": "item-types",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "deal",
+          "person",
+          "organization",
+          "product",
+          "lead",
+          "file",
+          "mail_attachment",
+          "project"
+        ]
+      },
+      {
+        "name": "fields",
+        "flag": "fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "address",
+          "code",
+          "custom_fields",
+          "email",
+          "name",
+          "notes",
+          "phone",
+          "title",
+          "description"
+        ]
+      },
+      {
+        "name": "search_for_related_items",
+        "flag": "search-for-related-items",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "exact_match",
+        "flag": "exact-match",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "deal.cc_email",
+          "person.picture",
+          "product.price"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /itemSearch/field",
+    "api_version": "v2",
+    "path": "/itemSearch/field",
+    "command_tokens": [
+      "item-search",
+      "field-search"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "term",
+        "flag": "term",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "entity_type",
+        "flag": "entity-type",
+        "required": true,
+        "type": "string",
+        "enum": [
+          "deal",
+          "lead",
+          "person",
+          "organization",
+          "product",
+          "project"
+        ]
+      },
+      {
+        "name": "match",
+        "flag": "match",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "exact",
+          "beginning",
+          "middle"
+        ]
+      },
+      {
+        "name": "field",
+        "flag": "field",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /leadFields",
+    "api_version": "v1",
+    "path": "/leadFields",
+    "command_tokens": [
+      "lead-fields",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /leadLabels",
+    "api_version": "v1",
+    "path": "/leadLabels",
+    "command_tokens": [
+      "lead-labels",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /leadSources",
+    "api_version": "v1",
+    "path": "/leadSources",
+    "command_tokens": [
+      "lead-sources",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /leads",
+    "api_version": "v1",
+    "path": "/leads",
+    "command_tokens": [
+      "leads",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "owner_id",
+        "flag": "owner-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "person_id",
+        "flag": "person-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "organization_id",
+        "flag": "organization-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "updated_since",
+        "flag": "updated-since",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "sort",
+        "flag": "sort",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "title",
+          "owner_id",
+          "creator_id",
+          "was_seen",
+          "expected_close_date",
+          "next_activity_id",
+          "add_time",
+          "update_time"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /leads/archived",
+    "api_version": "v1",
+    "path": "/leads/archived",
+    "command_tokens": [
+      "leads",
+      "list-archived"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "owner_id",
+        "flag": "owner-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "person_id",
+        "flag": "person-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "organization_id",
+        "flag": "organization-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort",
+        "flag": "sort",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "title",
+          "owner_id",
+          "creator_id",
+          "was_seen",
+          "expected_close_date",
+          "next_activity_id",
+          "add_time",
+          "update_time"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /leads/search",
+    "api_version": "v2",
+    "path": "/leads/search",
+    "command_tokens": [
+      "leads",
+      "search"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "term",
+        "flag": "term",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "fields",
+        "flag": "fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "custom_fields",
+          "notes",
+          "title"
+        ]
+      },
+      {
+        "name": "exact_match",
+        "flag": "exact-match",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "person_id",
+        "flag": "person-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "organization_id",
+        "flag": "organization-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "lead.was_seen"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /leads/{id}",
+    "api_version": "v1",
+    "path": "/leads/{id}",
+    "command_tokens": [
+      "leads",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /leads/{id}/convert/status/{conversion_id}",
+    "api_version": "v2",
+    "path": "/leads/{id}/convert/status/{conversion_id}",
+    "command_tokens": [
+      "leads",
+      "conversion-status"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "conversion_id",
+        "flag": "conversion-id",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /leads/{id}/permittedUsers",
+    "api_version": "v1",
+    "path": "/leads/{id}/permittedUsers",
+    "command_tokens": [
+      "leads",
+      "permitted-users"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /legacyTeams",
+    "api_version": "v1",
+    "path": "/legacyTeams",
+    "command_tokens": [
+      "legacy-teams",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "order_by",
+        "flag": "order-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "name",
+          "manager_id",
+          "active_flag"
+        ]
+      },
+      {
+        "name": "skip_users",
+        "flag": "skip-users",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /legacyTeams/user/{id}",
+    "api_version": "v1",
+    "path": "/legacyTeams/user/{id}",
+    "command_tokens": [
+      "legacy-teams",
+      "list-for-user"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "order_by",
+        "flag": "order-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "name",
+          "manager_id",
+          "active_flag"
+        ]
+      },
+      {
+        "name": "skip_users",
+        "flag": "skip-users",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /legacyTeams/{id}",
+    "api_version": "v1",
+    "path": "/legacyTeams/{id}",
+    "command_tokens": [
+      "legacy-teams",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "skip_users",
+        "flag": "skip-users",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /legacyTeams/{id}/users",
+    "api_version": "v1",
+    "path": "/legacyTeams/{id}/users",
+    "command_tokens": [
+      "legacy-teams",
+      "list-users"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /mailbox/mailMessages/{id}",
+    "api_version": "v1",
+    "path": "/mailbox/mailMessages/{id}",
+    "command_tokens": [
+      "mailbox",
+      "get-message"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "include_body",
+        "flag": "include-body",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /mailbox/mailThreads",
+    "api_version": "v1",
+    "path": "/mailbox/mailThreads",
+    "command_tokens": [
+      "mailbox",
+      "list-threads"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "folder",
+        "flag": "folder",
+        "required": true,
+        "type": "string",
+        "enum": [
+          "inbox",
+          "drafts",
+          "sent",
+          "archive"
+        ]
+      },
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /mailbox/mailThreads/{id}",
+    "api_version": "v1",
+    "path": "/mailbox/mailThreads/{id}",
+    "command_tokens": [
+      "mailbox",
+      "get-thread"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /mailbox/mailThreads/{id}/mailMessages",
+    "api_version": "v1",
+    "path": "/mailbox/mailThreads/{id}/mailMessages",
+    "command_tokens": [
+      "mailbox",
+      "list-thread-messages"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /noteFields",
+    "api_version": "v1",
+    "path": "/noteFields",
+    "command_tokens": [
+      "note-fields",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /notes",
+    "api_version": "v1",
+    "path": "/notes",
+    "command_tokens": [
+      "notes",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "user_id",
+        "flag": "user-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "lead_id",
+        "flag": "lead-id",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "deal_id",
+        "flag": "deal-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "person_id",
+        "flag": "person-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "org_id",
+        "flag": "org-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "project_id",
+        "flag": "project-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "task_id",
+        "flag": "task-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort",
+        "flag": "sort",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "start_date",
+        "flag": "start-date",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "end_date",
+        "flag": "end-date",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "updated_since",
+        "flag": "updated-since",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "pinned_to_lead_flag",
+        "flag": "pinned-to-lead-flag",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "pinned_to_deal_flag",
+        "flag": "pinned-to-deal-flag",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "pinned_to_organization_flag",
+        "flag": "pinned-to-organization-flag",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "pinned_to_person_flag",
+        "flag": "pinned-to-person-flag",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "pinned_to_project_flag",
+        "flag": "pinned-to-project-flag",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "pinned_to_task_flag",
+        "flag": "pinned-to-task-flag",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /notes/{id}",
+    "api_version": "v1",
+    "path": "/notes/{id}",
+    "command_tokens": [
+      "notes",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /notes/{id}/comments",
+    "api_version": "v1",
+    "path": "/notes/{id}/comments",
+    "command_tokens": [
+      "notes",
+      "list-comments"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /notes/{id}/comments/{commentId}",
+    "api_version": "v1",
+    "path": "/notes/{id}/comments/{commentId}",
+    "command_tokens": [
+      "notes",
+      "get-comment"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "commentId",
+        "flag": "commentId",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizationFields",
+    "api_version": "v2",
+    "path": "/organizationFields",
+    "command_tokens": [
+      "organization-fields",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "ui_visibility",
+          "important_fields",
+          "required_fields",
+          "ui_visibility,important_fields",
+          "ui_visibility,required_fields",
+          "important_fields,required_fields",
+          "ui_visibility,important_fields,required_fields"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizationFields/{field_code}",
+    "api_version": "v2",
+    "path": "/organizationFields/{field_code}",
+    "command_tokens": [
+      "organization-fields",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "field_code",
+        "flag": "field-code",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "ui_visibility",
+          "important_fields",
+          "required_fields",
+          "ui_visibility,important_fields",
+          "ui_visibility,required_fields",
+          "important_fields,required_fields",
+          "ui_visibility,important_fields,required_fields"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizationFields/{id}",
+    "api_version": "v1",
+    "path": "/organizationFields/{id}",
+    "command_tokens": [
+      "organization-fields",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizationRelationships",
+    "api_version": "v1",
+    "path": "/organizationRelationships",
+    "command_tokens": [
+      "organization-relationships",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "org_id",
+        "flag": "org-id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizationRelationships/{id}",
+    "api_version": "v1",
+    "path": "/organizationRelationships/{id}",
+    "command_tokens": [
+      "organization-relationships",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "org_id",
+        "flag": "org-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizations",
+    "api_version": "v2",
+    "path": "/organizations",
+    "command_tokens": [
+      "organizations",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "ids",
+        "flag": "ids",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "owner_id",
+        "flag": "owner-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "updated_since",
+        "flag": "updated-since",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "updated_until",
+        "flag": "updated-until",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "sort_by",
+        "flag": "sort-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "update_time",
+          "add_time"
+        ]
+      },
+      {
+        "name": "sort_direction",
+        "flag": "sort-direction",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      },
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "next_activity_id",
+          "last_activity_id",
+          "open_deals_count",
+          "related_open_deals_count",
+          "closed_deals_count",
+          "related_closed_deals_count",
+          "email_messages_count",
+          "people_count",
+          "activities_count",
+          "done_activities_count",
+          "undone_activities_count",
+          "files_count",
+          "notes_count",
+          "followers_count",
+          "won_deals_count",
+          "related_won_deals_count",
+          "lost_deals_count",
+          "related_lost_deals_count",
+          "smart_bcc_email"
+        ]
+      },
+      {
+        "name": "custom_fields",
+        "flag": "custom-fields",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "include_option_labels",
+        "flag": "include-option-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "include_labels",
+        "flag": "include-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizations/search",
+    "api_version": "v2",
+    "path": "/organizations/search",
+    "command_tokens": [
+      "organizations",
+      "search"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "term",
+        "flag": "term",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "fields",
+        "flag": "fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "address",
+          "custom_fields",
+          "notes",
+          "name"
+        ]
+      },
+      {
+        "name": "exact_match",
+        "flag": "exact-match",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizations/{id}",
+    "api_version": "v2",
+    "path": "/organizations/{id}",
+    "command_tokens": [
+      "organizations",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "next_activity_id",
+          "last_activity_id",
+          "open_deals_count",
+          "related_open_deals_count",
+          "closed_deals_count",
+          "related_closed_deals_count",
+          "email_messages_count",
+          "people_count",
+          "activities_count",
+          "done_activities_count",
+          "undone_activities_count",
+          "files_count",
+          "notes_count",
+          "followers_count",
+          "won_deals_count",
+          "related_won_deals_count",
+          "lost_deals_count",
+          "related_lost_deals_count",
+          "smart_bcc_email"
+        ]
+      },
+      {
+        "name": "custom_fields",
+        "flag": "custom-fields",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "include_option_labels",
+        "flag": "include-option-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "include_labels",
+        "flag": "include-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizations/{id}/changelog",
+    "api_version": "v1",
+    "path": "/organizations/{id}/changelog",
+    "command_tokens": [
+      "organizations",
+      "changelog"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizations/{id}/files",
+    "api_version": "v1",
+    "path": "/organizations/{id}/files",
+    "command_tokens": [
+      "organizations",
+      "files"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort",
+        "flag": "sort",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizations/{id}/flow",
+    "api_version": "v1",
+    "path": "/organizations/{id}/flow",
+    "command_tokens": [
+      "organizations",
+      "flow"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "all_changes",
+        "flag": "all-changes",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "items",
+        "flag": "items",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizations/{id}/followers",
+    "api_version": "v2",
+    "path": "/organizations/{id}/followers",
+    "command_tokens": [
+      "organizations",
+      "followers"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizations/{id}/followers/changelog",
+    "api_version": "v2",
+    "path": "/organizations/{id}/followers/changelog",
+    "command_tokens": [
+      "organizations",
+      "followers-changelog"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizations/{id}/mailMessages",
+    "api_version": "v1",
+    "path": "/organizations/{id}/mailMessages",
+    "command_tokens": [
+      "organizations",
+      "mail-messages"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /organizations/{id}/permittedUsers",
+    "api_version": "v1",
+    "path": "/organizations/{id}/permittedUsers",
+    "command_tokens": [
+      "organizations",
+      "permitted-users"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /permissionSets",
+    "api_version": "v1",
+    "path": "/permissionSets",
+    "command_tokens": [
+      "permission-sets",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "app",
+        "flag": "app",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "sales",
+          "projects",
+          "campaigns",
+          "global",
+          "account_settings"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /permissionSets/{id}",
+    "api_version": "v1",
+    "path": "/permissionSets/{id}",
+    "command_tokens": [
+      "permission-sets",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /permissionSets/{id}/assignments",
+    "api_version": "v1",
+    "path": "/permissionSets/{id}/assignments",
+    "command_tokens": [
+      "permission-sets",
+      "list-assignments"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /personFields",
+    "api_version": "v2",
+    "path": "/personFields",
+    "command_tokens": [
+      "person-fields",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "ui_visibility",
+          "important_fields",
+          "required_fields",
+          "ui_visibility,important_fields",
+          "ui_visibility,required_fields",
+          "important_fields,required_fields",
+          "ui_visibility,important_fields,required_fields"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /personFields/{field_code}",
+    "api_version": "v2",
+    "path": "/personFields/{field_code}",
+    "command_tokens": [
+      "person-fields",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "field_code",
+        "flag": "field-code",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "ui_visibility",
+          "important_fields",
+          "required_fields",
+          "ui_visibility,important_fields",
+          "ui_visibility,required_fields",
+          "important_fields,required_fields",
+          "ui_visibility,important_fields,required_fields"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /personFields/{id}",
+    "api_version": "v1",
+    "path": "/personFields/{id}",
+    "command_tokens": [
+      "person-fields",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons",
+    "api_version": "v2",
+    "path": "/persons",
+    "command_tokens": [
+      "persons",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "ids",
+        "flag": "ids",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "owner_id",
+        "flag": "owner-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "org_id",
+        "flag": "org-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "deal_id",
+        "flag": "deal-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "updated_since",
+        "flag": "updated-since",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "updated_until",
+        "flag": "updated-until",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "sort_by",
+        "flag": "sort-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "update_time",
+          "add_time"
+        ]
+      },
+      {
+        "name": "sort_direction",
+        "flag": "sort-direction",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      },
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "next_activity_id",
+          "last_activity_id",
+          "open_deals_count",
+          "related_open_deals_count",
+          "closed_deals_count",
+          "related_closed_deals_count",
+          "participant_open_deals_count",
+          "participant_closed_deals_count",
+          "email_messages_count",
+          "activities_count",
+          "done_activities_count",
+          "undone_activities_count",
+          "files_count",
+          "notes_count",
+          "followers_count",
+          "won_deals_count",
+          "related_won_deals_count",
+          "lost_deals_count",
+          "related_lost_deals_count",
+          "last_incoming_mail_time",
+          "last_outgoing_mail_time",
+          "marketing_status",
+          "doi_status",
+          "smart_bcc_email"
+        ]
+      },
+      {
+        "name": "custom_fields",
+        "flag": "custom-fields",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "include_option_labels",
+        "flag": "include-option-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "include_labels",
+        "flag": "include-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons/search",
+    "api_version": "v2",
+    "path": "/persons/search",
+    "command_tokens": [
+      "persons",
+      "search"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "term",
+        "flag": "term",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "fields",
+        "flag": "fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "custom_fields",
+          "email",
+          "notes",
+          "phone",
+          "name"
+        ]
+      },
+      {
+        "name": "exact_match",
+        "flag": "exact-match",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "organization_id",
+        "flag": "organization-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "person.picture"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons/{id}",
+    "api_version": "v2",
+    "path": "/persons/{id}",
+    "command_tokens": [
+      "persons",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "next_activity_id",
+          "last_activity_id",
+          "open_deals_count",
+          "related_open_deals_count",
+          "closed_deals_count",
+          "related_closed_deals_count",
+          "participant_open_deals_count",
+          "participant_closed_deals_count",
+          "email_messages_count",
+          "activities_count",
+          "done_activities_count",
+          "undone_activities_count",
+          "files_count",
+          "notes_count",
+          "followers_count",
+          "won_deals_count",
+          "related_won_deals_count",
+          "lost_deals_count",
+          "related_lost_deals_count",
+          "last_incoming_mail_time",
+          "last_outgoing_mail_time",
+          "marketing_status",
+          "doi_status",
+          "smart_bcc_email"
+        ]
+      },
+      {
+        "name": "custom_fields",
+        "flag": "custom-fields",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "include_option_labels",
+        "flag": "include-option-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "include_labels",
+        "flag": "include-labels",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons/{id}/changelog",
+    "api_version": "v1",
+    "path": "/persons/{id}/changelog",
+    "command_tokens": [
+      "persons",
+      "changelog"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons/{id}/files",
+    "api_version": "v1",
+    "path": "/persons/{id}/files",
+    "command_tokens": [
+      "persons",
+      "files"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort",
+        "flag": "sort",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons/{id}/flow",
+    "api_version": "v1",
+    "path": "/persons/{id}/flow",
+    "command_tokens": [
+      "persons",
+      "flow"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "all_changes",
+        "flag": "all-changes",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "items",
+        "flag": "items",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons/{id}/followers",
+    "api_version": "v2",
+    "path": "/persons/{id}/followers",
+    "command_tokens": [
+      "persons",
+      "followers"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons/{id}/followers/changelog",
+    "api_version": "v2",
+    "path": "/persons/{id}/followers/changelog",
+    "command_tokens": [
+      "persons",
+      "followers-changelog"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons/{id}/mailMessages",
+    "api_version": "v1",
+    "path": "/persons/{id}/mailMessages",
+    "command_tokens": [
+      "persons",
+      "mail-messages"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons/{id}/permittedUsers",
+    "api_version": "v1",
+    "path": "/persons/{id}/permittedUsers",
+    "command_tokens": [
+      "persons",
+      "permitted-users"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons/{id}/picture",
+    "api_version": "v2",
+    "path": "/persons/{id}/picture",
+    "command_tokens": [
+      "persons",
+      "picture"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /persons/{id}/products",
+    "api_version": "v1",
+    "path": "/persons/{id}/products",
+    "command_tokens": [
+      "persons",
+      "list-products"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /phases",
+    "api_version": "v2",
+    "path": "/phases",
+    "command_tokens": [
+      "project-phases",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "board_id",
+        "flag": "board-id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /phases/{id}",
+    "api_version": "v2",
+    "path": "/phases/{id}",
+    "command_tokens": [
+      "project-phases",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /pipelines",
+    "api_version": "v2",
+    "path": "/pipelines",
+    "command_tokens": [
+      "pipelines",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "sort_by",
+        "flag": "sort-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "update_time",
+          "add_time"
+        ]
+      },
+      {
+        "name": "sort_direction",
+        "flag": "sort-direction",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /pipelines/{id}",
+    "api_version": "v2",
+    "path": "/pipelines/{id}",
+    "command_tokens": [
+      "pipelines",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /pipelines/{id}/conversion_statistics",
+    "api_version": "v1",
+    "path": "/pipelines/{id}/conversion_statistics",
+    "command_tokens": [
+      "pipelines",
+      "conversion-statistics"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start_date",
+        "flag": "start-date",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "end_date",
+        "flag": "end-date",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "user_id",
+        "flag": "user-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /pipelines/{id}/deals",
+    "api_version": "v1",
+    "path": "/pipelines/{id}/deals",
+    "command_tokens": [
+      "pipelines",
+      "list-deals"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "user_id",
+        "flag": "user-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "everyone",
+        "flag": "everyone",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "stage_id",
+        "flag": "stage-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "get_summary",
+        "flag": "get-summary",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "totals_convert_currency",
+        "flag": "totals-convert-currency",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /pipelines/{id}/movement_statistics",
+    "api_version": "v1",
+    "path": "/pipelines/{id}/movement_statistics",
+    "command_tokens": [
+      "pipelines",
+      "movement-statistics"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start_date",
+        "flag": "start-date",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "end_date",
+        "flag": "end-date",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "user_id",
+        "flag": "user-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /productFields",
+    "api_version": "v2",
+    "path": "/productFields",
+    "command_tokens": [
+      "product-fields",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "ui_visibility"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /productFields/{field_code}",
+    "api_version": "v2",
+    "path": "/productFields/{field_code}",
+    "command_tokens": [
+      "product-fields",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "field_code",
+        "flag": "field-code",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "ui_visibility"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /productFields/{id}",
+    "api_version": "v1",
+    "path": "/productFields/{id}",
+    "command_tokens": [
+      "product-fields",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /products",
+    "api_version": "v2",
+    "path": "/products",
+    "command_tokens": [
+      "products",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "owner_id",
+        "flag": "owner-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "ids",
+        "flag": "ids",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort_by",
+        "flag": "sort-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "name",
+          "add_time",
+          "update_time"
+        ]
+      },
+      {
+        "name": "sort_direction",
+        "flag": "sort-direction",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      },
+      {
+        "name": "custom_fields",
+        "flag": "custom-fields",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /products/search",
+    "api_version": "v2",
+    "path": "/products/search",
+    "command_tokens": [
+      "products",
+      "search"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "term",
+        "flag": "term",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "fields",
+        "flag": "fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "code",
+          "custom_fields",
+          "name"
+        ]
+      },
+      {
+        "name": "exact_match",
+        "flag": "exact-match",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "include_fields",
+        "flag": "include-fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "product.price"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /products/{id}",
+    "api_version": "v2",
+    "path": "/products/{id}",
+    "command_tokens": [
+      "products",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /products/{id}/deals",
+    "api_version": "v1",
+    "path": "/products/{id}/deals",
+    "command_tokens": [
+      "products",
+      "list-deals"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "status",
+        "flag": "status",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "open",
+          "won",
+          "lost",
+          "deleted",
+          "all_not_deleted"
+        ]
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /products/{id}/files",
+    "api_version": "v1",
+    "path": "/products/{id}/files",
+    "command_tokens": [
+      "products",
+      "files"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort",
+        "flag": "sort",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /products/{id}/followers",
+    "api_version": "v2",
+    "path": "/products/{id}/followers",
+    "command_tokens": [
+      "products",
+      "followers"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /products/{id}/followers/changelog",
+    "api_version": "v2",
+    "path": "/products/{id}/followers/changelog",
+    "command_tokens": [
+      "products",
+      "followers-changelog"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /products/{id}/images",
+    "api_version": "v2",
+    "path": "/products/{id}/images",
+    "command_tokens": [
+      "products",
+      "images"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /products/{id}/permittedUsers",
+    "api_version": "v1",
+    "path": "/products/{id}/permittedUsers",
+    "command_tokens": [
+      "products",
+      "permitted-users"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /products/{id}/variations",
+    "api_version": "v2",
+    "path": "/products/{id}/variations",
+    "command_tokens": [
+      "products",
+      "variations"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projectFields",
+    "api_version": "v2",
+    "path": "/projectFields",
+    "command_tokens": [
+      "project-fields",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projectFields/{field_code}",
+    "api_version": "v2",
+    "path": "/projectFields/{field_code}",
+    "command_tokens": [
+      "project-fields",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "field_code",
+        "flag": "field-code",
+        "required": true,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projectTemplates",
+    "api_version": "v2",
+    "path": "/projectTemplates",
+    "command_tokens": [
+      "project-templates",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projectTemplates/{id}",
+    "api_version": "v2",
+    "path": "/projectTemplates/{id}",
+    "command_tokens": [
+      "project-templates",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects",
+    "api_version": "v2",
+    "path": "/projects",
+    "command_tokens": [
+      "projects",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "status",
+        "flag": "status",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "phase_id",
+        "flag": "phase-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/archived",
+    "api_version": "v2",
+    "path": "/projects/archived",
+    "command_tokens": [
+      "projects",
+      "list-archived"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "status",
+        "flag": "status",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "phase_id",
+        "flag": "phase-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/boards",
+    "api_version": "v1",
+    "path": "/projects/boards",
+    "command_tokens": [
+      "project-boards",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/boards/{id}",
+    "api_version": "v1",
+    "path": "/projects/boards/{id}",
+    "command_tokens": [
+      "project-boards",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/phases",
+    "api_version": "v1",
+    "path": "/projects/phases",
+    "command_tokens": [
+      "project-phases",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "board_id",
+        "flag": "board-id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/phases/{id}",
+    "api_version": "v1",
+    "path": "/projects/phases/{id}",
+    "command_tokens": [
+      "project-phases",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/search",
+    "api_version": "v2",
+    "path": "/projects/search",
+    "command_tokens": [
+      "projects",
+      "search"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "term",
+        "flag": "term",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "fields",
+        "flag": "fields",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "custom_fields",
+          "notes",
+          "title",
+          "description"
+        ]
+      },
+      {
+        "name": "exact_match",
+        "flag": "exact-match",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "person_id",
+        "flag": "person-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "organization_id",
+        "flag": "organization-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/{id}",
+    "api_version": "v2",
+    "path": "/projects/{id}",
+    "command_tokens": [
+      "projects",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/{id}/activities",
+    "api_version": "v1",
+    "path": "/projects/{id}/activities",
+    "command_tokens": [
+      "projects",
+      "list-activities"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/{id}/changelog",
+    "api_version": "v2",
+    "path": "/projects/{id}/changelog",
+    "command_tokens": [
+      "projects",
+      "changelog"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/{id}/groups",
+    "api_version": "v1",
+    "path": "/projects/{id}/groups",
+    "command_tokens": [
+      "projects",
+      "list-groups"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/{id}/permittedUsers",
+    "api_version": "v2",
+    "path": "/projects/{id}/permittedUsers",
+    "command_tokens": [
+      "projects",
+      "permitted-users"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/{id}/plan",
+    "api_version": "v1",
+    "path": "/projects/{id}/plan",
+    "command_tokens": [
+      "projects",
+      "get-plan"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /projects/{id}/tasks",
+    "api_version": "v1",
+    "path": "/projects/{id}/tasks",
+    "command_tokens": [
+      "projects",
+      "list-tasks"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /recents",
+    "api_version": "v1",
+    "path": "/recents",
+    "command_tokens": [
+      "recents",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "since_timestamp",
+        "flag": "since-timestamp",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "items",
+        "flag": "items",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "activity",
+          "activityType",
+          "deal",
+          "file",
+          "filter",
+          "note",
+          "person",
+          "organization",
+          "pipeline",
+          "product",
+          "stage",
+          "user"
+        ]
+      },
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /roles",
+    "api_version": "v1",
+    "path": "/roles",
+    "command_tokens": [
+      "roles",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /roles/{id}",
+    "api_version": "v1",
+    "path": "/roles/{id}",
+    "command_tokens": [
+      "roles",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /roles/{id}/assignments",
+    "api_version": "v1",
+    "path": "/roles/{id}/assignments",
+    "command_tokens": [
+      "roles",
+      "list-assignments"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /roles/{id}/pipelines",
+    "api_version": "v1",
+    "path": "/roles/{id}/pipelines",
+    "command_tokens": [
+      "roles",
+      "list-pipeline-visibility"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "visible",
+        "flag": "visible",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /roles/{id}/settings",
+    "api_version": "v1",
+    "path": "/roles/{id}/settings",
+    "command_tokens": [
+      "roles",
+      "list-settings"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /stages",
+    "api_version": "v2",
+    "path": "/stages",
+    "command_tokens": [
+      "stages",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "pipeline_id",
+        "flag": "pipeline-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "sort_by",
+        "flag": "sort-by",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "id",
+          "update_time",
+          "add_time",
+          "order_nr"
+        ]
+      },
+      {
+        "name": "sort_direction",
+        "flag": "sort-direction",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "asc",
+          "desc"
+        ]
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /stages/{id}",
+    "api_version": "v2",
+    "path": "/stages/{id}",
+    "command_tokens": [
+      "stages",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /stages/{id}/deals",
+    "api_version": "v1",
+    "path": "/stages/{id}/deals",
+    "command_tokens": [
+      "stages",
+      "list-deals"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "filter_id",
+        "flag": "filter-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "user_id",
+        "flag": "user-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "everyone",
+        "flag": "everyone",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /tasks",
+    "api_version": "v2",
+    "path": "/tasks",
+    "command_tokens": [
+      "tasks",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "is_done",
+        "flag": "is-done",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "is_milestone",
+        "flag": "is-milestone",
+        "required": false,
+        "type": "boolean",
+        "enum": null
+      },
+      {
+        "name": "assignee_id",
+        "flag": "assignee-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "project_id",
+        "flag": "project-id",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "parent_task_id",
+        "flag": "parent-task-id",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /tasks/{id}",
+    "api_version": "v2",
+    "path": "/tasks/{id}",
+    "command_tokens": [
+      "tasks",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /userConnections",
+    "api_version": "v1",
+    "path": "/userConnections",
+    "command_tokens": [
+      "user-connections",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /userSettings",
+    "api_version": "v1",
+    "path": "/userSettings",
+    "command_tokens": [
+      "user-settings",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /users",
+    "api_version": "v1",
+    "path": "/users",
+    "command_tokens": [
+      "users",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /users/find",
+    "api_version": "v1",
+    "path": "/users/find",
+    "command_tokens": [
+      "users",
+      "search"
+    ],
+    "path_parameters": [],
+    "query_parameters": [
+      {
+        "name": "term",
+        "flag": "term",
+        "required": true,
+        "type": "string",
+        "enum": null
+      },
+      {
+        "name": "search_by_email",
+        "flag": "search-by-email",
+        "required": false,
+        "type": "number",
+        "enum": [
+          0,
+          1
+        ]
+      }
+    ],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /users/me",
+    "api_version": "v1",
+    "path": "/users/me",
+    "command_tokens": [
+      "users",
+      "get-current"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /users/{id}",
+    "api_version": "v1",
+    "path": "/users/{id}",
+    "command_tokens": [
+      "users",
+      "get"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /users/{id}/followers",
+    "api_version": "v2",
+    "path": "/users/{id}/followers",
+    "command_tokens": [
+      "users",
+      "followers"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "cursor",
+        "flag": "cursor",
+        "required": false,
+        "type": "string",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "cursor",
+      "page_param": "cursor",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /users/{id}/permissions",
+    "api_version": "v1",
+    "path": "/users/{id}/permissions",
+    "command_tokens": [
+      "users",
+      "list-permissions"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /users/{id}/roleAssignments",
+    "api_version": "v1",
+    "path": "/users/{id}/roleAssignments",
+    "command_tokens": [
+      "users",
+      "role-assignments"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [
+      {
+        "name": "start",
+        "flag": "start",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      },
+      {
+        "name": "limit",
+        "flag": "limit",
+        "required": false,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "paging": {
+      "mode": "offset",
+      "page_param": "start",
+      "limit_param": "limit"
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /users/{id}/roleSettings",
+    "api_version": "v1",
+    "path": "/users/{id}/roleSettings",
+    "command_tokens": [
+      "users",
+      "role-settings"
+    ],
+    "path_parameters": [
+      {
+        "name": "id",
+        "flag": "id",
+        "required": true,
+        "type": "integer",
+        "enum": null
+      }
+    ],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  },
+  {
+    "operation": "GET /webhooks",
+    "api_version": "v1",
+    "path": "/webhooks",
+    "command_tokens": [
+      "webhooks",
+      "list"
+    ],
+    "path_parameters": [],
+    "query_parameters": [],
+    "paging": {
+      "mode": null,
+      "page_param": null,
+      "limit_param": null
+    },
+    "binary": false
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_order_status",
+  "order_id": "123456",
+  "out_path": null,
+  "dynadot": {
+    "command": "get_order_status",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "OrderId": "123456",
+      "OrderStatus": "Completed",
+      "OrderItem": []
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "base_url": "https://oauth.reddit.com",
+  "client_id_present": true,
+  "client_secret_present": true,
+  "env_access_token_present": false,
+  "live_allowed": false,
+  "live_checked": false,
+  "oauth_scopes": [
+    "identity",
+    "read",
+    "history"
+  ],
+  "oauth_token": {
+    "exists": false,
+    "expires_at_utc": null,
+    "has_refresh_token": null,
+    "path": "./examples/.state/token.json"
+  },
+  "ok": true,
+  "redirect_uri_present": true,
+  "run_id": null,
+  "runs_index": "./examples/.state/runs/index.jsonl"
+}

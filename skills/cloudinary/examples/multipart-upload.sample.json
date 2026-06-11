@@ -1,0 +1,15 @@
+{
+  "fields": {
+    "public_id": "demo/sample-upload",
+    "folder": "demo",
+    "tags": "demo,sample"
+  },
+  "files": [
+    {
+      "name": "file",
+      "path": "/replace/with/a/real/local/file.jpg",
+      "filename": "file.jpg",
+      "content_type": "image/jpeg"
+    }
+  ]
+}

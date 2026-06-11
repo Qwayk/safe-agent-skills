@@ -1,0 +1,25 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "ok": true,
+  "onboarding": {
+    "env_created": false,
+    "env_file": ".env.example",
+    "missing": [
+      "WOOCOMMERCE_CONSUMER_KEY",
+      "WOOCOMMERCE_CONSUMER_SECRET"
+    ],
+    "next_command": "qwayk-woocommerce-safe-agent-cli --output json auth check",
+    "steps": [
+      "Set WOOCOMMERCE_STORE_URL to your store home URL, for example https://shop.example.com",
+      "In WordPress admin open WooCommerce > Settings > Advanced > REST API",
+      "Create a new REST API key with Read/Write access",
+      "Paste the consumer key and consumer secret into .env",
+      "If your server strips Authorization headers, set WOOCOMMERCE_QUERY_STRING_AUTH=true",
+      "Run: qwayk-woocommerce-safe-agent-cli --output json auth check"
+    ]
+  },
+  "run_id": null,
+  "runs_index": "./.state/runs/index.jsonl"
+}

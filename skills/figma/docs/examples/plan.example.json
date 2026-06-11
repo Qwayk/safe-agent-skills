@@ -1,0 +1,45 @@
+{
+  "operation_id": "comments:post-comment",
+  "method": "POST",
+  "path": "/v1/files/file_123/comments",
+  "url": "http://127.0.0.1:8765/v1/files/file_123/comments",
+  "query": {},
+  "body": {
+    "comment": "Hello from the local proof stub"
+  },
+  "env_fingerprint": "http://127.0.0.1:8765|personal",
+  "verification_note": "Write operation is in dry-run mode; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available until operation-specific saved snapshot support is available.",
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "blocked",
+    "operation": "comments:post-comment",
+    "target": {
+      "method": "POST",
+      "path": "/v1/files/file_123/comments",
+      "path_params": {
+        "file_key": "file_123"
+      },
+      "query": {}
+    },
+    "saved_path": null,
+    "provider_backup_id": null,
+    "reason": "This Figma write family does not yet capture the live resource state or provider recovery point before apply."
+  },
+  "verification_plan": {
+    "type": "no-snapshot-approval",
+    "status": "blocked-before-provider-write",
+    "notes": "Apply must require explicit no-snapshot approval before Figma token use or HTTP until operation-specific saved snapshot support is available."
+  },
+  "post_apply_verification_note": "Write operation is in dry-run mode; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available until operation-specific saved snapshot support is available.",
+  "recovery": {
+    "automatic_rollback": false,
+    "end_state": "irreversible_and_clearly_labeled",
+    "strategy": "no_inverse",
+    "rollback_ready": false,
+    "backups": [],
+    "snapshots": [],
+    "rollback_plan": null,
+    "restore_note": "comments:post-comment: no automated rollback is available for this command; it is treated as irreversible and needs manual cleanup if removal is required."
+  }
+}

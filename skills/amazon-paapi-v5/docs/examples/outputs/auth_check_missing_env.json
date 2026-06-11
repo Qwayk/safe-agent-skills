@@ -1,0 +1,6 @@
+{
+  "error": "Missing AMAZON_PA_ACCESS_KEY_ID",
+  "error_type": "RuntimeError",
+  "ok": false
+}
+

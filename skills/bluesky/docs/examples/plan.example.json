@@ -1,0 +1,97 @@
+{
+  "tool": "bluesky-safe-cli",
+  "version": "0.1.0",
+  "dry_run": true,
+  "env_fingerprint": "https://bsky.social",
+  "inputs": {
+    "body": {
+      "identifier": "alice.bsky.social",
+      "password": "<redacted>"
+    },
+    "input_content_type": null,
+    "input_file": null,
+    "query": {}
+  },
+  "operation": {
+    "doc_url": "https://docs.bsky.app/docs/api/com-atproto-server-create-session",
+    "docs_source": "http-reference",
+    "group": "server",
+    "http_method": "POST",
+    "input_encoding": "application/json",
+    "kind": "procedure",
+    "lexicon_id": "com.atproto.server.createSession",
+    "namespace": "com.atproto",
+    "operation_command": "com-atproto-server-create-session",
+    "path": "/xrpc/com.atproto.server.createSession",
+    "route_hint": "entryway-or-pds",
+    "service_url": "https://bsky.social",
+    "stability": "stable",
+    "url": "https://bsky.social/xrpc/com.atproto.server.createSession"
+  },
+  "requirements": {
+    "missing_required": [],
+    "required_body_fields": [
+      "identifier",
+      "password"
+    ],
+    "required_query_params": []
+  },
+  "generated_at_utc": "2026-01-01T00:00:00Z",
+  "classification": {
+    "is_read": false,
+    "is_write": true,
+    "irreversible": false,
+    "risky": false,
+    "gates": {
+      "live": true,
+      "apply": true,
+      "yes": false,
+      "ack_irreversible": false
+    }
+  },
+  "risk_level": "medium",
+  "risk_reasons": [
+    "write-operation"
+  ],
+  "preconditions": [
+    "env_fingerprint must match the reviewed plan",
+    "live writes require --live --apply"
+  ],
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "blocked",
+    "saved_path": null,
+    "provider_backup_id": null,
+    "reason": "This source tool can build and review Bluesky write plans, but it does not yet save operation-specific before-state or provider backup data before applying them.",
+    "provider_write": {
+      "operation_command": "com-atproto-server-create-session",
+      "lexicon_id": "com.atproto.server.createSession",
+      "kind": "procedure",
+      "http_method": "POST",
+      "path": "/xrpc/com.atproto.server.createSession",
+      "service_url": "https://bsky.social"
+    }
+  },
+  "verification_plan": {
+    "status": "blocked_before_apply",
+    "steps": [
+      "Confirm no Bluesky provider write endpoint was called.",
+      "Confirm no session/auth write was created by the API write flow.",
+      "Confirm no successful write receipt was emitted."
+    ],
+    "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply."
+  },
+  "legacy_verification_plan": {
+    "type": "provider-response-only",
+    "notes": "Write execution is accepted from the live provider response only. No generic read-back target exists in this build."
+  },
+  "rollback": {
+    "supported": false,
+    "mode": "irreversible_and_clearly_labeled",
+    "automatic_rollback": false,
+    "requires_ack_irreversible": false,
+    "notes": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current Bluesky write families as irreversible_and_clearly_labeled and use the saved plan and refusal output for manual follow-up only."
+  },
+  "plan_hash": "<REDACTED>"
+}

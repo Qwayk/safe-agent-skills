@@ -1,0 +1,9 @@
+{
+  "date_range": "30d",
+  "dimensions": ["event:props:placement"],
+  "filters": [["is", "event:goal", ["members_modal_shown_manual"]]],
+  "metrics": ["events", "visitors"],
+  "order_by": [["events", "desc"]],
+  "pagination": {"limit": 50, "offset": 0},
+  "site_id": "example.com"
+}

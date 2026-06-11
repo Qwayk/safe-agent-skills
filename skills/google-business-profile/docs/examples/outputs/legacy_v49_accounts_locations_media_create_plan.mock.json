@@ -1,0 +1,43 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "operation": "legacy-v49.accounts.locations.media.create",
+  "plan": {
+    "tool": "google-business-profile-safe-cli",
+    "version": "0.1.0",
+    "generated_at_utc": "2026-06-04T00:00:00Z",
+    "env_fingerprint": "https://mybusiness.googleapis.com",
+    "command": "google-business-profile-safe-cli legacy-v49 accounts locations media create --parent accounts/123/locations/456 --media-item-file /tmp/media_item.json",
+    "selector": "accounts/123/locations/456",
+    "risk_level": "medium",
+    "risk_reasons": [
+      "Media item metadata write"
+    ],
+    "preconditions": [
+      "OAuth access"
+    ],
+    "proposed_changes": [
+      {
+        "operation": "legacy-v49.accounts.locations.media.create",
+        "selector": "accounts/123/locations/456",
+        "mask": "mediaItemDataRef",
+        "body_fingerprint": "a7147d42dc7761e1a4e3e009e84b6beed0f0c344a1537522c6645f8d78fdd53f"
+      }
+    ],
+    "verification_plan": [
+      "No direct read-back verification is available for this legacy media create; response should include matching mediaItemDataRef.resourceName, dataRef.resourceName, resourceName, or sourceUrl."
+    ],
+    "rollback": {
+      "supported": false,
+      "notes": "No automated rollback; preserve snapshots before apply for manual recovery."
+    },
+    "baseline": {
+      "selector": "accounts/123/locations/456",
+      "mask": "mediaItemDataRef",
+      "body_fingerprint": "a7147d42dc7761e1a4e3e009e84b6beed0f0c344a1537522c6645f8d78fdd53f",
+      "mask_fingerprint": "866fd806729862d65669e04d27d466bd450605208c5ae45d6cc37f098f425c1c"
+    }
+  },
+  "plan_path": null,
+  "receipt_path": null
+}

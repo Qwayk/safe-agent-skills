@@ -1,0 +1,85 @@
+{
+  "tool": "amazon-creators-api-tool",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-03-24T01:32:18Z",
+  "env_fingerprint": "https://creatorsapi.amazon/catalog/v1",
+  "command": "amazon-creators-api-tool --output json --env-file .env items get --item-id B0EXAMPLE --resource-preset book-media",
+  "selector": {
+    "operation": "GetItems",
+    "locale": "en_US",
+    "marketplace": "www.amazon.com",
+    "resources": [
+      "itemInfo.byLineInfo",
+      "itemInfo.classifications",
+      "itemInfo.contentInfo",
+      "itemInfo.contentRating",
+      "itemInfo.externalIds",
+      "itemInfo.features",
+      "itemInfo.manufactureInfo",
+      "itemInfo.productInfo",
+      "itemInfo.technicalInfo",
+      "itemInfo.title",
+      "itemInfo.tradeInInfo",
+      "images.primary.small",
+      "images.primary.medium",
+      "images.primary.large",
+      "images.variants.small",
+      "images.variants.medium",
+      "images.variants.large",
+      "offersV2.listings.availability",
+      "offersV2.listings.condition",
+      "offersV2.listings.dealDetails",
+      "offersV2.listings.isBuyBoxWinner",
+      "offersV2.listings.loyaltyPoints",
+      "offersV2.listings.merchantInfo",
+      "offersV2.listings.price",
+      "offersV2.listings.type",
+      "parentASIN"
+    ],
+    "itemIds": [
+      "B0EXAMPLE"
+    ],
+    "itemIdType": "ASIN"
+  },
+  "risk_level": "low",
+  "risk_reasons": [],
+  "payload": {
+    "resources": [
+      "itemInfo.byLineInfo",
+      "itemInfo.classifications",
+      "itemInfo.contentInfo",
+      "itemInfo.contentRating",
+      "itemInfo.externalIds",
+      "itemInfo.features",
+      "itemInfo.manufactureInfo",
+      "itemInfo.productInfo",
+      "itemInfo.technicalInfo",
+      "itemInfo.title",
+      "itemInfo.tradeInInfo",
+      "images.primary.small",
+      "images.primary.medium",
+      "images.primary.large",
+      "images.variants.small",
+      "images.variants.medium",
+      "images.variants.large",
+      "offersV2.listings.availability",
+      "offersV2.listings.condition",
+      "offersV2.listings.dealDetails",
+      "offersV2.listings.isBuyBoxWinner",
+      "offersV2.listings.loyaltyPoints",
+      "offersV2.listings.merchantInfo",
+      "offersV2.listings.price",
+      "offersV2.listings.type",
+      "parentASIN"
+    ],
+    "itemIds": [
+      "B0EXAMPLE"
+    ],
+    "itemIdType": "ASIN",
+    "marketplace": "www.amazon.com",
+    "partnerTag": "partner-tag"
+  },
+  "preconditions": [
+    "Run with --apply to contact Amazon Creators API"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "auth": {
+    "mode": "none",
+    "requested": "none",
+    "scheme": null,
+    "token_present": false
+  },
+  "before_state": {
+    "provider_backup_id": null,
+    "provider_write": {
+      "method": "POST",
+      "operation_id": "createPosts",
+      "path": "/2/tweets",
+      "service": "X API"
+    },
+    "reason": "This source tool can build and review X write plans, but it does not yet save operation-specific before-state or provider backup data before applying them.",
+    "required": true,
+    "saved_path": null,
+    "status": "no_snapshot_available",
+    "supported": false
+  },
+  "dry_run": true,
+  "env_fingerprint": "https://api.x.com/2",
+  "generated_at_utc": "2026-02-26T14:04:44Z",
+  "headers": {},
+  "inputs": {
+    "body": {},
+    "files": {},
+    "path": {},
+    "query": {}
+  },
+  "missing_required": [],
+  "operation": {
+    "method": "POST",
+    "operation_id": "createPosts",
+    "path_filled": "/2/tweets",
+    "path_template": "/2/tweets",
+    "security": "OAuth2UserToken{tweet.read,tweet.write,users.read}||UserToken{}",
+    "tags": [
+      "Tweets"
+    ],
+    "url": "https://api.x.com/2/tweets"
+  },
+  "rollback": {
+    "automatic_rollback": false,
+    "mode": "irreversible_and_clearly_labeled",
+    "notes": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current X write families as irreversible_and_clearly_labeled and use the saved plan and receipt for manual follow-up.",
+    "requires_ack_irreversible": false,
+    "supported": false
+  },
+  "safety_gates": {
+    "delete_requires_ack_irreversible": true,
+    "get_requires_live": true,
+    "write_requires_apply_yes": true
+  },
+  "tool": "x-api-tool",
+  "verification_plan": {
+    "approval_required": "--ack-no-snapshot",
+    "status": "best_effort_after_apply",
+    "steps": [
+      "Record the X provider or token response in the receipt.",
+      "Record any local token, PKCE, demo/job receipt, or write output created by the flow.",
+      "Record explicit no-snapshot approval for write operations."
+    ]
+  },
+  "version": "0.1.0"
+}

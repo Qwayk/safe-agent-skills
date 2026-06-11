@@ -1,0 +1,63 @@
+{
+  "artifacts_dir": "/path/to/your/project/.state/runs/2026-02-06T000000Z_example",
+  "audit_log": "/path/to/your/project/.state/runs/2026-02-06T000000Z_example/audit.jsonl",
+  "audit_log_global": null,
+  "command": "operations.call",
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "command": "cloudflare-api-tool --env-file /path/to/your/project/.env --output json operations workers_platform namespace-worker-create --path-param account_id=<your_account_id> --body-json-file /path/to/your/project/body.json",
+    "env_fingerprint": "https://api.cloudflare.com/client/v4",
+    "generated_at_utc": "2026-02-06T00:00:00Z",
+    "notes": [],
+    "preconditions": [
+      "API token has least-privilege permissions needed for this operation.",
+      "Path params and request body (if any) are correct.",
+      "For writes: review the plan output before applying."
+    ],
+    "proposed_changes": [
+      {
+        "action": "call",
+        "method": "POST",
+        "operation_id": "namespace-worker-create",
+        "path": "/accounts/<your_account_id>/workers/dispatch/namespaces",
+        "resource": "openapi_operation",
+        "sensitivity": "none"
+      }
+    ],
+    "request": {
+      "body_meta": {
+        "body_kind": "json",
+        "sha256": "<sha256>",
+        "size_bytes": 14,
+        "source": "/path/to/your/project/body.json"
+      },
+      "content_type": null,
+      "method": "POST",
+      "operation_id": "namespace-worker-create",
+      "out": null,
+      "path_resolved": "/accounts/<your_account_id>/workers/dispatch/namespaces",
+      "path_template": "/accounts/{account_id}/workers/dispatch/namespaces",
+      "query": {},
+      "sensitivity": "none"
+    },
+    "risk_level": "high",
+    "risk_reasons": [
+      "This is a Cloudflare API write."
+    ],
+    "selector": {
+      "method": "POST",
+      "operation_id": "namespace-worker-create",
+      "path_resolved": "/accounts/<your_account_id>/workers/dispatch/namespaces",
+      "path_template": "/accounts/{account_id}/workers/dispatch/namespaces",
+      "tags": "Workers for Platforms"
+    },
+    "tool": "cloudflare-api-tool",
+    "verification_plan": [
+      "Best-effort verification: for many writes, the tool attempts a read-back GET when a matching endpoint exists in the snapshot. Otherwise it records API response success."
+    ],
+    "version": "0.5.0"
+  },
+  "run_id": "2026-02-06T000000Z_example",
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}

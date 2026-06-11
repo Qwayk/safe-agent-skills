@@ -1,0 +1,1 @@
+{"customer":{"id":"YOUR_CUSTOMER_ID"},"campaign":{"id":"1","resource_name":"customers/YOUR_CUSTOMER_ID/campaigns/1"},"ad_group":{"id":"2","resource_name":"customers/YOUR_CUSTOMER_ID/adGroups/2","name":"Example Ad Group","status":"ENABLED","type":"SEARCH_STANDARD"}}

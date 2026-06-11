@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "operation": "transaction-queries.list",
+  "publisher_id": "12345",
+  "transaction_queries": {
+    "pageItems": [
+      {
+        "enquiryId": 77,
+        "enquiryStatus": "pending",
+        "advertiserId": 500,
+        "clickRef": "summer-1"
+      }
+    ],
+    "pageNumber": 1,
+    "pageSize": 100,
+    "totalPagesAvailable": 1,
+    "totalRowsAvailable": 1
+  },
+  "request": {
+    "method": "GET",
+    "endpoint": "https://api.awin.com/publisher/12345/transactionqueries",
+    "query": {
+      "required": [
+        "accessToken",
+        "startDate",
+        "endDate",
+        "timezone"
+      ],
+      "sent": [
+        "accessToken",
+        "dateType",
+        "endDate",
+        "pageNumber",
+        "pageSize",
+        "startDate",
+        "statuses",
+        "timezone"
+      ]
+    },
+    "response_status": 200
+  },
+  "metadata": {
+    "advertiser_ids": [],
+    "click_refs": [],
+    "date_type": "transactionDate",
+    "end_date": "2026-06-10T00:00:00Z",
+    "page_number": 1,
+    "page_size": 100,
+    "start_date": "2026-06-01T00:00:00Z",
+    "statuses": [
+      "pending"
+    ],
+    "timezone": "UTC"
+  }
+}

@@ -1,0 +1,2 @@
+note
+This tool intentionally does not ship a generic jobs runner. Use explicit named CLI commands instead.

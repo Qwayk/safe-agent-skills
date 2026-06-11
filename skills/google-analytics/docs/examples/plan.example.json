@@ -1,0 +1,56 @@
+{
+  "tool": "ga4-api-tool",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-03-02T00:00:00Z",
+  "command": "ga4-api-tool data v1beta properties audience-exports create --parent properties/123",
+  "env_fingerprint": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "request_fingerprint": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+  "operation": {
+    "service": "data",
+    "version": "v1beta",
+    "method_id": "analyticsdata.properties.audienceExports.create"
+  },
+  "risk": {
+    "level": "medium",
+    "reasons": [
+      "http:post"
+    ]
+  },
+  "request": {
+    "method": "POST",
+    "url": "https://analyticsdata.googleapis.com/v1beta/properties/123/audienceExports",
+    "query": {
+      "quotaUser": "planner"
+    },
+    "body": {
+      "displayName": "Demo Audience",
+      "dimensions": [
+        {
+          "dimensionName": "newVsReturningUsers"
+        }
+      ]
+    }
+  },
+  "preconditions": [
+    "env_fingerprint must match",
+    "request_fingerprint must match"
+  ],
+  "before_state": {
+    "required": true,
+    "supported": false,
+    "status": "no_snapshot_available",
+    "notes": "No saved before-state is available for this GA4 write. Apply may proceed only after explicit no-snapshot approval, and the receipt must record the recovery limit."
+  },
+  "verification_plan": {
+    "type": "no-snapshot-approval",
+    "expected_outcome": "refused-before-provider-http",
+    "notes": "Review the dry-run plan only. Apply requires explicit no-snapshot approval before GA4 HTTP when no saved snapshot is available."
+  },
+  "recovery": {
+    "automatic_rollback": false,
+    "backups": [],
+    "snapshots": [],
+    "rollback_plan": null,
+    "restore_note": "No automatic rollback, snapshots, or backups are created. If a restore action is available, run a separate explicit restore command as its own command."
+  }
+}

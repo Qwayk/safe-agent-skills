@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "get_backorder_auction_details",
+  "domain": "example.com",
+  "currency": "USD",
+  "out_path": null,
+  "dynadot": {
+    "command": "get_backorder_auction_details",
+    "status": "success",
+    "response_code": "0",
+    "raw": {
+      "Status": "success",
+      "ResponseCode": "0",
+      "Domain": "example.com",
+      "Currency": "usd",
+      "AuctionStatus": "open"
+    }
+  }
+}

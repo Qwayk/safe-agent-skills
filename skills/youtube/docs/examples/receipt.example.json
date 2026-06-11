@@ -1,0 +1,60 @@
+{
+  "dry_run": false,
+  "ok": true,
+  "plan": {
+    "before_state": {
+      "provider_backup_id": null,
+      "reason": "This source tool can build and review YouTube write plans, but it does not yet save operation-specific before-state or provider backup data before applying them.",
+      "required": true,
+      "saved_path": null,
+      "status": "blocked",
+      "supported": false
+    },
+    "command": "youtube-api-tool --output json --apply --plan-in plan.json demo write --selector demo-resource",
+    "recovery": {
+      "automatic_rollback": false,
+      "backups": [],
+      "end_state": "irreversible_and_clearly_labeled",
+      "restore_note": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current YouTube write families as irreversible_and_clearly_labeled and use the saved plan and refusal output for manual follow-up only.",
+      "rollback_plan": null,
+      "snapshots": []
+    },
+    "selector": {
+      "kind": "demo",
+      "value": "demo-resource"
+    },
+    "tool": "youtube-api-tool",
+    "verification_plan": {
+      "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply.",
+      "status": "blocked_before_apply",
+      "steps": [
+        "Confirm no YouTube provider write or upload endpoint was called.",
+        "Confirm no OAuth login/token store, demo/job receipt, or write output was created by the write flow.",
+        "Confirm no successful write receipt was emitted."
+      ]
+    },
+    "version": "0.1.0"
+  },
+  "reasons": [
+    "Refused: YouTube write apply requires explicit no-snapshot approval until this command saves real before-state before provider writes, upload writes, local auth/token writes, demo/job writes, or receipt output"
+  ],
+  "recovery": {
+    "automatic_rollback": false,
+    "backups": [],
+    "end_state": "irreversible_and_clearly_labeled",
+    "restore_note": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current YouTube write families as irreversible_and_clearly_labeled and use the saved plan and refusal output for manual follow-up only.",
+    "rollback_plan": null,
+    "snapshots": []
+  },
+  "refusal_type": "SafetyError",
+  "refused": true,
+  "verification_plan": {
+    "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply.",
+    "status": "blocked_before_apply",
+    "steps": [
+      "Confirm no YouTube provider write or upload endpoint was called.",
+      "Confirm no OAuth login/token store, demo/job receipt, or write output was created by the write flow.",
+      "Confirm no successful write receipt was emitted."
+    ]
+  }
+}

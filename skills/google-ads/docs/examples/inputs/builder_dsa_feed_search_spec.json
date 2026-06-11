@@ -1,0 +1,49 @@
+{
+  "customer_id": "1234567890",
+  "budget": {
+    "name": "DSA Budget | Example",
+    "amount": "50"
+  },
+  "campaign": {
+    "name": "DSA Campaign | Example",
+    "status": "PAUSED",
+    "max_clicks_cpc_ceiling_amount": "12"
+  },
+  "targeting": {
+    "locations": ["9059448"],
+    "languages": ["1000"],
+    "ad_schedule": [
+      {
+        "day_of_week": "MONDAY",
+        "start_hour": 7,
+        "end_hour": 19
+      }
+    ]
+  },
+  "campaign_negatives": [
+    "broken glass",
+    "screen repair"
+  ],
+  "page_feed": {
+    "asset_set_name": "DSA Page Feed | Example",
+    "label": "phase1_mechanical",
+    "urls": [
+      "https://example.com/",
+      "https://example.com/roller-replacement",
+      "https://example.com/track-alignment"
+    ]
+  },
+  "ad_group": {
+    "name": "Phase 1 Mechanical Feed",
+    "status": "PAUSED"
+  },
+  "ad": {
+    "status": "PAUSED",
+    "description": "Sliding door repair across DFW.",
+    "description2": "Call 7am-7pm."
+  },
+  "webpage_target": {
+    "criterion_name": "Phase 1 Mechanical Feed",
+    "label": "phase1_mechanical"
+  }
+}

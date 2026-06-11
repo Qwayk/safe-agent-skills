@@ -1,0 +1,38 @@
+{
+  "tool": "mercury-api-tool",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-01-01T00:00:00Z",
+  "env_fingerprint": "https://api.mercury.com/api/v1",
+  "command": "mercury-api-tool export transactions --format csv --out transactions.csv",
+  "action": "transactions.export",
+  "risk_level": "low",
+  "risk_reasons": [
+    "local_file_write"
+  ],
+  "baseline": {
+    "env_fingerprint": "https://api.mercury.com/api/v1",
+    "request": {
+      "format": "csv",
+      "params": {
+        "start": "2025-01-01",
+        "end": "2025-12-31"
+      },
+      "max_pages": 10
+    },
+    "out": "transactions.csv"
+  },
+  "files": [
+    {
+      "path": "transactions.csv",
+      "kind": "export"
+    }
+  ],
+  "verification_plan": {
+    "type": "local_files",
+    "notes": "Verify file exists and is non-empty."
+  },
+  "rollback": {
+    "supported": false,
+    "notes": "Delete local files to rollback."
+  }
+}

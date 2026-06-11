@@ -1,0 +1,33 @@
+{
+  "account_id": "acc_example",
+  "fetched_at_utc": "2026-02-10T00:00:00Z",
+  "members": [
+    {
+      "id": "m_example_1",
+      "roles": [
+        {
+          "id": "role_example"
+        }
+      ],
+      "status": "accepted",
+      "user": {
+        "email": "alice@example.com"
+      }
+    },
+    {
+      "id": "m_example_2",
+      "roles": [
+        {
+          "id": "role_viewer"
+        }
+      ],
+      "status": "pending",
+      "user": {
+        "email": "bob@example.com"
+      }
+    }
+  ],
+  "ok": true,
+  "status_filter": null
+}
+

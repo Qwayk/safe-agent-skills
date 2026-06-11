@@ -1,0 +1,165 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "count": 14,
+  "ok": true,
+  "operations": [
+    {
+      "api_token_groups": "com.cloudflare.edge.vectorize.index.list",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "vectorize-list-vectorize-indexes",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes",
+      "sensitivity": "sensitive_read",
+      "summary": "List Vectorize Indexes",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "com.cloudflare.edge.vectorize.index.create",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "vectorize-create-vectorize-index",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes",
+      "sensitivity": "sensitive_read",
+      "summary": "Create Vectorize Index",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "com.cloudflare.edge.vectorize.index.delete",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "DELETE",
+      "operation_id": "vectorize-delete-vectorize-index",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}",
+      "sensitivity": "sensitive_read",
+      "summary": "Delete Vectorize Index",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "com.cloudflare.edge.vectorize.index.read",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "vectorize-get-vectorize-index",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}",
+      "sensitivity": "sensitive_read",
+      "summary": "Get Vectorize Index",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "com.cloudflare.edge.vectorize.index.delete",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "vectorize-delete-vectors-by-id",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}/delete_by_ids",
+      "sensitivity": "sensitive_read",
+      "summary": "Delete Vectors By Identifier",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "vectorize-get-vectors-by-id",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}/get_by_ids",
+      "sensitivity": "sensitive_read",
+      "summary": "Get Vectors By Identifier",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "com.cloudflare.edge.vectorize.index.read",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "vectorize-index-info",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}/info",
+      "sensitivity": "sensitive_read",
+      "summary": "Get Vectorize Index Info",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "vectorize-insert-vector",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}/insert",
+      "sensitivity": "sensitive_read",
+      "summary": "Insert Vectors",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "com.cloudflare.edge.vectorize.index.read",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "vectorize-list-vectors",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}/list",
+      "sensitivity": "sensitive_read",
+      "summary": "List Vectors",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "com.cloudflare.edge.vectorize.index.create",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "vectorize-create-metadata-index",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}/metadata_index/create",
+      "sensitivity": "sensitive_read",
+      "summary": "Create Metadata Index",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "com.cloudflare.edge.vectorize.index.delete",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "vectorize-delete-metadata-index",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}/metadata_index/delete",
+      "sensitivity": "sensitive_read",
+      "summary": "Delete Metadata Index",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "GET",
+      "operation_id": "vectorize-list-metadata-indexes",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}/metadata_index/list",
+      "sensitivity": "sensitive_read",
+      "summary": "List Metadata Indexes",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "vectorize-query-vector",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}/query",
+      "sensitivity": "sensitive_read",
+      "summary": "Query Vectors",
+      "tags": "Vectorize"
+    },
+    {
+      "api_token_groups": "",
+      "area": "vectorize",
+      "deprecated": false,
+      "method": "POST",
+      "operation_id": "vectorize-upsert-vector",
+      "path_template": "/accounts/{account_id}/vectorize/v2/indexes/{index_name}/upsert",
+      "sensitivity": "sensitive_read",
+      "summary": "Upsert Vectors",
+      "tags": "Vectorize"
+    }
+  ],
+  "run_id": null,
+  "runs_index": "/path/to/your/project/.state/runs/index.jsonl"
+}
