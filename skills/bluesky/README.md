@@ -1,28 +1,107 @@
-# bluesky-safe-cli
+# Bluesky
 
-This is a safe CLI for Bluesky (atproto XRPC). API writes use a strict plan -> review -> explicit no-snapshot approval flow when real saved snapshots are not available.
+**Capability:** Reads + careful changes
 
-## For non-technical users: Start here
+Use this skill when you want your agent to inspect Bluesky profiles, posts, feeds, lists, and account state, or preview careful Bluesky API changes without guessing from raw docs.
 
-- `docs/use_cases.md` (what this tool can do)
-- `docs/onboarding.md` (setup, no coding)
-- `docs/safety_model.md` (how mistakes are reduced)
-- Agent skill prompt and install notes are included with this package.
+You can hand your agent jobs like profile checks, recent-post review, record lookups, list and follow inspection, planned post or repo-record writes, and moderation or admin calls when your account already has that access.
 
-## For technical users: Start here
+Read work starts carefully here too: the tool previews API operations first, live reads need `--live`, and writes need an explicit apply path plus extra approval when the action is risky, irreversible, or missing a saved before-state.
 
-- `docs/quickstart.md` (first successful run)
-- `docs/command_reference.md` (commands and flags)
+A good first ask is: "Check the Bluesky skill is connected, show my profile and recent posts safely, and preview the exact write steps before any account change."
 
-## Proof pack
+## Start here first
 
-- `docs/proof.md`
-- `docs/api_coverage.md`
-- `docs/examples/`
+- Want ideas for real Bluesky work? [What you can do with Bluesky](docs/use_cases.md)
+- Need setup? [Connect your Bluesky account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-Minimal smoke commands:
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
+
+## What this skill helps with
+
+- Check a profile, repo, or account state safely before deeper work.
+- Read posts, feeds, lists, follows, chat, or moderation-related endpoints when your account has access.
+- Inspect the documented Bluesky operation inventory before choosing an endpoint.
+- Preview a post, record, or account write before anything goes live.
+- Save plans, refusals, receipts, and run history for review.
+
+## What access this skill needs
+
+- A Bluesky handle or DID.
+- A Bluesky app password for the main account path.
+- Optional service URL overrides or admin tokens for non-default or moderation-only surfaces.
+- The real Bluesky permissions required for the endpoint you want to use.
+
+## Install and first run
+
+Install slug: `bluesky`
+
+Ask your agent to install the `bluesky` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
 
 ```bash
-bluesky-safe-cli --version
-bluesky-safe-cli auth check
+npx skills add Qwayk/safe-agent-skills@bluesky -g -y
 ```
+
+Then try a safe first ask like:
+
+```text
+Check the Bluesky skill is connected, show my profile and recent posts safely, and preview the next write steps before any change goes live.
+```
+
+## How this skill stays safe
+
+- API operations preview as dry-run plans first.
+- Live reads need `--live`.
+- Writes need `--live --apply`.
+- Riskier or irreversible writes can also need `--yes` and `--ack-irreversible`.
+- Writes without a saved before-state need `--ack-no-snapshot` before provider HTTP.
+- Plans, refusals, receipts, run history, docs, and tests all stay together so you can inspect what happened.
+
+## What it covers today
+
+This skill covers:
+
+- `onboarding` plus auth login, check, refresh, logout, and token helpers
+- operation inventory through `api ops list`
+- explicit query, procedure, and subscription calls across `app.bsky`, `com.atproto`, `chat.bsky`, and `tools.ozone` surfaces
+- plan, refusal, receipt, and run-history support for write-capable flows
+- raw subscription frame capture for stream-style inspection
+
+## What happens before live changes
+
+- The agent should show the dry-run plan first.
+- You review the endpoint, body, target account, and risk level.
+- Live reads use `--live`.
+- Writes use `--live --apply`.
+- Riskier or irreversible writes can also need `--yes` and `--ack-irreversible`.
+- No-snapshot writes also need `--ack-no-snapshot`.
+
+## What proof it leaves behind
+
+- Dry-run plans can be saved with `--plan-out`.
+- Apply receipts can be saved with `--receipt-out`.
+- Run history can be reviewed with `runs list` and `runs show`.
+- Refusal output makes it clear when missing approval stopped the write before provider HTTP.
+- The docs, tests, proof pack, and API coverage ledger are all in this repo.
+
+## Limits
+
+- Many Bluesky write families still do not have rollback or saved before-state.
+- Subscription output is raw websocket frame data, not a polished decoded event view.
+- Real work still needs valid Bluesky credentials and the right endpoint permissions.
+- This tool is safest when you start with one small read or one reviewed write plan before larger work.
+
+## Helpful docs
+
+- [Browse all Bluesky docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Authentication details](docs/authentication.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)

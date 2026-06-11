@@ -1,36 +1,54 @@
-# Onboarding (non-technical)
+# Connect your Bluesky account
 
-You do not need to be technical to start.
+Use this page when you want the shortest safe setup path for Bluesky work.
 
-1) Create `.env` from `.env.example`.
-2) Fill required values:
-   - `BLUESKY_IDENTIFIER=<your handle or DID>`
-   - `BLUESKY_APP_PASSWORD=<your app password>`
-3) Log in once:
+You do not need to be technical, but you do need a real Bluesky account and an app password stored locally on your machine.
+
+Keep this one rule in mind first: your `.env` file and any saved token files are private. Never paste them into chat.
+
+## What you need
+
+- Your Bluesky handle or DID
+- A Bluesky app password
+- Optional custom service URLs only if you are working against non-default Bluesky services
+
+## Step 1) Fill the local `.env` file
+
+1. Copy `.env.example` to `.env`.
+2. Fill:
+   - `BLUESKY_IDENTIFIER`
+   - `BLUESKY_APP_PASSWORD`
+3. Leave the optional service URL overrides alone unless you already know you need them.
+
+## Step 2) Log in once
 
 ```bash
-bluesky-safe-cli auth login
+bluesky-safe-cli --output json auth login
 ```
 
-4) Check auth:
+## Step 3) Run the first safe checks
 
 ```bash
-bluesky-safe-cli auth check
+bluesky-safe-cli --output json auth check
+bluesky-safe-cli --output json api app-bsky-actor-get-profile --query-json '{"actor":"your-handle.bsky.social"}'
+bluesky-safe-cli --output json --live api app-bsky-actor-get-profile --query-json '{"actor":"your-handle.bsky.social"}'
 ```
 
-5) Add your first safe call:
+The second command is the preview. The third command is the first real live read.
 
-```bash
-bluesky-safe-cli api app-bsky-actor-get-profile --query-json '{"actor":"your-handle.bsky.app"}'
-```
+## What to ask your agent next
 
-That last command is dry-run by default. It only sends live requests if you add `--live`.
+- "Check the Bluesky skill is connected and show my profile safely."
+- "List the operations for the area I need before we pick one."
+- "Preview the exact write plan first and do not apply anything yet."
 
-## What to ask your AI agent
+## If something fails
 
-- "Show me a dry-run plan first."
-- "Use a read query with `--live` and no changes."
-- "If this API plan is correct, attempt apply with `--live --apply` and show me the refusal."
-- "If a write attempt is refused, confirm no provider HTTP happened and no receipt was written."
+The most common causes are:
 
-If anything fails, use `docs/troubleshooting.md`.
+- the handle or DID is wrong
+- the app password is missing or invalid
+- the service URL overrides do not match the account you are using
+- the account does not have permission for the endpoint you chose
+
+Use [Troubleshooting](troubleshooting.md) if auth or the first live read fails.

@@ -1,10 +1,10 @@
 # Quickstart
 
-If you are non-technical, start with `docs/onboarding.md` and `docs/use_cases.md`.
+Want the short non-technical path first? Start with [What you can do with Bluesky](use_cases.md), [Connect your Bluesky account](onboarding.md), and [How this skill stays safe](safety_model.md).
 
-This page is technical.
+This page is for the exact commands.
 
-1) Install
+## 1) Install
 
 ```bash
 python3 -m venv .venv
@@ -12,46 +12,59 @@ python3 -m venv .venv
 pip install -e .
 ```
 
-2) Configure
+## 2) Configure
 
 ```bash
 cp .env.example .env
-# fill BLUESKY_IDENTIFIER and BLUESKY_APP_PASSWORD
 ```
 
-3) Run onboarding and login
+Fill:
+
+- `BLUESKY_IDENTIFIER`
+- `BLUESKY_APP_PASSWORD`
+
+## 3) Log in and check auth
 
 ```bash
-bluesky-safe-cli onboarding
-bluesky-safe-cli auth login
+bluesky-safe-cli --output json onboarding
+bluesky-safe-cli --output json auth login
+bluesky-safe-cli --output json auth check
 ```
 
-4) Smoke check
+## 4) First safe reads
+
+Preview the read first:
 
 ```bash
-bluesky-safe-cli auth check
+bluesky-safe-cli --output json api app-bsky-actor-get-profile --query-json '{"actor":"alice.bsky.social"}'
 ```
 
-5) Read command flow
-
-Dry-run preview:
+Then run the live read:
 
 ```bash
-bluesky-safe-cli api app-bsky-actor-get-profile --query-json '{"actor":"alice.bsky.app"}'
+bluesky-safe-cli --output json --live api app-bsky-actor-get-profile --query-json '{"actor":"alice.bsky.social"}'
 ```
 
-Live read:
+## 5) Operation inventory
+
+List the available documented operations before choosing one:
 
 ```bash
-bluesky-safe-cli --live api app-bsky-actor-get-profile --query-json '{"actor":"alice.bsky.app"}'
+bluesky-safe-cli --output json api ops list --kind query
 ```
 
-6) Write attempt flow (high-level)
+## 6) Write preview and apply flow
+
+Write preview:
 
 ```bash
-bluesky-safe-cli --live --apply --yes api com-atproto-server-update-account-handle --body-json '{"account":"alice.bsky.app","handle":"alice.new.bsky.app"}'
+bluesky-safe-cli --output json api com-atproto-repo-create-record --body-json '{"repo":"did:plc:example","collection":"app.bsky.feed.post","record":{"$type":"app.bsky.feed.post","text":"Hello from a preview"}}'
 ```
 
-If this is a risky write, add `--yes` and `--ack-irreversible` as needed.
+Approved live apply:
 
-Current write attempts are expected to require explicit no-snapshot approval before provider HTTP. Confirm `before_state.status="blocked"` and no receipt file was written.
+```bash
+bluesky-safe-cli --output json --live --apply --ack-no-snapshot api com-atproto-repo-create-record --body-json '{"repo":"did:plc:example","collection":"app.bsky.feed.post","record":{"$type":"app.bsky.feed.post","text":"Hello from a reviewed apply"}}'
+```
+
+Add `--yes` for risky writes and `--ack-irreversible` when the action is labeled irreversible.

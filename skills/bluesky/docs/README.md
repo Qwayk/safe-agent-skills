@@ -5,7 +5,7 @@ Use this page when you want the right Bluesky doc quickly.
 ## Start here
 
 - [What you can do](use_cases.md)
-- [Connect your account](onboarding.md)
+- [Connect your Bluesky account](onboarding.md)
 - [How this stays safe](safety_model.md)
 
 ## Commands and setup

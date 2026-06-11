@@ -1,71 +1,45 @@
 # Safety model
 
-Rules:
-- Dry-run by default; live API write attempts need `--live --apply`.
-- API write attempts without saved before-state or provider backup use `before_state.status="no_snapshot_available"` and require explicit no-snapshot approval; missing approval refuses before provider HTTP.
-- Refuse when unclear; do not guess.
-- Never log secrets.
+This tool is built to slow Bluesky changes down before they go live.
 
-## Two-layer safety
+## What this tool does by default
 
-There are two safety layers:
+- API calls preview first as dry-run plans.
+- Live reads need `--live`.
+- Live writes need `--live --apply`.
+- Secrets stay redacted in normal output and logs.
 
-1) Mechanical checks (the tool)
-- The tool checks required inputs before execution.
-- For writes, missing no-snapshot approval stops before provider HTTP and marks verification as `blocked_before_apply`; approved no-snapshot writes may proceed through the normal apply path.
+## Where the extra caution happens
 
-2) Human or AI review
-- A reviewer checks that the planned change matches the goal and context.
-- Keep this as a normal step before `--apply`.
+Some Bluesky writes do not have a saved before-state or a real rollback path.
 
-The tool is deterministic; reviewers are still needed.
+When that happens:
 
-## Plan -> Review -> Refusal
+- the plan must disclose the no-snapshot limit
+- live apply needs `--ack-no-snapshot`
+- risky writes can also need `--yes`
+- irreversible writes can also need `--ack-irreversible`
 
-Recommended flow for writes:
+If the needed approval is missing, the tool should refuse before provider HTTP.
 
-1) Build a plan (dry-run).
-2) Review the plan.
-3) Attempt apply with `--live --apply` and required safety flags for API writes.
-4) Confirm the explicit no-snapshot approval and that the receipt records no-snapshot approval, or missing approval refused before provider HTTP.
+## Recommended workflow
 
-## Plans and receipts
+1. Run auth and one small live read first.
+2. Preview the exact write plan.
+3. Review the endpoint, payload, target account, and recovery limits.
+4. Apply only with the required live and approval flags.
+5. Review the refusal or receipt after the run.
 
-For API write commands this tool writes plan files when enabled:
+## Plans, receipts, and run history
 
-- `--plan-out <path>`: save dry-run plan JSON
-- `--receipt-out <path>`: reserved for receipts from approved applies; missing-approval write refusals must not write it unless apply is approved
+- `--plan-out <path>` saves a dry-run plan.
+- `--receipt-out <path>` saves an apply receipt when the write is approved and runs.
+- `runs list` and `runs show` help inspect local run history.
 
-Saved-plan apply is not supported in this release.
-Local auth storage helpers write local state directly and do not use plan or receipt files.
+These files are the proof trail for what the tool planned, what it refused, and what it actually ran.
 
-## Run history (recommended for customer-ready tools)
+## Limits
 
-For write-capable commands, this tool writes run artifacts:
-
-- `.state/runs/<run_id>/`
-- `.state/runs/index.jsonl`
-
-Run artifacts stay next to your `--env-file`.
-
-Rules:
-- The tool must never write secrets into local artifacts.
-- Plans and refusal outputs are proof for review and audits.
-
-## Rollback model
-
-- Current Bluesky write families should be treated as `irreversible_and_clearly_labeled`.
-- This tool does not create rollback helpers, backups, snapshots, or provider restore flows.
-- If a write apply is refused, confirm no provider HTTP happened and the receipt records no-snapshot approval, or missing approval refused before provider HTTP.
-
-## Risk levels (guideline)
-
-- Low: create new drafts, small edits.
-- Medium: edit an existing draft.
-- High: status changes, deletions, and multi-step updates.
-- Irreversible: actions that cannot be undone.
-
-High/irreversible actions should need explicit safety flags.
-
-For irreversible actions, the tool uses:
-- `--ack-irreversible`
+- Many Bluesky write families should still be treated as irreversible.
+- This tool does not promise rollback, backup, or restore helpers for those writes.
+- Subscription output is raw frame capture, not a polished decoded event view.
