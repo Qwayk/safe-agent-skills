@@ -2,9 +2,9 @@
 
 ## Provider documentation
 
-Provider: Awin Publisher API
-Core API host: `https://api.awin.com`
-Legacy feed host: `https://productdata.awin.com`
+Provider: Awin Publisher API  
+Core API host: `https://api.awin.com`  
+Legacy feed host: `https://productdata.awin.com`  
 Last checked: 2026-06-09
 
 Official pages used for this build:

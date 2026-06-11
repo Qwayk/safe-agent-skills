@@ -1,9 +1,12 @@
-# Safety model
+# How this skill stays safe
 
-Most commands in this tool are remote reads or local file downloads.
+Use this page when you want to know what stays read-only, what only writes local files, and what can send a real Awin change.
 
+## Read and file safety
+
+- Accounts, programs, offers, transactions, transaction queries, reports, and linkbuilder commands are read-only.
+- Feed commands only write local files when you give an explicit `--out` path.
 - Reads stay explicit. There is no raw request bridge.
-- Feed downloads write to local files only when you provide `--out`.
 - The tool never prints secrets.
 - `proof-of-purchase orders create` is the only remote write command.
 
@@ -12,7 +15,7 @@ Most commands in this tool are remote reads or local file downloads.
 - Default behavior is dry-run.
 - Use `--plan-out` to save a reviewable plan.
 - Live submission requires `--apply --yes --plan-in`.
-- `--plan-in` checks that the file being applied is the same one you planned.
+- `--plan-in` checks that the reviewed plan still matches the current environment plus the requested publisher and advertiser ids.
 - `--receipt-out` can save the apply receipt.
 - Official live use also depends on Awin publisher enablement and advertiser CLO enablement.
 

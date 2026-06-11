@@ -1,12 +1,12 @@
-# Awin publisher docs
+# Awin Publisher docs
 
 Use this page when you want the right Awin publisher doc quickly.
 
-## Start here
+## Start here first
 
-- [What you can do](use_cases.md)
-- [Connect your account](onboarding.md)
-- [How this stays safe](safety_model.md)
+- [What you can do with Awin Publisher](use_cases.md)
+- [Connect your Awin publisher account](onboarding.md)
+- [How this skill stays safe](safety_model.md)
 
 ## Commands and setup
 
@@ -17,9 +17,9 @@ Use this page when you want the right Awin publisher doc quickly.
 - [Troubleshooting](troubleshooting.md)
 - [Technical architecture](architecture.md)
 
-## Proof and references
+## Helpful docs
 
-- [Proof pack](proof.md)
+- [Proof and verification](proof.md)
 - [API coverage](api_coverage.md)
 - [Source references](references.md)
 - [Examples](examples/)

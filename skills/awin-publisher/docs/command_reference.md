@@ -1,6 +1,7 @@
 # Command reference
 
-Technical reference. Non-technical users should start with `use_cases.md` and `onboarding.md`.
+Use this page when you need the exact Awin Publisher command, flag, or write gate.
+If you want the plain-English path first, start with [What you can do with Awin Publisher](use_cases.md), [Connect your Awin publisher account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

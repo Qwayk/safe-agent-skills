@@ -2,8 +2,8 @@
 
 This table maps the official publisher-side pages to the shipped command families and the current build status.
 
-Last updated (UTC): 2026-06-09
-Core API host: `https://api.awin.com`
+Last updated (UTC): 2026-06-09  
+Core API host: `https://api.awin.com`  
 Legacy feed host: `https://productdata.awin.com`
 
 Status labels used here:

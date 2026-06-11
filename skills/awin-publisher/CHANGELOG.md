@@ -29,9 +29,11 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Added plan and receipt handling for the proof-of-purchase write flow.
 - Added download-to-file helpers for enhanced and legacy feed commands.
 - Added example outputs and updated proof references for the shipped command surface.
+- Added `tests/test_readme_public_contract.py` and `tests/test_docs_standard.py` so the publish-ready README and user-doc contract stays enforced in source.
 
 ### Changed
 - Updated README, command reference, coverage ledger, references, skill wrapper docs, and tool AGENTS to match the shipped surface.
+- Rebuilt the source README and first linked user docs into the publish-ready `Qwayk/safe-agent-skills` contract so the public copy no longer has to rescue the main page later.
 - `auth check` performs real Awin `GET /accounts` verification using bearer auth and official `accessToken` query validation, and filters to publisher accounts.
 - Proof-of-purchase live apply now requires `--plan-in` together with `--apply --yes`.
 - Proof-of-purchase docs now say clearly that live use needs Awin-side publisher enablement and advertiser-side CLO enablement.
