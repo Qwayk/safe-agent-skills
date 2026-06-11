@@ -10,7 +10,13 @@ Read work stays simple. Riskier work slows down on purpose: site changes start a
 
 A good first ask is: "Show me what changed in traffic, sources, and goal conversions over the last 7 days."
 
-Install slug: `plausible`
+## Start here first
+
+- Want ideas for real Plausible work? [What you can do with Plausible](docs/use_cases.md)
+- Need setup? [Connect your Plausible account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
+
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
 ## What this skill helps with
 
@@ -28,6 +34,8 @@ Install slug: `plausible`
 - Some destructive site changes may need an owner key for that site.
 
 ## Install and first run
+
+Install slug: `plausible`
 
 Ask your agent to install the `plausible` skill from `Qwayk/safe-agent-skills`.
 
@@ -90,14 +98,7 @@ This skill covers:
 
 ## Helpful docs
 
-If you want the easiest path first:
-
-- [What you can do with Plausible](docs/use_cases.md)
-- [Connect your Plausible account](docs/onboarding.md)
-- [How this skill stays safe](docs/safety_model.md)
-
-If you want commands and proof:
-
+- [Browse all Plausible docs](docs/README.md)
 - [Quickstart](docs/quickstart.md)
 - [Command guide](docs/command_reference.md)
 - [Proof and verification](docs/proof.md)
