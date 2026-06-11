@@ -1,42 +1,45 @@
-# Use cases
+# What you can do with Figma
 
-Use this page when you want ideas for real Figma jobs to hand to your agent.
+Use this page when you want real Figma jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Discovery and targeting use case
+## File and comment review
 
-“I want to see which part of our Figma setup this account can safely inspect before we change anything.”
+"Show me the latest file metadata, version history, and unresolved comments for this file."
 
-An agent can start with read-only discovery, check which API areas are available for your token,
-and narrow the list to the files, teams, or libraries that are safe to inspect first.
-This reduces guessing and helps you avoid trying enterprise-only or team-gated endpoints too early.
+An agent can inspect file JSON, metadata, versions, comments, and reactions before anyone changes anything.
+This is a good first step when you need to understand a file quickly without clicking through the UI.
 
-## Safe write use case
+## Design system and library audit
 
-“I want to draft a comment for one file, review it, and only post it after I approve the exact request.”
+"List the components, styles, variables, and library analytics for this team or file."
 
-The tool can prepare a dry-run preview that shows the exact request, the target file,
-and the approval gates that must be passed before anything is written.
-After review, supported writes can proceed with explicit `--ack-no-snapshot` approval when no saved snapshot is available.
+This helps when you want a clean view of your design system, published library state, or variable usage before a migration or cleanup pass.
 
-## Access and plan-gate use case
+## Safe change planning
 
-“Tell me which endpoints this workspace can use now, and which ones are blocked by plan, team, or enterprise rules.”
+"Draft a comment, webhook, variable, or dev-resource change, show me the exact plan, and wait for approval."
 
-This is useful before you promise work to a customer or start a larger automation.
-The tool keeps the documented surface explicit, so it is easy to separate what is locally ready,
-what needs live credentials, and what depends on Figma plan or organization rules.
+The skill can preview supported writes first, show the target and request body, and stop before anything goes live.
+If Figma does not expose useful before-state, the reviewed apply still needs explicit no-snapshot approval.
 
-## Audit and traceability use case
+## Access and plan check
 
-“Show me what we already tried, what changed, and where the proof files are.”
+"Tell me which endpoints this token can use now, and which ones depend on team, org, or plan access."
 
-The tool keeps local run history, saved plans, receipts or refusal records, and redacted JSON outputs.
-That makes it easier to explain results to a customer or review the exact request before repeating it.
+This is useful before you promise automation work or start a deeper rollout.
+It helps separate what is already available from what is gated by workspace tier or permissions.
+
+## Proof and handoff
+
+"Save the plan, receipt, or JSON output so I can review it later or hand it to someone else."
+
+The skill keeps local run history, saved plans, receipts, and reusable JSON outputs.
+That makes it easier to audit what was reviewed, previewed, or applied.
 
 ## Why this beats typical no-code automation
 
-- It previews writes before applying them, and when no saved snapshot is available it asks for explicit no-snapshot approval instead of guessing.
-- It keeps the provider surface explicit instead of hiding behavior behind a generic request bridge.
-- It returns deterministic JSON output that is easy to review or reuse.
-- It keeps local proof files so you can show what was tested without screenshots.
+- It keeps the Figma REST surface explicit instead of hiding behavior behind a generic request bridge.
+- It previews writes before applying them.
+- It calls out no-snapshot risk honestly instead of pretending there is an undo path.
+- It returns deterministic JSON and local proof files that are easier to review than screenshots or memory.

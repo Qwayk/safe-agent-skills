@@ -1,48 +1,61 @@
-# Onboarding (non-technical)
+# Connect your Figma account
 
-You can use this tool without deep technical knowledge.
-It runs on your machine and only needs a small `.env` file with your token settings.
+Use this page when you want the Figma skill ready for real work.
 
-## Step 1: Set up `.env`
+You do not need to understand the whole Figma API first. You only need the right token mode, a small local `.env` file, and the file, team, or project IDs for the work you actually want to do.
 
-1. Copy `.env.example` to `.env`.
-2. Fill values for:
-   - `FIGMA_BASE_URL`
-   - `FIGMA_AUTH_MODE`
-   - `FIGMA_ACCESS_TOKEN` (optional only if you use OAuth token file mode)
-   - `FIGMA_TIMEOUT_S` (optional)
-3. Keep `.env` private. Never paste token values into chat.
+Keep `.env` private. Never paste token values into chat.
 
-## Step 2: Pick your auth mode
+## Step 1: Copy `.env.example` to `.env`
+
+Fill these first:
+
+- `FIGMA_BASE_URL`
+- `FIGMA_AUTH_MODE`
+- `FIGMA_ACCESS_TOKEN` if you use `personal` or `plan` mode
+- `FIGMA_TIMEOUT_S` only if you want a custom timeout
+
+## Step 2: Pick one auth mode
 
 Use exactly one mode:
-- `personal` for personal account / PAT workflows.
-- `oauth` to use an OAuth token JSON file stored at `.state/token.json`.
-- `plan` to use plan tokens for plan-scoped endpoints.
 
-## Step 3: Verify you are connected
+- `personal` for a normal personal access token
+- `oauth` for an OAuth token JSON file stored at `.state/token.json`
+- `plan` for plan-scoped token flows when the job needs that Figma mode
+
+If you use OAuth, save the token file locally with:
 
 ```bash
+figma-safe-agent-cli auth token set --file /path/to/token.json
+figma-safe-agent-cli auth token status
+```
+
+## Step 3: Run the built-in setup check
+
+```bash
+figma-safe-agent-cli onboarding
 figma-safe-agent-cli auth check
 ```
 
-If the command succeeds, the tool can make authenticated calls with your current config.
+If the command succeeds, the skill can make authenticated calls with your current config.
 
-If it says blocked, follow the hints in `docs/troubleshooting.md` before continuing.
+If it says blocked, go to [Troubleshooting](troubleshooting.md) before trying live work.
 
-## What to ask an agent
+## Good first asks
 
-Use read-only checks first:
-- “Show what Figma operations this tool supports for my account.”
-- “Find safe target files and return a preview only.”
-- “Create a plan for the exact changes, then hold until I approve.”
+Start with safe reads first:
+
+- "Show me what this Figma token can safely inspect."
+- "List the file, project, component, and library reads that are already available."
+- "Preview a comment or webhook change, but do not send it yet."
 
 ## If setup is blocked
 
-Most onboarding blocks are:
-- Missing `.env` fields.
-- Wrong auth mode for the requested use.
-- OAuth token JSON missing or expired.
-- Team-level permission limits in the Figma account.
+Most onboarding blocks are simple:
 
-The command `figma-safe-agent-cli auth check` tells you which of those is blocking.
+- missing `.env` fields
+- wrong auth mode for the token you have
+- OAuth token JSON missing or expired
+- file, team, project, or plan-level access limits in the Figma account
+
+`figma-safe-agent-cli auth check` tells you which of those is blocking.
