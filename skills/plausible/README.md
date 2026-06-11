@@ -1,8 +1,12 @@
 # Plausible
 
-Use this skill when you want your agent to pull Plausible reports, validate Stats queries, build funnels, and handle careful analytics changes without guessing from raw docs.
+Use this skill when you want your agent to answer real Plausible questions without guessing from raw docs.
 
-It keeps the risky parts slower and clearer. Read work stays simple. Writes start with a plan, and higher-risk actions need explicit approval before they change live settings or send analytics data.
+You can hand your agent jobs like weekly traffic and conversion reports, Stats query validation, signup or membership funnel analysis, and careful site or event changes.
+
+Read work stays simple. Riskier work slows down on purpose: site changes start as dry-run plans, destructive actions need extra approval, and event sends need explicit approval because they write analytics data that cannot be undone automatically.
+
+A good first ask is: "Show me what changed in traffic, sources, and goal conversions over the last 7 days."
 
 ## What this skill helps with
 
