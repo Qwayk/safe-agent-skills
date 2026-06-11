@@ -23,6 +23,7 @@ In the tool folder, copy `.env.example` to `.env` and fill:
 ## Step 3) What to ask your AI agent (examples)
 
 These are plain-English requests. For safety, event writes should always be planned first and only applied after your explicit approval.
+Some writes also need an extra no-snapshot acknowledgement because they do not have an automatic restore point.
 
 - “Confirm the tool is connected and run a weekly report for the last 7 days.”
 - “Validate this Stats query JSON, then run it and export results to a file.”

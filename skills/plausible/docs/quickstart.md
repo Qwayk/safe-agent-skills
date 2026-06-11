@@ -50,10 +50,10 @@ python3 -m plausible_api_tool --env-file .env stats goals list --date-range 30d 
 
 ## Optional: send a test event (writes analytics)
 
-Only do this when you explicitly want to write test data.
+Only do this when you explicitly want to write test data. This cannot be undone automatically.
 
 ```bash
-PYTHONPATH=src python3 -m plausible_api_tool --env-file .env --apply --yes --ack-irreversible event send \\
+PYTHONPATH=src python3 -m plausible_api_tool --env-file .env --apply --yes --ack-irreversible --ack-no-snapshot event send \\
   --name "__plausible_api_tool_test" \\
   --url "https://example.com/__plausible_api_tool_test/$(date +%s)" \\
   --verify

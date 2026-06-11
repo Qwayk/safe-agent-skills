@@ -3,13 +3,13 @@
 Use this page when you want ideas for real Plausible jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## Why this is powerful (vs typical no-code automation)
 
-No‑code tools can pull a single metric on a schedule. This tool is built for:
+No-code tools can pull a single metric on a schedule. This tool is built for:
 
 - Deep analytics queries (custom metrics/dimensions, funnels, comparisons)
 - Repeatable reporting (weekly/monthly snapshots)
-- Safe writes (Events API is disabled by default; writes require explicit approvals)
+- Careful writes (site changes start as plans; event sends need explicit approval because they cannot be undone automatically)
 - Receipts you can keep for auditing what was run
 
 ## Common use cases (examples)
@@ -35,5 +35,6 @@ No‑code tools can pull a single metric on a schedule. This tool is built for:
 When you ask for anything that writes analytics data, the agent should:
 
 1) Show a dry-run plan.
-2) Apply only after explicit confirmation (and the irreversible acknowledgement).
-3) Verify best-effort (when supported) and provide a receipt.
+2) Apply only after explicit confirmation.
+3) Ask for extra acknowledgement when the action has no automatic restore point.
+4) Verify best-effort (when supported) and provide a receipt.

@@ -2,9 +2,10 @@
 
 Rules:
 - Dry-run by default; no writes unless `--apply`.
+- Destructive actions need explicit irreversible acknowledgement.
+- Writes without saved before-state, including `event send` and `site shared-links ensure`, need explicit no-snapshot approval.
 - Verify after write when possible (Plausible Events API does not offer a reliable read-back).
 - Refuse when unsure; do not guess.
-- Event send is currently dry-run-only: live apply requires explicit no-snapshot approval until before-state persistence is supported.
 - Refuse sending likely PII in event props (e.g. emails/tokens).
 - Never log secrets.
 
@@ -40,5 +41,5 @@ Important detail:
 ## Events API verification note
 
 Plausible's Events API does not provide a direct “read back this exact event” endpoint.
-This tool supports a **best-effort** verification mode (`event send --verify`) which works best when
-you send to a unique, never-used URL path.
+This tool supports a **best-effort** verification mode (`event send --verify`) after a successful apply.
+It works best when you send to a unique, never-used URL path on the default domain.

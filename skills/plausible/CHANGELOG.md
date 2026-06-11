@@ -20,3 +20,5 @@
 - In `--output json`, usage/parse errors now return exactly one JSON object to stdout.
 - `--version` now respects `--output` (machine-readable in JSON mode).
 - Support Python >=3.11 runtime (was >=3.12).
+- Rewrote the public Plausible README so the first screen leads with real jobs, safety, and the first user action instead of internal tool wording.
+- Aligned Plausible docs with the live event-send safety contract, including explicit no-snapshot approval and best-effort verification wording.

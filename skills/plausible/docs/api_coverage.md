@@ -53,7 +53,7 @@ Each row is intended to be specific enough to implement and test without re-read
 
 | Method | Path | Purpose | CLI | Safety | Verification | Tests |
 |---|---|---|---|---|---|---|
-| POST | `/api/event` | Send an analytics event | `event send` | Refused for live apply in this release; use dry-run plan output only | Dry-run plan only in this release | `tests/test_event_safety.py` |
+| POST | `/api/event` | Send an analytics event | `event send` | Dry-run by default; apply requires `--apply --yes --ack-irreversible --ack-no-snapshot` | Best-effort Stats API poll on a unique URL path when `--verify` is requested | `tests/test_event_safety.py` |
 
 #### `event send` payload fields (supported)
 
@@ -81,7 +81,7 @@ Explicit refusals (by design):
 | POST | `/api/v1/sites` | Create site | `site create` | Default refused without `--apply`; apply requires `--apply --yes` | Read-back: `GET /api/v1/sites/:site_id` | `tests/test_sites_commands.py` |
 | PUT | `/api/v1/sites/:site_id` | Update site (domain and/or tracker config) | `site update` | Default refused without `--apply`; apply requires `--apply --yes` | Read-back: `GET /api/v1/sites/:site_id` (new domain if changed) | `tests/test_sites_commands.py` |
 | DELETE | `/api/v1/sites/:site_id` | Delete site (destructive) | `site delete` | Default refused without `--apply`; apply requires `--apply --yes --ack-irreversible` | Best-effort: confirm removed from `GET /api/v1/sites` | `tests/test_sites_commands.py` |
-| PUT | `/api/v1/sites/shared-links` | Find-or-create shared link (idempotent) | `site shared-links ensure` | Refused for live apply in this release; dry-run plan only | Read-back: repeat PUT (idempotent) | `tests/test_sites_commands.py` |
+| PUT | `/api/v1/sites/shared-links` | Find-or-create shared link (idempotent) | `site shared-links ensure` | Dry-run by default; apply requires `--apply --yes --ack-no-snapshot` | Read-back: repeat PUT (idempotent) | `tests/test_sites_commands.py` |
 | GET | `/api/v1/sites/goals` | List goals | `site goals list` | Read-only | N/A | `tests/test_sites_commands.py` |
 | PUT | `/api/v1/sites/goals` | Find-or-create goal (idempotent) | `site goals ensure` | Default refused without `--apply`; apply requires `--apply --yes` | Read-back: `GET /api/v1/sites/goals` and match `id`/`display_name` | `tests/test_sites_commands.py` |
 | DELETE | `/api/v1/sites/goals/:goal_id` | Delete goal (destructive) | `site goals delete` | Default refused without `--apply`; apply requires `--apply --yes --ack-irreversible` | Best-effort: `GET /api/v1/sites/goals` and confirm missing | `tests/test_sites_commands.py` |

@@ -1,52 +1,91 @@
-# plausible-api-tool
+# Plausible
 
-## Simplicity lock
+Use this skill when you want your agent to pull Plausible reports, validate Stats queries, build funnels, and handle careful analytics changes without guessing from raw docs.
 
-Build and change this area in the simplest way possible.
+It keeps the risky parts slower and clearer. Read work stays simple. Writes start with a plan, and higher-risk actions need explicit approval before they change live settings or send analytics data.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add modes, settings, or extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+## What this skill helps with
 
-Small, safe CLI for the Plausible Analytics **Stats API** and **Events API**.
+- Run weekly or monthly Plausible reports for traffic, sources, devices, and goals.
+- Validate Stats API queries before running them.
+- Build funnel and comparison reports for membership or conversion work.
+- Review sites, goals, custom properties, guests, and shared links.
+- Plan careful analytics changes or test events before anything is sent.
 
-Designed to be safe-by-default (dry-run, explicit apply gates, and machine-readable output).
+## What access this skill needs
 
-## Docs
+- A Plausible API key.
+- Your site ID or domain.
+- If you self-host Plausible, your base URL.
+- Some destructive site changes may need an owner key for that site.
 
-## For non-technical users: Start here (no coding)
+## Install and first run
 
-Start with these docs:
+Ask your agent to install the `plausible` skill from `Qwayk/safe-agent-skills`.
 
-- Use cases (ideas + benefits): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model (how we prevent mistakes): `docs/safety_model.md`
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
 
-What you can ask an AI agent to do (examples):
-
-- “Give me a weekly traffic report (top pages, sources, and goals).”
-- “Build a membership funnel report for the last 30 days.”
-- “Validate this Stats query JSON and then run it.”
-- “Send a test event only if I explicitly approve (writes analytics).”
-
-## For technical users: Start here (CLI)
-
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
-
-Minimal examples:
+If your host does not let the agent install skills directly, run:
 
 ```bash
-plausible-api-tool --version
-plausible-api-tool --env-file .env auth check
+npx skills add Qwayk/safe-agent-skills@plausible -g -y
 ```
 
-## Proof pack (customer-ready)
+Then try a safe first ask like:
 
+```text
+Connect the Plausible skill to my account and show me the top pages, sources, and goal conversions from the last 7 days.
+```
+
+## How this skill stays safe
+
+- Read-only reporting and query validation do not write anything.
+- Site and analytics writes start as dry-run plans first.
+- Live changes need explicit apply flags, and destructive actions need extra acknowledgement.
+- `event send` writes analytics data and cannot be undone automatically, so it also needs explicit no-snapshot approval.
+- Event verification is best-effort only; Plausible does not offer an exact read-back for one specific event.
+- Plans, receipts, docs, tests, and code all live together so you can inspect what the agent is using.
+
+## What it covers today
+
+This skill covers:
+
+- Stats API queries and reports
+- funnel, comparison, and goal analysis
+- site reads
+- site writes for create, update, delete, goals, custom properties, guests, and shared links
+- careful event sends with explicit approval
+
+## What happens before live changes
+
+- The agent should show the dry-run plan first.
+- You review the target, payload, and risk.
+- Safe reads can run immediately.
+- Site writes need `--apply --yes`.
+- Destructive actions need `--ack-irreversible`.
+- Writes without a saved before-state, like `event send` and `site shared-links ensure`, also need `--ack-no-snapshot`.
+
+## What proof it leaves behind
+
+- Dry-run plans can be saved with `--plan-out`.
+- Apply receipts can be saved with `--receipt-out`.
+- Many site writes include before-state details when the API makes that possible.
+- `event send --verify` can do a best-effort check when you use a unique URL path.
+- The docs, tests, and coverage ledger are all in this repo.
+
+## Limits
+
+- `event send` cannot be undone automatically.
+- Event verification is best-effort, not exact replay proof.
+- `event send` and `site shared-links ensure` do not have saved before-state because Plausible does not expose the exact prior state needed.
+- You still need valid Plausible access for real account work.
+
+## Helpful docs
+
+- `docs/use_cases.md`
+- `docs/onboarding.md`
+- `docs/safety_model.md`
+- `docs/quickstart.md`
+- `docs/command_reference.md`
 - `docs/proof.md`
 - `docs/api_coverage.md`

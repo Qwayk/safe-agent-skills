@@ -19,6 +19,7 @@ If you want the plain-English path first, start with [What you can do](use_cases
 - `--plan-out PATH`: write the computed plan JSON to a file (v2, no secrets)
 - `--receipt-out PATH`: write the post-apply receipt JSON to a file (v2, no secrets)
 - `--ack-irreversible`: extra acknowledgement for irreversible actions (v2)
+- `--ack-no-snapshot`: extra acknowledgement when a write has no saved before-state or automatic restore point
 
 ## Write recovery contract
 
@@ -94,7 +95,7 @@ This tool handles that for the built-in `goals` commands.
 ## Events (write; disabled by default)
 
 - Dry-run (safe no-op): `python3 -m plausible_api_tool event send --name test_event --url https://example.com/`
-- Live apply for this command family requires explicit no-snapshot approval when before-state persistence is not available.
+- Live apply: `python3 -m plausible_api_tool --apply --yes --ack-irreversible --ack-no-snapshot event send --name test_event --url https://example.com/`
 - Optional fields:
   - `--referrer https://example.com/from`
   - `--revenue-currency USD --revenue-amount 9.99`
@@ -111,9 +112,9 @@ This tool handles that for the built-in `goals` commands.
 ### Event send verification (best effort)
 
 If you use a unique URL path (recommended), verification is available after a successful apply.
-Apply is currently blocked for event send, so this verification path is not runnable yet.
+This works best on the default domain because the verification helper reads back through the Stats API.
 
-- `Live apply requires explicit no-snapshot approval for this command family when no saved snapshot is available.`
+- `Live apply requires --apply --yes --ack-irreversible --ack-no-snapshot for this command family.`
 
 ## Sites (safe reads + gated writes)
 
@@ -134,7 +135,7 @@ Writes (dry-run by default; requires `--apply --yes`):
 - Delete a site (destructive; apply): `python3 -m plausible_api_tool --apply --yes --ack-irreversible site delete --site-id test-domain.com`
 
 Other Sites API writes:
-- Ensure a shared link (dry-run plan only): `python3 -m plausible_api_tool site shared-links ensure --site-id example.com --name Wordpress`
+- Ensure a shared link: `python3 -m plausible_api_tool --apply --yes --ack-no-snapshot site shared-links ensure --site-id example.com --name Wordpress`
   - recovery: `irreversible_and_clearly_labeled`
 - Ensure a goal (event): `python3 -m plausible_api_tool --apply --yes site goals ensure --site-id example.com --goal-type event --event-name Signup`
   - recovery: `rollback_by_inverse_action` via `site goals delete`
