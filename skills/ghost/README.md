@@ -2,11 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to inspect a Ghost site, report what matters, and make careful changes without guessing from raw docs.
+Ghost is where published posts, newsletters, members, tiers, offers, themes, and webhooks all meet the public site your readers see.
 
-You can hand it jobs like content audits, internal link checks, post and page fixes, member and newsletter exports, careful tag cleanup, pricing or offer updates, and high-impact theme or webhook work that needs extra review.
+This skill helps an agent audit Ghost content, check internal links, review posts, pages, tags, members, newsletters, and offers, and prepare site changes before anything affects the live publication.
 
-Read work stays simple. Riskier Ghost changes slow down on purpose: the tool reads current state first, builds dry-run plans, verifies after write, and saves proof. Many update families keep local snapshot evidence, while higher-risk families need extra acknowledgements or explicit no-snapshot approval when Ghost does not expose the same safe before-state or read-back path.
+Use it for questions like: "Which posts are missing metadata?", "What internal links are broken?", "Which tags need cleanup?", "Can you export newsletter or member data?", or "Can you preview this offer, theme, or webhook change?"
+
+Ghost changes should start with the current site state. The tool builds dry-run plans, verifies many writes after apply, and saves proof. Higher-risk families need extra acknowledgements or explicit no-snapshot approval when Ghost does not expose the same safe before-state or read-back path.
 
 A good first ask is: "Audit my Ghost posts, tags, and broken internal links, then show me the highest-risk issues before changing anything."
 
@@ -51,7 +53,7 @@ npx skills add Qwayk/safe-agent-skills@ghost -g -y
 Then try a safe first ask like:
 
 ```text
-Connect the Ghost skill to my site, confirm auth, then audit my latest posts, tags, and broken internal links without changing anything.
+Check the Ghost connection, confirm auth, then audit my latest posts, tags, and broken internal links without changing anything.
 ```
 
 ## How this skill stays safe

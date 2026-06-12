@@ -12,6 +12,15 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertTrue(text.startswith("# Ghost\n"))
         self.assertNotIn("## Simplicity lock", text)
         self.assertNotIn("# ghost-api-tool", text)
+        self.assertIn("Ghost is where published posts", text)
+        for stale_phrase in [
+            "Use this skill when",
+            "You can hand it jobs like",
+            "without guessing from raw docs",
+            "Read work stays simple",
+            "Riskier Ghost changes slow down on purpose",
+        ]:
+            self.assertNotIn(stale_phrase, text)
 
         required_sections = [
             "## Start here first",
@@ -54,3 +63,13 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertIn("[Connect your Ghost account](onboarding.md)", text)
         self.assertNotIn("`docs/use_cases.md`", text)
         self.assertNotIn("`docs/onboarding.md`", text)
+
+    def test_use_cases_stay_specific_and_human(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        self.assertIn("Ghost work is usually about improving a live publication", text)
+        self.assertIn("## Good jobs to give the agent", text)
+        self.assertIn("## What you should expect from the agent", text)
+        self.assertNotIn("Why this skill is useful", text)
+        self.assertNotIn("Common jobs", text)

@@ -1,17 +1,11 @@
 # Use cases
 
-Use this page when you want ideas for real WordPress jobs to hand to your agent.
+Use this page when you want practical WordPress jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+WordPress work is usually about cleaning up a real content library: finding gaps, checking exact targets, previewing edits, and keeping proof of what changed.
 
-Most no‑code tools are great for *single events* (“when X happens, do Y”). This tool is built for safe, repeatable work on **large existing content libraries**, including:
-
-- Bulk changes with a preview-first workflow (dry-run → explicit apply → verification)
-- Deterministic transformations (the same input produces the same output)
-- Clear audit artifacts (plans/receipts/JSON logs) so you can review what happened
-
-## Common use cases (examples)
+## Good jobs to give the agent
 
 ### Content discovery and reporting
 
@@ -44,14 +38,15 @@ Most no‑code tools are great for *single events* (“when X happens, do Y”).
 
 - “Generate a migration tracking CSV from WordPress export XML, so I can track progress across hundreds of posts.”
 
-## What you’ll see from the agent (trust + safety)
+## What the agent should show you
 
 When you ask for a change, the agent should:
 
-1) Show a dry-run preview of what would change.
-2) Apply only after explicit confirmation.
-3) Verify after apply (read-back or idempotence).
-4) Provide a short receipt: what changed, what was verified, and where proof artifacts were saved.
+1. Show the exact post, page, media item, category, tag, or local file target.
+2. Show a dry-run preview of what would change.
+3. Apply only after explicit confirmation.
+4. Verify after apply by read-back or idempotence.
+5. Provide a short receipt: what changed, what was verified, and where proof artifacts were saved.
 
 ## What’s intentionally out of scope
 

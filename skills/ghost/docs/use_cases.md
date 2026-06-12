@@ -1,9 +1,11 @@
 # What you can do with Ghost
 
-Use this page when you want ideas for real Ghost jobs to hand to your agent.
+Use this page when you want practical Ghost jobs to hand to your agent.
 If you need setup first, start with [Connect your Ghost account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Common jobs
+Ghost work is usually about improving a live publication without accidentally changing the wrong post, tag, member, offer, theme, or webhook.
+
+## Good jobs to give the agent
 
 ### Audit and reporting
 
@@ -32,23 +34,12 @@ If you need setup first, start with [Connect your Ghost account](onboarding.md).
 - "Set up or update a webhook with careful proof because Ghost does not let us list webhooks later."
 - "Prepare a batch job or import plan, but do not apply it until I review the exact steps."
 
-## Why this skill is useful
-
-Ghost work is rarely one tiny API call. It usually means reading the current site carefully, previewing the change, and leaving proof behind.
-
-This skill is strongest when you want:
-
-- one tool that can handle both reporting and careful site changes
-- safer edits than a loose prompt-only workflow
-- proof after the work runs, not just a claim that it worked
-
-If your site has older imported posts, also expect the agent to check whether the body is `Lexical` or `Mobiledoc` before choosing the edit path.
-
 ## What you should expect from the agent
 
 When you ask for changes, the agent should:
 
 1. Read the current state first.
-2. Show a dry-run plan of what would change.
-3. Apply only after explicit approval and any required extra acknowledgements.
-4. Verify after apply and point you to the saved proof files.
+2. Check whether post bodies are Lexical or Mobiledoc when that affects the edit path.
+3. Show a dry-run plan of what would change.
+4. Apply only after explicit approval and any required extra acknowledgements.
+5. Verify after apply and point you to the saved proof files.

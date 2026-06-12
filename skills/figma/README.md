@@ -2,13 +2,15 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Figma files, comments, libraries, variables, webhooks, and design system work without guessing from raw docs.
+Figma is where product screens, comments, libraries, variables, components, and webhooks become the shared design record for a team.
 
-You can hand your agent jobs like file reviews, unresolved comment checks, team library audits, variable inventories, webhook cleanup plans, and careful Figma changes that should be previewed before they go live.
+This skill helps an agent review Figma files, comments, versions, libraries, variables, webhooks, developer resources, and design-system data, then prepare careful changes before they affect the workspace.
 
-Read work stays simple. Riskier work slows down on purpose: writes start as dry-run plans, destructive actions need extra approval, and some changes need an extra check when the tool cannot save useful before-state first.
+Use it for questions like: "What unresolved comments are in this file?", "Which components or variables are published?", "Can you audit this team library?", "What webhooks exist?", or "Can you preview a comment or variable change?"
 
-A good first ask is: "Check the Figma skill is connected, show me which files, teams, libraries, and comments this token can safely review, and preview any write before it goes live."
+Figma reads can help a team understand a file before anyone edits it. Writes start as dry-run plans, destructive actions need extra approval, and some changes need an extra check when the tool cannot save useful before-state first.
+
+A good first ask is: "Check the Figma connection, show me which files, teams, libraries, and comments this token can review, and preview any write before it goes live."
 
 ## Start here first
 
@@ -51,7 +53,7 @@ npx skills add Qwayk/safe-agent-skills@figma -g -y
 Then try a safe first ask like:
 
 ```text
-Connect the Figma skill, show me what this token can safely read, and preview any comment or webhook change before it goes live.
+Check the Figma connection, show me what this token can read, and preview any comment or webhook change before it goes live.
 ```
 
 ## How this skill stays safe

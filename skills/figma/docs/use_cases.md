@@ -1,7 +1,9 @@
 # What you can do with Figma
 
-Use this page when you want real Figma jobs to hand to your agent.
+Use this page when you want practical Figma jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+
+Figma work is usually about understanding a file, library, comment thread, or team resource before making a design-system or workflow change.
 
 ## File and comment review
 
@@ -37,9 +39,12 @@ It helps separate what is already available from what is gated by workspace tier
 The skill keeps local run history, saved plans, receipts, and reusable JSON outputs.
 That makes it easier to audit what was reviewed, previewed, or applied.
 
-## Why this beats typical no-code automation
+## What the agent should show you
 
-- It keeps the Figma REST surface explicit instead of hiding behavior behind a generic request bridge.
-- It previews writes before applying them.
-- It calls out no-snapshot risk honestly instead of pretending there is an undo path.
-- It returns deterministic JSON and local proof files that are easier to review than screenshots or memory.
+When you ask for a change, the agent should:
+
+1. Name the file, team, project, variable, dev resource, comment, or webhook target.
+2. Show the relevant read result before planning the change.
+3. Show the dry-run plan before any live Figma write.
+4. Explain team, organization, plan, or no-snapshot limits clearly.
+5. Point to saved plans, receipts, or JSON output when you need proof or handoff material.

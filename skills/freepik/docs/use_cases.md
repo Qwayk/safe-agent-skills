@@ -1,8 +1,10 @@
 # What you can do with Freepik
 
-Use this page when you want ideas for real Freepik jobs to hand to your agent.
+Use this page when you want practical Freepik jobs to hand to your agent.
 
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+
+Freepik work is usually a search, shortlist, preview, approval, and download flow. The important thing is not to jump from a broad search straight into a licensed download.
 
 ## Common jobs
 
@@ -30,15 +32,6 @@ If you need setup first, start with [Connect your account](onboarding.md). If yo
 - "Apply the download for this approved ID and show me the saved file, hash, and inventory row."
 - "Run the reviewed jobs CSV and stop if any row refuses."
 - "Use a dedicated downloads folder for this post and keep the inventory CSV updated."
-
-## Why this skill is useful
-
-This skill is strongest when you want both of these things at the same time:
-
-- faster image discovery than manual browsing
-- more control than a loose automation or prompt-only workflow
-
-It helps your agent stay organized across search, preview, approval, and download instead of jumping straight to a licensed action.
 
 ## What you should expect from the agent
 

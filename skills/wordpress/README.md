@@ -2,13 +2,15 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review WordPress posts, pages, media, categories, tags, comments, and migration data without guessing from raw docs.
+WordPress sites usually have years of posts, pages, images, tags, comments, and migration leftovers that are hard to review safely by hand.
 
-You can hand your agent jobs like content audits, featured-image gap checks, media metadata cleanup, careful caption or taxonomy edits, bulk media download plans, and migration prep across large content libraries.
+This skill helps an agent review a WordPress content library, find missing featured images or metadata, inspect media and taxonomies, prepare careful post or media edits, and build migration tracking files.
 
-Read work stays simple. Riskier work slows down on purpose: content and media edits start as dry-run plans, applies verify by read-back or idempotence, and some batch write paths are not available for live use yet because the tool still needs safer per-row before-state.
+Use it for questions like: "Which posts are missing featured images?", "Can you audit captions and alt text?", "What categories and tags need cleanup?", "Can you preview this exact content replacement?", or "Can you build a migration tracking CSV?"
 
-A good first ask is: "Check the WordPress skill is connected, list recent posts and pages, show featured-image gaps, and stop before any edits."
+WordPress reads are the normal first step. Content and media edits start as dry-run plans, applies verify by read-back or idempotence, and some batch write paths are not available for live use yet because the tool still needs safer per-row before-state.
+
+A good first ask is: "Check the WordPress connection, list recent posts and pages, show featured-image gaps, and stop before any edits."
 
 ## Start here first
 
@@ -50,7 +52,7 @@ npx skills add Qwayk/safe-agent-skills@wordpress -g -y
 Then try a safe first ask like:
 
 ```text
-Check the WordPress skill is connected, list recent posts and pages, show featured-image gaps, and stop before any edits.
+Check the WordPress connection, list recent posts and pages, show featured-image gaps, and stop before any edits.
 ```
 
 ## How this skill stays safe

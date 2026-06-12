@@ -2,11 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to search Freepik, build shortlists, check resource details, and handle licensed downloads without guessing from raw docs.
+Freepik is useful when you need real visual options quickly, but a licensed download should happen only after the exact asset is reviewed.
 
-You can hand it jobs like finding non-AI food photos, previewing finalists, checking same-shoot alternatives, preparing a careful download plan, or finishing approved downloads into a local folder and inventory CSV.
+This skill helps an agent search Freepik, build shortlists, preview resources, check same-shoot or related assets, and prepare licensed download plans with a local inventory record.
 
-Read work stays simple. Licensed downloads slow down on purpose: the tool should preview first, show the dry-run plan, and ask for explicit no-snapshot approval before a live download because Freepik can create a download or license record and this tool does not save a reliable before-state snapshot for that write.
+Use it for questions like: "Find non-AI food photos", "Show me the best previews", "Which finalists clearly pass the non-AI rule?", "Can you find same-shoot alternatives?", or "Can you prepare a download plan for these approved IDs?"
+
+Freepik search and preview work can stay read-only. Licensed downloads preview first, show the dry-run plan, and need explicit no-snapshot approval before a live download because Freepik can create a download or license record and this tool does not save a reliable before-state snapshot for that write.
 
 A good first ask is: "Find 20 non-AI pasta photos, show me the best previews, and prepare a careful download plan for the two I choose."
 
@@ -50,7 +52,7 @@ npx skills add Qwayk/safe-agent-skills@freepik -g -y
 Then try a safe first ask like:
 
 ```text
-Connect the Freepik skill to my account, find 15 non-AI food photos for mushroom pasta, and show me the best previews before any download.
+Check the Freepik connection, find 15 non-AI food photos for mushroom pasta, and show me the best previews before any download.
 ```
 
 ## How this skill stays safe
