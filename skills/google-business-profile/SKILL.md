@@ -3,7 +3,7 @@
 This page is the agent-facing rule sheet for the public Google Business Profile skill.
 If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
 
-Use this skill with a local environment where `.env` is configured.
+This skill gives an agent a careful path for Google Business Profile account, location, review, media, verification, and performance work through `google-business-profile-safe-cli`.
 
 ## Available commands
 
