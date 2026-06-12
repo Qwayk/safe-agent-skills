@@ -2,10 +2,12 @@
 
 Use this page when you want the right Hacker News doc quickly.
 
-## Start here
+Start with the first three pages if you are new. They explain what the skill can do, why it is safe, and how to run the first check without needing a Hacker News account.
 
-- [What you can do](use_cases.md)
-- [Connect your account](onboarding.md)
+## Start here first
+
+- [What you can do with Hacker News](use_cases.md)
+- [Use Hacker News with no account](onboarding.md)
 - [How this stays read-only](safety_model.md)
 
 ## Commands and setup
@@ -19,7 +21,7 @@ Use this page when you want the right Hacker News doc quickly.
 
 ## Proof and references
 
-- [Proof pack](proof.md)
+- [Proof and verification](proof.md)
 - [API coverage](api_coverage.md)
 - [Source references](references.md)
 - [Examples](examples/)

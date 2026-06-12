@@ -1,6 +1,6 @@
 # Proof pack
 
-Note: you don’t need to run these commands yourself. They exist so you or your reviewer can audit behavior and prove what happened.
+You do not need to run these commands yourself. They exist so you or your reviewer can audit behavior and prove what happened.
 
 ## Last verified
 
@@ -42,9 +42,9 @@ Committed examples live under `docs/examples/outputs/`:
 - Wrong API root → verify `auth check` fails cleanly and the error stays JSON-safe.
 - Missing item or user → verify the CLI returns `ok=false` and `error_type=ValidationError`.
 - Upstream response drift → verify `docs/api_coverage.md`, tests, and committed examples still match.
+- Thin story-list summaries → fetch item details before asking an agent to explain trends or relevance.
 
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
-- Debug notes: `docs/engineering_notes.md`
+- Coverage source of truth: `docs/api_coverage.md`

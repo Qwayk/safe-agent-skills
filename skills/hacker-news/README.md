@@ -1,71 +1,107 @@
-# hacker-news-api-tool (read-only)
+# Hacker News
 
-## Simplicity lock
+**Capability:** Read-only
 
-Build and change this area in the simplest way possible.
+Use this skill when you want an agent to read public Hacker News data safely: check story lists, fetch one story or comment item by ID, inspect a public user profile, and see which items or profiles changed recently.
 
-- Use the simplest solution that solves the real need.
-- Use one clear path and the fewest moving parts.
-- Use the shortest clear code that solves the real problem safely.
-- Remove before you add.
-- Do not build optional flexibility first.
-- Add extra flows only after a real repeated failure proves they are needed.
-- Prove each meaningful step with real testing or real evidence.
+You can hand your agent jobs like trend scouting, "what is being discussed now" summaries, story research for a topic, public user lookups, job-story checks, and repeatable snapshots for a handoff or report.
 
-`hacker-news-api-tool` is a small, read-only CLI for the public Hacker News Firebase API. It covers the full documented v0 HTTP read surface with explicit named commands and deterministic JSON output.
+This skill is safe by design. It uses the public Hacker News API, needs no account, and cannot post, vote, comment, hide, delete, or change anything. The main risk is reading too much into story IDs alone, so ask the agent to fetch the actual items before it summarizes patterns or makes decisions.
 
-## For non-technical users: Start here (no coding)
+A good first ask is: "Check the Hacker News skill is connected, show me the current top stories, fetch the first story item, and stop after the read-only results."
 
-Start with these docs:
+## Start here first
 
-- Use cases (ideas): `docs/use_cases.md`
-- Onboarding (setup + what to ask your agent): `docs/onboarding.md`
-- Safety model: `docs/safety_model.md`
+- Want ideas for real Hacker News work? [What you can do with Hacker News](docs/use_cases.md)
+- Need the shortest setup path? [Use Hacker News with no account](docs/onboarding.md)
+- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
 
-What you can ask an AI agent to do (examples):
+If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
 
-- “Show me the newest Hacker News story ids.”
-- “Fetch story item 8863 and explain the fields.”
-- “Get the public profile for user pg.”
-- “Show me the latest changed items and profiles.”
+## What this skill helps with
 
-## Scope (by design)
+- Check the current top, new, best, Ask HN, Show HN, or job story IDs.
+- Fetch one public item by ID so an agent can explain its title, URL, score, author, time, text, or comment IDs.
+- Fetch one public user profile by username to review karma, account age, and submitted item IDs.
+- Watch the latest changed item and profile IDs from the public updates feed.
+- Build a repeatable public snapshot without scraping the Hacker News website.
 
-Supported endpoints:
-- `GET /v0/item/{id}.json`
-- `GET /v0/user/{id}.json`
-- `GET /v0/topstories.json`
-- `GET /v0/newstories.json`
-- `GET /v0/beststories.json`
-- `GET /v0/askstories.json`
-- `GET /v0/showstories.json`
-- `GET /v0/jobstories.json`
-- `GET /v0/maxitem.json`
-- `GET /v0/updates.json`
+## What access this skill needs
 
-No authentication is required for the public Hacker News API.
+- Internet access to the public Hacker News API.
+- No Hacker News account.
+- No API key, bearer token, OAuth login, or browser session.
+- Optional local `.env` setup only if you want to pin the public API root or timeout.
 
-## For technical users: Start here (CLI)
+## Install and first run
 
-Full references:
-- `docs/quickstart.md`
-- `docs/command_reference.md`
+Install slug: `hacker-news`
 
-Minimal examples:
+Ask your agent to install the `hacker-news` skill from `Qwayk/safe-agent-skills`.
+
+If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
+
+If your host does not let the agent install skills directly, run:
 
 ```bash
-hacker-news-api-tool --output json --version
-hacker-news-api-tool --output json auth check
-hacker-news-api-tool --output json stories top
-hacker-news-api-tool --output json items get --id 8863
+npx skills add Qwayk/safe-agent-skills@hacker-news -g -y
 ```
 
-## Agent skill prompt
+Then try a safe first ask like:
 
-- Agent skill prompt and install notes are included with this package.
+```text
+Check the Hacker News skill is connected, show me the current top stories, fetch the first story item, and stop after the read-only results.
+```
 
-## Proof pack (customer-ready)
+## How this skill stays safe
 
-- `docs/proof.md`
-- `docs/api_coverage.md`
-- `docs/examples/`
+- It is read-only to Hacker News by design.
+- It only uses public Hacker News API reads.
+- It does not sign in, ask for secrets, or store account credentials.
+- It has no command that can post, vote, comment, edit, delete, or hide anything.
+- In JSON mode, each command returns one clear result object that an agent can parse.
+- The docs, tests, proof pack, and API coverage ledger all live in this repo so you can inspect what the agent is using.
+
+## What it covers today
+
+This skill covers the full documented Hacker News v0 public HTTP read surface:
+
+- one item by ID
+- one public user by username
+- top, new, best, Ask HN, Show HN, and job story ID lists
+- the current max item ID
+- recently changed item and profile IDs
+
+## What happens before live changes
+
+This skill does not make live changes in Hacker News. There is no write or account-action path.
+
+Before a live read, the agent should run the connection check, use one of the named read commands, and summarize only what the public API returned. The only local change this skill can make is creating a placeholder `.env` file during onboarding.
+
+## What proof it leaves behind
+
+- Commands return machine-readable JSON you can save or review.
+- Read results include the public API endpoint used.
+- Optional audit logs record command events without secrets.
+- The proof pack includes smoke commands and committed examples for the main result shapes.
+- The API coverage page maps every supported Hacker News endpoint to the matching command and test.
+
+## Limits
+
+- Public Hacker News data only.
+- No posting, voting, commenting, hiding, deleting, moderation, or account actions.
+- No full-text search endpoint.
+- Story-list commands return item IDs first; fetch item details before summarizing a story.
+- Comment trees are returned as child item IDs, not automatically expanded into a full discussion.
+- Public data can change quickly, so saved snapshots may age fast.
+
+## Helpful docs
+
+- [Browse all Hacker News docs](docs/README.md)
+- [Quickstart](docs/quickstart.md)
+- [Command guide](docs/command_reference.md)
+- [Authentication details](docs/authentication.md)
+- [Configuration](docs/configuration.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Proof and verification](docs/proof.md)
+- [API coverage](docs/api_coverage.md)

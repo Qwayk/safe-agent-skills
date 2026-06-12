@@ -1,7 +1,7 @@
 # Command reference
 
 Use this page when you need the exact Hacker News command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+If you want the plain-English path first, start with [What you can do with Hacker News](use_cases.md), [Use Hacker News with no account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

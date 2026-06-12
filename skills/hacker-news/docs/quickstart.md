@@ -1,6 +1,6 @@
 # Quickstart
 
-Technical reference. If you want the simpler overview, start with `use_cases.md` and `onboarding.md`.
+This is the technical command path for Hacker News. If you want the simpler overview first, start with [What you can do with Hacker News](use_cases.md), [Use Hacker News with no account](onboarding.md), and [How this skill stays safe](safety_model.md).
 
 ## Install
 

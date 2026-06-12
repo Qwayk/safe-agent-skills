@@ -25,6 +25,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Customer-ready docs, coverage ledger, proof pack, skill wrapper, and committed example outputs.
 
 ### Changed
+- Rebuilt the README and front-door docs into the public skill pattern so Hacker News now opens with a reader-friendly promise, a clear safe first ask, and honest read-only limits instead of the old internal tool layout.
 
 ### Fixed
 

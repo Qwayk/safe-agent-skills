@@ -19,7 +19,8 @@ Core rules:
 Workflow:
 1. If needed, run `hacker-news-api-tool --output json auth check`.
 2. Run one or more read-only commands to fetch the requested public data.
-3. Summarize results in plain English and include the exact command or commands used.
+3. If the user asks about a story list, fetch the relevant item details before summarizing meaning or relevance.
+4. Summarize results in plain English and include the exact command or commands used.
 
 Command examples:
 
@@ -46,3 +47,6 @@ Command examples:
 
 When to refuse:
 - If the user asks for writes, deletes, account actions, or anything outside the public read-only API.
+
+Important limit:
+- Story-list commands return item IDs first. Do not present those IDs as a full trend summary until you fetch the actual items the user asked about.
