@@ -14,7 +14,7 @@ Keep these private:
 - **API key** is enough for many public read-only requests.
 - **OAuth** is needed for private reads, uploads, and most write-capable actions.
 
-If you are unsure, start with OAuth so the skill can cover more of the real YouTube surface later.
+If you only want public channel research, start with an API key. Choose OAuth when you need private channel data, uploads, or changes.
 
 ## Step 2: Create the credentials in Google Cloud
 
@@ -37,7 +37,7 @@ Open Google Cloud Console, select or create a project, and enable **YouTube Data
 
 In the tool folder:
 
-1. Copy `.env.example` to `.env`.
+1. Copy `examples/example.env` to `.env`. In a source checkout, `.env.example` may also be available.
 2. Open `.env` in a text editor.
 3. Fill what you need:
    - `YOUTUBE_API_KEY=...` for public reads
@@ -46,11 +46,11 @@ In the tool folder:
 
 Keep the default base URL unless you have a very unusual setup.
 
-## Step 4: Know the current OAuth limit in this build
+## Step 4: Know the current OAuth limit
 
 This part matters:
 
-- `youtube-api-tool auth login --console` validates the OAuth setup and builds the write plan, but it does **not** write `.state/token.json` yet.
+- `youtube-api-tool auth login --console` validates the OAuth setup and shows the planned token-write action, but it does **not** write `.state/token.json` yet.
 - `youtube-api-tool auth token set --file token.json` also stops at the plan/refusal step today.
 
 If you already have a valid token JSON from a separate approved flow, place it at `.state/token.json` next to your `.env` so the read-only token checks can see it.
@@ -63,6 +63,10 @@ These are good first requests for your agent:
 - “Resolve this channel from the handle and show the latest uploads.”
 - “Plan a channel export to a local folder, but do not write anything yet.”
 - “Plan a video upload and stop before any upload or metadata change happens.”
+
+## What success looks like
+
+Setup is ready when `auth check` can see either your API key or your local OAuth token, and your agent can run a safe plan such as channel resolve without printing secrets.
 
 ## If something fails
 

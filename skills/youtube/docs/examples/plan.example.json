@@ -4,6 +4,7 @@
     "selector": "demo-resource"
   },
   "before_state": {
+    "approval_required": "--ack-no-snapshot",
     "provider_backup_id": null,
     "provider_write": {
       "action": "demo.write",
@@ -16,10 +17,10 @@
       ],
       "service": "YouTube Data API v3"
     },
-    "reason": "This source tool can build and review YouTube write plans, but it does not yet save operation-specific before-state or provider backup data before applying them.",
+    "reason": "This source tool can build and review YouTube write plans, but no reliable operation-specific before-state snapshot is available for this write.",
     "required": true,
     "saved_path": null,
-    "status": "blocked",
+    "status": "no_snapshot_available",
     "supported": false
   },
   "command": "youtube-api-tool --output json demo write --selector demo-resource",
@@ -36,10 +37,6 @@
       "to": "new_value"
     }
   ],
-  "risk_level": "medium",
-  "risk_reasons": [
-    "write-demo"
-  ],
   "recovery": {
     "automatic_rollback": false,
     "backups": [],
@@ -48,18 +45,22 @@
     "rollback_plan": null,
     "snapshots": []
   },
+  "risk_level": "medium",
+  "risk_reasons": [
+    "write-demo"
+  ],
   "selector": {
     "kind": "demo",
     "value": "demo-resource"
   },
   "tool": "youtube-api-tool",
   "verification_plan": {
-    "required_before_live_write": "Add command-specific before-state or provider-backup support before allowing apply.",
-    "status": "blocked_before_apply",
+    "approval_required": "--ack-no-snapshot",
+    "status": "best_effort_after_apply",
     "steps": [
-      "Confirm no YouTube provider write or upload endpoint was called.",
-      "Confirm no OAuth login/token store, demo/job receipt, or write output was created by the write flow.",
-      "Confirm no successful write receipt was emitted."
+      "Record the YouTube provider or upload response in the receipt.",
+      "Record any OAuth/token/demo/job output created by the flow.",
+      "Record explicit no-snapshot approval for write operations."
     ]
   },
   "version": "0.1.0"

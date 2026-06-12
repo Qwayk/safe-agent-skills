@@ -1,5 +1,7 @@
 # Jobs and batches
 
+Use this page when you want to test repeatable CSV jobs or understand the current batch limits.
+
 Batch operations are run from a CSV file:
 
 ```bash
@@ -10,9 +12,9 @@ youtube-api-tool jobs run --file jobs.csv
 
 - Jobs are strict by default.
 - Without `--apply`, jobs run in dry-run mode and include a plan for write rows.
-- Any write action requires `--apply --yes`, then requires explicit no-snapshot approval when no useful before-state can be saved.
+- Any write row starts as a plan first.
 - The runner stops on the first error and exits non-zero.
-- Write jobs require explicit no-snapshot approval before row writes when no useful before-state can be saved; refusals include `recovery` with `end_state=irreversible_and_clearly_labeled`.
+- Write rows are safety examples today. Apply attempts return a refusal instead of performing real YouTube writes.
 - Output is exactly one JSON summary object.
 
 ## Plan files (recommended for risky jobs)
@@ -25,10 +27,10 @@ If a jobs run includes writes, prefer:
 youtube-api-tool jobs run --file jobs.csv --plan-out plan.json
 ```
 
-2) Review the plan (human/Codex), then attempt from the saved plan:
+2) Review the plan, then inspect the safe refusal path:
 
 ```bash
-youtube-api-tool --apply --yes --plan-in plan.json jobs run --file jobs.csv
+youtube-api-tool --apply --yes --ack-no-snapshot --plan-in plan.json jobs run --file jobs.csv
 ```
 
 Note: when applying from `--plan-in`, this template requires the original `--file` so it can verify `job_file_sha256` and refuse if the job file changed since plan creation.
@@ -37,7 +39,7 @@ Note: when applying from `--plan-in`, this template requires the original `--fil
 
 The CSV must include an `action` column.
 
-This template includes demo actions:
+This tool includes demo job actions:
 - `read.ping` (safe; does not require `--apply`)
 - `write.ping` (requires `--apply --yes`)
 
@@ -48,8 +50,8 @@ action
 read.ping
 ```
 
-If you want to include a write action, run with `--apply --yes`; the tool will require explicit no-snapshot approval before the write when no useful before-state can be saved:
+If you include a write action, the tool returns a safety refusal instead of running a real YouTube write:
 
 ```bash
-youtube-api-tool --apply --yes jobs run --file examples/jobs_with_write.csv
+youtube-api-tool --apply --yes --ack-no-snapshot jobs run --file examples/jobs_with_write.csv
 ```

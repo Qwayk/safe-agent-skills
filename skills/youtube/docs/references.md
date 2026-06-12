@@ -1,10 +1,10 @@
 # References (sources)
 
-Purpose:
-- Record what sources the tool implementation relies on (so behavior is auditable and reproducible).
-- Prefer official provider docs; use other sources only when needed and note why.
+Use this page when you want to see the official YouTube and Google sources behind this tool.
 
-Rules:
+Prefer official provider docs; use other sources only when needed and note why.
+
+Source rules:
 - Never include secrets (tokens, client secrets) in this file.
 - When a capability depends on a specific documented behavior (rate limits, required headers, download tracking), link the exact doc page.
 - Update this file whenever you add/change an endpoint or behavior based on new research.

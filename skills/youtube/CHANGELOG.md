@@ -14,14 +14,15 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - OAuth login helper: `youtube-api-tool auth login --console` (plans/refuses before token writes; never prints token values).
 - Media upload planning support for discovery `mediaUpload` methods (minimum: `videos.insert`) with dry-run plans that never embed file bytes and confirmed apply refusal before upload endpoint use.
 - Media download support for `supportsMediaDownload` GET methods via `--download-to <path>` (example: `captions.download`), including file `sha256` and size in JSON output.
-- Blocked write-apply verification plans that confirm no provider write/upload/token write/success receipt happened before before-state support exists.
+- Write-apply refusal outputs that make the missing saved-state approval visible before provider writes, uploads, token writes, demo writes, or job writes continue.
 - First-class channel workflows:
   - `youtube-api-tool channels resolve` (resolve channelId from URL/handle/username/query; safe refusal when selection is required).
   - `youtube-api-tool channels export` (export an analysis-ready dataset of all public channel videos using only YouTube Data API v3).
 - Public README contract checks for the source skill page and quickstart opening.
 
 ### Changed
-- Non-GET API calls, media uploads, auth login/token set, demo writes, and write jobs now produce reviewable plans and require explicit no-snapshot approval before provider/local writes when before-state/provider-backup support is not available.
+- Non-GET API calls and media uploads now produce reviewable plans and require `--ack-no-snapshot` when no saved state is available.
+- Auth login/token set, demo writes, and write jobs now document their planning/refusal status clearly instead of implying they write state today.
 - Renamed tool identity to `youtube-api-tool` / `youtube_api_tool` and updated docs/tests accordingly.
 - HTTP logging and errors redact secret-bearing URLs/headers (query params like `key=` and Authorization).
 - Removed the generic dispatcher `youtube-api-tool api call --method ...` and replaced it with explicit per-method commands: `youtube-api-tool api <resource.method> ...`.
@@ -32,3 +33,4 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Removed the public proof-page link to source-only helper notes.
 
 ### Removed
+- Removed old template-only guide/readme files from the active tool folder.

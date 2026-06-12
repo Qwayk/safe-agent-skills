@@ -1,5 +1,7 @@
 # Architecture
 
+Use this page when you are maintaining the source tool and need the short map of where each part lives.
+
 Layers:
 - `cli.py`: argument parsing + shared flags
 - `commands/*`: user-facing verbs
@@ -9,4 +11,4 @@ Layers:
 - `runs.py`: local run artifacts + history index (`.state/runs/`)
 - `errors.py`: consistent error taxonomy (`ValidationError`, `SafetyError`, `NotSupportedError`)
 - `json_files.py`: safe JSON read/write helpers for plan/receipt files
-- `commands/write_safety.py`: shared blocked-before-state contracts for write-capable flows
+- `commands/write_safety.py`: shared saved-state safety contracts for write-capable flows

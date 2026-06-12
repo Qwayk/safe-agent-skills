@@ -11,7 +11,7 @@ If you want the plain-English path first, start with [What you can do with YouTu
 
 - `youtube-api-tool --output json --version`
 - `youtube-api-tool auth check`
-- `youtube-api-tool auth login --console` (plan/refusal; does not run OAuth or write token state yet)
+- `youtube-api-tool auth login --console` (plan/refusal; does not run the OAuth browser/console flow or write token state yet)
 - `youtube-api-tool auth token set --file token.json` (plan/refusal; does not write token state yet)
 - `youtube-api-tool auth token status`
 - `youtube-api-tool auth token show-safe`
@@ -29,21 +29,25 @@ If you want the plain-English path first, start with [What you can do with YouTu
   - Media downloads (methods marked `supportsMediaDownload`, example: captions):
     - `youtube-api-tool api captions.download --params-json '{"id":"CAPTION_TRACK_ID"}' --live --download-to ./captions.vtt`
     - If the output file already exists: add `--download-overwrite` (or global `--yes`).
+    - You need a valid caption track ID and the right account access; this is not a general public-caption scraper.
   - Pagination (GET methods with `nextPageToken`):
     - `youtube-api-tool api search.list --params-json '{"part":"snippet","q":"cats","maxResults":5}' --live --paginate --max-pages 3`
-- Writes (non-GET) create plans, and confirmed apply currently requires explicit no-snapshot approval before provider write when no saved snapshot or provider backup is available:
-  - `youtube-api-tool --apply --yes api <resource.method> --params-json '{}' [--body-json '{}']`
-  - Delete methods also require `--ack-irreversible`.
-- Attempt from a reviewed plan file (recommended for risky writes; currently requires explicit no-snapshot approval before provider write when no saved snapshot is available):
-  - `youtube-api-tool --apply --yes --plan-in plan.json api <resource.method>`
-  - For delete methods: `youtube-api-tool --apply --yes --ack-irreversible --plan-in plan.json api <resource.method>`
+- Writes (non-GET) create plans first:
+  - `youtube-api-tool api <resource.method> --params-json '{}' [--body-json '{}']`
+- Apply a reviewed write when no saved state exists:
+  - `youtube-api-tool --apply --yes --ack-no-snapshot api <resource.method> --params-json '{}' [--body-json '{}']`
+- Delete methods also require `--ack-irreversible`:
+  - `youtube-api-tool --apply --yes --ack-no-snapshot --ack-irreversible api <resource.method> --params-json '{}'`
+- Attempt from a reviewed plan file:
+  - `youtube-api-tool --apply --yes --ack-no-snapshot --plan-in plan.json api <resource.method>`
+  - For delete methods: `youtube-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json api <resource.method>`
   - When using `--plan-in`, do not pass request-building flags (`--params-*`, `--body-*`, `--upload-*`, `--download-*`, `--paginate`, `--max-pages`).
 - Upload (mediaUpload methods only; minimum: `videos.insert`):
   - `youtube-api-tool api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file /path/to/existing-video.mp4`
-  - `youtube-api-tool --apply --yes api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file /path/to/existing-video.mp4` (requires explicit no-snapshot approval before upload endpoint use)
+  - `youtube-api-tool --apply --yes --ack-no-snapshot api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file /path/to/existing-video.mp4`
   - Resumable uploads:
     - `youtube-api-tool api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file /path/to/existing-video.mp4 --upload-protocol resumable`
-    - `youtube-api-tool --apply --yes api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file /path/to/existing-video.mp4 --upload-protocol resumable` (requires explicit no-snapshot approval before upload session creation)
+    - `youtube-api-tool --apply --yes --ack-no-snapshot api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{...}' --upload-file /path/to/existing-video.mp4 --upload-protocol resumable`
 
 ## Channels (first-class workflows)
 
@@ -57,7 +61,7 @@ Resolve a channel from common inputs (channelId, URL, `@handle`, `/user/<usernam
   - `youtube-api-tool --output json channels resolve --channel "Some channel name" --live`
   - `youtube-api-tool --output json channels resolve --channel "Some channel name" --live --pick 1`
 
-Export an analysis-ready dataset of ALL public videos for a channel (IDs + watch URLs + metadata/stats). Default is plan-only; pass `--live` to execute:
+Export an analysis-ready dataset of public videos returned by a channel's uploads playlist (IDs + watch URLs + metadata/stats), subject to YouTube API access, quota, and paging limits. Default is plan-only; pass `--live` to execute:
 
 - Plan-only:
   - `youtube-api-tool --output json channels export --channel @GoogleDevelopers --out-dir ./channel_export`
@@ -76,7 +80,7 @@ Export an analysis-ready dataset of ALL public videos for a channel (IDs + watch
 ## Jobs
 
 - `youtube-api-tool jobs run --file jobs.csv [--limit N] [--plan-out plan.json]`
-- `youtube-api-tool --apply --yes --plan-in plan.json jobs run --file jobs.csv` (write rows require explicit no-snapshot approval before write/receipt)
+- `youtube-api-tool --apply --yes --ack-no-snapshot --plan-in plan.json jobs run --file jobs.csv` (write rows are planning/refusal examples today; they are not real YouTube writes)
 
 ## Runs (history)
 
@@ -96,4 +100,4 @@ Optional flags:
 
 - `youtube-api-tool demo read`
 - `youtube-api-tool demo write --selector demo-resource [--plan-out plan.json]`
-- `youtube-api-tool --apply --plan-in plan.json --receipt-out receipt.json demo write --selector demo-resource` (refuses and does not create a receipt)
+- `youtube-api-tool --apply --yes --ack-no-snapshot --plan-in plan.json --receipt-out receipt.json demo write --selector demo-resource` (refuses and does not create a receipt)

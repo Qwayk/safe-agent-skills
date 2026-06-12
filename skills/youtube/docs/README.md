@@ -1,26 +1,26 @@
 # YouTube docs
 
-Use this page when you want the right YouTube doc quickly.
+Start with the first three pages if you want to use the YouTube skill without learning every command first.
 
 ## Start here
 
-- [What you can do](use_cases.md)
-- [Connect your account](onboarding.md)
+- [What you can do with YouTube](use_cases.md)
+- [Connect your YouTube account](onboarding.md)
 - [How this stays safe](safety_model.md)
 
 ## Commands and setup
 
-- [Quickstart](quickstart.md)
-- [Command reference](command_reference.md)
+- [Quickstart for commands](quickstart.md)
+- [Full command guide](command_reference.md)
 - [Authentication details](authentication.md)
-- [Configuration](configuration.md)
-- [Troubleshooting](troubleshooting.md)
+- [Local settings](configuration.md)
+- [Fix common problems](troubleshooting.md)
 - [Jobs and batch work](jobs_and_batches.md)
 
 ## Proof and references
 
-- [Proof pack](proof.md)
+- [Proof and verification](proof.md)
 - [API coverage](api_coverage.md)
 - [Source references](references.md)
 - [Examples](examples/)
-- [Technical architecture](architecture.md)
+- [How the source code is organized](architecture.md)

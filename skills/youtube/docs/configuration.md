@@ -1,11 +1,14 @@
 # Configuration
 
-This tool uses a `.env` file for configuration.
+Use this page when you need the local settings file names and environment variables for the YouTube skill.
+
+The tool uses a `.env` file for private local settings.
 
 ## Files
 
-- `.env.example`: copy this to `.env` (do not commit `.env`)
-- `.state/token.json`: optional OAuth token storage (gitignored). The current auth write helpers require explicit no-snapshot approval before creating or replacing this file until local saved snapshot support is available.
+- `examples/example.env`: copy this to `.env` (do not commit `.env`)
+- `.env.example`: available in the source checkout as another local env template
+- `.state/token.json`: optional OAuth token storage (gitignored). The current auth helpers can inspect this file, but they do not create or replace it automatically today.
 
 By default, `.state/token.json` is stored next to your `--env-file`.
 

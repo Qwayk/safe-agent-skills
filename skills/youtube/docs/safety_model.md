@@ -1,30 +1,30 @@
 # How this skill stays safe
 
-Use this page when you want to know what the YouTube skill will do right away, what it will slow down on purpose, and where the real approval gates are.
+Use this page when you want to know what the YouTube skill can run right away, what needs review first, and which approvals matter before a real change.
 
 ## Safe by default
 
 - API calls are plan-only by default.
-- Live provider reads need explicit `--live`.
+- Live YouTube reads need explicit `--live`.
 - `channels resolve` is also plan-only unless you add `--live`.
 - `channels export --live` writes only local dataset files under `--out-dir`; it does not change YouTube state.
 - Captions and other media downloads must use `--download-to` so binary data goes to a file, not into JSON output.
 - Secrets are redacted from logs, JSON output, and audit artifacts.
 
-## What slows down on purpose
+## What needs extra approval
 
 - Non-GET API calls start as dry-run plans first.
 - Uploads start as dry-run plans first.
 - Auth login and token-set flows start as dry-run plans first.
 - Demo writes and write jobs also start as dry-run plans first.
-- When there is no saved before-state, higher-risk actions need `--ack-no-snapshot` before the tool can try the write.
+- When there is no saved state to restore from, higher-risk actions need `--ack-no-snapshot` before the tool can try the write.
 - Delete methods also need `--ack-irreversible`.
 
 ## What the approval flags mean
 
 - `--live` means "run the real read or the approved local export now."
 - `--apply --yes` means "I reviewed the plan and want the write attempt to continue."
-- `--ack-no-snapshot` means "I understand there may be no saved before-state to roll back from."
+- `--ack-no-snapshot` means "I understand there may be no saved state to restore from."
 - `--ack-irreversible` means "I understand this delete or one-way action may not be reversible."
 
 ## What is still planning-only today

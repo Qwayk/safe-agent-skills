@@ -1,13 +1,13 @@
 {
-  "artifacts_dir": ".state/runs/<REDACTED>",
-  "audit_log": ".state/runs/<REDACTED>/audit.jsonl",
+  "artifacts_dir": null,
+  "audit_log": null,
   "audit_log_global": null,
   "dry_run": true,
   "ok": true,
   "plan": {
     "command": "youtube-api-tool --output json channels export --channel @GoogleDevelopers --out-dir ./channel_export",
     "env_fingerprint": "https://www.googleapis.com",
-    "generated_at_utc": "2026-02-26T00:00:00Z",
+    "generated_at_utc": "<REDACTED>",
     "inputs": {
       "channel": {
         "kind": "handle",
@@ -16,7 +16,7 @@
       },
       "max_pages": 2000,
       "max_results": 5,
-      "out_dir": "./channel_export",
+      "out_dir": "channel_export",
       "overwrite": false,
       "pick": null,
       "resume": false,
@@ -70,8 +70,7 @@
     },
     "version": "0.1.0"
   },
-  "plan_out": ".state/runs/<REDACTED>/plan.json",
-  "run_id": "<REDACTED>",
+  "plan_out": null,
+  "run_id": null,
   "runs_index": ".state/runs/index.jsonl"
 }
-

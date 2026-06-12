@@ -1,16 +1,16 @@
 # What you can do with YouTube
 
-Use this page when you want ideas for real YouTube jobs to hand to your agent.
+Use this page when you want ideas for real YouTube jobs to hand to your agent, especially if you are not sure what to ask first.
 If you need setup first, start with [Connect your YouTube account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Why this skill is useful
 
-Most no-code automation works best on one small trigger. This skill is built for the bigger YouTube jobs that usually get messy:
+This skill is useful when a YouTube job needs more than one quick lookup and you want the agent to slow down before changing anything:
 
 - channel research across many videos, playlists, and captions
-- safe preview-first changes instead of instant blind writes
-- official API reads instead of brittle scraping guesses
-- proof you can keep: plans, refusals, receipts, and export files
+- review-first changes instead of instant blind writes
+- official YouTube API reads instead of guesses from scraped pages
+- saved plans, refusals, receipts, and export files you can review later
 
 ## Common YouTube use cases
 
@@ -18,7 +18,7 @@ Most no-code automation works best on one small trigger. This skill is built for
 
 - “Resolve this channel from the handle, then show the latest uploads and total public video count.”
 - “Search this channel for videos about a topic and summarize what needs updating.”
-- “Export the full public video library for this channel into a local dataset I can review.”
+- “Export the public videos returned by this channel's uploads playlist into a local dataset I can review.”
 
 ### Publishing and metadata work
 
@@ -34,7 +34,7 @@ Most no-code automation works best on one small trigger. This skill is built for
 
 ### Captions and localization
 
-- “Download captions for these videos into local files for translation.”
+- “Download caption tracks I have access to into local files for translation.”
 - “Plan caption uploads or replacements, then show me the exact approval gate before any write.”
 - “Find videos that are missing captions or language coverage.”
 
@@ -50,4 +50,6 @@ When you ask for a change, the agent should:
 1. Start with a safe read or a dry-run plan.
 2. Tell you clearly whether the action is just a local export, a live read, or a real YouTube write.
 3. Ask for explicit approval before uploads, non-GET writes, or other higher-risk changes.
-4. Finish with proof: a receipt, a refusal that proves nothing changed, or saved local export files.
+4. Finish with a receipt, a refusal that proves nothing changed, or saved local export files.
+
+If the agent cannot safely identify the channel, video, playlist, file path, or permission it needs, it should stop and ask you for the missing detail instead of guessing.

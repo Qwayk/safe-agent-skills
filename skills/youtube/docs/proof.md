@@ -4,19 +4,25 @@ Use this page when you want the shortest honest answer to one question: what has
 
 You do not need to run these commands yourself. They are here so you or your agent can audit what ran, what came back, and what still depends on local auth, scopes, or approvals.
 
-Rules:
+Keep the proof safe:
 - Never include secrets.
 - Use obvious redactions or placeholders in examples.
 - Keep this file short, factual, and easy to verify.
 
 ## Last verified
 
-Date (UTC): 2026-06-11
-Verified by: Codex YouTube README rebuild and source gate pass
+Date (UTC): 2026-06-12
+Verified by: Codex human-docs workflow test
 Tool version: 0.1.0
 Provider API: YouTube Data API v3 pinned discovery snapshot
 Base URL (default): https://www.googleapis.com
-Latest local verification: `60` unit tests passed, the focused docs/README subset passed `7` tests, and the version, auth check, search-list plan, channel-resolve plan, channel-export plan, upload-plan, and captions-download plan smokes all passed.
+Latest local verification: `65` source unit tests passed, `65` public mirror unit tests passed, and the saved proof examples were refreshed from offline version, auth check, method inventory, search-list plan, channel-resolve plan, channel-export plan, upload-plan, and captions-download plan commands.
+
+Verification commands:
+- In the source tool folder: `.venv/bin/python -m unittest -q`
+- In the public mirror folder, using an installed Python environment for this tool: `python -m unittest -q`
+- Expected output for both folders: `Ran 65 tests` and `OK`
+- Saved example outputs are under `docs/examples/` in each folder.
 
 ## Smoke checks
 
@@ -47,7 +53,7 @@ Run inside the tool folder:
 8. Plan an upload without uploading bytes:
 - `youtube-api-tool --output json api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{"snippet":{"title":"Example"},"status":{"privacyStatus":"private"}}' --upload-file /path/to/existing-video.mp4`
 
-9. Plan a caption download path:
+9. Plan a caption download path. You need a valid caption track ID and the right access:
 - `youtube-api-tool --output json api captions.download --params-json '{"id":"CAPTION_TRACK_ID"}' --download-to ./captions.vtt`
 
 Optional live reads when credentials are ready:
@@ -80,4 +86,4 @@ These files are committed:
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage source of truth: `docs/api_coverage.md`
+- Coverage details: `docs/api_coverage.md`

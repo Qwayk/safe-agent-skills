@@ -1,6 +1,6 @@
 {
-  "artifacts_dir": ".state/runs/<REDACTED>",
-  "audit_log": ".state/runs/<REDACTED>/audit.jsonl",
+  "artifacts_dir": null,
+  "audit_log": null,
   "audit_log_global": null,
   "dry_run": true,
   "ok": true,
@@ -11,12 +11,20 @@
     },
     "command": "youtube-api-tool --output json api captions.download --params-json {\"id\":\"CAPTION_TRACK_ID\"} --download-to ./captions.vtt",
     "env_fingerprint": "https://www.googleapis.com",
-    "generated_at_utc": "2026-02-25T12:01:38Z",
+    "generated_at_utc": "<REDACTED>",
     "preconditions": [
       "env_fingerprint must match",
       "request_fingerprint must match"
     ],
     "proposed_changes": [],
+    "recovery": {
+      "automatic_rollback": false,
+      "backups": [],
+      "end_state": "irreversible_and_clearly_labeled",
+      "restore_note": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Treat current YouTube write families as irreversible_and_clearly_labeled and use the saved plan and refusal output for manual follow-up only.",
+      "rollback_plan": null,
+      "snapshots": []
+    },
     "request": {
       "body": null,
       "download": {
@@ -40,26 +48,18 @@
     "risk_reasons": [
       "Read-only method (GET)"
     ],
-    "recovery": {
-      "end_state": "irreversible_and_clearly_labeled",
-      "automatic_rollback": false,
-      "backups": [],
-      "snapshots": [],
-      "rollback_plan": null,
-      "restore_note": "No built-in rollback, backups, snapshots, or provider restore are available in this runtime. Use the saved plan and receipt for manual follow-up only."
-    },
     "selector": {
       "kind": "youtube_method",
       "value": "captions.download"
     },
     "tool": "youtube-api-tool",
     "verification_plan": {
-      "notes": "API method call: for writes, the tool attempts a best-effort read-back verification when possible; otherwise it falls back to HTTP-status verification.",
+      "notes": "API method call plan. GET reads may execute with --live; non-GET methods require explicit no-snapshot approval before apply.",
       "type": "api_call"
     },
     "version": "0.1.0"
   },
-  "plan_out": ".state/runs/<REDACTED>/plan.json",
-  "run_id": "<REDACTED>",
+  "plan_out": null,
+  "run_id": null,
   "runs_index": ".state/runs/index.jsonl"
 }

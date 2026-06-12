@@ -2,7 +2,9 @@
 
 Want the short non-technical path first? Start with [What you can do with YouTube](use_cases.md), [Connect your YouTube account](onboarding.md), and [How this skill stays safe](safety_model.md).
 
-This page is the fast technical path for setup, safe first reads, channel export, and your first careful write plan.
+This technical command path is for local developer/test setup, safe first reads, channel export, and your first careful write plan.
+
+If you installed the public skill through your agent host, you usually do not need the Python setup below. Use it when you are working from a local checkout of this tool or when you want to run the test suite yourself.
 
 Requires: **Python 3.12+**.
 
@@ -16,7 +18,17 @@ pip install -e '.[dev]'
 
 ## 2. Configure
 
-Copy `.env.example` to `.env`, then fill what you need:
+Copy the example env file to `.env`, then fill what you need:
+
+```bash
+cp examples/example.env .env
+```
+
+In a source checkout that also includes `.env.example`, this works too:
+
+```bash
+cp .env.example .env
+```
 
 - `YOUTUBE_API_KEY=...` for many public reads
 - `YOUTUBE_OAUTH_CLIENT_SECRETS_FILE=/absolute/path/to/client_secrets.json` for OAuth work
@@ -51,7 +63,7 @@ Local auth/config check:
 youtube-api-tool auth check
 ```
 
-If you want to inspect the current OAuth planning gate:
+If you want to inspect the current OAuth helper behavior:
 
 ```bash
 youtube-api-tool auth login --console
@@ -105,10 +117,20 @@ youtube-api-tool api playlists.insert --params-json '{"part":"snippet,status"}' 
 Preview an upload without uploading bytes:
 
 ```bash
-youtube-api-tool api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{"snippet":{"title":"Example video"},"status":{"privacyStatus":"private"}}' --upload-file /path/to/existing-video.mp4
+youtube-api-tool api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{"snippet":{"title":"Example video"},"status":{"privacyStatus":"private"}}' --upload-file /absolute/path/to/existing-video.mp4
 ```
 
-For a download flow, plan or run a caption download to a real file path:
+The upload file must exist because the plan records its path, size, and modified time. Do not run the apply version until you have reviewed the plan and really intend to upload or change YouTube.
+
+When a reviewed write or upload has no saved state to restore from, the apply shape is:
+
+```bash
+youtube-api-tool --apply --yes --ack-no-snapshot api <resource.method> ...
+```
+
+Delete methods also need `--ack-irreversible`.
+
+For a download flow, plan or run a caption download to a real file path. You need a valid caption track ID and the right account access; the official API does not allow downloading captions for every public video.
 
 ```bash
 youtube-api-tool api captions.download --params-json '{"id":"CAPTION_TRACK_ID"}' --live --download-to ./captions.vtt
