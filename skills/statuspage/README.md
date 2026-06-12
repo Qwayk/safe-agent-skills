@@ -2,11 +2,11 @@
 
 **Capability:** Read-only
 
-Use this skill when you want your agent to check a public Statuspage site, explain open incidents or maintenance, and tell you quickly whether anything looks unhealthy without needing private account access.
+Statuspage is useful when you need a quick answer about whether a service looks healthy before you deploy, reply to a customer, or decide if an outage is yours or the vendor's.
 
-You can hand your agent jobs like vendor status checks before a deploy, daily health summaries, open-incident monitoring, maintenance watch, and quick component checks across public pages.
+This skill lets an agent check a public Statuspage site, summarize open incidents and maintenance, and turn the page's public data into a clear status note. It works well for vendor checks, daily health summaries, component reviews, and comparing several public pages the same way.
 
-This skill stays simple on purpose: it reads public Statuspage API data only. It does not sign in, change anything, or need a normal account token. The main risk here is not a bad write. It is checking the wrong public page or assuming a public page tells the whole story for a private outage.
+No account is needed for normal checks. The tool only reads public Statuspage API data. The useful limit is that a public page may not show every private outage, so the first thing to check is that the agent is looking at the right page.
 
 A good first ask is: "Check https://status.atlassian.com and tell me if anything looks down, what incidents are open, and whether any maintenance is scheduled."
 
@@ -71,9 +71,9 @@ This skill covers:
 - scheduled maintenance
 - listed components when the page publishes them in the summary response
 
-## What happens before a real change
+## What happens before live changes
 
-This skill does not change anything in Statuspage. It reads public data and returns structured output you can review, save, or compare.
+There are no live changes in this skill. It reads public data and returns structured output you can review, save, or compare.
 
 ## What proof it leaves behind
 

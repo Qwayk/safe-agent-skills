@@ -1,7 +1,7 @@
 # Use cases
 
 Use this page when you want ideas for real TheMealDB jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+If you need setup first, start with [Start with the free public key](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Plain-English outcomes
 
