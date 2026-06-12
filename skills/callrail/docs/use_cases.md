@@ -1,29 +1,30 @@
 # Use cases
 
-Use this page when you want ideas for real CallRail jobs to hand to your agent.
+Use this page when you want practical CallRail jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this helps in real CallRail work
+## Why this helps with CallRail work
 
-CallRail work often means reviewing live calls, texts, forms, trackers, companies, and integrations before anyone touches routing, reporting, or outbound settings:
+CallRail work often starts with a simple question: which leads came in, where did they come from, and what should happen next?
 
-- You can inspect the current account first.
-- You can preview higher-risk changes before they run.
-- You get a clearer proof trail after the work finishes.
+This skill is useful when you want the agent to inspect calls, texts, forms, trackers, companies, integrations, or webhooks before it prepares any outbound call, message, routing, or settings change.
 
-## Common use cases (examples)
+## Good jobs to give the agent
 
-- “List recent calls, summaries, or time-series results for this account and show me the output in JSON.”
-- “Preview a new set of CallRail tags, then apply them only after I approve.”
-- “Check which integrations, trackers, users, or notifications exist before we touch anything.”
-- “Send me a dry-run for tracker, company, or message-flow changes and save a receipt if we apply them.”
+- “Show recent calls for this company and group them by day.”
+- “Find text conversations that include this customer number.”
+- “Check which integrations, trackers, users, notifications, or webhooks exist.”
+- “Preview a new set of CallRail tags and wait for my approval before applying them.”
+- “Draft an outbound call request and explain the irreversible risk before it can run.”
+- “Prepare an MMS reply with one image attachment and show the preview first.”
 - “Show me whether this API key can read the account now, and tell me if write access is the thing blocking the next step.”
 
-## What you’ll see from the agent (trust + safety)
+## What the agent should show you
 
 When you ask for a change, the agent should:
 
-1) Show a dry-run preview of what would change.
-2) Apply only after explicit confirmation.
-3) Verify after apply with the best evidence the command supports today.
-4) Provide a short receipt and point to any saved proof artifacts.
+1. Show a dry-run preview first.
+2. Name the account, company, call, text, tracker, integration, or webhook involved.
+3. Ask for stronger approval before outbound calls or text messages.
+4. Verify after apply with the best evidence the command supports.
+5. Provide a short receipt and point to any saved proof files.

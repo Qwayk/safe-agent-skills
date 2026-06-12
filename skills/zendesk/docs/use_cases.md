@@ -1,29 +1,29 @@
-# Use cases
+# What you can do with Zendesk
 
-Use this page when you want ideas for real Zendesk jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Use this page when you want practical Zendesk jobs to hand to your agent.
+If you need setup first, start with [Connect your Zendesk account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## Why this helps with Zendesk work
 
-Most no‑code tools are great for *single events* (“when X happens, do Y”). A safe agent CLI is built for:
+Zendesk work often mixes operational questions with sensitive customer details. The agent should inspect, count, and plan carefully before changing tickets, users, organizations, tags, or workflows.
 
-- Bulk work on existing libraries (hundreds/thousands of records)
-- Preview-first changes (dry-run plan, then explicit no-snapshot approval for writes when no saved snapshot is available)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Audit artifacts (plans/refusals/logs) you can keep for proof and debugging
+## Good jobs to give the agent
 
-## Common use cases (examples)
+- “Count the tickets that match these rules and show the safest way to inspect them.”
+- “Find the users, tags, or organizations tied to this support issue.”
+- “Pull a clean report of matching records so I can review it outside Zendesk.”
+- “Plan a batch of small metadata updates from this spreadsheet, but stop before any live change.”
+- “Find duplicate or stale records and propose the safest cleanup path.”
+- “Review a ticket update plan and explain exactly what would change.”
+- “Validate the pinned command inventory so we know the Zendesk surface is still in sync.”
+- “Inspect the operations available for this area before we decide how to automate it.”
+- “Plan a change to views, automations, or ticket settings, but keep it review-first.”
 
-- “Pull a report of the things that match these rules, and export it to a file.”
-- “Find the right targets safely (avoid guessing), then propose changes for review.”
-- “Plan a large set of small metadata edits from a spreadsheet, and show the missing-approval refusal if apply is attempted.”
-- “Do a safe, repeatable transformation across many items, and prove it’s complete.”
-
-## What you’ll see from the agent (trust + safety)
+## What you should expect from the agent
 
 When you ask for a change, the agent should:
 
-1) Show a dry-run preview of what would change.
-2) Explain that live writes require explicit no-snapshot approval when no saved snapshot is available.
-3) Refuse apply safely if someone tries it.
-4) Point to the saved plan, refusal summary, and audit log.
+1. Start with a safe read or a dry-run plan.
+2. Tell you clearly when the output may include sensitive support data.
+3. Explain the approval gate before any real Zendesk write.
+4. Finish with proof: a saved plan, a refusal that proves nothing changed, or a receipt when a supported API apply really ran.

@@ -17,12 +17,14 @@ class TestDocsAndSkillGuard(unittest.TestCase):
             root / "docs" / "quickstart.md",
             root / "docs" / "references.md",
             root / "docs" / "safety_model.md",
+            root / "docs" / "skills_wrappers.md",
             root / "docs" / "troubleshooting.md",
+            root / "docs" / "agent_extension.md",
             root / "docs" / "examples" / "outputs" / "version.json",
             root / "docs" / "examples" / "outputs" / "auth_check.json",
             root / "docs" / "examples" / "plan.example.json",
             root / "docs" / "examples" / "receipt.example.json",
-            root / "SKILL.md",
+            root / "skills" / "callrail-safe-agent-cli" / "SKILL.md",
         ]
         forbidden = [
             "<replace_me>",
@@ -55,7 +57,7 @@ class TestDocsAndSkillGuard(unittest.TestCase):
 
     def test_skill_wrapper_exists_and_points_to_safe_workflow(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        skill_path = root / "SKILL.md"
+        skill_path = root / "skills" / "callrail-safe-agent-cli" / "SKILL.md"
         self.assertTrue(skill_path.exists())
         text = skill_path.read_text(encoding="utf-8")
         required = [
@@ -106,7 +108,8 @@ class TestDocsAndSkillGuard(unittest.TestCase):
             root / "README.md",
             root / "docs" / "api_coverage.md",
             root / "docs" / "command_reference.md",
-            root / "SKILL.md",
+            root / "docs" / "skills_wrappers.md",
+            root / "skills" / "callrail-safe-agent-cli" / "SKILL.md",
         ]
         removed_tokens = [
             "tags available-colors",
@@ -130,7 +133,7 @@ class TestDocsAndSkillGuard(unittest.TestCase):
     def test_command_reference_and_skill_wrapper_explain_account_scoping_honestly(self) -> None:
         root = Path(__file__).resolve().parents[1]
         command_reference = (root / "docs" / "command_reference.md").read_text(encoding="utf-8")
-        skill_wrapper = (root / "SKILL.md").read_text(encoding="utf-8")
+        skill_wrapper = (root / "skills" / "callrail-safe-agent-cli" / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("In normal use, include `--account-id`", command_reference)
         self.assertIn("unless `CALLRAIL_DEFAULT_ACCOUNT_ID` is already set", command_reference)
         self.assertIn("Most REST commands in this tool are account-scoped", skill_wrapper)
@@ -139,14 +142,29 @@ class TestDocsAndSkillGuard(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         text = (root / "README.md").read_text(encoding="utf-8")
         required = [
-            "## For non-technical users: Start here (no coding)",
-            "Example requests you can ask the AI agent:",
-            "## For technical users: Start here (CLI)",
-            "docs/proof.md",
+            "**Capability:** Reads + careful changes",
+            "CallRail is where calls, texts, forms",
+            "## Start here first",
+            "## What this skill helps with",
+            "## What access this skill needs",
+            "## Install and first run",
+            "## How this skill stays safe",
+            "## Helpful docs",
         ]
         missing = [token for token in required if token not in text]
         if missing:
-            self.fail("README missing required non-technical sections: " + ", ".join(missing))
+            self.fail("README missing required public sections: " + ", ".join(missing))
+
+        forbidden = [
+            "Use this skill when",
+            "For non-technical users",
+            "For technical users",
+            "with dry-run-first write paths",
+            "without guessing from raw docs",
+        ]
+        hits = [token for token in forbidden if token in text]
+        if hits:
+            self.fail("README still has old public-page wording: " + ", ".join(hits))
 
     def test_tool_agents_has_customer_ready_contract_sections(self) -> None:
         root = Path(__file__).resolve().parents[1]

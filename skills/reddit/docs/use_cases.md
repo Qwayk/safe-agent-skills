@@ -1,19 +1,27 @@
 # Use cases
 
-Use this page when you want ideas for real Reddit jobs to hand to your agent.
+Use this page when you want practical Reddit jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## What it can do
+## Why this helps with Reddit work
 
-- Check your Reddit account details with a live OAuth read.
-- List the official Reddit operations pinned in this build.
-- Read subreddit, user, moderation, wiki, widget, message, and multi endpoints from the pinned docs set.
-- Build dry-run plans for Reddit writes before you send them.
-- Save local proof files for review after read and write-capable commands.
+Reddit work can affect public posts, communities, moderation, messages, and account state. The useful first step is usually to check what the API access can actually read and which official operations are available.
 
-## Why this is useful with an AI agent
+## Good jobs to give the agent
 
-- The API surface is pinned locally, so the agent does not guess endpoint names.
-- Reads and writes use clear safety gates.
-- Risky writes can be reviewed from saved plan files before a blocked apply attempt.
-- Local plans and refusal outputs make it easier to audit what happened.
+- “Check whether my Reddit OAuth setup is ready.”
+- “List the official account or subreddit operations pinned in this tool.”
+- “Read this subreddit or user endpoint and explain what came back.”
+- “Check moderation, wiki, widget, message, or multi endpoints from the pinned docs set.”
+- “Prepare a post, moderation, message, or account-state write plan and wait for my approval.”
+- “Show the saved plan and run history for this request.”
+
+## What the agent should show you
+
+When you ask for a change, the agent should:
+
+1. Show a dry-run plan first.
+2. Name the account, subreddit, endpoint, and target record.
+3. Confirm `--live` access before any real Reddit call.
+4. Ask for stronger approval before risky or irreversible writes.
+5. Say clearly when Reddit access, scopes, or User-Agent setup is missing.
