@@ -10,7 +10,7 @@ Use it for questions like: "Which account is connected?", "What recent media and
 
 Instagram reads can run live after valid access is available. Publish, moderation, mention, message, and token actions start as dry-run plans, and live applies need explicit no-snapshot approval when the tool cannot save useful before-state first.
 
-A good first ask is: "Check the Instagram skill is connected, show which account this token reaches, and list my recent media, comments, and safe review options."
+A good first ask is: "Check the Instagram connection, show which account this token reaches, and list my recent media, comments, and safe review options."
 
 ## Start here first
 
