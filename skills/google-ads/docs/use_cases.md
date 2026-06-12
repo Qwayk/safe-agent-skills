@@ -1,9 +1,11 @@
 # Use cases
 
-Use this page when you want ideas for real Google Ads jobs to hand to your agent.
+Use this page when you want practical Google Ads jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Common use cases (examples)
+Google Ads work is usually about finding where spend is helping, where it is leaking, and which change is safe enough to review next.
+
+## Good jobs to give the agent
 
 - “Show me which Google Ads accounts I can access, and their customer ids.”
 - “Export a joinable analysis pack for last month so I (and an AI agent) can find winning ads and explain why they win.”
@@ -12,11 +14,14 @@ If you need setup first, start with [Connect your account](onboarding.md). If yo
 - “Run a GAQL query to pull a small sample of campaign performance fields (for exploration) and export to JSON.”
 - “Help me discover which fields exist for a report (so I don’t guess the schema).”
 - “Build a shortlist of underperforming campaigns based on a pack export and explain why they were picked.”
+- "Preview a budget, negative keyword, conversion upload, or campaign-build plan before anything changes."
 
-## What this tool intentionally does not do
+## What the agent should show you
 
-- It does not “optimize” or claim causality; exports are descriptive only.
-- It does not perform external writes without explicit approval and a configured allowlist (safe-by-default refusal is the intended behavior).
+When you ask for a change, the agent should:
 
-For edits:
-- Use the explicit RPC method commands, run once to get a plan, review it, then apply with the required safety gates (see `docs/safety_model.md`).
+1. Confirm the customer ID and account access first.
+2. Use export packs or GAQL reads to show the evidence behind its recommendation.
+3. Avoid claiming causality from descriptive reports.
+4. Show the dry-run plan before budgets, negative keywords, uploads, removes, or campaign builds.
+5. Explain allowlist, spend, irreversible, or no-snapshot approvals before live apply.

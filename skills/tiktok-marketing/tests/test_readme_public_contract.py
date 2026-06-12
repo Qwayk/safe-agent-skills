@@ -13,6 +13,15 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertNotIn("## Simplicity lock", text)
         self.assertNotIn("# tiktok-marketing-api-tool", text)
         self.assertIn("**Capability:** Reads + careful changes", text)
+        self.assertIn("TikTok Marketing is where campaign setup", text)
+        for stale_phrase in [
+            "Use this skill when",
+            "You can hand your agent jobs like",
+            "without guessing from raw docs",
+            "Read work stays explicit",
+            "Riskier work slows down on purpose",
+        ]:
+            self.assertNotIn(stale_phrase, text)
 
         required_sections = [
             "## Start here first",
@@ -55,3 +64,13 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertIn("[How this skill stays safe](safety_model.md)", text)
         self.assertNotIn("`use_cases.md`", text)
         self.assertNotIn("`onboarding.md`", text)
+
+    def test_use_cases_stay_specific_and_human(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        self.assertIn("TikTok Marketing work usually starts with access proof", text)
+        self.assertIn("## Common TikTok Marketing jobs", text)
+        self.assertIn("## What you should expect from the agent", text)
+        self.assertNotIn("Why this skill is useful", text)
+        self.assertNotIn("raw API guessing", text)

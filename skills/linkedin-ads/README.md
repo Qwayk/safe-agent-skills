@@ -2,13 +2,15 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review LinkedIn ad accounts, campaigns, creatives, leads, conversions, targeting, and reporting without guessing from raw docs.
+LinkedIn Ads is where B2B campaign work often depends on the right account access, product approval, targeting rules, lead forms, and tracking setup.
 
-You can hand your agent jobs like authenticated account checks, campaign and creative reviews, analytics pulls, lead-form checks, conversion setup plans, tracking tag reviews, and careful LinkedIn Ads changes that should be planned before they go live.
+This skill helps an agent check LinkedIn Ads access, review accounts, campaigns, creatives, leads, conversions, targeting, analytics, previews, and tracking tags, and prepare careful changes before they go live.
 
-Read work stays simple. Riskier work slows down on purpose: many LinkedIn reads run live, create and update flows start as dry-run plans, higher-risk changes need stronger approval, and write applies still need explicit no-snapshot approval because this runtime does not save provider-side before-state first.
+Use it for questions like: "Which ad accounts can this token see?", "What campaign groups and creatives should we review?", "Can you pull one analytics report?", "Are lead forms or conversions accessible?", or "What LinkedIn approval gate is blocking this job?"
 
-A good first ask is: "Check the LinkedIn Ads skill is connected, list the ad accounts I can see, show one campaign report, and stop before any writes."
+LinkedIn Ads access can fail even when the command is correct, because product approval and account permissions matter. Reads can run live when the token allows them, create and update flows start as dry-run plans, higher-risk changes need stronger approval, and write applies still need explicit no-snapshot approval because this runtime does not save provider-side before-state first.
+
+A good first ask is: "Check the LinkedIn Ads connection, list the ad accounts I can see, show one campaign report, and stop before any writes."
 
 ## Start here first
 
@@ -50,7 +52,7 @@ npx skills add Qwayk/safe-agent-skills@linkedin-ads -g -y
 Then try a safe first ask like:
 
 ```text
-Check the LinkedIn Ads skill is connected, list the ad accounts I can see, show one campaign report, and stop before any writes.
+Check the LinkedIn Ads connection, list the ad accounts I can see, show one campaign report, and stop before any writes.
 ```
 
 ## How this skill stays safe

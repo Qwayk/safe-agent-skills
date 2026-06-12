@@ -2,13 +2,15 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Microsoft Ads accounts, reports, audiences, and planned changes without guessing from raw docs.
+Microsoft Ads is where search campaigns, audiences, reports, bids, and bulk jobs can affect spend across Bing and Microsoft’s ad network.
 
-You can hand your agent jobs like account or campaign review, keyword and bid research, performance reporting, bulk export workflows, customer-management checks, and careful Microsoft Ads write plans for service operations or jobs.
+This skill helps an agent confirm access, review accounts and campaigns, pull reports, research keywords or audiences, and prepare Microsoft Ads service-operation, bulk, reporting, or customer-management changes before anything goes live.
 
-Read work stays simple. Riskier work slows down on purpose: no network call happens without `--live`, writes start as dry-run plans, higher-risk changes can require a reviewed `--plan-in` plus `--yes`, delete-like actions need extra approval, and live writes still need explicit no-snapshot approval when useful before-state cannot be saved first.
+Use it for questions like: "Which Microsoft Ads account can I reach?", "Can you pull last month’s performance?", "What keywords or audiences should we review?", "Can you preview this bulk change?", or "What approvals would this delete-like action need?"
 
-A good first ask is: "Check the Microsoft Ads skill is configured, confirm live access, and show me the safest reporting or account review steps to start with."
+Microsoft Ads work is careful by default. No network call happens without `--live`, writes start as dry-run plans, higher-risk changes can require a reviewed `--plan-in` plus `--yes`, delete-like actions need extra approval, and live writes still need explicit no-snapshot approval when useful before-state cannot be saved first.
+
+A good first ask is: "Check the Microsoft Ads connection, confirm live access, and show me the safest reporting or account review steps to start with."
 
 ## Start here first
 
@@ -51,7 +53,7 @@ npx skills add Qwayk/safe-agent-skills@microsoft-ads -g -y
 Then try a safe first ask like:
 
 ```text
-Connect the Microsoft Ads skill, confirm live access, and show me the safest account, campaign, or reporting reads to start with.
+Check the Microsoft Ads connection, confirm live access, and show me the safest account, campaign, or reporting reads to start with.
 ```
 
 ## How this skill stays safe

@@ -1,11 +1,13 @@
 # What you can do with TikTok Marketing
 
-Use this page when you want ideas for real TikTok Marketing work to hand to your agent.
+Use this page when you want practical TikTok Marketing work to hand to your agent.
 If you need setup first, start with [Connect your TikTok Marketing account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+
+TikTok Marketing work usually starts with access proof, advertiser context, and a small campaign or report read before planning uploads or live changes.
 
 ## A good first ask
 
-"Check the TikTok Marketing skill is configured, tell me whether auth works, and help me plan one safe campaign or advertiser read first."
+"Check the TikTok Marketing connection, tell me whether auth works, and help me plan one safe campaign or advertiser read first."
 
 ## Common TikTok Marketing jobs
 
@@ -32,12 +34,6 @@ If you need setup first, start with [Connect your TikTok Marketing account](onbo
 - "Show exactly what API call would run before any live write."
 - "Prepare a reviewed campaign or ad change plan and tell me what approvals it still needs."
 - "Confirm the write path would record explicit no-snapshot approval before provider HTTP."
-
-## Why this skill is useful
-
-- It gives your agent a pinned, explicit TikTok Marketing command surface instead of raw API guessing.
-- It helps you review campaigns, ads, and advertiser context before you attempt a live change.
-- It keeps proof for each step with plans, refusal outputs, and run history.
 
 ## What you should expect from the agent
 

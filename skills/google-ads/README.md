@@ -2,11 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Google Ads accounts, explain performance, build offline analysis packs, validate GAQL or change plans, and handle careful account changes without guessing from raw docs.
+Google Ads is where small targeting, budget, keyword, and conversion-tracking choices can turn into real spend very quickly.
 
-You can hand your agent jobs like account access checks, last-30-day performance reviews, campaign and keyword diagnosis, campaign tree lookups, budget or negative keyword changes, conversion upload previews, and deterministic campaign build plans.
+This skill helps an agent check account access, export performance packs, review campaigns and keywords, validate GAQL reports, and prepare budget, negative keyword, conversion upload, or campaign-build plans before anything changes in the account.
 
-Read work stays simple. Riskier work slows down on purpose: writes start as dry-run plans, spend-impacting actions need extra approval, remove actions need extra acknowledgement, and some write families still need explicit no-snapshot approval when the tool cannot save useful before-state first.
+Use it for questions like: "Which accounts can I access?", "What changed in the last 30 days?", "Which campaigns or keywords need attention?", "Can you preview this budget or negative keyword change?", or "Can you build a campaign plan from this reviewed spec?"
+
+Google Ads reads and exports are meant to happen before account changes. Writes start as dry-run plans, spend-impacting actions need extra approval, remove actions need extra acknowledgement, and some write families still need explicit no-snapshot approval when the tool cannot save useful before-state first.
 
 A good first ask is: "Check which Google Ads accounts I can access, export the optimization pack for the last 30 days, and summarize the biggest issues before we change anything."
 

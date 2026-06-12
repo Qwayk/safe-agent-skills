@@ -13,6 +13,15 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertNotIn("## Simplicity lock", text)
         self.assertNotIn("# google-ads-api-tool", text)
         self.assertIn("**Capability:** Reads + careful changes", text)
+        self.assertIn("Google Ads is where small targeting", text)
+        for stale_phrase in [
+            "Use this skill when",
+            "You can hand your agent jobs like",
+            "without guessing from raw docs",
+            "Read work stays simple",
+            "Riskier work slows down on purpose",
+        ]:
+            self.assertNotIn(stale_phrase, text)
 
         required_sections = [
             "## Start here first",
@@ -55,3 +64,13 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertIn("[Media buyer quickstart](media_buyer_quickstart.md)", text)
         self.assertNotIn("- `use_cases.md`", text)
         self.assertNotIn("- `onboarding.md`", text)
+
+    def test_use_cases_stay_specific_and_human(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        self.assertIn("Google Ads work is usually about finding where spend", text)
+        self.assertIn("## Good jobs to give the agent", text)
+        self.assertIn("## What the agent should show you", text)
+        self.assertNotIn("Common use cases", text)
+        self.assertNotIn("What this tool intentionally does not do", text)

@@ -2,13 +2,15 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review TikTok for Business campaigns, ads, creatives, reports, advertiser settings, and other official marketing operations without guessing from raw docs.
+TikTok Marketing is where campaign setup, ad groups, creatives, pixels, catalogs, reports, and advertiser access decide what can run on TikTok for Business.
 
-You can hand your agent jobs like campaign and ad reviews, advertiser checks, report planning, creative upload prep, audience or pixel checks, and careful TikTok Marketing change plans.
+This skill helps an agent confirm TikTok Marketing access, review advertisers, campaigns, ad groups, ads, creatives, reports, pixels, catalogs, and business-center data, and prepare upload or campaign-change plans before anything writes to TikTok.
 
-Read work stays explicit. The shipped API surface is pinned to the official manifest and exposed as named commands, not a raw request bridge. Riskier work slows down on purpose: the general `api` surface needs `--live` for real reads, write-like operations stay plan-first, and current writes still need explicit no-snapshot approval when the command cannot save real before-state first. `auth check` is the one special live helper because it validates your TikTok credentials directly.
+Use it for questions like: "Does this advertiser access work?", "What campaigns or ads should we review?", "Can you plan a report request?", "Can you prepare an image or video upload flow?", or "Which pinned operation fits this TikTok job?"
 
-A good first ask is: "Check the TikTok Marketing skill is configured, tell me whether my access works, and show me what campaign or advertiser reads are safe to review first."
+TikTok Marketing work starts best with one credential check and one small advertiser or campaign read. The general `api` surface needs `--live` for real reads, write-like operations stay plan-first, and current writes still need explicit no-snapshot approval when the command cannot save real before-state first. `auth check` is the one special live helper because it validates your TikTok credentials directly.
+
+A good first ask is: "Check the TikTok Marketing connection, tell me whether my access works, and show me what campaign or advertiser reads are safe to review first."
 
 ## Start here first
 
@@ -51,7 +53,7 @@ npx skills add Qwayk/safe-agent-skills@tiktok-marketing -g -y
 Then try a safe first ask like:
 
 ```text
-Check the TikTok Marketing skill is configured, tell me whether auth works, and help me plan one safe campaign or advertiser read first.
+Check the TikTok Marketing connection, tell me whether auth works, and help me plan one safe campaign or advertiser read first.
 ```
 
 ## How this skill stays safe
