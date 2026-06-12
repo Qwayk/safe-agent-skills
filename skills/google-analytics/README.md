@@ -2,13 +2,15 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to pull GA4 reports, inspect account and property setup, review access, and plan careful Google Analytics admin changes without guessing from raw docs.
+Google Analytics is where traffic, engagement, conversions, audiences, data streams, and product links show whether your site is actually working.
 
-You can hand your agent jobs like property audits, last-7-days report checks, audience and conversion reviews, custom definition checks, data stream reviews, and careful GA4 admin changes.
+This skill helps an agent pull GA4 reports, inspect accounts and properties, review access, check audiences, conversion events, custom definitions, data streams, and product links, and prepare admin changes before they go live.
 
-Read work stays simple. Riskier work slows down on purpose: reports and discovery reads can run live, write-capable commands start as dry-run plans, and many GA4 writes need explicit no-snapshot approval because this tool does not yet save useful before-state for those changes.
+Use it for questions like: "Which accounts and properties can I access?", "What happened in the last 7 days?", "Are conversions and audiences set up correctly?", "Who has access?", or "Can you preview this GA4 admin change?"
 
-A good first ask is: "Check the Google Analytics skill is connected, list the accounts and properties I can access, and show me the safest report or review steps to start with."
+GA4 reports and discovery reads can run live when access is valid. Write-capable commands start as dry-run plans, and many GA4 writes need explicit no-snapshot approval because this tool does not yet save useful before-state for those changes.
+
+A good first ask is: "Check the Google Analytics connection, list the accounts and properties I can access, and show me the safest report or review steps to start with."
 
 ## Start here first
 
@@ -50,7 +52,7 @@ npx skills add Qwayk/safe-agent-skills@google-analytics -g -y
 Then try a safe first ask like:
 
 ```text
-Connect the Google Analytics skill, list the accounts and properties I can access, and show me a simple safe report or review path for the last 7 days.
+Check the Google Analytics connection, list the accounts and properties I can access, and show me a simple safe report or review path for the last 7 days.
 ```
 
 ## How this skill stays safe

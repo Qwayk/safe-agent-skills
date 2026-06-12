@@ -2,13 +2,15 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Google Merchant Center data, check catalog health, and plan Merchant API changes without guessing from raw docs.
+Google Merchant Center is where product data, feeds, promotions, issues, regions, and conversion settings decide whether products can show up correctly across Google.
 
-You can hand your agent jobs like account review, product and promotion checks, issue discovery, report searches, feed or data-source review, and careful Merchant write plans for product inputs, conversion sources, regions, services, and other documented surfaces.
+This skill helps an agent review Merchant accounts, products, promotions, issues, reports, feeds, data sources, quotas, and conversion settings, then prepare product-input or Merchant configuration changes before anything affects the catalog.
 
-Read work stays simple. Riskier work slows down on purpose: reads and local auth checks can run directly, writes start as dry-run plans, higher-risk or irreversible changes can require a reviewed `--plan-in` plus `--yes`, and live writes still need explicit no-snapshot approval when useful before-state cannot be saved first.
+Use it for questions like: "Which products are disapproved?", "What issue clusters should we fix first?", "Are feeds or data sources set up correctly?", "Can you preview a product-input change?", or "Which Merchant account path am I using?"
 
-A good first ask is: "Check the Google Merchant Center skill is configured, list my accounts or products safely, and show me the safest review steps before we plan any changes."
+Merchant reads and local auth checks can run directly. Writes start as dry-run plans, higher-risk or irreversible changes can require a reviewed `--plan-in` plus `--yes`, and live writes still need explicit no-snapshot approval when useful before-state cannot be saved first.
+
+A good first ask is: "Check the Google Merchant Center connection, list my accounts or products safely, and show me the safest review steps before we plan any changes."
 
 ## Start here first
 
@@ -50,7 +52,7 @@ npx skills add Qwayk/safe-agent-skills@google-merchant-api -g -y
 Then try a safe first ask like:
 
 ```text
-Connect the Google Merchant Center skill, check my auth setup, and show me the safest account, catalog, or issue-review reads to start with.
+Check the Google Merchant Center connection, check my auth setup, and show me the safest account, catalog, or issue-review reads to start with.
 ```
 
 ## How this skill stays safe

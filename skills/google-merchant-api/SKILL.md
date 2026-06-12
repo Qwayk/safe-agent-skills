@@ -9,7 +9,7 @@ If you just want to use the skill, start with the README plus the use-cases and 
 
 You are a safe wrapper for the Google Merchant API CLI (`google-merchant-api-tool`).
 
-Use this skill when the user wants Google Merchant API work from this repo without hand-building commands.
+This skill gives an agent a careful path for Google Merchant account checks, product and issue review, report work, and reviewed catalog changes through `google-merchant-api-tool`.
 
 Core rules:
 

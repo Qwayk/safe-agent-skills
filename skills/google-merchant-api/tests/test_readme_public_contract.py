@@ -12,6 +12,15 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertTrue(text.startswith("# Google Merchant Center\n"))
         self.assertNotIn("## Simplicity lock", text)
         self.assertNotIn("# Google Merchant API Safe Agent CLI", text)
+        self.assertIn("Google Merchant Center is where product data", text)
+        for stale_phrase in [
+            "Use this skill when",
+            "You can hand your agent jobs like",
+            "without guessing from raw docs",
+            "Read work stays simple",
+            "Riskier work slows down on purpose",
+        ]:
+            self.assertNotIn(stale_phrase, text)
 
         required_sections = [
             "## Start here first",
@@ -56,3 +65,13 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertIn("--ack-no-snapshot", text)
         self.assertNotIn("`use_cases.md`", text)
         self.assertNotIn("`onboarding.md`", text)
+
+    def test_use_cases_stay_specific_and_human(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        self.assertIn("Merchant work is usually about finding catalog problems", text)
+        self.assertIn("## Good jobs to give the agent", text)
+        self.assertIn("## What the agent should show you", text)
+        self.assertNotIn("Why this skill is more useful than raw docs", text)
+        self.assertNotIn("What this skill intentionally does not promise", text)

@@ -1,18 +1,11 @@
 # Use cases
 
-Use this page when you want ideas for real Plausible jobs to hand to your agent.
+Use this page when you want practical Plausible jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no-code automation)
+Plausible work is usually about answering a simple business question from clean analytics data, then stopping before any site or event write unless it is clearly approved.
 
-No-code tools can pull a single metric on a schedule. This tool is built for:
-
-- Deep analytics queries (custom metrics/dimensions, funnels, comparisons)
-- Repeatable reporting (weekly/monthly snapshots)
-- Careful writes (site changes start as plans; event sends need explicit approval because they cannot be undone automatically)
-- Receipts you can keep for auditing what was run
-
-## Common use cases (examples)
+## Good jobs to give the agent
 
 ### Reporting (read-only)
 
@@ -30,11 +23,12 @@ No-code tools can pull a single metric on a schedule. This tool is built for:
 - “Plan a test event to validate my conversion pipeline, but don’t send it until I approve.”
 - “Send the test event with verification, and show me a receipt of what was written.”
 
-## What you’ll see from the agent (trust + safety)
+## What the agent should show you
 
 When you ask for anything that writes analytics data, the agent should:
 
-1) Show a dry-run plan.
-2) Apply only after explicit confirmation.
-3) Ask for extra acknowledgement when the action has no automatic restore point.
-4) Verify best-effort (when supported) and provide a receipt.
+1. Show the site, date range, metrics, dimensions, funnel, or event target.
+2. Validate custom Stats queries before running them.
+3. Show a dry-run plan before site changes or event sends.
+4. Ask for extra acknowledgement when the action has no automatic restore point.
+5. Verify best-effort when supported and provide a receipt.

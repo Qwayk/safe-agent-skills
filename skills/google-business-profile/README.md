@@ -2,13 +2,15 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Google Business Profile accounts, locations, reviews, media, verifications, and performance without guessing from raw docs.
+Google Business Profile is where local customers see your hours, address, phone number, reviews, photos, services, and verification status.
 
-You can hand your agent jobs like location audits, missing-info reviews, review reply prep, media update plans, verification work, notification changes, and careful account or location changes.
+This skill helps an agent review accounts and locations, check categories, attributes, reviews, media, verifications, lodging, calls, place actions, and performance, and prepare profile changes before anything affects a live listing.
 
-Read work stays simple. Riskier work slows down on purpose: read commands can run live, write-capable actions start as dry-run plans, many apply paths require a reviewed plan file, and live writes need explicit no-snapshot approval when the tool cannot save useful before-state first.
+Use it for questions like: "Which locations have missing basics?", "What Google-updated fields need review?", "Can you prepare a review reply?", "Is this location verified?", or "Can you preview this hours or attribute change?"
 
-A good first ask is: "Check the Google Business Profile skill is connected, list my accounts and locations, and show me what looks incomplete before we plan any changes."
+Business Profile reads can run live after access is connected. Write-capable actions start as dry-run plans, many apply paths require a reviewed plan file, and live writes need explicit no-snapshot approval when the tool cannot save useful before-state first.
+
+A good first ask is: "Check the Google Business Profile connection, list my accounts and locations, and show me what looks incomplete before we plan any changes."
 
 ## Start here first
 
@@ -50,7 +52,7 @@ npx skills add Qwayk/safe-agent-skills@google-business-profile -g -y
 Then try a safe first ask like:
 
 ```text
-Connect the Google Business Profile skill, list my accounts and locations, and show me what is safe to review before we plan any live changes.
+Check the Google Business Profile connection, list my accounts and locations, and show me what is safe to review before we plan any live changes.
 ```
 
 ## How this skill stays safe

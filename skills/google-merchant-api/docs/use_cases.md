@@ -1,9 +1,11 @@
 # Use cases
 
-Use this page when you want ideas for real Google Merchant Center jobs to hand to your agent.
+Use this page when you want practical Google Merchant Center jobs to hand to your agent.
 If you need setup first, start with [Connect your Google Merchant Center account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Common use cases
+Merchant work is usually about finding catalog problems, understanding which products or feeds are affected, and reviewing the exact change before Google sees it.
+
+## Good jobs to give the agent
 
 - "Check my Merchant setup and show me the safest reads to run first."
 - "List my accounts, products, or promotions before we change anything."
@@ -12,18 +14,12 @@ If you need setup first, start with [Connect your Google Merchant Center account
 - "Prepare a product-input or conversion-source change plan and make me review it first."
 - "Show me the approval path for a higher-risk or irreversible Merchant change before anything goes live."
 
-## Why this skill is more useful than raw docs
+## What the agent should show you
 
-This skill gives your agent a safer path through real Merchant API work.
+When you ask for a change, the agent should:
 
-- It can help you discover Merchant accounts, products, issues, and reports without making the first step technical.
-- It can show a dry-run plan before risky writes.
-- It can keep the write approval story honest when no useful before-state exists.
-- It can leave plans, refusals, receipts, run history, docs, and tests in one place so you can inspect what happened.
-- It can help with both own-account and client-account access without turning the page into a setup maze first.
-
-## What this skill intentionally does not promise
-
-- It does not promise a built-in undo path for every Merchant write.
-- It does not guess the right Merchant account, product name, or request body when the target is unclear.
-- It does not offer API-key auth.
+1. Confirm the Merchant account, product, promotion, issue, or data-source target.
+2. Show the catalog, issue, report, or auth context before planning.
+3. Show the dry-run plan before product, conversion, region, service, or data-source changes.
+4. Explain own-account versus client-account access and say clearly that API-key auth is not supported.
+5. Point to the plan, refusal, receipt, or run history after the request.

@@ -2,11 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to answer real Plausible questions without guessing from raw docs.
+Plausible is useful when you want privacy-friendly traffic, source, device, goal, and funnel answers without opening a heavy analytics stack.
 
-You can hand your agent jobs like weekly traffic and conversion reports, Stats query validation, signup or membership funnel analysis, and careful site or event changes.
+This skill helps an agent run Plausible reports, validate Stats API queries, compare periods, review goals and funnels, inspect sites, and prepare site or event changes before anything writes analytics data.
 
-Read work stays simple. Riskier work slows down on purpose: site changes start as dry-run plans, destructive actions need extra approval, and event sends need explicit approval because they write analytics data that cannot be undone automatically.
+Use it for questions like: "What changed in traffic this week?", "Which sources and pages drove conversions?", "Can you compare this membership funnel?", "Can you validate this Stats query?", or "Can you preview a test event before sending it?"
+
+Plausible reporting is read-only. Site changes start as dry-run plans, destructive actions need extra approval, and event sends need explicit approval because they write analytics data that cannot be undone automatically.
 
 A good first ask is: "Show me what changed in traffic, sources, and goal conversions over the last 7 days."
 
@@ -50,7 +52,7 @@ npx skills add Qwayk/safe-agent-skills@plausible -g -y
 Then try a safe first ask like:
 
 ```text
-Connect the Plausible skill to my account and show me the top pages, sources, and goal conversions from the last 7 days.
+Check the Plausible connection and show me the top pages, sources, and goal conversions from the last 7 days.
 ```
 
 ## How this skill stays safe

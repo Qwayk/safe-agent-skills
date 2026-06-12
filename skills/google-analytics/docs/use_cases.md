@@ -1,9 +1,11 @@
 # Use cases
 
-Use this page when you want ideas for real Google Analytics jobs to hand to your agent.
+Use this page when you want practical Google Analytics jobs to hand to your agent.
 If you need setup first, start with [Connect your Google Analytics access](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Common use cases
+Google Analytics work usually starts with two questions: what happened on the site, and whether the property is set up to measure it correctly.
+
+## Good jobs to give the agent
 
 - "Show me which GA4 accounts and properties I can access, and call out anything that looks incomplete."
 - "Run a simple last-7-days report for traffic, engagement, and conversions."
@@ -14,17 +16,12 @@ If you need setup first, start with [Connect your Google Analytics access](onboa
 - "Build a dry-run plan for a GA4 admin change, but stop before any live write."
 - "Review a CSV batch plan before any write-capable GA4 action runs."
 
-## Why this skill is more useful than raw docs
+## What the agent should show you
 
-This skill gives your agent a safer path through real GA4 work.
+When you ask for a change, the agent should:
 
-- It can start with live reads instead of guessing from documentation.
-- It can show a dry-run plan before risky admin changes.
-- It can stop for extra approval when Google does not offer useful before-state for a write.
-- It leaves plans, refusals, run history, docs, and tests in one place so you can inspect what happened.
-
-## What this skill intentionally does not promise
-
-- It does not promise a built-in undo path for every GA4 write.
-- It does not hide risky changes behind vague automation language.
-- It does not guess which account, property, or setting you meant when the target is unclear.
+1. Confirm the account, property, stream, audience, event, or access target.
+2. Show the report or discovery read it used before planning.
+3. Show the dry-run plan before any live GA4 admin change.
+4. Explain missing permissions, unclear targets, or no-snapshot approval clearly.
+5. Point to the plan, refusal, receipt, or run history after the request.
