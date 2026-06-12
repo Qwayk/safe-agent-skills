@@ -2,13 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Klaviyo audiences, campaigns, forms, templates, catalog data, and customer events without guessing from raw docs.
+Klaviyo is where ecommerce audience, campaign, flow, profile, event, form, catalog, and coupon decisions come together. This skill helps an agent inspect those parts of the account, find the exact operation behind a task, and prepare risky audience or marketing changes as reviewable plans first.
 
-You can hand it jobs like list and segment audits, profile or event checks, coupon and catalog planning, template or webhook changes, campaign-send review, and careful bulk audience work that should stop for review before apply.
+It is useful for questions like "Which lists or segments match this cleanup idea?", "What happened on this profile or event stream?", "Can we preview this coupon, template, webhook, or campaign change?", or "What approval is needed before a bulk audience action?"
 
-Read work stays simple. Riskier Klaviyo changes slow down on purpose: the tool maps the exact operation first, builds a dry-run plan, flags the recovery limit, and requires explicit no-snapshot approval before any live Klaviyo write.
+Read work can run after setup. Riskier Klaviyo changes map the exact operation first, build a dry-run plan, explain the recovery limit, and require explicit no-snapshot approval before any live Klaviyo write.
 
-A good first ask is: "Check my Klaviyo connection, show me the safest audience and campaign reviews to start with, and preview anything risky before apply."
+A good first ask is: "Check my Klaviyo connection, show me the safest list, segment, campaign, and profile reviews to start with, and preview anything risky before apply."
 
 ## Start here first
 

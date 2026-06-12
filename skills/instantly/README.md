@@ -2,13 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Instantly campaigns, accounts, leads, deliverability, and workspace settings without guessing from raw docs.
+Instantly is where cold email problems show up as campaign health, sending-account risk, lead quality, warmup issues, and deliverability signals. This skill helps an agent review those areas first, then prepare campaign, lead, webhook, or workspace changes only after the target and risk are clear.
 
-You can hand it jobs like campaign health reviews, warmup or account-vitals checks, lead list cleanup, webhook reviews, inbox placement analysis, and careful Instantly changes that need a dry-run first.
+It is useful for questions like "Which campaigns look weak right now?", "Which sending accounts need attention?", "Are these leads ready for cleanup?", or "What would this webhook or workspace change do before we apply it?"
 
-Read work stays simple. Riskier Instantly changes slow down on purpose: the tool checks auth, discovers the right IDs first, builds dry-run plans, verifies supported writes after apply, and saves proof. Some supported live writes save before-state first, while create, send, bulk, and other no-pre-read families need explicit no-snapshot approval before HTTP.
+Read and reporting work can start after setup. Riskier Instantly changes check auth, discover the right IDs, build dry-run plans, verify supported writes after apply, and save proof. Some supported writes save before-state first; create, send, bulk, and other no-pre-read families need explicit no-snapshot approval before HTTP.
 
-A good first ask is: "Check my Instantly connection, list my active campaigns and key account health signals, and show me the safest place to start."
+A good first ask is: "Check my Instantly connection, list active campaigns and sending-account health, then show me the safest campaign or lead review to start with."
 
 ## Start here first
 

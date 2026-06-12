@@ -2,11 +2,11 @@
 
 **Capability:** Read-only
 
-Use this skill when you want your agent to review Meta ad accounts, campaigns, ad sets, ads, creatives, previews, and insights without guessing from raw docs.
+Meta Ads reporting is where campaign structure, creative fatigue, spend, previews, and performance changes meet. This read-only skill helps an agent inspect ad accounts, campaigns, ad sets, ads, creatives, previews, and insights without giving it the power to pause or edit anything.
 
-You can hand your agent jobs like account inventory checks, campaign and ad status reviews, date-range performance pulls, winning-ad analysis, creative anatomy review, and snapshot exports for deeper reporting work.
+It is useful for questions like "Which campaigns changed performance?", "Which ads or creatives are worth reviewing?", "Can you compare these two date ranges?", or "Can you export a clean snapshot pack for deeper analysis?"
 
-This skill stays simple on purpose: it is GET-only and read-only. It does not create, pause, update, or delete anything in Meta Ads, so the safe path is to inspect the account clearly and leave any live changes to a different tool or a human.
+The tool is GET-only and read-only. It does not create, pause, update, or delete anything in Meta Ads, so it is best for inspection, reporting, creative review, and local exports.
 
 A good first ask is: "Check the Meta Ads skill is connected, list my ad accounts, show one campaign performance report, and export a small snapshot pack."
 

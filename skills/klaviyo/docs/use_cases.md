@@ -1,19 +1,9 @@
-# Use cases
+# What you can do with Klaviyo
 
-Use this page when you want ideas for real Klaviyo jobs to hand to your agent.
+Klaviyo work usually starts with audience and message questions: which people are in the right group, which campaigns or flows need attention, and which bulk actions need a plan before they touch customers.
 If you need setup first, start with [Connect your Klaviyo account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is useful for Klaviyo work
-
-Most no-code tools are fine for one small trigger. This skill is built for bigger Klaviyo jobs like:
-
-- One explicit command surface across the stable Klaviyo API
-- Bulk work across profiles, lists, segments, catalogs, coupons, templates, and campaigns
-- Preview-first changes with a dry-run plan before live apply
-- Clear safety stops when a change is risky or recovery is limited
-- Saved plans, receipts, refusals, and logs you can keep as proof
-
-## Common Klaviyo jobs
+## Good jobs to give the agent
 
 - "Show me which lists, segments, forms, or campaigns match these filters."
 - "Check one profile, event stream, or metric before I change anything."
@@ -23,6 +13,8 @@ Most no-code tools are fine for one small trigger. This skill is built for bigge
 - "Use the client endpoints for signup, reviews, push tokens, or event capture when I only have the company id."
 
 ## What you should expect from the agent
+
+For review work, the agent should show the account object, filters, date range, or operation it used before it summarizes the result.
 
 When you ask for a change, the agent should:
 

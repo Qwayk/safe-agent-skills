@@ -1,9 +1,9 @@
 # What you can do with Instantly
 
-Use this page when you want ideas for real Instantly jobs to hand to your agent.
+Instantly work usually starts with campaign and deliverability questions: which campaigns are healthy, which sending accounts are risky, which leads need cleanup, and which changes should wait for review.
 If you need setup first, start with [Connect your Instantly account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Common jobs
+## Good jobs to give the agent
 
 ### Campaign and deliverability review
 
@@ -26,17 +26,9 @@ If you need setup first, start with [Connect your Instantly account](onboarding.
 - "Prepare a careful workspace or campaign change and keep a receipt of what changed."
 - "Check API-key or account-management flows safely without exposing secrets in chat."
 
-## Why this skill is useful
-
-Instantly work is rarely one tiny click. It usually means finding the right campaign, account, or lead set first, previewing the change, and leaving proof behind.
-
-This skill is strongest when you want:
-
-- one tool for reporting, deliverability review, and careful Instantly changes
-- safer bulk or admin work than a loose prompt-only workflow
-- proof after the work runs, not just a claim that it worked
-
 ## What you should expect from the agent
+
+For review work, the agent should show the campaign, account, lead, or webhook IDs it checked and explain the few signals that matter most.
 
 When you ask for a change, the agent should:
 

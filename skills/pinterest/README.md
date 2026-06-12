@@ -2,13 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review what is in your Pinterest account, spot issues, and plan careful changes without guessing from raw docs.
+Pinterest work often starts with a messy question: what boards, pins, sections, ads, catalogs, or feeds are actually in the account, and what looks worth fixing? This skill helps an agent export snapshots, review account structure, check analytics or catalog diagnostics, and prepare changes as plans before anything goes live.
 
-You can hand your agent jobs like board and pin inventory snapshots, section reviews, top-pin or account analytics, ads account checks, catalog or feed diagnostics, and planned pin or board changes.
+It is useful for questions like "What changed in my boards and pins?", "Which pins or ads are performing?", "Are there catalog feed issues?", or "What would this pin-link cleanup change before we approve it?"
 
-Read work is the easy path here. Snapshots and audits can run from read-only Pinterest calls plus local JSON output. Riskier work slows down on purpose: write families start as dry-run plans, and confirmed apply still needs explicit no-snapshot approval before live Pinterest writes because saved before-state support is not there yet.
+Snapshots and audits can run from read-only Pinterest calls plus local JSON output. Write families start as dry-run plans, and confirmed apply still needs explicit no-snapshot approval before live Pinterest writes because saved before-state support is not there yet.
 
-A good first ask is: "Check the Pinterest skill is configured, export a snapshot of my boards and pins, and tell me what changed before we plan any updates."
+A good first ask is: "Check the Pinterest skill is configured, export a snapshot of my boards and pins, and tell me what looks unusual before we plan any updates."
 
 ## Start here first
 

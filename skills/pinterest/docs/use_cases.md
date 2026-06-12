@@ -1,13 +1,13 @@
 # What you can do with Pinterest
 
-Use this page when you want ideas for real Pinterest work to hand to your agent.
+Pinterest work usually starts with visibility: what exists in the account, what changed, which pins or ads are getting attention, and whether catalog feeds have problems.
 If you need setup first, start with [Connect your Pinterest account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## A good first ask
 
 "Check the Pinterest skill is configured, export a snapshot of my boards and pins, and tell me if anything looks unusual before we plan changes."
 
-## Common Pinterest jobs
+## Good jobs to give the agent
 
 ### Inventory and audits
 
@@ -32,12 +32,6 @@ If you need setup first, start with [Connect your Pinterest account](onboarding.
 - "Plan a pin-link cleanup for these pins and show me exactly what would change."
 - "Preview the write steps for a board, pin, ad, or feed change before anything goes live."
 - "Show the missing-approval refusal first so I can confirm nothing writes without approval."
-
-## Why this skill is useful
-
-- It gives you stable inventory snapshots instead of one-off screenshots or manual exports.
-- It helps your agent inspect Pinterest account structure before it suggests changes.
-- It keeps risky write work in plan-first mode when there is no saved before-state yet.
 
 ## What you should expect from the agent
 
