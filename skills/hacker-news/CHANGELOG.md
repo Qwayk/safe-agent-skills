@@ -26,6 +26,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ### Changed
 - Rebuilt the README and front-door docs into the public skill pattern so Hacker News now opens with a reader-friendly promise, a clear safe first ask, and honest read-only limits instead of the old internal tool layout.
+- Rewrote the README opening again to remove template-sounding safety language and lead with the real user value: understanding what people are discussing on Hacker News.
 
 ### Fixed
 

@@ -2,13 +2,13 @@
 
 **Capability:** Read-only
 
-Use this skill when you want an agent to read public Hacker News data safely: check story lists, fetch one story or comment item by ID, inspect a public user profile, and see which items or profiles changed recently.
+Hacker News is useful when you want a quick read on what people in tech are talking about right now. This skill lets an agent pull the public story lists, open the real story or comment items behind those lists, check public user profiles, and watch recent item or profile changes without scraping the website.
 
-You can hand your agent jobs like trend scouting, "what is being discussed now" summaries, story research for a topic, public user lookups, job-story checks, and repeatable snapshots for a handoff or report.
+Use it for questions like: "What is getting attention today?", "Which Show HN posts look relevant to developer tools?", "What jobs are showing up?", or "What does this Hacker News thread actually include?"
 
-This skill is safe by design. It uses the public Hacker News API, needs no account, and cannot post, vote, comment, hide, delete, or change anything. The main risk is reading too much into story IDs alone, so ask the agent to fetch the actual items before it summarizes patterns or makes decisions.
+No account is needed. The tool cannot post, vote, comment, hide, delete, or change anything. The useful limit to remember is that Hacker News story lists start as IDs, so ask the agent to fetch the actual items before it explains trends.
 
-A good first ask is: "Check the Hacker News skill is connected, show me the current top stories, fetch the first story item, and stop after the read-only results."
+A good first ask is: "Show me the current top Hacker News stories, fetch the first five items, and tell me the main topics people are discussing. Do not summarize from IDs alone."
 
 ## Start here first
 
@@ -20,18 +20,18 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 
 ## What this skill helps with
 
-- Check the current top, new, best, Ask HN, Show HN, or job story IDs.
-- Fetch one public item by ID so an agent can explain its title, URL, score, author, time, text, or comment IDs.
-- Fetch one public user profile by username to review karma, account age, and submitted item IDs.
-- Watch the latest changed item and profile IDs from the public updates feed.
-- Build a repeatable public snapshot without scraping the Hacker News website.
+- See what is currently on top, new, best, Ask HN, Show HN, or jobs.
+- Open a story, comment, poll, or job item and get the title, link, score, author, text, time, and comment IDs.
+- Check a public user profile by username.
+- Watch which public items and profiles changed recently.
+- Save a small snapshot for research, reporting, or a handoff.
 
 ## What access this skill needs
 
-- Internet access to the public Hacker News API.
+- A normal internet connection.
 - No Hacker News account.
-- No API key, bearer token, OAuth login, or browser session.
-- Optional local `.env` setup only if you want to pin the public API root or timeout.
+- No API key, login, browser session, or private access.
+- Optional local settings only if you want to change the public API root or timeout.
 
 ## Install and first run
 
@@ -50,17 +50,18 @@ npx skills add Qwayk/safe-agent-skills@hacker-news -g -y
 Then try a safe first ask like:
 
 ```text
-Check the Hacker News skill is connected, show me the current top stories, fetch the first story item, and stop after the read-only results.
+Show me the current top Hacker News stories, fetch the first five items, and tell me the main topics people are discussing. Do not summarize from IDs alone.
 ```
 
 ## How this skill stays safe
 
-- It is read-only to Hacker News by design.
-- It only uses public Hacker News API reads.
-- It does not sign in, ask for secrets, or store account credentials.
-- It has no command that can post, vote, comment, edit, delete, or hide anything.
-- In JSON mode, each command returns one clear result object that an agent can parse.
-- The docs, tests, proof pack, and API coverage ledger all live in this repo so you can inspect what the agent is using.
+Most of the safety story is simple: this tool has nothing that can change Hacker News. It reads the official public API in a predictable way, so an agent does not need to scrape pages or invent hidden URLs.
+
+- It does not sign in or ask for secrets.
+- It cannot post, vote, comment, edit, delete, or hide anything.
+- It uses named read commands for the public Hacker News API.
+- In JSON mode, each command returns one clear result object.
+- The docs, tests, proof pack, and API coverage page all live in this repo so you can inspect what the agent is using.
 
 ## What it covers today
 
@@ -74,13 +75,13 @@ This skill covers the full documented Hacker News v0 public HTTP read surface:
 
 ## What happens before live changes
 
-This skill does not make live changes in Hacker News. There is no write or account-action path.
+There are no live changes to approve. This skill has no write or account-action path.
 
-Before a live read, the agent should run the connection check, use one of the named read commands, and summarize only what the public API returned. The only local change this skill can make is creating a placeholder `.env` file during onboarding.
+Before a read, the agent can run the connection check, use one of the named read commands, and summarize only what the public API returned. The only local change this skill can make is creating a placeholder `.env` file during onboarding.
 
 ## What proof it leaves behind
 
-- Commands return machine-readable JSON you can save or review.
+- Commands return JSON you can save or review.
 - Read results include the public API endpoint used.
 - Optional audit logs record command events without secrets.
 - The proof pack includes smoke commands and committed examples for the main result shapes.

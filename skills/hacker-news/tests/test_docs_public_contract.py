@@ -27,6 +27,9 @@ class TestDocsPublicContract(unittest.TestCase):
             "bridge",
             "wrapper",
             "Simplicity lock",
+            "read public Hacker News data safely",
+            "safe by design",
+            "stop after the read-only results",
         ]
         for phrase in forbidden:
             with self.subTest(phrase=phrase):
