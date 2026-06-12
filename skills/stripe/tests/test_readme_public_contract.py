@@ -29,6 +29,16 @@ class TestReadmePublicContract(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         text = (root / "README.md").read_text(encoding="utf-8")
 
+        stale_phrases = [
+            "Use this skill when",
+            "You can hand your agent jobs like",
+            "without guessing from raw docs",
+            "Read work stays simple",
+            "Riskier work slows down on purpose",
+        ]
+        for phrase in stale_phrases:
+            self.assertNotIn(phrase, text)
+
         self.assertIn("[What you can do with Stripe](docs/use_cases.md)", text)
         self.assertIn("[Connect your Stripe account](docs/onboarding.md)", text)
         self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)

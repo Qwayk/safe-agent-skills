@@ -2,11 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Shopify products, variants, inventory, orders, customers, discounts, collections, and other Admin API work without guessing from raw docs.
+Shopify Admin is where the live store comes together: products, variants, inventory, orders, customers, collections, discounts, and the changes that can affect what shoppers see.
 
-You can hand your agent jobs like product and inventory reviews, order exports, customer segment pulls, discount plans, bulk metadata updates, and careful Shopify mutations that should be previewed before they touch the store.
+This skill helps an agent review store data, export useful lists, and prepare mutation plans before anything touches products, orders, customers, inventory, or discounts.
 
-Read work stays simple. Riskier work slows down on purpose: Shopify mutations start as dry-run plans, higher-risk mutation families need stronger approval gates, and live apply still needs explicit no-snapshot approval when no operation-specific saved snapshot is available.
+Use it for questions like: "Which products are missing tags?", "What changed in recent orders?", "Can you export these customers?", "Which discounts are active?", or "Can you draft the product updates first and stop before applying them?"
+
+Shopify changes are preview-first. Mutations start as dry-run plans, higher-risk mutation families need stronger approval, and live apply still needs explicit no-snapshot approval when no operation-specific saved snapshot is available.
 
 A good first ask is: "Check the Shopify Admin skill is connected, list the store details, export my recent orders and product list, and stop before any mutations."
 

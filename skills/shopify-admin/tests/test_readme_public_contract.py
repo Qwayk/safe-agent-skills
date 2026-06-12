@@ -29,6 +29,16 @@ class TestReadmePublicContract(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         text = (root / "README.md").read_text(encoding="utf-8")
 
+        stale_phrases = [
+            "Use this skill when",
+            "You can hand your agent jobs like",
+            "without guessing from raw docs",
+            "Read work stays simple",
+            "Riskier work slows down on purpose",
+        ]
+        for phrase in stale_phrases:
+            self.assertNotIn(phrase, text)
+
         self.assertIn("[What you can do with Shopify Admin](docs/use_cases.md)", text)
         self.assertIn("[Connect your Shopify Admin account](docs/onboarding.md)", text)
         self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
@@ -54,3 +64,21 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertIn("[Connect your Shopify Admin account](onboarding.md)", text)
         self.assertNotIn("- `use_cases.md`", text)
         self.assertNotIn("- `onboarding.md`", text)
+
+    def test_use_cases_stay_shopify_specific(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        stale_phrases = [
+            "Bulk work on existing libraries",
+            "Deterministic behavior",
+            "Common use cases (examples)",
+            "safe, repeatable transformation",
+        ]
+        for phrase in stale_phrases:
+            self.assertNotIn(phrase, text)
+
+        self.assertIn("Shopify work is usually about a live store", text)
+        self.assertIn("Products:", text)
+        self.assertIn("Inventory:", text)
+        self.assertIn("Discounts:", text)

@@ -2,11 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Stripe customers, subscriptions, invoices, products, prices, payouts, and other account work without guessing from raw docs.
+Stripe is where billing problems become real customer problems: subscriptions, invoices, refunds, payouts, transfers, disputes, products, prices, and connected accounts all live close to real money.
 
-You can hand your agent jobs like account checks, customer and subscription exports, invoice and payment investigations, Connect account reviews, metadata cleanup plans, and careful Stripe changes that should be previewed before they touch live billing or money-moving flows.
+This skill helps an agent inspect Stripe carefully, explain what it finds, export useful account details, and prepare reviewed change plans before anything touches live billing or money-moving flows.
 
-Read work stays simple. Riskier work slows down on purpose: live reads still need `--live`, write plans are reviewed before apply, money-moving operations need stronger approval, and when no saved snapshot or provider backup exists the tool requires explicit no-snapshot approval before Stripe HTTP.
+Use it for questions like: "Which subscriptions are active?", "Why did this customer get charged?", "What refunds or disputes need review?", "Which connected account is this payout for?", or "Can you draft a safe metadata cleanup plan first?"
+
+Live Stripe work is intentionally cautious. Reads need `--live`, writes start as review plans, money-moving actions need stronger approval, and when there is no saved snapshot or provider backup the tool requires explicit no-snapshot approval before Stripe HTTP.
 
 A good first ask is: "Check the Stripe skill is connected, show me the account details, list recent customers and subscriptions, and stop before any writes."
 

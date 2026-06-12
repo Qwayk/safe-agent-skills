@@ -1,29 +1,27 @@
 # Use cases
 
-Use this page when you want ideas for real Shopify Admin jobs to hand to your agent.
+Use this page when you want practical Shopify Admin jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this helps with store operations
+## Why this helps with store work
 
-Shopify work usually means reviewing a live catalog, planning many changes together, and keeping proof of what was proposed before anything touches the store:
+Shopify work is usually about a live store, not an abstract database. A small mistake can change what shoppers see, what staff fulfill, or what customers receive.
 
-- Bulk work on existing libraries (hundreds/thousands of records)
-- Preview-first changes (dry-run plans; live apply requires explicit no-snapshot approval when no saved snapshot is available)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Audit artifacts (plans, refusals, and logs) you can keep for proof and debugging
+This skill is useful when you want the agent to inspect the store first, then prepare a clear plan for product, inventory, customer, order, discount, or collection work before anything is applied.
 
-## Common use cases (examples)
+## Good jobs to give the agent
 
-- “Pull a report of the things that match these rules, and export it to a file.”
-- “Find the right targets safely (avoid guessing), then propose changes for review.”
-- “Create dry-run plans for a large set of small metadata edits from a spreadsheet.”
-- “Do a safe, repeatable transformation across many items, and prove it’s complete.”
+- “Show me products that are missing tags, images, or descriptions.”
+- “Export recent orders with line items and totals for a support review.”
+- “Find products in this collection and draft the changes before applying them.”
+- “Check which discounts are active and when they expire.”
+- “Review inventory for these SKUs at this location.”
+- “Prepare a plan for product metadata updates from this spreadsheet.”
+- “Find customer records that match this segment and export the IDs.”
 
-## Shopify Admin-specific examples (still plain English)
+## Specific examples
 
-These examples are intentionally specific so you can understand what the tool is capable of without learning the Shopify Admin API.
-
-- Products: “Create a dry-run plan for a product with variants and prices.”
+- Products: “Create a dry-run plan for a new product with variants and prices.”
 - Products: “Draft a plan to update product titles, descriptions, tags, and media for these product IDs.”
 - Inventory: “Set on-hand inventory levels for these SKUs at this location.”
 - Orders: “Export orders from the last 30 days with line items and totals, then save to a file.”
@@ -32,11 +30,12 @@ These examples are intentionally specific so you can understand what the tool is
 - Collections: “Plan adding these products to this collection and removing others.”
 - Customers: “Find customers who match this segment and export their IDs.”
 
-## What you’ll see from the agent (trust + safety)
+## What the agent should show you
 
 When you ask for a change, the agent should:
 
-1) Show a dry-run preview of what would change.
-2) Explain any extra mutation gates, including `--ack-no-snapshot` when no saved snapshot exists.
-3) Apply only after explicit approval, then report the receipt or any provider error clearly.
-4) Point to the saved plan and run artifacts.
+1. Show a dry-run preview of what would change.
+2. Explain any extra mutation gates, including `--ack-no-snapshot` when no saved snapshot exists.
+3. Apply only after explicit approval.
+4. Report the receipt or Shopify error clearly.
+5. Point to the saved plan and run artifacts when they are available.
