@@ -2,13 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to work with Awin publisher accounts, programs, offers, transactions, reports, tracking links, feeds, and proof-of-purchase uploads without guessing from raw docs.
+Awin Publisher is where an affiliate publisher checks the programs they joined, the offers they can use, the transactions they earned, and the tracking links or feeds behind that work. This skill helps an agent review publisher accounts, programs, offers, transactions, reports, linkbuilder tasks, feeds, and proof-of-purchase uploads from one careful workflow.
 
-You can hand your agent jobs like joined-program checks, offer reviews, transaction follow-up, advertiser or campaign reporting, enhanced or legacy feed downloads, linkbuilder tasks, and proof-of-purchase upload planning.
+It is useful for jobs like checking joined or pending programs, reviewing recent transactions, grouping results by advertiser or campaign, generating tracking links, downloading feeds to local files, and preparing proof-of-purchase uploads for review.
 
 Most publisher work stays read-only or download-only. The one remote write path, `proof-of-purchase orders create`, starts as a dry-run plan and only goes live after explicit approval with the reviewed plan file. There is no raw request bridge.
 
-A good first ask is: "Check the Awin Publisher skill is configured, show me the most important recent programs and transactions, and stop before any live proof-of-purchase upload."
+A good first ask is: "Check the Awin Publisher skill is configured, list the publisher accounts this token can use, show recent transactions by advertiser, and stop before any live proof-of-purchase upload."
 
 ## Start here first
 

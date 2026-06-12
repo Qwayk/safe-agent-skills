@@ -2,13 +2,13 @@
 
 **Capability:** Read-only
 
-Use this skill when you want your agent to inspect Skimlinks merchants, reporting, Product Key lookups, and Link Wrapper URLs without guessing from raw docs.
+Skimlinks helps publishers understand which merchants, links, pages, products, and commissions are actually earning money. This skill lets an agent check merchant availability, pull reporting, look up Product Key data, and build Link Wrapper URLs when you need monetized links outside normal browser JavaScript.
 
-You can hand your agent jobs like merchant discovery for a country or category, commission and page/link reports, Product Key alternative checks, and Link Wrapper URL builds for links that need monetizing outside browser JavaScript.
+It is useful for questions like "Which merchants are active in this market?", "Which pages or links earned commission last month?", "Does Product Key have alternatives for this item?", or "What official Skimlinks URL should I use for this destination?"
 
-This skill stays read-only against Skimlinks on purpose. Merchant, Reporting, and Product Key commands only read or query official Skimlinks surfaces. Link Wrapper only builds the official monetized URL locally and does not open it.
+The tool is read-only against Skimlinks. Merchant, Reporting, and Product Key commands only read or query official Skimlinks surfaces. Link Wrapper only builds the official monetized URL locally and does not open it.
 
-A good first ask is: "Check the Skimlinks skill is configured, then show me active merchants and top commission links for last month."
+A good first ask is: "Check the Skimlinks skill is configured, show me active merchants for my market, and pull last month's top commission links."
 
 ## Start here first
 

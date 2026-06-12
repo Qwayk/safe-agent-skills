@@ -3,7 +3,7 @@
 This page is the agent-facing rule sheet for the public Skimlinks skill.
 If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
 
-Use this skill when a user wants an agent to work with the customer-ready Skimlinks safe API CLI in this repo.
+This skill gives an agent a careful path for Skimlinks merchant discovery, reporting, Product Key checks, and local Link Wrapper URL builds through `skimlinks-safe-cli`.
 
 ## Reference points
 

@@ -1,18 +1,9 @@
-# Use cases
+# What you can do with Awin Advertiser
 
-Use this page when you want ideas for real Awin advertiser work to hand to your agent.
+Awin Advertiser work usually starts with performance and control questions: which publishers are driving results, which transactions need action, and whether an advertiser-side file is safe to submit.
 If you need setup first, start with [Connect your Awin advertiser account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is useful
-
-This skill is useful when:
-
-- you want advertiser reviews and reads before anyone touches a live Awin account
-- you want dry-run plans before risky advertiser actions
-- you want stable command boundaries instead of one broad hidden automation
-- you want proof files and receipts left behind for review later
-
-## Common use cases
+## Good jobs to give the agent
 
 - "Show me which publishers drove results last month."
 - "Check whether this Awin token is connected correctly before we do anything else."
@@ -21,6 +12,14 @@ This skill is useful when:
 - "Prepare an offer draft and explain the proof files before we do anything live."
 - "Check this product-feed file before we upload it."
 - "Help me plan conversion order posting safely with a preview first."
+
+## What the agent should show you
+
+- The advertiser ID, date range, and report type it used.
+- The publishers, campaigns, transactions, or jobs that matter most for the question.
+- A dry-run plan before batch validation, offer creation, feed upload, or conversion-order posting.
+- Any auth difference that matters for the endpoint family.
+- A receipt after a live write, when you explicitly approve one.
 
 ## Good first review path
 

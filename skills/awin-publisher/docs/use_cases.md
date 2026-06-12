@@ -1,6 +1,6 @@
 # What you can do with Awin Publisher
 
-Use this skill when you want your agent to work with Awin publisher data through explicit commands instead of one-off scripts, risky browser steps, or vague API guesses.
+Awin Publisher work usually starts with earning questions: which programs are available, which advertisers are producing results, which transactions need attention, and whether a tracking link or feed is ready to use.
 
 ## Good jobs for this skill
 
@@ -21,9 +21,10 @@ Use this skill when you want your agent to work with Awin publisher data through
 - "Download the enhanced retail feed for advertiser 6789 to a local file."
 - "Prepare a proof-of-purchase upload from this orders file, but stop after the dry-run plan."
 
-## Why this is safer than ad-hoc API calls
+## What the agent should show you
 
-- The command list stays explicit, so each task is predictable.
-- Output stays structured, which makes it easier for an AI agent to verify.
-- Feed downloads and proof files stay local and easy to audit.
-- The one remote write command is review-first instead of sending live data by default.
+- The publisher ID, advertiser ID, date range, and filters it used.
+- A short summary before any table of raw transactions or reports.
+- Which feed or linkbuilder output was saved locally, if any.
+- A dry-run plan before any proof-of-purchase upload.
+- Clear warnings when a command uses a different Awin key or auth flow.

@@ -2,11 +2,11 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Awin advertiser activity, inspect publisher and transaction data, and prepare advertiser-side validation, offer, feed, or conversion work without guessing from raw docs.
+Awin Advertiser is where a brand or advertiser checks publisher performance, transactions, campaign reports, offers, product feeds, and conversion orders. This skill helps an agent review the account first, then prepare advertiser-side changes only after a dry-run plan is clear.
 
-You can hand your agent jobs like publisher performance reviews, transaction checks, campaign or publisher reports, transaction batch validation, offer drafts, product-feed upload prep, and conversion-order planning.
+It is useful for questions like "Which publishers drove results last month?", "Do these transactions need follow-up?", "Is this batch validation file safe to submit?", or "What should we check before uploading an offer, feed, or conversion order?"
 
-Read work stays explicit. Riskier advertiser actions slow down on purpose: write families start as dry-run plans, live apply needs the normal review gates, and current writes leave plans and receipts but do not promise a broad saved before-state or automatic restore. There is no raw request bridge.
+Read work can run after setup. Advertiser-side writes start as dry-run plans, live apply needs the normal review gates, and current writes leave plans and receipts but do not promise a broad saved before-state or automatic restore. There is no raw request bridge.
 
 A good first ask is: "Check the Awin Advertiser skill is configured, show me which publishers drove results recently, and help me plan the safest next advertiser action."
 

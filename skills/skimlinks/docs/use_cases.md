@@ -1,9 +1,9 @@
 # What you can do with Skimlinks
 
-Use this page when you want ideas for real Skimlinks jobs to hand to your agent.
+Skimlinks work is usually about answering publisher money questions: which merchants are available, which links earned commission, which pages performed, and whether Product Key can help with product alternatives.
 If you need setup first, start with [Connect your Skimlinks account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-You can ask your agent to:
+## Good jobs to give the agent
 
 - Find Skimlinks merchants that match a country, search term, vertical, or advertiser ID.
 - List merchant domains, verticals, alternative verticals, and offers.
@@ -15,10 +15,10 @@ You can ask your agent to:
 - Look up Product Key details and alternatives for one product or many products.
 - Build official Link Wrapper URLs for links that need to be monetized outside browser JavaScript.
 
-## Why this is safer than a generic automation
+## What the agent should show you
 
-- It uses official documented surfaces only.
-- It exposes named commands instead of a raw request box.
-- It keeps secrets out of output and logs.
-- It refuses missing setup instead of guessing.
-- It clearly separates API commands from Data Pipe and browser JavaScript guidance.
+- Which publisher ID, country, dates, or merchant filters it used.
+- Whether Product Key is enabled or needs separate access.
+- A clear table or summary of merchant, page, link, or commission results.
+- Any report scope that may be broader than you intended.
+- Link Wrapper URLs only as generated text, not opened in a browser.

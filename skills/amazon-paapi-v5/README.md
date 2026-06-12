@@ -2,13 +2,13 @@
 
 **Capability:** Read-only
 
-Use this skill when you want your agent to research Amazon products, resolve ASINs, build affiliate links, and run careful catalog lookups without guessing from raw docs.
+Amazon Product Advertising API is useful when affiliate research needs real catalog data instead of copied product-page guesses. It can help an agent search products, resolve ASINs, check browse nodes, fetch product details, and build clean affiliate links from the items you already want to compare.
 
-You can hand your agent jobs like niche research, exact product-detail fetches, Amazon URL cleanup, affiliate link generation, browse-node checks, and spreadsheet-driven batch pulls.
+It is a good fit for jobs like niche research, gift-guide shortlists, product comparison tables, Amazon URL cleanup, affiliate link generation, category checks, and repeatable spreadsheet-driven product pulls.
 
-This skill stays simple on purpose: it reads Amazon Product Advertising API data only. It does not create, edit, or delete anything in Amazon. The main risk here is not a bad write. It is wasted requests, wrong marketplace settings, or a batch that is larger than you meant to run.
+The tool is read-only against Amazon. It cannot create, edit, or delete Amazon products or account data. The thing to watch is scope: wrong marketplace settings, wasted API requests, or a batch that is larger than you meant to run.
 
-A good first ask is: "Check the Amazon Product Advertising skill is configured, search for a small set of products for my niche, and build clean affiliate links for the best matches."
+A good first ask is: "Check the Amazon Product Advertising skill is configured, search for five products in my niche, resolve the ASINs, and build clean affiliate links for the best matches."
 
 ## Start here first
 
