@@ -1,30 +1,30 @@
 # Use cases
 
-Use this page when you want ideas for real ElevenLabs jobs to hand to your agent.
+Use this page when you want practical ElevenLabs jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Why this helps with voice and media work
 
-ElevenLabs work often means checking voices, planning spend-sensitive generation, and keeping large audio outputs out of chat until you are ready:
+ElevenLabs work often means choosing the right voice or model before spending credits, then keeping generated audio, transcripts, and sensitive results in files instead of chat.
 
-- Bulk work on existing libraries (hundreds/thousands of records)
-- Preview-first changes (dry-run → explicit apply gates → missing-approval refusal when no saved snapshot is available)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Audit artifacts (plans/refusals/logs) you can keep for proof and debugging
+The agent is most useful when it checks the account first, shows what it can safely read, and previews any generation or admin work before live apply.
 
-## Common use cases (examples)
+## Good jobs to give the agent
 
 - “Check whether my ElevenLabs key is working before I try anything expensive.”
 - “List my voices and available models so I can pick the right one.”
-- “Review my recent generation history and then see the exact missing-approval refusal for downloading one audio file when no saved snapshot is available.”
-- “Draft a text-to-speech generation first, then tell me what approval is needed if no saved snapshot is available.”
+- “Review my recent generation history before downloading anything.”
+- “Draft a text-to-speech generation first, then tell me what approval is needed.”
 - “Check current usage before I launch more audio generation.”
+- “Transcribe this file only after I approve the spend-sensitive step.”
+- “Save the generated audio or transcript to a local file, not into chat.”
 
-## What you’ll see from the agent (trust + safety)
+## What the agent should show you
 
 When you ask for a change, the agent should:
 
-1) Show a dry-run preview of what would change.
-2) Try live apply only after explicit confirmation and required safety flags.
-3) For writes, show the explicit no-snapshot approval instead of pretending the write happened.
-4) Point to the saved plan, refusal, and proof artifacts.
+1. Show a dry-run preview first.
+2. Name the voice, model, file, or workspace area involved.
+3. Ask for spend approval before live generation, transcription, music, voice design, audio isolation, or forced alignment.
+4. Keep binary or sensitive results in files.
+5. Say plainly when no saved before-state exists and no-snapshot approval is needed.

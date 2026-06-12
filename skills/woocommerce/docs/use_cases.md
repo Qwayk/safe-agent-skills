@@ -1,20 +1,26 @@
 # Use cases
 
-Use this page when you want ideas for real WooCommerce jobs to hand to your agent.
+Use this page when you want practical WooCommerce jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## What you can do
+WooCommerce work usually means checking a live store before changing something customers can see or buy.
 
-- Review products, orders, customers, taxes, shipping zones, and payment gateways
-- Preview a change before it reaches the store
-- Prepare plans for products, coupons, customers, reviews, webhooks, and more without sending unsafe writes
-- Prepare official WooCommerce batch endpoint plans with a preview-first workflow
-- Inspect reference data like countries, continents, and currencies
+## Good jobs to give the agent
 
-## Why this beats a quick one-off script
+- "Show me active products and flag anything missing prices or stock."
+- "Find this order and explain its status."
+- "List shipping zones and payment gateways before we change checkout settings."
+- "Preview a coupon for this sale, but do not create it yet."
+- "Review customers or reviews that match these rules."
+- "Prepare a batch update plan for these products and wait for my approval before applying it."
+- "Inspect countries, continents, currencies, taxes, or store settings for this checkout issue."
 
-- Every WooCommerce v3 endpoint is mapped to an explicit command
-- Writes are preview-first instead of “send now and hope”
-- Current write apply requires explicit no-snapshot approval before WooCommerce HTTP when no saved snapshot is available until before-state capture exists
-- Local proof files make review easier
-- The same command shape works across catalog, settings, taxes, shipping, and admin areas
+## What the agent should show you
+
+When a change is requested, the agent should:
+
+1. Show the dry-run plan first.
+2. Name the store, resource, and exact target.
+3. Explain whether the change affects products, checkout, orders, customers, or settings.
+4. Ask for stronger approval before high-risk store changes.
+5. Say plainly when no saved before-state exists and no-snapshot approval is needed.

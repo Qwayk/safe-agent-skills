@@ -1,32 +1,26 @@
 # Use cases
 
-Use this page when you want ideas for real Cloudinary jobs to hand to your agent.
+Use this page when you want practical Cloudinary jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Common jobs
+Cloudinary work usually touches media people actually see, so the safest path is to inspect assets, folders, metadata, and account settings before applying changes.
 
-- Check whether product and account credentials are ready before a bigger task.
-- Look up asset details, folders, tags, metadata fields, upload presets, streaming profiles, or player profiles.
-- Prepare plans to upload files, rename assets, change tags, change context, or update structured metadata.
-- Run Analyze API jobs that are exposed as read-like REST calls.
-- Inspect backed-up assets through `upload download-backup`; restore writes currently plan and then require explicit no-snapshot approval before Cloudinary HTTP when no saved snapshot is available.
-- Manage account-level product environments, users, user groups, roles, and custom policies when your Cloudinary plan allows it.
-- Export sensitive or binary results to local files instead of printing them to the screen.
+## Good jobs to give the agent
 
-## Why it is safer than ad-hoc API calls
+- "Check whether my product and account credentials are ready."
+- "Look up this asset and explain its tags, metadata, and delivery details."
+- "List folders, upload presets, metadata fields, streaming profiles, or player profiles."
+- "Prepare a plan to upload, rename, tag, restore, or update structured metadata."
+- "Run this Analyze API job and save the result."
+- "Check product environments, users, user groups, roles, and policies if my plan allows it."
+- "Save sensitive or binary results to a local file instead of printing them in chat."
 
-- Every shipped operation is allowlisted in the local inventory.
-- Writes are preview-first by default.
-- Current write apply attempts require explicit no-snapshot approval before Cloudinary HTTP when no saved snapshot is available.
-- Deletes and access-key changes need extra confirmation.
-- Sensitive results are forced to files.
-- Each run can leave a local proof trail under `.state/runs/`.
+## What the agent should show you
 
-## Good prompts for an agent
+When a change is requested, the agent should:
 
-- "Check my Cloudinary product and account setup and tell me what is still missing."
-- "Show me the shipped Upload API commands and explain which one uploads a signed file."
-- "Get asset details for public ID sample in my image/upload library."
-- "Plan a restore for this sample asset and confirm the apply attempt will require explicit no-snapshot approval before Cloudinary HTTP."
-- "Plan a new product environment in Cloudinary provisioning, but do not apply it."
-- "Run the public Cedar policy validator with this JSON body and save the result."
+1. Show the dry-run plan first.
+2. Name the asset, folder, product environment, account resource, or output file involved.
+3. Keep sensitive or binary output in files.
+4. Ask for stronger approval before deletes, access-key changes, or other risky work.
+5. Say plainly when a write has no saved snapshot and needs no-snapshot approval.
