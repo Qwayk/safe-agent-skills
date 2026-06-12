@@ -2,11 +2,11 @@
 
 **Capability:** Read-only
 
-Use this skill when you want your agent to inspect Sovrn Commerce and Advertising data without guessing from raw docs.
+Sovrn helps publishers answer revenue questions across Commerce and Advertising: which campaigns are active, which merchants are approved, which pages or links are earning, and which reports are safe to pull for one publisher. This skill lets an agent inspect those Sovrn surfaces while keeping the Commerce and Advertising credential split visible.
 
-You can hand your agent jobs like campaign checks, merchant-group lookups, page or merchant reporting, product URL monetization checks, comparison-shopping queries, and advertising report pulls for one publisher.
+It is useful for questions like "Can this product URL be monetized?", "Which merchant groups are approved?", "Which pages or links performed?", "Can you compare offers or coupons?", or "Which Advertising reports can this publisher pull?"
 
-This skill stays read-only on purpose. Even when an official Sovrn endpoint uses `POST` for a query, this tool still treats it as read-only work and never changes your Sovrn account. The real risk here is using the wrong key type, wrong publisher ID, or a report scope that is broader than you meant to run.
+The tool is read-only against Sovrn. Even when an official Sovrn endpoint uses `POST` for a query, this tool treats it as read-only work and never changes your Sovrn account. The real risk is using the wrong key type, wrong publisher ID, or a report scope that is broader than you meant to run.
 
 A good first ask is: "Check the Sovrn skill is configured, then show me active campaigns, approved merchant groups, and the safest Commerce or Advertising reports I can run first."
 

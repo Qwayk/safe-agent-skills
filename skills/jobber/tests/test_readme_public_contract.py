@@ -39,7 +39,8 @@ class TestReadmePublicContract(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         text = (root / "README.md").read_text(encoding="utf-8")
 
-        self.assertTrue(text.startswith("# Jobber Safe CLI\n"))
+        self.assertTrue(text.startswith("# Jobber\n"))
+        self.assertIn("**Capability:** Reads + careful changes", text)
         self.assertNotIn("## Simplicity lock", text)
         self.assertNotIn("# qwayk-jobber-safe-agent-cli", text)
 
@@ -55,7 +56,17 @@ class TestReadmePublicContract(unittest.TestCase):
 
         opening = text.split("## Start here first", 1)[0]
         self.assertIn("A good first ask is:", opening)
-        self.assertIn("You can ask for things like", opening)
+        self.assertIn("service business", opening)
+        banned = [
+            "You can ask for things like",
+            "Use this skill when",
+            "without guessing from raw docs",
+            "real product work",
+            "stays simple",
+            "slows down on purpose",
+        ]
+        for phrase in banned:
+            self.assertNotIn(phrase, opening)
 
     def test_helpful_docs_stay_human_facing(self) -> None:
         root = Path(__file__).resolve().parents[1]

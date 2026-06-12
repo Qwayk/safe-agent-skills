@@ -1,6 +1,6 @@
 # Sovrn Safe CLI
 
-Use this skill when you need safe, explicit CLI access to the official Sovrn Commerce HTTP APIs or the official Sovrn Advertising Reporting APIs.
+Sovrn work starts with publisher revenue questions across the official Commerce HTTP APIs or the official Advertising Reporting APIs.
 
 ## What this skill is for
 

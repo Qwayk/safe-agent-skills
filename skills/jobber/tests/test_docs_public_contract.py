@@ -39,7 +39,7 @@ class TestDocsPublicContract(unittest.TestCase):
         text = self._read("use_cases.md")
 
         self.assertIn("## Good first asks", text)
-        self.assertIn("## What you should get back", text)
+        self.assertIn("## What the agent should show you", text)
         self.assertNotIn("`qwayk-jobber-safe-agent-cli", text)
         self.assertNotIn("--apply", text)
 
@@ -118,6 +118,10 @@ class TestDocsPublicContract(unittest.TestCase):
         self.assertIn("Authentication means", authentication)
         self.assertIn("Configuration means", configuration)
         self.assertIn("A CSV file is a simple spreadsheet-style file.", jobs)
+        receipt_path = self.docs / "receipt_review_prompt.md"
+        if receipt_path.exists():
+            receipt = receipt_path.read_text(encoding="utf-8")
+            self.assertIn("A receipt is the record of what the tool actually did.", receipt)
 
     def test_public_write_apply_examples_require_plan_in(self) -> None:
         roots = [

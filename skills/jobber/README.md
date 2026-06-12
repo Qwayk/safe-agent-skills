@@ -1,12 +1,18 @@
-# Jobber Safe CLI
+# Jobber
 
-A good first ask is: Connect this skill, show me what it can safely review first, and suggest the clearest next action.
+**Capability:** Reads + careful changes
 
-You can ask for things like account summaries, report checks, risk review, and a safe change plan before any live write.
+Jobber is where field-service teams manage clients, jobs, invoices, quotes, visits, and the day-to-day work behind a service business. This skill helps an agent review Jobber account data through explicit commands, then prepare client, job, invoice, or workflow changes as reviewed plans before any live write.
+
+It is useful for questions like "Which clients or jobs need attention?", "Can you check account visibility before we change anything?", "What would this update do?", or "Which webhook topics should our app be ready for?"
+
+Read work can run after setup. Write operations start as dry-run plans, live writes need the reviewed plan file and explicit approval, and higher-risk changes need a clear extra acknowledgement.
+
+A good first ask is: "Check the Jobber skill is connected, show what account data it can safely review first, and suggest the clearest next action before any live write."
 
 ## Start here first
 
-- What this skill can help with? [What this skill can help you do](docs/use_cases.md)
+- Want ideas for real Jobber work? [What this skill can help you do](docs/use_cases.md)
 - Need setup? [Set up your account step by step](docs/onboarding.md)
 - Want the safety story first? [See how this skill keeps changes safe](docs/safety_model.md)
 - If you are ready for commands, go to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
@@ -27,7 +33,7 @@ You can ask for things like account summaries, report checks, risk review, and a
 
 ## Install and first run
 
-Install slug: `jobber`.
+Install slug: `jobber`
 
 Ask your agent to install the skill from `Qwayk/safe-agent-skills`.
 
@@ -37,7 +43,11 @@ If auto-install is not available, run:
 npx skills add Qwayk/safe-agent-skills@jobber -g -y
 ```
 
-Then open [Onboarding](docs/onboarding.md), then [Quickstart](docs/quickstart.md).
+Then try a safe first ask like:
+
+```text
+Check the Jobber skill is connected, show what account data it can safely review first, and suggest the clearest next action before any live write.
+```
 
 ## How this skill stays safe
 

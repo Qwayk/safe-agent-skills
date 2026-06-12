@@ -2,11 +2,11 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want an AI agent to work with YouTube safely: research channels, check official YouTube Data API results, export channel video lists, download caption tracks you have access to, and prepare careful plans for uploads or metadata changes.
+YouTube work often starts with channel research, upload audits, playlist cleanup, caption access, or metadata planning. This skill helps an agent resolve channels, read official YouTube Data API results, export channel video lists, download caption tracks you have access to, and prepare upload or metadata changes as reviewable plans.
 
-You can hand your agent jobs like channel lookups from a handle or URL, recent upload audits, search and playlist reporting, exporting public video lists, caption downloads when the API allows them, and careful upload or metadata plans.
+It is useful for questions like "What are this channel's latest uploads?", "Which videos need metadata cleanup?", "Can we export this channel's public videos?", "Can we download caption tracks we have access to?", or "What would this upload or playlist change do before approval?"
 
-It is best for work where you want the agent to check first and change later. Real YouTube reads run only when you ask for them clearly, and changes such as uploads, playlist edits, metadata updates, and deletes need clear approval before the tool can try them.
+Real YouTube reads run only when you ask for them clearly. Changes such as uploads, playlist edits, metadata updates, and deletes need clear approval before the tool can try them.
 
 A good first ask is: "Check the YouTube skill is connected, resolve this channel, show the latest uploads, and stop before any changes."
 

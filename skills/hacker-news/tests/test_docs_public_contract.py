@@ -38,7 +38,7 @@ class TestDocsPublicContract(unittest.TestCase):
     def test_front_door_docs_open_with_user_help(self) -> None:
         checks = {
             "docs/README.md": "Start with the first three pages",
-            "docs/use_cases.md": "Use this page when you want ideas",
+            "docs/use_cases.md": "Hacker News work usually starts",
             "docs/onboarding.md": "You do not need to be technical",
             "docs/safety_model.md": "Use this page when you want to know",
             "docs/quickstart.md": "technical command path",

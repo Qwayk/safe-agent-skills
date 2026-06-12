@@ -23,4 +23,4 @@ This tool is intentionally read-only. It can fetch public Hacker News data, but 
 
 Ask:
 
-"Check the Hacker News skill is connected, show me the current top stories, fetch the first story item, and stop after the read-only results."
+"Show me the current top Hacker News stories, fetch the first five items, and tell me the main topics people are discussing. Do not summarize from IDs alone."

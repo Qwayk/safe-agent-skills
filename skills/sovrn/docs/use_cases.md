@@ -1,25 +1,14 @@
 # What you can do with Sovrn
 
-This skill helps publishers, affiliate teams, and ad or revenue teams who need direct answers from Sovrn without clicking through dashboards all day.
+Sovrn work usually starts with publisher revenue questions: which campaigns are active, which merchants are approved, which links or pages earned, and which Commerce or Advertising report answers the question.
 
-It is strongest when you want an AI agent to do read-only work like:
+## Good jobs to give the agent
 
-- checking whether a product URL can be monetized
-- pulling Commerce reports by page, link, merchant, network, merchandise, transaction, or CUID
-- finding approved merchants for a campaign
-- comparing prices for one product across merchants in one market
-- pulling Advertising account, bid, breakout, domain, or custom reports
-
-## Where this skill is especially useful
-
-Typical no-code automation is fine when you already know the exact record you want and only need a simple trigger or export.
-
-This skill is better when the hard part is discovery, targeting, and report pulling:
-
-- it can ask real Sovrn APIs direct questions
-- it can search across existing campaigns, merchants, products, and reports
-- it gives deterministic API results instead of browser scraping
-- it keeps the real Sovrn auth split visible so you do not guess which key belongs to which job
+- Check whether a product URL can be monetized.
+- Pull Commerce reports by page, link, merchant, network, merchandise, transaction, or CUID.
+- Find approved merchants for a campaign.
+- Compare prices for one product across merchants in one market.
+- Pull Advertising account, bid, breakout, domain, or custom reports.
 
 ## Real example
 

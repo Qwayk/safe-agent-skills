@@ -1,18 +1,9 @@
 # What you can do with YouTube
 
-Use this page when you want ideas for real YouTube jobs to hand to your agent, especially if you are not sure what to ask first.
+YouTube work usually starts with a channel, video, playlist, caption, or upload question that needs official API data before anyone changes the channel.
 If you need setup first, start with [Connect your YouTube account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this skill is useful
-
-This skill is useful when a YouTube job needs more than one quick lookup and you want the agent to slow down before changing anything:
-
-- channel research across many videos, playlists, and captions
-- review-first changes instead of instant blind writes
-- official YouTube API reads instead of guesses from scraped pages
-- saved plans, refusals, receipts, and export files you can review later
-
-## Common YouTube use cases
+## Good jobs to give the agent
 
 ### Channel research and reporting
 
