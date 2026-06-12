@@ -2,13 +2,15 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to inspect Bluesky profiles, posts, feeds, lists, and account state, or preview careful Bluesky API changes without guessing from raw docs.
+Bluesky is where profiles, posts, feeds, follows, lists, chat, moderation, and repo records shape a public social account and its network.
 
-You can hand your agent jobs like profile checks, recent-post review, record lookups, list and follow inspection, planned post or repo-record writes, and moderation or admin calls when your account already has that access.
+This skill helps an agent check Bluesky identity and account state, review posts or feeds, inspect lists and follows, and prepare record, post, moderation, or admin work before anything changes the account.
 
-Read work starts carefully here too: the tool previews API operations first, live reads need `--live`, and writes need an explicit apply path plus extra approval when the action is risky, irreversible, or missing a saved before-state.
+Use it for questions like: "What does this Bluesky profile show?", "Which recent posts should we review?", "What lists or follows are attached to this account?", "Can you preview a repo-record change?", or "Which moderation operation is available to this account?"
 
-A good first ask is: "Check the Bluesky skill is connected, show my profile and recent posts safely, and preview the exact write steps before any account change."
+Live Bluesky work is deliberate. The tool previews API operations first, live reads need `--live`, and writes need explicit apply approval plus extra confirmation when the action is risky, irreversible, or missing a saved before-state.
+
+A good first ask is: "Check the Bluesky connection, show my profile and recent posts, list the safest read options, and stop before any account changes."
 
 ## Start here first
 
@@ -50,7 +52,7 @@ npx skills add Qwayk/safe-agent-skills@bluesky -g -y
 Then try a safe first ask like:
 
 ```text
-Check the Bluesky skill is connected, show my profile and recent posts safely, and preview the next write steps before any change goes live.
+Check the Bluesky connection, show my profile and recent posts, list the safest read options, and stop before any account changes.
 ```
 
 ## How this skill stays safe

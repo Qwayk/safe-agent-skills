@@ -2,13 +2,15 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review X accounts, users, posts, lists, mentions, DMs, and careful X API v2 changes without guessing from raw docs.
+X is where posts, mentions, lists, DMs, follows, likes, bookmarks, and account identity can affect a public brand or creator account fast.
 
-You can hand your agent jobs like account and token checks, user or post lookups, mention reviews, list work, explicit endpoint planning, DM safety checks, and controlled write plans for supported X API v2 actions.
+This skill helps an agent check account and token readiness, review users, posts, mentions, lists, trends, Spaces, and DMs, and prepare X API v2 changes before anything posts, messages, follows, likes, bookmarks, or edits account state.
 
-Read work stays simple. Riskier work slows down on purpose: live reads need explicit `--live`, write-capable actions start as dry-run plans, and provider or local token writes need explicit no-snapshot approval when the tool cannot save useful before-state first.
+Use it for questions like: "Which account does this token reach?", "What mentions need review?", "Can this user receive a DM?", "Can you resolve these usernames?", or "Can you build the safest plan before we post or send anything?"
 
-A good first ask is: "Check the X skill is connected, show my account and recent mentions, list the main safe read options, and stop before any writes."
+X work is sensitive because public posts and DMs are easy to get wrong. Live reads need `--live`, write-capable actions start as dry-run plans, and provider or local token writes need explicit no-snapshot approval when the tool cannot save useful before-state first.
+
+A good first ask is: "Check the X connection, show my account, recent mentions, and DM safety status, then stop before any writes."
 
 ## Start here first
 
@@ -51,7 +53,7 @@ npx skills add Qwayk/safe-agent-skills@x -g -y
 Then try a safe first ask like:
 
 ```text
-Connect the X skill, show my account, recent mentions, and DM safety status, then stop before any writes.
+Check the X connection, show my account, recent mentions, and DM safety status, then stop before any writes.
 ```
 
 ## How this skill stays safe

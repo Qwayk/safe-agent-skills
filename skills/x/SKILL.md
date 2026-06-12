@@ -4,7 +4,7 @@
 This page is the agent-facing rule sheet for the public X skill.
 If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
 
-Use this skill when you need to interact with the **X API v2** safely via `x-api-tool`.
+This skill gives an agent a careful way to check X accounts, posts, mentions, lists, DMs, and supported X API v2 actions through `x-api-tool`.
 
 ## Safety contract (non-negotiable)
 

@@ -2,13 +2,15 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Threads profiles, posts, replies, mentions, insights, search results, locations, and publishing options without guessing from raw docs.
+Threads is where profile identity, posts, replies, mentions, insights, search, locations, and publishing choices shape how an Instagram-connected public conversation appears.
 
-You can hand your agent jobs like account checks, owned-post reviews, public profile lookups, reply and mention moderation prep, insight pulls, keyword or topic-tag discovery, and careful Threads publishing plans.
+This skill helps an agent check Threads account readiness, review owned and public posts, inspect replies and mentions, pull insights, research keywords or topic tags, and prepare publishing or moderation plans before anything changes.
 
-Read work stays simple. Riskier work slows down on purpose: write-capable commands start as dry-run plans, high-risk deletes need stronger approval, and token writes or Threads provider writes need explicit no-snapshot approval when no saved snapshot exists.
+Use it for questions like: "Which Threads profile does this token reach?", "What recent posts and replies need review?", "What insights are available?", "Can you search this topic tag?", or "Can you preview a post plan before publishing?"
 
-A good first ask is: "Check the Threads skill is connected, show my profile, list my recent posts, and stop before any writes."
+Threads reads can run live after valid access is available. Write-capable commands start as dry-run plans, high-risk deletes need stronger approval, and token writes or Threads provider writes need explicit no-snapshot approval when no saved snapshot exists.
+
+A good first ask is: "Check the Threads connection, show my profile, list my recent posts and replies, and stop before any writes."
 
 ## Start here first
 
@@ -50,7 +52,7 @@ npx skills add Qwayk/safe-agent-skills@threads -g -y
 Then try a safe first ask like:
 
 ```text
-Check the Threads skill is connected, show my profile, list my recent posts, and stop before any writes.
+Check the Threads connection, show my profile, list my recent posts and replies, and stop before any writes.
 ```
 
 ## How this skill stays safe

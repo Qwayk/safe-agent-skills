@@ -12,6 +12,15 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertTrue(text.startswith("# Threads\n"))
         self.assertNotIn("# threads-api-tool", text)
         self.assertIn("**Capability:** Reads + careful changes", text)
+        self.assertIn("Threads is where profile identity", text)
+        for stale_phrase in [
+            "Use this skill when",
+            "You can hand your agent jobs like",
+            "without guessing from raw docs",
+            "Read work stays simple",
+            "Riskier work slows down on purpose",
+        ]:
+            self.assertNotIn(stale_phrase, text)
 
         required_sections = [
             "## Start here first",
@@ -54,3 +63,13 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertIn("[Connect your Threads account](onboarding.md)", text)
         self.assertIn("[How this skill stays safe](safety_model.md)", text)
         self.assertNotIn("read `docs/onboarding.md`", text)
+
+    def test_use_cases_stay_specific_and_human(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        self.assertIn("Threads work usually starts", text)
+        self.assertIn("## Good jobs to give the agent", text)
+        self.assertIn("## What the agent should show you", text)
+        self.assertNotIn("What this tool is for", text)
+        self.assertNotIn("Common use cases", text)

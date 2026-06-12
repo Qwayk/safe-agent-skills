@@ -1,35 +1,25 @@
 # What you can do with Bluesky
 
-Use this page when you want ideas for real Bluesky jobs to hand to your agent.
+Use this page when you want practical Bluesky jobs to hand to your agent.
 If you need setup first, start with [Connect your Bluesky account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-This skill is best when you want a careful agent path into documented Bluesky API work instead of guessing from scattered docs.
+Bluesky work can touch public posts, follows, lists, records, chat, and moderation. The safest first move is to inspect the account and endpoint before planning any write.
 
-## Common jobs this skill is good at
-
-- Check a profile, DID, repo, or basic account state.
-- Review recent posts, lists, follows, or feed-related data.
-- Inspect the operation inventory before choosing a Bluesky endpoint.
-- Preview a post, record, or account write before any live apply.
-- Review moderation, chat, or admin surfaces when your account already has that access.
-- Capture raw subscription frames when you need stream-style inspection.
-
-## Real example asks
+## Good jobs to give the agent
 
 - "Check this Bluesky profile and show me the recent post surface safely."
 - "List the documented operations for the area I need before we choose one."
 - "Preview the exact write plan for creating or updating a record, but do not apply it yet."
 - "Show me the safest live read for this endpoint before we do anything riskier."
+- "Review lists, follows, feeds, or chat surfaces available to this account."
+- "Capture raw subscription frames if I need stream-style inspection."
 
-## Why this is useful
+## What the agent should show you
 
-- The tool keeps reads and writes explicit instead of hiding them behind vague prompts.
-- You can inspect the operation inventory before the agent touches a live endpoint.
-- Write work leaves behind plans, refusals, receipts, and run history for review.
+When you ask for a change, the agent should:
 
-## What a careful run should look like
-
-- Start with auth and one small live read.
-- Review the exact endpoint and payload before any write apply.
-- Use live apply only after the plan looks right.
-- Treat missing before-state and irreversible actions as slower approval points, not as normal clicks.
+1. Start with auth and one small live read.
+2. Name the endpoint, payload, account, and target record.
+3. Show the dry-run plan before any write apply.
+4. Ask for stronger approval for risky, irreversible, or no-snapshot writes.
+5. Point to the plan, receipt, refusal, or run history after the request.

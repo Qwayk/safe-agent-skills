@@ -2,11 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Instagram professional-account media, comments, mentions, messages, stories, live media, and insights without guessing from raw docs.
+Instagram is where professional-account media, comments, mentions, messages, stories, live media, and insights become public content and customer conversations.
 
-You can hand your agent jobs like recent media reviews, publish planning, comment moderation prep, mention replies, message prep, publish quota checks, and account or media insight pulls.
+This skill helps an agent confirm which Instagram account a token reaches, review media and comments, check insights and publishing limits, and prepare publish, moderation, mention, or message plans before anything goes live.
 
-Read work stays simple. Riskier work slows down on purpose: read commands can run live, publish and moderation actions start as dry-run plans, some higher-risk actions need extra confirmation, and live applies need explicit no-snapshot approval when the tool cannot save useful before-state first.
+Use it for questions like: "Which account is connected?", "What recent media and comments need review?", "Are we near the publish quota?", "Can you prepare a Reel or carousel plan?", or "Can you draft this reply before sending it?"
+
+Instagram reads can run live after valid access is available. Publish, moderation, mention, message, and token actions start as dry-run plans, and live applies need explicit no-snapshot approval when the tool cannot save useful before-state first.
 
 A good first ask is: "Check the Instagram skill is connected, show which account this token reaches, and list my recent media, comments, and safe review options."
 
@@ -52,7 +54,7 @@ npx skills add Qwayk/safe-agent-skills@instagram -g -y
 Then try a safe first ask like:
 
 ```text
-Connect the Instagram skill, show which account this token reaches, list my recent media and comments, and stop before any live changes.
+Check the Instagram connection, show which account this token reaches, list my recent media and comments, and stop before any live changes.
 ```
 
 ## How this skill stays safe
