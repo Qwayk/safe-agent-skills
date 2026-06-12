@@ -1,0 +1,3 @@
+action,args_json,selection,limit
+read.clients,,nodes { id name } totalCount,10
+write.clientCreate,"{""input"":{""firstName"":""Sample"",""lastName"":""Client""}}",client { id name } userErrors { message path },

@@ -1,0 +1,2 @@
+action,selection,limit
+read.clients,nodes { id name } totalCount,10

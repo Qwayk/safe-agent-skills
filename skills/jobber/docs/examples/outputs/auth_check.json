@@ -1,0 +1,12 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "command": "auth.check",
+  "message": "Set JOBBER_API_TOKEN or store a token in .state/token.json",
+  "missing_token": true,
+  "ok": true,
+  "run_id": null,
+  "runs_index": "[tool-root]/.state/runs/index.jsonl",
+  "token_available": false
+}

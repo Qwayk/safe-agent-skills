@@ -1,0 +1,25 @@
+{
+  "tool": "qwayk-jobber-safe-agent-cli",
+  "version": "0.1.0",
+  "applied_at_utc": "2026-06-11T00:00:00Z",
+  "env_fingerprint": "https://api.getjobber.com/api/graphql",
+  "command": "qwayk-jobber-safe-agent-cli --output json --apply --yes --plan-in plan.json write clientCreate --args-json [redacted]",
+  "changed": false,
+  "live_verified": false,
+  "note": "Shape-only example. This repository run did not apply a live Jobber mutation.",
+  "operation": "clientCreate",
+  "snapshot_status": "No snapshot available",
+  "recovery_notes": "No useful before-state was saved. Recovery may be manual or impossible.",
+  "recovery": {
+    "status": "manual_or_impossible",
+    "notes": "No useful before-state was saved. Recovery may be manual or impossible."
+  },
+  "receipt_out": null,
+  "verification": {
+    "ok": null,
+    "details": "Live verification requires a Jobber account token and matching OAuth scopes."
+  },
+  "diff_applied": [],
+  "backups": [],
+  "rollback_plan": null
+}

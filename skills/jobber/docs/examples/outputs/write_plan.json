@@ -1,0 +1,54 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "command": "write.clientCreate",
+  "dry_run": true,
+  "ok": true,
+  "operation": "clientCreate",
+  "plan": {
+    "arguments": {
+      "input": {
+        "firstName": "Sample",
+        "lastName": "Client"
+      }
+    },
+    "arguments_hash": "822c54e505b8b2c73d28c16c4305ed37634e83b8f6895f6b73eef73e7a229858",
+    "arguments_summary": {
+      "count": 1,
+      "keys": [
+        "input"
+      ]
+    },
+    "command": "write.clientCreate",
+    "env_fingerprint": "https://api.getjobber.com/api/graphql",
+    "graphql": {
+      "document": "mutation { clientCreate(input: {\"firstName\":\"Sample\",\"lastName\":\"Client\"}) { client { id name } userErrors { message path } } }",
+      "document_hash": "900b271c348767d05ba1890f57be18cfe67bb2d12d55c84d8f9bde9ffb388704"
+    },
+    "intended_mutation": "clientCreate",
+    "mutation": "clientCreate",
+    "operation": "clientCreate",
+    "snapshot_status": "No snapshot available",
+    "recovery_notes": "No useful before-state was saved. Recovery may be manual or impossible.",
+    "recovery": {
+      "status": "manual_or_impossible",
+      "notes": "No useful before-state was saved. Recovery may be manual or impossible."
+    },
+    "risk": "medium",
+    "selection": "{ client { id name } userErrors { message path } }",
+    "selection_hash": "4b220f2689338b0d48ac8ba7ae038c5f42a7ab14f9f9bd086332a3d9537d6ad4",
+    "verification_plan": {
+      "required_for_apply": true,
+      "steps": [
+        "Run a matching read command with a limited selector",
+        "Check expected fields changed",
+        "Confirm response includes requested mutation result"
+      ],
+      "type": "read_back"
+    }
+  },
+  "plan_out": "docs/examples/plan.example.json",
+  "run_id": null,
+  "runs_index": "[tool-root]/.state/runs/index.jsonl"
+}

@@ -1,0 +1,16 @@
+{
+  "api_version": "2025-04-16",
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "command": "schema.summary",
+  "counts": {
+    "mutations": 596,
+    "queries": 384,
+    "webhook_topics": 46
+  },
+  "fetched_utc": "2026-06-11",
+  "ok": true,
+  "run_id": null,
+  "runs_index": "[repo-root]/.state/runs/index.jsonl"
+}
