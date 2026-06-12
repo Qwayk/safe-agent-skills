@@ -3,7 +3,7 @@
 This page is the agent-facing rule sheet for the public Microsoft Ads skill.
 If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
 
-Use this skill to interact with the Microsoft Advertising API v13 via the safe-by-default CLI in this repo.
+This skill gives an agent a careful Microsoft Advertising API v13 path for account checks, reports, bulk work, and reviewed campaign or customer-management changes through `msads-api-tool`.
 
 ## Safety rules (non-negotiable)
 
