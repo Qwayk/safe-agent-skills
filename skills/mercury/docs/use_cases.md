@@ -1,6 +1,6 @@
 # What you can do with Mercury
 
-Use this page when you want ideas for real Mercury work to hand to your agent.
+Mercury work usually starts with finance review questions: what accounts exist, what transactions need bookkeeping, which statements or invoices should be saved, and what recent activity deserves attention.
 If you need setup first, start with [Connect your Mercury API token](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 Mercury stays read-only here by design. The skill can read Mercury data freely, and it can save exports or downloads to your machine only after an explicit local-file approval.
@@ -9,7 +9,7 @@ Mercury stays read-only here by design. The skill can read Mercury data freely, 
 
 "Check the Mercury skill is configured, list my accounts, and preview a CSV export of this month's transactions without writing any files yet."
 
-## Common Mercury jobs
+## Good jobs to give the agent
 
 - "List all my Mercury accounts and show the account IDs."
 - "Export all transactions from January 1 to December 31 to a CSV for my accountant, but start with a dry-run plan."
@@ -20,16 +20,7 @@ Mercury stays read-only here by design. The skill can read Mercury data freely, 
 - "Show me treasury transactions for this treasury account."
 - "Summarize recent transaction volume and totals by category."
 
-## What this skill is good for
-
-- bookkeeping exports
-- account and transaction review
-- invoice and statement retrieval
-- treasury and journal-entry checks
-- recipient, customer, and webhook review
-- audit and reporting support
-
-## What this skill will not do
+## What it will not do
 
 - approve payments
 - send money

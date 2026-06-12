@@ -2,11 +2,11 @@
 
 **Capability:** Read-only
 
-Use this skill when you want your agent to review Mercury accounts, transactions, statements, invoices, and other finance records without guessing from raw docs.
+Mercury is where business money questions become concrete: account balances, transactions, statements, invoices, recipients, treasury activity, and bookkeeping exports. This skill helps an agent review those records and prepare local exports or downloads without giving it any way to change Mercury itself.
 
-You can hand your agent jobs like account reviews, transaction exports for bookkeeping, statement and invoice downloads, customer and recipient lookups, event checks, and treasury or journal-entry review.
+It is useful for questions like "Which accounts do I have?", "Can you export this month of transactions for bookkeeping?", "Can you download these statements or invoices?", or "What recent Mercury events should I review?"
 
-This skill stays read-only against Mercury on purpose. It does not change Mercury data. The only writes it can do are local file exports or downloads on your own machine, and those start as dry-run plans before any file is written.
+The tool is read-only against Mercury. It does not send money, approve payments, edit invoices, or change settings. The only writes it can do are local file exports or downloads on your own machine, and those start as dry-run plans before any file is written.
 
 A good first ask is: "Check the Mercury skill is configured, list my accounts, and preview a transaction export for bookkeeping without writing any files yet."
 

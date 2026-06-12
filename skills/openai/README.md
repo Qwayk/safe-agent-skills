@@ -2,13 +2,13 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to work inside OpenAI more carefully: review what is there, inspect the shipped operation catalog, check live account access, and plan real API changes without guessing from raw docs.
+OpenAI account work can affect models, files, assistants, threads, vector stores, usage, projects, and sometimes real spend. This skill helps an agent inspect what is available, choose the right shipped operation, and prepare risky API changes as reviewed plans before anything reaches OpenAI.
 
-You can hand your agent jobs like model and file checks, usage review, project or org review, assistant or thread review, vector store work, and careful OpenAI write plans for files, responses, batches, fine-tunes, or other documented API operations.
+It is useful for questions like "Which models or files are available?", "What usage or project access should we review?", "Which operation fits this API job?", or "What approvals are needed before a batch, fine-tune, upload, delete, or spend-money action?"
 
-Read work stays simple. Riskier work slows down on purpose: no network call happens without `--live`, write-capable operations start as dry-run plans, spend-money actions need stronger approval, and live writes need explicit no-snapshot approval when the tool cannot save useful before-state first.
+No network call happens without `--live`, even for reads. Write-capable operations start as dry-run plans, spend-money actions need stronger approval, and live writes need explicit no-snapshot approval when the tool cannot save useful before-state first.
 
-A good first ask is: "Check the OpenAI skill is configured, list the available operations, and show me the safest live read or review steps to start with."
+A good first ask is: "Check the OpenAI skill is configured, list the available operations, and show me the safest live read or review steps before we plan any changes."
 
 ## Start here first
 

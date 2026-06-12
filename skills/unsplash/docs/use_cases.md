@@ -1,13 +1,13 @@
 # What you can do with Unsplash
 
-Use this page when you want ideas for real Unsplash work to hand to your agent.
+Unsplash work usually starts with a creative selection question: which photos fit the topic, style, creator, collection, or campaign, and which ones are approved before download tracking runs.
 If you need setup first, start with [Connect your Unsplash access key](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## A good first ask
 
 "Check the Unsplash skill is configured, find 20 photos for my topic, and build a shortlist before we plan any downloads."
 
-## Common Unsplash jobs
+## Good jobs to give the agent
 
 ### Photo research and shortlist building
 
@@ -26,12 +26,6 @@ If you need setup first, start with [Connect your Unsplash access key](onboardin
 - "Plan downloading these approved photo IDs into a folder, but do not download anything yet."
 - "Show me whether the current apply would need no-snapshot approval before download tracking."
 - "Try the approved download only after I confirm the destination path and overwrite rules."
-
-## Why this skill is useful
-
-- It gives your agent a clean Unsplash research surface instead of making it guess from raw docs.
-- It helps you keep image research organized across search, topics, collections, and creator pages.
-- It keeps the download path explicit, so tracking and local file writes do not happen by accident.
 
 ## What you should expect from the agent
 

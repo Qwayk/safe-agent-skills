@@ -2,11 +2,11 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Qdrant Cloud accounts, clusters, backups, access, billing, and monitoring without guessing from raw docs.
+Qdrant Cloud is where vector-search infrastructure decisions live: accounts, clusters, backups, regions, packages, access, billing, monitoring, and recovery options. This skill helps an agent inspect the control plane first, then prepare cluster, access, backup, billing, or serverless changes as reviewable plans.
 
-You can hand your agent jobs like cluster inventories, backup reviews, region or package checks, API-key and role review, billing or invoice checks, monitoring exports, and careful change plans for clusters or serverless resources.
+It is useful for questions like "Which clusters and backups exist?", "Do we have the right regions and packages?", "Who has access?", "What billing or monitoring data should we review?", or "What approval is needed before this infrastructure change?"
 
-Read work stays careful. Nothing hits the Qdrant Cloud API unless you add `--live`. Riskier work slows down on purpose: ordinary writes start as dry-run plans, many live changes still need explicit no-snapshot approval when no saved before-state or provider backup exists, and money-moving actions need extra approval. Provider backup and restore stays a narrow exception because it is the product's own recovery workflow.
+Nothing hits the Qdrant Cloud API unless you add `--live`. Ordinary writes start as dry-run plans, many live changes still need explicit no-snapshot approval when no saved before-state or provider backup exists, and money-moving actions need extra approval. Provider backup and restore stays a narrow exception because it is the product's own recovery workflow.
 
 A good first ask is: "Check the Qdrant Cloud skill is configured, list my accounts and clusters, and tell me what is safe to review before we plan any changes."
 

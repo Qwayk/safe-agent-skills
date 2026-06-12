@@ -35,6 +35,21 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertIn("[Quickstart](docs/quickstart.md)", text)
         self.assertIn("[Command guide](docs/command_reference.md)", text)
 
+    def test_opening_rejects_template_voice(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "README.md").read_text(encoding="utf-8")
+        opening = text.split("## Start here first", 1)[0]
+
+        banned = [
+            "Use this skill when",
+            "You can hand your agent jobs like",
+            "without guessing from raw docs",
+            "stays read-only against",
+            "read public data safely",
+        ]
+        for phrase in banned:
+            self.assertNotIn(phrase, opening)
+
     def test_helpful_docs_stay_human_facing(self) -> None:
         root = Path(__file__).resolve().parents[1]
         text = (root / "README.md").read_text(encoding="utf-8")

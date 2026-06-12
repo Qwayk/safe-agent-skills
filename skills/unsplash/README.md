@@ -2,11 +2,11 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to research Unsplash photos, collections, topics, and creator portfolios without guessing from raw docs.
+Unsplash is useful when image research needs real photo records, creator details, collections, topics, and download planning instead of a vague visual search. This skill helps an agent build shortlists, compare photos, inspect creator or collection context, and plan downloads only after the photo IDs and destination are clear.
 
-You can hand your agent jobs like image shortlist research, style-matched photo packs, collection scans, creator lookups, export planning, and careful download planning for already approved photos.
+It is useful for questions like "Find images for this article theme", "Build a consistent photo pack", "Which creator or collection fits this style?", "Can you export this search for review?", or "What would happen before these approved photos are downloaded?"
 
-Most work stays simple and read-first. The only riskier path is `photos download`, because a real apply can trigger Unsplash download tracking and can also write a file to your machine. That path starts as a dry-run plan, needs explicit approval before apply, and still needs explicit no-snapshot approval when the tool cannot save useful prior state first.
+Most work is read-first. The only riskier path is `photos download`, because a real apply can trigger Unsplash download tracking and can also write a file to your machine. That path starts as a dry-run plan, needs explicit approval before apply, and still needs explicit no-snapshot approval when the tool cannot save useful prior state first.
 
 A good first ask is: "Check the Unsplash skill is configured, find 20 photos for my topic, and build a shortlist before we plan any downloads."
 

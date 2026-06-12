@@ -1,13 +1,13 @@
 # What you can do with Qdrant Cloud
 
-Use this page when you want ideas for real Qdrant Cloud work to hand to your agent.
+Qdrant Cloud work usually starts with infrastructure questions: what is running, what is backed up, who has access, what it costs, and what would happen before a cluster or recovery change.
 If you need setup first, start with [Connect your Qdrant Cloud account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## A good first ask
 
 "Check the Qdrant Cloud skill is configured, list my accounts and clusters, and tell me what is safe to review before we plan any changes."
 
-## Common Qdrant Cloud jobs
+## Good jobs to give the agent
 
 ### Account and cluster review
 
@@ -38,12 +38,6 @@ If you need setup first, start with [Connect your Qdrant Cloud account](onboardi
 - "Plan this cluster change first and show me exactly what needs approval."
 - "Preview a payment or billing change and tell me if it needs spend approval."
 - "Show the refusal path first when a write still has no saved before-state."
-
-## Why this skill is useful
-
-- It gives your agent a safer front door to the Qdrant Cloud control plane than raw API guessing.
-- It lets you review infrastructure, access, backups, and billing in one place.
-- It keeps ordinary writes in plan-first mode when there is no saved before-state or provider backup yet.
 
 ## What you should expect from the agent
 

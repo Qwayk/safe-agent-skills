@@ -1,9 +1,9 @@
-# Use cases
+# What you can do with OpenAI
 
-Use this page when you want ideas for real OpenAI jobs to hand to your agent.
+OpenAI work usually starts with choosing the right operation and understanding the risk before a live API call runs.
 If you need setup first, start with [Connect your OpenAI access](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Common use cases
+## Good jobs to give the agent
 
 - "Check my OpenAI setup and confirm which live reads are safe to run first."
 - "List the available OpenAI operations and help me find the right one for this job."
@@ -13,17 +13,15 @@ If you need setup first, start with [Connect your OpenAI access](onboarding.md).
 - "Show me the review steps for a spend-money action before anything goes live."
 - "Build a reviewed plan for batch or fine-tune work and save it so I can check it first."
 
-## Why this skill is more useful than raw docs
+## What the agent should show you
 
-This skill gives your agent a safer path through real OpenAI API work.
+- The exact operation it plans to use.
+- Whether the request is only a read, a write, spend-sensitive, or irreversible.
+- The live-read or dry-run plan before any API call that matters.
+- Any no-snapshot limit before a write goes live.
+- Where the saved plan, receipt, or run history will be.
 
-- It can start with local operation discovery before any live network call.
-- It can keep all live reads behind `--live` so nothing reaches the API by accident.
-- It can show a dry-run plan before risky, spend-money, or irreversible actions.
-- It can leave plans, receipts, run history, docs, and tests in one place so you can inspect what happened.
-- It can record when a write needed explicit no-snapshot approval because there was no useful saved before-state.
-
-## What this skill intentionally does not promise
+## What it does not promise
 
 - It does not promise a built-in undo path for every OpenAI write.
 - It does not treat spend-money actions like cheap or harmless reads.
