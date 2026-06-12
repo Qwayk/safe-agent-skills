@@ -11,7 +11,7 @@ The tool is currently in early 0.x development.
 - Added public-facing documentation for Jobber OAuth setup, generated read/write coverage, and webhook helpers.
 - Added explicit `--ack-no-snapshot` safety gate for high-risk writes that lack before-state snapshots.
 - Added no-snapshot and recovery metadata to write plans and receipts.
-- Added wrapper scaffold notes for `jobber-safe-cli`.
+- Added wrapper scaffold notes for the public `jobber` skill.
 - Added registry-backed CSV job planning for `read.<JobberQuery>` and `write.<JobberMutation>` rows.
 
 ### Changed

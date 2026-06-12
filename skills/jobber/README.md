@@ -27,14 +27,14 @@ You can ask for things like account summaries, report checks, risk review, and a
 
 ## Install and first run
 
-Install slug: `jobber-safe-cli`.
+Install slug: `jobber`.
 
 Ask your agent to install the skill from `Qwayk/safe-agent-skills`.
 
 If auto-install is not available, run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@jobber-safe-cli -g -y
+npx skills add Qwayk/safe-agent-skills@jobber -g -y
 ```
 
 Then open [Onboarding](docs/onboarding.md), then [Quickstart](docs/quickstart.md).

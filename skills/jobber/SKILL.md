@@ -1,5 +1,5 @@
 ---
-name: jobber-safe-cli
+name: jobber
 description: Run Jobber read/write operations safely using qwayk-jobber-safe-agent-cli.
 ---
 

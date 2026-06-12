@@ -55,6 +55,7 @@ Start here if you want lead, pipeline, support, outreach, or lifecycle work.
 | Product | What it helps with | What you connect | Mode |
 | --- | --- | --- | --- |
 | [**HubSpot**](hubspot/README.md)<br><sub>Install slug: <code>hubspot</code></sub> | Review HubSpot CRM data and make careful CRM changes | HubSpot account | Reads + careful changes |
+| [**Jobber**](jobber/README.md)<br><sub>Install slug: <code>jobber</code></sub> | Review and plan Jobber client, request, quote, job, visit, invoice, payment, property, and webhook work | Jobber account | Reads + careful changes |
 | [**Pipedrive**](pipedrive/README.md)<br><sub>Install slug: <code>pipedrive</code></sub> | Review Pipedrive CRM data and build sales reports | Pipedrive account | Read-only |
 | [**Salesforce**](salesforce-platform/README.md)<br><sub>Install slug: <code>salesforce-platform</code></sub> | Review and plan Salesforce platform object, data, and metadata work | Salesforce account | Reads + careful changes |
 | [**Instantly**](instantly/README.md)<br><sub>Install slug: <code>instantly</code></sub> | Review Instantly outreach, campaigns, leads, sending accounts, analytics, and webhooks | Instantly account | Reads + careful changes |
