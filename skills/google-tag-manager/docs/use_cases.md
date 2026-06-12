@@ -3,27 +3,31 @@
 Use this page when you want ideas for real Google Tag Manager jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## Good first asks
 
-Most no‑code tools are great for *single events* (“when X happens, do Y”). A safe agent CLI is built for:
+- "List my GTM accounts, containers, and workspaces."
+- "Review the tags, triggers, and variables in this container before we publish anything."
+- "Compare these GTM versions and explain what changed."
+- "Show me which workspace changes are waiting for review."
+- "Prepare a dry-run plan for this tag or variable change and stop before apply."
 
-- Bulk work on existing libraries (hundreds/thousands of records)
-- Preview-first changes (dry-run → explicit apply → verification)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Audit artifacts (plans/receipts/logs) you can keep for proof and debugging
+## What to expect back
 
-## Common use cases (examples)
+The agent should give you a clear map of the GTM account, container, workspace, and resource it checked. For review work, it should summarize the tags, triggers, variables, versions, or publish state in plain English.
 
-- “Pull a report of the things that match these rules, and export it to a file.”
-- “Find the right targets safely (avoid guessing), then propose changes for review.”
-- “Apply a large set of small metadata edits from a spreadsheet, with verification and a receipt.”
-- “Do a safe, repeatable transformation across many items, and prove it’s complete.”
+For changes, the agent should slow down. It should show a dry-run plan first, ask for approval before apply, and explain when a GTM method cannot safely run live because the API does not expose the needed pre-read.
 
-## What you’ll see from the agent (trust + safety)
+## Good fits
 
-When you ask for a change, the agent should:
+- tracking setup reviews
+- tag, trigger, and variable inventories
+- version comparisons
+- publish-readiness checks
+- careful API change plans
 
-1) Show a dry-run preview of what would change.
-2) Apply only after explicit confirmation.
-3) Verify after apply (read-back or idempotence).
-4) Provide a short receipt and point to any saved proof artifacts.
+## Not a good fit
+
+- deciding marketing strategy from tag names alone
+- publishing a container without a reviewed plan
+- assuming a tag fires correctly without website-side testing
+- broad undo promises for GTM changes

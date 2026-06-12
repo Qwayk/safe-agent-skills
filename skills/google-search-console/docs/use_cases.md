@@ -3,27 +3,31 @@
 Use this page when you want ideas for real Google Search Console jobs to hand to your agent.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this is powerful (vs typical no‑code automation)
+## Good first asks
 
-Most no‑code tools are great for *single events* (“when X happens, do Y”). A safe agent CLI is built for:
+- "List the Search Console sites I can access and tell me which ones look relevant."
+- "Show the top queries and pages for this site over the last 28 days."
+- "Inspect this URL and explain what Google says about indexing."
+- "List submitted sitemaps and flag anything that looks stale or broken."
+- "Preview submitting this sitemap, but stop before any live change."
 
-- Bulk work on existing libraries (hundreds/thousands of records)
-- Preview-first changes (dry-run → explicit apply → verification)
-- Deterministic behavior (refuses when unsure instead of guessing)
-- Audit artifacts (plans/receipts/logs) you can keep for proof and debugging
+## What to expect back
 
-## Common use cases (examples)
+The agent should give you Search Console facts in plain English: the property it checked, the date range, the top query or page patterns, and any indexing or sitemap issue worth reviewing.
 
-- “List all verified sites in my Search Console account and tell me which ones look relevant.”
-- “Run Search Analytics queries for a site and export the results (queries, pages, countries, devices).”
-- “Inspect a URL (index status) and summarize what Google thinks about it.”
-- “Submit one or more sitemap URLs, but show me a dry-run plan first and only apply after approval.”
+For changes, the useful path is slower. The agent should show a dry-run plan first, apply only after approval, verify what happened, and leave a short receipt.
 
-## What you’ll see from the agent (trust + safety)
+## Good fits
 
-When you ask for a change, the agent should:
+- weekly SEO checks
+- URL indexing reviews
+- sitemap review and submit plans
+- site access inventory
+- Search Analytics exports for a report
 
-1) Show a dry-run preview of what would change.
-2) Apply only after explicit confirmation.
-3) Verify after apply (read-back or idempotence).
-4) Provide a short receipt and point to any saved proof artifacts.
+## Not a good fit
+
+- guessing why rankings changed without Search Console data
+- changing site content
+- crawling the website itself
+- deleting a site or sitemap without a reviewed plan

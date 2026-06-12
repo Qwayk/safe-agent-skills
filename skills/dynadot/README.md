@@ -2,11 +2,11 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Dynadot domains, pricing, transfers, auctions, and account settings without guessing from raw docs.
+Dynadot is where domain mistakes can become expensive fast: the wrong name server change, missed renewal, bad push target, or irreversible purchase can affect real domains. This skill helps an agent review the portfolio and plan domain work before anything live happens.
 
-You can hand your agent jobs like expiring-domain checks, name server audits, bulk push planning, guided account-to-account transfers, and careful Dynadot changes across many domains.
+Use it for jobs like "Which domains expire soon?", "What name servers are these domains using?", "Can we preview this account-to-account push?", or "What auctions or marketplace listings match these filters?"
 
-Read work stays simple. Riskier work slows down on purpose: writes start as dry-run plans, bulk jobs keep pacing controls, and live Dynadot writes need explicit no-snapshot approval because this tool cannot save a real restore point for those write families yet.
+Read work can cover domains, pricing, transfers, orders, contacts, DNS, name servers, auctions, and marketplace research. Riskier work starts as a dry-run plan, bulk jobs keep pacing controls, and live Dynadot writes need explicit no-snapshot approval because this tool cannot save a real restore point for those write families yet.
 
 A good first ask is: "Check the Dynadot skill is connected, list my active domains, flag anything expiring soon, and show me the safest next step before any changes."
 

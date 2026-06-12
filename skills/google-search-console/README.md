@@ -2,11 +2,11 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Google Search Console performance, inspect URL coverage, check sites and sitemaps, and handle careful site or sitemap changes without guessing from raw docs.
+Google Search Console is where Google shows what it can see from your site: search queries, pages, indexing details, URL inspection results, and submitted sitemaps. This skill helps an agent turn that data into a clear SEO check instead of guessing from the outside.
 
-You can hand your agent jobs like verified-site inventories, last-28-day query and page reports, URL inspection summaries, sitemap submit or delete previews, and careful site add or delete plans.
+Use it for questions like "Which sites can I access?", "What queries and pages changed in the last 28 days?", "How does Google see this URL?", or "Should we submit this sitemap after checking the current state?"
 
-Read work stays simple. Riskier work slows down on purpose: the write-capable flows are limited to site add or delete and sitemap submit or delete, changes start as dry-run plans, and delete actions need extra irreversible approval before they can run.
+Most work is read-first: reports, URL inspection, site lists, and sitemap review. The only write-capable flows are site add or delete and sitemap submit or delete; those start as dry-run plans, and delete actions need extra irreversible approval before they can run.
 
 A good first ask is: "Check which Search Console sites I can access, show the top queries and pages for the last 28 days, and tell me if any sitemap or indexing issue needs attention before we change anything."
 

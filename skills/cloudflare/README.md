@@ -2,11 +2,11 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Cloudflare zones, DNS, Workers, Pages, Zero Trust, storage, and account settings without guessing from raw docs.
+Cloudflare is where a small mistake can affect DNS, security rules, Workers, Pages, access policies, or production traffic. This skill helps an agent look through the account carefully before anyone changes something important.
 
-You can hand your agent jobs like DNS inventories, zone onboarding preflight checks, Workers route reviews, Browser Run checks, Zero Trust policy review, and careful Cloudflare changes that should be planned before they go live.
+Use it for jobs like "What zones and DNS records do we have?", "Is this Worker route pointing where we think?", "What Zero Trust policies are active?", or "Can we plan this DNS change and show the risk before it goes live?"
 
-Read work stays simple. Riskier work slows down on purpose: writes start as dry-run plans, sensitive reads go to local files instead of the chat, destructive actions need extra approval, and some write families need explicit no-snapshot approval when the tool cannot save useful before-state first.
+Read work can run as normal account review. Riskier work starts as a dry-run plan, sensitive results go to local files instead of chat, destructive actions need extra approval, and some write families need explicit no-snapshot approval when the tool cannot save useful before-state first.
 
 A good first ask is: "Check the Cloudflare skill is connected, list my accounts and zones, and run zone-create-check before we plan any onboarding."
 
@@ -53,7 +53,7 @@ npx skills add Qwayk/safe-agent-skills@cloudflare -g -y
 Then try a safe first ask like:
 
 ```text
-Check the Cloudflare skill is connected, list my accounts and zones, and show me what is safe to review first.
+Check the Cloudflare skill is connected, list my accounts and zones, and run zone-create-check before we plan any onboarding.
 ```
 
 ## How this skill stays safe

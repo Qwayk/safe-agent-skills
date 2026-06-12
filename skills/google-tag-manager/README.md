@@ -2,11 +2,11 @@
 
 **Capability:** Reads + careful changes
 
-Use this skill when you want your agent to review Google Tag Manager accounts, containers, workspaces, tags, triggers, variables, versions, and publish flow changes without guessing from raw docs.
+Google Tag Manager controls the tags, triggers, variables, and containers that often decide whether analytics, ads, consent, and conversion tracking work correctly. This skill helps an agent inspect that setup carefully before a tracking change reaches a real website.
 
-You can hand your agent jobs like account and container inventories, workspace reviews, tag and trigger checks, variable cleanup plans, version comparisons, publish readiness checks, and careful GTM API changes that should be previewed before they go live.
+Use it for jobs like "What tags and triggers are in this container?", "Which workspace changes are waiting?", "What changed between versions?", or "Can you prepare this GTM change as a plan before anything is published?"
 
-Read work stays simple. Riskier work slows down on purpose: writes are dry-run first, higher-risk and publish-like actions need saved-plan review, irreversible delete actions need extra approval, and some mutating families are refused for live apply if the API does not expose the matching pre-read needed for safe before-state capture.
+Read work can run first for account, container, workspace, tag, trigger, variable, and version review. Riskier GTM changes are dry-run first, publish-like actions need saved-plan review, irreversible deletes need extra approval, and some mutating families are refused for live apply if the API cannot expose the matching pre-read needed for safe before-state capture.
 
 A good first ask is: "List my GTM accounts, containers, and workspaces, review the tags, triggers, and variables in this container, and stop before any changes."
 
