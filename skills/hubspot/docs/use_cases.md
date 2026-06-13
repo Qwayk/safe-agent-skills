@@ -1,44 +1,53 @@
-# Use cases
+# What you can do with HubSpot
 
-Use this page when you want practical HubSpot jobs to hand to your agent.
+HubSpot work usually starts when the team needs to know what is true about customers: which contacts or companies match a rule, how deals move through the pipeline, which properties exist, or whether an import, export, association, or custom object change is safe.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this helps with CRM work
-
-HubSpot often becomes the place where a team decides what is true about customers, companies, deals, tickets, and pipeline work.
-
-This skill is useful when you want the agent to inspect the account first, understand the available objects and fields, then prepare careful CRM changes as a plan before touching live records.
+This skill helps an agent inspect CRM records and settings, explain account limits, export useful data, and prepare careful plans before anything changes live HubSpot data.
 
 ## Good jobs to give the agent
 
-- “Find all companies that match these rules and export the list.”
-- “Check which HubSpot objects are active in this account before we use them.”
-- “Show me all associations between these contacts and companies.”
-- “List the properties on deals and explain which ones are required.”
-- “Create or update these custom properties, but show the plan first.”
-- “Review this pipeline, then propose the stage changes as a plan.”
-- “Import these records from files and give me the import status and errors.”
-- “Create a HubSpot export job and tell me when the download is ready.”
-- “Define a new custom object schema and show me the plan without applying it.”
+### CRM record review
 
-## Specific examples
+- "Find contacts without an owner and export their IDs."
+- "Search companies in this industry and show the linked contacts."
+- "List deals in this pipeline stage and explain what fields are missing."
+- "Show tickets that match these rules before support follows up."
+- "Read a small sample from each active object type so I know what this account exposes."
 
-- Contacts: “Find contacts without an owner and export the IDs.”
-- Companies: “Search companies in this industry and show the linked contacts.”
-- Deals: “Review this deal pipeline and explain what each stage means.”
-- Properties: “Draft a plan to add these custom properties.”
-- Associations: “Show the contact-company associations for these records.”
-- Imports: “Preview this import and explain what HubSpot will accept or reject.”
-- Exports: “Create an export job and tell me when the file is ready.”
-- Custom objects: “Check whether this custom object is available in the account.”
+### Properties, associations, and pipeline checks
+
+- "List the properties on deals and explain which ones are required."
+- "Show all associations between these contacts, companies, deals, or tickets."
+- "List association labels and limits before we create anything new."
+- "Review this deal pipeline and explain what each stage means."
+- "Check owners, property groups, custom object schemas, and object-library enablement."
+
+### Imports, exports, and account readiness
+
+- "Create an export job and tell me when the download is ready."
+- "Preview this import and explain what HubSpot will accept or reject."
+- "Show import errors for this job and group them by fix."
+- "Tell me which token scopes, account tier, or inactive object type blocks this request."
+- "Create a handoff file for a sales or support cleanup project."
+
+### Careful CRM change planning
+
+- "Draft a plan to add these custom properties."
+- "Prepare a plan to update these contact, company, deal, or ticket records."
+- "Plan an association-label or pipeline-stage change and show the risk first."
+- "Define a new custom object schema, but show me the plan without applying it."
+- "Explain when an archive, delete, merge, cancel, or hard-delete action needs stronger approval."
 
 ## What the agent should show you
 
-When a change is requested, the agent should:
+- The object type, record ID, property, pipeline, association, schema, import, export, or owner it checked.
+- A plain-English explanation of the CRM meaning before raw HubSpot data.
+- Any missing scope, account-tier limit, inactive object type, or expired export download issue.
+- A dry-run plan before creates, updates, archives, imports, property changes, schema changes, pipeline edits, or association writes.
+- Stronger approval gates for batch, irreversible, or no-snapshot work.
+- The saved plan, receipt, refusal, export status, or run history after the request.
 
-1. Show a dry-run preview first.
-2. Explain the risk in plain English.
-3. Name any missing scopes, account-tier limits, or inactive object types.
-4. Refuse live apply when required approval or no-snapshot acknowledgement is missing.
-5. Verify with read commands when HubSpot makes that possible.
-6. Save or point to the proof files.
+## Good first HubSpot path
+
+Start with `auth check`, list available CRM areas, read a small sample of contacts, companies, deals, and properties, then inspect one real record and its associations before planning any write.

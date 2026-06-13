@@ -30,3 +30,27 @@ class TestDocsFormatting(unittest.TestCase):
         if bad_lines:
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
+
+    def test_use_cases_stays_human_and_specific(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+        required = [
+            "# What you can do with Cloudflare",
+            "Account, zone, and DNS review",
+            "Workers, Pages, and edge routing",
+            "Zero Trust, access, and security posture",
+            "Careful change planning",
+            "What the agent should show you",
+            "Good first Cloudflare path",
+        ]
+        forbidden = [
+            "Use this page when you want ideas",
+            "What this tool is for (today)",
+            "Why this beats typical no-code automation",
+            "Common use cases (examples)",
+            "What you’ll see from the agent",
+        ]
+        for phrase in required:
+            self.assertIn(phrase, text)
+        for phrase in forbidden:
+            self.assertNotIn(phrase, text)

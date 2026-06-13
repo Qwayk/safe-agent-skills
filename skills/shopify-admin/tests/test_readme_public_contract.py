@@ -78,7 +78,8 @@ class TestReadmePublicContract(unittest.TestCase):
         for phrase in stale_phrases:
             self.assertNotIn(phrase, text)
 
-        self.assertIn("Shopify work is usually about a live store", text)
-        self.assertIn("Products:", text)
-        self.assertIn("Inventory:", text)
-        self.assertIn("Discounts:", text)
+        self.assertIn("# What you can do with Shopify Admin", text)
+        self.assertIn("Store, catalog, and product cleanup", text)
+        self.assertIn("Orders, customers, and support review", text)
+        self.assertIn("Inventory, discounts, and merchandising", text)
+        self.assertIn("Good first Shopify path", text)

@@ -68,7 +68,8 @@ class TestReadmePublicContract(unittest.TestCase):
         for phrase in stale_phrases:
             self.assertNotIn(phrase, text)
 
-        self.assertIn("HubSpot often becomes the place", text)
-        self.assertIn("Contacts:", text)
-        self.assertIn("Companies:", text)
-        self.assertIn("Deals:", text)
+        self.assertIn("# What you can do with HubSpot", text)
+        self.assertIn("CRM record review", text)
+        self.assertIn("Properties, associations, and pipeline checks", text)
+        self.assertIn("Imports, exports, and account readiness", text)
+        self.assertIn("Good first HubSpot path", text)

@@ -1,43 +1,50 @@
-# Use cases
+# What you can do with Dynadot
 
-Use this page when you want ideas for real Dynadot jobs to hand to your agent.
+Dynadot work usually starts when a domain decision needs care: which domains expire soon, which name servers are active, whether a push or transfer is ready, or whether a marketplace, auction, or registration action could cost money.
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Domain portfolio review
+This skill helps an agent review a domain portfolio, export sensitive details safely, and prepare domain changes as reviewed plans before live Dynadot actions run.
 
-- "List all my active domains and flag anything expiring in the next 30 or 60 days."
-- "Show my account balance, coupons, and recent order status."
-- "Export my current contacts, DNS, and name server setup to files."
+## Good jobs to give the agent
 
-## Domain moves and transfers
+### Domain portfolio review
 
-- "Preview a push of these domains to another Dynadot account, but do not apply yet."
-- "Run the guided transfer plan from sender to receiver and show me the full sequence before any live step."
-- "Check incoming push requests on the receiver side and show what is ready to accept."
+- "List all active domains and flag anything expiring in the next 30 or 60 days."
+- "Show account balance, coupons, recent order status, and transfer status."
+- "Export current contacts, DNS, and name server setup to local files."
+- "Check folders, renewal options, forwarding, WHOIS privacy, and contact setup for this domain list."
+- "Review a CSV of domains and tell me which rows are safe to plan first."
 
-## Name server and DNS change planning
+### Name server and DNS work
 
-- "Export current name servers for these domains and build a diff against the target."
-- "Preview a bulk name server migration and show batch pacing before anything goes live."
-- "Verify the read-back results after the approved name server change."
+- "Export current name servers for these domains and compare them with the target name servers."
+- "Preview a bulk name server migration and show the batch pacing before anything changes."
+- "Tell me when an external provider like Cloudflare may not appear in Dynadot's name-server availability list."
+- "Verify the read-back results after an approved name server change."
 
-## Account and policy changes
+### Domain moves, pushes, and transfers
 
-- "Preview WHOIS privacy changes for this domain list."
-- "Plan forwarding, renew-option, folder, or contact changes across many domains."
-- "Review these job rows from a CSV and show which changes are safe to plan first."
+- "Preview a push of these domains to another Dynadot account, but wait for approval before any live step."
+- "Check incoming push requests on the receiver account and show what is ready to accept."
+- "Run the guided sender-to-receiver transfer plan and show the full sequence first."
+- "Show which transfer auth codes or push details are sensitive and should stay in files, not chat."
 
-## Pricing, auctions, and marketplace research
+### Pricing, auctions, and marketplace research
 
-- "Show current TLD prices for these extensions."
+- "Show current TLD pricing for these extensions."
 - "List open auctions, closeouts, or backorders that match my filters."
-- "Export marketplace listings and auction details for review."
+- "Review marketplace listings for domains in this niche."
+- "Preview an auction bid, backorder, registration, renewal, or purchase and explain the money risk before approval."
 
-## What you'll see from the agent
+## What the agent should show you
 
-When you ask for a change, the agent should:
+- The exact account, domain list, transfer target, name servers, auction, marketplace listing, or API3 command it checked.
+- A plain-English summary of the domain risk, money risk, irreversible action, or missing account detail.
+- Local file output for sensitive auth codes, contacts, domain exports, or large portfolio lists.
+- A dry-run plan before pushes, transfers, name-server changes, API3 writes, purchases, bids, privacy changes, or contact changes.
+- The approval gates needed before any money-moving, irreversible, or no-snapshot action.
+- A receipt, refusal, or read-back verification after an approved action.
 
-1. Start with the read-only facts or a dry-run plan.
-2. Tell you if the job is monetary, irreversible, or missing a saved before-state.
-3. Apply only after explicit approval.
-4. Leave a receipt or a clear refusal you can review later.
+## Good first Dynadot path
+
+Start with `auth check`, list active domains, flag near-term expirations, export current name servers, and review account balance before planning any push, transfer, bid, purchase, or DNS change.
