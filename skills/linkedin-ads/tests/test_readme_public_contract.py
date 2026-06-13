@@ -68,8 +68,11 @@ class TestReadmePublicContract(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
 
-        self.assertIn("LinkedIn Ads work often breaks in two places", text)
-        self.assertIn("## Good jobs to give the agent", text)
+        self.assertIn("# What you can do with LinkedIn Ads", text)
+        self.assertIn("Access and account checks", text)
+        self.assertIn("Campaign, creative, and analytics review", text)
+        self.assertIn("Audience and approval-gated work", text)
         self.assertIn("## What the agent should show you", text)
+        self.assertIn("Good first LinkedIn Ads path", text)
         self.assertNotIn("Why this helps with LinkedIn Ads work", text)
         self.assertNotIn("What you’ll see from the agent", text)

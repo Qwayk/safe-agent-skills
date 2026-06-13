@@ -1,35 +1,48 @@
-# Use cases
+# What you can do with LinkedIn Ads
 
-Use this page when you want practical LinkedIn Ads jobs to hand to your agent.
+LinkedIn Ads work usually starts with access and approval: which ad accounts the token can see, whether the app has the right LinkedIn product approval, which campaigns or creatives need review, and whether lead forms, conversions, targeting, or tracking are available.
 If you need setup first, start with [Connect your LinkedIn Ads account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-LinkedIn Ads work often breaks in two places: getting the right product approval, and making sure the account or campaign change is really the one you meant.
+This skill helps an agent check access, review B2B campaign data, surface LinkedIn approval gates, and prepare campaign or creative changes before anything writes to the ad account.
 
 ## Good jobs to give the agent
 
-- “Check my LinkedIn Ads token, tell me which ad accounts I can access, and flag any approval problems.”
-- “Show campaign groups, campaigns, and one analytics pull for this ad account.”
-- “Review my creatives and previews before I change anything.”
-- “Prepare a campaign update plan and stop before any live apply.”
-- “Show which lead forms, lead responses, or conversions are available in this account.”
-- “Check whether tracking tags, insight tags, or audience-related families are accessible with this app.”
+### Access and account checks
 
-## Approval-gated areas to expect
+- "Check my LinkedIn Ads token, list the ad accounts I can access, and flag approval problems."
+- "Tell me which account, organization, campaign group, campaign, or creative this request targets."
+- "Show whether restricted families are access-gated, private-api-gated, tier-gated, or live-unverified."
+- "Explain which product approval, scope, account permission, or resource ID is missing."
 
-LinkedIn often blocks or limits these areas until app approval is complete:
+### Campaign, creative, and analytics review
 
-- Matched Audiences
-- Audience Insights
-- Media Planning
-- Company Intelligence
-- some Lead Sync, Conversions, tracking, and creative flows depending on account tier and product access
+- "Show campaign groups, campaigns, creatives, and one analytics pull for this ad account."
+- "Review sponsored creatives and previews before I change anything."
+- "Pull campaign performance and explain what looks worth human review."
+- "Check whether lead forms, lead responses, conversions, tracking tags, or insight tags are available."
+
+### Audience and approval-gated work
+
+- "Check whether Matched Audiences, Audience Insights, Media Planning, or Company Intelligence is available for this app."
+- "Review targeting or audience-related commands before we build a plan."
+- "Tell me when a LinkedIn approval gate is the real blocker instead of a tool problem."
+- "Prepare a handoff that separates working account reads from restricted API areas."
+
+### Careful change planning
+
+- "Prepare a campaign update plan so I can review the exact account and payload before anything changes."
+- "Preview a creative, lead, conversion, tracking, or permission-changing action."
+- "Explain when delete, batch-write, or permission-changing work needs stronger approval."
+- "Show the no-snapshot limit before any live LinkedIn write."
 
 ## What the agent should show you
 
-When you ask for a change, the agent should:
+- The token status, ad account, organization, campaign group, campaign, creative, lead, conversion, audience, or tracking target.
+- The approval or access label when LinkedIn blocks a family.
+- A dry-run plan before create, update, delete, batch, creative, conversion, lead, or permission-changing actions.
+- Any `--apply`, `--yes`, irreversible, no-snapshot, saved-plan, product-approval, or scope gate.
+- The saved plan, run artifact, refusal, or live-read result after the request.
 
-1. Check whether the token, product approval, and account access are in place.
-2. Name the account, campaign, creative, lead, conversion, or tracking target.
-3. Show the dry-run plan before any live LinkedIn write.
-4. Explain approval gates, restricted API areas, or no-snapshot limits clearly.
-5. Point to the saved plan and run artifacts after the review step.
+## Good first LinkedIn Ads path
+
+Start by checking the token, listing visible ad accounts, pulling one campaign or analytics read, and asking the agent to name any LinkedIn approval gates before planning a write.

@@ -70,8 +70,11 @@ class TestReadmePublicContract(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
 
-        self.assertIn("Microsoft Ads work is usually about checking the right account", text)
-        self.assertIn("## Good jobs to give the agent", text)
+        self.assertIn("# What you can do with Microsoft Ads", text)
+        self.assertIn("Account and campaign review", text)
+        self.assertIn("Keyword, audience, and report work", text)
+        self.assertIn("Bulk and service-operation planning", text)
         self.assertIn("## What the agent should show you", text)
+        self.assertIn("Good first Microsoft Ads path", text)
         self.assertNotIn("Why this skill is more useful than raw docs", text)
         self.assertNotIn("What this skill intentionally does not promise", text)

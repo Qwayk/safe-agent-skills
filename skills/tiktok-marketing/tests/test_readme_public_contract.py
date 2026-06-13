@@ -69,8 +69,11 @@ class TestReadmePublicContract(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
 
-        self.assertIn("TikTok Marketing work usually starts with access proof", text)
-        self.assertIn("## Common TikTok Marketing jobs", text)
-        self.assertIn("## What you should expect from the agent", text)
+        self.assertIn("# What you can do with TikTok Marketing", text)
+        self.assertIn("Auth and advertiser access", text)
+        self.assertIn("Campaign, ad, and creative review", text)
+        self.assertIn("Reports, uploads, and pinned operations", text)
+        self.assertIn("## What the agent should show you", text)
+        self.assertIn("Good first TikTok Marketing path", text)
         self.assertNotIn("Why this skill is useful", text)
         self.assertNotIn("raw API guessing", text)

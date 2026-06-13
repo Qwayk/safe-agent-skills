@@ -69,8 +69,11 @@ class TestReadmePublicContract(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
 
-        self.assertIn("Google Ads work is usually about finding where spend", text)
-        self.assertIn("## Good jobs to give the agent", text)
+        self.assertIn("# What you can do with Google Ads", text)
+        self.assertIn("Account and performance review", text)
+        self.assertIn("Search terms, placements, and budget checks", text)
+        self.assertIn("Reporting and field discovery", text)
         self.assertIn("## What the agent should show you", text)
+        self.assertIn("Good first Google Ads path", text)
         self.assertNotIn("Common use cases", text)
         self.assertNotIn("What this tool intentionally does not do", text)
