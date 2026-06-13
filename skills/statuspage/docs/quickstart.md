@@ -1,8 +1,8 @@
 # Quickstart
 
-This page helps you get one useful Statuspage result quickly, without turning the quickstart into a full command manual.
+Start with a small Statuspage read: checking a vendor status page before you make an operational decision.
 
-If you are still deciding what to ask, start with [What you can do with Statuspage](use_cases.md). If setup is not done yet, read [Use a public Statuspage URL](onboarding.md).
+Need more ideas? See [What you can do with Statuspage](use_cases.md). Need setup help? See [Use a public Statuspage URL](onboarding.md).
 
 A good first ask is:
 
@@ -11,9 +11,9 @@ A good first ask is:
 ## What you will do first
 
 1. Make sure the local tool can run.
-2. Check setup or connection status.
-3. Run one safe read that proves the agent can get useful data.
-4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+2. Check the account, token, or public access the tool needs.
+3. Run one small read and make sure the result matches the real service.
+4. Review any local file path before saving exports or reports.
 
 ## 1. Install or open the tool
 
@@ -36,9 +36,9 @@ statuspage-api-tool --output json auth check
 statuspage-api-tool --output json --version
 ```
 
-## 3. Run one safe first read
+## 3. Run one small first read
 
-This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
+Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
 
 ```bash
 statuspage-api-tool --output json --base-url https://status.atlassian.com status get
@@ -50,20 +50,20 @@ statuspage-api-tool --output json status get
 
 After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-## 4. Stop before changes
+## 4. Stop before anything risky
 
-Statuspage is read-only for normal use, so the first run should not change remote data. If a command writes local files, review the output path before running it.
+Statuspage is read-only here and can start from a public page URL. The first run should not change anything; just confirm the page and incidents match what you need.
 
-## What good output looks like
+## What a useful first result includes
 
-A useful first result should tell you:
+A good first result should make these things clear:
 
-- what account, workspace, project, page, item, or public data was checked
-- whether the tool connected successfully
-- what the first read returned
-- what the result means in normal language
-- what is safe to do next
-- where the plan, receipt, export, or saved file lives if the command created one
+- what was checked
+- whether the connection worked
+- what came back from the service
+- what the result means in plain English
+- what is safe to inspect next
+- where any saved file, export, plan, or receipt was written
 
 ## Where to go next
 

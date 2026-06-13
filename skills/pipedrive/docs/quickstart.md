@@ -1,8 +1,8 @@
 # Quickstart
 
-This page helps you get one useful Pipedrive result quickly, without turning the quickstart into a full command manual.
+Start with a small Pipedrive read: checking deals, pipelines, people, organizations, and activity data before you build a sales report.
 
-If you are still deciding what to ask, start with [What you can do with Pipedrive](use_cases.md). If setup is not done yet, read [Connect your account](onboarding.md).
+Need more ideas? See [What you can do with Pipedrive](use_cases.md). Need setup help? See [Connect your Pipedrive account](onboarding.md).
 
 A good first ask is:
 
@@ -11,9 +11,9 @@ A good first ask is:
 ## What you will do first
 
 1. Make sure the local tool can run.
-2. Check setup or connection status.
-3. Run one safe read that proves the agent can get useful data.
-4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+2. Check the account, token, or public access the tool needs.
+3. Run one small read and make sure the result matches the real service.
+4. Review any local file path before saving exports or reports.
 
 ## 1. Install or open the tool
 
@@ -38,9 +38,9 @@ PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli onboarding
 PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env auth check
 ```
 
-## 3. Run one safe first read
+## 3. Run one small first read
 
-This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
+Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
 
 ```bash
 PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env --output json users get-current
@@ -48,24 +48,24 @@ PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env --outpu
 
 After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-## 4. Stop before changes
+## 4. Stop before anything risky
 
-Pipedrive is read-only for normal use, so the first run should not change remote data. If a command writes local files, review the output path before running it.
+Pipedrive is read-only here. Your first run should not change CRM data; only review any local export path before saving files.
 
-## What good output looks like
+## What a useful first result includes
 
-A useful first result should tell you:
+A good first result should make these things clear:
 
-- what account, workspace, project, page, item, or public data was checked
-- whether the tool connected successfully
-- what the first read returned
-- what the result means in normal language
-- what is safe to do next
-- where the plan, receipt, export, or saved file lives if the command created one
+- what was checked
+- whether the connection worked
+- what came back from the service
+- what the result means in plain English
+- what is safe to inspect next
+- where any saved file, export, plan, or receipt was written
 
 ## Where to go next
 
 - For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your account](onboarding.md).
+- For setup details, read [Connect your Pipedrive account](onboarding.md).
 - For exact command options, read [Command reference](command_reference.md).
 - For approval rules and limits, read [How this skill stays safe](safety_model.md).

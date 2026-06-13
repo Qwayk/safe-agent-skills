@@ -1,8 +1,8 @@
 # Quickstart
 
-This page helps you get one useful X result quickly, without turning the quickstart into a full command manual.
+Start with a small X read: checking account access, mentions, posts, DMs, and safe read options before you send or change anything.
 
-If you are still deciding what to ask, start with [What you can do with X](use_cases.md). If setup is not done yet, read [Connect your X account](onboarding.md).
+Need more ideas? See [What you can do with X](use_cases.md). Need setup help? See [Connect your X account](onboarding.md).
 
 A good first ask is:
 
@@ -11,9 +11,9 @@ A good first ask is:
 ## What you will do first
 
 1. Make sure the local tool can run.
-2. Check setup or connection status.
-3. Run one safe read that proves the agent can get useful data.
-4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+2. Check the account or connection before asking for real work.
+3. Run one small read and make sure the result matches the real service.
+4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
 
 ## 1. Install or open the tool
 
@@ -37,9 +37,9 @@ x-api-tool onboarding
 x-api-tool --output json --version
 ```
 
-## 3. Run one safe first read
+## 3. Run one small first read
 
-This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
+Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
 
 ```bash
 x-api-tool --live users resolve --username <name> [--include-receives-your-dm]
@@ -47,22 +47,20 @@ x-api-tool --live users resolve --username <name> [--include-receives-your-dm]
 
 After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-## 4. Stop before changes
+## 4. Stop before anything risky
 
-For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
+Ask for a reviewed plan before posts, replies, DMs, follows, deletes, auth changes, or any action that changes the live X account.
 
-Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+## What a useful first result includes
 
-## What good output looks like
+A good first result should make these things clear:
 
-A useful first result should tell you:
-
-- what account, workspace, project, page, item, or public data was checked
-- whether the tool connected successfully
-- what the first read returned
-- what the result means in normal language
-- what is safe to do next
-- where the plan, receipt, export, or saved file lives if the command created one
+- what was checked
+- whether the connection worked
+- what came back from the service
+- what the result means in plain English
+- what is safe to inspect next
+- where any saved file, export, plan, or receipt was written
 
 ## Where to go next
 

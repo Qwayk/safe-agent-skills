@@ -1,8 +1,8 @@
 # Quickstart
 
-This page helps you get one useful Google Merchant Api result quickly, without turning the quickstart into a full command manual.
+Start with a small Google Merchant Center read: checking product status, disapprovals, accounts, and feed issues before you change catalog data.
 
-If you are still deciding what to ask, start with [What you can do with Google Merchant Api](use_cases.md). If setup is not done yet, read [Connect your Google Merchant Center account](onboarding.md).
+Need more ideas? See [What you can do with Google Merchant Center](use_cases.md). Need setup help? See [Connect your Google Merchant Center account](onboarding.md).
 
 A good first ask is:
 
@@ -11,9 +11,9 @@ A good first ask is:
 ## What you will do first
 
 1. Make sure the local tool can run.
-2. Check setup or connection status.
-3. Run one safe read that proves the agent can get useful data.
-4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+2. Check the account or connection before asking for real work.
+3. Run one small read and make sure the result matches the real service.
+4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
 
 ## 1. Install or open the tool
 
@@ -37,9 +37,9 @@ google-merchant-api-tool onboarding
 google-merchant-api-tool --output json --version
 ```
 
-## 3. Run one safe first read
+## 3. Run one small first read
 
-This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
+Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
 
 ```bash
 google-merchant-api-tool --output json accounts list
@@ -51,29 +51,20 @@ google-merchant-api-tool --output json accounts products list --parent accounts/
 
 After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-## 4. Stop before changes
+## 4. Stop before anything risky
 
-For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
+Ask for a reviewed plan before product, feed, account, shipping, promotion, or supplemental data changes. If no snapshot is available, the apply step must say that clearly.
 
-Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
-If the tool cannot save a before-state snapshot for that change, the reviewed apply must also include `--ack-no-snapshot`.
+## What a useful first result includes
 
-A first change should stay as a preview or dry run until you approve it:
+A good first result should make these things clear:
 
-```bash
-google-merchant-api-tool --output json --plan-out plan.json accounts product-inputs insert --parent accounts/123456 --body-file product.json
-```
-
-## What good output looks like
-
-A useful first result should tell you:
-
-- what account, workspace, project, page, item, or public data was checked
-- whether the tool connected successfully
-- what the first read returned
-- what the result means in normal language
-- what is safe to do next
-- where the plan, receipt, export, or saved file lives if the command created one
+- what was checked
+- whether the connection worked
+- what came back from the service
+- what the result means in plain English
+- what is safe to inspect next
+- where any saved file, export, plan, or receipt was written
 
 ## Where to go next
 
