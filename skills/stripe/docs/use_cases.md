@@ -1,39 +1,51 @@
-# Use cases
+# What you can do with Stripe
 
-Use this page when you want ideas for real Stripe jobs to hand to your agent.
+Stripe work usually starts when billing, money movement, or customer support needs a careful answer: why was someone charged, which subscription is active, what invoice is unpaid, which refund or dispute needs review, and which connected account owns the money?
 If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-## Why this helps with Stripe work
+This skill helps an agent inspect Stripe records, export useful review data, and prepare change plans before anything touches live billing, payments, payouts, transfers, or customer records.
 
-Stripe work usually means checking live billing data carefully, sorting through lots of records, and slowing down before anything touches money or customer billing. This tool is built for:
+## Good jobs to give the agent
 
-- Bulk work on existing records like customers, subscriptions, invoices, products, and payouts
-- Preview-first changes where the agent shows the plan before any live Stripe write
-- Deterministic behavior that refuses when unsure instead of guessing
-- Proof artifacts like plans, refusals, and receipts that you can keep for review and debugging
+### Customer and billing review
 
-## Common use cases (examples)
+- "List recent customers with email, creation date, and account status."
+- "Show subscriptions that are trialing, active, past due, paused, or canceled."
+- "Find invoices that are open, overdue, uncollectible, or recently paid."
+- "Explain why this customer was charged by checking the customer, invoice, subscription, payment intent, and charge."
+- "Export recent customers, subscriptions, invoices, and failed payments for finance review."
 
-- “Show me recent customers, subscriptions, invoices, and failed payments, then export the results to a file.”
-- “Find the Stripe records that match these rules and prepare the safe next step for review.”
-- “Create dry-run plans for metadata or catalog updates across many items from a spreadsheet.”
-- “Review payouts, refunds, disputes, or transfers and tell me what needs attention before we do anything live.”
+### Catalog, pricing, and cleanup planning
 
-## Stripe-specific examples (still plain English)
+- "List products and prices so I can see what is currently sold."
+- "Find products or prices missing metadata and prepare a cleanup plan."
+- "Draft a metadata update plan for these product, price, customer, or subscription IDs and stop before any writes."
+- "Review checkout sessions, payment links, coupons, or promotion codes before we change a campaign."
 
-- Customers: “List recent customers with email, creation date, and account status.”
-- Subscriptions: “Show subscriptions that are trialing, past due, or canceled in the last 30 days.”
-- Invoices: “Export open and uncollectible invoices so I can review follow-up work.”
-- Products and prices: “Draft a metadata update plan for these product or price IDs and stop before any writes.”
-- Refunds: “Prepare a refund plan for this payment and explain every approval gate before live apply.”
-- Payouts and transfers: “Review recent payouts and transfers and flag anything unusual.”
-- Connect: “Check this connected account safely and show me what data is available before we plan any changes.”
+### Refunds, disputes, payouts, and transfers
 
-## What you’ll see from the agent (trust + safety)
+- "Prepare a refund plan for this payment and explain every approval gate before live apply."
+- "Review recent refunds and disputes and tell me what needs human attention."
+- "Review payouts and transfers and flag anything unusual."
+- "Check which connected account this payout, charge, customer, or transfer belongs to."
+- "Show whether this job needs money-moving approval before any live Stripe call."
 
-When you ask for a change, the agent should:
+### Connect and account operations
 
-1) Show a dry-run preview of what would change.
-2) Explain any extra approval gates, especially for money-moving or irreversible work.
-3) Ask for explicit no-snapshot approval when Stripe work has no saved snapshot or provider backup.
-4) Point to the saved plan, receipt, or run artifacts.
+- "Check this connected account safely and show me what data is available before we plan any changes."
+- "List account details and capabilities for this connected account."
+- "Check whether this connected account is allowed by the local allowlist."
+- "Prepare a careful account, capability, or external-account change plan, but stop before apply."
+
+## What the agent should show you
+
+- Whether it is using test mode or live mode.
+- The customer, subscription, invoice, payment, refund, dispute, payout, transfer, product, price, or connected account it checked.
+- A short plain-English explanation before any raw Stripe data.
+- A dry-run plan before any write-like operation.
+- Stronger approval gates for money-moving, irreversible, connected-account, or no-snapshot work.
+- The saved plan, receipt, refusal, or run history after the request.
+
+## Good first Stripe path
+
+Start with an account check, list recent customers and subscriptions, then inspect one real customer or invoice end to end before planning any update.

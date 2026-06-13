@@ -63,3 +63,27 @@ class TestDocsFormatting(unittest.TestCase):
                         hits.append(f"{rel}:{i}: {line}")
         if hits:
             self.fail("Template placeholders found (remove before shipping):\n" + "\n".join(hits))
+
+    def test_use_cases_stays_human_and_specific(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        required = [
+            "# What you can do with Google Tag Manager",
+            "Tracking setup review",
+            "Version and workspace checks",
+            "Careful change planning",
+            "What the agent should show you",
+            "Good first tracking path",
+        ]
+        for phrase in required:
+            self.assertIn(phrase, text)
+
+        rejected = [
+            "Use this page when you want ideas",
+            "Good first asks",
+            "Good fits",
+            "Not a good fit",
+        ]
+        for phrase in rejected:
+            self.assertNotIn(phrase, text)

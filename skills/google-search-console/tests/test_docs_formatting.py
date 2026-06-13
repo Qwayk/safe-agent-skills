@@ -30,3 +30,27 @@ class TestDocsFormatting(unittest.TestCase):
         if bad_lines:
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
+
+    def test_use_cases_stays_human_and_specific(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        required = [
+            "# What you can do with Google Search Console",
+            "Weekly SEO checks",
+            "URL and indexing review",
+            "Sitemap and property work",
+            "What the agent should show you",
+            "Good first SEO path",
+        ]
+        for phrase in required:
+            self.assertIn(phrase, text)
+
+        rejected = [
+            "Use this page when you want ideas",
+            "Good first asks",
+            "Good fits",
+            "Not a good fit",
+        ]
+        for phrase in rejected:
+            self.assertNotIn(phrase, text)
