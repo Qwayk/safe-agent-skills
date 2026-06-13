@@ -1,10 +1,23 @@
 # Quickstart
 
-Want the short non-technical path first? Start with [What you can do](use_cases.md), [Connect your Google Business Profile access](onboarding.md), and [How this skill stays safe](safety_model.md).
+This page helps you get one useful Google Business Profile result quickly, without turning the quickstart into a full command manual.
 
-This page is the CLI path when you already want exact commands.
+If you are still deciding what to ask, start with [What you can do with Google Business Profile](use_cases.md). If setup is not done yet, read [Connect your Google Business Profile access](onboarding.md).
 
-## 1. Install
+A good first ask is:
+
+> Which locations have missing basics?
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -12,52 +25,40 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-## 2. Configure
+## 2. Check setup
 
-Copy `.env.example` to `.env` and add your Google OAuth client secrets path.
-
-If you want the tool to create or refresh the starter file for you, run:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 google-business-profile-safe-cli onboarding
 ```
-
-## 3. Sign in and smoke test
 
 ```bash
 google-business-profile-safe-cli auth login --console
 google-business-profile-safe-cli auth check
 ```
 
-If you want a safe machine-readable version output with no `.env` file:
+## 3. Run one safe first read
 
-```bash
-google-business-profile-safe-cli --output json --version
-```
-
-## 4. First safe reads
-
-List the accounts you can access:
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 google-business-profile-safe-cli account-management accounts list
 ```
 
-List locations from one account:
-
 ```bash
 google-business-profile-safe-cli business-info accounts locations list --parent accounts/123 --read-mask "title,primaryPhone"
 ```
 
-Check one location in more detail:
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-google-business-profile-safe-cli business-info locations get --name locations/abc --read-mask "name,title,storeCode"
-```
+## 4. Stop before changes
 
-## 5. Plan a write-capable change
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-Write-capable actions start as dry-run plans by default:
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+A first change should stay as a preview or dry run until you approve it:
 
 ```bash
 google-business-profile-safe-cli \
@@ -68,26 +69,20 @@ google-business-profile-safe-cli \
   --location-file /path/to/location.json
 ```
 
-## 6. Request apply only after review
+## What good output looks like
 
-Many Google Business Profile writes require a reviewed plan file first:
+A useful first result should tell you:
 
-```bash
-google-business-profile-safe-cli --apply \
-  --plan-in /tmp/location.patch.plan.json \
-  --receipt-out /tmp/location.patch.receipt.json \
-  business-info locations patch \
-  --name locations/abc \
-  --update-mask title,storeCode \
-  --location-file /path/to/location.json
-```
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-If the write has no saved before-state, apply also needs `--ack-no-snapshot`.
-Higher-risk actions can also require `--yes` or `--ack-irreversible`.
+## Where to go next
 
-## 7. Need the full command list?
-
-Use:
-
-- [Command reference](command_reference.md)
-- [Browse all docs](README.md)
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your Google Business Profile access](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

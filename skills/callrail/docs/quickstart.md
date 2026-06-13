@@ -1,12 +1,23 @@
 # Quickstart
 
-If you are non-technical, start with:
-- `use_cases.md`
-- `onboarding.md`
+This page helps you get one useful Callrail result quickly, without turning the quickstart into a full command manual.
 
-This page is a technical reference (it includes CLI commands).
+If you are still deciding what to ask, start with [What you can do with Callrail](use_cases.md). If setup is not done yet, read [Connect your account](onboarding.md).
 
-1) Install (dev)
+A good first ask is:
+
+> Show recent calls for this company and group them by day.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -14,48 +25,55 @@ python3 -m venv .venv
 pip install -e .
 ```
 
-2) Configure
+## 2. Check setup
 
-Copy `.env.example` → `.env` and fill your values.
-
-Tip: for a guided first-time setup, run:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 qwayk-callrail-safe-agent-cli onboarding
 ```
 
-3) Smoke test
-
 ```bash
 qwayk-callrail-safe-agent-cli auth check
 ```
 
-If you want a safe machine-readable version output (no `.env` required):
+## 3. Run one safe first read
 
-```bash
-qwayk-callrail-safe-agent-cli --output json --version
-```
-
-4) Run one safe read:
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 qwayk-callrail-safe-agent-cli --output json accounts list
 ```
 
-5) Dry-run a write before applying
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
+
+## 4. Stop before changes
+
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
+
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+A first change should stay as a preview or dry run until you approve it:
 
 ```bash
 qwayk-callrail-safe-agent-cli --output json --env-file .env \
   tags create --account-id acc_example --payload-json '{"name":"VIP Lead","color":"blue"}'
 ```
 
-6) Apply with explicit safety flags
+## What good output looks like
 
-```bash
-qwayk-callrail-safe-agent-cli --output json --env-file .env \
-  tags create --account-id acc_example --payload-json '{"name":"VIP Lead","color":"blue"}' --apply --yes --ack-no-snapshot
-```
+A useful first result should tell you:
 
-Use `--ack-irreversible` only for `calls create-outbound` and `text-messages send`.
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-By default the tool keeps run artifacts. If disabled, receipts and plans are not written.
+## Where to go next
+
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

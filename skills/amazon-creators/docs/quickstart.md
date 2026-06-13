@@ -1,20 +1,59 @@
 # Quickstart
 
-1. Copy `.env.example` → `.env` and fill the Amazon Creators credential fields:
-   - `AMAZON_CREATORS_API_BASE_URL` (usually `https://creatorsapi.amazon/catalog/v1`).
-   - `AMAZON_CREATORS_CREDENTIAL_ID`
-   - `AMAZON_CREATORS_CREDENTIAL_SECRET`
-   - `AMAZON_CREATORS_CREDENTIAL_VERSION` (use the documented ones, e.g., `2.1`, `2.2`, `2.3`, or `3.1`, `3.2`, `3.3`)
-   - `AMAZON_CREATORS_LOCALE` (e.g., `en_US` or `en_GB`)
-   - `AMAZON_CREATORS_PARTNER_TAG` (published with your credential; used for every catalog call)
-   - `AMAZON_CREATORS_TIMEOUT_S` (optional; defaults to `30`)
-   - `AMAZON_CREATORS_TOKEN_URL` (optional override for the token endpoint)
-2. Run `amazon-creators-api-tool onboarding` to get the non-technical setup steps. If `.env` is missing, confirmed apply requires explicit no-snapshot approval before creating it when no saved snapshot is available.
-3. Confirm the CLI runs: `amazon-creators-api-tool --output json --version`.
-4. Use an existing cached token when available. `amazon-creators-api-tool --output json auth token fetch` now shows the blocked token-cache plan, and confirmed apply requires explicit no-snapshot approval before token endpoint use or cache writes.
-   - Add `--force` if you need to bypass a valid cached token (for example, after rotating secrets).
-   - `auth token set --file <token.json>` now shows the blocked token-cache plan.
-5. Verify OAuth flow: `amazon-creators-api-tool auth check`.
-6. Try the catalog commands to see the plan/apply loop:
-   - Run `amazon-creators-api-tool items get --item-id B0EXAMPLE --resource-preset book-media` to output the dry-run `plan` without hitting Amazon.
-   - Re-run with `--apply --include-raw` to call the API, view the simplified item summary, and produce a `receipt`/`receipt_out`.
+This page helps you get one useful Amazon Creators result quickly, without turning the quickstart into a full command manual.
+
+If you are still deciding what to ask, start with [What you can do with Amazon Creators](use_cases.md). If setup is not done yet, read [Connect your account](onboarding.md).
+
+A good first ask is:
+
+> Gather every classification, variation summary, and parent ASIN for this set of ISBNs so I can compare paperback, hardcover, and Kindle formats.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Open the tool
+
+If the skill is already installed in your agent host, start there. If you are working from source, follow the install notes in the repository before running commands.
+
+## 2. Check setup
+
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
+
+## 3. Run one safe first read
+
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
+
+```bash
+amazon-creators-api-tool locales list
+amazon-creators-api-tool items get --item-id B0EXAMPLE --resource-preset book-media
+```
+
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
+
+## 4. Stop before changes
+
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
+
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+## What good output looks like
+
+A useful first result should tell you:
+
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
+
+## Where to go next
+
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

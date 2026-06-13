@@ -1,12 +1,23 @@
 # Quickstart
 
-Want the short non-technical path first? Start with [What you can do with Mercury](use_cases.md), [Connect your Mercury API token](onboarding.md), and [How this skill stays safe](safety_model.md).
+This page helps you get one useful Mercury result quickly, without turning the quickstart into a full command manual.
 
-This page is for the exact commands.
+If you are still deciding what to ask, start with [What you can do with Mercury](use_cases.md). If setup is not done yet, read [Connect your Mercury API token](onboarding.md).
 
-Requires: **Python 3.11+**.
+A good first ask is:
 
-## 1) Install
+> Which Mercury accounts do I have, and what are their IDs?
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 --version
@@ -14,30 +25,17 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 ```
 
-Optional dev extras:
-
 ```bash
 .venv/bin/python -m pip install -e '.[dev]'
 ```
 
-## 2) Configure
+## 2. Check setup
 
-Copy `.env.example` to `.env`, then fill:
-
-- `MERCURY_API_TOKEN`
-- `MERCURY_API_BASE_URL`
-
-Optional:
-
-- `MERCURY_AUTH_SCHEME`
-
-For a guided first-time setup, run:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 mercury-api-tool onboarding
 ```
-
-## 3) First safe checks
 
 ```bash
 mercury-api-tool --output json --version
@@ -45,46 +43,46 @@ mercury-api-tool --output json auth check
 mercury-api-tool --output json accounts list
 ```
 
-## 4) Common next commands
+## 3. Run one safe first read
 
-Review transactions:
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 mercury-api-tool --output json transactions list --limit 20
 ```
 
-Preview a CSV export without writing a file yet:
-
 ```bash
 mercury-api-tool --output json export transactions --format csv --out ./transactions.csv
 ```
 
-Write the export after review:
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-mercury-api-tool --output json --apply export transactions --format csv --out ./transactions.csv
-```
+## 4. Stop before changes
 
-Download an invoice PDF locally:
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
+
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+A first change should stay as a preview or dry run until you approve it:
 
 ```bash
 mercury-api-tool --output json --apply invoices download-pdf --invoice-id inv_123 --out ./invoice.pdf
 ```
 
-## 5) Local file-write rules
+## What good output looks like
 
-Mercury reads are remote read-only, but exports and downloads still write local files.
+A useful first result should tell you:
 
-That means:
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-- preview first with the dry-run output
-- use `--apply` before any local file write
-- add `--yes` if you are overwriting an existing file
+## Where to go next
 
-## 6) Module fallback
-
-If you are not using an editable install, you can run:
-
-```bash
-PYTHONPATH=src python3 -m mercury_api_tool --output json auth check
-```
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your Mercury API token](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

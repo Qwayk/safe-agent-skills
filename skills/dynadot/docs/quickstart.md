@@ -1,10 +1,23 @@
 # Quickstart
 
-If you're non-technical, start with [What you can do](use_cases.md) and [Connect your account](onboarding.md).
+This page helps you get one useful Dynadot result quickly, without turning the quickstart into a full command manual.
 
-This page is a technical reference (it includes CLI commands).
+If you are still deciding what to ask, start with [What you can do with Dynadot](use_cases.md). If setup is not done yet, read [Connect your account](onboarding.md).
 
-1) Install (minimal)
+A good first ask is:
+
+> List all active domains and flag anything expiring in the next 30 or 60 days.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -12,79 +25,29 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 ```
 
-Optional (dev extras):
-
 ```bash
 .venv/bin/python -m pip install -e '.[dev]'
 ```
 
-2) Configure
+## 2. Check setup
 
-Copy `.env.example` -> `.env` and fill your Dynadot values.
-
-If you want guided local setup first, run:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 dynadot-api-tool onboarding
 ```
 
-3) Smoke test
-
 ```bash
 dynadot-api-tool auth check
 ```
 
-If you want a safe version check with no `.env`:
+## 3. Run one safe first read
 
-```bash
-dynadot-api-tool --output json --version
-```
-
-4) Read a quick domain inventory
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 dynadot-api-tool --output json domains list --all --out domains.list.json
 ```
-
-You can also inspect a smaller read:
-
-```bash
-dynadot-api-tool --output json domains info --domain example.com
-```
-
-5) Preview a domain push
-
-```bash
-dynadot-api-tool --output json --plan-out push.plan.json domains push \\
-  --to-push-username "<RECEIVER_PUSH_USERNAME>" \\
-  --domains-file "<FILE>"
-```
-
-If you review the plan and approve it, the live apply path also needs `--ack-no-snapshot` because Dynadot writes here do not have a saved before-state:
-
-```bash
-dynadot-api-tool --output json --apply --yes --ack-no-snapshot \\
-  --plan-in push.plan.json --receipt-out push.receipt.json \\
-  domains push --to-push-username "<RECEIVER_PUSH_USERNAME>" --domains-file "<FILE>"
-```
-
-6) Preview a guided transfer run
-
-```bash
-dynadot-api-tool --output json --plan-out transfer.plan.json \\
-  --env-file "<SENDER_ENV>" \\
-  transfer run \\
-  --receiver-env-file "<RECEIVER_ENV>" \\
-  --to-push-username "<RECEIVER_PUSH_USERNAME>" \\
-  --desired-ns "ns1.example.net" \\
-  --desired-ns "ns2.example.net"
-```
-
-This plans the full sequence: push, receiver accept, presence check, name server fix, and summary.
-
-7) Preview a name server migration
-
-Export current name servers:
 
 ```bash
 dynadot-api-tool --output json domains name-servers export \\
@@ -92,18 +55,28 @@ dynadot-api-tool --output json domains name-servers export \\
   --out name_servers.current.json
 ```
 
-Build the diff:
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-dynadot-api-tool --output json domains name-servers diff \\
-  --current-in name_servers.current.json \\
-  --desired-ns "ns1.example.net" \\
-  --desired-ns "ns2.example.net" \\
-  --out name_servers.diff.json
-```
+## 4. Stop before changes
 
-Preview the bulk set:
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-```bash
-dynadot-api-tool --output json --plan-out ns.plan.json domains name-servers set --diff-in name_servers.diff.json
-```
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+## What good output looks like
+
+A useful first result should tell you:
+
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
+
+## Where to go next
+
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

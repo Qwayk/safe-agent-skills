@@ -1,10 +1,23 @@
 # Quickstart
 
-Want the short non-technical path first? Start with [What you can do](use_cases.md), [Connect your OpenAI access](onboarding.md), and [How this skill stays safe](safety_model.md).
+This page helps you get one useful OpenAI result quickly, without turning the quickstart into a full command manual.
 
-This page is the CLI path when you already want exact commands.
+If you are still deciding what to ask, start with [What you can do with OpenAI](use_cases.md). If setup is not done yet, read [Connect your OpenAI access](onboarding.md).
 
-## 1. Install
+A good first ask is:
+
+> Which OpenAI operations are available in this tool?
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -12,75 +25,59 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-## 2. Configure
+## 2. Check setup
 
-Copy `.env.example` to `.env` and fill your OpenAI values.
-
-If you want the tool to create the starter file for you, run:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 openai-api-tool onboarding
 ```
 
-## 3. Local smoke checks
-
-Version output with no network call:
-
 ```bash
 openai-api-tool --output json --version
 ```
 
-List the pinned operation catalog locally:
+## 3. Run one safe first read
+
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 openai-api-tool api ops list
 ```
 
-## 4. First live check
-
-Real network reads still require `--live`:
-
-```bash
-openai-api-tool --output json --live auth check
-```
-
-## 5. First safe live reads
-
-List models:
-
 ```bash
 openai-api-tool --live api listModels
 ```
 
-Review one model:
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-openai-api-tool --live api retrieveModel --path model=gpt-4.1-mini
-```
+## 4. Stop before changes
 
-## 6. Plan a write-capable action
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-Write-capable operations start as dry-run plans by default, so save the plan first:
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+A first change should stay as a preview or dry run until you approve it:
 
 ```bash
 openai-api-tool --plan-out plan.json api createResponse --body-json '{"model":"gpt-4.1-mini","input":"Hello"}'
+openai-api-tool --apply --yes --plan-in plan.json api createResponse --body-json '{"model":"gpt-4.1-mini","input":"Hello"}'
 ```
 
-Nothing goes live in this step.
+## What good output looks like
 
-## 7. Request apply only after review
+A useful first result should tell you:
 
-After you review `plan.json`, spend-money actions can need all of these gates:
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-```bash
-openai-api-tool --live --apply --plan-in plan.json --yes --ack-spend-money --ack-no-snapshot api createResponse --body-json '{"model":"gpt-4.1-mini","input":"Hello"}'
-```
+## Where to go next
 
-Delete-like actions can also require `--ack-irreversible`.
-
-## 8. Need the full command list?
-
-Use:
-
-- [Command reference](command_reference.md)
-- [API coverage](api_coverage.md)
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your OpenAI access](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

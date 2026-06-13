@@ -1,12 +1,23 @@
 # Quickstart
 
-Want the short non-technical path first? Start with [What you can do with TikTok Marketing](use_cases.md), [Connect your TikTok Marketing account](onboarding.md), and [How this skill stays safe](safety_model.md).
+This page helps you get one useful TikTok Marketing result quickly, without turning the quickstart into a full command manual.
 
-This page is for the exact commands.
+If you are still deciding what to ask, start with [What you can do with TikTok Marketing](use_cases.md). If setup is not done yet, read [Connect your TikTok Marketing account](onboarding.md).
 
-One important rule first: `auth check` is already a live helper, but the wider `api` surface still needs `--live` for real provider reads.
+A good first ask is:
 
-## 1) Install
+> Check whether my TikTok Marketing app credentials and access token work.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 --version
@@ -14,23 +25,17 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 ```
 
-Optional (developer tooling):
-
 ```bash
 .venv/bin/python -m pip install -e '.[dev]'
 ```
 
-## 2) Configure
+## 2. Check setup
 
-Run onboarding or copy `.env.example` to `.env`:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 tiktok-marketing-api-tool --output json onboarding
 ```
-
-Then fill the TikTok values from [Configuration](configuration.md).
-
-## 3) First safe checks
 
 ```bash
 tiktok-marketing-api-tool --output json --version
@@ -39,27 +44,38 @@ tiktok-marketing-api-tool --output json api ops list
 tiktok-marketing-api-tool --output json api ops show --op oauth2-advertiser-get
 ```
 
-## 4) First reviewed plan
+## 3. Run one safe first read
 
-Create a small query file first, then build the dry-run plan:
-
-```bash
-tiktok-marketing-api-tool --output json --plan-out plan.json api campaign-get --query-json query.json
-```
-
-## 5) First real API read
-
-The broad `api` surface needs `--live`:
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
-tiktok-marketing-api-tool --output json --live api campaign-get --query-json query.json
+tiktok-marketing-api-tool --output json api ops list --method GET --family campaign
+tiktok-marketing-api-tool --output json api ops show --op oauth2-advertiser-get
+tiktok-marketing-api-tool --output json --live api ad-get --query-json path/to/query.json
 ```
 
-## 6) Write planning rules
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-If you move from reads into live TikTok Marketing changes:
+## 4. Stop before changes
 
-- start with the dry-run plan first
-- expect the normal apply flags for write-like operations
-- expect explicit no-snapshot approval too when the command cannot save real before-state
-- keep the reviewed plan file so the apply step has a clear audit trail
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
+
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+## What good output looks like
+
+A useful first result should tell you:
+
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
+
+## Where to go next
+
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your TikTok Marketing account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

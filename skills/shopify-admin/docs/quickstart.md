@@ -1,10 +1,23 @@
 # Quickstart
 
-Want the short non-technical path first? Start with [What you can do](use_cases.md) and [Connect your Shopify Admin account](onboarding.md).
+This page helps you get one useful Shopify Admin result quickly, without turning the quickstart into a full command manual.
 
-This page is the CLI path when you already want exact commands.
+If you are still deciding what to ask, start with [What you can do with Shopify Admin](use_cases.md). If setup is not done yet, read [Connect your Shopify Admin account](onboarding.md).
 
-1) Install (dev)
+A good first ask is:
+
+> Show store details and list the products that are missing tags, images, descriptions, vendors, or SEO fields.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -12,40 +25,48 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-2) Configure
+## 2. Check setup
 
-Copy `.env.example` → `.env` and fill your values.
-
-Tip: for a guided first-time setup, run:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 shopify-admin-api-tool onboarding
 ```
 
-3) Smoke test
-
 ```bash
 shopify-admin-api-tool auth check
 ```
 
-If you want a safe machine-readable version output (no `.env` required):
+## 3. Run one safe first read
 
-```bash
-shopify-admin-api-tool --output json --version
-```
-
-If you want to validate your env file without modifying it, you can point at `.env.example`:
-
-```bash
-shopify-admin-api-tool --env-file .env.example auth check
-```
-
-4) One representative query (read-only)
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 shopify-admin-api-tool --output json query shop
 ```
 
-Important: query stdout is not redacted. Treat outputs as sensitive, especially when using `--return-shape-file`.
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-Mutation commands stay preview-first by default. After review, live apply still needs the normal mutation risk flags plus explicit `--ack-no-snapshot` when no operation-specific saved snapshot is available.
+## 4. Stop before changes
+
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
+
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+## What good output looks like
+
+A useful first result should tell you:
+
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
+
+## Where to go next
+
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your Shopify Admin account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

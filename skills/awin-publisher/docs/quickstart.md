@@ -1,8 +1,23 @@
 # Quickstart
 
-If you want the plain-English path first, start with [What you can do with Awin Publisher](use_cases.md), [Connect your Awin publisher account](onboarding.md), and [How this skill stays safe](safety_model.md).
+This page helps you get one useful Awin Publisher result quickly, without turning the quickstart into a full command manual.
 
-## Install and validate
+If you are still deciding what to ask, start with [What you can do with Awin Publisher](use_cases.md). If setup is not done yet, read [Connect your Awin publisher account](onboarding.md).
+
+A good first ask is:
+
+> Which publisher accounts can this token see?
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -10,7 +25,15 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-## First local setup
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e .
+.venv/bin/python -m unittest -q
+```
+
+## 2. Check setup
+
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 cp .env.example .env
@@ -18,13 +41,9 @@ awin-publisher-safe-cli onboarding
 awin-publisher-safe-cli --output json auth check
 ```
 
-Fill the keys you need in `.env`:
+## 3. Run one safe first read
 
-- Always: `AWIN_API_TOKEN`
-- Legacy feeds only: `AWIN_FEED_API_KEY`
-- Proof of purchase only: `AWIN_PROOF_OF_PURCHASE_API_KEY` after Awin enables the publisher and the advertiser enables CLO
-
-## Common read examples
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 awin-publisher-safe-cli --output json accounts list
@@ -34,34 +53,35 @@ awin-publisher-safe-cli --output json transactions list --publisher-id <publishe
 awin-publisher-safe-cli --output json reports advertiser --publisher-id <publisher_id> --start-date 2026-06-01 --end-date 2026-06-02 --region GB
 ```
 
-## Download examples
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-awin-publisher-safe-cli --output json feeds enhanced-download --publisher-id <publisher_id> --advertiser-id <advertiser_id> --locale en_GB --out enhanced-feed.jsonl
-awin-publisher-safe-cli --output json feeds legacy-list --out legacy-feed-list.csv
-```
+## 4. Stop before changes
 
-## Safe proof-of-purchase flow
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
+
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+A first change should stay as a preview or dry run until you approve it:
 
 ```bash
 awin-publisher-safe-cli --output json --plan-out proof-plan.json proof-of-purchase orders create --publisher-id <publisher_id> --advertiser-id <advertiser_id> --orders-file orders.json
 awin-publisher-safe-cli --output json --apply --yes --plan-in proof-plan.json --receipt-out proof-receipt.json proof-of-purchase orders create --publisher-id <publisher_id> --advertiser-id <advertiser_id> --orders-file orders.json
 ```
 
-Official gating still applies to the live proof-of-purchase command: Awin must enable the publisher and the advertiser must enable CLO for that program.
+## What good output looks like
 
-## Validation
+A useful first result should tell you:
 
-```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install -e .
-.venv/bin/python -m unittest -q
-```
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-## Next references
+## Where to go next
 
-- [Command reference](command_reference.md)
-- [Authentication details](authentication.md)
-- [Configuration](configuration.md)
-- [Proof and verification](proof.md)
-- [API coverage](api_coverage.md)
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your Awin publisher account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

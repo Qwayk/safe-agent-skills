@@ -1,10 +1,23 @@
 # Quickstart
 
-If you're non-technical, start with [What you can do](use_cases.md) and [Connect your account](onboarding.md).
+This page helps you get one useful Freepik result quickly, without turning the quickstart into a full command manual.
 
-This page is technical. It shows the exact Freepik CLI commands.
+If you are still deciding what to ask, start with [What you can do with Freepik](use_cases.md). If setup is not done yet, read [Connect your account](onboarding.md).
 
-## 1) Install
+A good first ask is:
+
+> Search for recipe photos for mushroom pasta and give me 50 options with preview links.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -12,135 +25,54 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-## 2) Configure
+## 2. Check setup
 
-Create `.env` from `.env.example` and fill:
-
-- `FREEPIK_API_BASE_URL`
-- `FREEPIK_BASE_URL` (legacy alias)
-- `FREEPIK_API_KEY`
-
-Freepik auth defaults to:
-
-- `FREEPIK_AUTH_HEADER=x-freepik-api-key`
-- `FREEPIK_AUTH_PREFIX=` (empty)
-
-Only change those auth settings if Freepik support tells you to.
-
-Optional: if you want stable defaults for downloads and the inventory CSV, create a small non-secret config JSON and pass `--config`.
-
-Useful keys:
-
-- `downloads_dir`
-- `inventory_csv`
-
-## 3) Check auth
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 freepik-api-tool auth check
 ```
 
-## 4) Run safe reads first
+## 3. Run one safe first read
 
-Search:
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 freepik-api-tool search photos --query "roasted turkey" --limit 10 --shortlist
 ```
 
-Get details for a chosen candidate:
-
 ```bash
 freepik-api-tool resource get --id RESOURCE_ID
 ```
 
-Preview a chosen asset:
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-freepik-api-tool preview --id RESOURCE_ID
-freepik-api-tool preview --id RESOURCE_ID --save-preview previews/
-```
+## 4. Stop before changes
 
-`--save-preview` writes local preview files only. Delete them manually when you no longer need them.
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-## 5) Build a dry-run download plan
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+A first change should stay as a preview or dry run until you approve it:
 
 ```bash
 freepik-api-tool download --id RESOURCE_ID --format jpg --out-dir downloads --inventory licensed-downloads-ledger.csv
 ```
 
-Safety:
+## What good output looks like
 
-- `download` refuses unless the resource detail clearly shows `is_ai_generated=false` and `has_prompt=false`.
-- Dry-run does not call the licensed download endpoint or write files.
+A useful first result should tell you:
 
-## 6) Apply only after review
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-Licensed live download needs explicit no-snapshot approval:
+## Where to go next
 
-```bash
-freepik-api-tool --apply --ack-no-snapshot download --id RESOURCE_ID --format jpg --out-dir downloads --inventory licensed-downloads-ledger.csv
-```
-
-Approved apply writes the file and an inventory row, then returns verification details in the JSON output.
-
-Without `--ack-no-snapshot`, the tool refuses before the licensed download endpoint, local file write, or inventory row write.
-
-Optional resize for photos:
-
-```bash
-freepik-api-tool --apply --ack-no-snapshot download --id RESOURCE_ID --format jpg --image-size 1000px --out-dir downloads --inventory licensed-downloads-ledger.csv
-```
-
-## 7) Batch apply only after review
-
-Generate a local jobs CSV first:
-
-```bash
-freepik-api-tool search photos --query "roasted turkey" --limit 10 --write-jobs jobs.csv --job-format jpg --job-image-size 2000px
-```
-
-Then apply the batch only after you review the file:
-
-```bash
-freepik-api-tool --apply --yes --ack-no-snapshot jobs run --file jobs.csv --out-dir downloads --inventory licensed-downloads-ledger.csv
-```
-
-## Useful filtering notes
-
-Freepik's `/resources` endpoint uses `filters` in `deepObject` style. Some filters are arrays, so `content_type` must use `[]`:
-
-```bash
-freepik-api-tool search images \
-  --query "roasted turkey" \
-  --limit 10 \
-  --param 'filters[content_type][]=photo'
-```
-
-Best-effort AI exclusion:
-
-```bash
-freepik-api-tool search images \
-  --query "roasted turkey" \
-  --limit 10 \
-  --param 'filters[content_type][]=photo' \
-  --exclude-ai
-```
-
-`--exclude-ai` fetches resource detail for each result. It helps, but you should still verify the previews by eye.
-
-## Advanced response parsing overrides
-
-If the API returns license or download URLs in an unexpected place, use:
-
-- `--license-url-jsonpath`
-- `--download-url-jsonpath`
-
-Or set defaults in `.env`:
-
-- `FREEPIK_LICENSE_URL_JSONPATH`
-- `FREEPIK_DOWNLOAD_URL_JSONPATH`
-
-## Pricing note
-
-Freepik API pricing can change over time. Check Freepik's current pricing and keep batch sizes reasonable.
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

@@ -1,12 +1,23 @@
 # Quickstart
 
-Want the short non-technical path first? Start with [What you can do with Pinterest](use_cases.md), [Connect your Pinterest account](onboarding.md), and [How this skill stays safe](safety_model.md).
+This page helps you get one useful Pinterest result quickly, without turning the quickstart into a full command manual.
 
-This page is for the exact commands.
+If you are still deciding what to ask, start with [What you can do with Pinterest](use_cases.md). If setup is not done yet, read [Connect your Pinterest account](onboarding.md).
 
-This tool is read-mostly today. It can read Pinterest account data and write JSON snapshots locally. Remote write families stay plan-first and still need explicit no-snapshot approval before live Pinterest changes.
+A good first ask is:
 
-## 1) Install
+> What boards, sections, and pins are in this account?
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 --version
@@ -14,44 +25,17 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 ```
 
-Optional (developer tooling):
-
 ```bash
 .venv/bin/python -m pip install -e '.[dev]'
 ```
 
-## 2) Configure
+## 2. Check setup
 
-Copy `.env.example` to `.env`, then fill your values from [Configuration](configuration.md).
-
-Important:
-- Never commit `.env` (it is gitignored).
-- Never paste tokens/secrets into chat.
-
-## 3) Authenticate
-
-You have two options:
-
-### Option A: 24‑hour “Generate Access Tokens” (fastest for first test)
-
-Put the access token in `.env`:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 PINTEREST_ACCESS_TOKEN=PASTE_HERE
 ```
-
-This is good for quick testing, but it expires (often ~24 hours).
-
-### Option B: Long‑term refresh-token auth (recommended)
-
-Put these in `.env`:
-- `PINTEREST_APP_ID`
-- `PINTEREST_APP_SECRET`
-- `PINTEREST_REFRESH_TOKEN`
-
-If you do not have a refresh token yet, follow [Authentication details](authentication.md). The built-in auth setup helpers still require explicit no-snapshot approval before writing local token state, so the safest first path is a manually provisioned token.
-
-## 4) First safe checks
 
 ```bash
 pinterest-api-tool --output json --version
@@ -59,67 +43,42 @@ pinterest-api-tool --output json auth check
 pinterest-api-tool --output json boards list --limit 1
 ```
 
-## 5) Common inventory commands
+## 3. Run one safe first read
+
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 pinterest-api-tool --output json boards list --limit 100
 pinterest-api-tool --output json pins list --limit 100
 ```
 
-If you want to check board sections for a specific board:
-
 ```bash
 pinterest-api-tool --output json board-sections list --board-id BOARD_ID
 pinterest-api-tool --output json board-pins list --board-id BOARD_ID --section-id SECTION_ID
 ```
 
-## 6) Ads and catalogs reads
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-These endpoints require access to a Pinterest ad account (and may require additional scopes/tiers).
+## 4. Stop before changes
 
-```bash
-pinterest-api-tool --output json ads accounts list
-pinterest-api-tool --output json ads campaigns list --ad-account-id AD_ACCOUNT_ID
-pinterest-api-tool --output json ads ad-groups list --ad-account-id AD_ACCOUNT_ID
-pinterest-api-tool --output json ads ads list --ad-account-id AD_ACCOUNT_ID
-pinterest-api-tool --output json ads analytics ad-account --ad-account-id AD_ACCOUNT_ID --start-date 2026-01-01 --end-date 2026-01-31 --metric IMPRESSION
-pinterest-api-tool --output json ads analytics campaigns --ad-account-id AD_ACCOUNT_ID --start-date 2026-01-01 --end-date 2026-01-31 --metric IMPRESSION
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-pinterest-api-tool --output json catalogs list --ad-account-id AD_ACCOUNT_ID
-pinterest-api-tool --output json catalogs feeds list --ad-account-id AD_ACCOUNT_ID
-pinterest-api-tool --output json catalogs product-groups list --ad-account-id AD_ACCOUNT_ID
-pinterest-api-tool --output json catalogs product-group-products list --ad-account-id AD_ACCOUNT_ID --product-group-id PRODUCT_GROUP_ID
-pinterest-api-tool --output json catalogs reports list --ad-account-id AD_ACCOUNT_ID
-```
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
 
-## 7) Audit snapshot
+## What good output looks like
 
-```bash
-pinterest-api-tool --output json audit snapshot --out-dir <PROJECT_DIR>/pinterest/audits/first-run
-```
+A useful first result should tell you:
 
-If analytics endpoints fail (scopes/tier), retry:
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-```bash
-pinterest-api-tool --output json audit snapshot --out-dir <PROJECT_DIR>/pinterest/audits/first-run --skip-analytics
-```
+## Where to go next
 
-Optional (ads/catalogs exports; warning-only on failures):
-
-```bash
-pinterest-api-tool --output json audit snapshot --out-dir <PROJECT_DIR>/pinterest/audits/first-run --ad-account-id AD_ACCOUNT_ID --include-ads
-pinterest-api-tool --output json audit snapshot --out-dir <PROJECT_DIR>/pinterest/audits/first-run --ad-account-id AD_ACCOUNT_ID --include-catalogs
-```
-
-Notes:
-- `audit snapshot` treats analytics failures as warnings, but it fails if core inventory (boards/pins) fails.
-- The snapshot includes `boards_summary.json` which shows (best-effort) section counts per board.
-
-## 8) Write planning rules
-
-If you move from reads into live Pinterest changes:
-
-- start with the dry-run plan first
-- use `--apply --yes` for confirmed write attempts
-- add `--ack-irreversible`, `--ack-spend`, or `--ack-volume` when the command requires them
-- expect `--ack-no-snapshot` too when the write has no saved before-state
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your Pinterest account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

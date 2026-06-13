@@ -1,10 +1,23 @@
 # Quickstart
 
-This page is for people who want the commands.
+This page helps you get one useful Jobber result quickly, without turning the quickstart into a full command manual.
 
-If you are not ready for commands, start with [What this skill can help you do](use_cases.md), [Set up your account step by step](onboarding.md), and [See how this skill keeps changes safe](safety_model.md).
+If you are still deciding what to ask, start with [What you can do with Jobber](use_cases.md). If setup is not done yet, read [Set up your account step by step](onboarding.md).
 
-## Install for local use
+A good first ask is:
+
+> Check whether this Jobber connection works, then show what account areas the agent can review.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -12,11 +25,9 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-## Add your settings
+## 2. Check setup
 
-Copy `.env.example` to `.env` and fill your values.
-
-## First safety checks
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 qwayk-jobber-safe-agent-cli --output json onboarding
@@ -24,33 +35,23 @@ qwayk-jobber-safe-agent-cli --output json auth check
 qwayk-jobber-safe-agent-cli --output json schema summary
 ```
 
-## First Jobber-style read
+## 3. Run one safe first read
+
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
-qwayk-jobber-safe-agent-cli --output json read clients --selection "nodes { id name } totalCount" --limit 10
+qwayk-jobber-safe-agent-cli --output json webhooks topics
 ```
 
-## First safe write plan
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-qwayk-jobber-safe-agent-cli --output json write clientCreate --args-json '{"input": {"firstName": "Sample", "lastName": "Client"}}' --selection 'client { id name } userErrors { message path }'
-```
+## 4. Stop before changes
 
-## Apply flow (plan first, then apply)
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-```bash
-qwayk-jobber-safe-agent-cli --output json --plan-out plan.json write clientCreate --args-json '{"input": {"firstName": "Sample", "lastName": "Client"}}' --selection 'client { id name } userErrors { message path }'
-qwayk-jobber-safe-agent-cli --output json --apply --yes --plan-in plan.json write clientCreate --args-json '{"input": {"firstName": "Sample", "lastName": "Client"}}' --selection 'client { id name } userErrors { message path }'
-```
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
 
-## OAuth token refresh and checks
-
-```bash
-qwayk-jobber-safe-agent-cli --output json auth token status
-qwayk-jobber-safe-agent-cli --output json --apply --yes auth token refresh --refresh-token <refresh_token>
-```
-
-## Commands for webhook and jobs
+A first change should stay as a preview or dry run until you approve it:
 
 ```bash
 qwayk-jobber-safe-agent-cli --output json webhooks topics
@@ -58,3 +59,21 @@ qwayk-jobber-safe-agent-cli --output json webhooks verify-signature --body-file 
 qwayk-jobber-safe-agent-cli --output json --plan-out plan.json jobs run --file examples/jobs.csv
 qwayk-jobber-safe-agent-cli --output json --apply --yes --plan-in plan.json jobs run --file examples/jobs_with_write.csv
 ```
+
+## What good output looks like
+
+A useful first result should tell you:
+
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
+
+## Where to go next
+
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Set up your account step by step](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

@@ -1,12 +1,23 @@
 # Quickstart
 
-If you want the human path first, start with [What you can do with LinkedIn Ads](use_cases.md), [Connect your LinkedIn Ads account](onboarding.md), and [How this skill stays safe](safety_model.md).
+This page helps you get one useful LinkedIn Ads result quickly, without turning the quickstart into a full command manual.
 
-This page is the technical reference for install, setup, approval checks, and first LinkedIn Ads commands.
+If you are still deciding what to ask, start with [What you can do with LinkedIn Ads](use_cases.md). If setup is not done yet, read [Connect your LinkedIn Ads account](onboarding.md).
 
-## 1) Install
+A good first ask is:
 
-From the tool folder:
+> Check my LinkedIn Ads token, list the ad accounts I can access, and flag approval problems.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -14,42 +25,40 @@ python3 -m venv .venv
 pip install -e .
 ```
 
-## 2) Put config in place
+## 2. Check setup
+
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 cp .env.example .env
 ```
 
-Then fill `LINKEDIN_ADS_TOKEN` in `.env` or run:
-
 ```bash
 linkedin-ads-api-tool onboarding
 ```
-
-`onboarding` creates a placeholder `.env` with `LINKEDIN_ADS_TOKEN` when missing.
-You can also use `LINKEDIN_ADS_ACCESS_TOKEN` or `LINKEDIN_ADS_API_TOKEN` instead.
-
-## 3) Confirm approval flow
 
 ```bash
 linkedin-ads-api-tool --output json auth check
 ```
 
-This is a safe live GET for `GET /adAccountUsers?q=authenticatedUser`.
-It confirms the token loads and that LinkedIn can authenticate your user in this app context.
+## 3. Run one safe first read
 
-## 4) Start with safe first commands
-
-Read commands are live and do not need `--apply`:
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 linkedin-ads-api-tool --output json ad-account-users list-authenticated-user
 linkedin-ads-api-tool --output json ad-campaigns search --ad-account-id 123456
 ```
 
-## 5) Test write safety
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-Write commands can run first in plan mode. Use a plan file first:
+## 4. Stop before changes
+
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
+
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+A first change should stay as a preview or dry run until you approve it:
 
 ```bash
 linkedin-ads-api-tool \
@@ -59,16 +68,20 @@ linkedin-ads-api-tool \
   --body-json '{"name":"Sample account"}'
 ```
 
-Then apply only after review:
+## What good output looks like
 
-```bash
-linkedin-ads-api-tool --output json --apply --ack-irreversible ad-accounts create --body-json '{"name":"Sample account"}'
-```
+A useful first result should tell you:
 
-If you do not have a token, dry-run plans still work for non-read operations, but live LinkedIn reads will not.
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-## 6) Helpful next references
+## Where to go next
 
-- [Command reference](command_reference.md)
-- [Authentication details](authentication.md)
-- [API coverage](api_coverage.md)
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your LinkedIn Ads account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

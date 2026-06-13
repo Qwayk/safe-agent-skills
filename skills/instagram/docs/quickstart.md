@@ -1,10 +1,23 @@
 # Quickstart
 
-Want the short non-technical path first? Start with [What you can do](use_cases.md), [Connect your Instagram access](onboarding.md), and [How this skill stays safe](safety_model.md).
+This page helps you get one useful Instagram result quickly, without turning the quickstart into a full command manual.
 
-This page is the CLI path when you already want exact commands.
+If you are still deciding what to ask, start with [What you can do with Instagram](use_cases.md). If setup is not done yet, read [Connect your Instagram access](onboarding.md).
 
-## 1. Install
+A good first ask is:
+
+> Show which Instagram professional account this token reaches and list my latest media.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -12,88 +25,53 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-## 2. Configure
+## 2. Check setup
 
-Copy `.env.example` to `.env` and fill your Instagram app values.
-
-If you want the tool to create the starter file for you, run:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 instagram-api-tool onboarding
 ```
-
-## 3. Build the login URL
-
-```bash
-instagram-api-tool auth login-url --scope instagram_business_basic
-```
-
-Add more scopes later only when the job needs them.
-
-## 4. Exchange the auth code
-
-After you sign in through the login URL and copy the `code` value from the redirect URL:
-
-```bash
-instagram-api-tool auth code exchange --code YOUR_CODE
-```
-
-That first run can show the plan first.
-If the tool cannot save useful old token state first, finish the reviewed exchange with:
-
-```bash
-instagram-api-tool --apply --ack-no-snapshot auth code exchange --code YOUR_CODE
-```
-
-## 5. Smoke test
 
 ```bash
 instagram-api-tool auth check
 instagram-api-tool users me --fields user_id,username,account_type
 ```
 
-Version output still works without `.env`:
+## 3. Run one safe first read
 
-```bash
-instagram-api-tool --output json --version
-```
-
-## 6. First safe reads
-
-List recent media:
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 instagram-api-tool media list --ig-user-id 17841400000000000 --fields id,caption,media_type,permalink --limit 10
 ```
 
-List comments on one media item:
-
 ```bash
 instagram-api-tool comments list --media-id 17900000000000000 --fields id,text,username,timestamp
 ```
 
-Check account insights:
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-instagram-api-tool insights account get --ig-user-id 17841400000000000 --metric impressions,reach
-```
+## 4. Stop before changes
 
-## 7. Plan a write-capable change
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-Write-capable actions start as dry-run plans by default:
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
 
-```bash
-instagram-api-tool media publish --ig-user-id 17841400000000000 --creation-id 17890000000000000
-```
+## What good output looks like
 
-## 8. Request apply only after review
+A useful first result should tell you:
 
-Higher-risk write actions can need `--yes`, and some also need `--ack-irreversible`.
-When no saved before-state exists, live apply also needs `--ack-no-snapshot`.
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-## 9. Need the full command list?
+## Where to go next
 
-Use:
-
-- [Command reference](command_reference.md)
-- [Browse all docs](README.md)
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your Instagram access](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

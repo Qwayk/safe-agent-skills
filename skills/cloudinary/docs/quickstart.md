@@ -1,81 +1,62 @@
 # Quickstart
 
-## Install
+This page helps you get one useful Cloudinary result quickly, without turning the quickstart into a full command manual.
+
+If you are still deciding what to ask, start with [What you can do with Cloudinary](use_cases.md). If setup is not done yet, read [Connect your account](onboarding.md).
+
+A good first ask is:
+
+> Check whether my product and account credentials are ready.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 ```
 
-## Create `.env`
+## 2. Check setup
+
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 cloudinary-safe-agent-cli onboarding
 ```
 
-That command copies `.env.example` to `.env` when `.env` does not exist.
-Then fill your Cloudinary values in `.env`.
-
-## Check access
-
 ```bash
 cloudinary-safe-agent-cli --output json auth check
 ```
 
-`auth check` does three things:
-- calls product `GET /ping` when product credentials are set
-- calls account provisioning `GET /sub_accounts` when account credentials are set
-- marks public permissions schema and validate endpoints as ready without credentials
+## 3. Run one safe first read
 
-## Discover what is shipped
-
-```bash
-cloudinary-safe-agent-cli --output json operations list --area upload --limit 10
-cloudinary-safe-agent-cli --output json operations show --area upload --op upload-signed
-```
-
-`operations list` hides deprecated and sensitive commands unless you opt in with `--include-deprecated` or `--include-sensitive`.
-
-## Run a read
-
-```bash
-cloudinary-safe-agent-cli --output json operations admin \
-  resources-get-details-of-a-single-resource-by-public-id \
-  --path-param resource_type=image \
-  --path-param type=upload \
-  --path-param public_id=sample
-```
-
-## Recover from backup (explicit commands only)
-
-There is no generic rollback command in this tool.
-Use the restore commands directly:
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 cloudinary-safe-agent-cli --output json \
-  --plan-out plans/restore-sample.json \
-  operations admin resources-restore-resources-by-public-id \
-  --path-param resource_type=image \
-  --path-param type=upload \
-  --path-param public_id=sample-public-id \
-  --body-json-file examples/resources-restore-by-public-id.sample.json
+  --project-dir . \
+  operations provisioning getaccesskeys \
+  --path-param sub_account_id=sub123 \
+  --out artifacts/access-keys.json
 ```
 
-Attempt the restore plan:
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-cloudinary-safe-agent-cli --output json \
-  --apply --yes --ack-no-snapshot \
-  --plan-in plans/restore-sample.json \
-  operations admin resources-restore-resources-by-public-id \
-  --path-param resource_type=image \
-  --path-param type=upload \
-  --path-param public_id=sample-public-id
-```
+## 4. Stop before changes
 
-If the reviewed plan still matches, `--ack-no-snapshot` allows the restore to reach Cloudinary and record a receipt even though this write path does not save a snapshot first.
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-Download a specific backed-up version to inspect it locally:
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
+
+A first change should stay as a preview or dry run until you approve it:
 
 ```bash
 cloudinary-safe-agent-cli --output json \
@@ -88,37 +69,20 @@ cloudinary-safe-agent-cli --output json \
   --overwrite
 ```
 
-## Plan a write
+## What good output looks like
 
-```bash
-cloudinary-safe-agent-cli --output json \
-  --plan-out plans/create-sub-account.json \
-  operations provisioning createproductenvironment \
-  --body-json-file examples/create-sub-account.sample.json
-```
+A useful first result should tell you:
 
-Without `--apply`, write commands return a dry-run plan.
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-## Attempt a write after review
+## Where to go next
 
-```bash
-cloudinary-safe-agent-cli --output json \
-  --apply --yes --ack-no-snapshot \
-  --plan-in plans/create-sub-account.json \
-  operations provisioning createproductenvironment \
-  --body-json-file examples/create-sub-account.sample.json
-```
-
-When no saved snapshot exists, add `--ack-no-snapshot` after review so the write can reach Cloudinary and record a receipt. Delete-like actions and access-key actions also need `--ack-irreversible`.
-
-## Save sensitive or binary results
-
-```bash
-cloudinary-safe-agent-cli --output json \
-  --project-dir . \
-  operations provisioning getaccesskeys \
-  --path-param sub_account_id=sub123 \
-  --out artifacts/access-keys.json
-```
-
-`--out` must stay inside `--project-dir`.
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

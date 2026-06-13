@@ -1,109 +1,89 @@
 # Quickstart
 
-Use this page when you want the exact Klaviyo commands.
-If you want the simpler path first, start with [What you can do with Klaviyo](use_cases.md) and [Connect your Klaviyo account](onboarding.md).
+This page helps you get one useful Klaviyo result quickly, without turning the quickstart into a full command manual.
 
-## 1) Install
+If you are still deciding what to ask, start with [What you can do with Klaviyo](use_cases.md). If setup is not done yet, read [Connect your Klaviyo account](onboarding.md).
+
+A good first ask is:
+
+> Which lists, segments, forms, or campaigns match these filters?
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 ```
 
-Optional dev extras:
-
 ```bash
 .venv/bin/python -m pip install -e '.[dev]'
 ```
 
-## 2) Configure your local `.env`
+## 2. Check setup
+
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 cp .env.example .env
 ```
 
-Tip: for guided first-time setup, run:
-
 ```bash
 klaviyo-safe-agent-cli onboarding
 ```
-
-Required fields:
-
-- `KLAVIYO_API_BASE_URL=https://a.klaviyo.com`
-- `KLAVIYO_API_KEY=...`
-- `KLAVIYO_COMPANY_ID=...` only for `/client/*` calls
-
-Never commit `.env`.
-
-## 3) Check auth first
 
 ```bash
 klaviyo-safe-agent-cli --output json auth check
 ```
 
-If you want a safe machine-readable version output with no `.env` needed:
+## 3. Run one safe first read
 
-```bash
-klaviyo-safe-agent-cli --output json --version
-```
-
-## 4) Discover the exact operation
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 klaviyo-safe-agent-cli --output json api ops list --method GET
 ```
 
-Show one operation with its method, path, and requirements:
-
 ```bash
 klaviyo-safe-agent-cli --output json api ops show --op get_accounts
 ```
 
-## 5) Run safe reads first
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-Reads need `--live`. Without `--live`, the tool only returns a dry-run plan.
+## 4. Stop before changes
 
-Account and campaign checks:
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-```bash
-klaviyo-safe-agent-cli --output json --live api get_accounts
-klaviyo-safe-agent-cli --output json --live api get_campaigns
-```
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
 
-Audience and profile checks:
-
-```bash
-klaviyo-safe-agent-cli --output json --live api get_lists
-klaviyo-safe-agent-cli --output json --live api get_profiles --query 'page[size]=5'
-```
-
-## 6) Preview a careful change
-
-Plan a low-risk write first:
+A first change should stay as a preview or dry run until you approve it:
 
 ```bash
 klaviyo-safe-agent-cli --output json --plan-out plan.json api create_coupon --body-json coupon.json
 ```
 
-Plan a high-impact audience change first:
+## What good output looks like
 
-```bash
-klaviyo-safe-agent-cli --output json --plan-out bulk_plan.json api bulk_suppress_profiles --body-json suppress.json
-```
+A useful first result should tell you:
 
-## 7) Apply only after review
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-Apply a reviewed low-risk write:
+## Where to go next
 
-```bash
-klaviyo-safe-agent-cli --output json --live --apply --ack-no-snapshot api create_coupon --body-json coupon.json
-```
-
-Apply a reviewed high-impact write:
-
-```bash
-klaviyo-safe-agent-cli --output json --live --apply --yes --plan-in bulk_plan.json --ack-no-snapshot api bulk_suppress_profiles --body-json suppress.json
-```
-
-Current Klaviyo write families do not save before-state snapshots, so approved live writes need explicit `--ack-no-snapshot`.
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your Klaviyo account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

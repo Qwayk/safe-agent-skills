@@ -1,12 +1,23 @@
 # Quickstart
 
-Want the short non-technical path first? Start with [What you can do with Skimlinks](use_cases.md), [Connect your Skimlinks account](onboarding.md), and [How this skill stays safe](safety_model.md).
+This page helps you get one useful Skimlinks result quickly, without turning the quickstart into a full command manual.
 
-This page is for the exact commands.
+If you are still deciding what to ask, start with [What you can do with Skimlinks](use_cases.md). If setup is not done yet, read [Connect your Skimlinks account](onboarding.md).
 
-Requires: **Python 3.12+**.
+A good first ask is:
 
-## 1) Install
+> Which merchants are active for this country or vertical?
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 --version
@@ -14,40 +25,21 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 ```
 
-Optional dev extras:
-
 ```bash
 .venv/bin/python -m pip install -e '.[dev]'
 ```
 
-## 2) Configure
+## 2. Check setup
+
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 cp .env.example .env
 ```
 
-Fill `.env` locally. Do not paste secrets into chat.
-
-Required for Merchant API and Reporting API:
-- `SKIMLINKS_CLIENT_ID`
-- `SKIMLINKS_CLIENT_SECRET`
-- `SKIMLINKS_PUBLISHER_ID`
-
-Required for Product Key unless passed per command:
-- `SKIMLINKS_PUBLISHER_DOMAIN_ID`
-
-Optional for Link Wrapper defaults and Product Key credential split:
-- `SKIMLINKS_LINK_WRAPPER_ID`
-- `SKIMLINKS_PRODUCT_CLIENT_ID`
-- `SKIMLINKS_PRODUCT_CLIENT_SECRET`
-
-For a guided first-time setup, run:
-
 ```bash
 skimlinks-safe-cli onboarding
 ```
-
-## 3) First safe checks
 
 ```bash
 skimlinks-safe-cli --output json --version
@@ -55,52 +47,40 @@ skimlinks-safe-cli onboarding
 skimlinks-safe-cli auth check
 ```
 
-If you plan to use Product Key, check that path separately too:
+## 3. Run one safe first read
 
-```bash
-skimlinks-safe-cli auth check --scope product
-```
-
-## 4) Common next commands
-
-Review active merchants:
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 skimlinks-safe-cli merchant merchants list --search laptop --country US --limit 10
 ```
 
-Review top commission links:
-
 ```bash
 skimlinks-safe-cli reporting link-report query --start-date 2026-01-01 --end-date 2026-01-31 --dim merchant_id --met clicks
 ```
 
-Check Product Key alternatives:
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-skimlinks-safe-cli product-key product get --publisher-domain-id 456 --product-url https://merchant.example/product --sort-by epc --sort-desc desc
-```
+## 4. Stop before changes
 
-Build a Link Wrapper URL locally:
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-```bash
-skimlinks-safe-cli link-wrapper build --url https://merchant.example/product
-```
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
 
-## 5) Read-only rules
+## What good output looks like
 
-This skill does not change anything inside Skimlinks.
+A useful first result should tell you:
 
-That means:
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-- Merchant, Reporting, and Product Key calls only read or query data
-- Link Wrapper only builds a URL locally
-- onboarding can create a placeholder `.env`, but it does not fill secrets for you
+## Where to go next
 
-## 6) Module fallback
-
-If you are not using an editable install, you can run:
-
-```bash
-PYTHONPATH=src python3 -m skimlinks_safe_agent_cli --output json auth check
-```
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your Skimlinks account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

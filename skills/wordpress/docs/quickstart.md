@@ -1,36 +1,36 @@
 # Quickstart
 
-If you want the human path first, start with [What you can do with WordPress](use_cases.md), [Connect your WordPress site](onboarding.md), and [How this skill stays safe](safety_model.md).
+This page helps you get one useful WordPress result quickly, without turning the quickstart into a full command manual.
 
-This page is the technical reference for install, setup, and first WordPress commands.
+If you are still deciding what to ask, start with [What you can do with WordPress](use_cases.md). If setup is not done yet, read [Connect your WordPress site](onboarding.md).
 
-## Install
+A good first ask is:
 
-From the skill folder:
+> Find all posts/pages mentioning a keyword and give me a report with links, status, and last modified date.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 ```
 
-Optional (dev tooling):
-
 ```bash
 .venv/bin/python -m pip install -e '.[dev]'
 ```
 
-## Configure
+## 2. Check setup
 
-Create `.env` (or export env vars) using `.env.example`:
-- `WP_BASE_URL`
-- `WP_USERNAME`
-- `WP_APP_PASSWORD` (Application Password; spaces are OK)
-
-Notes:
-- `WP_BASE_URL` should be the site root (example: `https://example.com`). If you paste a full API URL like `https://example.com/wp-json/wp/v2`, the tool will normalize it.
-- Application Passwords require WordPress 5.6+ and may be disabled by some security plugins.
-
-## First commands
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 wordpress-api-tool --version
@@ -48,81 +48,44 @@ wordpress-api-tool post truth --slug hello-world --resolve-urls
 wordpress-api-tool post images --slug hello-world --include-featured
 ```
 
-Optional (permission-restricted on many sites):
+## 3. Run one safe first read
+
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
-wordpress-api-tool users list --limit 5
-wordpress-api-tool settings get
+wordpress-api-tool search query --query "hello" --limit 3
+wordpress-api-tool post find --query "test" --limit 5
 ```
 
-## Migration tracking (from WordPress export XML)
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-If you have WordPress export XML files, you can generate a `tracking.csv`:
+## 4. Stop before changes
 
-```bash
-wordpress-api-tool migration tracking-from-xml --xml export.xml --out <PROJECT_DIR>/tracking.csv
-```
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-## First safe edit (dry-run, then apply)
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
 
-Media Library caption (attachment metadata):
-
-```bash
-wordpress-api-tool media set --id 123 --caption "Photo: Stock site / License XYZ"
-wordpress-api-tool --apply media set --id 123 --caption "Photo: Stock site / License XYZ"
-```
-
-Post-body captions (only Gutenberg `wp:image` blocks):
+A first change should stay as a preview or dry run until you approve it:
 
 ```bash
 wordpress-api-tool post set-image-captions --slug hello-world --caption "Photo: Stock site / License XYZ"
 wordpress-api-tool --apply post set-image-captions --slug hello-world --caption "Photo: Stock site / License XYZ"
 ```
 
-Categories/tags (taxonomy terms) are also dry-run by default:
+## What good output looks like
 
-```bash
-wordpress-api-tool post set-terms --slug hello-world --set --category-slug news --tag-slug featured
-wordpress-api-tool --apply post set-terms --slug hello-world --set --category-slug news --tag-slug featured
-```
+A useful first result should tell you:
 
-Publishing (status change) is also dry-run by default:
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-```bash
-wordpress-api-tool post set-status --slug hello-world --to publish --require-current draft
-wordpress-api-tool --apply post set-status --slug hello-world --to publish --require-current draft
-```
+## Where to go next
 
-Same safe flow works for pages with `--post-type pages`:
-
-```bash
-wordpress-api-tool post set-status --post-type pages --slug about-us --to publish --require-current draft
-wordpress-api-tool --apply post set-status --post-type pages --slug about-us --to publish --require-current draft
-```
-
-## Faster updates for many images
-
-If you have a lot of images with different captions, put them in a JSON file and run a single command:
-
-```bash
-wordpress-api-tool media set-batch --file updates.json
-wordpress-api-tool --apply media set-batch --file updates.json
-wordpress-api-tool post set-image-captions --slug hello-world --captions-file updates.json
-wordpress-api-tool --apply post set-image-captions --slug hello-world --captions-file updates.json
-```
-
-## Bulk media download (plan, then apply)
-
-You can download many Media Library files to your computer from a CSV/JSON list.
-
-Dry-run (compute filenames/paths, no local writes):
-
-```bash
-wordpress-api-tool media download-batch --file items.json --plan-out plan.media_download_batch.json
-```
-
-Apply (writes files locally; requires `--apply --yes`):
-
-```bash
-wordpress-api-tool --apply --yes media download-batch --file items.json --receipt-out receipt.media_download_batch.json
-```
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your WordPress site](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

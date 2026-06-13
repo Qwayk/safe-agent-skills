@@ -1,6 +1,23 @@
 # Quickstart
 
-## Install
+This page helps you get one useful Salesforce Platform result quickly, without turning the quickstart into a full command manual.
+
+If you are still deciding what to ask, start with [What you can do with Salesforce Platform](use_cases.md). If setup is not done yet, read [Connect your account](onboarding.md).
+
+A good first ask is:
+
+> Check this Salesforce connection and show the org resources and limits.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -8,13 +25,9 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-## Configure
+## 2. Check setup
 
-1. Copy `.env.example` to `.env`.
-2. Set `SALESFORCE_INSTANCE_URL`.
-3. Add a token in `.env` or store one with `auth token set`.
-
-## Smoke checks
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 qwayk-salesforce-platform-safe-agent-cli --output json --version
@@ -22,22 +35,36 @@ qwayk-salesforce-platform-safe-agent-cli --output json auth token status
 qwayk-salesforce-platform-safe-agent-cli --output json auth check
 ```
 
-## One read
+## 3. Run one safe first read
+
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 qwayk-salesforce-platform-safe-agent-cli --output json query run --soql "SELECT Id, Name FROM Account LIMIT 5"
 ```
 
-## One write preview
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-qwayk-salesforce-platform-safe-agent-cli --output json composite execute --body-file composite.json
-```
+## 4. Stop before changes
 
-## One write apply refusal
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-```bash
-qwayk-salesforce-platform-safe-agent-cli --output json --apply --yes --plan-in plan.json composite execute --body-file composite.json
-```
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
 
-This apply request currently requires explicit no-snapshot approval before Salesforce HTTP when real before-state capture is not available for the write command.
+## What good output looks like
+
+A useful first result should tell you:
+
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
+
+## Where to go next
+
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

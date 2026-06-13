@@ -1,14 +1,23 @@
 # Quickstart
 
-If you’re non-technical, start with:
-- `use_cases.md`
-- `onboarding.md`
+This page helps you get one useful Elevenlabs result quickly, without turning the quickstart into a full command manual.
 
-This page is a technical reference (it includes CLI commands).
+If you are still deciding what to ask, start with [What you can do with Elevenlabs](use_cases.md). If setup is not done yet, read [Connect your account](onboarding.md).
 
-> **Plan-first workflow**: read-only commands execute once you add `--live`. Write/spend-sensitive calls still require `--live --apply` plus the needed acknowledgements, and write applies require explicit no-snapshot approval before provider HTTP when command-specific before-state capture is not available.
+A good first ask is:
 
-1) Install (dev)
+> Check whether my ElevenLabs key is working before I try anything expensive.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -16,60 +25,49 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-2) Configure
+## 2. Check setup
 
-Copy `.env.example` → `.env` and fill your values.
-
-Tip: for a guided first-time setup, run:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 elevenlabs-api-tool onboarding
 ```
 
-3) Smoke test
-
 ```bash
 elevenlabs-api-tool auth check
 ```
 
-If you want a safe machine-readable version output (no `.env` required):
+## 3. Run one safe first read
+
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
-elevenlabs-api-tool --output json --version
+service-accounts list
+elevenlabs-api-tool voices list
 ```
 
-If you want to run the template without creating a real `.env` yet, you can point at `.env.example`:
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-elevenlabs-api-tool --env-file .env.example auth check
-```
+## 4. Stop before changes
 
-4) Explore the core workflows (still plan-only by default):
-- `elevenlabs-api-tool --output json voices list`
-- `elevenlabs-api-tool --output json models list`
-- `elevenlabs-api-tool --output json usage get`
-- `elevenlabs-api-tool --output json history list`
-- `elevenlabs-api-tool --output json tts synthesize --voice-id <voice> --text \"hello\" --out ./out.mp3`
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-Add `--live` when you are ready to actually read data. Generation and admin writes still require `--live --apply` plus the safety acknowledgements, `--out`, and `--plan-in` checks documented in `docs/safety_model.md`, then require explicit no-snapshot approval before provider HTTP when no saved snapshot is available.
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
 
-5) Live-tested starter path
+## What good output looks like
 
-These read flows were rechecked against the live ElevenLabs API on 2026-03-29 UTC:
+A useful first result should tell you:
 
-- `elevenlabs-api-tool --output json --live auth check --out ./auth.json`
-- `elevenlabs-api-tool --output json --live voices list`
-- `elevenlabs-api-tool --output json --live models list`
-- `elevenlabs-api-tool --output json --live usage get`
-- `elevenlabs-api-tool --output json --live history list --out ./history.json`
-- `elevenlabs-api-tool --output json --live --apply --ack-spend-money tts synthesize --voice-id <voice> --model-id eleven_multilingual_v2 --text "hello" --out ./out.mp3`
-  - Expected approved result: provider apply runs only after explicit no-snapshot approval and the receipt records the recovery limit.
-- `elevenlabs-api-tool --output json --live --apply history download --history-item-id <id> --out ./history.mp3`
-  - Expected approved result: provider apply runs only after explicit no-snapshot approval and the receipt records the recovery limit.
-- `elevenlabs-api-tool --output json --live --apply --ack-spend-money stt transcribe --body '{"model_id":"scribe_v1"}' --file audio=@./sample.mp3 --out ./transcript.json`
-  - Expected approved result: provider apply runs only after explicit no-snapshot approval and the receipt records the recovery limit.
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-Notes:
-- `usage get` uses a default recent time window for live calls. Add `--start-unix` and `--end-unix` to override it.
-- File-upload endpoints use `--file key=@path`. For example, STT/audio isolation/voice changer use `audio=@./sample.mp3`.
-- Music and voice-design endpoints may still return paid-plan errors on free accounts even when the CLI wiring is correct.
+## Where to go next
+
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

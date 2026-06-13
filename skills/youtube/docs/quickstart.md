@@ -1,14 +1,23 @@
 # Quickstart
 
-Want the short non-technical path first? Start with [What you can do with YouTube](use_cases.md), [Connect your YouTube account](onboarding.md), and [How this skill stays safe](safety_model.md).
+This technical command path helps you get one useful YouTube result quickly, without turning the quickstart into a full command manual.
 
-This technical command path is for local developer/test setup, safe first reads, channel export, and your first careful write plan.
+If you are still deciding what to ask, start with [What you can do with YouTube](use_cases.md). If setup is not done yet, read [Connect your YouTube account](onboarding.md).
 
-If you installed the public skill through your agent host, you usually do not need the Python setup below. Use it when you are working from a local checkout of this tool or when you want to run the test suite yourself.
+A good first ask is:
 
-Requires: **Python 3.12+**.
+> Resolve this channel from a handle or URL, then show the latest uploads.
 
-## 1. Install
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
@@ -16,122 +25,56 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-## 2. Configure
+## 2. Check setup
 
-Copy the example env file to `.env`, then fill what you need:
-
-```bash
-cp examples/example.env .env
-```
-
-In a source checkout that also includes `.env.example`, this works too:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 cp .env.example .env
 ```
 
-- `YOUTUBE_API_KEY=...` for many public reads
-- `YOUTUBE_OAUTH_CLIENT_SECRETS_FILE=/absolute/path/to/client_secrets.json` for OAuth work
-
-If you already have a valid token JSON from a separate approved flow, keep it at `.state/token.json` next to your `.env`.
-
-Tip: for a guided first-time setup, run:
-
 ```bash
 youtube-api-tool onboarding
 ```
-
-Important: `auth login` and `auth token set` still stop at the plan/refusal step today, so they do not write the token file automatically yet.
-
-## 3. First safe checks
-
-Version check with no `.env` required:
 
 ```bash
 youtube-api-tool --output json --version
 ```
 
-Pinned discovery inventory with no network:
+## 3. Run one safe first read
+
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 youtube-api-tool methods list
 ```
 
-Local auth/config check:
-
-```bash
-youtube-api-tool auth check
-```
-
-If you want to inspect the current OAuth helper behavior:
-
-```bash
-youtube-api-tool auth login --console
-```
-
-## 4. First live reads
-
-Plan a read first:
-
 ```bash
 youtube-api-tool api search.list --params-json '{"part":"snippet","q":"cats","maxResults":5}'
 ```
 
-Then run the real GET call only when you mean it:
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-youtube-api-tool api search.list --params-json '{"part":"snippet","q":"cats","maxResults":5}' --live
-```
+## 4. Stop before changes
 
-Resolve a channel safely:
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-```bash
-youtube-api-tool --output json channels resolve --channel @GoogleDevelopers
-youtube-api-tool --output json channels resolve --channel @GoogleDevelopers --live
-```
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
 
-## 5. First channel export
+## What good output looks like
 
-Plan the export first:
+A useful first result should tell you:
 
-```bash
-youtube-api-tool --output json channels export --channel @GoogleDevelopers --out-dir ./channel_export
-```
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-Run the local export only when you mean to create the files:
+## Where to go next
 
-```bash
-youtube-api-tool --output json channels export --channel @GoogleDevelopers --out-dir ./channel_export --live
-```
-
-If the folder already has files, use `--resume` or approve an overwrite.
-
-## 6. First careful write plan
-
-Preview a write without sending it yet:
-
-```bash
-youtube-api-tool api playlists.insert --params-json '{"part":"snippet,status"}' --body-json '{"snippet":{"title":"Example playlist"},"status":{"privacyStatus":"private"}}'
-```
-
-Preview an upload without uploading bytes:
-
-```bash
-youtube-api-tool api videos.insert --params-json '{"part":"snippet,status"}' --body-json '{"snippet":{"title":"Example video"},"status":{"privacyStatus":"private"}}' --upload-file /absolute/path/to/existing-video.mp4
-```
-
-The upload file must exist because the plan records its path, size, and modified time. Do not run the apply version until you have reviewed the plan and really intend to upload or change YouTube.
-
-When a reviewed write or upload has no saved state to restore from, the apply shape is:
-
-```bash
-youtube-api-tool --apply --yes --ack-no-snapshot api <resource.method> ...
-```
-
-Delete methods also need `--ack-irreversible`.
-
-For a download flow, plan or run a caption download to a real file path. You need a valid caption track ID and the right account access; the official API does not allow downloading captions for every public video.
-
-```bash
-youtube-api-tool api captions.download --params-json '{"id":"CAPTION_TRACK_ID"}' --live --download-to ./captions.vtt
-```
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your YouTube account](onboarding.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).

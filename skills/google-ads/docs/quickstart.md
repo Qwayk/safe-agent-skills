@@ -1,45 +1,44 @@
 # Quickstart
 
-Want the short non-technical path first? Start with [What you can do](use_cases.md), [Connect your Google Ads account](onboarding.md), and [Media buyer quickstart](media_buyer_quickstart.md).
+This page helps you get one useful Google Ads result quickly, without turning the quickstart into a full command manual.
 
-This page is the CLI path when you already want exact commands.
+If you are still deciding what to ask, start with [What you can do with Google Ads](use_cases.md). If setup is not done yet, read [Connect your Google Ads account](onboarding.md).
 
-1) Install (dev)
+A good first ask is:
+
+> Show which Google Ads accounts I can access and confirm the customer IDs.
+
+## What you will do first
+
+1. Make sure the local tool can run.
+2. Check setup or connection status.
+3. Run one safe read that proves the agent can get useful data.
+4. Stop before any write, spend, upload, delete, message, or public change unless you have reviewed the plan.
+
+## 1. Install or open the tool
+
+Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -e '.[dev]'
 ```
 
-2) Configure
+## 2. Check setup
 
-Copy `.env.example` → `.env` and fill your values.
-
-Tip: for a guided first-time setup, run:
+If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
 
 ```bash
 google-ads-api-tool onboarding
 ```
 
-3) Smoke test
-
 ```bash
 google-ads-api-tool auth check
 ```
 
-If you want a safe machine-readable version output (no `.env` required):
+## 3. Run one safe first read
 
-```bash
-google-ads-api-tool --output json --version
-```
-
-4) Run a GAQL query (read)
-
-```bash
-google-ads-api-tool gaql --customer-id YOUR_CUSTOMER_ID --query "SELECT customer.id FROM customer LIMIT 1" --limit 1
-```
-
-5) List presets (no GAQL knowledge required)
+This should be a small read-only request. The goal is to prove the connection and get one result you can understand.
 
 ```bash
 google-ads-api-tool presets list
@@ -49,48 +48,33 @@ google-ads-api-tool presets show --preset analysis_pack_max_v1
 google-ads-api-tool presets validate
 ```
 
-6) Export a snapshot optimization pack (dry-run → apply)
-
-Dry-run (no API calls, no out-dir written):
-
 ```bash
 google-ads-api-tool snapshot export --preset optimization_pack_v1 --customer-id YOUR_CUSTOMER_ID --since 2026-01-01 --until 2026-01-31 --out-dir ./out/google-ads-pack
 ```
 
-Apply (read-only to Google Ads; writes local pack files):
+After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
 
-```bash
-google-ads-api-tool snapshot export --preset optimization_pack_v1 --customer-id YOUR_CUSTOMER_ID --since 2026-01-01 --until 2026-01-31 --out-dir ./out/google-ads-pack --apply --yes
-```
+## 4. Stop before changes
 
-Include optional preset groups (recommended for deeper analysis; may increase time/quota):
+For anything that could change an account, spend money, upload files, send messages, publish content, delete data, or update settings, ask for a dry-run plan first.
 
-```bash
-google-ads-api-tool snapshot export --preset optimization_pack_v1 --customer-id YOUR_CUSTOMER_ID --since 2026-01-01 --until 2026-01-31 --out-dir ./out/google-ads-pack --apply --yes --include-optional
-```
+Only apply a change after the plan names the exact target, the risk, the approval flags, and the expected proof.
 
-7) Use explicit RPC methods (advanced)
+## What good output looks like
 
-Command shape:
+A useful first result should tell you:
 
-```bash
-google-ads-api-tool <service-kebab> <method-kebab> --in request.json
-```
+- what account, workspace, project, page, item, or public data was checked
+- whether the tool connected successfully
+- what the first read returned
+- what the result means in normal language
+- what is safe to do next
+- where the plan, receipt, export, or saved file lives if the command created one
 
-Write RPCs are plan-first by default:
+## Where to go next
 
-```bash
-google-ads-api-tool campaign-service mutate-campaigns --in mutate_campaigns_request.json
-```
-
-7b) Offline optimization diagnosis from a pack (no API calls)
-
-```bash
-google-ads-api-tool snapshot analyze diagnose --pack-dir ./out/google-ads-pack
-```
-
-Legacy best-effort optimization report:
-
-```bash
-google-ads-api-tool snapshot analyze optimize --pack-dir ./out/google-ads-pack
-```
+- For real examples, read [What you can do](use_cases.md).
+- For setup details, read [Connect your Google Ads account](onboarding.md).
+- For Google Ads workflow examples, read [Media buyer quickstart](media_buyer_quickstart.md).
+- For exact command options, read [Command reference](command_reference.md).
+- For approval rules and limits, read [How this skill stays safe](safety_model.md).
