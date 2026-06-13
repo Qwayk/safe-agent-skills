@@ -1,26 +1,49 @@
 # What you can do with Awin Advertiser
 
-Awin Advertiser work usually starts with performance and control questions: which publishers are driving results, which transactions need action, and whether an advertiser-side file is safe to submit.
-If you need setup first, start with [Connect your Awin advertiser account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Awin Advertiser is useful when a brand needs to understand publisher performance, transaction follow-up, offers, product feeds, and conversion orders from the advertiser side.
 
-## Good jobs to give the agent
+Ask the agent for the work an affiliate manager or ecommerce team checks before making changes: which publishers are producing results, which transactions need attention, whether a batch file is shaped correctly, and what would happen before an offer, feed, or conversion order goes live.
 
-- "Show me which publishers drove results last month."
-- "Check whether this Awin token is connected correctly before we do anything else."
-- "Find these transaction IDs and tell me whether they need follow-up."
-- "Review this transaction batch and stop before anything is applied."
-- "Prepare an offer draft and explain the proof files before we do anything live."
-- "Check this product-feed file before we upload it."
-- "Help me plan conversion order posting safely with a preview first."
+## Good questions to ask
+
+- "Which publishers drove results last month?"
+- "Which campaigns or publishers are worth a closer look?"
+- "Can you find these transaction IDs and explain their status?"
+- "Can you review this transaction batch before we submit anything?"
+- "Can you prepare an offer draft and show the proof files first?"
+- "Can you check this product-feed file before upload?"
+- "Can you plan conversion order posting with a preview first?"
+- "Which advertiser action is safest to do next?"
+
+## Everyday work this helps with
+
+### Publisher and campaign review
+
+The agent can pull publisher and campaign reports so you can see what is driving results. The useful answer should name the advertiser ID, date range, report type, and the publishers or campaigns that matter.
+
+### Transaction follow-up
+
+Ask the agent to list transactions, find known transaction IDs, or check transaction jobs. This is useful before approving, declining, amending, or investigating a batch.
+
+### Batch and file review
+
+For batch validation, offers, product feeds, and conversion orders, the agent can inspect the input shape and prepare a plan first. It should make unclear file paths, advertiser IDs, and endpoint-specific auth requirements visible before any live action.
+
+### Advertiser change planning
+
+When you want to submit an offer, feed, conversion order, or transaction batch, the agent should show what would be sent and what proof it will leave behind.
 
 ## What the agent should show you
 
-- The advertiser ID, date range, and report type it used.
-- The publishers, campaigns, transactions, or jobs that matter most for the question.
-- A dry-run plan before batch validation, offer creation, feed upload, or conversion-order posting.
-- Any auth difference that matters for the endpoint family.
-- A receipt after a live write, when you explicitly approve one.
+- The advertiser ID, date range, report type, and filters it used.
+- The publishers, campaigns, transactions, jobs, or files that matter most.
+- A short summary before raw report output.
+- Any endpoint-specific auth difference that affects the request.
+- A review plan before batch validation, offer creation, feed upload, or conversion-order posting.
+- A receipt after a live write, only when you explicitly approve it.
 
-## Good first review path
+## Good first path
 
-Start by checking auth, then review recent publisher or campaign results, and only then move into any write-like advertiser task such as batch validation, offers, feeds, or conversion orders.
+Start with: "Check the Awin Advertiser skill is configured, show which publishers drove results last month, and stop before any live advertiser write."
+
+After that, ask one useful follow-up, such as: "Find these transaction IDs and explain their status" or "Review this product-feed file before upload."

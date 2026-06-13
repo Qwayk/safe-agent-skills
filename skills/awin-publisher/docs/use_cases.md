@@ -1,30 +1,49 @@
 # What you can do with Awin Publisher
 
-Awin Publisher work usually starts with earning questions: which programs are available, which advertisers are producing results, which transactions need attention, and whether a tracking link or feed is ready to use.
+Awin Publisher is useful when an affiliate publisher wants to know which advertiser programs are available, which links are ready to use, and which transactions or feeds need attention.
 
-## Good jobs for this skill
+Ask the agent for the work a publisher team repeats all the time: check account access, review joined or pending programs, find offers, pull transaction reports, generate tracking links, download feeds, and prepare proof-of-purchase uploads only after the plan is clear.
 
-- Check whether your token can see the right publisher account before you trust later reports.
-- Find which advertiser programs are joined, pending, suspended, rejected, or hidden.
-- Pull offers, transactions, and transaction queries into a repeatable workflow instead of clicking around the Awin UI.
-- Build advertiser, campaign, and creative performance reads with the same filters every time.
-- Generate one tracking link or a prepared batch of links with clear inputs and predictable output.
-- Download enhanced retail feeds and legacy feed exports to local files you can inspect later.
-- Prepare a proof-of-purchase order batch in dry-run mode, review the saved plan, and only then send it live with the same reviewed plan file.
+## Good questions to ask
 
-## Good requests to hand your agent
+- "Which publisher accounts can this token see?"
+- "Which programs are joined, pending, suspended, rejected, or hidden?"
+- "Which advertisers drove transactions yesterday or last week?"
+- "Can you group recent transactions by advertiser, campaign, or status?"
+- "Which offers are available for this advertiser?"
+- "Can you generate tracking links for these destination URLs?"
+- "Can you download this advertiser feed to a local file I can inspect?"
+- "Can you prepare this proof-of-purchase upload and stop after the review plan?"
 
-- "Show me which publisher accounts this token can use."
-- "List joined programs for publisher 12345 and highlight anything new or pending."
-- "Pull yesterday's approved transactions and group them by advertiser."
-- "Generate tracking links for these destination URLs from this JSON file."
-- "Download the enhanced retail feed for advertiser 6789 to a local file."
-- "Prepare a proof-of-purchase upload from this orders file, but stop after the dry-run plan."
+## Everyday work this helps with
+
+### Program and offer checks
+
+The agent can check the programs connected to a publisher account and show which ones are joined, pending, suspended, rejected, or hidden. This helps before choosing merchants for an article, campaign, or newsletter.
+
+### Transaction review
+
+Ask the agent to pull transactions or transaction queries for a date range and group them in a way a person can act on. The answer should make clear which advertiser, campaign, status, or date range it used.
+
+### Tracking links and feeds
+
+The agent can generate one tracking link, prepare a batch of links, or download enhanced and legacy feeds to local files. It should show where the file was saved and what inputs it used.
+
+### Proof-of-purchase planning
+
+For proof-of-purchase uploads, the agent should prepare the plan first. A person should review the publisher ID, advertiser ID, order file, and target environment before anything is sent to Awin.
 
 ## What the agent should show you
 
 - The publisher ID, advertiser ID, date range, and filters it used.
-- A short summary before any table of raw transactions or reports.
-- Which feed or linkbuilder output was saved locally, if any.
-- A dry-run plan before any proof-of-purchase upload.
-- Clear warnings when a command uses a different Awin key or auth flow.
+- A short summary before raw transaction, report, or feed output.
+- Which linkbuilder or feed file was created locally.
+- Any Awin key or auth split that matters for the command.
+- A review plan before any proof-of-purchase upload.
+- A receipt only after a person explicitly approves the live upload.
+
+## Good first path
+
+Start with: "Check the Awin Publisher skill is configured, list the publisher accounts this token can see, and show recent transactions grouped by advertiser."
+
+After that, ask one practical follow-up, such as: "Generate tracking links for these URLs" or "Prepare this proof-of-purchase upload as a review plan only."

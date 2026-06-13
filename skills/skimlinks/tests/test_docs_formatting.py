@@ -31,6 +31,31 @@ class TestDocsFormatting(unittest.TestCase):
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
 
+    def test_use_cases_stays_human_and_specific(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        required = [
+            "Skimlinks is useful when a publisher wants to understand",
+            "## Good questions to ask",
+            "## Everyday work this helps with",
+            "## What the agent should show you",
+            "## Good first path",
+            "Which pages or links earned commission last month?",
+        ]
+        for phrase in required:
+            self.assertIn(phrase, text)
+
+        stale_phrases = [
+            "Skimlinks work is usually about answering publisher money questions",
+            "Good jobs to give the agent",
+            "Use this page when you want practical",
+            "Link Wrapper URLs only as generated text",
+            "dry-run plan",
+        ]
+        for phrase in stale_phrases:
+            self.assertNotIn(phrase, text)
+
     def test_product_key_docs_match_required_domain_and_sort_contract(self) -> None:
         root = Path(__file__).resolve().parents[1]
         command_reference = (root / "docs" / "command_reference.md").read_text(encoding="utf-8")
