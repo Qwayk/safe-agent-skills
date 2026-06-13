@@ -30,3 +30,28 @@ class TestDocsFormatting(unittest.TestCase):
         if bad_lines:
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
+
+    def test_use_cases_stays_human_and_specific(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        required = [
+            "Unsplash is useful when you need real photo records",
+            "## Good questions to ask",
+            "## Everyday work this helps with",
+            "## What the agent should show you",
+            "## Good first path",
+            "Can you find 20 photos for this topic and shortlist the best options?",
+        ]
+        for phrase in required:
+            self.assertIn(phrase, text)
+
+        stale_phrases = [
+            "Unsplash work usually starts with a creative selection question",
+            "A good first ask",
+            "Good jobs to give the agent",
+            "What you should expect from the agent",
+            "dry-run plan",
+        ]
+        for phrase in stale_phrases:
+            self.assertNotIn(phrase, text)

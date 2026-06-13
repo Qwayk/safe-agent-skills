@@ -1,51 +1,49 @@
 # What you can do with Qdrant Cloud
 
-Qdrant Cloud work usually starts with infrastructure questions: what is running, what is backed up, who has access, what it costs, and what would happen before a cluster or recovery change.
-If you need setup first, start with [Connect your Qdrant Cloud account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Qdrant Cloud is useful when a team needs to understand vector-search infrastructure before changing clusters, backups, access, billing, or recovery settings.
 
-## A good first ask
+Ask the agent for the control-plane work an infrastructure owner checks before touching live search systems: what clusters exist, what regions and packages are in use, what backups are available, who has access, what it costs, and what recovery path is safest.
 
-"Check the Qdrant Cloud skill is configured, list my accounts and clusters, and tell me what is safe to review before we plan any changes."
+## Good questions to ask
 
-## Good jobs to give the agent
+- "Which accounts, clusters, and releases exist right now?"
+- "Which regions, packages, quotas, and cluster settings should we review?"
+- "Can you export a clean inventory of clusters, backups, and backup schedules?"
+- "Which backup or restore options exist for this cluster?"
+- "Can you prepare a restore-backup plan without changing anything?"
+- "Who has access through members, roles, permissions, and API keys?"
+- "What billing, invoice, discount, payment, or metering data should we review?"
+- "Can you pull cluster metrics, logs, events, or usage before we plan a change?"
 
-### Account and cluster review
+## Everyday work this helps with
 
-- "List my accounts, clusters, and releases so I can review what is running."
-- "Show me packages, regions, and quotas before we plan a cluster change."
-- "Export a clean inventory of clusters, backups, and backup schedules."
+### Cluster inventory
+
+The agent can list accounts, clusters, releases, packages, regions, quotas, and serverless or hybrid resources so you know what is running before a change.
 
 ### Backup and recovery review
 
-- "List my backups and backup schedules, then tell me which recovery options exist."
-- "Prepare a restore-backup plan for this backup without changing anything yet."
-- "Show me whether create-cluster-from-backup is the safer path for this recovery job."
+Ask the agent to list backups, backup schedules, restore jobs, and create-cluster-from-backup options. It should keep provider backup and restore work separate from ordinary changes.
 
-### Access, keys, and permissions
+### Access and key review
 
-- "Review management keys, database API keys, roles, and account members."
-- "List effective permissions for this account before we change access."
-- "Check user roles for this account and point out anything surprising."
+The agent can review management keys, database API keys, account members, user roles, and effective permissions so risky access changes are visible before they happen.
 
-### Billing and monitoring
+### Billing and monitoring checks
 
-- "Show me invoices, discounts, payment methods, and monthly metering for this account."
-- "Pull cluster summary metrics, usage metrics, or logs for this cluster."
-- "Export cluster events so I can review recent incidents or changes."
+For finance or reliability review, ask for invoices, payment methods, discounts, monthly metering, cluster summary metrics, usage metrics, logs, and events.
 
-### Careful change planning
+## What the agent should show you
 
-- "Plan this cluster change first and show me exactly what needs approval."
-- "Preview a payment or billing change and tell me if it needs spend approval."
-- "Show the refusal path first when a write still has no saved before-state."
+- The account, cluster, backup, role, key, invoice, metric, or resource it checked.
+- The date range or metric scope for monitoring and billing reads.
+- A clear summary of infrastructure, access, cost, or recovery risk.
+- A review plan before cluster, backup schedule, payment, IAM, hybrid, or serverless changes.
+- Whether a change needs live access, apply approval, spend approval, or no-snapshot approval.
+- Receipts or run history for approved provider backup, restore, or other change work.
 
-## What you should expect from the agent
+## Good first path
 
-For normal review work, the agent should gather the right reads and summarize what matters.
+Start with: "Check the Qdrant Cloud skill is configured, list my accounts and clusters, and tell me what is safe to review before we plan changes."
 
-For change work, the agent should:
-
-1. show the dry-run plan first
-2. explain whether the change needs `--live`, `--apply`, or extra approval flags
-3. tell you when no-snapshot approval is still required
-4. keep provider backup and restore workflows separate from ordinary writes
+After that, ask one practical follow-up, such as: "Show backup and restore options for this cluster" or "Review account members and API keys before we change access."

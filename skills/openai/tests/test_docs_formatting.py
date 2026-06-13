@@ -30,3 +30,28 @@ class TestDocsFormatting(unittest.TestCase):
         if bad_lines:
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
+
+    def test_use_cases_stays_human_and_specific(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        required = [
+            "OpenAI is useful when you need an agent to inspect account resources",
+            "## Good questions to ask",
+            "## Everyday work this helps with",
+            "## What the agent should show you",
+            "## Good first path",
+            "Which OpenAI operations are available in this tool?",
+        ]
+        for phrase in required:
+            self.assertIn(phrase, text)
+
+        stale_phrases = [
+            "OpenAI work usually starts with choosing the right operation",
+            "Good jobs to give the agent",
+            "What it does not promise",
+            "dry-run plan",
+            "live-read or dry-run plan",
+        ]
+        for phrase in stale_phrases:
+            self.assertNotIn(phrase, text)

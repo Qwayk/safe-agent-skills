@@ -1,40 +1,49 @@
 # What you can do with Mercury
 
-Mercury work usually starts with finance review questions: what accounts exist, what transactions need bookkeeping, which statements or invoices should be saved, and what recent activity deserves attention.
-If you need setup first, start with [Connect your Mercury API token](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Mercury is useful when a business needs a clear read on accounts, transactions, statements, invoices, recipients, treasury activity, and bookkeeping exports.
 
-Mercury stays read-only here by design. The skill can read Mercury data freely, and it can save exports or downloads to your machine only after an explicit local-file approval.
+Ask the agent for the finance review work a founder, bookkeeper, or operations person repeats often: account inventory, monthly transaction exports, statement downloads, invoice checks, event review, and safe local files for the accountant.
 
-## A good first ask
+## Good questions to ask
 
-"Check the Mercury skill is configured, list my accounts, and preview a CSV export of this month's transactions without writing any files yet."
+- "Which Mercury accounts do I have, and what are their IDs?"
+- "Can you summarize this month's transaction activity for bookkeeping?"
+- "Can you preview a CSV export before writing a file?"
+- "Can you download statement PDFs for this account after I approve the path?"
+- "Which invoices or invoice attachments should I save for this customer?"
+- "What recent Mercury events should I review?"
+- "Can you show treasury transactions for this treasury account?"
+- "Can you group recent transaction volume and totals by category?"
 
-## Good jobs to give the agent
+## Everyday work this helps with
 
-- "List all my Mercury accounts and show the account IDs."
-- "Export all transactions from January 1 to December 31 to a CSV for my accountant, but start with a dry-run plan."
-- "Download statement PDFs for this account so I can reconcile monthly."
-- "List invoices for this customer and download the PDF for invoice X."
-- "Download this invoice attachment to my computer, but preview the file path first."
-- "Pull the latest Mercury events so I can audit recent activity."
-- "Show me treasury transactions for this treasury account."
-- "Summarize recent transaction volume and totals by category."
+### Bookkeeping exports
 
-## What it will not do
+The agent can prepare transaction exports for a date range and show the filters, file type, and output path before writing anything locally. This is useful before sending data to an accountant.
 
-- approve payments
-- send money
-- edit customers, invoices, or webhooks
-- change Mercury settings
-- write anything back into Mercury
+### Statement and invoice collection
 
-## What you should expect from the agent
+Ask the agent to find statement PDFs, invoice PDFs, or invoice attachments and preview the save path first. It should verify the file after an approved download.
 
-For normal reads, the agent should fetch the data and explain it clearly.
+### Account and activity review
 
-For exports or downloads, the agent should:
+The agent can list accounts, cards, users, recipients, customers, invoices, events, treasury activity, and journal entries so you can see what needs attention without changing Mercury.
 
-1. show a dry-run preview first
-2. wait for explicit approval before writing any local file
-3. verify the file was written successfully
-4. return a short receipt with the saved path and proof details
+### Finance summaries
+
+For a quick review, ask for totals, categories, recent activity, or transaction volume. The useful answer should name the account, date range, and filters.
+
+## What the agent should show you
+
+- The account, customer, invoice, statement, treasury account, or date range it used.
+- A clear summary before raw transaction or invoice data.
+- The planned local file path before any export or download.
+- Whether an existing file would be overwritten.
+- A receipt after an approved local file write.
+- A plain note that it cannot approve payments, send money, edit invoices, or change Mercury settings.
+
+## Good first path
+
+Start with: "Check the Mercury skill is configured, list my accounts, and preview a CSV export of this month's transactions without writing any files yet."
+
+After that, ask one practical follow-up, such as: "Download this month's statement PDFs after I approve the folder" or "Summarize recent transaction totals by category."

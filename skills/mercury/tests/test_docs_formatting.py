@@ -30,3 +30,28 @@ class TestDocsFormatting(unittest.TestCase):
         if bad_lines:
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
+
+    def test_use_cases_stays_human_and_specific(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        required = [
+            "Mercury is useful when a business needs a clear read",
+            "## Good questions to ask",
+            "## Everyday work this helps with",
+            "## What the agent should show you",
+            "## Good first path",
+            "Can you summarize this month's transaction activity for bookkeeping?",
+        ]
+        for phrase in required:
+            self.assertIn(phrase, text)
+
+        stale_phrases = [
+            "Mercury work usually starts with finance review questions",
+            "A good first ask",
+            "Good jobs to give the agent",
+            "What you should expect from the agent",
+            "dry-run preview",
+        ]
+        for phrase in stale_phrases:
+            self.assertNotIn(phrase, text)
