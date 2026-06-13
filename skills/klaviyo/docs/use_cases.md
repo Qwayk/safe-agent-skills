@@ -1,25 +1,49 @@
 # What you can do with Klaviyo
 
-Klaviyo work usually starts with audience and message questions: which people are in the right group, which campaigns or flows need attention, and which bulk actions need a plan before they touch customers.
-If you need setup first, start with [Connect your Klaviyo account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Klaviyo is useful when an ecommerce team wants to understand audiences, profiles, events, campaigns, flows, forms, coupons, and catalog data before changing what customers receive.
 
-## Good jobs to give the agent
+Ask the agent for the work a lifecycle marketer or retention team checks often: which lists and segments matter, what happened on a profile, whether a campaign or flow needs attention, and what a bulk audience action would do before it touches real customers.
 
-- "Show me which lists, segments, forms, or campaigns match these filters."
-- "Check one profile, event stream, or metric before I change anything."
-- "Prepare a safe bulk import, subscribe, suppress, or unsubscribe change, then show the plan for review."
-- "Plan catalog, coupon, template, webhook, or form changes from reviewed JSON."
-- "Plan a send cancellation or delete action and show me the recovery limit before apply."
-- "Use the client endpoints for signup, reviews, push tokens, or event capture when I only have the company id."
+## Good questions to ask
 
-## What you should expect from the agent
+- "Which lists, segments, forms, or campaigns match these filters?"
+- "What happened on this profile or event stream?"
+- "Which campaign, flow, or form should we review before the next send?"
+- "Can you check the metric behind this audience idea?"
+- "Can you preview a bulk import, subscribe, suppress, or unsubscribe change?"
+- "Can you review this coupon, template, webhook, or catalog update from JSON?"
+- "Can you plan a send cancellation or delete action and explain the recovery limit?"
+- "Can you use client endpoints for signup, reviews, push tokens, or event capture?"
 
-For review work, the agent should show the account object, filters, date range, or operation it used before it summarizes the result.
+## Everyday work this helps with
 
-When you ask for a change, the agent should:
+### Audience review
 
-1. Show a dry-run preview of what would change.
-2. Explain the recovery limit before any live write runs.
-3. Require explicit no-snapshot approval when no saved snapshot is available.
-4. Refuse apply safely if someone skips the required approval gates.
-5. Point to the saved plan, receipt or refusal summary, and proof files.
+The agent can inspect lists, segments, profiles, tags, metrics, and events so you understand who is included before you move, import, suppress, unsubscribe, or delete anyone.
+
+### Campaign and flow checks
+
+Ask the agent to review campaigns, flows, forms, templates, and event activity before a launch or cleanup. The useful answer should name the exact object, filter, or date range.
+
+### Bulk action planning
+
+For imports, subscriptions, suppressions, unsubscribes, deletes, relationship changes, or send cancellations, the agent should show the operation and recovery limit before any live write.
+
+### Catalog and marketing setup review
+
+The agent can help plan catalog, coupon, template, webhook, and form changes from reviewed JSON so a person can confirm the target and payload first.
+
+## What the agent should show you
+
+- The account object, operation, filters, or date range it used.
+- The list, segment, profile, campaign, flow, form, metric, event, or catalog item it checked.
+- A plain-English answer before raw API output.
+- A review plan before bulk, send, delete, coupon, catalog, template, form, webhook, or profile changes.
+- The recovery limit when a change cannot be safely undone.
+- Saved plans, receipts, or refusal summaries after write-like work.
+
+## Good first path
+
+Start with: "Check my Klaviyo connection, show the safest list, segment, campaign, and profile reviews to start with, and preview anything risky before apply."
+
+After that, ask one useful follow-up, such as: "Check this profile and recent events" or "Preview this suppression import before it touches customers."

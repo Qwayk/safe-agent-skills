@@ -1,38 +1,49 @@
 # What you can do with Instantly
 
-Instantly work usually starts with campaign and deliverability questions: which campaigns are healthy, which sending accounts are risky, which leads need cleanup, and which changes should wait for review.
-If you need setup first, start with [Connect your Instantly account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Instantly is useful when a cold email team wants to understand campaign health, sending-account risk, lead quality, and deliverability before making changes.
 
-## Good jobs to give the agent
+Ask the agent for the work a growth team or agency checks before touching live outreach: weak campaigns, risky sending accounts, warmup issues, inbox placement, lead cleanup, webhook health, and the exact IDs behind any change.
 
-### Campaign and deliverability review
+## Good questions to ask
 
-- "Show me which active campaigns look weak or risky right now."
-- "Pull campaign analytics for the last 7 days and highlight what changed."
-- "Check account warmup and vitals so I can see which sending accounts need attention."
-- "Review inbox placement results and summarize the biggest deliverability problems."
+- "Which active campaigns look weak or risky this week?"
+- "What changed in campaign analytics over the last 7 days?"
+- "Which sending accounts need attention based on warmup, vitals, or inbox placement?"
+- "Which lead lists, labels, or tags look messy?"
+- "Can you check this lead or campaign target before I change it?"
+- "Can you preview moving these leads before anything is applied?"
+- "Which webhooks look stale, risky, or unused?"
+- "Who has workspace access, and does anything look unusual?"
 
-### Lead and list operations
+## Everyday work this helps with
 
-- "Audit my lead lists, labels, and custom tags before we clean anything up."
-- "Preview moving or bulk assigning these leads, but stop before apply."
-- "Prepare a lead patch from this file and show me the plan first."
-- "Check whether this lead or campaign target is valid before changing anything."
+### Campaign health review
 
-### Webhooks, workspace, and admin work
+The agent can pull campaign lists, analytics, account vitals, warmup status, and inbox placement results so you can see what needs attention before a campaign gets worse.
 
-- "Review my webhooks and tell me which ones look stale or risky."
-- "Show me my workspace health and who has access before we change settings."
-- "Prepare a careful workspace or campaign change and keep a receipt of what changed."
-- "Check API-key or account-management flows safely without exposing secrets in chat."
+### Lead cleanup planning
 
-## What you should expect from the agent
+Ask the agent to inspect lead lists, labels, custom tags, and target records before moving, patching, assigning, or cleaning up leads. It should make the exact lead or campaign IDs visible before any plan.
 
-For review work, the agent should show the campaign, account, lead, or webhook IDs it checked and explain the few signals that matter most.
+### Deliverability checks
 
-When you ask for a change, the agent should:
+The agent can summarize the few signals that matter most: account health, warmup, inbox placement, verification, and recent campaign performance.
 
-1. Check auth and discover the right target first.
-2. Show a dry-run plan of what would change.
-3. Apply only after explicit approval and any required extra acknowledgements.
-4. Verify after apply and point you to the saved proof files.
+### Webhook and workspace review
+
+Before changing webhooks, API keys, workspace settings, or members, ask the agent to show what exists now and what looks risky or stale.
+
+## What the agent should show you
+
+- The campaign, account, lead, list, webhook, or workspace IDs it checked.
+- The date range and metric source for any report.
+- A short explanation of the few signals that matter most.
+- A review plan before any campaign, lead, webhook, or workspace change.
+- A clear note when a sensitive result was saved locally instead of printed in chat.
+- Proof files or receipts after an approved change.
+
+## Good first path
+
+Start with: "Check my Instantly connection, list active campaigns and sending-account health, then tell me which campaign or lead review is safest to start with."
+
+After that, ask one practical follow-up, such as: "Show which sending accounts need attention" or "Preview this lead cleanup before anything is applied."

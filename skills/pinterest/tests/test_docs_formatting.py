@@ -30,3 +30,28 @@ class TestDocsFormatting(unittest.TestCase):
         if bad_lines:
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
+
+    def test_use_cases_stays_human_and_specific(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        required = [
+            "Pinterest is useful when you need to understand",
+            "## Good questions to ask",
+            "## Everyday work this helps with",
+            "## What the agent should show you",
+            "## Good first path",
+            "What boards, sections, and pins are in this account?",
+        ]
+        for phrase in required:
+            self.assertIn(phrase, text)
+
+        stale_phrases = [
+            "Pinterest work usually starts with visibility",
+            "Good jobs to give the agent",
+            "What you should expect from the agent",
+            "dry-run plan",
+            "missing-approval refusal",
+        ]
+        for phrase in stale_phrases:
+            self.assertNotIn(phrase, text)

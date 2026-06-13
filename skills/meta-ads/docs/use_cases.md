@@ -1,33 +1,49 @@
 # What you can do with Meta Ads
 
-Meta Ads work usually starts with performance questions: what changed, which campaign or creative deserves attention, and what data should be exported before a human decides what to change.
-If you need setup first, start with [Connect your Meta Ads account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Meta Ads is useful when a media buyer wants to understand campaign structure, spend, creative fatigue, and performance changes without giving the agent permission to edit ads.
 
-## Inventory and account checks
+Ask the agent for read-only ad work: list accounts, inspect campaigns and ads, pull insights, compare time ranges, review creative anatomy, fetch previews, and export a clean snapshot pack for deeper analysis.
 
-- “List my ad accounts with id + name.”
-- “List campaigns in act_<id> with id, name, status.”
-- “List ads in act_<id> with id, name, status, effective_status.”
-- “List creatives in act_<id> and fetch a specific creative by id.”
+## Good questions to ask
 
-## Insights and reporting
+- "Which ad accounts can this token read?"
+- "What campaigns, ad sets, ads, and creatives exist in this account?"
+- "Which campaigns changed performance in the last 7 days?"
+- "Can you compare this week to last week with the same settings?"
+- "Which ads or creatives look worth reviewing?"
+- "Can you fetch creative previews for these ads?"
+- "Can you export a snapshot pack for analysis?"
+- "Can you download creative assets during the export if I opt in?"
 
-- “Campaign performance last 7 days: impressions, clicks, spend.”
-- “Daily spend for January 2026 with breakdowns.”
-- “Adset-level insights for a specific time range.”
-- “Compare two date ranges (same settings) to spot fatigue or promotion effects.”
+## Everyday work this helps with
 
-## Analysis packs and creative review
+### Account and campaign inventory
 
-- “Export an analysis-ready snapshot pack (manifest + JSONL tables).”
-- “Find winning ads and inspect their creative anatomy + previews.”
-- “Optionally download creative asset URLs into the export (explicit opt-in).”
+The agent can list ad accounts, campaigns, ad sets, ads, creatives, images, and videos so a person can understand the account before reviewing performance.
+
+### Performance reporting
+
+Ask for insights at account, campaign, ad set, or ad level. The useful answer should name the ad account, date range, level, metrics, and any breakdowns.
+
+### Creative review
+
+The agent can inspect creative anatomy, fetch previews, and help spot which ads deserve a human look. It should separate what the data says from creative judgment.
+
+### Snapshot exports
+
+For deeper analysis, the agent can export manifest files and JSONL tables. Creative asset downloads should happen only when you explicitly opt in.
 
 ## What the agent should show you
 
-Because this tool is read-only, the agent should:
+- The ad account, date range, level, metrics, and breakdowns it used.
+- The campaigns, ad sets, ads, creatives, images, or videos it inspected.
+- A short summary of what changed or what looks worth reviewing.
+- The local files created by a snapshot export.
+- A clear note when the request is outside read-only reporting.
+- No promise that it can pause, edit, create, or delete ads.
 
-1. check auth first
-2. name the ad account, date range, and level it used
-3. summarize what changed or what looks worth reviewing
-4. point to any local export files it created
+## Good first path
+
+Start with: "Check the Meta Ads skill is connected, list my ad accounts, show one campaign performance report, and export a small snapshot pack."
+
+After that, ask one useful follow-up, such as: "Compare this week to last week" or "Find ads worth reviewing and fetch their creative previews."

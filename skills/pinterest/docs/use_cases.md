@@ -1,45 +1,49 @@
 # What you can do with Pinterest
 
-Pinterest work usually starts with visibility: what exists in the account, what changed, which pins or ads are getting attention, and whether catalog feeds have problems.
-If you need setup first, start with [Connect your Pinterest account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Pinterest is useful when you need to understand what exists in an account, which pins or ads are getting attention, and whether boards, catalogs, or feeds need cleanup.
 
-## A good first ask
+Ask the agent for the work a creator, ecommerce team, or media buyer checks before changing anything: board structure, pin inventory, top pins, ad performance, catalog feed issues, product groups, and exactly what a cleanup would change.
 
-"Check the Pinterest skill is configured, export a snapshot of my boards and pins, and tell me if anything looks unusual before we plan changes."
+## Good questions to ask
 
-## Good jobs to give the agent
+- "What boards, sections, and pins are in this account?"
+- "Can you export a snapshot so I can compare account structure over time?"
+- "Which boards are private, empty, or unusually large?"
+- "Which pins got the most attention in the last 90 days?"
+- "What changed in ads performance for this date range?"
+- "Are there catalog feed issues or product group problems?"
+- "Can you preview a pin-link cleanup before anything changes?"
+- "Can you show what a board, pin, ad, or feed change would do first?"
 
-### Inventory and audits
+## Everyday work this helps with
 
-- "Export a full snapshot of my boards, sections, and pins into a folder."
-- "Generate a boards summary so I can review board privacy, section counts, and pin counts."
-- "Create a repeatable audit snapshot so I can compare account structure over time."
+### Account inventory
 
-### Analytics and performance review
+The agent can export boards, sections, pins, and account details into a local snapshot. This is useful before reorganizing boards, cleaning up old pins, or comparing account structure over time.
 
-- "Show me my top pins and account analytics for the last 90 days if my account supports it."
-- "Export my ads account structure so I can review campaigns, ad groups, and ads with my team."
-- "Pull aggregated ads analytics for this date range so I can spot performance changes."
+### Performance review
+
+Ask for top pins, account analytics, ads structure, or aggregated ads performance when the account has access. The agent should name the date range, account, and level it used.
 
 ### Catalog and feed diagnostics
 
-- "List my catalogs and feeds, then show the latest processing results."
-- "Export product group products and item issues so I can diagnose catalog problems."
-- "Show me catalog reports or stats for this ad account."
+The agent can list catalogs and feeds, show processing results, export product group products, and surface item issues so you can find the problem before changing catalog settings.
 
 ### Careful change planning
 
-- "Plan a pin-link cleanup for these pins and show me exactly what would change."
-- "Preview the write steps for a board, pin, ad, or feed change before anything goes live."
-- "Show the missing-approval refusal first so I can confirm nothing writes without approval."
+For pin-link cleanup, board changes, pin changes, ad changes, feed work, or report jobs, the agent should show the plan and wait for approval before any live Pinterest write.
 
-## What you should expect from the agent
+## What the agent should show you
 
-For normal reads and snapshots, the agent should fetch the data and summarize what matters.
+- The account, board, section, pin, ad account, catalog, feed, or product group it checked.
+- The local folder where a snapshot or export was saved.
+- The date range and reporting level for analytics.
+- A short summary of what looks unusual or worth reviewing.
+- A review plan before any board, pin, ad, catalog, feed, token, or report-output write.
+- A clear refusal when missing approval stopped a write before Pinterest was touched.
 
-For write-capable operations, the agent should:
+## Good first path
 
-1. produce a dry-run plan first
-2. explain the no-snapshot limit clearly
-3. wait for explicit approval before any live Pinterest write
-4. show refusal output when a missing approval stopped the write before Pinterest HTTP
+Start with: "Check the Pinterest skill is configured, export a snapshot of my boards and pins, and tell me what looks unusual before we plan changes."
+
+After that, ask one practical follow-up, such as: "Show top pins for the last 90 days" or "Check catalog feed issues before we plan a fix."
