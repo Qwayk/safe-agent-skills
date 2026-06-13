@@ -1,10 +1,10 @@
 # Connect your TikTok Marketing account
 
-Use this page when you want the shortest safe setup path for TikTok Marketing work.
+TikTok Marketing needs local app credentials and advertiser access before an agent can inspect accounts, campaigns, creatives, and credential health.
 
-This skill runs on your machine and uses local TikTok app credentials plus a token. You do not need to write code, but you do need the right advertiser access for the operations you want.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start by confirming advertiser access before asking for campaign or spend work.
 
 ## What you need
 
@@ -13,7 +13,7 @@ Keep this one rule in mind first: your `.env` file contains secrets. Keep it pri
 - `TIKTOK_MARKETING_ACCESS_TOKEN`, or a local `.state/token.json` token file
 - The right advertiser permissions for the live operations you want to use
 
-## Step 1) Create the local `.env` file
+## Step 1. Create the local `.env` file
 
 The easiest path is one of these:
 
@@ -27,7 +27,7 @@ Then fill:
 - `TIKTOK_MARKETING_APP_SECRET`
 - `TIKTOK_MARKETING_ACCESS_TOKEN`
 
-## Step 2) Use the token-file path only if you need it
+## Step 2. Use the token-file path only if you need it
 
 If you want token-file auth instead of an env token:
 
@@ -38,7 +38,7 @@ tiktok-marketing-api-tool --output json auth token status
 
 `auth check` uses `.state/token.json` only when `TIKTOK_MARKETING_ACCESS_TOKEN` is missing.
 
-## Step 3) Run the first safe checks
+## Step 3. Run the first safe checks
 
 These are the best first commands:
 

@@ -1,7 +1,10 @@
-# Onboarding
+# Connect your WooCommerce account
 
-This page is for first-time setup.
-You only need your store URL and a WooCommerce REST API key pair.
+WooCommerce needs a store URL and local REST API key pair before an agent can inspect products, orders, customers, coupons, and store settings.
+
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start with a store or product read before asking for catalog or order changes.
 
 ## Step by step
 
@@ -40,5 +43,9 @@ qwayk-woocommerce-safe-agent-cli --output json auth check
 - “List all products.”
 - “Preview a new coupon before creating it.”
 - “Show me all shipping zones.”
+
+## Before changes
+
+Ask for a reviewed plan before product, order, coupon, customer, inventory, shipping, tax, or store setting changes.
 
 Write apply currently requires explicit no-snapshot approval before WooCommerce HTTP when the tool cannot save real before-state.

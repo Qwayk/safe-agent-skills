@@ -1,8 +1,10 @@
-# Onboarding
+# Connect your Salesforce Platform account
 
-This tool runs locally and talks to your Salesforce org over the official Platform REST API.
+Salesforce Platform needs local org access before an agent can inspect objects, records, limits, metadata, and org resources.
 
-Keep the main rule simple: store secrets only on your machine, never in chat.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start with an org or limits read before asking for record or metadata changes.
 
 ## Step 1: Create `.env`
 

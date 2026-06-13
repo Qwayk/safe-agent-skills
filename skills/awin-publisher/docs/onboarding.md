@@ -1,6 +1,10 @@
-# Connect your Awin publisher account
+# Connect your Awin Publisher account
 
-You do not need to run every command yourself. This page exists so you or your AI agent can set the tool up safely.
+Awin Publisher needs local credentials before an agent can inspect publisher accounts, merchants, reports, links, or feed data.
+
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start with a small account or merchant read and add optional feed or proof-of-purchase keys only when that work is needed.
 
 ## Before you start
 

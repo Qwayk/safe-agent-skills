@@ -1,10 +1,10 @@
 # Connect your Pinterest account
 
-Use this page when you want the shortest safe setup path for Pinterest work.
+Pinterest needs local credentials before an agent can inspect boards, pins, ads, catalogs, analytics, or business access data.
 
-This skill runs on your machine and uses Pinterest credentials you store locally. You do not need to write code, but you do need the right Pinterest token and scopes for the work you want.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with an account or boards read before asking for pin, catalog, ad, or business-access changes.
 
 ## What you need
 
@@ -13,7 +13,7 @@ Keep this one rule in mind first: your `.env` file contains secrets. Keep it pri
 - An ad account ID if you want ads or catalogs work.
 - A business ID if you want Business Access inventory.
 
-## Step 1) Choose the auth path
+## Step 1. Choose the auth path
 
 You have two normal options:
 
@@ -22,7 +22,7 @@ You have two normal options:
 
 The full step-by-step lives in [Authentication details](authentication.md).
 
-## Step 2) Fill the local `.env` file
+## Step 2. Fill the local `.env` file
 
 In the tool folder:
 
@@ -31,7 +31,7 @@ In the tool folder:
 3. If you only want a fast first read test, start with the access token path.
 4. If you want a longer-lived setup, fill the app and refresh-token values too.
 
-## Step 3) Run the first safe checks
+## Step 3. Run the first safe checks
 
 These are the best first commands:
 

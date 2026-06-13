@@ -1,8 +1,10 @@
-# Onboarding
+# Use Statuspage with no account
 
-This skill is read-only and does not need authentication for the normal public-page flow.
+Statuspage can start from a public status page URL. You do not need an account or API key for normal incident and maintenance checks.
 
-The shortest path is to give your agent a public Statuspage URL and ask for the job you want done.
+No secrets are needed for the first run. If the tool creates a local `.env` file, treat it as local setup only; it should not contain a private service token.
+
+Start by giving the agent the exact public status page URL you want reviewed.
 
 ## Fastest first run
 
@@ -25,3 +27,8 @@ If you want to run the CLI yourself more than once, you can keep the base URL in
 2. Set `STATUSPAGE_BASE_URL=https://status.somevendor.com`.
 
 Keep `.env` local on your machine.
+
+## What to avoid
+
+- Do not ask for private incident data from a public Statuspage URL. This tool reads what the page exposes publicly.
+- Do not rely on a summary alone during an outage. Ask the agent to show the incident title, status, affected components, and latest update time.

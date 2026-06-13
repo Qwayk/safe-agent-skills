@@ -1,13 +1,10 @@
 # Connect your X account
 
-This tool runs on your computer and connects to the **X API v2** using credentials you store locally.
+X needs local API credentials and token settings before an agent can inspect account data, mentions, posts, DMs, or safe read options.
 
-You do not need to be technical. You can ask an AI agent to do the work, and the agent should report back with a safe read, a dry-run plan for higher-risk actions, and proof after the work runs.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep these points in mind:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
-- App bearer tokens are enough for many reads.
-- OAuth user tokens are needed for DMs and most live writes.
+After setup, start with a safe account or mentions read before asking for posts, replies, DMs, or auth changes.
 
 ## Step 1: Create the local `.env` file
 
@@ -43,7 +40,7 @@ Open the X Developer Portal and create (or select) your app/project. You will ne
 
 ## Step 3: Ask for a safe first check
 
-These are plain-English requests that fit the real shipped surface:
+Good first requests:
 
 - “Confirm the tool is connected, then show me the available X API operations.”
 - “Check my account, recent mentions, and the safe read options I can run first.”
@@ -53,8 +50,8 @@ These are plain-English requests that fit the real shipped surface:
 ## Step 4: If something fails
 
 The most common issues are:
-- Missing/incorrect values in `.env`
-- Missing scopes for user-context endpoints (OAuth2)
+- Missing or incorrect values in `.env`
+- Missing scopes for user-context endpoints (OAuth2).
 - Network/auth restrictions in your X developer account
 
 Extra notes for outreach (DMs):
@@ -62,4 +59,4 @@ Extra notes for outreach (DMs):
 - Whether you *can* DM someone depends on the **recipient’s DM settings** (and your sender account’s status). Use `x-api-tool --live dm can-send --to-username <name>` to check first.
 - “Verified” for DM reach is an X product decision (X Premium + eligibility review). The API does not make an account verified.
 
-The tool explains common errors in `docs/troubleshooting.md`.
+See `docs/troubleshooting.md` for common errors and fixes.

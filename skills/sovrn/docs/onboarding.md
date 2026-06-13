@@ -1,13 +1,10 @@
 # Connect your Sovrn account
 
-This tool runs on your computer and connects to Sovrn using local credentials that stay in your own `.env` file.
+Sovrn needs local credentials before an agent can inspect Commerce and Advertising data for publisher reports and link work.
 
-You do not need to be technical. You can ask an AI agent to run checks, reports, and discovery work for you.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep these points in mind:
-- This shipped surface is read-only.
-- It does not make live changes to your Sovrn account.
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with a small Commerce or Advertising read. This shipped surface is read-only.
 
 ## Step 1: Create the local `.env` file
 
@@ -49,7 +46,7 @@ You can fill all four values now, or start with only the product area you need f
 
 ## Step 3: Ask for a safe first check
 
-These are plain-English requests that fit the real shipped surface:
+Good first requests:
 
 - “Confirm the tool is connected, then show me which Sovrn command bundles are ready.”
 - “Check whether these product URLs can be monetized before we use them.”
@@ -64,6 +61,6 @@ The most common issues are:
 - Missing or incorrect values in `.env`
 - Mixing the Commerce secret key and the Commerce site API key
 - Missing the Advertising publisher ID even though the Advertising API key is present
-- Access-gated product APIs in the vendor account
+- Access-gated product APIs in the connected account
 
-The tool explains common errors in `docs/troubleshooting.md`.
+See `docs/troubleshooting.md` for common errors and fixes.

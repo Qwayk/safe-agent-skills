@@ -1,19 +1,18 @@
-# Connect your account
+# Connect your Freepik account
 
-This skill runs on your computer and connects to Freepik with an API key that stays in your local `.env` file.
+Freepik needs a local API key before an agent can search assets, review previews, check licenses, or prepare download plans.
 
-You do not need to be technical. You can ask your agent to handle search, previews, download plans, and approved downloads for you.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with a search and preview links before asking for licensed downloads or saved files.
 
-## Step 1) Get a Freepik API key
+## Step 1. Get a Freepik API key
 
 Open your Freepik account dashboard, find the API section, and create an API key.
 
 The exact dashboard steps can change over time, so use Freepik's current account UI if the labels move.
 
-## Step 2) Fill your local `.env` file
+## Step 2. Fill your local `.env` file
 
 In the tool folder, copy `.env.example` to `.env` and fill these values:
 
@@ -22,7 +21,7 @@ In the tool folder, copy `.env.example` to `.env` and fill these values:
 
 Keep the default base URL unless Freepik support tells you to use something else.
 
-## Step 3) Optional: choose your local output paths
+## Step 3. Optional: choose your local output paths
 
 If you want stable local paths for downloaded files and the inventory CSV, create a small project config JSON and pass it with `--config`.
 
@@ -31,7 +30,7 @@ Useful keys:
 - `downloads_dir`
 - `inventory_csv`
 
-## Step 4) Ask your agent to check access first
+## Step 4. Ask your agent to check access first
 
 Before any real work, ask for a safe auth check.
 
@@ -39,9 +38,9 @@ Example:
 
 - "Check that my Freepik skill is connected, then show me a short photo search for mushroom pasta."
 
-## Step 5) Ask for the real job
+## Step 5. Ask for the real job
 
-These plain-English requests fit the normal safe workflow:
+Good next requests:
 
 - "Search for 40 recipe photos for mushroom pasta, exclude AI best-effort, and give me a shortlist."
 - "Preview the top 10 so I can pick the final IDs."

@@ -1,30 +1,32 @@
-# Onboarding (non-technical)
+# Connect your WordPress account
 
-This tool runs on your computer, and connects to your WordPress site using a WordPress **Application Password**.
+WordPress needs a site URL, username, and application password before an agent can inspect or update posts, pages, media, users, and taxonomies.
 
-Goal: use a dedicated WordPress user with the **minimum permissions** needed, so the tool can help with content workflows without having full admin power.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-## Step 1) Create a dedicated WordPress user (recommended)
+After setup, start with a small content read and use the lowest WordPress role that can do the job.
+
+## Step 1. Create a dedicated WordPress user (recommended)
 
 In WordPress Admin:
 
-1) Go to **Users → Add New**.
-2) Create a new user for the tool (example name: “Content Assistant”).
-3) Choose the lowest role that can do your job:
+1. Go to **Users → Add New**.
+2. Create a new user for the tool (example name: “Content Assistant”).
+3. Choose the lowest role that can do your job:
    - If you only need to work on that user’s own posts: **Author**
    - If you need to edit many existing posts: often **Editor**
-4) Avoid using an **Administrator** account unless you truly need it.
+4. Avoid using an **Administrator** account unless you truly need it.
 
-## Step 2) Create an Application Password
+## Step 2. Create an Application Password
 
 In WordPress Admin:
 
-1) Go to **Users → Profile** for the tool user.
-2) Find **Application Passwords**.
-3) Create a new application password (name it something like “wordpress-api-tool”).
-4) Copy the generated password and store it safely.
+1. Go to **Users → Profile** for the tool user.
+2. Find **Application Passwords**.
+3. Create a new application password (name it something like “wordpress-api-tool”).
+4. Copy the generated password and store it safely.
 
-## Step 3) Fill the local `.env` file (on your machine)
+## Step 3. Fill the local `.env` file (on your machine)
 
 In the tool folder, copy `.env.example` to `.env` and fill:
 
@@ -32,12 +34,11 @@ In the tool folder, copy `.env.example` to `.env` and fill:
 - `WP_USERNAME` (the tool user’s username)
 - `WP_APP_PASSWORD` (the application password you created)
 
-Important:
 - Keep `.env` private. Do not paste it into chat or share it publicly.
 
-## Step 4) What to ask your AI agent (examples)
+## Step 4. What to ask your AI agent (examples)
 
-These are plain-English requests you can give to your agent. The agent should run a dry-run first, then ask for confirmation before applying changes.
+Ask your agent to run a dry-run first, then ask for confirmation before applying changes.
 
 Discovery / targeting (read-only):
 

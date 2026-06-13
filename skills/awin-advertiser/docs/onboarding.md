@@ -1,19 +1,10 @@
-# Onboarding
+# Connect your Awin Advertiser account
 
-This skill uses a local `.env` file.
+Awin Advertiser needs a local API token and advertiser ID before an agent can inspect publishers, transactions, offers, or product-feed work.
 
-The shortest path is:
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-1. Copy `.env.example` to `.env`.
-2. Fill in your `AWIN_API_TOKEN` and `AWIN_ADVERTISER_ID`.
-3. Run:
-
-```bash
-awin-advertiser-safe-cli --output json onboarding
-awin-advertiser-safe-cli --output json auth check
-```
-
-If `auth check` returns `setup_needed: true`, fix the missing `.env` values and run it again.
+After setup, start with a small account or transaction read before asking for validation or feed work.
 
 ## What these fields mean
 

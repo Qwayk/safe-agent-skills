@@ -1,69 +1,62 @@
-# Onboarding (non-technical)
+# Connect your Zendesk account
 
-This tool runs on your computer, and connects to a vendor API using an API key/token that you store locally.
+Zendesk needs local subdomain and token settings before an agent can inspect tickets, users, organizations, views, and support queues.
 
-You do not need to be technical. You can simply ask an AI agent to do work, and the agent will run the tool for you and report back with a preview. When no saved snapshot is available for a supported write, the agent must say that clearly and ask for explicit no-snapshot approval before apply.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with a ticket count or small search before asking for support data changes.
 
-## Step 1: Create the local `.env` file (on your machine)
+## Step 1: Choose the auth mode you want
+
+- **Zendesk email + API token** is the simplest setup and the recommended default.
+- **OAuth bearer token** is also supported if your team already uses OAuth.
+
+If you are unsure, start with the API token path.
+
+## Step 2: Create the credentials in Zendesk
+
+If you are using API token auth:
+
+1. Identify your Zendesk subdomain.
+   - If your Zendesk URL is `https://acme.zendesk.com`, the subdomain is `acme`.
+2. Open Zendesk Admin Center.
+3. Go to **Apps and integrations -> APIs -> Zendesk API**.
+4. Enable **Token access** if it is not already enabled.
+5. Click **Add API token** and copy the token value.
+6. Keep your Zendesk login email ready too.
+
+If your team uses OAuth instead, get the bearer token from your approved internal flow and keep it private for `.env`.
+
+## Step 3: Fill the local `.env` file
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
-3) Fill the required fields:
-   - `ZENDESK_SUBDOMAIN` (or `ZENDESK_BASE_URL`)
-   - `ZENDESK_EMAIL`
-   - `ZENDESK_API_TOKEN`
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
+3. Fill one of these setups:
+   - API token setup:
+     - `ZENDESK_SUBDOMAIN=acme` or `ZENDESK_BASE_URL=https://acme.zendesk.com`
+     - `ZENDESK_EMAIL=you@company.com`
+     - `ZENDESK_API_TOKEN=...`
+   - OAuth setup:
+     - `ZENDESK_SUBDOMAIN=acme` or `ZENDESK_BASE_URL=...`
+     - `ZENDESK_OAUTH_ACCESS_TOKEN=...`
 
-## Step 2: Get your Zendesk API token (recommended auth)
+## Step 4: Ask for safe first checks
 
-This tool supports Zendesk API token auth (email + API token) using HTTP Basic auth.
-You’ll create an API token in Zendesk Admin Center, then paste it into `.env`.
+These are good first requests for your agent:
 
-1) Identify your Zendesk subdomain:
-   - If your Zendesk URL is `https://acme.zendesk.com`, your subdomain is `acme`.
-2) Open Zendesk Admin Center, then go to:
-   - **Apps and integrations** → **APIs** → **Zendesk API**
-3) Enable **Token access** (if it’s not already enabled).
-4) Click **Add API token**, then copy the token value.
-5) Copy your Zendesk account email address (the email you log in with).
-6) Fill in your `.env` (do not paste secrets into chat):
+- “Confirm the Zendesk skill is connected and show the safest read options first.”
+- “Validate the pinned Zendesk inventory and show me the main ticket read commands.”
+- “Find the right tickets or users safely, but stop before any changes.”
+- “Plan these Zendesk updates from a spreadsheet and show me the approval gate before live writes.”
 
-```bash
-ZENDESK_SUBDOMAIN=acme
-ZENDESK_EMAIL=you@company.com
-ZENDESK_API_TOKEN=zd_api_token_here
-```
-
-Smoke test (offline by default; does not make a network call):
-
-```bash
-zendesk-api-tool --env-file .env --output json auth check
-```
-
-Optional live auth validation (safe read; makes one GET request):
-
-```bash
-zendesk-api-tool --env-file .env --output json --live auth check
-```
-
-## Step 3: What to ask your AI agent (examples)
-
-These are plain-English requests. The agent should start with a read-only check, then show a preview and avoid live writes.
-
-- “Confirm the tool is connected, then show me what it can do on my account.”
-- “Find the right targets safely (avoid guessing), then propose changes for my review.”
-- “Plan these metadata updates from a spreadsheet and show me the safe refusal if apply is attempted.”
-- “Do a dry-run preview first. Do not apply live Zendesk writes.”
-
-## Step 4: If something fails
+## If something fails
 
 The most common issues are:
-- Missing/incorrect values in `.env`
-- Wrong key type (example: read-only key vs admin key)
-- Network/auth restrictions in the vendor account
+- missing or wrong values in `.env`
+- wrong key type or missing Zendesk permissions
+- network or auth restrictions in your Zendesk account
+- forgetting that even safe reads may return sensitive support data
 
-The real tool should explain common errors in `docs/troubleshooting.md`.
+See [Troubleshooting](troubleshooting.md) for the common error paths and fixes.

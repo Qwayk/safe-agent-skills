@@ -1,6 +1,10 @@
-# Onboarding
+# Use TheMealDB with no account
 
-You do not need a secret for the default setup. This tool uses TheMealDB free public V1 key `1` unless you choose to override it.
+TheMealDB can start with its free public key. You do not need a private secret for normal recipe, ingredient, category, and meal searches.
+
+No secrets are needed for the first run. If the tool creates a local `.env` file, treat it as local setup only; it should not contain a private service token.
+
+Start with a recipe or ingredient search and check a few options before choosing one.
 
 ## Step-by-step setup
 

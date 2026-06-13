@@ -1,13 +1,12 @@
 # Connect your Klaviyo account
 
-This tool runs on your machine and uses a local Klaviyo key that stays in your `.env` file.
+Klaviyo needs a local API key before an agent can inspect lists, segments, profiles, campaigns, flows, forms, or events.
 
-You do not need to be technical. You can ask your agent to do the work for you, but the agent still needs the right Klaviyo access on your machine first.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with a small list or segment read before asking for marketing-data changes.
 
-## Step 1) Create your local `.env` file
+## Step 1. Create your local `.env` file
 
 In the tool folder:
 
@@ -19,7 +18,7 @@ In the tool folder:
    - `KLAVIYO_COMPANY_ID=...` only if you want `/client/*` endpoint work
    - `KLAVIYO_TIMEOUT_S=30` is optional
 
-## Step 2) Create the Klaviyo API key
+## Step 2. Create the Klaviyo API key
 
 Create a private Klaviyo API key with the smallest scopes you really need.
 
@@ -35,7 +34,7 @@ If you plan to use `/client/*` endpoints, also add your company ID to `KLAVIYO_C
 
 Never paste the API key into chat.
 
-## Step 3) Ask for a safe connection check first
+## Step 3. Ask for a safe connection check first
 
 Before any real work, ask your agent to confirm the connection first.
 
@@ -43,9 +42,9 @@ Example:
 
 - "Check that my Klaviyo skill is connected, then show me the safest audience, profile, and campaign reviews to start with."
 
-## Step 4) Ask for the real job
+## Step 4. Ask for the real job
 
-These plain-English requests fit the normal safe workflow:
+Good next requests:
 
 - "Show me which lists, segments, or campaigns changed recently."
 - "Review one profile and its recent events before I change anything."

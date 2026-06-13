@@ -1,19 +1,18 @@
-# Onboarding (non-technical)
+# Connect your Google Search Console account
 
-This tool runs on your computer and connects to the Google Search Console API using OAuth credentials you store locally.
+Google Search Console needs local OAuth credentials before an agent can inspect sites, search performance, sitemaps, or URL inspection data.
 
-You do not need to be technical. You can simply ask an AI agent to do work, and the agent will run the tool for you and report back with a preview + receipt.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start by listing the Search Console sites this token can access.
 
 ## Step 1: Create the local `.env` file (on your machine)
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
-3) Fill the required fields:
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
+3. Fill the required fields:
    - Pick one auth mode and set exactly one of:
      - `GSC_OAUTH_CLIENT_SECRETS_FILE=/absolute/path/to/client_secrets.json`, or
      - `GSC_SERVICE_ACCOUNT_FILE=/absolute/path/to/service_account.json`
@@ -31,40 +30,40 @@ Choose one auth mode.
 
 ### Option A (recommended): Installed-app OAuth
 
-1) Go to Google Cloud Console → “APIs & Services”.
-2) Enable the “Google Search Console API” for your project.
-3) Go to “Credentials” → “Create credentials” → “OAuth client ID”.
-4) Pick an application type that supports local login (Desktop App is the simplest).
-5) Download the client secrets JSON file to your computer.
-6) Set this in `.env`:
+1. Go to Google Cloud Console → “APIs & Services”.
+2. Enable the “Google Search Console API” for your project.
+3. Go to “Credentials” → “Create credentials” → “OAuth client ID”.
+4. Pick an application type that supports local login (Desktop App is the simplest).
+5. Download the client secrets JSON file to your computer.
+6. Set this in `.env`:
    - `GSC_OAUTH_CLIENT_SECRETS_FILE=/absolute/path/to/client_secrets.json`
 7) Run login once:
    - `gsc-api-tool auth login`
 
 ### Option B (optional): Service account
 
-1) Create a service account JSON in Google Cloud.
-2) Set this in `.env`:
+1. Create a service account JSON in Google Cloud.
+2. Set this in `.env`:
    - `GSC_SERVICE_ACCOUNT_FILE=/absolute/path/to/service_account.json`
-3) In Google Search Console, grant the service account email access to the property you want to work on.
+3. In Google Search Console, grant the service account email access to the property you want to work on.
 
 Note: Service accounts are not always a drop-in replacement for user OAuth. If auth fails, use Option A.
 
 ## Step 3: What to ask your AI agent (examples)
 
-These are plain-English requests. The agent should start with a read-only check, then show a preview before applying changes.
+Ask your agent to start with a read-only check, then show a preview before applying changes.
 
 - “Confirm the tool is connected, then show me what it can do on my account.”
 - “Find the right targets safely (avoid guessing), then propose changes for my review.”
 - “Apply these metadata updates from a spreadsheet and give me a receipt of what changed.”
-- “Do a dry-run preview first. Only apply after I approve.”
+- “Do a dry-run reviewed plan first. Only apply after I approve.”
 
 ## Step 4: If something fails
 
 The most common issues are:
-- Missing/incorrect values in `.env`
+- Missing or incorrect values in `.env`
 - Missing OAuth login (installed-app OAuth not completed)
 - Wrong OAuth scopes (read-only vs write)
-- Network/auth restrictions in the vendor account
+- Network or permission restrictions in the connected account
 
-The real tool should explain common errors in `docs/troubleshooting.md`.
+See `docs/troubleshooting.md` for common errors and fixes.

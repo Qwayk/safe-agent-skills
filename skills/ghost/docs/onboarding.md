@@ -1,14 +1,12 @@
-# Connect your account
+# Connect your Ghost account
 
-This skill runs on your computer and connects to Ghost with local API credentials that stay in your `.env` file.
+Ghost needs local API credentials before an agent can review posts, authors, tags, members, or publication settings.
 
-You do not need to be technical. You can ask your agent to do the work for you, but the agent still needs the right Ghost API values on your machine first.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
-- The Ghost Admin API key is for management work and writes. The Content API key is optional and only used for public read-only content commands.
+After setup, start with a small post or site read before asking for publish, edit, or delete work.
 
-## Step 1) Create a Ghost Custom Integration
+## Step 1. Create a Ghost Custom Integration
 
 In Ghost Admin:
 
@@ -18,7 +16,7 @@ In Ghost Admin:
 4. Copy the **API URL** shown in that integration panel.
 5. If you also want public read-only Content API commands, copy the **Content API Key** from the same area.
 
-## Step 2) Fill your local `.env` file
+## Step 2. Fill your local `.env` file
 
 In the tool folder, copy `.env.example` to `.env` and fill:
 
@@ -36,7 +34,7 @@ Important URL shapes:
 - Admin API URL should end with `/ghost/api/admin/`
 - Content API URL should end with `/ghost/api/content/`
 
-## Step 3) Ask for a safe auth check first
+## Step 3. Ask for a safe auth check first
 
 Before any real work, ask your agent to confirm the connection first.
 
@@ -44,9 +42,9 @@ Example:
 
 - "Check that my Ghost skill is connected, then show me the latest posts and tags without changing anything."
 
-## Step 4) Ask for the real job
+## Step 4. Ask for the real job
 
-These plain-English requests fit the normal safe workflow:
+Good next requests:
 
 - "Audit my posts and summarize what looks risky or inconsistent."
 - "Export email delivery stats for my posts into a CSV."

@@ -1,18 +1,19 @@
-# Onboarding (non-technical)
+# Connect your Cloudflare account
 
-This tool runs on your computer and connects to the Cloudflare API using an API Token that you store locally.
+Cloudflare needs a local API token before an agent can review zones, DNS, cache, security, or account settings.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start by listing the account and zone you want, because the wrong zone can affect a live site.
 
 ## Step 1: Create the local `.env` file (on your machine)
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
+1. Copy `.env.example` to `.env`.
    - Alternatively: run `cloudflare-api-tool config init` to create the placeholder file.
-2) Open `.env` in a text editor.
-3) Fill the required fields:
+2. Open `.env` in a text editor.
+3. Fill the required fields:
    - `CLOUDFLARE_API_TOKEN=...`
    - (optional) `CLOUDFLARE_API_BASE_URL=https://api.cloudflare.com/client/v4`
    - (optional) `CLOUDFLARE_TIMEOUT_S=30`
@@ -45,7 +46,7 @@ That’s expected: add only the minimum additional permissions needed for the sp
 
 ## Step 3: What to ask your AI agent (examples)
 
-These are plain-English requests. The agent should start with a read-only connection check and then shortlist IDs safely.
+Ask your agent to start with a read-only connection check and then shortlist IDs safely.
 
 - “Confirm the tool is connected, then list my Cloudflare accounts.”
 - “Confirm the tool is connected, then run zone-create-check for my account before we onboard domains.”
@@ -56,8 +57,8 @@ These are plain-English requests. The agent should start with a read-only connec
 ## Step 4: If something fails
 
 The most common issues are:
-- Missing/incorrect values in `.env`
+- Missing or incorrect values in `.env`
 - Token missing permissions for the endpoint you called
-- Network/auth restrictions in the vendor account
+- Network or permission restrictions in the connected account
 
 See `docs/troubleshooting.md` and ask your agent to run a connection check first.

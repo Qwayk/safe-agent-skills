@@ -1,18 +1,17 @@
-# Onboarding (non-technical)
+# Connect your Plausible account
 
-This tool runs on your computer and connects to your Plausible account using an API key that you store locally.
+Plausible needs a local API key before an agent can inspect sites, traffic, goals, conversions, and privacy-friendly reports.
 
-You do not need to be technical. You can ask an AI agent to do the work, and the agent will run the tool for you and report back with a preview + receipt.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with one site and a short date range before asking for trends or site changes.
 
-## Step 1) Get a Plausible API key
+## Step 1. Get a Plausible API key
 
 In your Plausible account settings, create an API key (the exact steps can change).
 If you plan to use Sites API commands (creating/updating/deleting sites, goals, guests, custom properties), make sure the key has access to the site; destructive operations may require an owner key.
 
-## Step 2) Fill the local `.env` file (on your machine)
+## Step 2. Fill the local `.env` file (on your machine)
 
 In the tool folder, copy `.env.example` to `.env` and fill:
 
@@ -20,9 +19,9 @@ In the tool folder, copy `.env.example` to `.env` and fill:
 - `PLAUSIBLE_SITE_ID` (your site/domain identifier in Plausible)
 - `PLAUSIBLE_API_KEY` (your API key)
 
-## Step 3) What to ask your AI agent (examples)
+## Step 3. What to ask your AI agent (examples)
 
-These are plain-English requests. For safety, event writes should always be planned first and only applied after your explicit approval.
+For safety, event writes should be planned first and applied only after your explicit approval.
 Some writes also need an extra no-snapshot acknowledgement because they do not have an automatic restore point.
 
 - “Confirm the tool is connected and run a weekly report for the last 7 days.”
@@ -33,7 +32,7 @@ Some writes also need an extra no-snapshot acknowledgement because they do not h
 ## If something fails
 
 Common causes:
-- Missing/invalid API key
+- Missing or invalid API key
 - Wrong base URL (self-hosted vs cloud)
 - Wrong site ID/domain mismatches
 

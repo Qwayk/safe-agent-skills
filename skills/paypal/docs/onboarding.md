@@ -1,11 +1,10 @@
-# Onboarding (non-technical)
+# Connect your PayPal account
 
-This tool runs on your computer and connects to the official PayPal REST API using a PayPal app client ID and client secret that you store locally.
+PayPal needs local app credentials before an agent can inspect orders, payments, captures, refunds, and account data.
 
-You do not need to be technical. You can ask an AI agent to run the tool for you, and it should report back with a safe preview first for write actions. Current write apply requires explicit no-snapshot approval before PayPal auth or HTTP.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start in sandbox when possible and confirm one order or account read before live money actions.
 
 ## Step 1: Create the local `.env` file (on your machine)
 
@@ -29,9 +28,9 @@ If you already have a production-approved PayPal app, you can switch `PAYPAL_ENV
 
 ## Step 3: What to ask your AI agent (examples)
 
-These are plain-English requests. The agent should start with a read-only check, then show a preview before applying changes.
+Ask your agent to start with a read-only check, then show a preview before applying changes.
 
-- “Check the PayPal connection and tell me which API areas are ready.”
+- “Confirm the PayPal tool is connected and tell me which API areas are ready.”
 - “Show me one order by ID.”
 - “List my webhooks and show the details for one webhook.”
 - “Prepare a dry-run preview for creating an invoice, then tell me what approval it needs before any live PayPal write.”

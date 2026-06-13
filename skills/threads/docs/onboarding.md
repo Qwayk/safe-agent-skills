@@ -1,11 +1,10 @@
-# Onboarding (non-technical)
+# Connect your Threads account
 
-This tool uses local `.env` settings and the official Threads OAuth + Graph APIs.
+Threads needs local app settings and tokens before an agent can inspect profile and post data or prepare publishing work.
 
-Keep these private:
-- `.env`
-- app secret
-- access tokens
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start with a profile or owned-post read before asking for posts, replies, moderation, or token changes.
 
 ## Step 1: Create `.env`
 

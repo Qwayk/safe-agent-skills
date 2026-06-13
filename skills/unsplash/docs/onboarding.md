@@ -1,10 +1,10 @@
-# Connect your Unsplash access key
+# Connect your Unsplash account
 
-Use this page when you want the shortest safe setup path for Unsplash work.
+Unsplash needs a local access key before an agent can search photos, inspect creators, review license data, or prepare downloads.
 
-This skill runs on your machine and uses the Unsplash API with an Access Key. You do not need to write code, but you do need a valid key before the agent can do real Unsplash reads.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with a photo search and preview links before saving files or choosing final images.
 
 ## What you need
 
@@ -12,7 +12,7 @@ Keep this one rule in mind first: your `.env` file contains secrets. Keep it pri
 - the default Unsplash API base URL unless you intentionally changed it
 - a local output path only when you want exports or downloads written to your machine
 
-## Step 1) Create the local `.env` file
+## Step 1. Create the local `.env` file
 
 The easiest path is one of these:
 
@@ -24,7 +24,7 @@ Then fill:
 - `UNSPLASH_API_BASE_URL=https://api.unsplash.com`
 - `UNSPLASH_ACCESS_KEY`
 
-## Step 2) Run the first safe checks
+## Step 2. Run the first safe checks
 
 These are the best first commands:
 

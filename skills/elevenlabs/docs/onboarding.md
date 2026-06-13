@@ -1,11 +1,10 @@
-# Onboarding (non-technical)
+# Connect your ElevenLabs account
 
-This tool runs on your computer and connects to ElevenLabs using an API key that you store locally.
+ElevenLabs needs a local API key before an agent can check voices, models, history, or account access.
 
-You do not need to be technical. You can simply ask an AI agent to do work, and the agent will run the tool for you and report back with a preview, or with a safe refusal when a write is blocked.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with a small account or voices read before asking for audio generation or downloads.
 
 ## Step 1: Create the local `.env` file (on your machine)
 
@@ -29,7 +28,7 @@ Never paste the key into chat. The tool reads it from `.env`.
 
 ## Step 3: What to ask your AI agent (examples)
 
-These are plain-English requests. The agent should start with a read-only check, then show a preview before any live generation or download.
+Ask your agent to start with a read-only check, then show a preview before any live generation or download.
 
 - “Confirm the tool is connected, then list my voices and available models.”
 - “Show my recent generation history before downloading anything.”
@@ -39,8 +38,8 @@ These are plain-English requests. The agent should start with a read-only check,
 ## Step 4: If something fails
 
 The most common issues are:
-- Missing/incorrect values in `.env`
+- Missing or incorrect values in `.env`
 - Invalid or expired ElevenLabs API key
-- Network/auth restrictions in the vendor account
+- Network or permission restrictions in the connected account
 
 Common error help lives in `docs/troubleshooting.md`.

@@ -1,12 +1,21 @@
-# Onboarding
+# Connect your Cloudinary account
 
-Run this once in a new working folder:
+Cloudinary needs local cloud credentials before an agent can inspect assets, folders, tags, transformations, or media account data.
+
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start with an account check or small asset search before asking for uploads, deletes, or file writes.
+
+## Step 1: Create or check `.env`
+
+Run:
 
 ```bash
 cloudinary-safe-agent-cli onboarding
 ```
 
-What it does:
+The onboarding command will:
+
 - if `.env` does not exist, it copies `.env.example` to `.env`
 - checks which required Cloudinary values are still missing
 - prints the next command to run: `cloudinary-safe-agent-cli --output json auth check`
@@ -36,3 +45,7 @@ Then run:
 ```bash
 cloudinary-safe-agent-cli --output json auth check
 ```
+
+## First useful check
+
+After the connection works, ask the agent to run a small account check or asset search. Confirm it is looking at the right cloud before asking for uploads, deletes, or downloads.

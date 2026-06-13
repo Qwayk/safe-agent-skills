@@ -1,8 +1,10 @@
 # Use Hacker News with no account
 
-This tool uses the public Hacker News API and does not need an account or API key.
+Hacker News uses a public API. You do not need an account, API key, OAuth file, or token to fetch story lists, items, users, or updates.
 
-You do not need to be technical to use it through an agent. The important thing to know is simple: the skill can read public Hacker News data, but it cannot change anything on Hacker News.
+No secrets are needed for the first run. If the tool creates a local `.env` file, treat it as local setup only; it should not contain a private service token.
+
+Start by fetching real items, not only story IDs, so the agent summarizes the actual discussion.
 
 ## First setup
 

@@ -1,13 +1,12 @@
 # Connect your Instantly account
 
-This tool runs on your computer and connects to Instantly with a local API key that stays in your `.env` file.
+Instantly needs a local API key before an agent can inspect campaigns, leads, sending health, and weak spots.
 
-You do not need to be technical. You can ask your agent to do the work for you, but the agent still needs the right Instantly API key on your machine first.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with a small campaign or account read before asking for lead, campaign, or sending changes.
 
-## Step 1) Create your local `.env` file
+## Step 1. Create your local `.env` file
 
 In the tool folder:
 
@@ -18,7 +17,7 @@ In the tool folder:
    - `INSTANTLY_API_KEY=...`
    - `INSTANTLY_TIMEOUT_S=30` (optional)
 
-## Step 2) Create the Instantly API key
+## Step 2. Create the Instantly API key
 
 Create an API key in Instantly:
 
@@ -31,7 +30,7 @@ Create an API key in Instantly:
 
 Never paste the API key into chat.
 
-## Step 3) Ask for a safe connection check first
+## Step 3. Ask for a safe connection check first
 
 Before any real work, ask your agent to confirm the connection first.
 
@@ -39,21 +38,21 @@ Example:
 
 - "Check that my Instantly skill is connected, then show me my active campaigns and the safest review-first jobs to start with."
 
-## Step 4) Ask for the real job
+## Step 4. Ask for the real job
 
-These plain-English requests fit the normal safe workflow:
+Good next requests:
 
 - "Pull my campaign analytics for the last 7 days and flag what changed."
 - "Review my sending accounts and tell me which warmup or vitals issues need attention."
 - "Preview moving these leads into another campaign, but stop before apply."
 - "Review my webhooks and show me what looks stale or risky."
-- "Do a dry-run preview first. Only apply after I approve."
+- "Do a dry-run reviewed plan first. Only apply after I approve."
 
 ## If something fails
 
 The most common issues are:
-- Missing/incorrect values in `.env`
+- Missing or incorrect values in `.env`
 - Wrong API key or missing scopes
-- Network/auth restrictions in the vendor account
+- Network or permission restrictions in the connected account
 
 See [Troubleshooting](troubleshooting.md) for common fixes.

@@ -1,9 +1,10 @@
-# Onboarding
+# Connect your Google Merchant Center account
 
-Use this page when you want the shortest safe setup path for Google Merchant Center.
+Google Merchant Center needs one local auth mode before an agent can inspect accounts, product status, disapprovals, and feed issues.
 
-This tool runs locally and needs one Merchant auth mode in `.env`.
-Keep your `.env` file, service-account file, and OAuth token files private, and never paste them into chat.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start with an account or product-status read before asking for feed, product, shipping, or promotion changes.
 
 ## Step 1: Create the local `.env` file
 

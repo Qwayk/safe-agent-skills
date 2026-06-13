@@ -1,11 +1,10 @@
-# Onboarding (non-technical)
+# Connect your LinkedIn Ads account
 
-This tool runs on your computer and connects to LinkedIn Ads with a local token and local config.
+LinkedIn Ads needs local app credentials and token data before an agent can inspect ad accounts, campaigns, creatives, and approvals.
 
-You do not need to be technical. You can ask an AI agent to do the LinkedIn Ads work, and the agent should start with a safe access check before it plans anything risky.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Keep your `.env` file and any token JSON private. Never paste them into chat.
+After setup, start by confirming accessible ad accounts before asking for campaign or spend work.
 
 ## Step 1: create `.env` with safe defaults
 

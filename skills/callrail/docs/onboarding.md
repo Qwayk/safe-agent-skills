@@ -1,19 +1,18 @@
-# Onboarding (non-technical)
+# Connect your CallRail account
 
-This tool runs on your computer and connects to CallRail with a local API key.
+CallRail needs a local API key before an agent can review calls, companies, forms, trackers, and attribution data.
 
-You do not need to be technical. Ask an AI agent to run safe previews first, then apply only after review.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with a small company or recent-calls read before asking for tracking changes.
 
 ## Step 1: Create the local `.env` file (on your machine)
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
-3) Set these values:
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
+3. Set these values:
    - `CALLRAIL_API_TOKEN` = your CallRail API v3 token
    - `CALLRAIL_API_BASE_URL` = keep the example value `https://api.callrail.com` unless you intentionally point somewhere else
    - `CALLRAIL_DEFAULT_ACCOUNT_ID` = optional default account
@@ -24,10 +23,10 @@ In the tool folder:
 
 In CallRail:
 
-1) In CallRail, open **Integrations -> API Keys / Data Access**.
-2) Click **Create New API v3 Key**.
-3) Copy the full key value right away. The full key is shown only once and is hidden after 15 minutes.
-4) Paste it into `CALLRAIL_API_TOKEN`.
+1. In CallRail, open **Integrations -> API Keys / Data Access**.
+2. Click **Create New API v3 Key**.
+3. Copy the full key value right away. The full key is shown only once and is hidden after 15 minutes.
+4. Paste it into `CALLRAIL_API_TOKEN`.
 
 The key type is often read-only by default. If a write command fails while auth check passes, use a key with write access enabled.
 
@@ -43,9 +42,9 @@ Start with read-only checks and dry-runs. Ask for a preview before any write.
 ## Step 4: If something fails
 
 The most common issues are:
-- Missing/incorrect values in `.env`
+- Missing or incorrect values in `.env`
 - Wrong key type (read-only token used for writes)
-- Network/auth restrictions in the vendor account
+- Network or permission restrictions in the connected account
 - Write actions not enabled on the active API key
 
 When writes fail, share the exact command, payload, and tool output and check for token permissions first.

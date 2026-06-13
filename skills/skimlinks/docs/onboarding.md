@@ -1,10 +1,10 @@
 # Connect your Skimlinks account
 
-Use this page when you want the shortest safe setup path for Skimlinks work.
+Skimlinks needs local publisher credentials before an agent can inspect merchants, reports, product data, and affiliate links.
 
-This skill runs on your machine and connects to Skimlinks using credentials that you store locally. You do not need to write code, but you do need real Skimlinks access.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with a merchant or reporting read and add Product Key credentials only if your account has that feature.
 
 ## What you need
 
@@ -14,7 +14,7 @@ Keep this one rule in mind first: your `.env` file contains secrets. Keep it pri
 - Separate Product Key credentials if Skimlinks enabled Product Key separately for your account.
 - A Link Wrapper ID if you want a default ID for local Link Wrapper builds.
 
-## Step 1) Fill the local `.env` file
+## Step 1. Fill the local `.env` file
 
 In the tool folder:
 
@@ -24,7 +24,7 @@ In the tool folder:
 4. Fill `SKIMLINKS_LINK_WRAPPER_ID` if you want a default Link Wrapper ID.
 5. Fill `SKIMLINKS_PRODUCT_CLIENT_ID` and `SKIMLINKS_PRODUCT_CLIENT_SECRET` only if Skimlinks gave you Product Key-specific credentials.
 
-## Step 2) Get the right values from Skimlinks
+## Step 2. Get the right values from Skimlinks
 
 1. Open Skimlinks Publisher Hub.
 2. Go to the Toolbox or developer/API area for your account.
@@ -36,7 +36,7 @@ In the tool folder:
 
 Never paste any client secret into chat. If the agent needs to check setup, ask it to run an auth check locally.
 
-## Step 3) Run the first safe checks
+## Step 3. Run the first safe checks
 
 These are the best first commands:
 

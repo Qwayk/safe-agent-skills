@@ -1,9 +1,10 @@
-# Onboarding
+# Connect your OpenAI account
 
-Use this page when you want the shortest safe setup path for OpenAI.
+OpenAI needs a local API key before an agent can inspect models, files, batches, projects, or generated API operations.
 
-This tool runs locally and needs an OpenAI API key for live reads or writes.
-Keep your `.env` file private, and never paste keys into chat or shell history notes.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start with a small account or operation read before asking for uploads, batches, fine-tuning, or costly work.
 
 ## Step 1: Create the local `.env` file
 

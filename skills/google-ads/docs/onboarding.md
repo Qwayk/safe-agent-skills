@@ -1,16 +1,17 @@
-# Onboarding (Google Ads API, non-technical)
+# Connect your Google Ads account
 
-This tool runs on your computer and connects to the Google Ads API using credentials you store locally in `.env`.
+Google Ads needs local API credentials before an agent can check accounts, customer IDs, presets, or campaign data.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start by confirming the accessible customer IDs before asking for campaign analysis or any change that can affect spend.
 
 ## Step 1: Create the local `.env` file
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
 
 Or run:
 
@@ -20,18 +21,18 @@ Or run:
 
 You need all of the following:
 
-1) **Google Ads developer token**
+1. **Google Ads developer token**
    - Request a developer token in Google Ads (approval may take time).
    - Paste into `.env`:
      - `GOOGLE_ADS_DEVELOPER_TOKEN=YOUR_GOOGLE_ADS_DEVELOPER_TOKEN`
 
-2) **OAuth2 client id + client secret**
+2. **OAuth2 client id + client secret**
    - Create an OAuth client in Google Cloud Console (see `docs/references.md`).
    - Paste into `.env`:
      - `GOOGLE_ADS_CLIENT_ID=YOUR_GOOGLE_ADS_CLIENT_ID`
      - `GOOGLE_ADS_CLIENT_SECRET=YOUR_GOOGLE_ADS_CLIENT_SECRET`
 
-3) **OAuth2 refresh token (Google Ads API scope)**
+3. **OAuth2 refresh token (Google Ads API scope)**
    - Generate a refresh token for the Google Ads API scope (see `docs/references.md`).
    - Paste into `.env`:
      - `GOOGLE_ADS_REFRESH_TOKEN=YOUR_GOOGLE_ADS_REFRESH_TOKEN`
@@ -64,7 +65,7 @@ For whole campaign creation, use builders:
 ## If something fails
 
 Most common issues:
-- Missing/incorrect values in `.env`
+- Missing or incorrect values in `.env`
 - Developer token not approved/allowed for your account type
 - OAuth refresh token created for the wrong scope
 

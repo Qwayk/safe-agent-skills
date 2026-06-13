@@ -1,9 +1,10 @@
-# Onboarding
+# Connect your Microsoft Ads account
 
-Use this page when you want the shortest safe setup path for Microsoft Ads.
+Microsoft Ads needs a developer token and local OAuth token file before an agent can inspect accounts, campaigns, and setup health.
 
-This tool runs locally and needs a Microsoft Advertising developer token plus a local OAuth token JSON for live reads or writes.
-Keep your `.env` file and token file private, and never paste them into chat.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start by confirming account access before asking for campaign or spend work.
 
 ## Step 1: Create the local `.env` file
 

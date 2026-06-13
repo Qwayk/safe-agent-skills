@@ -1,9 +1,10 @@
-# Onboarding
+# Connect your Google Business Profile account
 
-Use this page when you want the shortest safe setup path for Google Business Profile.
+Google Business Profile needs local Google OAuth credentials before an agent can review locations, missing details, reviews, or profile data.
 
-This skill runs on your machine and uses Google OAuth credentials you keep locally.
-Do not paste secrets into chat.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start by listing locations and confirming the business profile before asking for public-facing edits.
 
 ## Step 1: Create the local `.env` file
 

@@ -1,10 +1,10 @@
-# Connect your Mercury API token
+# Connect your Mercury account
 
-Use this page when you want the shortest safe setup path for Mercury work.
+Mercury needs a local API token before an agent can inspect accounts, balances, transactions, and IDs.
 
-This skill runs on your machine and uses an API token that you store locally. You do not need to write code, but you do need real Mercury API access.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with an account list and confirm the account IDs before building finance reports or exports.
 
 ## What you need
 
@@ -12,7 +12,7 @@ Keep this one rule in mind first: your `.env` file contains secrets. Keep it pri
 - The right Mercury base URL for production or sandbox.
 - A local place to save files if you plan to export or download anything.
 
-## Step 1) Get the Mercury API token
+## Step 1. Get the Mercury API token
 
 In Mercury, create or copy the API token you want this skill to use.
 
@@ -20,7 +20,7 @@ If Mercury lets you choose scopes or permissions, choose the most limited option
 
 Even if Mercury does not offer a read-only token, this skill still refuses non-GET remote requests.
 
-## Step 2) Fill the local `.env` file
+## Step 2. Fill the local `.env` file
 
 In the tool folder:
 
@@ -31,7 +31,7 @@ In the tool folder:
    - sandbox: `https://api-sandbox.mercury.com/api/v1`
 4. Leave `MERCURY_AUTH_SCHEME=bearer` unless your setup really needs `basic`.
 
-## Step 3) Run the first safe checks
+## Step 3. Run the first safe checks
 
 These are the best first commands:
 

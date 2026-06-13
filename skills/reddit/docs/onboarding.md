@@ -1,6 +1,10 @@
-# Onboarding
+# Connect your Reddit account
 
-You do not need to paste secrets into chat.
+Reddit needs local OAuth app details before an agent can inspect account access, subreddits, posts, comments, or moderation data.
+
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start with an auth check or small read before asking for posts, comments, or moderation actions.
 
 ## Step by step
 
@@ -41,3 +45,8 @@ qwayk-reddit-safe-agent-cli --live auth check
 - “Show my Reddit auth status.”
 - “Read my Reddit account profile with a live safe call.”
 - “Build a dry-run plan to vote on a post.”
+
+## What to avoid
+
+- Do not approve posts, comments, votes, saves, moderation actions, or messages until the agent shows a reviewed plan.
+- Do not paste the OAuth code or token files into chat. Let the tool save them locally.

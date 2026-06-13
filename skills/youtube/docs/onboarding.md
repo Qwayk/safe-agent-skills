@@ -1,13 +1,10 @@
 # Connect your YouTube account
 
-This tool runs on your computer and connects to the **YouTube Data API v3** using credentials you keep locally.
+YouTube needs local API key or OAuth access before an agent can inspect channels, uploads, playlists, captions, and metadata.
 
-You do not need to be technical. You can ask an AI agent to do the work, and the agent should come back with a safe read, a dry-run plan for higher-risk actions, and proof of what really happened.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep these private:
-- your `.env` file
-- your OAuth client secrets file
-- your local `.state/token.json` file if you already have one
+After setup, start with a channel or uploads read before asking for uploads, playlist edits, metadata changes, or deletes.
 
 ## Step 1: Choose the access mode you need
 

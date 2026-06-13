@@ -1,10 +1,10 @@
 # Connect your Bluesky account
 
-Use this page when you want the shortest safe setup path for Bluesky work.
+Bluesky needs your handle and an app password stored locally before an agent can check profiles, posts, sessions, or account data.
 
-You do not need to be technical, but you do need a real Bluesky account and an app password stored locally on your machine.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep this one rule in mind first: your `.env` file and any saved token files are private. Never paste them into chat.
+After setup, start with a profile or session check before asking for any post or account action.
 
 ## What you need
 
@@ -12,7 +12,7 @@ Keep this one rule in mind first: your `.env` file and any saved token files are
 - A Bluesky app password
 - Optional custom service URLs only if you are working against non-default Bluesky services
 
-## Step 1) Fill the local `.env` file
+## Step 1. Fill the local `.env` file
 
 1. Copy `.env.example` to `.env`.
 2. Fill:
@@ -20,13 +20,13 @@ Keep this one rule in mind first: your `.env` file and any saved token files are
    - `BLUESKY_APP_PASSWORD`
 3. Leave the optional service URL overrides alone unless you already know you need them.
 
-## Step 2) Log in once
+## Step 2. Log in once
 
 ```bash
 bluesky-safe-cli --output json auth login
 ```
 
-## Step 3) Run the first safe checks
+## Step 3. Run the first safe checks
 
 ```bash
 bluesky-safe-cli --output json auth check

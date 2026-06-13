@@ -1,9 +1,10 @@
-# Onboarding
+# Connect your Instagram account
 
-Use this page when you want the shortest safe setup path for Instagram.
+Instagram needs local app credentials and access tokens for a professional account before an agent can inspect media, comments, mentions, or insights.
 
-This skill is for Instagram professional accounts that use the Instagram Login product.
-Keep your `.env` private and never paste app secrets or access tokens into chat.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start by confirming which Instagram professional account the token reaches.
 
 ## Step 1: Create the local `.env` file
 

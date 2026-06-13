@@ -1,40 +1,44 @@
-# Onboarding
+# Connect your Pipedrive account
 
-This tool needs a local `.env` file.
+Pipedrive needs a local API token before an agent can inspect deals, people, organizations, pipelines, and activities.
 
-1) Run onboarding to create `.env` from `.env.example`:
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start by checking the current user or one pipeline before building a sales report.
+
+## Step 1: Create the local `.env` file
+
+Run onboarding once:
 
 ```bash
 PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli onboarding
 ```
 
-2) Fill values:
+Then open `.env` and fill one of these connection paths:
 
-- `PIPEDRIVE_API_DOMAIN=your-company`
-- `PIPEDRIVE_API_TOKEN=YOUR_TOKEN`
+```dotenv
+PIPEDRIVE_API_DOMAIN=your-company
+PIPEDRIVE_BASE_URL=https://your-company.pipedrive.com
+PIPEDRIVE_API_TOKEN=
+```
 
-Or use:
+Use `PIPEDRIVE_API_DOMAIN` for the normal company slug. Use `PIPEDRIVE_BASE_URL` only when you need to provide the full URL.
 
-- `PIPEDRIVE_BASE_URL=https://your-company.pipedrive.com`
+## Step 2: Check the token
 
-If your Pipedrive UI shows a full domain, use that in `PIPEDRIVE_API_DOMAIN`.
-
-Required setup:
-- `PIPEDRIVE_API_TOKEN`
-- one of:
-  - `PIPEDRIVE_API_DOMAIN`
-  - `PIPEDRIVE_BASE_URL`
-
-Optional:
-- `PIPEDRIVE_TIMEOUT_S` (defaults to `30`)
-
-3) Confirm setup:
+Run:
 
 ```bash
 PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env auth check
 ```
 
-4) Keep `.env` private and never paste the token in chat.
+Then run a small read:
+
+```bash
+PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env --output json users get-current
+```
+
+If that works, the agent can safely inspect deals, leads, activities, people, and organizations.
 
 ## What to ask your AI agent
 

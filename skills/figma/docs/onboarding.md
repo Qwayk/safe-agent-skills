@@ -1,10 +1,10 @@
 # Connect your Figma account
 
-Use this page when you want the Figma skill ready for real work.
+Figma needs a local token or plan-based access before an agent can inspect files, nodes, teams, projects, or comments.
 
-You do not need to understand the whole Figma API first. You only need the right token mode, a small local `.env` file, and the file, team, or project IDs for the work you actually want to do.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep `.env` private. Never paste token values into chat.
+After setup, start with a file or access check and confirm the file, team, or project ID before asking for edits or exports.
 
 ## Step 1: Copy `.env.example` to `.env`
 

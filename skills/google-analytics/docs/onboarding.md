@@ -1,9 +1,10 @@
-# Onboarding
+# Connect your Google Analytics account
 
-Use this page when you want the shortest safe setup path for Google Analytics.
+Google Analytics needs local credentials before an agent can inspect properties, reports, events, or measurement setup.
 
-This skill runs on your machine and uses local credentials you keep in `.env` or local token files.
-Do not paste secrets into chat.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start with a property or small report read and confirm the property is the one you meant.
 
 ## Step 1: Create the local `.env` file
 

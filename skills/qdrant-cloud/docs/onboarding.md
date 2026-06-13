@@ -1,10 +1,10 @@
 # Connect your Qdrant Cloud account
 
-Use this page when you want the shortest safe setup path for Qdrant Cloud work.
+Qdrant Cloud needs a local management API key before an agent can inspect accounts, clusters, releases, backups, and infrastructure details.
 
-This skill runs on your machine and uses a Qdrant Cloud management API key that you store locally. You do not need to write code, but you do need the right key and the right account or cluster IDs for deeper jobs.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with account and cluster inventory before asking for backup, restore, or infrastructure changes.
 
 ## What you need
 
@@ -12,7 +12,7 @@ Keep this one rule in mind first: your `.env` file contains secrets. Keep it pri
 - The account ID for most real account, cluster, IAM, billing, or backup work.
 - Cluster IDs, backup IDs, or other resource IDs when you move past the first inventory checks.
 
-## Step 1) Create the local `.env` file
+## Step 1. Create the local `.env` file
 
 In the tool folder:
 
@@ -27,7 +27,7 @@ Example:
 QDRANT_CLOUD_API_KEY='your_real_key_here'
 ```
 
-## Step 2) Check optional settings only if you need them
+## Step 2. Check optional settings only if you need them
 
 Most people can leave the defaults alone.
 
@@ -38,7 +38,7 @@ Optional settings:
 
 You only need those if your environment requires a different base URL or timeout.
 
-## Step 3) Run the first safe checks
+## Step 3. Run the first safe checks
 
 These are the best first commands:
 

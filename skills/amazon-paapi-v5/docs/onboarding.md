@@ -1,10 +1,10 @@
-# Connect your Amazon Associates credentials
+# Connect your Amazon Product Advertising API account
 
-Use this page when you want the shortest safe setup path for Amazon Product Advertising API work.
+Amazon Product Advertising API needs your local PA-API credentials before an agent can check real Amazon products for an affiliate page, gift guide, or comparison.
 
-This skill runs on your machine and uses credentials you store locally. You do not need to write code, but you do need real Amazon Associates and PA-API access.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Keep this one rule in mind first: your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, run one product lookup and confirm the marketplace, partner tag, and returned product match your intended store.
 
 ## What you need
 
@@ -13,11 +13,11 @@ Keep this one rule in mind first: your `.env` file contains secrets. Keep it pri
 - Your Amazon Associates partner tag.
 - The right Amazon host, region, and marketplace for your store if you are not using Amazon US defaults.
 
-## Step 1) Get your Amazon Associates and PA-API access
+## Step 1. Get your Amazon Associates and PA-API access
 
 PA-API access usually comes from your Amazon Associates setup. The exact screen names can vary by region, so collect the access key, secret key, and partner tag from the Amazon side first.
 
-## Step 2) Fill the local `.env` file
+## Step 2. Fill the local `.env` file
 
 In the tool folder:
 
@@ -25,7 +25,7 @@ In the tool folder:
 2. Fill in your access key ID, secret access key, and partner tag.
 3. If you use a non-US Amazon store, also update the host, region, and marketplace values.
 
-## Step 3) Run the first safe checks
+## Step 3. Run the first safe checks
 
 These are the best first commands:
 

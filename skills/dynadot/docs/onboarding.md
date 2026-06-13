@@ -1,13 +1,12 @@
-# Onboarding (non-technical)
+# Connect your Dynadot account
 
-This tool runs on your computer and connects to your Dynadot account using an API key that you keep locally.
+Dynadot needs a local API key before an agent can inspect domains, renewals, DNS, name servers, and account details.
 
-You do not need to be technical. You can ask an AI agent to do the work, and the agent will show a preview first, explain any approval it needs, and then give you a receipt or a clear blocker.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
+After setup, start with a domain list and confirm the exact domain before asking for DNS, renewal, or transfer work.
 
-## Step 1) Get your Dynadot API key
+## Step 1. Get your Dynadot API key
 
 In Dynadot:
 
@@ -17,7 +16,7 @@ In Dynadot:
 4. If you have a stable IP, add an IP whitelist too.
 5. Copy the key and keep it ready for your local `.env` file.
 
-## Step 2) Fill the local `.env` file
+## Step 2. Fill the local `.env` file
 
 In the tool folder:
 
@@ -28,7 +27,7 @@ In the tool folder:
    - `DYNADOT_API_BASE_URL` and keep the default unless Dynadot tells you otherwise
    - `DYNADOT_TIMEOUT_S` only if you need a different timeout
 
-## Step 3) Know the extra values some jobs need
+## Step 3. Know the extra values some jobs need
 
 - Domain pushes use a **Push Username**. Ask the receiver for that exact Dynadot push username first.
 - Guided transfer runs between two Dynadot accounts need two local env files:
@@ -36,9 +35,9 @@ In the tool folder:
   - receiver account as `--receiver-env-file`
 - Transfer auth codes are sensitive. Save them to a local file instead of pasting them into chat.
 
-## Step 4) What to ask your AI agent
+## Step 4. What to ask your AI agent
 
-These are plain-English requests. The safest path is always: read first, preview next, apply only after review.
+Start with a read, review the preview, and only apply after you approve the exact change.
 
 - "Check the Dynadot tool is connected and show me my active domains."
 - "Flag anything expiring soon and tell me what needs attention first."

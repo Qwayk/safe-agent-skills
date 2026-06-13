@@ -1,19 +1,19 @@
-# Onboarding (non-technical)
+# Connect your Meta Ads account
 
-This tool runs on **your computer** and connects to Meta’s Graph/Marketing API using an access token you store **locally**.
+Meta Ads needs a local access token before an agent can read ad accounts, campaigns, creatives, and reporting data.
 
-Important:
-- Your `.env` file contains secrets. Keep it private and never paste it into chat.
-- This tool is **read-only** (GET-only). It will not create/update/pause ads.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start by confirming which ad accounts the token can read.
 
 ## Step 1: Create the local `.env` file
 
 In the tool folder:
 
-1) Copy `.env.example` to `.env`.
-2) Open `.env` in a text editor.
-3) Fill in `META_ADS_ACCESS_TOKEN`.
-4) (Recommended) Fill in `META_ADS_AD_ACCOUNT_ID` (numeric id or `act_<id>`).
+1. Copy `.env.example` to `.env`.
+2. Open `.env` in a text editor.
+3. Fill in `META_ADS_ACCESS_TOKEN`.
+4. (Recommended) Fill in `META_ADS_AD_ACCOUNT_ID` (numeric id or `act_<id>`).
 
 If you want the tool to guide you:
 
@@ -30,9 +30,9 @@ Minimum permissions/scopes (typical):
 - `ads_read` (for most Marketing API reads and insights)
 
 How to get a token (high level):
-1) Use Meta for Developers to create/select an app.
-2) Use a Meta-provided token tool (such as Graph API Explorer or Business Manager system user token generation) to generate an access token with `ads_read`.
-3) Paste the token into `.env` as `META_ADS_ACCESS_TOKEN=...`.
+1. Use Meta for Developers to create/select an app.
+2. Use a Meta-provided token tool (such as Graph API Explorer or Business Manager system user token generation) to generate an access token with `ads_read`.
+3. Paste the token into `.env` as `META_ADS_ACCESS_TOKEN=...`.
 
 Notes:
 - Tokens can expire. If `auth check` starts failing later, regenerate a token and replace it in `.env`.

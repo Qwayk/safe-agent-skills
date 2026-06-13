@@ -1,11 +1,10 @@
-# Onboarding
+# Connect your Jobber account
 
-This page helps you get the skill connected without learning the command list first.
+Jobber needs local OAuth settings and token state before an agent can inspect account areas, clients, jobs, requests, invoices, or scheduling data.
 
-If setup goes well, the next step is simple: ask your agent to check access, then ask for a first safe read.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
 
-Important:
-- Your `.env` and `.state/token.json` files contain secrets. Keep them local and private.
+After setup, start with an access check and a small read before asking for service-business changes.
 
 ## Step 1: Add local settings
 

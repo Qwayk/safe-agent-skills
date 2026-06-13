@@ -1,14 +1,16 @@
-# Onboarding (non-technical)
+# Connect your HubSpot account
 
-This tool uses a HubSpot private app access token as the default path.
+HubSpot needs a local private app token before an agent can inspect contacts, companies, deals, owners, tickets, and CRM gaps.
 
-Your `.env` file stores secrets on your computer. Never paste `.env` or token values into chat.
+Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+
+After setup, start with a small owner, contact, or deal read before asking for CRM changes.
 
 ## Step 1: Create `.env`
 
-1) Copy `.env.example` to `.env`.
-2) Keep `HUBSPOT_API_BASE_URL` as `https://api.hubapi.com` unless you use a custom base URL.
-3) Paste your HubSpot token into `HUBSPOT_ACCESS_TOKEN`.
+1. Copy `.env.example` to `.env`.
+2. Keep `HUBSPOT_API_BASE_URL` as `https://api.hubapi.com` unless you use a custom base URL.
+3. Paste your HubSpot token into `HUBSPOT_ACCESS_TOKEN`.
 
 ## Step 2: Get a HubSpot private app token (recommended default)
 
