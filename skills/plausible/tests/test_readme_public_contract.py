@@ -67,8 +67,10 @@ class TestReadmePublicContract(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
 
-        self.assertIn("Plausible work is usually about answering a simple business question", text)
-        self.assertIn("## Good jobs to give the agent", text)
+        self.assertIn("Plausible is useful when you want a clean answer", text)
+        self.assertIn("## Good questions to ask", text)
+        self.assertIn("## Everyday work this helps with", text)
         self.assertIn("## What the agent should show you", text)
+        self.assertIn("## Good first path", text)
         self.assertNotIn("Why this is powerful", text)
         self.assertNotIn("Common use cases", text)

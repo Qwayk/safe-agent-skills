@@ -1,34 +1,49 @@
 # Use cases
 
-Use this page when you want practical Plausible jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Plausible is useful when you want a clean answer about traffic, sources, pages, goals, and funnels without digging through a heavy analytics tool.
 
-Plausible work is usually about answering a simple business question from clean analytics data, then stopping before any site or event write unless it is clearly approved.
+Ask the agent the kind of questions a founder, marketer, writer, or product person asks after something goes live: who came, where they came from, what they looked at, and whether they completed the goal you care about.
 
-## Good jobs to give the agent
+## Good questions to ask
 
-### Reporting (read-only)
+- "What changed in traffic this week?"
+- "Which pages brought the most visitors, and which pages helped people convert?"
+- "Where did our best visitors come from?"
+- "Which countries, devices, or browsers are most common?"
+- "Did the launch, email, ad, or social post send useful traffic?"
+- "How did this week compare to last week?"
+- "Can you build a simple funnel for signup, checkout, or membership?"
+- "Can you validate this Stats API query before running it?"
 
-- “Generate a weekly report: top pages, sources/referrers, devices, and goal conversions.”
-- “Create a ‘membership funnel’ report for the last 30 days and compare to the previous period.”
-- “Run this Stats query JSON, validate it first, and export results to a file.”
+## Everyday work this helps with
 
-### Analytics QA
+### Weekly performance review
 
-- “Verify tracking is working by checking recent traffic on a specific page path.”
-- “Find top entry and exit pages for the last 14 days.”
+The agent can pull top pages, sources, referrers, devices, countries, and goal conversions. This is useful for a weekly update, client report, or quick check after publishing.
 
-### Events (writes analytics; only with explicit approval)
+### Campaign and launch checks
 
-- “Plan a test event to validate my conversion pipeline, but don’t send it until I approve.”
-- “Send the test event with verification, and show me a receipt of what was written.”
+Ask the agent to compare traffic before and after a campaign, product launch, email, or post. It should show which sources mattered and which pages people actually visited.
+
+### Funnel and goal review
+
+The agent can help check signup, checkout, membership, or lead goals. It can compare periods and help you see where people drop off.
+
+### Query validation
+
+If you already have a Stats API query, the agent can validate it before running it, explain what it asks for, and then export the result if it is valid.
 
 ## What the agent should show you
 
-When you ask for anything that writes analytics data, the agent should:
+- The site, date range, metrics, and filters it used.
+- The plain-English answer before raw data.
+- Top pages, sources, referrers, devices, countries, goals, or funnel steps when relevant.
+- Comparison numbers when you ask what changed.
+- A clear note when a query is invalid or the site ID is missing.
+- A review plan before any site change or event send.
 
-1. Show the site, date range, metrics, dimensions, funnel, or event target.
-2. Validate custom Stats queries before running them.
-3. Show a dry-run plan before site changes or event sends.
-4. Ask for extra acknowledgement when the action has no automatic restore point.
-5. Verify best-effort when supported and provide a receipt.
+## Good first path
+
+Start with: "Check the Plausible connection and show me the top pages, sources, and goal conversions from the last 7 days."
+
+After that, ask one useful follow-up, such as: "Compare this week to last week" or "Show me which traffic source brought the most goal completions."

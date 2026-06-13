@@ -30,3 +30,28 @@ class TestDocsFormatting(unittest.TestCase):
         if bad_lines:
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
+
+    def test_use_cases_stays_human_and_specific(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
+
+        required = [
+            "Google Analytics is useful when you want to understand",
+            "## Good questions to ask",
+            "## Everyday work this helps with",
+            "## What the agent should show you",
+            "## Good first path",
+            "Which traffic sources are sending people who actually convert?",
+        ]
+        for phrase in required:
+            self.assertIn(phrase, text)
+
+        stale_phrases = [
+            "Use this page when you want practical",
+            "Good jobs to give the agent",
+            "dry-run plan",
+            "stop before any live write",
+            "Why this skill is more useful than raw docs",
+        ]
+        for phrase in stale_phrases:
+            self.assertNotIn(phrase, text)

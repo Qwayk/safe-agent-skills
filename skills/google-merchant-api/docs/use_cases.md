@@ -1,25 +1,49 @@
 # Use cases
 
-Use this page when you want practical Google Merchant Center jobs to hand to your agent.
-If you need setup first, start with [Connect your Google Merchant Center account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Google Merchant Center is useful when you need to know whether your products can show correctly on Google, what is blocking them, and which catalog fixes matter most.
 
-Merchant work is usually about finding catalog problems, understanding which products or feeds are affected, and reviewing the exact change before Google sees it.
+Ask the agent for the work a store owner, ecommerce manager, or shopping ads specialist needs before making changes: product status, disapprovals, feed problems, promotion issues, missing fields, account setup, and the exact items affected.
 
-## Good jobs to give the agent
+## Good questions to ask
 
-- "Check my Merchant setup and show me the safest reads to run first."
-- "List my accounts, products, or promotions before we change anything."
-- "Find disapproved products or issue clusters and group them by fix type."
-- "Review feed, data-source, or region settings before we plan edits."
-- "Prepare a product-input or conversion-source change plan and make me review it first."
-- "Show me the approval path for a higher-risk or irreversible Merchant change before anything goes live."
+- "Which products are disapproved or limited, and why?"
+- "Can you group product issues by the fix we need to make?"
+- "Which feed, data source, or region setting is connected to this problem?"
+- "Are promotions active, rejected, or missing required details?"
+- "Which products changed recently or need a closer look?"
+- "Can you check the account setup and show the safest reads to start with?"
+- "Can you prepare a product-input change and show me the exact product first?"
+- "Can you explain whether this is an own-account or client-account access issue?"
+
+## Everyday work this helps with
+
+### Product issue triage
+
+The agent can pull products, item statuses, issue reports, and account details so you can see what Google is unhappy about. The useful output is not just a list of errors; it is a grouped view of what to fix first.
+
+### Feed and data-source review
+
+Ask the agent to inspect feeds, data sources, regions, inventory details, and quotas before you edit anything. This helps you avoid fixing the wrong place.
+
+### Promotion and catalog checks
+
+The agent can help review promotions, products, product inputs, and reports before a sale, launch, or shopping campaign review.
+
+### Careful change planning
+
+When you want to update a product input, conversion source, region, service, notification, or data source, the agent should show the target account and product details first, then the proposed change.
 
 ## What the agent should show you
 
-When you ask for a change, the agent should:
+- The Merchant account and access path it is using.
+- The product, promotion, feed, data source, or issue target.
+- Product issue groups written in plain English.
+- The source of the problem when the API makes that clear.
+- A clear warning if the account ID, product name, or request body is missing.
+- A review plan before any catalog or Merchant setting change.
 
-1. Confirm the Merchant account, product, promotion, issue, or data-source target.
-2. Show the catalog, issue, report, or auth context before planning.
-3. Show the dry-run plan before product, conversion, region, service, or data-source changes.
-4. Explain own-account versus client-account access and say clearly that API-key auth is not supported.
-5. Point to the plan, refusal, receipt, or run history after the request.
+## Good first path
+
+Start with: "Check the Google Merchant Center connection, confirm the account path, and show me product or issue reads that are safe to review first."
+
+After that, ask one practical follow-up, such as: "Group disapproved products by fix type" or "Show me which data source is connected to these item issues."
