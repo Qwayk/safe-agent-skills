@@ -1,5 +1,11 @@
 # Troubleshooting
 
+When TheMealDB does not return what you expected, start by checking the target, the API response, and the exact JSON error. For this public read tool, most fixes are about the request itself: a missing ID, an empty result, a changed public record, a timeout, or an API root override.
+
+Do not guess from an empty list or a `null` result. Ask the agent to fetch the actual record, show the error type, and explain whether the data is missing or the request needs to change.
+
+A good first troubleshooting ask is: "Read the TheMealDB error, explain what failed in plain English, and tell me the safest next check without inventing missing data."
+
 ## `auth check` fails
 
 - Confirm you can reach `www.themealdb.com`

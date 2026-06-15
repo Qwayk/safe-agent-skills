@@ -1,4 +1,10 @@
-# Instagram Login Tool Troubleshooting
+# Troubleshooting
+
+When Instagram stops or returns an error, start with the boring checks first: setup, account access, target IDs, API limits, and the tool's safety gates. That usually tells you whether the problem is local configuration, provider permissions, a bad request, or a write that correctly refused to run.
+
+Keep the JSON error output. It is the best clue for an agent reading account, media, comments, insights, and profile data the connected app can access, and it is safer than retrying commands blindly. For any write-related error, stop before retrying and confirm the needed approval or plan.
+
+A good first troubleshooting ask is: "Read the Instagram error, explain what failed in plain English, tell me the safest next check, and do not retry any write or destructive action."
 
 ## Debug HTTP
 
