@@ -1,5 +1,13 @@
 # Architecture
 
+Jobber is built as a small command-line tool for service-business clients, requests, jobs, quotes, invoices, and scheduling data. The architecture is intentionally plain: commands parse the user request, configuration loads only the needed account settings, the client layer talks to the API, and the output layer returns one predictable JSON result.
+
+This matters when an agent is using the skill for real work. You can see where credentials are loaded, where HTTP requests happen, where local plans or receipts are saved, and where safety checks stop a risky action before it reaches Jobber.
+
+A good architecture check is: "Show me which layer handles configuration, which layer sends the API request, and where a plan or receipt would be saved for Jobber."
+
+## Architecture notes
+
 This page is for builders who need to understand where the code lives before changing it.
 
 Read this after the user-facing docs, not before them.
