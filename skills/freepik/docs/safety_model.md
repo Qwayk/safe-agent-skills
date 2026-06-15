@@ -1,4 +1,12 @@
-# How this skill stays safe
+# Safety model
+
+Freepik can touch image search, licensed downloads, binary fetches, and local inventory files, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Search first, confirm the asset, destination, and license intent, then review the plan before any tracked download or file write."
+
+## Core safety rules
 
 Freepik licensed downloads are treated as state-changing work because they can:
 

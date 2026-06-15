@@ -1,6 +1,13 @@
 # Safety model
 
-Rules:
+Amazon Creators can touch creator storefront and product-catalog work, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Run one catalog read first, confirm the marketplace and partner tag, and stop before any local credential or token write."
+
+## Core safety rules
+
 - Keep catalog commands read-only against Amazon.
 - Run catalog commands in dry-run mode by default; they emit a plan but do not hit the API.
 - Keep local write helpers plan-first and require explicit no-snapshot approval when no saved snapshot is available:
@@ -11,17 +18,17 @@ Rules:
 - Refuse when unsure; do not guess.
 - Never log secrets.
 
-## Two-layer safety
+## How to review risky work
 
 There are two kinds of safety:
 
-1) Mechanical correctness (the tool)
+1. What the tool checks
 - Build a deterministic plan first.
 - For catalog commands, run the remote request only after `--apply`.
 - For local write helpers, emit a plan first, then require explicit no-snapshot approval before local file writes, token endpoint calls, demo/job writes, or success receipt output.
 - When verification is not possible, label it clearly and explain.
 
-2) Intent alignment (a reviewer)
+2. What a reviewer checks
 - A reviewer checks that the request selector matches the goal.
 - This is best done by a human or an AI reviewer (we recommend Codex).
 
@@ -77,11 +84,11 @@ It also appends a simple history row to:
 
 These live next to your `--env-file` (usually next to your `.env` file), so you can always find them.
 
-This is designed for vibe coders:
+This makes later review easier:
 - You can ask your agent “what happened last time?” and it can use `runs list/show`.
 - You don’t need to manually browse folders.
 
-Rules:
+Keep these local files private:
 - These artifacts must never include secrets.
 - Plans/refusals/receipts/audit logs are proof of what happened and how it was verified.
 

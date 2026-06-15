@@ -1,5 +1,13 @@
 # Safety model
 
+Open Library is safest when you treat the agent as a focused reader for public books, authors, editions, subjects, and ISBN data. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+
+The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+
+A good safety ask is: "Look up one book, author, or ISBN first, then summarize only from the returned record."
+
+## Core safety rules
+
 This tool is intentionally read-only.
 
 - No auth commands.

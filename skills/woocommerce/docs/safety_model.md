@@ -1,5 +1,11 @@
 # Safety model
 
+WooCommerce can touch products, orders, customers, coupons, reports, and store settings, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the product or order first, then review the plan before inventory, order, customer, coupon, or store changes."
+
 ## Reads
 
 - Read commands run immediately.

@@ -1,4 +1,12 @@
-# How this skill stays safe
+# Safety model
+
+Skimlinks is safest when you treat the agent as a focused reader for merchant search, reporting, Product Key lookups, and local link wrapping. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+
+The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+
+A good safety ask is: "Read the merchant or report first, then keep link-wrapper output local and treat Product Key results as read-like lookups."
+
+## Core safety rules
 
 This skill ships read commands, read-like Product Key POST lookups, and a local Link Wrapper URL builder.
 

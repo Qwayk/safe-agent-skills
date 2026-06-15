@@ -1,6 +1,13 @@
 # Safety model
 
-Rules:
+Plausible can touch sites, stats, goals, shared links, team members, and account settings, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the site stats first, then review the plan before site, goal, shared-link, or account changes."
+
+## Core safety rules
+
 - Dry-run by default; no writes unless `--apply`.
 - Destructive actions need explicit irreversible acknowledgement.
 - Writes without saved before-state, including `event send` and `site shared-links ensure`, need explicit no-snapshot approval.

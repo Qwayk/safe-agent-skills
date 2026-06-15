@@ -1,4 +1,12 @@
-# How this skill stays safe
+# Safety model
+
+Sovrn is safest when you treat the agent as a focused reader for publisher commerce, advertising reports, merchants, links, and performance data. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+
+The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+
+A good safety ask is: "Read the merchant or report first, then summarize only from the returned Sovrn data."
+
+## Core safety rules
 
 This skill is careful in a different way from a write-capable skill.
 

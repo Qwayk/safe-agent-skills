@@ -1,6 +1,13 @@
 # Safety model
 
-Rules:
+CallRail can touch calls, forms, companies, trackers, messages, and account settings, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Start with one company or call read, then require the full approval flags before any tracker, SMS, call, or account change."
+
+## Core safety rules
+
 - Dry-run by default; no writes unless `--apply --yes` and any required approval flags are present.
 - Write paths without saved before-state require `--ack-no-snapshot` before apply.
 - Write commands can only run when they include explicit review intent.
@@ -12,19 +19,19 @@ Rules:
 - `integrations create` and `integrations update` payloads must use `payload.type` of `webhooks` or `custom`.
 - Only the explicit CLI command families in `docs/api_coverage.md` are shipped.
 
-## Two-layer safety (recommended)
+## How to review risky work
 
 There are two kinds of safety:
 
-1) Mechanical correctness (the tool)
+1. What the tool checks
 - After a write, the tool records the request and provider response.
 - When read-back verification is not available yet, the tool should label the receipt as response-based and explain that clearly.
 
-2) Intent alignment (a reviewer)
+2. What a reviewer checks
 - A reviewer checks that the planned change matches the goal and context.
 - This is best done by a human or a smart agent (we recommend Codex).
 
-The tool should stay deterministic; the review is outside the tool.
+The tool can check gates and outputs, but a person or reviewing agent still needs to check whether the change is the right change.
 
 ## Plan → Review → Apply → Verify
 
@@ -70,11 +77,11 @@ It also appends a simple history row to:
 
 These live next to your `--env-file` (usually next to your `.env` file), so you can always find them.
 
-This is designed for vibe coders:
+This makes later review easier:
 - You can ask your agent “what happened last time?” and it can use `runs list/show`.
 - You don’t need to manually browse folders.
 
-Rules:
+Keep these local files private:
 - These artifacts must never include secrets.
 - Plans/receipts/audit logs are proof of what happened and how it was verified.
 
@@ -87,8 +94,7 @@ Rules:
 
 High/irreversible actions should require an explicit plan + confirmation.
 
-For irreversible actions, consider an extra acknowledgement flag:
-- `--ack-irreversible`
+Irreversible actions should require `--ack-irreversible`.
 
 ## Drift detection (recommended for plan apply)
 

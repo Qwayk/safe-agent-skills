@@ -1,5 +1,13 @@
 # Safety model
 
+Dynadot can touch domains, DNS, auctions, backorders, transfers, and account checks, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Check the domain or account state first, then review a saved plan before nameserver, transfer, auction, or privacy changes."
+
+## Core safety rules
+
 This skill is designed for high-volume Dynadot work where a mistake can affect many domains at once.
 
 ## What it protects you from

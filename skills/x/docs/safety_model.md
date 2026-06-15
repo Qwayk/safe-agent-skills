@@ -1,4 +1,12 @@
-# How this skill stays safe
+# Safety model
+
+X can touch users, posts, DMs, lists, spaces, and auth-related work, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the account or post first, then review the plan before DMs, posts, auth writes, or generated API changes."
+
+## Core safety rules
 
 This skill covers a broad X API v2 surface, so safety here means keeping every live action explicit, reviewable, and honest about its limits.
 

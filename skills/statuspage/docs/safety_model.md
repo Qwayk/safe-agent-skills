@@ -1,6 +1,13 @@
 # Safety model
 
-This page explains the simple safety promise for this skill.
+Statuspage is safest when you treat the agent as a focused reader for public incidents, components, maintenances, subscribers, and status summaries. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+
+The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+
+A good safety ask is: "Read the page, incidents, and components first, then report the current status without trying to change the page."
+
+## Core safety rules
+
 It is built to check a public page and stay out of private account actions.
 
 This skill is read-only:

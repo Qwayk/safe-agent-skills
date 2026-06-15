@@ -1,6 +1,10 @@
-# How this skill stays safe
+# Safety model
 
-Use this page when you want to know what stays read-only, what only writes local files, and what can send a real Awin change.
+Awin Publisher can touch publisher reporting, link building, feeds, and proof-of-purchase workflows, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Start with a small report or link-builder check, then review the plan before any proof-of-purchase upload."
 
 ## Read and file safety
 

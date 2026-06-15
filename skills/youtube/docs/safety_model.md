@@ -1,6 +1,10 @@
-# How this skill stays safe
+# Safety model
 
-Use this page when you want to know what the YouTube skill can run right away, what needs review first, and which approvals matter before a real change.
+YouTube can touch channels, videos, captions, playlists, uploads, metadata, and OAuth state, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Resolve the channel or video first, then review the plan before uploads, metadata changes, token writes, or deletes."
 
 ## Safe by default
 

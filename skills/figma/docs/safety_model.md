@@ -1,6 +1,10 @@
 # Safety model
 
-This skill is safe-by-default for the current Figma slice.
+Figma can touch files, nodes, comments, branches, webhooks, and team resources, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the file or node first, then require no-snapshot approval before comments, file edits, webhook changes, or team writes."
 
 ## Core rules
 

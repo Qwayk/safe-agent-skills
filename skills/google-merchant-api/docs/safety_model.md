@@ -1,5 +1,13 @@
 # Safety model
 
+Google Merchant Center can touch accounts, products, feeds, promotions, shipping, and merchant settings, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the account or product first, then review the plan before product, feed, promotion, or account changes."
+
+## Core safety rules
+
 This tool keeps Merchant API work explicit, reviewable, and auditable.
 
 ## Core rules

@@ -1,8 +1,15 @@
 # Safety model
 
+Threads can touch profiles, posts, replies, insights, moderation, and token-related work, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the profile or post first, then review the plan before posts, replies, moderation, or token writes."
+
+## Core safety rules
+
 This tool supports live reads and write planning. Current write-capable commands require explicit no-snapshot approval before live write execution when no saved snapshot is available.
 
-Core rules:
 - Write-capable commands are dry-run by default.
 - Dry-run plans include `before_state.required: true`, `before_state.supported: false`, and `before_state.status: "blocked"`.
 - Apply attempts still require the normal flags.

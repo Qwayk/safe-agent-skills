@@ -1,6 +1,12 @@
 # Safety model
 
-Use this page when you want to know why this Hacker News skill is safe for public read-only work.
+Hacker News is safest when you treat the agent as a focused reader for public stories, comments, users, and item changes. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+
+The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+
+A good safety ask is: "Fetch the real items behind a story list before summarizing trends or making a report."
+
+## Core safety rules
 
 This tool is intentionally read-only. It can fetch public Hacker News data, but it cannot change Hacker News.
 

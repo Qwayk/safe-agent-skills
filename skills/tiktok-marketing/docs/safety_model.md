@@ -1,6 +1,12 @@
-# How this skill stays safe
+# Safety model
 
-This skill is careful by default.
+TikTok Marketing can touch advertiser accounts, campaigns, ad groups, ads, reports, and generated API operations, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the advertiser or campaign first, then review the plan before ad, campaign, audience, report-job, or generated writes."
+
+## Core safety rules
 
 The safest first step is an auth check plus one reviewed read plan before you try anything broader.
 

@@ -1,6 +1,10 @@
 # Safety model
 
-This tool is safe by default.
+Cloudinary can touch assets, folders, backups, transformations, and media delivery settings, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Start with one asset or folder read, then review the plan before uploads, deletes, backup changes, or metadata edits."
 
 ## Default rule
 

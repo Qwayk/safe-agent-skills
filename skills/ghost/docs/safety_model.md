@@ -1,4 +1,12 @@
-# How this skill stays safe
+# Safety model
+
+Ghost can touch posts, pages, members, newsletters, offers, themes, and webhooks, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the post, member, or setting first, then review the plan before publishing, emailing, deleting, or changing live site behavior."
+
+## Core safety rules
 
 Ghost changes can affect live content, memberships, pricing, email delivery, themes, and webhooks, so this tool is built to slow down before risky actions.
 
@@ -74,7 +82,7 @@ Note: the vendored Ghost docs only show `source=html` for **creating** posts (`P
 
 `post bodylex ...` commands operate on the post’s **Lexical** field (the normal Ghost editor format).
 
-Rules:
+Keep these local files private:
 - Dry-run by default; writes require `--apply`.
 - By default, applying edits to a **non-draft** post is refused unless you pass `--allow-published` (or use `--require-current draft`).
 - After a write, the tool re-fetches the post and verifies that re-running the same transform would produce **zero further changes** (idempotence check).

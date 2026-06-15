@@ -1,5 +1,13 @@
 # Safety model
 
+Meta Ads is safest when you treat the agent as a focused reader for ad accounts, campaigns, ad sets, ads, insights, and Graph API inventory. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+
+The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+
+A good safety ask is: "Read the campaign or insight data first, then summarize only from the returned records."
+
+## Core safety rules
+
 This tool is intentionally **read-only** and **GET-only**.
 
 ## What this tool will never do (in this phase)
@@ -19,7 +27,6 @@ If asked to do any of the above, the tool should refuse with a clear explanation
 
 ## How to use it safely with an AI agent
 
-Recommended workflow:
 1) Run `onboarding` (if config isn’t set up).
 2) Run `auth check`.
 3) Run one or more read-only commands and capture the JSON output.

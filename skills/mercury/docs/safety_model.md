@@ -1,4 +1,12 @@
-# How this skill stays safe
+# Safety model
+
+Mercury is safest when you treat the agent as a focused reader for business banking balances, accounts, transactions, cards, recipients, and local exports. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+
+The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+
+A good safety ask is: "Read one account or transaction page first, keep exports local, and do not ask the tool to move money."
+
+## Core safety rules
 
 Mercury access is intentionally read-only here.
 

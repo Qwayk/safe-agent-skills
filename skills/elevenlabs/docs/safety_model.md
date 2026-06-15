@@ -1,6 +1,13 @@
 # Safety model
 
-Rules:
+ElevenLabs can touch voices, text-to-speech jobs, history downloads, and account resources, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the voice or account state first, then review the plan before generation, downloads, or any account write."
+
+## Core safety rules
+
 - Dry-run by default; no writes unless `--apply`.
 - Record what verification to run after a write (read-back or idempotence hints) so reviewers know what to check.
 - Refuse when unsure; do not guess.
@@ -11,19 +18,19 @@ Rules:
 - Binary or high-risk sensitive responses (media, transcripts, phone numbers, ConvAI content, webhook secrets) must go to `--out <path>`; those commands stay file-only even though safe read helpers can still emit JSON to stdout. This now includes the live payloads from `auth check` and `history list`, so adding `--live` forces you to also pass `--out <path>` (use `--overwrite` if you reuse the same file) so the CLI only emits the file fingerprint.
 - Spend-sensitive or irreversible operations also demand `--ack-spend-money` and (where noted) `--ack-irreversible` before applying; refer to `docs/api_coverage.md` for the exact gates per command.
 
-## Two-layer safety (recommended)
+## How to review risky work
 
 There are two kinds of safety:
 
-1) Mechanical correctness (the tool)
+1. What the tool checks
 - Write plans include the intended post-apply verification steps, but writes require explicit no-snapshot approval before provider apply because before-state capture is missing.
 - When verification is not possible, the tool should label it as best-effort and explain.
 
-2) Intent alignment (a reviewer)
+2. What a reviewer checks
 - A reviewer checks that the planned change matches the goal and context.
 - This is best done by a human or a smart agent (we recommend Codex).
 
-The tool should stay deterministic; the review is outside the tool.
+The tool can check gates and outputs, but a person or reviewing agent still needs to check whether the change is the right change.
 
 ## Plan → Review → Apply → Verify
 
@@ -69,11 +76,11 @@ It also appends a simple history row to:
 
 These live next to your `--env-file` (usually next to your `.env` file), so you can always find them.
 
-This is designed for vibe coders:
+This makes later review easier:
 - You can ask your agent “what happened last time?” and it can use `runs list/show`.
 - You don’t need to manually browse folders.
 
-Rules:
+Keep these local files private:
 - These artifacts must never include secrets.
 - Plans, refusals, receipts, and audit logs are proof of what happened. Approved supported writes emit receipts that record no-snapshot approval and recovery limits when no before-state can be saved.
 
@@ -86,8 +93,7 @@ Rules:
 
 High/irreversible actions should require an explicit plan + confirmation.
 
-For irreversible actions, consider an extra acknowledgement flag:
-- `--ack-irreversible`
+Irreversible actions should require `--ack-irreversible`.
 
 ## Drift detection (recommended for plan apply)
 

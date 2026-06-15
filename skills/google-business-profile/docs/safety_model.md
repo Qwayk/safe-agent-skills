@@ -1,6 +1,13 @@
 # Safety model
 
-Rules:
+Google Business Profile can touch locations, reviews, media, attributes, lodging, and business settings, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the location first, then review the plan before replies, media, lodging, attributes, transfers, or profile changes."
+
+## Core safety rules
+
 - Dry-run by default; no provider writes are sent without `--apply`.
 - Provider write apply requires explicit no-snapshot approval before Google Business Profile HTTP when no saved snapshot is available.
 - Approved writes should verify with the best available follow-up read and clearly label any no-snapshot limit.
@@ -8,19 +15,19 @@ Rules:
 - Batch workflows require `--apply` and `--yes` when write-capable.
 - Never log secrets.
 
-## Two-layer safety (recommended)
+## How to review risky work
 
 There are two kinds of safety:
 
-1) Mechanical correctness (the tool)
+1. What the tool checks
 - After a write, the tool verifies the API state.
 - When verification is not possible, the tool should label it as best-effort and explain.
 
-2) Intent alignment (a reviewer)
+2. What a reviewer checks
 - A reviewer checks that the planned change matches the goal and context.
 - This is best done by a human or a smart agent (we recommend Codex).
 
-The tool should stay deterministic; the review is outside the tool.
+The tool can check gates and outputs, but a person or reviewing agent still needs to check whether the change is the right change.
 
 ## Plan → Review → Apply → Verify
 
@@ -64,11 +71,11 @@ It also appends a simple history row to:
 
 These live next to your `--env-file` (usually next to your `.env` file), so you can always find them.
 
-This is designed for vibe coders:
+This makes later review easier:
 - You can ask your agent “what happened last time?” and it can use `runs list/show`.
 - You don’t need to manually browse folders.
 
-Rules:
+Keep these local files private:
 - These artifacts must never include secrets.
 - Plans/receipts/audit logs are proof of what happened and how it was verified.
 
@@ -81,8 +88,7 @@ Rules:
 
 High/irreversible actions should require an explicit plan + confirmation.
 
-For irreversible actions, consider an extra acknowledgement flag:
-- `--ack-irreversible`
+Irreversible actions should require `--ack-irreversible`.
 
 ## Drift detection (recommended for plan apply)
 

@@ -1,6 +1,13 @@
-# Instagram Login Tool Safety model
+# Safety model
 
-Rules:
+Instagram can touch media, comments, mentions, messages, insights, and token-related work, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the account or media first, then review the plan before comments, messages, publishing, or token writes."
+
+## Core safety rules
+
 - Dry-run by default.
 - Write apply attempts without saved before-state or provider backup use `before_state.status="no_snapshot_available"` and require explicit no-snapshot approval; missing approval refuses before provider HTTP.
 - Refuse when unsure; do not guess.
@@ -78,7 +85,7 @@ Write-capable commands save local proof under:
 - `.state/runs/<run_id>/summary.md`
 - `.state/runs/index.jsonl`
 
-Rules:
+Keep these local files private:
 - These artifacts must never include secrets.
 - Plans and refusal outputs are your local proof trail.
 - missing-approval write refusals do not create `.state/runs/<run_id>/receipt.json`.

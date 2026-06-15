@@ -1,6 +1,13 @@
 # Safety model
 
-Rules:
+Google Ads can touch customer access, GAQL reads, campaign settings, budgets, criteria, and bulk mutate work, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the customer and campaign state first, then review the exact plan before anything that can affect spend, targeting, or delivery."
+
+## Core safety rules
+
 - This tool supports **reads + writes** to the Google Ads API, but is **plan-first** and safe-by-default.
 - Refuse when unsure; do not guess.
 - Never log secrets.

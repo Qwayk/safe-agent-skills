@@ -1,5 +1,13 @@
 # Safety model
 
+Amazon Product Advertising API is safest when you treat the agent as a focused reader for product lookup and browse-node research. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+
+The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+
+A good safety ask is: "Look up one product or browse node first, then summarize only from the returned product data."
+
+## Core safety rules
+
 This tool is intentionally read-only against Amazon Product Advertising API.
 
 ## What this tool will never do
@@ -26,8 +34,6 @@ For that reason:
 - batch jobs stay strict and stop on the first error
 
 ## How to use it safely with an AI agent
-
-Recommended workflow:
 
 1. Run `auth check`.
 2. Run one small sample search or one known ASIN lookup.

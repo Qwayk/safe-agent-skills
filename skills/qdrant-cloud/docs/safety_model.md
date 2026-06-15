@@ -1,6 +1,12 @@
-# How this skill stays safe
+# Safety model
 
-This skill is careful by default.
+Qdrant Cloud can touch clusters, backups, API keys, cloud accounts, and vector database resources, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+
+That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+
+A good safety ask is: "Read the cluster or backup state first, then review the plan before keys, backups, restores, cluster changes, or deletes."
+
+## Core safety rules
 
 The safest first step is a simple live inventory read like account, cluster, or backup review before you plan any change.
 
