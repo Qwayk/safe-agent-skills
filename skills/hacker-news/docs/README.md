@@ -1,28 +1,25 @@
 # Hacker News docs
 
-Use this page when you want the right Hacker News doc quickly.
+Hacker News is quickest to understand if you start with what the public data can answer, then check the first safe read. These docs explain how to read public story lists, items, comments, users, and recent updates, what empty or missing results mean, and how to verify behavior without setting up a private account.
 
-Start with the first three pages if you are new. They explain what the skill can do, why it is safe, and how to run the first check without needing a Hacker News account.
+No private account is needed for the default path, so setup is mostly about defaults, timeouts, and knowing what a missing public result means.
 
-## Start here first
+## Start with the work
+- [What you can do with Hacker News](use_cases.md) - real jobs to hand to an agent for Hacker News
+- [Quickstart](quickstart.md) - the shortest path to one useful first result
+- [Use Hacker News with no account](onboarding.md) - what to know before the first public read
+- [How this stays read-only](safety_model.md) - why the tool cannot change anything and what limits still matter
 
-- [What you can do with Hacker News](use_cases.md)
-- [Use Hacker News with no account](onboarding.md)
-- [How this stays read-only](safety_model.md)
+## Commands, setup, and fixes
+- [Command reference](command_reference.md) - the exact commands and options
+- [Authentication details](authentication.md) - why the default path does not need credentials
+- [Configuration](configuration.md) - local settings, environment values, and precedence rules
+- [Troubleshooting](troubleshooting.md) - what to check when a command fails or refuses to run
+- [Jobs and batch work](jobs_and_batches.md) - repeatable or larger jobs that need more care
 
-## Commands and setup
-
-- [Quickstart](quickstart.md)
-- [Command reference](command_reference.md)
-- [Authentication details](authentication.md)
-- [Configuration](configuration.md)
-- [Troubleshooting](troubleshooting.md)
-- [Jobs and batch work](jobs_and_batches.md)
-
-## Proof and references
-
-- [Proof and verification](proof.md)
-- [API coverage](api_coverage.md)
-- [Source references](references.md)
-- [Examples](examples/)
-- [Technical architecture](architecture.md)
+## Proof and details
+- [Proof and verification](proof.md) - what has been checked and what still needs live verification
+- [API coverage](api_coverage.md) - the API surfaces this skill actually covers
+- [Source references](references.md) - source notes behind the implementation and docs
+- [Technical architecture](architecture.md) - how the command, config, client, and output layers fit together
+- [Examples](examples/) - sample inputs or outputs when the tool ships them

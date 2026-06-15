@@ -1,32 +1,29 @@
 # Ghost docs
 
-Use this page when you want the right Ghost doc quickly.
-If you only need the first safe path, use the first three links below.
+Ghost is easiest to use when you start with the real job, then check setup, safety, and proof before asking an agent to do more. These docs explain how to review posts, pages, members, tags, and publication data, what access is needed, and where the tool stops before risky changes.
 
-## Start here
+If you are new, read the first few links before asking for account data or changes. They explain the useful jobs, the setup path, and the safety limits.
 
-- [What you can do with Ghost](use_cases.md)
-- [Connect your Ghost account](onboarding.md)
-- [How this skill stays safe](safety_model.md)
+## Start with the work
+- [What you can do with Ghost](use_cases.md) - real jobs to hand to an agent for Ghost
+- [Quickstart](quickstart.md) - the shortest path to one useful first result
+- [Connect your Ghost account](onboarding.md) - what must be connected or confirmed before the first run
+- [How this stays safe](safety_model.md) - what the tool can and cannot change, and where approval is needed
 
-## Commands and setup
+## Commands, setup, and fixes
+- [Command reference](command_reference.md) - the exact commands and options
+- [Authentication details](authentication.md) - credential rules and safe auth checks
+- [Configuration](configuration.md) - local settings, environment values, and precedence rules
+- [Troubleshooting](troubleshooting.md) - what to check when a command fails or refuses to run
+- [Jobs and batch work](jobs_and_batches.md) - repeatable or larger jobs that need more care
 
-- [Quickstart](quickstart.md)
-- [Command reference](command_reference.md)
-- [Authentication details](authentication.md)
-- [Configuration](configuration.md)
-- [Troubleshooting](troubleshooting.md)
-- [Jobs and batch work](jobs_and_batches.md)
-- [Ghost content format notes](content_lexical_mode.md)
+## Extra guides
+- [Content and Lexical mode](content_lexical_mode.md) - Ghost content-mode behavior and limits
+- [Logging and auditing](logging_and_auditing.md) - how local logs and audit trails should be read
 
-## Workflows and proof
-
-- [Proof pack](proof.md)
-- [API coverage](api_coverage.md)
-- [Examples](examples/)
-- [Logging and auditing](logging_and_auditing.md)
-
-## Technical references
-
-- [Source references](references.md)
-- [Architecture](architecture.md)
+## Proof and details
+- [Proof and verification](proof.md) - what has been checked and what still needs live verification
+- [API coverage](api_coverage.md) - the API surfaces this skill actually covers
+- [Source references](references.md) - source notes behind the implementation and docs
+- [Technical architecture](architecture.md) - how the command, config, client, and output layers fit together
+- [Examples](examples/) - sample inputs or outputs when the tool ships them
