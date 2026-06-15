@@ -1,12 +1,14 @@
 # Proof and verification
 
-Use this page when you want the shortest honest answer to one question: what has really been proved for this YouTube skill so far?
+YouTube proof should answer a simple question: what has actually been checked for channels, videos, captions, playlists, uploads, metadata, and OAuth state, and what still needs live credentials, permissions, or reviewer judgment?
 
-You do not need to run these commands yourself. They are here so you or your agent can audit what ran, what came back, and what still depends on local auth, scopes, or approvals.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check unit-test counts, saved plan examples, and auth/live-read limits before trusting YouTube work.
+
+## Current proof summary
 
 Keep the proof safe:
-- Never include secrets.
-- Use obvious redactions or placeholders in examples.
 - Keep this file short, factual, and easy to verify.
 
 ## Last verified
@@ -75,7 +77,7 @@ These files are committed:
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json`
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Wrong auth mode** -> API key is not enough for many private or write-capable actions; verify by checking `auth check` plus one representative live GET read.
 - **OAuth helper expectation mismatch** -> `auth login` and `auth token set` still stop at plan/refusal today; verify by checking the refusal output and confirming no `.state/token.json` write happened.

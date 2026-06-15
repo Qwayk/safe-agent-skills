@@ -1,16 +1,14 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+CallRail proof should answer a simple question: what has actually been checked for calls, forms, companies, trackers, messages, and account settings, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check the read proof and the no-snapshot write refusal evidence before trusting tracker, call, SMS, or account changes.
+
+## Current proof summary
 
 Note: this is a living evidence file. Keep each item exact and honest about what was actually run.
-You don't need to run these commands yourself. They exist for auditing and proof.
-
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions/placeholder values in examples.
-- Keep this file short and factual.
 
 ## Last verified
 
@@ -20,7 +18,7 @@ Rules:
 - Provider API version (if applicable): `CallRail API v3`
 - Environment: `local smoke checks with redacted mocked HTTP examples and fresh unittest rerun` / provider base URL: `https://api.callrail.com`
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -59,7 +57,7 @@ These committed example files show redacted, non-secret output:
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json`
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Invalid API key / wrong scopes** → use `auth check`; if `ok=false`, stop and update the token.
 - **Write commands fail after auth passes** → very common when key has read-only access; confirm key was created with the needed write permissions.
@@ -87,5 +85,5 @@ These committed example files show redacted, non-secret output:
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
+- Coverage source of truth: `docs/api_coverage.md`
 - Debug history: `docs/engineering_notes.md`

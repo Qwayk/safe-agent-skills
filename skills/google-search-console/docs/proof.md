@@ -1,14 +1,10 @@
-# Proof pack (offline, publish-ready)
+# Proof and verification
 
-Purpose:
-- Make this tool auditable and “proof-first” for future pages/posts.
-- Capture deterministic evidence without relying on local `.state/` artifacts.
+Google Search Console proof should answer a simple question: what has actually been checked for sites, search analytics, sitemaps, URL inspection, and ownership data, and what still needs live credentials, permissions, or reviewer judgment?
 
-Note: You don’t need to run these commands yourself. They exist for auditing and proof.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Keep proof examples redacted and generic (`https://example.com/`).
+If you only check one thing, check property/report proof and sitemap or ownership plan evidence before trusting Search Console work.
 
 ## Last verified (offline)
 
@@ -16,7 +12,7 @@ Rules:
 - Tool version: 0.1.0
 - Provider API: Google Search Console API v1 (pinned discovery snapshot)
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -40,7 +36,7 @@ Run inside the tool folder:
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json`
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - Missing/invalid credentials → verify with `gsc-api-tool auth check` failing without printing token values.
 - Wrong OAuth scopes (read-only vs write) → verify write methods refuse or error cleanly; confirm no writes occurred when `--apply` is absent.

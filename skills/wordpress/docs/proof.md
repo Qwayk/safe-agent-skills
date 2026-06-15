@@ -1,10 +1,14 @@
-# Proof pack
+# Proof and verification
+
+WordPress proof should answer a simple question: what has actually been checked for posts, pages, media, users, comments, settings, and plugin-related checks, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check post/page/site proof and write-plan evidence before trusting WordPress changes.
+
+## Current proof summary
 
 Last verified (UTC): 2026-01-28
-
-This folder is the customer-ready “proof pack” for `wordpress-api-tool`.
-
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
 
 ## Smoke commands
 

@@ -1,7 +1,10 @@
-# Proof
+# Proof and verification
 
-You do not need to run these commands yourself.
-They exist for auditing and proof.
+Reddit proof should answer a simple question: what has actually been checked for posts, comments, mod actions, users, subreddits, and generated API calls, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check post/subreddit proof and moderation or write-plan evidence before trusting Reddit work.
 
 ## Last verified
 

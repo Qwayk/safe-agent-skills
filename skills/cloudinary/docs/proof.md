@@ -1,4 +1,12 @@
-# Proof
+# Proof and verification
+
+Cloudinary proof should answer a simple question: what has actually been checked for assets, folders, backups, transformations, and media delivery settings, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check asset reads, backup/download proof, and write refusal examples before trusting media changes.
+
+## Current proof summary
 
 Last verified (UTC): 2026-06-04
 Tool version: `0.1.0`

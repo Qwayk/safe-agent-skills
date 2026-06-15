@@ -1,6 +1,12 @@
 # Proof and verification
 
-Use this page when you want the clearest proof story for TikTok Marketing.
+TikTok Marketing proof should answer a simple question: what has actually been checked for advertiser accounts, campaigns, ad groups, ads, reports, and generated API operations, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check advertiser/campaign proof and generated write-plan evidence before trusting TikTok ad changes.
+
+## Current proof summary
 
 This repo does not rely on live TikTok ad accounts for normal proof. The evidence here comes from the local suite, the pinned official manifest, the committed redacted examples, and the explicit live-gating and no-snapshot behavior.
 

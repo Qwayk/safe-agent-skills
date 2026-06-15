@@ -1,8 +1,10 @@
-# Proof
+# Proof and verification
 
-Purpose:
-- Show why the live coverage claim is trustworthy.
-- Keep the proof small, concrete, and reproducible.
+Cloudflare proof should answer a simple question: what has actually been checked for zones, DNS, Workers, routes, security settings, logs, and other infrastructure, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check the official inventory refresh, allowlist proof, and unit-test result before trusting infrastructure coverage.
 
 ## Coverage proof
 

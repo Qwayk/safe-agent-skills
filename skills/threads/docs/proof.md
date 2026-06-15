@@ -1,8 +1,10 @@
-# Proof pack
+# Proof and verification
 
-Purpose:
-- Say exactly what is proved locally.
-- Separate local proof from live Threads verification that needs real app access and approved permissions.
+Threads proof should answer a simple question: what has actually been checked for profiles, posts, replies, insights, moderation, and token-related work, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check profile/post proof and write-plan evidence before trusting Threads changes.
 
 ## Last verified
 

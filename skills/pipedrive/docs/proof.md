@@ -1,6 +1,10 @@
-# Proof pack
+# Proof and verification
 
-You do not need to run these commands yourself. They are here for audit and proof.
+Pipedrive proof should answer a simple question: what has actually been checked for CRM deals, leads, activities, people, organizations, products, and pipelines, and what still depends on account access, provider permissions, public API limits, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check the read-only smoke tests, saved outputs, and coverage-test notes before trusting CRM reports.
 
 ## Last verified
 - 2026-05-22

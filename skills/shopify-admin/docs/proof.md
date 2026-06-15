@@ -1,15 +1,10 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+Shopify Admin proof should answer a simple question: what has actually been checked for products, orders, customers, discounts, themes, publications, and store settings, and what still needs live credentials, permissions, or reviewer judgment?
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions/placeholder values in examples.
-- Keep this file short and factual.
+If you only check one thing, check query proof, mutation-plan evidence, and sensitive-output warnings before trusting store changes.
 
 ## Last verified
 
@@ -20,7 +15,7 @@ Rules:
 - Verification mode: offline unit tests only (no live Shopify calls)
 - Endpoint format (for real runs): `https://{SHOPIFY_SHOP_DOMAIN}/admin/api/{SHOPIFY_ADMIN_API_VERSION}/graphql.json`
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -45,7 +40,7 @@ These files are committed (unlike `.state/`):
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json` (missing-approval refusal example; approved supported writes emit receipts when live access and required approvals are available)
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Invalid API key / wrong scopes** → verify with `auth check` returning `ok=true` but showing `graphql.http_status` >= 400 and/or `graphql.has_errors=true` (and typically `graphql.shop_id_present=false`). `ok=false` is reserved for tool/runtime errors like missing config or non-JSON responses.
 - **Rate limiting** → verify the CLI surfaces `graphql.http_status=429`. The tool does not auto-retry or back off (it sets `retries=0`), so your caller must implement backoff/jitter if needed.

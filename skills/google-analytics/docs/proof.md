@@ -1,15 +1,10 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+Google Analytics proof should answer a simple question: what has actually been checked for GA4 properties, reports, audiences, links, and admin settings, and what still needs live credentials, permissions, or reviewer judgment?
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions/placeholder values in examples.
-- Keep this file short and factual.
+If you only check one thing, check report/property proof and admin-change plan evidence before trusting analytics setup work.
 
 ## Last verified
 
@@ -19,7 +14,7 @@ Rules:
 - Provider snapshots: vendored GA4 discovery JSON (see `docs/references.md`)
 - Environment: local (dry-run plans; explicit no-snapshot approval checks; no live GA4 changes in this repo task)
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -51,7 +46,7 @@ These files are committed (unlike `.state/`):
 
 The committed plan and refusal examples now use a real write-like GA4 command shape and show the explicit before-state blocker.
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Invalid credentials / wrong scopes** → verify with `--apply auth check` returning `ok=false` and a clear error type; confirm no writes occurred.
 - **Rate limiting** → verify low-risk reads use bounded retries and never print response bodies (which may contain secrets).

@@ -1,13 +1,10 @@
 # Proof and verification
 
-Use this page when you want the shortest honest answer to one question: what has really been proved for this X skill so far?
+X proof should answer a simple question: what has actually been checked for users, posts, DMs, lists, spaces, and auth-related work, and what still needs live credentials, permissions, or reviewer judgment?
 
-You do not need to run these commands yourself. They are here so you or your agent can audit what ran, what came back, and what still depends on local auth, scopes, or approvals.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets.
-- Use obvious redactions or placeholders in examples.
-- Keep this file short and factual.
+If you only check one thing, check account/post proof, DM safeguards, and write-plan evidence before trusting X work.
 
 ## Last verified
 
@@ -56,7 +53,7 @@ These files are committed:
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json`
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Invalid token / wrong scopes** → `auth check` is a local config/token presence check; verify by running a live read (e.g., `x-api-tool --output json --live api getUsersMe --auth user`) and inspecting a non-2xx status/error; confirm no writes occurred.
 - **Rate limiting** → verify the CLI surfaces a non-secret retry/backoff hint; confirm it does not loop/retry-storm.

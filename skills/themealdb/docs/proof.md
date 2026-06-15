@@ -1,6 +1,10 @@
-# Proof
+# Proof and verification
 
-You do not need to run these commands yourself. They are here for proof and audit.
+TheMealDB proof should answer a simple question: what has actually been checked for public meals, ingredients, categories, areas, and recipe lookups, and what can still fail because of public API limits, changed upstream data, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check meal, ingredient, category, and lookup examples before trusting recipe output.
 
 ## Last verified
 

@@ -1,9 +1,10 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Keep claims honest and checkable.
-- Pair every behavior with a repeatable command path.
-- Show what can go wrong and how to verify.
+Bluesky proof should answer a simple question: what has actually been checked for profile, post, graph, moderation, and session work, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check the read examples, write-plan refusals, and session safety proof before account-changing work.
 
 ## Last verified
 

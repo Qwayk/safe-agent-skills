@@ -1,6 +1,12 @@
 # Proof and verification
 
-Use this page when you want the clearest proof story for Qdrant Cloud.
+Qdrant Cloud proof should answer a simple question: what has actually been checked for clusters, backups, API keys, cloud accounts, and vector database resources, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check cluster/backup proof and key or restore-plan evidence before trusting vector infrastructure changes.
+
+## Current proof summary
 
 This repo does not rely on live Qdrant Cloud credentials for normal proof. The evidence here comes from the local suite, the committed redacted examples, and the explicit live-gating and write-gating behavior.
 

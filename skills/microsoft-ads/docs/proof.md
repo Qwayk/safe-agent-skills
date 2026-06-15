@@ -1,15 +1,10 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+Microsoft Ads proof should answer a simple question: what has actually been checked for accounts, campaigns, budgets, ads, keywords, audiences, and reports, and what still needs live credentials, permissions, or reviewer judgment?
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions; never include real token values.
-- Keep this file short and factual.
+If you only check one thing, check account/campaign proof and budget, ad, keyword, or batch-plan evidence before trusting ad changes.
 
 ## Last verified
 
@@ -20,7 +15,7 @@ Rules:
 - Environment: local `prod` config with SOAP writes requires explicit no-snapshot approval before provider HTTP; endpoint docs remain in `docs/official_web_service_addresses_bingads-13_2026-03-04.md`
 - Blessed local validation: `.venv/bin/python -m unittest -q` -> `Ran 28 tests in 0.907s OK`
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -48,7 +43,7 @@ These files are committed (unlike `.state/`):
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json` (missing-approval refusal example; kept under the old filename for compatibility)
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Invalid API key / wrong scopes** → verify with `--live auth check` returning `ok=false` and a clear error type; confirm no writes occurred.
 - **Rate limiting** → verify the CLI surfaces a non-secret retry/backoff hint; confirm it does not loop/retry-storm.

@@ -1,13 +1,10 @@
 # Proof and verification
 
-Use this page when you want the shortest honest answer to one question: what has really been proved for this Sovrn skill so far?
+Sovrn proof should answer a simple question: what has actually been checked for publisher commerce, advertising reports, merchants, links, and performance data, and what still depends on account access, provider permissions, public API limits, or reviewer judgment?
 
-You do not need to run these commands yourself. They are here so you or your agent can audit what ran, what came back, and what still is not proved live yet.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets.
-- Use obvious redactions or placeholders in examples.
-- Keep this file short and factual.
+If you only check one thing, check merchant/report proof and saved output examples before trusting publisher performance summaries.
 
 ## Last verified
 
@@ -60,7 +57,7 @@ Planned success-example paths, once credentials are available:
 - `docs/examples/outputs/commerce_comparisons_success.json`
 - `docs/examples/outputs/advertising_account_success.json`
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Wrong auth shape** → verify the command fails with a clear message about the missing Commerce secret key, site key, Advertising API key, or publisher ID.
 - **Rate limiting** → verify the CLI surfaces a non-secret retry/backoff hint; confirm it does not loop/retry-storm.

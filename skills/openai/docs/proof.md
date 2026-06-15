@@ -1,15 +1,10 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+OpenAI proof should answer a simple question: what has actually been checked for models, files, batches, fine-tuning, vector stores, assistants, and generated API calls, and what still needs live credentials, permissions, or reviewer judgment?
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions/placeholder values in examples.
-- Keep this file short and factual.
+If you only check one thing, check read examples, generated API plans, and write refusals before trusting OpenAI account work.
 
 ## Last verified
 
@@ -20,7 +15,7 @@ Rules:
 - Environment: plan-only / base URL: https://api.openai.com/v1
 - Tests: full local suite passed (`39 tests, OK`); docs formatting passed (`1 test, OK`); JSON examples parsed successfully.
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -46,7 +41,7 @@ These files are committed (unlike `.state/`):
 - `docs/examples/plan_spend_money.example.json` (spend-money plan with `classification.gates.plan_in/yes/ack_spend_money = true`)
 - `docs/examples/receipt.example.json`
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Invalid API key / wrong scopes** → rerun `openai-api-tool --output json auth check --live` so the tool actually calls `/models` and surfaces `ok=false` plus the error details; the offline-only run simply reports which fields are populated.
 - **Rate limiting** → verify the CLI surfaces a non-secret retry/backoff hint; confirm it does not loop/retry-storm.
@@ -57,5 +52,5 @@ These files are committed (unlike `.state/`):
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
+- Coverage source of truth: `docs/api_coverage.md`
 - Debug history: `docs/engineering_notes.md`

@@ -1,13 +1,12 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- show what happened, what it changed, and what was verified
-- keep claims small and close to real tool output
+Google Tag Manager proof should answer a simple question: what has actually been checked for accounts, containers, workspaces, tags, triggers, variables, and versions, and what still needs live credentials, permissions, or reviewer judgment?
 
-Rules:
-- never include secrets
-- use placeholders in examples
-- keep this file short and factual
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check workspace proof and tag/trigger/version plan evidence before trusting GTM changes.
+
+## Current proof summary
 
 Use the recovery fields in plan and receipt as part of proof:
 - `recovery.end_state`
@@ -32,7 +31,7 @@ This tool only shows inverse actions that it can emit from GTM discovery. It doe
 - Provider API version: v2
 - Environment: no live GTM calls in this PR (plan-only); base URL defaults to `https://tagmanager.googleapis.com/`
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 

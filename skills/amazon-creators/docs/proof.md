@@ -1,6 +1,12 @@
-# Proof
+# Proof and verification
 
-You don’t need to run these commands yourself; offline unit tests cover the dry-run plans and the `--apply` flows that matter for this release.
+Amazon Creators proof should answer a simple question: what has actually been checked for creator storefront and product-catalog work, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check the catalog read proof, the local helper gates, and the saved examples before trusting a creator workflow.
+
+## Current proof summary
 
 Verification command: `python3 -m venv .venv && .venv/bin/python -m pip install -e . && .venv/bin/python -m unittest -q`
 Sync command: `python3 agent-orchestrator/scripts/sync_tool_docs.py --apply --repo-path .`

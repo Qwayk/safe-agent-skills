@@ -1,10 +1,14 @@
-# Proof pack
+# Proof and verification
+
+Ghost proof should answer a simple question: what has actually been checked for posts, pages, members, newsletters, offers, themes, and webhooks, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check read proof and write-plan refusals before trusting live content, member, theme, or webhook changes.
+
+## Current proof summary
 
 Last verified (UTC): 2026-06-11
-
-Use this page when you want proof that the Ghost skill was tested, or when you want a short list of safe checks to re-run.
-
-You do not need to run all of these commands yourself. They exist so you, your reviewer, or your agent can audit behavior and prove what happened.
 
 ## Smoke commands
 

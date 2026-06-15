@@ -1,8 +1,10 @@
 # Proof and verification
 
-Use this page when you want the clearest proof story for Mercury.
+Mercury proof should answer a simple question: what has actually been checked for business banking balances, accounts, transactions, cards, recipients, and local exports, and what still needs live credentials, permissions, or reviewer judgment?
 
-You do not need to run these commands yourself, but they are here so you or your agent can audit what was checked and what the committed examples mean.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check account and transaction proof, then confirm no payment-moving workflow is claimed.
 
 ## What is already proved
 
@@ -61,7 +63,7 @@ These redacted example files are committed and safe to inspect:
 - Signed URL secrecy: attachment URLs should stay redacted in outputs, plans, receipts, and logs.
 - Pagination restraint: exports and reports should still respect their page or limit controls.
 
-## Related docs
+## Links
 
 - [API coverage](api_coverage.md)
 - [Source references](references.md)

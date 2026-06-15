@@ -1,15 +1,10 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+ElevenLabs proof should answer a simple question: what has actually been checked for voices, text-to-speech jobs, history downloads, and account resources, and what still needs live credentials, permissions, or reviewer judgment?
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions/placeholder values in examples.
-- Keep this file short and factual.
+If you only check one thing, check voice/account reads, generation plans, and download proof before trusting audio work.
 
 ## Last verified
 
@@ -19,7 +14,7 @@ Rules:
 - Provider API version: `ElevenLabs non-legacy public API (as of March 2026)`
 - Environment: local offline tests; historical live proof from 2026-03-29 remains documented below
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -68,7 +63,7 @@ These files are committed (unlike `.state/`):
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json` (missing-approval refusal output; approved apply emits a receipt that records no-snapshot approval)
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Invalid API key / wrong scopes** → the plan-only `/auth check` outlined above only verifies your local config and never exercises the ElevenLabs service, so it cannot fail. Rerun the live check with `--live --out ./auth.json --overwrite` to capture the real ElevenLabs response; stdout stays file-only, fingerprints only, and the file will show `ok=false` or the precise provider error when the key or scopes are wrong.
 - **Rate limiting** → verify the CLI surfaces a non-secret retry/backoff hint; confirm it does not loop/retry-storm.

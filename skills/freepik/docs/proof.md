@@ -1,10 +1,14 @@
-# Proof pack
+# Proof and verification
+
+Freepik proof should answer a simple question: what has actually been checked for image search, licensed downloads, binary fetches, and local inventory files, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check search proof, download-plan evidence, and local file handling before trusting licensed asset work.
+
+## Current proof summary
 
 Last verified (UTC): 2026-06-11
-
-This folder is the customer-ready “proof pack” for `freepik-api-tool`.
-
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
 
 ## Smoke commands
 

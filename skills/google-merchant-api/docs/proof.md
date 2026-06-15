@@ -1,4 +1,10 @@
-# Proof pack
+# Proof and verification
+
+Google Merchant Center proof should answer a simple question: what has actually been checked for accounts, products, feeds, promotions, shipping, and merchant settings, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check product/account proof and feed or promotion plan evidence before trusting merchant changes.
 
 ## Last verified
 

@@ -1,15 +1,10 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+Stripe proof should answer a simple question: what has actually been checked for customers, subscriptions, invoices, payments, refunds, payouts, and connected accounts, and what still needs live credentials, permissions, or reviewer judgment?
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions/placeholder values in examples.
-- Keep this file short and factual.
+If you only check one thing, check the offline inventory proof, write refusal example, and no-snapshot warning before trusting Stripe changes.
 
 ## Last verified
 
@@ -19,7 +14,7 @@ Rules:
 - Provider API version: pinned OpenAPI snapshot `2026-02-25.clover` (see `docs/references.md`)
 - Environment: offline-only (no live Stripe API calls) / base URL: `https://api.stripe.com`
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -47,7 +42,7 @@ These files are committed (unlike `.state/`):
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json` (safe API write refusal example; no live API receipt exists today)
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **No saved snapshot / no automatic rollback** -> every API write plan must include `before_state.supported=false` and a `rollback` block with `supported=false`; live API write apply requires explicit no-snapshot approval before Stripe HTTP when no saved snapshot is available.
 
@@ -59,5 +54,5 @@ These files are committed (unlike `.state/`):
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
+- Coverage source of truth: `docs/api_coverage.md`
 - Debug history: `docs/engineering_notes.md`

@@ -1,4 +1,10 @@
-# Proof
+# Proof and verification
+
+Salesforce proof should answer a simple question: what has actually been checked for objects, records, metadata, jobs, and platform API operations, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check object/record proof and metadata, job, or bulk-plan evidence before trusting Salesforce changes.
 
 ## Last verified
 

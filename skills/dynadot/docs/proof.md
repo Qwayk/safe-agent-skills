@@ -1,15 +1,10 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+Dynadot proof should answer a simple question: what has actually been checked for domains, DNS, auctions, backorders, transfers, and account checks, and what still needs live credentials, permissions, or reviewer judgment?
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions/placeholder values in examples.
-- Keep this file short and factual.
+If you only check one thing, check domain/account proof and the name-server or transfer plan evidence before trusting domain changes.
 
 ## Last verified
 
@@ -19,7 +14,7 @@ Rules:
 - Provider API version (if applicable): Dynadot API3 (command-based)
 - Environment: expected prod base URL is https://api.dynadot.com/api3.json (not executed here)
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -117,7 +112,7 @@ These files are committed (unlike `.state/`):
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json`
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Invalid API key / wrong scopes** → verify with `auth check` returning `ok=false` and a clear error type; confirm no writes occurred.
 - **Rate limiting** → verify the CLI surfaces a non-secret retry/backoff hint; confirm it does not loop/retry-storm.

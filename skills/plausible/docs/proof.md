@@ -1,8 +1,14 @@
-# Proof pack
+# Proof and verification
+
+Plausible proof should answer a simple question: what has actually been checked for sites, stats, goals, shared links, team members, and account settings, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check stats/site proof and goal or shared-link plan evidence before trusting analytics changes.
+
+## Current proof summary
 
 Last verified (UTC): 2026-06-01
-
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
 
 ## Smoke commands (safe)
 

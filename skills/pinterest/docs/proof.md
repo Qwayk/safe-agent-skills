@@ -1,6 +1,12 @@
 # Proof and verification
 
-Use this page when you want the clearest proof story for Pinterest.
+Pinterest proof should answer a simple question: what has actually been checked for boards, pins, ads, catalogs, reports, and auth state, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check board/pin/ad proof and auth or catalog plan evidence before trusting Pinterest changes.
+
+## Current proof summary
 
 This repo does not rely on live Pinterest API calls for normal verification. The proof here comes from the local suite, the committed redacted examples, and the explicit write-gating behavior.
 

@@ -1,8 +1,10 @@
 # Proof and verification
 
-This page is for trust and auditing. Most users will never need to run these commands themselves.
+Jobber proof should answer a simple question: what has actually been checked for service-business clients, requests, jobs, quotes, invoices, and scheduling data, and what still needs live credentials, permissions, or reviewer judgment?
 
-You don’t need to run these commands yourself. They are here so your reviewer can see what was checked and what should be left behind.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check registry-backed tests, read examples, and write-plan gates before trusting service-business changes.
 
 ## What this page proves
 
@@ -66,6 +68,13 @@ Run these when safe connectivity is available:
 - `runs show --run-id <run-id>`
 - Saved plan and receipt file paths returned in command output.
 - `docs/examples/plan.example.json` and `docs/examples/receipt.example.json` for format shape only.
+
+
+## What can go wrong
+
+- Live reads and writes still depend on the connected Jobber account, OAuth scopes, and the requested GraphQL selection.
+- High-risk no-snapshot writes can change real service-business data, so the reviewed plan and approval flags must match the intended customer record.
+- Redacted examples prove output shape, not that a specific live account has the same data or permissions.
 
 ## Links
 

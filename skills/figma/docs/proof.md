@@ -1,8 +1,14 @@
-# Proof pack (local proof only)
+# Proof and verification
 
-## Purpose
+Figma proof should answer a simple question: what has actually been checked for files, nodes, comments, branches, webhooks, and team resources, and what still needs live credentials, permissions, or reviewer judgment?
 
-This document is evidence of what is proven in this repository today for customer-facing claims.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check committed local artifacts, unit-test-backed examples, and live-access limits before trusting Figma claims.
+
+## What this proves
+
+This document shows what is proven in this repository today.
 All examples are from committed local artifacts and unit-test-backed runs. Live Figma
 behavior is not yet verified in this environment because real provider credentials and
 team/plan access are not available here.

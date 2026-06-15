@@ -1,6 +1,13 @@
-# Proof
+# Proof and verification
 
-You do not need to run these commands yourself.
+PayPal proof should answer a simple question: what has actually been checked for orders, captures, refunds, payouts, invoices, webhooks, and account resources, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check order/payment proof and money-moving refusal or plan evidence before trusting PayPal changes.
+
+## Current proof summary
+
 They exist so a reviewer can see what is proved locally and what still needs real PayPal access.
 
 ## Last checked

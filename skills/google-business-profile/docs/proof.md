@@ -1,14 +1,12 @@
-# Proof pack
+# Proof and verification
 
-Purpose:
-- Record what the current shipped tool proves with local commands.
-- Keep this folder honest about current behavior and verification commands.
-- You don’t need to run these commands yourself; they are here for auditing and proof.
+Google Business Profile proof should answer a simple question: what has actually been checked for locations, reviews, media, attributes, lodging, and business settings, and what still needs live credentials, permissions, or reviewer judgment?
 
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use placeholder values in examples.
-- Keep commands and outputs short and factual.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check location/read proof and write-plan evidence before trusting profile, review, media, or lodging changes.
+
+## Current proof summary
 
 Current Wave 3 safety result: provider write apply requires explicit no-snapshot approval before Google Business Profile HTTP
 until per-command before-state capture exists. Dry-run plans still work and include
@@ -28,7 +26,7 @@ until per-command before-state capture exists. Dry-run plans still work and incl
 - `.venv/bin/python -m unittest -q` with **314 passing tests**
 - JSON validation for `docs/official_inventory.json` plus **79** committed example output JSON files (**80 files total**)
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run in the tool folder:
 
@@ -204,7 +202,7 @@ These files are committed (unlike `.state/`):
 - `docs/examples/outputs/verifications_verification_tokens_generate_plan.mock.json`
 - `docs/examples/outputs/verifications_verification_tokens_generate_receipt.mock.json`
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Missing or unreadable OAuth config** → confirm `auth check` reports `ok=false` and update `.env`.
 - **Missing token file** → confirm `auth token status` shows `exists=false`, then run `auth login` or `auth token set`.
@@ -217,5 +215,5 @@ These files are committed (unlike `.state/`):
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
+- Coverage source of truth: `docs/api_coverage.md`
 - Debug history: `docs/engineering_notes.md`

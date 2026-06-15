@@ -1,18 +1,10 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool proof-first for future customer pages and reviews.
-- Capture the small set of checks a reviewer can trust: what ran, what passed, and what still depends on live HubSpot access.
+HubSpot proof should answer a simple question: what has actually been checked for CRM records, owners, pipelines, marketing data, and account resources, and what still needs live credentials, permissions, or reviewer judgment?
 
-You do not need to run these commands yourself. They exist for auditing and proof.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets.
-- Use clear redactions or placeholders in committed examples.
-- Keep this file short and factual.
-- HubSpot live writes currently require explicit no-snapshot approval before HTTP when no saved snapshot is available.
-- This tool does not use snapshots, provider backups, or automatic rollback.
-- Proof is local-only via plan, receipt, refusal, and local artifact output.
+If you only check one thing, check record/pipeline proof and write-plan evidence before trusting CRM changes.
 
 ## Last verified
 
@@ -21,7 +13,7 @@ Verified by: `qwayk-hubspot-safe-agent-cli maintainers`
 Tool version: `0.1.0`
 Environment: `local portfolio-build` / base URL: `https://api.hubapi.com`
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -58,7 +50,7 @@ These files are committed:
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json` (missing-approval refusal example; approved supported writes emit receipts)
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - Missing token or wrong scopes: `auth check` should refuse cleanly or fail with a non-secret message, and no write should happen.
 - Rate limiting: verify the CLI returns the provider error clearly and does not hide it behind generic output.

@@ -1,8 +1,10 @@
-# Proof pack
+# Proof and verification
 
-Use this page when you want proof that the Instantly skill was tested, or when you want a short list of safe checks to re-run.
+Instantly proof should answer a simple question: what has actually been checked for campaigns, leads, accounts, inboxes, analytics, and send-related workflows, and what still needs live credentials, permissions, or reviewer judgment?
 
-You do not need to run all of these commands yourself. They exist so you, your reviewer, or your agent can audit behavior and prove what happened.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check campaign/lead proof and send or bulk-plan evidence before trusting outbound work.
 
 ## Last verified
 
@@ -13,7 +15,7 @@ You do not need to run all of these commands yourself. They exist so you, your r
 - Environment: plan-only / base URL: https://api.instantly.ai/api/v2
 - Validation result: `.venv/bin/python -m unittest -q` passed with 118 tests.
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -38,7 +40,7 @@ These files are committed (unlike `.state/`):
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json`
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Invalid API key / wrong scopes** → verify with `auth check` returning `ok=false` and a clear error type; confirm no writes occurred.
 - **Rate limiting** → verify the CLI surfaces a non-secret retry/backoff hint; confirm it does not loop/retry-storm.

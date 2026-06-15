@@ -1,8 +1,14 @@
-# Proof pack
+# Proof and verification
+
+Klaviyo proof should answer a simple question: what has actually been checked for profiles, lists, segments, campaigns, flows, templates, and events, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check profile/list proof and campaign or flow plan evidence before trusting marketing changes.
+
+## Current proof summary
 
 Date (UTC): 2026-06-11
-
-You do not need to run these commands yourself for normal use. They are here for auditing, verification, and proof.
 
 ## Verification status
 

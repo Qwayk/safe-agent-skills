@@ -1,4 +1,10 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
+
+LinkedIn Ads proof should answer a simple question: what has actually been checked for ad accounts, campaigns, creatives, audiences, lead forms, and reports, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check account/campaign proof and creative, audience, or budget plan evidence before trusting ad changes.
 
 ## What is verified in this repository now
 

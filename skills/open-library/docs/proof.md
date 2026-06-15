@@ -1,6 +1,10 @@
-# Proof pack
+# Proof and verification
 
-You do not need to run these commands yourself. They are here for auditing and proof.
+Open Library proof should answer a simple question: what has actually been checked for public books, authors, editions, subjects, and ISBN data, and what can still fail because of public API limits, changed upstream data, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check the saved book, author, edition, ISBN, and subject examples before trusting library research.
 
 ## Last verified
 
@@ -10,7 +14,7 @@ You do not need to run these commands yourself. They are here for auditing and p
 - API model: Open Library public endpoints
 - Base URL: https://openlibrary.org
 
-## Blessed local validation command
+## Blessed local validation
 
 Run inside the tool folder:
 
@@ -58,7 +62,7 @@ Result on 2026-05-21:
 - `subjects` is experimental and can change without warning.
 - Avoid large `--limit` values, broad queries, and bulk-style repeated lookups.
 
-## Related docs
+## Links
 
 - `docs/references.md`
 - `docs/api_coverage.md`

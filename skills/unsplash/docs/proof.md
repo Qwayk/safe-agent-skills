@@ -1,6 +1,12 @@
 # Proof and verification
 
-Use this page when you want the clearest proof story for Unsplash.
+Unsplash proof should answer a simple question: what has actually been checked for photo search, collections, tracked downloads, and local image files, and what still needs live credentials, permissions, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check search proof, download-plan evidence, and local file handling before trusting image work.
+
+## Current proof summary
 
 This repo does not rely on live Unsplash credentials for normal proof. The evidence here comes from the local suite, the committed redacted examples, and the explicit download-planning and no-snapshot behavior.
 

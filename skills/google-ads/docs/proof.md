@@ -1,14 +1,10 @@
-# Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+Google Ads proof should answer a simple question: what has actually been checked for customer access, GAQL reads, campaign settings, budgets, criteria, and bulk mutate work, and what still needs live credentials, permissions, or reviewer judgment?
 
-Rules:
-- Never include secrets.
-- Keep this file short and factual.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Reassurance:
-- You don’t need to run these commands yourself; they exist for auditing and proof.
+If you only check one thing, check the test count, snapshot proof, GAQL examples, and write-plan gates before trusting campaign work.
 
 ## Last verified
 
@@ -18,7 +14,7 @@ Reassurance:
 - Provider API version: v22 (RPC surface snapshots + enforcement tests; no live API calls)
 - Validation result: `.venv/bin/python -m unittest -q` passed after readable ad-schedule remove support was added; 97 tests passed.
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -104,7 +100,7 @@ These files are committed:
 - `docs/examples/outputs/snapshot_analyze_optimize.json`
 - `docs/examples/packs/minimal_pack/manifest.json`
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Invalid developer token / OAuth setup** → verify `auth check` returns `ok=false`, and the error message does not echo secret env values.
 - **No accessible customers** → verify `auth check` returns `ok=true` but `customer_count=0`.
@@ -120,4 +116,4 @@ These files are committed:
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
+- Coverage source of truth: `docs/api_coverage.md`

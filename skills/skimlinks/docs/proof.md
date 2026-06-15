@@ -1,6 +1,12 @@
 # Proof and verification
 
-You do not need to run these commands yourself. They exist so a reviewer can audit the tool.
+Skimlinks proof should answer a simple question: what has actually been checked for merchant search, reporting, Product Key lookups, and local link wrapping, and what still depends on account access, provider permissions, public API limits, or reviewer judgment?
+
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+
+If you only check one thing, check merchant/report examples, Product Key proof, and local link-wrapper behavior before trusting affiliate work.
+
+## Current proof summary
 
 Last verified: **2026-06-11**
 

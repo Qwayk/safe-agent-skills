@@ -1,15 +1,10 @@
-# Instagram Login Tool Proof pack (publish-ready evidence)
+# Proof and verification
 
-Purpose:
-- Make this tool “proof-first” for future posts/pages (E‑E‑A‑T).
-- Capture the minimal evidence a customer can trust: what ran, what came back, what can go wrong, and how we verify.
+Instagram proof should answer a simple question: what has actually been checked for media, comments, mentions, messages, insights, and token-related work, and what still needs live credentials, permissions, or reviewer judgment?
 
-Note: you don’t need to run these commands yourself. They exist so you (or your reviewer/agent) can audit behavior and prove what happened.
+You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
-Rules:
-- Never include secrets (tokens, client secrets, Authorization headers).
-- Use obvious redactions in examples.
-- Keep this file short and factual.
+If you only check one thing, check media/account reads, token handling, and write-plan evidence before trusting Instagram work.
 
 ## Last verified
 
@@ -21,7 +16,7 @@ Rules:
 
 Live Meta auth was not run in this workspace because no Instagram professional-account credentials were provided here. The proof pack below covers the shipped CLI shape, local auth safety, redaction, before-state plans that require explicit no-snapshot approval, missing-approval refusals, and unit-test validation.
 
-## Smoke checks (copy/paste)
+## Smoke checks
 
 Run inside the tool folder:
 
@@ -49,7 +44,7 @@ These files are committed (unlike `.state/`):
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json` (missing-approval refusal example; approved apply emits a receipt that records no-snapshot approval)
 
-## What can go wrong (and how we verify)
+## What can go wrong
 
 - **Missing or expired token** → verify with `auth token status` or `auth check` returning `ok=false` and a clear error type; confirm no remote write occurred.
 - **Rate limiting** → verify the CLI surfaces a redacted HTTP failure and never leaks tokens in the URL or response text.
