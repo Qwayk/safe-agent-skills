@@ -1,5 +1,13 @@
 # Configuration
 
+Amazon Creators configuration is the local setup an agent needs before it can check creator lists, storefront details, and creator-campaign reporting. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Amazon Creators values are required, which ones are optional, and confirm the setup without showing secrets."
+
+## Where settings come from
+
 The tool reads keys from `.env` (or any file passed via `--env-file`). Only non-secret config goes into `--config`.
 
 Required env vars:

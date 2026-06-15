@@ -1,6 +1,10 @@
 # Configuration
 
-This tool uses a `.env` file for configuration (local-only; do not commit it).
+Cloudflare configuration is the local setup an agent needs before it can inspect zones, DNS, cache, rules, and account settings safely. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Cloudflare values are required, which ones are optional, and confirm the setup without showing secrets."
 
 ## Files
 
@@ -19,7 +23,7 @@ Optional:
 - `CLOUDFLARE_CONNECT_TIMEOUT_S`: connect timeout seconds (defaults to `CLOUDFLARE_TIMEOUT_S`)
 - `CLOUDFLARE_READ_TIMEOUT_S`: read timeout seconds (defaults to `CLOUDFLARE_TIMEOUT_S`)
 
-Notes:
+## Notes
 - OS environment variables override the env file (useful in CI).
 - This tool never prints your token and never logs `Authorization` headers.
 - For vendor-slow endpoints (commonly in Zero Trust), use `--timeout-profile slow` or increase `--read-timeout-s`.

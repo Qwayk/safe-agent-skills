@@ -1,6 +1,10 @@
 # Configuration
 
-This tool uses a local `.env` file for PayPal setup.
+PayPal configuration is the local setup an agent needs before it can review orders, payments, captures, refunds, subscriptions, and account activity. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which PayPal values are required, which ones are optional, and confirm the setup without showing secrets."
 
 ## Files
 
@@ -37,4 +41,4 @@ Default base URLs:
 ## OS environment override
 
 OS environment variables override values from the env file.
-This is useful in CI or when running in containers.
+Use this for CI or container runs.

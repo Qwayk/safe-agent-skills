@@ -1,6 +1,10 @@
 # Configuration
 
-This tool reads `.env` values and supports OS environment overrides.
+Awin Advertiser configuration is the local setup an agent needs before it can review advertiser programs, publishers, transactions, and performance data. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Awin Advertiser values are required, which ones are optional, and confirm the setup without showing secrets."
 
 ## Files
 

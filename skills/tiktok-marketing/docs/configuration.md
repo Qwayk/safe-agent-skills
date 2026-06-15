@@ -1,6 +1,10 @@
 # Configuration
 
-This tool uses a `.env` file for configuration.
+TikTok Marketing configuration is the local setup an agent needs before it can review advertisers, campaigns, ad groups, ads, reports, and creative data. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which TikTok Marketing values are required, which ones are optional, and confirm the setup without showing secrets."
 
 ## Files
 
@@ -11,7 +15,7 @@ By default, `.state/token.json` is stored next to your `--env-file`.
 
 ## Environment variables
 
-This tool uses these variables:
+Set these variables:
 
 - `TIKTOK_MARKETING_API_BASE_URL`
 - `TIKTOK_MARKETING_APP_ID`

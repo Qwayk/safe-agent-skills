@@ -1,5 +1,13 @@
 # Configuration
 
+Unsplash configuration is the local setup an agent needs before it can search photos, collections, topics, and photographer details. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Unsplash values are required, which ones are optional, and confirm the setup without showing secrets."
+
+## Setup note
+
 This tool loads configuration from a local `.env` file (gitignored).
 
 ## Files
@@ -19,4 +27,3 @@ By default, `.state/` lives next to your `--env-file` path.
 ## OS environment override
 
 OS environment variables override values from the env file.
-

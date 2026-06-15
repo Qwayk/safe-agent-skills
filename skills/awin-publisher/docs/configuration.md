@@ -1,6 +1,10 @@
 # Configuration
 
-This tool reads settings from `.env` by default.
+Awin Publisher configuration is the local setup an agent needs before it can review publisher accounts, advertiser programs, links, transactions, and performance data. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Awin Publisher values are required, which ones are optional, and confirm the setup without showing secrets."
 
 ## Files
 

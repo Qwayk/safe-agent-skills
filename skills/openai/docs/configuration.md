@@ -1,5 +1,13 @@
 # Configuration
 
+OpenAI configuration is the local setup an agent needs before it can inspect organization, project, model, file, and usage-related data available to the key. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which OpenAI values are required, which ones are optional, and confirm the setup without showing secrets."
+
+## Setup note
+
 This CLI keeps its configuration inside a local `.env` file so you can switch accounts without changing source control.
 
 ## Files

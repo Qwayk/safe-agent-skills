@@ -1,6 +1,10 @@
 # Configuration
 
-Use one `.env` file for local settings.
+Pipedrive configuration is the local setup an agent needs before it can review deals, people, organizations, activities, products, and pipeline data. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Pipedrive values are required, which ones are optional, and confirm the setup without showing secrets."
 
 ## Files
 

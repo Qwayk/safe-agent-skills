@@ -1,5 +1,13 @@
 # Configuration
 
+Jobber configuration is the local setup an agent needs before it can review clients, requests, quotes, jobs, invoices, and field-service records. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Jobber values are required, which ones are optional, and confirm the setup without showing secrets."
+
+## Setup note
+
 Configuration means the private settings the tool reads before it can connect.
 
 Most users only need `.env` in the project folder.

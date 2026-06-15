@@ -1,5 +1,13 @@
 # Configuration
 
+Bluesky configuration is the local setup an agent needs before it can read public posts, profiles, feeds, and social context. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Bluesky values are required, which ones are optional, and confirm the setup without showing secrets."
+
+## Setup note
+
 `bluesky-safe-cli` reads local values from `.env` by default.
 
 ## Files

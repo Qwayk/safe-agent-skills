@@ -1,6 +1,14 @@
 # Configuration
 
-This tool uses a local `.env` file and optional non-secret JSON config.
+WooCommerce configuration is the local setup an agent needs before it can review products, orders, customers, coupons, and store data. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which WooCommerce values are required, which ones are optional, and confirm the setup without showing secrets."
+
+## Setup note
+
+Use a local `.env` file for private values and optional JSON config for non-secret defaults.
 
 Use `--config <file>` for machine defaults. It can include any non-secret
 configuration keys only.

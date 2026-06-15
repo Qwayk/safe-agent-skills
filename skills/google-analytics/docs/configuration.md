@@ -1,6 +1,10 @@
 # Configuration
 
-This tool uses a `.env` file for configuration (local-only; do not commit it).
+Google Analytics configuration is the local setup an agent needs before it can read properties, reports, traffic sources, and analytics metrics. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Google Analytics values are required, which ones are optional, and confirm the setup without showing secrets."
 
 ## Files
 

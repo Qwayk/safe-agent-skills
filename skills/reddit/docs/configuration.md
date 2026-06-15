@@ -1,6 +1,14 @@
 # Configuration
 
-This tool uses a local `.env` file next to your work folder.
+Reddit configuration is the local setup an agent needs before it can read posts, comments, subreddits, user context, and moderation-safe public data. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Reddit values are required, which ones are optional, and confirm the setup without showing secrets."
+
+## Setup note
+
+Use a local `.env` file next to your work folder.
 
 ## Required values
 

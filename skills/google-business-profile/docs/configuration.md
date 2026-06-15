@@ -1,6 +1,10 @@
 # Configuration
 
-This tool uses `.env` for local configuration.
+Google Business Profile configuration is the local setup an agent needs before it can review locations, business details, reviews, and local presence data. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Google Business Profile values are required, which ones are optional, and confirm the setup without showing secrets."
 
 ## Files
 

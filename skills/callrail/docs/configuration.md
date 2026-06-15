@@ -1,6 +1,10 @@
 # Configuration
 
-This tool uses a `.env` file for configuration.
+CallRail configuration is the local setup an agent needs before it can review calls, forms, companies, trackers, and attribution data. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which CallRail values are required, which ones are optional, and confirm the setup without showing secrets."
 
 ## Files
 
@@ -20,7 +24,7 @@ CallRail tool runs with API-key auth only.
 ## OS environment override
 
 OS environment variables override values from the env file.
-This is useful in CI or when running in containers.
+Use this for CI or container runs.
 
 ## Required headers
 

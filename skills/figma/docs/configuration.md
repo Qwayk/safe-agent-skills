@@ -1,5 +1,13 @@
 # Configuration
 
+Figma configuration is the local setup an agent needs before it can read files, projects, comments, components, and design metadata. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Figma values are required, which ones are optional, and confirm the setup without showing secrets."
+
+## Setup note
+
 The config is loaded from a `.env` file and optional OS environment variables.
 OS environment variables always override `.env` values.
 

@@ -1,8 +1,14 @@
 # Configuration
 
+Cloudinary configuration is the local setup an agent needs before it can review media assets, folders, tags, transformations, and delivery settings. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Cloudinary values are required, which ones are optional, and confirm the setup without showing secrets."
+
 ## `.env` values
 
-This tool reads a simple `.env` file.
+Use a simple `.env` file.
 OS environment variables override the file.
 
 Required for product APIs:

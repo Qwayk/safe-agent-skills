@@ -1,6 +1,14 @@
 # Configuration
 
-This tool uses a local `.env` file for configuration and a local `.state/token.json` file for OAuth tokens.
+Microsoft Ads configuration is the local setup an agent needs before it can review accounts, campaigns, ad groups, keywords, and reporting. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Microsoft Ads values are required, which ones are optional, and confirm the setup without showing secrets."
+
+## Setup note
+
+Use a local `.env` file for settings and a local `.state/token.json` file for OAuth tokens.
 
 ## Files
 
@@ -29,4 +37,4 @@ Advanced (optional overrides):
 ## OS environment override
 
 OS environment variables override values from the env file.
-This is useful in CI or when running in containers.
+Use this for CI or container runs.

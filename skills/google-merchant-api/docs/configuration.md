@@ -1,6 +1,10 @@
 # Configuration
 
-This tool uses a `.env` file so the same settings work across local runs.
+Google Merchant API configuration is the local setup an agent needs before it can inspect merchant accounts, products, feeds, and product status data. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Google Merchant API values are required, which ones are optional, and confirm the setup without showing secrets."
 
 This is built for Google Merchant Center, not for API keys.
 
@@ -42,4 +46,4 @@ The base URL key used by the live tool is `GOOGLE_MERCHANT_API_BASE_URL`.
 ## OS environment override
 
 OS environment variables override values from the env file.
-This is useful in CI or when running in containers.
+Use this for CI or container runs.

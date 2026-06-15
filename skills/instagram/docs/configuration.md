@@ -1,6 +1,10 @@
-# Instagram Login Tool Configuration
+# Configuration
 
-This tool reads Instagram Login settings from a local `.env` file.
+Instagram configuration is the local setup an agent needs before it can read account, media, comments, insights, and profile data the connected app can access. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+
+Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+
+A good first configuration check is: "Show me which Instagram values are required, which ones are optional, and confirm the setup without showing secrets."
 
 ## Files
 
@@ -37,4 +41,4 @@ If neither exists, read commands that need auth fail with a clean JSON error.
 ## OS environment override
 
 OS environment variables override values from `.env`.
-That is useful for CI or container runs.
+Use this for CI or container runs.
