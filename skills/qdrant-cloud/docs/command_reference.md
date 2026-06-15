@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Qdrant Cloud command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do with Qdrant Cloud](use_cases.md), [Connect your Qdrant Cloud account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Qdrant Cloud accounts, clusters, releases, backups, IAM, and infrastructure gates. Resolve account and cluster IDs before backup or cluster changes.
+
+For the guided path, start with [What you can do with Qdrant Cloud](use_cases.md), [Connect your Qdrant Cloud account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

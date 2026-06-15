@@ -1,8 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Figma command, flag, or safety rule.
-This is the technical reference for the skill.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Figma files, nodes, projects, comments, exports, and write gates. Resolve the file or node ID before asking for edits or generated changes.
+
+For the guided path, start with [What you can do with Figma](use_cases.md), [Connect your Figma account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Awin Publisher command, flag, or write gate.
-If you want the plain-English path first, start with [What you can do with Awin Publisher](use_cases.md), [Connect your Awin publisher account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover publisher accounts, merchants, reports, links, feeds, and proof-of-purchase work. Start with account and merchant reads before any upload or order submission.
+
+For the guided path, start with [What you can do with Awin Publisher](use_cases.md), [Connect your Awin publisher account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

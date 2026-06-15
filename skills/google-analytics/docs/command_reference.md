@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Google Analytics command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover GA4 properties, reports, metadata, events, and write-like admin methods. Confirm the property before using report or admin commands.
+
+For the guided path, start with [What you can do with Google Analytics](use_cases.md), [Connect your Google Analytics access](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Skimlinks command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do with Skimlinks](use_cases.md), [Connect your Skimlinks account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Skimlinks merchants, reports, Product Key, Link Wrapper, and local link work. Check which credentials are present before Product Key or report commands.
+
+For the guided path, start with [What you can do with Skimlinks](use_cases.md), [Connect your Skimlinks account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

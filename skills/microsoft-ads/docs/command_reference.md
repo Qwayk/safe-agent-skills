@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Microsoft Ads command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Microsoft Ads accounts, campaigns, reports, operations, and write gates. Confirm account access before campaign or spend work.
+
+For the guided path, start with [What you can do with Microsoft Ads](use_cases.md), [Connect your Microsoft Ads account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

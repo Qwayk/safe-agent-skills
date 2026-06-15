@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Google Business Profile command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover accounts, locations, admins, reviews, posts, media, and public profile changes. Resolve the exact location before any public-facing update.
+
+For the guided path, start with [What you can do with Google Business Profile](use_cases.md), [Connect your Google Business Profile access](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

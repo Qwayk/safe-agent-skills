@@ -1,8 +1,8 @@
 # Command reference
 
-This is the full command list for people who want exact syntax.
+These commands cover Jobber GraphQL reads, writes, registry-backed operations, plans, and receipts. Start with account-area reads before client, job, quote, invoice, or schedule changes.
 
-If you want help deciding what to ask first, start with [What this skill can help you do](use_cases.md), [Set up your account step by step](onboarding.md), and [See how this skill keeps changes safe](safety_model.md).
+For the guided path, start with [What you can do with Jobber](use_cases.md), [Set up your account step by step](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Get connected
 

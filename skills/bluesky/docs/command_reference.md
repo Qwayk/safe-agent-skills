@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Bluesky command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do with Bluesky](use_cases.md), [Connect your Bluesky account](onboarding.md), and [Quickstart](quickstart.md).
+These commands separate safe reads from live Bluesky writes. Use `--live` only when you want real execution, and add the approval flags only after the target is clear.
+
+For the guided path, start with [What you can do with Bluesky](use_cases.md), [Connect your Bluesky account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global behavior
 

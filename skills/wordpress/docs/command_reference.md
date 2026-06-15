@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact WordPress command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover WordPress posts, pages, media, users, taxonomies, comments, exports, and write gates. Resolve the post, page, or media item before edits.
+
+For the guided path, start with [What you can do with WordPress](use_cases.md), [Connect your WordPress site](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

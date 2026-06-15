@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Google Merchant API command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Merchant accounts, products, feeds, promotions, shipping, and plan-first writes. Use dry-run plans for catalog changes and review no-snapshot limits before apply.
+
+For the guided path, start with [What you can do with Google Merchant Center](use_cases.md), [Connect your Google Merchant Center account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

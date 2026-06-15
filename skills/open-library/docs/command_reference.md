@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Open Library command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands read public Open Library books, authors, works, editions, subjects, and ISBN records. Check the exact edition or author before relying on a match.
+
+For the guided path, start with [What you can do with Open Library](use_cases.md), [Use Open Library with no account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

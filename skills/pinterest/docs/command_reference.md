@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Pinterest command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Pinterest boards, pins, ads, catalogs, analytics, tokens, and write gates. Resolve board, ad account, and business IDs before changes.
+
+For the guided path, start with [What you can do with Pinterest](use_cases.md), [Connect your Pinterest account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Auth
 

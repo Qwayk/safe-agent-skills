@@ -1,8 +1,8 @@
 # Command reference
 
-Use this page when you already want exact Sovrn commands.
+These commands cover Sovrn Commerce and Advertising reads for publisher reports and link work. The shipped public surface is read-only, so use it for checks and reports.
 
-If you want the non-technical path first, start with [What you can do](use_cases.md) and [Connect your account](onboarding.md).
+For the guided path, start with [What you can do with Sovrn](use_cases.md), [Connect your Sovrn account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Good first commands
 

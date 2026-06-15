@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Cloudinary command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Cloudinary product and account APIs, safe file outputs, uploads, downloads, and media changes. Check the cloud name and account credentials before writing files or changing assets.
+
+For the guided path, start with [What you can do with Cloudinary](use_cases.md), [Connect your Cloudinary account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Program name
 

@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Mercury command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Mercury accounts, balances, transactions, recipients, and exports. Confirm account IDs before finance reports or saved files.
+
+For the guided path, start with [What you can do with Mercury](use_cases.md), [Connect your Mercury API token](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

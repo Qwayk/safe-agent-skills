@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Instagram command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Instagram professional account checks, media, comments, mentions, insights, messages, and token flows. Confirm the account reached by the token before any moderation or publishing work.
+
+For the guided path, start with [What you can do with Instagram](use_cases.md), [Connect your Instagram access](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

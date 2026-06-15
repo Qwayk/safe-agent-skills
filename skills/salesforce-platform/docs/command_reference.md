@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Salesforce Platform command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Salesforce org checks, objects, records, metadata, limits, downloads, and write gates. Confirm the org and object before record or metadata changes.
+
+For the guided path, start with [What you can do with Salesforce Platform](use_cases.md), [Connect your Salesforce account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Setup and auth
 

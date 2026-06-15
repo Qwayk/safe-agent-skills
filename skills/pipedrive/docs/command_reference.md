@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Pipedrive command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover read-only Pipedrive users, deals, leads, activities, people, organizations, and pipelines. Start with current user or pipeline reads before reports.
+
+For the guided path, start with [What you can do with Pipedrive](use_cases.md), [Connect your Pipedrive account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global command
 

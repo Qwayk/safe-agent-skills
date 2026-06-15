@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact ElevenLabs command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover account checks, voices, models, history, generation, downloads, and no-snapshot write gates. Check usage and voices before spending credits or saving audio.
+
+For the guided path, start with [What you can do with ElevenLabs](use_cases.md), [Connect your ElevenLabs account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

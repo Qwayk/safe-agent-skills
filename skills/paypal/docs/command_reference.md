@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact PayPal command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover PayPal auth, orders, payments, captures, refunds, webhooks, payouts, and guarded writes. Start in sandbox when possible before live money actions.
+
+For the guided path, start with [What you can do with PayPal](use_cases.md), [Connect your PayPal account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Public local commands
 

@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Google Ads command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover customer access, GAQL, presets, snapshots, helpers, and campaign write gates. Confirm customer IDs before analysis or anything that can affect spend.
+
+For the guided path, start with [What you can do with Google Ads](use_cases.md), [Connect your Google Ads account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

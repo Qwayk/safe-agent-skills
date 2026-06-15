@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact HubSpot command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover HubSpot CRM objects, owners, lists, tickets, jobs, and write gates. Start with small reads before bulk CRM changes or exports.
+
+For the guided path, start with [What you can do with HubSpot](use_cases.md), [Connect your HubSpot account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Zendesk command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Zendesk auth, tickets, users, organizations, views, jobs, and OpenAPI operations. Start with ticket counts or searches before support-data changes.
+
+For the guided path, start with [What you can do with Zendesk](use_cases.md), [Connect your Zendesk account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

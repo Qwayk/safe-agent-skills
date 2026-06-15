@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Amazon Creators command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+Catalog commands here are plan-first. Use them to choose locale, inspect item resources, and review token/local-write gates before a real catalog call.
+
+For the guided path, start with [What you can do with Amazon Creators](use_cases.md), [Connect your Amazon Creators account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

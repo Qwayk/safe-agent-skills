@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Awin Advertiser command, flag, or write gate.
-If you want the plain-English path first, start with [What you can do with Awin Advertiser](use_cases.md), [Connect your Awin advertiser account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover publisher checks, transactions, jobs, offers, feeds, and advertiser write gates. Use the read commands first, then review plans before uploads or validations.
+
+For the guided path, start with [What you can do with Awin Advertiser](use_cases.md), [Connect your Awin advertiser account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

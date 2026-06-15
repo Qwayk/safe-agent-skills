@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact CallRail command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover CallRail auth, run history, account-scoped reads, and guarded writes. Most real calls need an `--account-id`, so resolve that before deeper work.
+
+For the guided path, start with [What you can do with CallRail](use_cases.md), [Connect your CallRail account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

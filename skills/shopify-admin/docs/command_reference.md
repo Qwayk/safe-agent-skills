@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Shopify Admin command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Shopify Admin operations, GraphQL queries, mutations, products, orders, customers, and write gates. Confirm the store and API version before catalog or order work.
+
+For the guided path, start with [What you can do with Shopify Admin](use_cases.md), [Connect your Shopify Admin account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Threads command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Threads auth, profiles, posts, replies, insights, moderation, and token gates. Confirm owned profile access before publishing or moderation work.
+
+For the guided path, start with [What you can do with Threads](use_cases.md), [Connect your Threads account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding and runs
 

@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact X command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do with X](use_cases.md), [Connect your X account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover X account reads, mentions, OpenAPI operations, DMs, PKCE auth, and write gates. Confirm account and permission scope before posts, replies, or DMs.
+
+For the guided path, start with [What you can do with X](use_cases.md), [Connect your X account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Good first commands
 

@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Cloudflare command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Cloudflare inventory, DNS, Workers, KV, D1, cache, and other account work. Resolve the account and zone first; the wrong target can affect a live site.
+
+For the guided path, start with [What you can do with Cloudflare](use_cases.md), [Connect your Cloudflare account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags (selected)
 

@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Hacker News command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do with Hacker News](use_cases.md), [Use Hacker News with no account](onboarding.md), and [Quickstart](quickstart.md).
+These commands read public Hacker News lists, items, users, and updates. Fetch item details before summarizing trends so the agent does not reason from IDs alone.
+
+For the guided path, start with [What you can do with Hacker News](use_cases.md), [Use Hacker News with no account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

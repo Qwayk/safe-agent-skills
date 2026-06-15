@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Reddit command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Reddit OAuth, account reads, subreddits, posts, comments, messages, and moderation gates. Start with auth and small reads before any post or moderation action.
+
+For the guided path, start with [What you can do with Reddit](use_cases.md), [Connect your Reddit account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

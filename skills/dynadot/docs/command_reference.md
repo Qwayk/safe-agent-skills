@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Dynadot command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Dynadot API3 actions, domain inventory, DNS, name servers, transfers, and write gates. Read the domain state first before any domain or DNS change.
+
+For the guided path, start with [What you can do with Dynadot](use_cases.md), [Connect your Dynadot account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

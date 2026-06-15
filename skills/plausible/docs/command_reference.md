@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Plausible command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Plausible sites, stats, goals, events, custom properties, and guarded writes. Confirm site ID and date range before reports or site changes.
+
+For the guided path, start with [What you can do with Plausible](use_cases.md), [Connect your Plausible account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags (all commands)
 

@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Klaviyo command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do with Klaviyo](use_cases.md), [Connect your Klaviyo account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Klaviyo lists, segments, profiles, campaigns, flows, forms, events, and write gates. Check one audience or profile before bulk marketing changes.
+
+For the guided path, start with [What you can do with Klaviyo](use_cases.md), [Connect your Klaviyo account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

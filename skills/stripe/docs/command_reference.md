@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Stripe command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Stripe auth, customers, payments, subscriptions, invoices, webhooks, jobs, and guarded writes. Check the target object before live money or subscription changes.
+
+For the guided path, start with [What you can do with Stripe](use_cases.md), [Connect your Stripe account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

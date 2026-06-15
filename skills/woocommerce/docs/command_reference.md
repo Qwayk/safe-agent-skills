@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact WooCommerce command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover WooCommerce products, orders, customers, coupons, shipping, tax, operations, and write gates. Confirm the store before catalog or order changes.
+
+For the guided path, start with [What you can do with WooCommerce](use_cases.md), [Connect your WooCommerce store](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Local commands
 

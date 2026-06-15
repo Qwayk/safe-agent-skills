@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact YouTube command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do with YouTube](use_cases.md), [Connect your YouTube account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover YouTube channels, uploads, playlists, captions, metadata, downloads, and write gates. Resolve the channel or video before uploads or metadata changes.
+
+For the guided path, start with [What you can do with YouTube](use_cases.md), [Connect your YouTube account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Onboarding
 

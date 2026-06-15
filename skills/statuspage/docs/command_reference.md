@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Statuspage command, flag, or behavior.
-If you want the plain-English path first, start with [What you can do with Statuspage](use_cases.md), [Use a public Statuspage URL](onboarding.md), and [Quickstart](quickstart.md).
+These commands read public Statuspage status, incidents, maintenance, components, and summaries. Set or pass the public status page URL before running checks.
+
+For the guided path, start with [What you can do with Statuspage](use_cases.md), [Use a public Statuspage URL](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Setup
 

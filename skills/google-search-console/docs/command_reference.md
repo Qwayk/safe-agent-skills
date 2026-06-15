@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Google Search Console command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover site access, search analytics, sitemaps, URL inspection, and write gates. Confirm the property and OAuth scope before request or sitemap actions.
+
+For the guided path, start with [What you can do with Google Search Console](use_cases.md), [Connect your Google Search Console account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags (selected)
 

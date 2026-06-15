@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Ghost command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Ghost posts, pages, members, tags, webhooks, themes, and publish gates. Read the target content first before edits, deletes, or status changes.
+
+For the guided path, start with [What you can do with Ghost](use_cases.md), [Connect your Ghost account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

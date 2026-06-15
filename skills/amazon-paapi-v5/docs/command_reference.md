@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Amazon PA-API v5 command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do with Amazon Product Advertising API](use_cases.md), [Connect your Amazon Associates credentials](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover product search, ASIN lookup, variations, resource presets, and affiliate links. Start with auth and a small product lookup before adding raw PA-API fields.
+
+For the guided path, start with [What you can do with Amazon Product Advertising API](use_cases.md), [Connect your Amazon Associates credentials](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Auth
 

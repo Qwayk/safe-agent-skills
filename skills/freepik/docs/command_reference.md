@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Freepik command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover Freepik search, shortlist output, licenses, downloads, and jobs files. Use preview links first, then review any licensed download or local file output.
+
+For the guided path, start with [What you can do with Freepik](use_cases.md), [Connect your Freepik account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## `auth`
 - `freepik-api-tool auth check`

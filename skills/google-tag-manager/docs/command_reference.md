@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact Google Tag Manager command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover GTM accounts, containers, workspaces, tags, triggers, variables, versions, and publish gates. Resolve the workspace before editing or publishing.
+
+For the guided path, start with [What you can do with Google Tag Manager](use_cases.md), [Connect your Google Tag Manager account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags (all commands)
 

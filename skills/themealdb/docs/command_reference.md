@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact TheMealDB command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do](use_cases.md), [Connect your account](onboarding.md), and [Quickstart](quickstart.md).
+These commands read public TheMealDB recipes, ingredients, categories, areas, filters, and random meals. Check several recipe matches before choosing one.
+
+For the guided path, start with [What you can do with TheMealDB](use_cases.md), [Use TheMealDB with no account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 

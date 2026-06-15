@@ -1,7 +1,8 @@
 # Command reference
 
-Use this page when you need the exact TikTok Marketing command, flag, or safety rule.
-If you want the plain-English path first, start with [What you can do with TikTok Marketing](use_cases.md), [Connect your TikTok Marketing account](onboarding.md), and [Quickstart](quickstart.md).
+These commands cover TikTok Marketing auth, advertisers, campaigns, creatives, reports, and write gates. Confirm advertiser access before campaign or spend work.
+
+For the guided path, start with [What you can do with TikTok Marketing](use_cases.md), [Connect your TikTok Marketing account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags
 
