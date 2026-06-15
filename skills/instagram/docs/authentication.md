@@ -1,6 +1,10 @@
-# Instagram Login Tool Authentication
+# Authentication
 
-This tool uses the official Instagram Login OAuth flow for Instagram professional accounts.
+Instagram authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
+
+For media, comments, mentions, messages, insights, and token-related work, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which Instagram credential path is configured, run the safe auth check, and stop before any token write or live account change."
 
 ## Required app settings
 

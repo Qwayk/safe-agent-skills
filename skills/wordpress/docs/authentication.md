@@ -1,6 +1,12 @@
 # Authentication
 
-This tool uses **Basic Auth** with a WordPress **Application Password**.
+WordPress authentication is meant to be local and checked before an agent works with posts, pages, media, users, comments, settings, and plugin-related checks. Keep credentials local, run the safe check first, and do not paste secrets into chat.
+
+The goal is simple: prove the tool can reach the right account without exposing private values or making a live change.
+
+A good first auth check is: "Check the WordPress credential setup, run the safe auth check, and stop before any account change."
+
+## Authentication notes
 
 It calls `/wp-json/wp/v2/users/me` for a smoke test.
 

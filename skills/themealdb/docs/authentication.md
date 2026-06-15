@@ -1,5 +1,13 @@
 # Authentication
 
+TheMealDB does not need a private account connection for the default public recipe lookups. The default key is public, and the useful first check is simply whether the API is reachable from your machine.
+
+If you use your own TheMealDB key, keep it in `.env` and do not paste it into chat. The safe check should prove the key works without printing the value.
+
+A good first auth check is: "Confirm whether TheMealDB is using the default public key or a custom key, run the safe check, and tell me whether recipe lookup is reachable."
+
+## Authentication notes
+
 The default setup does not need a secret.
 
 ## Default mode

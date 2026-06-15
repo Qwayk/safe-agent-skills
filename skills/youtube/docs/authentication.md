@@ -1,8 +1,10 @@
 # Authentication
 
-Use this page when you need to understand which YouTube credential to use and what the current OAuth helper can and cannot do.
+YouTube authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
 
-This tool supports two auth styles.
+For channels, videos, captions, playlists, uploads, metadata, and OAuth state, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which YouTube credential path is configured, run the safe auth check, and stop before any token write or live account change."
 
 ## 1) API key / token in `.env`
 

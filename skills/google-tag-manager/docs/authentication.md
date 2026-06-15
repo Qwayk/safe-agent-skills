@@ -1,6 +1,10 @@
 # Authentication
 
-This tool supports three auth modes:
+Google Tag Manager authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
+
+For accounts, containers, workspaces, tags, triggers, variables, and versions, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which Google Tag Manager credential path is configured, run the safe auth check, and stop before any token write or live account change."
 
 ## 1) ADC (Application Default Credentials)
 

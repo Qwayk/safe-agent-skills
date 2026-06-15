@@ -1,6 +1,10 @@
 # Authentication
 
-This tool uses API-key auth only.
+CallRail authentication is meant to be local and boring: put the required key or token in your `.env` file, keep it out of chat, and run the safe check before asking an agent for real account data.
+
+That matters because calls, forms, companies, trackers, messages, and account settings can contain account or business data. The auth check should prove the credential works without printing the secret value.
+
+A good first auth check is: "Confirm the required CallRail environment values are present, run the safe auth check, and tell me whether the credential works without showing the secret."
 
 ## 1) API key in `.env`
 

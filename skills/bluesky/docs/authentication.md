@@ -1,5 +1,11 @@
 # Authentication
 
+Bluesky authentication is meant to be local and boring: put the required key or token in your `.env` file, keep it out of chat, and run the safe check before asking an agent for real account data.
+
+That matters because profile, post, graph, moderation, and session work can contain account or business data. The auth check should prove the credential works without printing the secret value.
+
+A good first auth check is: "Confirm the required Bluesky environment values are present, run the safe auth check, and tell me whether the credential works without showing the secret."
+
 ## Primary auth path
 
 Use handle or DID + app password via `com.atproto.server.createSession`.

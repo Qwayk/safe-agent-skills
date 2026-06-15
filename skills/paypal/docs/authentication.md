@@ -1,6 +1,10 @@
 # Authentication
 
-This tool uses PayPal’s official OAuth 2.0 client-credentials flow as the normal auth path.
+PayPal authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
+
+For orders, captures, refunds, payouts, invoices, webhooks, and account resources, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which PayPal credential path is configured, run the safe auth check, and stop before any token write or live account change."
 
 ## Normal path
 

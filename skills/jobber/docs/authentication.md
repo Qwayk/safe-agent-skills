@@ -1,8 +1,14 @@
 # Authentication
 
-Authentication means proving to Jobber that this tool can run the actions you requested.
+Jobber authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
 
-This tool uses OAuth 2.0 in the common case.
+For service-business clients, requests, jobs, quotes, invoices, and scheduling data, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which Jobber credential path is configured, run the safe auth check, and stop before any token write or live account change."
+
+## Authentication notes
+
+Authentication means proving to Jobber that this tool can run the actions you requested.
 
 ## OAuth flow for this tool
 

@@ -1,6 +1,12 @@
 # Authentication
 
-This tool supports these shipped auth modes:
+Google Merchant Center authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
+
+For accounts, products, feeds, promotions, shipping, and merchant settings, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which Google Merchant Center credential path is configured, run the safe auth check, and stop before any token write or live account change."
+
+## Setup details
 
 - `service_account_json` (recommended for own-account use)
 - `oauth_refresh_token` (required for client-account use)

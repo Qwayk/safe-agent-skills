@@ -1,6 +1,12 @@
-# Authentication (Freepik API)
+# Authentication
 
-This tool uses a Freepik API key.
+Freepik authentication is meant to be local and boring: put the required key or token in your `.env` file, keep it out of chat, and run the safe check before asking an agent for real account data.
+
+That matters because image search, licensed downloads, binary fetches, and local inventory files can contain account or business data. The auth check should prove the credential works without printing the secret value.
+
+A good first auth check is: "Confirm the required Freepik environment values are present, run the safe auth check, and tell me whether the credential works without showing the secret."
+
+## Authentication notes
 
 It never prints your API key, and it never prints HTTP `Authorization` headers.
 

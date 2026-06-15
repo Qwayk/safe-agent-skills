@@ -1,5 +1,11 @@
 # Authentication
 
+TikTok Marketing authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
+
+For advertiser accounts, campaigns, ad groups, ads, reports, and generated API operations, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which TikTok Marketing credential path is configured, run the safe auth check, and stop before any token write or live account change."
+
 ## 1) Access token in `.env`
 
 Put these values in `.env`:

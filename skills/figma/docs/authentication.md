@@ -1,6 +1,16 @@
 # Authentication
 
+Figma authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
+
+For files, nodes, comments, branches, webhooks, and team resources, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which Figma credential path is configured, run the safe auth check, and stop before any token write or live account change."
+
+## Authentication notes
+
 The tool supports three auth modes:
+
+## Setup details
 
 - `personal` (default): uses `FIGMA_ACCESS_TOKEN` as `X-Figma-Token`.
 - `oauth`: uses `FIGMA_ACCESS_TOKEN` or an OAuth `access_token` loaded from `.state/token.json`, and sends `Authorization: Bearer`.

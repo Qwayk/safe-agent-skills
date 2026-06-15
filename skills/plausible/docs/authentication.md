@@ -1,6 +1,10 @@
 # Authentication
 
-Plausible uses API keys (no OAuth).
+Plausible authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
+
+For sites, stats, goals, shared links, team members, and account settings, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which Plausible credential path is configured, run the safe auth check, and stop before any token write or live account change."
 
 ## API key
 

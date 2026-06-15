@@ -1,8 +1,16 @@
 # Authentication
 
-This tool uses `.env` credentials directly.
+Awin Advertiser authentication is meant to be local and boring: put the required key or token in your `.env` file, keep it out of chat, and run the safe check before asking an agent for real account data.
+
+That matters because advertiser transactions, publisher checks, offers, product feeds, and conversion work can contain account or business data. The auth check should prove the credential works without printing the secret value.
+
+A good first auth check is: "Confirm the required Awin Advertiser environment values are present, run the safe auth check, and tell me whether the credential works without showing the secret."
+
+## Authentication notes
 
 Required fields for `auth check`:
+
+## Setup details
 
 - `AWIN_API_TOKEN`
 - `AWIN_ADVERTISER_ID`

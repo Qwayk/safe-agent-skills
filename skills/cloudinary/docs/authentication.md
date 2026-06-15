@@ -1,6 +1,10 @@
 # Authentication
 
-This tool uses Cloudinary's normal REST auth split.
+Cloudinary authentication is meant to be local and checked before an agent works with assets, folders, backups, transformations, and media delivery settings. Keep credentials local, run the safe check first, and do not paste secrets into chat.
+
+The goal is simple: prove the tool can reach the right account without exposing private values or making a live change.
+
+A good first auth check is: "Check the Cloudinary credential setup, run the safe auth check, and stop before any account change."
 
 ## Product APIs
 

@@ -1,5 +1,13 @@
 # Authentication
 
+Amazon Creators authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
+
+For creator storefront and product-catalog work, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which Amazon Creators credential path is configured, run the safe auth check, and stop before any token write or live account change."
+
+## Authentication notes
+
 Amazon’s Creators Catalog API uses OAuth 2.0 credentials (credential ID, secret, version) plus a cached access token. This tool keeps secrets off the console and never prints raw tokens.
 
 ## Token storage

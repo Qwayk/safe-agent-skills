@@ -1,6 +1,10 @@
 # Authentication
 
-This tool uses the official Threads OAuth flow for user access tokens and the official client-credentials flow for app tokens.
+Threads authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
+
+For profiles, posts, replies, insights, moderation, and token-related work, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which Threads credential path is configured, run the safe auth check, and stop before any token write or live account change."
 
 ## Supported commands
 

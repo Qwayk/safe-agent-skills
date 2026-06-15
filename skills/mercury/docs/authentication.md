@@ -1,6 +1,10 @@
 # Authentication
 
-This tool supports Mercury API token authentication.
+Mercury authentication is meant to be local and boring: put the required key or token in your `.env` file, keep it out of chat, and run the safe check before asking an agent for real account data.
+
+That matters because business banking balances, accounts, transactions, cards, recipients, and local exports can contain account or business data. The auth check should prove the credential works without printing the secret value.
+
+A good first auth check is: "Confirm the required Mercury environment values are present, run the safe auth check, and tell me whether the credential works without showing the secret."
 
 ## Configure `.env` (recommended)
 

@@ -1,6 +1,10 @@
 # Authentication
 
-This tool supports Stripe API key auth (recommended) and a local OAuth token helper (advanced / optional).
+Stripe authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
+
+For customers, subscriptions, invoices, payments, refunds, payouts, and connected accounts, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which Stripe credential path is configured, run the safe auth check, and stop before any token write or live account change."
 
 ## Stripe API key in `.env` (recommended)
 

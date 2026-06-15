@@ -1,5 +1,13 @@
 # Authentication
 
+Sovrn authentication is the part that decides which account the agent can see and which actions it can even plan. Keep the credential setup local, use the safe check first, and do not paste secrets or token files into chat.
+
+For publisher commerce, advertising reports, merchants, links, and performance data, the exact credential path is listed below. When OAuth is required, it means the user approves access through the provider instead of copying a long-lived password into the tool.
+
+A good first auth check is: "Check which Sovrn credential path is configured, run the safe auth check, and stop before any token write or live account change."
+
+## Authentication notes
+
 This tool does not use OAuth. It uses the official Sovrn credential shapes directly.
 
 ## Commerce secret header

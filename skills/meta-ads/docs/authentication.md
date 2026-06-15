@@ -1,6 +1,10 @@
 # Authentication
 
-This tool uses a Meta Graph API **access token** stored locally in your `.env` file.
+Meta Ads authentication is meant to be local and boring: put the required key or token in your `.env` file, keep it out of chat, and run the safe check before asking an agent for real account data.
+
+That matters because ad accounts, campaigns, ad sets, ads, insights, and Graph API inventory can contain account or business data. The auth check should prove the credential works without printing the secret value.
+
+A good first auth check is: "Confirm the required Meta Ads environment values are present, run the safe auth check, and tell me whether the credential works without showing the secret."
 
 ## Where the token lives
 
@@ -23,4 +27,3 @@ meta-ads-api-tool --output json --ad-account-id act_<id> auth check
 ```
 
 If `META_ADS_AD_ACCOUNT_ID` (or `--ad-account-id`) is available, `auth check` prefers an ad-account scoped GET.
-

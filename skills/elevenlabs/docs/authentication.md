@@ -1,6 +1,16 @@
 # Authentication
 
+ElevenLabs authentication is meant to be local and boring: put the required key or token in your `.env` file, keep it out of chat, and run the safe check before asking an agent for real account data.
+
+That matters because voices, text-to-speech jobs, history downloads, and account resources can contain account or business data. The auth check should prove the credential works without printing the secret value.
+
+A good first auth check is: "Confirm the required ElevenLabs environment values are present, run the safe auth check, and tell me whether the credential works without showing the secret."
+
+## Authentication notes
+
 The tool authenticates with ElevenLabs using the `xi-api-key` header and the `ELEVENLABS_API_KEY` value stored in `.env`.
+
+## Setup details
 
 ```
 ELEVENLABS_API_KEY=call_{redacted}
