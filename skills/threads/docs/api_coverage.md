@@ -1,6 +1,13 @@
 # API coverage
 
-Purpose:
+Threads coverage shows exactly what this skill can do with profiles, posts, replies, insights, moderation, and token-related work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect profiles, posts, and insights, then show which Threads actions are covered."
+
+## Coverage notes
+
 - Make endpoint coverage explicit.
 - Keep the shipped CLI tied to the current official Threads documentation.
 

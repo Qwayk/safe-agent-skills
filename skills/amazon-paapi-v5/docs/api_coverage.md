@@ -1,6 +1,12 @@
 # API coverage
 
-This ledger maps Amazon PA-API v5 operations/features to `amazon-pa-api-tool` CLI commands.
+Amazon Product Advertising API coverage shows exactly what this skill can do with product lookup and browse-node research. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can look up this ASIN, compare the returned product fields, and show which Product Advertising calls are not included."
+
+## Coverage notes
 
 Last updated (UTC): 2026-02-03
 

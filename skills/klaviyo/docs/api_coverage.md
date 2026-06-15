@@ -1,4 +1,12 @@
-# API coverage (endpoints → CLI)
+# API coverage
+
+Klaviyo coverage shows exactly what this skill can do with profiles, lists, segments, campaigns, flows, templates, and events. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect profiles, campaigns, and flows, then show which marketing changes are covered."
+
+## Coverage notes
 
 - Provider: Klaviyo
 - API surface: stable operations only
@@ -7,6 +15,8 @@
 - API revision: 2026-04-15
 - Last audited (UTC): 2026-06-04
 - Write rows keep the required gate flags. When no saved snapshot is available, live apply can still run after review and explicit `--ack-no-snapshot` approval.
+
+## Coverage
 
 | Operation command | Method | Path | CLI command | Safety gates | Tests/examples | Notes |
 |---|---|---|---|---|---|---|

@@ -1,7 +1,14 @@
 # API coverage
 
-Last audited/verified (UTC): 2026-05-21T00:00:00Z
+Hacker News coverage shows exactly what this skill can do with public stories, comments, users, and item changes. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can fetch top stories, open the first five items, and show why story IDs alone are not enough."
+
+## Coverage notes
+
+Last audited/verified (UTC): 2026-05-21T00:00:00Z
 This tool targets the official Hacker News Firebase API.
 
 ## Coverage definition

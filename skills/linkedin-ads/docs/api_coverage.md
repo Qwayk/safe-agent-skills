@@ -1,10 +1,15 @@
 # API coverage
 
-Purpose:
+LinkedIn Ads coverage shows exactly what this skill can do with ad accounts, campaigns, creatives, audiences, lead forms, and reports. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect campaigns, creatives, and lead forms, then show which ad changes require a reviewed plan."
+
+## Coverage notes
+
 - Make the LinkedIn Ads scope measurable.
 - Show what this tool ships now, and what would still be docs-only if LinkedIn's docs were too incomplete for safe wiring.
-
-Rules:
 - Every unique documented operation in the chosen ad scope must be accounted for here.
 - Shared helper resources such as `posts`, `creatives`, `events`, and `inMailContents` are included only where LinkedIn's ad docs directly depend on them.
 - If the docs are incomplete, say that clearly instead of guessing.

@@ -1,4 +1,10 @@
-# Jobber API coverage ledger
+# API coverage
+
+Jobber coverage shows exactly what this skill can do with service-business clients, requests, jobs, quotes, invoices, and scheduling data. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect clients, jobs, and invoices, then show which service-business changes need a reviewed plan."
 
 ## Official sources verified 2026-06-11
 - API endpoint and request shape: https://developer.getjobber.com/docs/using_jobbers_api/api_queries_and_mutations/

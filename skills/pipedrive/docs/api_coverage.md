@@ -1,8 +1,15 @@
-# API Coverage (main reference)
+# API coverage
 
-This table is built from the official Pipedrive OpenAPI specs and is used as main reference for shipped command coverage and exclusions.
+Pipedrive coverage shows exactly what this skill can do with CRM deals, leads, activities, people, organizations, products, and pipelines. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can list open deals, inspect one person or organization, and show which Pipedrive writes are intentionally excluded."
+
+## Coverage notes
+
+This table is built from the official Pipedrive OpenAPI specs and is used as source of truth for shipped command coverage and exclusions.
 Scope note: this tool is intentionally read-only by product choice, not by omission.
-
 
 ## Source summary
 - Deduped public surface: **336** method+path pairs.

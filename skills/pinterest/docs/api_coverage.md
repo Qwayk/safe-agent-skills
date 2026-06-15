@@ -1,8 +1,14 @@
 # API coverage
 
-Last verified (UTC): 2026-02-03
+Pinterest coverage shows exactly what this skill can do with boards, pins, ads, catalogs, reports, and auth state. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
-Notes:
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect boards, pins, catalogs, and ad reports, then show which Pinterest changes are covered."
+
+## Coverage notes
+
+Last verified (UTC): 2026-02-03
 - The “Scopes” column is a reminder only. **Confirm required scopes in the Pinterest developer UI** (and the official docs), since scope names/requirements can change.
 - Reference links point to the official Pinterest API v5 docs (operation IDs).
 - Write coverage is split into:

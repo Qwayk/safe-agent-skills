@@ -1,6 +1,13 @@
 # API coverage
 
-Purpose:
+Cloudflare coverage shows exactly what this skill can do with zones, DNS, Workers, routes, security settings, logs, and infrastructure. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect this zone, DNS records, and Worker routes, then show which change paths require a reviewed plan."
+
+## Coverage notes
+
 - Make the Cloudflare API coverage claim exact and auditable.
 - Keep one active runtime allowlist reference.
 - Separate live coverage from historical phase ledgers.

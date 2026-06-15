@@ -1,12 +1,15 @@
-# API coverage (endpoints → CLI)
+# API coverage
 
-Purpose:
-- Make “all capabilities” measurable (no guessing about what’s implemented).
+Dynadot coverage shows exactly what this skill can do with domains, DNS, auctions, backorders, transfers, and account checks. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect this domain, DNS settings, and renewal details, then show which domain actions are outside the tool."
+
+## Coverage notes
+
 - Give the Manager a single source of truth for review/approval.
 - Help customers quickly see what the tool can and cannot do.
-
-Rules:
-- Keep this table honest. If something is missing, list it as missing.
 - If behavior differs from the provider docs, note it and link `docs/references.md`.
 
 ## Summary

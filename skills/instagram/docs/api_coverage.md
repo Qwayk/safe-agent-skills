@@ -1,13 +1,19 @@
 # API coverage
 
-Last audited (UTC): 2026-06-04
+Instagram coverage shows exactly what this skill can do with media, comments, mentions, messages, insights, and token-related work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect recent media and insights, then show which comment or messaging workflows are included."
+
+## Coverage notes
+
+Last audited (UTC): 2026-06-04
 Provider: Meta Instagram Platform
 Product choice: Instagram API with Instagram Login
 Primary API base URL: `https://graph.instagram.com`
 Auth method: OAuth authorization code, then short-lived to long-lived Instagram User access token
 Default API version: `v25.0`
-
 This file is the source of truth for what this tool will ship for the Instagram Login product choice.
 
 ## Shipped Instagram Login surface

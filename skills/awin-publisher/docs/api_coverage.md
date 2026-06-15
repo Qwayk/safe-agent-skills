@@ -1,16 +1,22 @@
 # API coverage
 
-This table maps the official publisher-side pages to the shipped command families and the current build status.
+Awin Publisher coverage shows exactly what this skill can do with publisher reporting, link building, feeds, and proof-of-purchase workflows. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
-Last updated (UTC): 2026-06-09  
-Core API host: `https://api.awin.com`  
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can report publisher performance, build tracking links, and show which publisher workflows are not shipped."
+
+## Coverage notes
+
+Last updated (UTC): 2026-06-09
+Core API host: `https://api.awin.com`
 Legacy feed host: `https://productdata.awin.com`
-
 Status labels used here:
-
 - `implemented (local-tested, live-unverified)`: code and unit coverage are in place, but no live Awin credential proof has been recorded yet.
 - `support-only`: official context page, not its own API command family.
 - `inbound callback`: official webhook or notification docs, not a pull command for this CLI.
+
+## Coverage
 
 | Official publisher page | Locked command family | Status | Command family state | Notes |
 | --- | --- | --- | --- | --- |

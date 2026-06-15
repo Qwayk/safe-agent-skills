@@ -1,7 +1,14 @@
 # API coverage
 
-Last verified (UTC): 2026-06-11
+Freepik coverage shows exactly what this skill can do with image search, licensed downloads, binary fetches, and local inventory files. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can search images, download licensed results, and show which Freepik workflows are outside the tool."
+
+## Coverage notes
+
+Last verified (UTC): 2026-06-11
 This tool intentionally covers a small subset of the Freepik API, optimized for safe preview-first selection and careful licensed downloads.
 
 ## Endpoints used

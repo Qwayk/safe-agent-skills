@@ -1,6 +1,14 @@
-# API coverage (endpoints → CLI)
+# API coverage
 
-Use this page when you want to check whether a Ghost API area already has a CLI command in this skill, and what safety gates apply to it.
+Ghost coverage shows exactly what this skill can do with posts, pages, members, newsletters, offers, themes, and webhooks. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect posts, pages, and members, then show which publishing or account changes are covered."
+
+## Coverage notes
+
+Check this section when you need to confirm whether a Ghost API area already has a CLI command and which safety gates apply.
 
 ## Ghost Admin API
 

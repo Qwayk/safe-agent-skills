@@ -1,10 +1,15 @@
-# API coverage (endpoints → CLI)
+# API coverage
+
+WordPress coverage shows exactly what this skill can do with posts, pages, media, users, comments, settings, and plugin-related checks. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect posts, pages, media, and comments, then show which WordPress changes are covered."
+
+## Coverage notes
 
 Last verified (UTC): 2026-01-28
-
 This tool intentionally covers a small subset of the WordPress REST API, optimized for safe, deterministic migrations and metadata edits.
-
-Summary:
 - Provider: WordPress
 - API base (default): `{WP_BASE_URL}/wp-json/wp/v2`
 - Auth: Basic Auth using a WordPress Application Password (`WP_USERNAME`, `WP_APP_PASSWORD`)

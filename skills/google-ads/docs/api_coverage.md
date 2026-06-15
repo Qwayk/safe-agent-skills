@@ -1,11 +1,10 @@
-# API coverage (Google Ads API → CLI)
+# API coverage
 
-Purpose:
-- Make “all capabilities” measurable (no guessing about what’s implemented).
-- Give reviewers a single main reference for what exists.
+Google Ads coverage shows exactly what this skill can do with customer access, GAQL reads, campaign settings, budgets, criteria, and bulk mutate work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
-Rules:
-- Keep this table honest. If something is missing, list it as missing.
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can list accessible customers, run this GAQL query, and show which campaign changes require a reviewed plan."
 
 ## Summary
 

@@ -1,17 +1,22 @@
-# API coverage (OpenAI)
+# API coverage
+
+OpenAI coverage shows exactly what this skill can do with models, files, batches, fine-tuning, vector stores, assistants, and generated API calls. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can list models, inspect files or batches, and show which OpenAI operations are covered."
+
+## Coverage notes
 
 Last audited (UTC): 2026-03-17
 Last verified (UTC): 2026-03-17
-
 Definition of “100% coverage” for this tool: every operation in `docs/official_operations_v1_2026-03-17.txt` is available as an explicit CLI command.
-
 Current write safety: every non-GET/HEAD operation can create a plan, but write apply now requires explicit no-snapshot approval before OpenAI API key use or HTTP until command-specific saved snapshot support is available. Live reads still require `--live`.
-
 Primary CLI mapping rule:
-
 - `openai-api-tool api <operation_command>`
-
 Pinned operations count: 240
+
+## Coverage
 
 | operation_command | METHOD | PATH | doc_url | tags | beta_header | primary_cli |
 |---|---:|---|---|---|---|---|

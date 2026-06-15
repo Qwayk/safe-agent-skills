@@ -1,6 +1,13 @@
-# API coverage (Discovery methods → CLI)
+# API coverage
 
-Purpose:
+Google Search Console coverage shows exactly what this skill can do with sites, search analytics, sitemaps, URL inspection, and ownership data. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can run search analytics, inspect this URL, and show which Search Console endpoints are included."
+
+## Coverage notes
+
 - Make “100% coverage” measurable (no guessing about what’s implemented).
 - Pin the canonical inventory to a committed discovery snapshot.
 

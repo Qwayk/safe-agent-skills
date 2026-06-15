@@ -1,6 +1,13 @@
-# API coverage - Sovrn
+# API coverage
 
-Purpose:
+Sovrn coverage shows exactly what this skill can do with publisher commerce, advertising reports, merchants, links, and performance data. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can review merchants, links, and performance data, then show which publisher workflows are included."
+
+## Coverage notes
+
 - Lock the exact official Sovrn HTTP surface before scaffolding or broad code work.
 - Keep coverage honest across Commerce HTTP APIs, Advertising Reporting APIs, and docs-only support pages.
 - Preserve the real auth split instead of flattening it into one fake auth model.

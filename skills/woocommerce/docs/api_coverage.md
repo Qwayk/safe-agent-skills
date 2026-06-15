@@ -1,4 +1,12 @@
-# API Coverage (main reference)
+# API coverage
+
+WooCommerce coverage shows exactly what this skill can do with products, orders, customers, coupons, reports, and store settings. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect products, orders, and customers, then show which store changes are read-only or covered."
+
+## Coverage notes
 
 This file is generated from the shipped WooCommerce operation catalog.
 Scope is the official WooCommerce REST API v3 at `/wp-json/wc/v3/`.

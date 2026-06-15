@@ -1,11 +1,20 @@
 # API coverage
 
+Amazon Creators coverage shows exactly what this skill can do with creator storefront and product-catalog work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect a storefront, list creator products, and show where catalog work stops."
+
+## Coverage notes
+
 Last audited (UTC): 2026-06-04
 Last verified (UTC): 2026-06-04
-
 The tool targets the Amazon Creators Catalog API at `https://creatorsapi.amazon/catalog/v1`.
 The four supported operations are mapped to explicit catalog commands with first-class resource controls.
 The Issue #404 inventory is test-locked: the coverage suite now fails if any of the four operations or eight high-level resources drift out of the ledger.
+
+## Coverage
 
 | API operation | CLI command | Key resource/locale flags |
 |---------------|-------------|--------------------------|

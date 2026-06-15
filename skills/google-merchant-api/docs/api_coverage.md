@@ -1,8 +1,15 @@
-# Merchant API coverage ledger
+# API coverage
+
+Google Merchant Center coverage shows exactly what this skill can do with accounts, products, feeds, promotions, shipping, and merchant settings. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect products, feeds, and account settings, then show which merchant changes need a reviewed plan."
+
+## Coverage notes
 
 Last audited (UTC): 2026-06-04
-
-This file is the main reference for the official documented Google Merchant REST surface and how each operation maps to this CLI.
+This file is the source of truth for the official documented Google Merchant REST surface and how each operation maps to this CLI.
 
 ## Totals
 
@@ -670,4 +677,3 @@ Columns: provider family, HTTP method, REST path, provider method id, explicit C
 | Status | HTTP | Path | Method ID | CLI command | Proof status | Source shape | Notes |
 |---|---|---|---|---|---|---|---|
 | Accounted, not shipped | `POST` | `youtubeshoppingcheckout/v1beta/{parent=accounts/*/orders/*}:applyOrderUpdate` | `accounts.orders.applyOrderUpdate` | `google-merchant-api-tool accounts v1beta orders apply-order-update` | Accounted from official docs only; not in shipped command tree. | REST reference page only | Official REST reference page is still published, discovery URL returned 404 on 2026-06-04, and this tool excludes legacy v1beta-only surfaces from the public CLI. |
-

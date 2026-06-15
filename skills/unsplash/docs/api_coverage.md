@@ -1,15 +1,22 @@
-# API coverage (endpoints → CLI)
+# API coverage
 
-Summary:
+Unsplash coverage shows exactly what this skill can do with photo search, collections, tracked downloads, and local image files. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can search photos, fetch one result, and show which Unsplash download or collection workflows are included."
+
+## Coverage notes
+
 - Provider: Unsplash
 - API base URL: https://api.unsplash.com
 - Auth method: Access Key via `Authorization: Client-ID ...` (no OAuth in this tool)
 - Last audited (UTC): 2026-06-04
-
-Notes:
 - This tool sends `Accept-Version: v1` on all API requests.
 - `GET /me` is not supported because it requires a Bearer token (OAuth), which is out of scope.
 - Pagination: Unsplash docs state list endpoints are paginated with a default of 10 items, up to a maximum of 30 per page. This tool enforces `--per-page <= 30` consistently.
+
+## Coverage
 
 | Endpoint | Capability | CLI command(s) | Safety gates | Tests/examples | Notes | Official docs |
 |---|---|---|---|---|---|---|

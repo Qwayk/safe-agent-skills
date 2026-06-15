@@ -1,12 +1,15 @@
-# API coverage (endpoints → CLI)
+# API coverage
 
-Purpose:
-- Make “all capabilities” measurable (no guessing about what’s implemented).
-- Give the Manager a single main reference for review/approval.
+ElevenLabs coverage shows exactly what this skill can do with voices, text-to-speech jobs, history downloads, and account resources. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can list voices, inspect generation history, and show which audio workflows are covered."
+
+## Coverage notes
+
+- Give the Manager a single source of truth for review/approval.
 - Help customers quickly see what the tool can and cannot do.
-
-Rules:
-- Keep this table honest. If something is missing, list it as missing.
 - If behavior differs from the provider docs, note it and link `docs/references.md`.
 
 ## Summary
@@ -16,7 +19,7 @@ Rules:
 - Auth method: API key via `xi-api-key` header documented at `docs/references.md`
 - Last audited (UTC): 2026-06-04
 
-## main reference
+## Source of truth
 
 - The table below mirrors `src/elevenlabs_api_tool/operations.py` and is enforced by `tests/test_api_coverage_inventory.py`; update both whenever you add a command so the ledger stays auditable.
 - Official ElevenLabs non-legacy docs are at `https://elevenlabs.io/docs/api-reference`. Each row links to the exact page we reference in `Notes`.

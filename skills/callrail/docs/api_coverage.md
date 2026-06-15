@@ -1,11 +1,16 @@
-# API coverage (endpoints → CLI)
+# API coverage
 
-Purpose:
+CallRail coverage shows exactly what this skill can do with calls, forms, companies, trackers, messages, and account settings. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can list recent calls and forms, inspect one tracker, and show which account changes are available."
+
+## Coverage notes
+
 - Make CallRail v3 capabilities measurable.
 - Keep the shipped command surface honest and reviewable.
 - Keep missing or scoped-out behavior explicit.
-
-Rules:
 - Keep this ledger honest: each real API intent has a concrete shipped command or an explicit exclusion.
 - If something is not for this CLI surface, mark it as excluded here.
 - Link implementation deltas back to `docs/references.md` as needed.

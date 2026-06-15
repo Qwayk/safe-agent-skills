@@ -1,6 +1,14 @@
-# API coverage (endpoints -> CLI)
+# API coverage
 
-This is the main reference for shipped runtime commands in this slice.
+PayPal coverage shows exactly what this skill can do with orders, captures, refunds, payouts, invoices, webhooks, and account resources. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+
+Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+
+A good first coverage check is: "Check whether this skill can inspect orders, captures, and invoices, then show which money-moving actions need extra review."
+
+## Coverage notes
+
+This is the source of truth for shipped runtime commands in this slice.
 
 ## Source summary
 
