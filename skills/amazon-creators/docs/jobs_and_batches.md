@@ -1,8 +1,11 @@
 # Jobs and batches
 
-This tool uses a safe loop for the remote catalog API and keeps loops simple:
-- Catalog commands are read-only and use dry-run plan + apply flow.
-- Local write helpers (`onboarding`, `auth token set`, `auth token fetch`) now plan and require approval before local file writes when no saved snapshot is available.
+Amazon catalog jobs should stay small and reviewable. The normal flow is: show the request plan, confirm the locale and identifiers, then call Amazon only after `--apply`.
+
+Two rules matter most:
+
+- Catalog commands are read-only and use a dry-run plan plus apply flow.
+- Local write helpers (`onboarding`, `auth token set`, `auth token fetch`) plan first and require approval before local file writes when no saved snapshot is available.
 
 - Catalog commands emit a dry-run `plan` object by default and do not hit Amazon until you pass `--apply`.
 - When `--apply` is used, the CLI calls the catalog API, returns simplified output, and writes a `receipt`.

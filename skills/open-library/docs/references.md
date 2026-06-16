@@ -10,6 +10,6 @@ Official Open Library references:
 
 Notes for this tool (2026-05-21):
 
-- This tool uses public, low-volume read endpoints.
+- The Open Library commands use public, low-volume read endpoints.
 - No authentication is required.
 - Keep list-style calls limited (`--limit`, `--offset`) and avoid bulk harvests.

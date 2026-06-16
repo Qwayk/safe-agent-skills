@@ -1,8 +1,8 @@
 # What you can do with X
 
-Use this page when you want practical X jobs to hand to your agent.
-
 X work can affect a public account, a DM conversation, or a user's relationship with your brand. The safest first move is to check auth, identify the account, and plan before sending or changing anything.
+
+Start with account identity, mentions, posts, lists, trends, Spaces, or DM reachability. The agent should show the target and plan before it posts, sends, follows, likes, bookmarks, or changes lists.
 
 ## Good jobs to give the agent
 

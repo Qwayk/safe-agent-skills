@@ -1,7 +1,8 @@
-# Use cases
+# What you can do with Amazon Creators
 
-Use this page when you want practical Amazon Creators jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Amazon Creators is useful when you need product and catalog context before making a content, storefront, or affiliate decision. Start with a small request: confirm the locale, identifiers, and resource preset, then ask the agent to show the request plan before it calls Amazon.
+
+For setup, start with [Connect your account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Why this helps with Amazon catalog research
 

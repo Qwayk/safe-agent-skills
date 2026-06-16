@@ -1,6 +1,6 @@
 # Jobs and batches
 
-Use this page when you want to test repeatable CSV jobs or understand the current batch limits.
+YouTube batch work is useful when you want the same careful check repeated across a CSV file. Start with a dry run, review the plan, and treat write rows as safety examples unless the tool clearly supports the live action you need.
 
 Batch operations are run from a CSV file:
 

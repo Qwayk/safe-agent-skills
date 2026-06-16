@@ -1,9 +1,10 @@
-# Use cases
-
-Use this page when you want practical Cloudinary jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+# What you can do with Cloudinary
 
 Cloudinary work usually touches media people actually see, so the safest path is to inspect assets, folders, metadata, and account settings before applying changes.
+
+Ask the agent to find the exact asset, folder, preset, or account resource first. That keeps media cleanup, upload planning, tagging, and restore work focused on the right target.
+
+For setup, start with [Connect your account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Good jobs to give the agent
 

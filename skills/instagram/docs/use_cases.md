@@ -1,9 +1,10 @@
-# Use cases
-
-Use this page when you want practical Instagram jobs to hand to your agent.
-If you need setup first, start with [Connect your Instagram access](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+# What you can do with Instagram
 
 Instagram professional-account work usually means reviewing real media, comments, mentions, messages, and insights before publishing or replying.
+
+Ask the agent to confirm the account first, then review the media, comments, mentions, messages, quota, or insights that matter for the job. Publishing and replies should come only after a clear preview.
+
+For setup, start with [Connect your Instagram access](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Good jobs to give the agent
 

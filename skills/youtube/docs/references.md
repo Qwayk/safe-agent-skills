@@ -1,8 +1,6 @@
 # References (sources)
 
-Use this page when you want to see the official YouTube and Google sources behind this tool.
-
-Prefer official provider docs; use other sources only when needed and note why.
+These are the official YouTube and Google sources used to keep the tool grounded. Prefer provider docs when adding or checking behavior; use other sources only when needed and say why.
 
 Source rules:
 - Never include secrets (tokens, client secrets) in this file.

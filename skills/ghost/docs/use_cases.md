@@ -1,9 +1,10 @@
 # What you can do with Ghost
 
-Use this page when you want practical Ghost jobs to hand to your agent.
-If you need setup first, start with [Connect your Ghost account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
-
 Ghost work is usually about improving a live publication without accidentally changing the wrong post, tag, member, offer, theme, or webhook.
+
+Start by asking the agent to read the publication, find the exact content or member target, and explain the safest next step before it prepares a change.
+
+For setup, start with [Connect your Ghost account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Good jobs to give the agent
 

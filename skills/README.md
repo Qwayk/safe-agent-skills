@@ -1,12 +1,12 @@
 # Skill catalog
 
-Use this page to choose a Qwayk skill by product, job, access, and change level.
+Pick the product or job you want an agent to handle, then install the matching Qwayk skill. Each skill keeps the agent instructions, safe API tool code, docs, and tests together so the agent has one clear place to look before it touches an API.
 
-Each skill keeps the agent instructions, safe API tool code, docs, and tests together. Some skills are read-only by design. Others can change real settings or data, but they are built to show the plan first, ask before important changes, check the result, and leave a record of what happened. When possible, they should save the exact thing they are about to change. When the product has its own restore, backup, or version history, they should use that too.
+Some skills only read public or account data. Others can prepare or apply changes, but they are designed to show a plan, ask before important actions, check the result, and leave a record of what happened. When possible, they save the current state before changing it. When the product has restore, backup, or version history, the skill should use that too.
 
 If your agent supports installed skills, ask it to install the skill you want from `Qwayk/safe-agent-skills`. For manual setup, use the [install guide](../INSTALL.md). For the safety model, read [How Qwayk skills keep agents safer](../docs/how-qwayk-keeps-agents-safe.md).
 
-The install slug appears under each product name so you can tell your agent exactly which skill to install.
+Use the install slug under each product name when you want to tell the agent exactly which skill to install.
 
 ## Start here
 

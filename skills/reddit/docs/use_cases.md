@@ -1,11 +1,8 @@
-# Use cases
+# What you can do with Reddit
 
-Use this page when you want practical Reddit jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Reddit work can affect public posts, communities, moderation, messages, and account state. Start by checking what the API access can read and which official operations are available before asking for any write plan.
 
-## Why this helps with Reddit work
-
-Reddit work can affect public posts, communities, moderation, messages, and account state. The useful first step is usually to check what the API access can actually read and which official operations are available.
+For setup, start with [Connect your account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Good jobs to give the agent
 

@@ -1,9 +1,10 @@
-# Use cases
-
-Use this page when you want practical WordPress jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+# What you can do with WordPress
 
 WordPress work is usually about cleaning up a real content library: finding gaps, checking exact targets, previewing edits, and keeping proof of what changed.
+
+Start with a read of posts, pages, media, comments, categories, tags, or post types. Once the exact target is clear, the agent can prepare a preview for metadata, caption, taxonomy, publishing, or media work.
+
+For setup, start with [Connect your account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Good jobs to give the agent
 

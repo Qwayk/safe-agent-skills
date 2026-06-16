@@ -1,9 +1,10 @@
 # What you can do with Figma
 
-Use this page when you want practical Figma jobs to hand to your agent.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
-
 Figma work is usually about understanding a file, library, comment thread, or team resource before making a design-system or workflow change.
+
+Start with a read: file metadata, comments, variables, components, or team resources. Once the target is clear, the agent can prepare a careful plan for comments, webhooks, variables, or dev resources.
+
+For setup, start with [Connect your account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## File and comment review
 
