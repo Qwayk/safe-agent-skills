@@ -77,7 +77,7 @@ This skill covers the full documented Hacker News v0 public HTTP read surface:
 
 There are no live changes to approve. This skill has no write or account-action path.
 
-Before a read, the agent can run the connection check, use one of the named read commands, and summarize only what the public API returned. The only local change this skill can make is creating a placeholder `.env` file during onboarding.
+Before a read, the agent can run the connection check, use one of the named read commands, and summarize only what the public API returned. The only local change the shipped commands can make is creating a placeholder `.env` file during onboarding.
 
 ## What proof it leaves behind
 

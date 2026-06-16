@@ -56,7 +56,7 @@ Connect the Sovrn skill to my account, check which Commerce and Advertising cred
 ## How this skill stays safe
 
 - It is read-only to Sovrn by design.
-- It uses only explicit named commands and no raw request bridge.
+- It uses only explicit named commands and no unreviewed direct API passthrough.
 - It keeps the real Sovrn auth split visible instead of flattening Commerce and Advertising into one fake credential model.
 - `onboarding` can create a local placeholder `.env` file, but it never fills secrets for you and it never asks you to paste secrets into chat.
 - `auth check` proves local readiness only. It does not pretend to be live vendor proof.
@@ -83,7 +83,7 @@ Before credentialed reads:
 - you confirm the Advertising publisher ID before Advertising report pulls
 - if a needed credential is missing, the tool should say so instead of guessing
 
-The only local change this skill can make is creating a placeholder `.env` file during onboarding.
+The only local change the shipped commands can make is creating a placeholder `.env` file during onboarding.
 
 ## What proof it leaves behind
 

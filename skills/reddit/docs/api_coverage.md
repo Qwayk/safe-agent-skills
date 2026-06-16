@@ -1,10 +1,10 @@
 # API coverage
 
-Reddit coverage shows exactly what this skill can do with posts, comments, mod actions, users, subreddits, and generated API calls. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Reddit coverage shows exactly what the shipped commands can do with posts, comments, mod actions, users, subreddits, and generated API calls. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether this skill can inspect posts, comments, and subreddit data, then show which Reddit actions are covered."
+A good first coverage check is: "Check whether the shipped commands can inspect posts, comments, and subreddit data, then show which Reddit actions are covered."
 
 ## Coverage notes
 
@@ -24,7 +24,7 @@ A good first coverage check is: "Check whether this skill can inspect posts, com
 
 Definition of coverage for this tool:
 - Every row below must be available as an explicit CLI subcommand under `qwayk-reddit-safe-agent-cli api <operation_command>`.
-- No raw request bridge counts toward coverage.
+- No unreviewed direct API passthrough counts toward coverage.
 
 | operation_command | METHOD | PATH | section | oauth_scope | primary_cli |
 |---|---:|---|---|---|---|
@@ -86,7 +86,7 @@ Definition of coverage for this tool:
 | `post-api-store-visits` | `POST` | `/api/store_visits` | `links comments` | `save` | `qwayk-reddit-safe-agent-cli api post-api-store-visits` |
 | `post-api-submit` | `POST` | `/api/submit` | `links comments` | `submit` | `qwayk-reddit-safe-agent-cli api post-api-submit` |
 | `post-api-unhide` | `POST` | `/api/unhide` | `links comments` | `report` | `qwayk-reddit-safe-agent-cli api post-api-unhide` |
-| `post-api-unlock` | `POST` | `/api/unlock` | `links comments` | `modposts` | `qwayk-reddit-safe-agent-cli api post-api-unlock` |
+| `post-api-use` | `POST` | `/api/use` | `links comments` | `modposts` | `qwayk-reddit-safe-agent-cli api post-api-use` |
 | `post-api-unmarknsfw` | `POST` | `/api/unmarknsfw` | `links comments` | `modposts` | `qwayk-reddit-safe-agent-cli api post-api-unmarknsfw` |
 | `post-api-unsave` | `POST` | `/api/unsave` | `links comments` | `save` | `qwayk-reddit-safe-agent-cli api post-api-unsave` |
 | `post-api-unspoiler` | `POST` | `/api/unspoiler` | `links comments` | `modposts` | `qwayk-reddit-safe-agent-cli api post-api-unspoiler` |

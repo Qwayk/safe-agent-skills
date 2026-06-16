@@ -1,17 +1,17 @@
 # API coverage
 
-HubSpot coverage shows exactly what this skill can do with CRM records, owners, pipelines, marketing data, and account resources. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+HubSpot coverage shows exactly what the shipped commands can do with CRM records, owners, pipelines, marketing data, and account resources. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether this skill can inspect deals, contacts, pipelines, and owners, then show which CRM changes are covered."
+A good first coverage check is: "Check whether the shipped commands can inspect deals, contacts, pipelines, and owners, then show which CRM changes are covered."
 
 ## Coverage notes
 
 - Make the HubSpot CRM surface measurable.
 - Lock the shipped command families.
 - Keep mixed API versions and gated object types explicit.
-- This file is the source of truth for the shipped HubSpot command surface.
+- This file is the main reference for the shipped HubSpot command surface.
 - Every official CRM endpoint group in scope must map to an explicit CLI action.
 - No raw-request bridge counts as coverage.
 - If HubSpot keeps an operation on an older official path, keep that path here and note it clearly.

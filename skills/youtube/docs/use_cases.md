@@ -2,7 +2,7 @@
 
 YouTube work usually starts with a channel, video, playlist, caption, comment, or upload question that needs official data before someone edits a public channel.
 
-This skill can help with channel research, video audits, caption downloads, playlist cleanup, metadata planning, and careful upload or update plans. The safest pattern is simple: read the channel first, explain what was found, then prepare a reviewed plan before anything changes.
+The shipped commands can help with channel research, video audits, caption downloads, playlist cleanup, metadata planning, and careful upload or update plans. The safest pattern is simple: read the channel first, explain what was found, then prepare a reviewed plan before anything changes.
 
 If you need setup first, start with [Connect your YouTube account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 

@@ -1,17 +1,17 @@
 # API coverage
 
-Figma coverage shows exactly what this skill can do with files, nodes, comments, branches, webhooks, and team resources. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Figma coverage shows exactly what the shipped commands can do with files, nodes, comments, branches, webhooks, and team resources. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether this skill can inspect this file, list comments or nodes, and show which Figma actions are not included."
+A good first coverage check is: "Check whether the shipped commands can inspect this file, list comments or nodes, and show which Figma actions are not included."
 
 ## Coverage notes
 
 Provider: Figma
 API base URL: `https://api.figma.com`
 Last verified (UTC): `2026-06-04`
-`operation_specs.py` is the source of truth. Runtime for all listed endpoints is implemented in the local tool.
+`operation_specs.py` is the main reference. Runtime for all listed endpoints is implemented in the local tool.
 `status` now separates local/runtime proof from provider live verification status.
 Current write operations build plans first. When no saved snapshot is available, apply can still run after review and explicit `--ack-no-snapshot` approval.
 

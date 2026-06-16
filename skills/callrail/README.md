@@ -62,7 +62,7 @@ Check the CallRail connection, show recent calls for one company, list integrati
 - Normal live writes need `--apply --yes --ack-no-snapshot` while command-specific snapshots are not available.
 - Reviewed writes should use `--plan-out` before review and `--plan-in` for live apply.
 - `calls create-outbound` and `text-messages send` also need `--ack-irreversible`.
-- The tool has no raw request bridge.
+- The tool has no unreviewed direct API passthrough.
 
 ## What it covers today
 

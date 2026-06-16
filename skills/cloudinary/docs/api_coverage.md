@@ -1,15 +1,15 @@
 # API coverage
 
-Cloudinary coverage shows exactly what this skill can do with assets, folders, backups, transformations, and media delivery settings. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Cloudinary coverage shows exactly what the shipped commands can do with assets, folders, backups, transformations, and media delivery settings. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether this skill can list assets in this folder, inspect one asset, and show which media changes are shipped."
+A good first coverage check is: "Check whether the shipped commands can list assets in this folder, inspect one asset, and show which media changes are shipped."
 
 ## Coverage notes
 
 - Make the Cloudinary REST coverage claim exact and auditable.
-- Keep one active source of truth for the runtime allowlist.
+- Keep one active main reference for the runtime allowlist.
 - Show which official REST groups are shipped, gated, beta, or out of scope.
 
 ## Summary

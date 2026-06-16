@@ -64,5 +64,5 @@ Use official Sovrn sources only.
 ## Notes
 
 - The Advertising endpoint pages above are official pages, but some are only discoverable through the official Advertising support pages and the live reference index data on the Sovrn home page.
-- `custom-reporting.md` is an official overview page, but the parameter-level source of truth for the custom reporting endpoint is `get_reporting-advertising-publishers-publisherid-1.md`.
+- `custom-reporting.md` is an official overview page, but the parameter-level main reference for the custom reporting endpoint is `get_reporting-advertising-publishers-publisherid-1.md`.
 - Commerce real-time report pages still show `Authorization: secret {SECRET_KEY}` in prose and examples even though the OpenAPI scheme name says `bearerAuth`.

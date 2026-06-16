@@ -10,7 +10,7 @@ A good safety ask is: "Start with a small report or link-builder check, then rev
 
 - Accounts, programs, offers, transactions, transaction queries, reports, and linkbuilder commands are read-only.
 - Feed commands only write local files when you give an explicit `--out` path.
-- Reads stay explicit. There is no raw request bridge.
+- Reads stay explicit. There is no unreviewed direct API passthrough.
 - The tool never prints secrets.
 - `proof-of-purchase orders create` is the only remote write command.
 

@@ -1,14 +1,14 @@
 # API coverage
 
-Mercury coverage shows exactly what this skill can do with business banking balances, accounts, transactions, cards, recipients, and local exports. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Mercury coverage shows exactly what the shipped commands can do with business banking balances, accounts, transactions, cards, recipients, and local exports. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether this skill can inspect balances, transactions, and cards, then show which banking actions are read-only or excluded."
+A good first coverage check is: "Check whether the shipped commands can inspect balances, transactions, and cards, then show which banking actions are read-only or excluded."
 
 ## Coverage notes
 
-- Give the Manager a single source of truth for review/approval.
+- Give the Manager a single main reference for review/approval.
 - Help customers quickly see what the tool can and cannot do.
 - If behavior differs from the provider docs, note it and link `docs/references.md`.
 

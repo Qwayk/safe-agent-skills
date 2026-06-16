@@ -62,7 +62,7 @@ Check the TikTok Marketing connection, tell me whether auth works, and help me p
 - `auth check` is a special live helper that validates credentials directly.
 - Write-like operations start as dry-run plans first.
 - Apply attempts need the normal write gates and still require explicit no-snapshot approval when no real before-state support exists.
-- There is no raw request bridge.
+- There is no unreviewed direct API passthrough.
 - Plans, refusal outputs, run history, docs, tests, and the coverage ledger all live in this repo so you can inspect what the agent is using.
 
 ## What it covers today

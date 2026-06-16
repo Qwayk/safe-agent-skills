@@ -54,7 +54,7 @@ They still need the normal gates, but they are not the same as pretending a norm
 
 ## Local files and proof
 
-This skill can save:
+The shipped commands can save:
 
 - dry-run plans with `--plan-out`
 - provider backup or restore receipts with `--receipt-out`

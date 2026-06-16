@@ -1,6 +1,6 @@
 # Batches (bulk operations)
 
-This tool intentionally avoids a generic “jobs runner” today. Instead, it provides focused batch commands with strict safety gates.
+This tool intentionally avoids a generic “jobs runner” for now. Instead, it provides focused batch commands with strict safety gates.
 
 ## Bulk lead injection
 

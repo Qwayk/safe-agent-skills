@@ -22,13 +22,13 @@ This tool is safe by design because it is read-only.
 - No writes
 - No uploads
 - No premium V2 endpoints
-- No raw request bridge
+- No unreviewed direct API passthrough
 - No generic “call anything” command
 
 ## Safety checks
 
 - `auth check` confirms the API is reachable with a read-only probe
-- `docs/api_coverage.md` is the source of truth for the allowed endpoint list
+- `docs/api_coverage.md` is the main reference for the allowed endpoint list
 - `docs/proof.md` and `docs/examples/outputs/` show real command evidence
 
 ## Output safety

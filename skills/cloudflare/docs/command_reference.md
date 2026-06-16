@@ -441,7 +441,7 @@ Dry-run (plan only):
   - `cloudflare-api-tool email-routing dns get --zone-id <ZONE_ID>`
   - `cloudflare-api-tool email-routing dns enable --zone-id <ZONE_ID>`
   - `cloudflare-api-tool email-routing dns disable --zone-id <ZONE_ID>`
-  - `cloudflare-api-tool email-routing dns unlock --zone-id <ZONE_ID>`
+  - `cloudflare-api-tool email-routing dns use --zone-id <ZONE_ID>`
 - Rules (zone-scoped):
   - `cloudflare-api-tool email-routing rules list --zone-id <ZONE_ID>`
   - `cloudflare-api-tool email-routing rules get --zone-id <ZONE_ID> --rule-identifier <ID>`

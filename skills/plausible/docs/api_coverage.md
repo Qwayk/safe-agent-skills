@@ -1,10 +1,10 @@
 # API coverage
 
-Plausible coverage shows exactly what this skill can do with sites, stats, goals, shared links, team members, and account settings. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Plausible coverage shows exactly what the shipped commands can do with sites, stats, goals, shared links, team members, and account settings. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether this skill can report site stats, inspect goals, and show which Plausible account changes are covered."
+A good first coverage check is: "Check whether the shipped commands can report site stats, inspect goals, and show which Plausible account changes are covered."
 
 ## Coverage notes
 

@@ -27,7 +27,7 @@ Status: **done**
 
 What Phase 1 ships:
 - Push domains to another Dynadot account (bulk, chunked, safe-by-default).
-- Auto-unlock domains for push during the push request (default behavior).
+- Auto-use domains for push during the push request (default behavior).
 - List incoming push requests (receiver side).
 - Accept or decline push requests (receiver side).
 - Future verification target: re-check push requests and confirm the domains are gone after accept/decline.

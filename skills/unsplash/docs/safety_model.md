@@ -43,7 +43,7 @@ The tool should say those limits plainly before any real tracked download is all
 
 ## Local proof and run history
 
-This skill can save:
+The shipped commands can save:
 
 - dry-run plans with `--plan-out`
 - local run history under `.state/runs`

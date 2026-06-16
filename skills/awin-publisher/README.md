@@ -6,7 +6,7 @@ Awin Publisher is where an affiliate publisher checks the programs they joined, 
 
 It is useful for jobs like checking joined or pending programs, reviewing recent transactions, grouping results by advertiser or campaign, generating tracking links, downloading feeds to local files, and preparing proof-of-purchase uploads for review.
 
-Most publisher work stays read-only or download-only. The one remote write path, `proof-of-purchase orders create`, starts as a dry-run plan and only goes live after explicit approval with the reviewed plan file. There is no raw request bridge.
+Most publisher work stays read-only or download-only. The one remote write path, `proof-of-purchase orders create`, starts as a dry-run plan and only goes live after explicit approval with the reviewed plan file. There is no unreviewed direct API passthrough.
 
 A good first ask is: "Check the Awin Publisher skill is configured, list the publisher accounts this token can use, show recent transactions by advertiser, and stop before any live proof-of-purchase upload."
 
@@ -64,7 +64,7 @@ Check the Awin Publisher skill is configured, list the publisher accounts this t
 - Live proof-of-purchase uploads need `--apply --yes --plan-in`.
 - `--plan-in` rechecks the reviewed plan against the current environment and the requested publisher and advertiser ids.
 - `--receipt-out` can save the final apply receipt.
-- There is no raw request bridge.
+- There is no unreviewed direct API passthrough.
 
 ## What it covers today
 
@@ -101,7 +101,7 @@ This skill covers:
 - Live proof-of-purchase use still needs both Awin-side publisher enablement and advertiser-side CLO enablement.
 - Live Awin credential proof is not stored in this repo because no real credentials are committed here.
 - Different Awin command families use different auth flows, so the tool keeps those splits explicit instead of pretending one key works everywhere.
-- There is no raw request bridge.
+- There is no unreviewed direct API passthrough.
 
 ## Helpful docs
 

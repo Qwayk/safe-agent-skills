@@ -75,7 +75,7 @@ These files are committed (unlike `.state/`):
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage source of truth: `docs/api_coverage.md`
+- Coverage main reference: `docs/api_coverage.md`
 - Debug history: `docs/engineering_notes.md`
 
 Latest local verification on 2026-06-04 UTC: `.venv/bin/python -m unittest -q tests.test_commands tests.test_run_artifacts` passed with `34` tests; full-suite result is recorded in the lifecycle note when this pass closes.

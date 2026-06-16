@@ -57,5 +57,5 @@ The committed plan and refusal examples now use a real write-like GA4 command sh
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage source of truth: `docs/api_coverage.md`
+- Coverage main reference: `docs/api_coverage.md`
 - Debug history: `docs/engineering_notes.md`

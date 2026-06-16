@@ -126,12 +126,12 @@ These files are committed (unlike `.state/`):
   - `recovery.backups: []`
   - `recovery.snapshots: []`
   - `recovery.rollback_plan: null`
-- Future verification notes may still be present as `post_apply_verification_plan`, but they do not unlock apply.
+- Future verification notes may still be present as `post_apply_verification_plan`, but they do not use apply.
 - **Write receipt** → verify approved apply records no-snapshot approval and recovery limits; missing approval creates only refusal output.
 - **Snapshot wording drift** → verify docs never describe read-back snapshot verification as a restoreable backup.
 
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage source of truth: `docs/api_coverage.md`
+- Coverage main reference: `docs/api_coverage.md`
 - Debug history: `docs/engineering_notes.md`

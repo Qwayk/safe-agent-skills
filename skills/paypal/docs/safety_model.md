@@ -11,7 +11,7 @@ A good safety ask is: "Read the order or transaction first, then review the plan
 - Dry-run by default; no writes unless `--apply`.
 - Current write apply requires explicit no-snapshot approval before PayPal auth or HTTP until command-specific saved snapshot support is available.
 - Refuse when unsure; do not guess.
-- Some higher-risk actions require `--apply` and `--yes`, including both delete and non-delete actions. Use `docs/api_coverage.md` as the exact source of truth.
+- Some higher-risk actions require `--apply` and `--yes`, including both delete and non-delete actions. Use `docs/api_coverage.md` as the exact main reference.
 - No current shipped PayPal command in this tool requires `--ack-irreversible`.
 - Never log secrets.
 

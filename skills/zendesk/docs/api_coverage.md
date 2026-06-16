@@ -1,14 +1,14 @@
 # API coverage
 
-Zendesk coverage shows exactly what this skill can do with tickets, users, organizations, groups, macros, jobs, and support content. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Zendesk coverage shows exactly what the shipped commands can do with tickets, users, organizations, groups, macros, jobs, and support content. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether this skill can inspect tickets, users, and macros, then show which support changes are covered."
+A good first coverage check is: "Check whether the shipped commands can inspect tickets, users, and macros, then show which support changes are covered."
 
 ## Coverage notes
 
-- Give the Manager a single source of truth for review/approval.
+- Give the Manager a single main reference for review/approval.
 - Help customers quickly see what the tool can and cannot do.
 - If behavior differs from the provider docs, note it and link `docs/references.md`.
 
@@ -36,7 +36,7 @@ Columns:
 | Endpoint | Capability | CLI command(s) | Safety gates | Tests/examples | Notes |
 |---|---|---|---|---|---|
 | OpenAPI snapshot (pinned) | Canonical operation + command inventory | `zendesk-api-tool inventory ...` | read-only | `tests/test_inventory.py` | Offline; proves 100% coverage is measurable. |
-| Ticketing API (all operations) | One explicit command per OpenAPI operation | `zendesk-api-tool api <operation>` | Plan-only by default. Reads require `--live` to execute. Writes require gates such as `--apply --yes --plan-in`, then require explicit no-snapshot approval before Zendesk HTTP when no saved snapshot is available. Deletes also require `--ack-irreversible`. | `tests/test_cli_api_registry.py`, `tests/test_cli_api_safety_gates.py` | No generic/raw request bridge. |
+| Ticketing API (all operations) | One explicit command per OpenAPI operation | `zendesk-api-tool api <operation>` | Plan-only by default. Reads require `--live` to execute. Writes require gates such as `--apply --yes --plan-in`, then require explicit no-snapshot approval before Zendesk HTTP when no saved snapshot is available. Deletes also require `--ack-irreversible`. | `tests/test_cli_api_registry.py`, `tests/test_cli_api_safety_gates.py` | No generic/unreviewed direct API passthrough. |
 
 ## Known gaps (explicit)
 

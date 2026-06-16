@@ -1,15 +1,15 @@
 # API coverage
 
-Google Merchant Center coverage shows exactly what this skill can do with accounts, products, feeds, promotions, shipping, and merchant settings. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Google Merchant Center coverage shows exactly what the shipped commands can do with accounts, products, feeds, promotions, shipping, and merchant settings. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether this skill can inspect products, feeds, and account settings, then show which merchant changes need a reviewed plan."
+A good first coverage check is: "Check whether the shipped commands can inspect products, feeds, and account settings, then show which merchant changes need a reviewed plan."
 
 ## Coverage notes
 
 Last audited (UTC): 2026-06-04
-This file is the source of truth for the official documented Google Merchant REST surface and how each operation maps to this CLI.
+This file is the main reference for the official documented Google Merchant API area and how each operation maps to this CLI.
 
 ## Totals
 

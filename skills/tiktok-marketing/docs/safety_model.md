@@ -38,7 +38,7 @@ It validates your current credentials against `oauth2-advertiser-get`, so it is 
 
 ## What this skill does not promise
 
-- no raw request bridge
+- no unreviewed direct API passthrough
 - no hidden live calls through the broad `api` surface
 - no generic rollback
 - no broad saved before-state support for current write-like operations
@@ -47,7 +47,7 @@ The tool should say those limits plainly before any live write is allowed.
 
 ## Local proof and run history
 
-This skill can save:
+The shipped commands can save:
 
 - dry-run plans with `--plan-out`
 - local run history under `.state/runs`

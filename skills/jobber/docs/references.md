@@ -17,7 +17,7 @@ Keep this list as the source anchor for command behavior and limits.
 
 ## Local source files
 
-- Coverage source of truth: `docs/api_coverage.md`
+- Coverage main reference: `docs/api_coverage.md`
 - Inventory source: `docs/jobber_schema_inventory.json`
 - Proof examples: `docs/examples/outputs/`
 

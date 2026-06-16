@@ -1,4 +1,4 @@
-# Qwayk Safe Agent Skills
+# Qwayk skills
 
 Give your AI agent real product work, with more review before risky changes.
 
@@ -10,6 +10,14 @@ Qwayk skills help agents work inside real products without turning live settings
 If your agent supports installed skills, ask it to install the skill you want from `Qwayk/safe-agent-skills`. If the skill needs account access, ask the agent to run `onboarding`. For the full setup flow, use the [install guide](INSTALL.md).
 
 Each skill keeps the agent instructions, safe API tool code, docs, and tests together in one place, so you can inspect what the agent is really using. Some skills are read-only by design. Others can change real settings or data, but they are built to look first, show the plan, ask before important changes, check the result, and leave a record of what happened.
+
+## Start here
+
+If you know the product, open the [skill catalog](skills/README.md) and choose it from the list.
+
+If you know the job but not the product yet, use the catalog sections to start from the work: reporting, ads, CRM, commerce, publishing, creative tools, cloud platforms, or public data.
+
+If you are checking whether this is safe enough for real account work, read [How Qwayk skills keep agents safer](docs/how-qwayk-keeps-agents-safe.md) before installing anything.
 
 ## What makes Qwayk skills different
 

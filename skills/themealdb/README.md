@@ -56,7 +56,7 @@ Find meal ideas with chicken breast, show a few options, and open one recipe wit
 
 - It is read-only by design.
 - It uses TheMealDB free V1 public endpoints.
-- It has named commands only, not a raw request bridge.
+- It has named commands only, not a unreviewed direct API passthrough.
 - It does not upload, edit, or delete anything.
 - Custom API keys are redacted from errors and verbose HTTP logs.
 

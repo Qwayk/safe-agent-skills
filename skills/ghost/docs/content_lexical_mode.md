@@ -44,7 +44,7 @@ Images-first, because it maps directly to common migration work:
 
 Some affiliate/paid link compliance requires `rel="noreferrer noopener sponsored nofollow"`.
 
-This tool can enforce that on Lexical link nodes:
+The shipped commands can enforce that on Lexical link nodes:
 - Amazon-only: `ghost-api-tool post bodylex set-amazon-link-rel --slug SLUG --diff`
 - Generic paid links:
   - Host mode: `ghost-api-tool post bodylex set-paid-link-rel --slug SLUG --host hellofresh.com --host sovrn.co --diff`

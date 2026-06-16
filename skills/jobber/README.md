@@ -12,7 +12,7 @@ A good first ask is: "Check the Jobber skill is connected, show what account dat
 
 ## Start here first
 
-- Want ideas for real Jobber work? [What this skill can help you do](docs/use_cases.md)
+- Want ideas for real Jobber work? [What the shipped commands can help you do](docs/use_cases.md)
 - Need setup? [Set up your account step by step](docs/onboarding.md)
 - Want the safety story first? [See how this skill keeps changes safe](docs/safety_model.md)
 - If you are ready for commands, go to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).

@@ -6,7 +6,7 @@ Awin Advertiser is where a brand or advertiser checks publisher performance, tra
 
 It is useful for questions like "Which publishers drove results last month?", "Do these transactions need follow-up?", "Is this batch validation file safe to submit?", or "What should we check before uploading an offer, feed, or conversion order?"
 
-Read work can run after setup. Advertiser-side writes start as dry-run plans, live apply needs the normal review gates, and current writes leave plans and receipts but do not promise a broad saved before-state or automatic restore. There is no raw request bridge.
+Read work can run after setup. Advertiser-side writes start as dry-run plans, live apply needs the normal review gates, and current writes leave plans and receipts but do not promise a broad saved before-state or automatic restore. There is no unreviewed direct API passthrough.
 
 A good first ask is: "Check the Awin Advertiser skill is configured, show me which publishers drove results recently, and help me plan the safest next advertiser action."
 
@@ -60,7 +60,7 @@ Check the Awin Advertiser skill is configured, show me which publishers drove re
 - Live writes need `--apply --yes --ack-irreversible --plan-in`.
 - Plans and receipts can be saved with `--plan-out` and `--receipt-out`.
 - Current write families leave a review trail, but they do not promise a broad saved before-state or automatic restore path.
-- There is no raw request bridge.
+- There is no unreviewed direct API passthrough.
 
 ## What it covers today
 
@@ -92,7 +92,7 @@ This skill covers:
 
 ## Limits
 
-- No raw request bridge.
+- No unreviewed direct API passthrough.
 - Live Awin advertiser proof is not stored in this repo because no real credentials are committed here.
 - Current write families do not provide a broad saved before-state or one-click restore.
 - Auth details differ by endpoint family, so the skill keeps those mappings explicit instead of pretending one rule fits every Awin endpoint.

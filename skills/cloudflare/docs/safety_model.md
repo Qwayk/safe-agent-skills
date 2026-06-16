@@ -13,7 +13,7 @@ A good safety ask is: "Read the target zone or resource first, save any sensitiv
 - Sensitive reads (code/KV values/PII-like outputs) require `--apply` and explicit file output; the tool never prints sensitive content to stdout.
 - Some Cloudflare APIs use **non-GET** methods for **read-like** operations (example: KV bulk get, Queues pull). These are treated as sensitive file-only reads: apply requires `--apply` + `--out`, and they do **not** require `--yes`.
 - Browser Run named wrappers are read-like file-output commands: `browser-run markdown|links|scrape|screenshot|crawl|crawl-result` require `--apply --out`; `--yes` is accepted but not required.
-- Dangerous writes should save live before-state before apply when practical. If this tool cannot save useful before-state for a supported write family, apply requires explicit no-snapshot approval; unsupported, ambiguous, or failed safety-check cases still stop.
+- Dangerous writes should save live before-state before apply when practical. If the shipped commands cannot save useful before-state for a supported write family, apply requires explicit no-snapshot approval; unsupported, ambiguous, or failed safety-check cases still stop.
 - `auth zone-create-check` is a safe auth preflight. It sends an intentionally invalid create-zone payload so Cloudflare can prove or refuse the permission without creating a zone.
 
 - Read-only by default; refuse when unsure; do not guess.
@@ -119,6 +119,6 @@ Examples:
 ## Rollback and recovery
 
 - Do not auto-rollback silently.
-- For the broad `operations` write surface, this tool can now save live old-state before many writes, but it still does not provide automatic rollback or restore.
+- For the broad `operations` write surface, the shipped commands can now save live old-state before many writes, but it still does not provide automatic rollback or restore.
 - If a command emits a `rollback_plan` in its receipt, use it as a **manual** guide for next steps; it is not automatic rollback.
 - If there is no rollback path, label the action as irreversible and ask for manual recovery planning.

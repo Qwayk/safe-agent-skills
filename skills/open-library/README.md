@@ -90,7 +90,7 @@ There are no live changes in this skill. It reads public catalog data and return
 - Open Library public endpoints are for low-volume real-time use, not bulk downloading.
 - Subject lookup is marked experimental in this tool.
 - Catalog records can be incomplete or inconsistent because Open Library is a public catalog.
-- This skill cannot edit Open Library data or use account-only features.
+- The shipped commands cannot edit Open Library data or use account-only features.
 
 ## Helpful docs
 

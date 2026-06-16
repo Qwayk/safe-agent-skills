@@ -56,7 +56,7 @@ Connect the Skimlinks skill to my account, check my credentials, and show me the
 ## How this skill stays safe
 
 - It does not send remote Skimlinks writes.
-- It uses only explicit named commands and no raw request bridge.
+- It uses only explicit named commands and no unreviewed direct API passthrough.
 - Product Key credential limits stay visible instead of being hidden behind the shared auth path.
 - Link Wrapper builds the official monetized URL locally and does not click it or follow redirects.
 - `onboarding` can create a local placeholder `.env` file, but it never fills secrets for you and it never asks you to paste secrets into chat.
@@ -82,7 +82,7 @@ Before credentialed reads:
 - you confirm the publisher ID and, for Product Key, the publisher domain ID
 - if Product Key is not enabled, the tool should say so instead of guessing
 
-The only local changes this skill can make are creating a placeholder `.env` file during onboarding and printing a Link Wrapper URL for you to reuse elsewhere.
+The only local changes the shipped commands can make are creating a placeholder `.env` file during onboarding and printing a Link Wrapper URL for you to reuse elsewhere.
 
 ## What proof it leaves behind
 

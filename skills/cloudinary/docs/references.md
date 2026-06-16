@@ -15,7 +15,7 @@ Last verified (UTC): 2026-05-25
 - Video Player Profiles API: `https://cloudinary.com/documentation/video_player_profiles_reference.md`
 - Video Config API: `https://cloudinary.com/documentation/video_config_reference.md`
 
-## Source-of-truth files inside this tool
+## Main reference files inside this tool
 
 - runtime allowlist: `docs/_generated/cloudinary_rest_inventory.json`
 - coverage report: `docs/api_coverage.md`

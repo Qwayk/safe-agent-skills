@@ -1,10 +1,10 @@
 # API coverage
 
-Bluesky coverage shows exactly what this skill can do with profile, post, graph, moderation, and session work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Bluesky coverage shows exactly what the shipped commands can do with profile, post, graph, moderation, and session work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether this skill can read this profile, inspect recent posts, and show which write or moderation actions need extra care."
+A good first coverage check is: "Check whether the shipped commands can read this profile, inspect recent posts, and show which write or moderation actions need extra care."
 
 ## Coverage notes
 
@@ -36,7 +36,7 @@ Stability notes:
 
 Coverage rule for this tool:
 - Every row below must be reachable as an explicit subcommand under `bluesky-safe-cli api <operation_command>`.
-- No raw request bridge counts toward coverage.
+- No unreviewed direct API passthrough counts toward coverage.
 
 ## Inventory mapping
 
@@ -173,7 +173,7 @@ Coverage rule for this tool:
 | `chat-bsky-convo-remove-reaction` | `chat.bsky.convo.removeReaction` | `procedure` | `chat` | `http-reference` | `stable` | `bluesky-safe-cli api chat-bsky-convo-remove-reaction` |
 | `chat-bsky-convo-send-message` | `chat.bsky.convo.sendMessage` | `procedure` | `chat` | `http-reference` | `stable` | `bluesky-safe-cli api chat-bsky-convo-send-message` |
 | `chat-bsky-convo-send-message-batch` | `chat.bsky.convo.sendMessageBatch` | `procedure` | `chat` | `http-reference` | `stable` | `bluesky-safe-cli api chat-bsky-convo-send-message-batch` |
-| `chat-bsky-convo-unlock-convo` | `chat.bsky.convo.unlockConvo` | `procedure` | `chat` | `lexicon-only` | `active-development` | `bluesky-safe-cli api chat-bsky-convo-unlock-convo` |
+| `chat-bsky-convo-use-convo` | `chat.bsky.convo.unlockConvo` | `procedure` | `chat` | `lexicon-only` | `active-development` | `bluesky-safe-cli api chat-bsky-convo-use-convo` |
 | `chat-bsky-convo-unmute-convo` | `chat.bsky.convo.unmuteConvo` | `procedure` | `chat` | `http-reference` | `stable` | `bluesky-safe-cli api chat-bsky-convo-unmute-convo` |
 | `chat-bsky-convo-update-all-read` | `chat.bsky.convo.updateAllRead` | `procedure` | `chat` | `http-reference` | `stable` | `bluesky-safe-cli api chat-bsky-convo-update-all-read` |
 | `chat-bsky-convo-update-read` | `chat.bsky.convo.updateRead` | `procedure` | `chat` | `http-reference` | `stable` | `bluesky-safe-cli api chat-bsky-convo-update-read` |

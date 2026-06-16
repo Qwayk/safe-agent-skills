@@ -86,7 +86,7 @@ There are no live changes in this skill. It reads public data and returns struct
 
 - Public Statuspage sites only.
 - No private account access or authenticated admin actions.
-- If a company hides a problem from its public page, this skill cannot see it.
+- If a company hides a problem from its public page, the shipped commands cannot see it.
 - Some pages expose fewer components or incident details than others.
 
 ## Helpful docs

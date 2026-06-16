@@ -19,7 +19,7 @@ If you want a full Python stack trace (developer debugging), add `--debug`.
 
 ## OAuth tokens
 
-- If `auth token status` says the token is missing, this tool cannot create it automatically yet:
+- If `auth token status` says the token is missing, the shipped commands cannot create it automatically yet:
   - `youtube-api-tool auth login --console`
   - (or advanced) `youtube-api-tool auth token set --file token.json`
 - Both commands validate inputs and stop at a plan/refusal today. They do not write `.state/token.json` automatically.

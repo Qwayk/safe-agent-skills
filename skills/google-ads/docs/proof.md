@@ -116,4 +116,4 @@ These files are committed:
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage source of truth: `docs/api_coverage.md`
+- Coverage main reference: `docs/api_coverage.md`
