@@ -42,7 +42,7 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertIn("[What you can ask the Fortnox skill to do](docs/use_cases.md)", text)
         self.assertIn("[Set up your Fortnox connection step by step](docs/onboarding.md)", text)
         self.assertIn("[Read the Fortnox safety guide](docs/safety_model.md)", text)
-        self.assertIn("[Do the first Fortnox check](docs/quickstart.md)", text)
+        self.assertIn("[Do the first safe Fortnox check](docs/quickstart.md)", text)
         self.assertIn("[Open the technical command guide](docs/command_reference.md)", text)
         self.assertIn("[Browse all Fortnox docs](docs/README.md)", text)
         self.assertIn("[See proof and verification](docs/proof.md)", text)

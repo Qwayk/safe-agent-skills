@@ -1,13 +1,8 @@
 # References (sources)
 
-Purpose:
-- Record what sources the tool implementation relies on (so behavior is auditable and reproducible).
-- Prefer official provider docs; use other sources only when needed and note why.
+This page lists the public Fortnox docs used to map the skill. Use it when you want to check where an auth rule, endpoint family, rate limit, websocket topic, or coverage decision came from.
 
-Rules:
-- Never include secrets (tokens, client secrets) in this file.
-- When a capability depends on a specific documented behavior (rate limits, required headers, download tracking), link the exact doc page.
-- Update this file whenever you add/change an endpoint or behavior based on new research.
+Only official Fortnox sources are used here. Do not add secrets, tokens, callback URLs with codes, private tenant data, or copied live responses to this file.
 
 ## Provider docs (official)
 

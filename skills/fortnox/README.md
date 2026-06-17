@@ -9,7 +9,7 @@ A good first ask is: "Check that Fortnox is connected, show our company details,
 - Want plain-English ideas first? [What you can ask the Fortnox skill to do](docs/use_cases.md)
 - Need setup help? [Set up your Fortnox connection step by step](docs/onboarding.md)
 - Want the safety story first? [Read the Fortnox safety guide](docs/safety_model.md)
-- Want the first safe command flow? [Do the first Fortnox check](docs/quickstart.md)
+- Want the first safe command flow? [Do the first safe Fortnox check](docs/quickstart.md)
 - Need the full command list? [Open the technical command guide](docs/command_reference.md)
 
 ## What this skill helps with

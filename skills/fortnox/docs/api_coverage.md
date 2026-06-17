@@ -2,7 +2,7 @@
 
 Last audited (UTC): 2026-06-16
 
-Fortnox coverage shows exactly what this skill can do with company details, customers, suppliers, invoices, supplier invoices, bookkeeping, payroll, time, stock, attachments, documents, websocket topics, and careful change plans. Coverage shows exactly what this skill can do, which commands are shipped, and which behavior still needs real Fortnox credentials before it can be called live-verified.
+Fortnox coverage shows exactly what this skill can do with company details, customers, suppliers, invoices, supplier invoices, bookkeeping, payroll, time, stock, attachments, documents, websocket topics, and careful change plans. It also shows which commands are shipped and which behavior still needs real Fortnox credentials before it can be called live-verified.
 
 Read the mapped command rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
@@ -25,7 +25,7 @@ A good first coverage check is: "Check whether this skill can inspect Fortnox co
 - REST source: `https://api.fortnox.se/apidocs`
 - Websocket source: `https://www.fortnox.se/developer/guides-and-good-to-know/websockets`
 - Official OpenAPI download is linked from the docs page, but direct download returned HTTP 429 from this environment on 2026-06-09.
-- This inventory is derived from the rendered official docs page itself and kept as the current coverage-lock source.
+- This inventory is derived from the rendered official docs page itself and kept as the current coverage-lock record.
 - The official docs repeat the labels `Articles` and `Integration Sales`; this ledger merges those repeated labels by CLI family slug so planned commands stay unique.
 
 ## REST group summary

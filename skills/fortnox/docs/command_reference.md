@@ -514,7 +514,7 @@ Notes:
 - `voucher-series create` and `voucher-series update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json voucher-series <create|update> ...`
 - `registrations get` uses the official `/api/time/registrations-v2` endpoint.
 - `vacation-debt-basis get` is shipped as a plain GET read.
-- Action-like GET endpoints such as email, e-print, preview, print, and reminder flows stay unshipped until they get a separate safety decision.
+- Action-like GET endpoints are handled by explicit commands, not by a generic bridge. PDF-style preview and print flows are shipped as read/output commands. Delivery-triggering invoice, offer, and order GET flows are shipped as dry-run-first commands; a live apply must reuse a reviewed plan, include the required approval flags, verify by read-back when Fortnox exposes a stable signal, and keep live provider effects honestly marked live-unverified until real credentials prove them.
 - `articles list`, `customers list`, and `suppliers list` now keep the rendered official Fortnox query/filter names explicit on the CLI. The current rendered `price-lists` read docs do not show extra query params.
 
 ## Payroll and time reporting
