@@ -21,7 +21,7 @@ Verified commands:
 
 Latest result:
 
-- `Ran 669 tests in 76.307s, OK.`
+- `Ran 669 tests in 77.559s, OK.`
 
 Standards and packaging validation:
 
@@ -29,6 +29,7 @@ Standards and packaging validation:
 - Control-room audit passed.
 - Project standards audit passed.
 - The Fortnox scoped whitespace check returned no issues.
+- The live-ready public clone tests passed before the docs patch was pushed to GitHub.
 
 Attachment-focused validation:
 

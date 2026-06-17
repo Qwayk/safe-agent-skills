@@ -144,9 +144,11 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Replaced template Fortnox auth/config/onboarding docs with the real OAuth + refresh + service-account contract.
 - Expanded `.env.example`, token helpers, and auth runtime plumbing to support the official Fortnox token endpoints.
 - Rewrote the source README and front-door docs to match the public Fortnox skill-page contract, removed source-only wrapper links from public-facing pages, tightened the docs contract tests, and corrected stale shipped-status wording in the API coverage ledger.
+- Polished the Fortnox public docs after review: API coverage, command reference, references, and jobs/batches now use clearer public-ready wording without changing shipped behavior.
 
 ### Fixed
 - CLI template: ensure argument/usage errors in `--output json` mode emit exactly one JSON error object (no argparse usage text).
 - Clarified the engineering notes so the original `373` REST-operation lock stays historical while the current rendered-doc coverage lock remains `377`, and added a docs consistency test to guard that wording.
+- Fixed a stale command-reference contradiction that said action-like Fortnox GET flows were unshipped even though invoice, offer, and order preview/print/send commands are shipped with explicit safety handling.
 
 ### Removed
