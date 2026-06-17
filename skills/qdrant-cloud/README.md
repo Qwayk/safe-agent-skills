@@ -25,7 +25,7 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 - Review management keys, database API keys, user roles, members, and permissions.
 - Pull billing, invoice, discount, payment-method, and metering reads for account review.
 - Inspect cluster logs, events, usage metrics, summary metrics, and serverless or hybrid resources.
-- Preview careful Qdrant Cloud changes before anything goes live.
+- Preview Qdrant Cloud changes before changing clusters, keys, or billing-sensitive settings.
 
 ## What access this skill needs
 

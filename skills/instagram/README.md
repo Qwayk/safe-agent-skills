@@ -4,7 +4,7 @@
 
 Instagram is where professional-account media, comments, mentions, messages, stories, live media, and insights become public content and customer conversations.
 
-This skill helps an agent confirm which Instagram account a token reaches, review media and comments, check insights and publishing limits, and prepare publish, moderation, mention, or message plans before anything goes live.
+This skill helps an agent confirm which Instagram account a token reaches, review media and comments, check insights and publishing limits, and prepare publish, moderation, mention, or message plans for review.
 
 Use it for questions like: "Which account is connected?", "What recent media and comments need review?", "Are we near the publish quota?", "Can you prepare a Reel or carousel plan?", or "Can you draft this reply before sending it?"
 
@@ -26,7 +26,7 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 - Review media, stories, live media, tags, comments, mentions, and messages.
 - Pull account and media insights.
 - Plan careful publish flows for images, reels, and carousels.
-- Plan comment, mention, and message actions before anything goes live.
+- Plan comment, mention, and message actions before the account is changed.
 - Check publish quota limits and container status during content work.
 
 ## What access this skill needs

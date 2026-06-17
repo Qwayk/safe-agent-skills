@@ -26,7 +26,7 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 - Review owned posts, public posts, replies, mentions, and publishing limits.
 - Pull user or media insights when the app already has the needed Threads permissions.
 - Use keyword, topic-tag, location, and oEmbed lookups for content research and review.
-- Plan careful post creation, repost, reply moderation, or delete actions before anything goes live.
+- Plan post creation, repost, reply moderation, or delete actions before the account is changed.
 
 ## What access this skill needs
 

@@ -26,7 +26,7 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 - Review accounts, properties, data streams, access bindings, and change history.
 - Check audiences, conversion events, custom dimensions, custom metrics, and other property settings.
 - Review product links like BigQuery, Firebase, AdSense, and Display & Video 360 connections.
-- Plan careful Analytics Admin changes before anything goes live.
+- Plan Analytics Admin changes before applying them.
 
 ## What access this skill needs
 

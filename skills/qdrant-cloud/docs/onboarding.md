@@ -55,7 +55,7 @@ The offline `auth check` confirms config shape. The `--live` checks confirm that
 
 - "Confirm the Qdrant Cloud skill is connected, then list my accounts and clusters."
 - "Show me backups, backup schedules, and cluster recovery options for this account."
-- "Preview this cluster or billing change and tell me what approval it needs before anything goes live."
+- "Preview this cluster or billing change and tell me what approval it needs before applying it."
 
 ## If something fails
 

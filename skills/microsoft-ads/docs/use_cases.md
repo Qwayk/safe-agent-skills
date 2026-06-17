@@ -25,7 +25,7 @@ This skill helps an agent confirm live access, read campaign and report data, re
 ### Bulk and service-operation planning
 
 - "Prepare a bulk upload or change from this request file and show me the plan first."
-- "Preview a campaign-management change and explain the risk before anything goes live."
+- "Preview a campaign-management change and explain the risk before applying it."
 - "Show the request body for this service operation and tell me whether it is budget, bid, delete-like, or batch work."
 - "Explain the approval path for a high-risk budget, bid, or delete-like action."
 

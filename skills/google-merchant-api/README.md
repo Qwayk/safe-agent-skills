@@ -26,7 +26,7 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 - Review accounts, products, product inputs, promotions, issues, quotas, and reports.
 - Find disapproved products, feed problems, missing fields, or risky catalog changes before you edit anything.
 - Prepare careful write plans for product inputs, conversion sources, regions, services, data sources, and other Merchant surfaces.
-- Review higher-risk, irreversible, or batch-style Merchant changes before anything goes live.
+- Review higher-risk, irreversible, or batch-style Merchant changes before applying them.
 
 ## What access this skill needs
 

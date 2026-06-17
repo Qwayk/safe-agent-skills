@@ -1,6 +1,6 @@
 # Fortnox
 
-Fortnox is where many teams keep invoices, supplier bills, bookkeeping, payroll, and stock in one place. This skill gives your AI agent a careful way to check that work, prepare reviewed changes before anything goes live, and leave proof behind after it runs.
+Fortnox is where many teams keep invoices, supplier bills, bookkeeping, payroll, and stock in one place. This skill gives your AI agent a careful way to check that work, review changes before it sends, books, updates, or deletes records, and leave proof behind after it runs.
 
 A good first ask is: "Check that Fortnox is connected, show our company details, list a few customers and invoices, and tell me which change should be planned instead of applied live."
 

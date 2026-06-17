@@ -4,7 +4,7 @@
 
 Microsoft Ads is where search campaigns, audiences, reports, bids, and bulk jobs can affect spend across Bing and Microsoft’s ad network.
 
-This skill helps an agent confirm access, review accounts and campaigns, pull reports, research keywords or audiences, and prepare Microsoft Ads service-operation, bulk, reporting, or customer-management changes before anything goes live.
+This skill helps an agent confirm access, review accounts and campaigns, pull reports, research keywords or audiences, and prepare Microsoft Ads service-operation, bulk, reporting, or customer-management changes as reviewed plans.
 
 Use it for questions like: "Which Microsoft Ads account can I reach?", "Can you pull last month’s performance?", "What keywords or audiences should we review?", "Can you preview this bulk change?", or "What approvals would this delete-like action need?"
 
@@ -26,7 +26,7 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 - Review campaigns, accounts, reports, recommendations, audiences, and customer-management data.
 - Run keyword, bid, and audience-estimate research before you change anything.
 - Prepare careful campaign-management, bulk, reporting, ad-insight, or customer-management write plans.
-- Review higher-risk budget, bid, delete-like, or batch actions before anything goes live.
+- Review higher-risk budget, bid, delete-like, or batch actions before the account is changed.
 
 ## What access this skill needs
 

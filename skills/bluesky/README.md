@@ -25,7 +25,7 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 - Check a profile, repo, or account state safely before deeper work.
 - Read posts, feeds, lists, follows, chat, or moderation-related endpoints when your account has access.
 - Inspect the documented Bluesky operation inventory before choosing an endpoint.
-- Preview a post, record, or account write before anything goes live.
+- Preview a post, record, or account write before publishing or changing it.
 - Save plans, refusals, receipts, and run history for review.
 
 ## What access this skill needs

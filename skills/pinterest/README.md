@@ -2,7 +2,7 @@
 
 **Capability:** Reads + careful changes
 
-Pinterest work often starts with a messy question: what boards, pins, sections, ads, catalogs, or feeds are actually in the account, and what looks worth fixing? This skill helps an agent export snapshots, review account structure, check analytics or catalog diagnostics, and prepare changes as plans before anything goes live.
+Pinterest work often starts with a messy question: what boards, pins, sections, ads, catalogs, or feeds are actually in the account, and what looks worth fixing? This skill helps an agent export snapshots, review account structure, check analytics or catalog diagnostics, and prepare account changes as reviewed plans.
 
 It is useful for questions like "What changed in my boards and pins?", "Which pins or ads are performing?", "Are there catalog feed issues?", or "What would this pin-link cleanup change before we approve it?"
 

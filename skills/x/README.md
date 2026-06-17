@@ -25,7 +25,7 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 - Check auth readiness, token state, and which X auth mode is available.
 - Review users, posts, mentions, lists, trends, Spaces, and other pinned X API v2 reads.
 - Inspect the exact supported endpoint inventory through the pinned operation list.
-- Plan careful post, follow, like, bookmark, list, or moderation writes before anything goes live.
+- Plan post, follow, like, bookmark, list, or moderation changes before the account is changed.
 - Check DM reachability, plan DM sends, and enforce safer bulk DM rules with local opt-out protection.
 - Run batch jobs from CSV with the same review-first safety pattern.
 

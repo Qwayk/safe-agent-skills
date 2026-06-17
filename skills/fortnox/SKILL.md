@@ -7,7 +7,7 @@ description: Run Fortnox read and careful write operations safely using fortnox-
 
 **Capability:** Reads + careful changes
 
-Fortnox is where invoicing, suppliers, bookkeeping, payroll, and warehouse work live. This skill helps an agent read the official Fortnox REST and websocket surface, then plan reviewed changes without guessing.
+Fortnox is where invoicing, suppliers, bookkeeping, payroll, and warehouse work live. This skill helps an agent read the official Fortnox REST and websocket surface, then plan reviewed changes from named commands instead of loose API calls.
 
 It is useful when you want to know what records exist, what is safe to change first, or what needs extra confirmation before a write.
 

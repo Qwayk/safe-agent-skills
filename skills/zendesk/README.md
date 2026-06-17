@@ -24,7 +24,7 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 
 - Check auth readiness and confirm the pinned Zendesk command inventory is valid.
 - Search, count, and inspect tickets, users, organizations, tags, views, and other Ticketing API records with exact commands.
-- Review planned ticket or metadata changes before anything goes live.
+- Review ticket or metadata changes before applying them.
 - Plan batch changes from CSV with the same review-first safety pattern.
 - Keep proof of what ran through saved plans, refusals, receipts, and local run history.
 - Handle Zendesk data carefully when outputs may include names, emails, ticket bodies, or other customer details.

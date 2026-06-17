@@ -28,6 +28,6 @@ If you are not sure what to ask first, start with something you already recogniz
 ## Why this is better than a typical no-code automation
 
 - It can look across existing Fortnox records instead of waiting for one new event.
-- It can prepare bulk cleanups and bookkeeping changes before anything goes live.
+- It can prepare bulk cleanups and bookkeeping changes for review before the account is changed.
 - It stays explicit about risky actions instead of hiding them behind a generic API call.
 - It leaves proof behind so you can check what changed later.

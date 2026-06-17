@@ -1,10 +1,8 @@
 # What you can do with Figma
 
-Figma work is usually about understanding a file, library, comment thread, or team resource before making a design-system or workflow change.
+Figma work usually starts with one practical question: what is in this file, library, comment thread, or team resource, and what needs attention before anyone changes the design system? Start with a read, then ask for a reviewed plan only after the target is clear.
 
-Start with a read: file metadata, comments, variables, components, or team resources. Once the target is clear, the agent can prepare a careful plan for comments, webhooks, variables, or dev resources.
-
-For setup, start with [Connect your account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Need setup first? Start with [Connect your account](onboarding.md). Need exact commands? Use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## File and comment review
 
@@ -23,7 +21,7 @@ This helps when you want a clean view of your design system, published library s
 
 "Draft a comment, webhook, variable, or dev-resource change, show me the exact plan, and wait for approval."
 
-The skill can preview supported writes first, show the target and request body, and stop before anything goes live.
+The skill can preview supported writes first, show the target and request body, and stop before it changes the Figma file.
 If Figma does not expose useful before-state, the reviewed apply still needs explicit no-snapshot approval.
 
 ## Access and plan check

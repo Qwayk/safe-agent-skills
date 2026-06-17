@@ -24,7 +24,7 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 - Review the pinned OpenAI operation catalog before making a live call.
 - Inspect models, files, assistants, threads, vector stores, usage, projects, and other OpenAI resources.
 - Plan careful write actions across the shipped OpenAI command surface.
-- Review spend-money and delete-like actions before anything goes live.
+- Review spend-money and delete-like actions before the request runs.
 
 ## What access this skill needs
 

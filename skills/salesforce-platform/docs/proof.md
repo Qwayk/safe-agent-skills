@@ -37,7 +37,7 @@ If you only check one thing, check object/record proof and metadata, job, or bul
 ## Not live-verified here
 
 - authenticated reads against a real org
-- real writes against live records; current write apply requires explicit no-snapshot approval before provider HTTP until before-state capture support exists
+- real writes against production records; current write apply requires explicit no-snapshot approval before provider HTTP until before-state capture support exists
 - org-gated areas such as Knowledge, Scheduler, survey translations, Named Query API, consent/Data 360, and the OpenAPI beta
 - Bulk API 2.0 live job lifecycle timing and org-specific limits
 

@@ -6,7 +6,7 @@ Need more ideas? See [What you can ask the Fortnox skill to do](use_cases.md). N
 
 A good first ask is:
 
-> Check that Fortnox is connected, show our company details, list a few customers and invoices, and stop before any change that would affect live records.
+> Check that Fortnox is connected, show our company details, list a few customers and invoices, and stop before creating, updating, sending, booking, or deleting anything.
 
 ## What you will do first
 
