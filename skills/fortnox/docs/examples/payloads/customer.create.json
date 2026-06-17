@@ -1,0 +1,8 @@
+{
+  "Customer": {
+    "CustomerNumber": "CUST-1000",
+    "Name": "Example customer",
+    "Email": "customer@example.com",
+    "Type": "COMPANY"
+  }
+}

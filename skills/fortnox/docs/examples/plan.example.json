@@ -1,0 +1,48 @@
+{
+  "example_kind": "representative-redacted-doc-example",
+  "example_note": "Representative redacted example only. This file shows the Fortnox dry-run plan shape and is not a live plan captured from this workspace.",
+  "proof_status": "local-unit-tested-live-unverified",
+  "tool": "fortnox-api-tool",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-01-01T00:00:00Z",
+  "env_fingerprint": "<REDACTED>",
+  "command": "fortnox-api-tool invoice-accruals create --json-file docs/examples/payloads/invoice_accrual.create.json",
+  "selector": "InvoiceAccrual payload for invoice 1001",
+  "risk_level": "medium",
+  "risk_reasons": [
+    "Creates a bookkeeping-related Fortnox record",
+    "No useful before-state snapshot exists before create"
+  ],
+  "preconditions": [
+    "Review the example payload before apply"
+  ],
+  "snapshot_status": "no_snapshot_available",
+  "before_state": {
+    "required": false,
+    "supported": false,
+    "status": "no_snapshot_available",
+    "saved_path": null,
+    "provider_backup_id": null,
+    "reason": "Create-style Fortnox examples do not have a meaningful before-state snapshot."
+  },
+  "proposed_changes": [
+    "Create one Fortnox invoice-accrual record from the example payload"
+  ],
+  "verification_plan": [
+    "POST /invoiceaccruals on apply",
+    "Follow up with GET /invoiceaccruals/1001 to confirm the created record"
+  ],
+  "recovery_notes": "No useful before-state snapshot is recorded before create. Recovery would be a separate manual cleanup or compensating change if needed.",
+  "recovery": {
+    "automatic_rollback": false,
+    "backups": [],
+    "snapshots": [],
+    "rollback_plan": null,
+    "end_state": "manual_recovery_only",
+    "restore_note": "No useful before-state snapshot is recorded before create. Recovery would be a separate manual cleanup or compensating change if needed."
+  },
+  "rollback": {
+    "supported": false,
+    "notes": "Create example only. Recovery would be a separate cleanup flow, not an automatic rollback."
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "example_kind": "representative-redacted-doc-example",
+  "example_note": "Representative redacted example only. This file shows the Fortnox websocket subscribe output shape, not a live websocket session captured from this workspace.",
+  "proof_status": "local-unit-tested-live-unverified",
+  "command": "fortnox-api-tool ws subscribe start --topic invoices --max-events 1 --idle-timeout-s 5",
+  "event_count": 0,
+  "events": [],
+  "ok": false,
+  "request": {
+    "addTenants": {
+      "accessTokenCount": 0,
+      "clientSecretProvided": false,
+      "command": "add-tenants-v1",
+      "includeChildTenants": false
+    },
+    "addTopics": {
+      "command": "add-topics-v1",
+      "topics": [
+        {
+          "topic": "invoices"
+        }
+      ]
+    },
+    "idleTimeoutSeconds": 15.0,
+    "maxEvents": 1,
+    "subscribe": {
+      "command": "subscribe-v1"
+    }
+  },
+  "responses": {
+    "addTenants": null,
+    "addTopics": null,
+    "subscribe": null
+  },
+  "stop_reason": "representative_example_only_no_live_connection",
+  "ws_url": "wss://ws.fortnox.se/topics-v1"
+}

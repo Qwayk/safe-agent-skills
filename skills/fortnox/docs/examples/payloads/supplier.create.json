@@ -1,0 +1,7 @@
+{
+  "Supplier": {
+    "SupplierNumber": "SUP-1000",
+    "Name": "Example supplier",
+    "Email": "supplier@example.com"
+  }
+}

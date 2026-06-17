@@ -1,0 +1,9 @@
+{
+  "SupplierInvoicePayment": {
+    "Number": "42",
+    "InvoiceNumber": 1001,
+    "Amount": 2000.0,
+    "PaymentDate": "2026-06-09",
+    "ModeOfPayment": "BG"
+  }
+}

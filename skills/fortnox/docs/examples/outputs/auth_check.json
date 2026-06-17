@@ -1,0 +1,39 @@
+{
+  "example_kind": "representative-redacted-doc-example",
+  "example_note": "Representative redacted example only. This file shows the Fortnox auth-check output shape, not a live Fortnox probe captured from this workspace.",
+  "proof_status": "local-unit-tested-live-unverified",
+  "command": "fortnox-api-tool auth check --skip-live",
+  "ok": true,
+  "base_url": "https://api.fortnox.se/3",
+  "ws_url": "wss://ws.fortnox.se/topics-v1",
+  "client_id_present": true,
+  "client_secret_present": true,
+  "redirect_uri_present": true,
+  "service_tenant_id_present": false,
+  "oauth_scopes": [
+    "companyinformation"
+  ],
+  "token_source": "none",
+  "token_present": false,
+  "token_expired": null,
+  "token_status": {
+    "exists": false,
+    "path": "/redacted/.state/token.json",
+    "updated_at_utc": null,
+    "fields": [],
+    "has_access_token": null,
+    "has_refresh_token": null,
+    "expires_at_utc": null,
+    "token_source": null,
+    "grant_type": null,
+    "tenant_id": null
+  },
+  "live_probe": {
+    "attempted": false,
+    "ok": null,
+    "status": null,
+    "reason": "Representative redacted example only. No live Fortnox request was run from this workspace.",
+    "path": "/me",
+    "response_keys": []
+  }
+}

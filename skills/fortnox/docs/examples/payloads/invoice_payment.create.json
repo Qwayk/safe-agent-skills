@@ -1,0 +1,10 @@
+{
+  "InvoicePayment": {
+    "Number": "42",
+    "InvoiceNumber": 1001,
+    "Amount": 1000.0,
+    "PaymentDate": "2026-06-09",
+    "ModeOfPayment": "BG",
+    "Booked": false
+  }
+}

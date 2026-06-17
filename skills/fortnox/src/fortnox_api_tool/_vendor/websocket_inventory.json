@@ -1,0 +1,457 @@
+{
+  "source_url": "https://www.fortnox.se/developer/guides-and-good-to-know/websockets",
+  "audited_utc": "2026-06-16",
+  "stream_url": "wss://ws.fortnox.se/topics-v1",
+  "control_command_count": 5,
+  "topic_count": 19,
+  "event_count": 60,
+  "control_commands": [
+    {
+      "official_command": "add-tenants-v1",
+      "cli_command": "fortnox-api-tool ws tenants add",
+      "ship_status": "shipped",
+      "notes": "Adds new tenants to the websocket stream. Official payload includes includeChildTenants, clientSecret, and accessTokens."
+    },
+    {
+      "official_command": "remove-tenants-v1",
+      "cli_command": "fortnox-api-tool ws tenants remove",
+      "ship_status": "shipped",
+      "notes": "Removes tenants from the websocket stream."
+    },
+    {
+      "official_command": "list-tenants-v1",
+      "cli_command": "fortnox-api-tool ws tenants list",
+      "ship_status": "shipped",
+      "notes": "Lists tenants already added for subscription."
+    },
+    {
+      "official_command": "add-topics-v1",
+      "cli_command": "fortnox-api-tool ws topics add",
+      "ship_status": "shipped",
+      "notes": "Adds topics with optional replay offsets. Official docs say offsets can replay up to 14 days back."
+    },
+    {
+      "official_command": "subscribe-v1",
+      "cli_command": "fortnox-api-tool ws subscribe start",
+      "ship_status": "shipped",
+      "notes": "Starts the subscription after tenants and topics are set."
+    }
+  ],
+  "topics": [
+    {
+      "topic": "articles",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "article-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "article-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "article-deleted-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic articles",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "bureau-activities",
+      "event_count": 2,
+      "events": [
+        {
+          "event": "activity-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "activity-updated-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic bureau-activities",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "bureau-assignments",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "assignment-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "assignment-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "assignment-deleted-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic bureau-assignments",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "cost-centers",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "cost-center-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "cost-center-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "cost-center-deleted-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic cost-centers",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "currencies",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "currency-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "currency-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "currency-deleted-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic currencies",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "customers",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "customer-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "customer-updated-v2",
+          "additional_payload": ""
+        },
+        {
+          "event": "customer-deleted-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic customers",
+      "ship_status": "shipped",
+      "notes": "Official docs currently mix v1 and v2 event suffixes in this topic; keep the exact documented event names."
+    },
+    {
+      "topic": "financial-years",
+      "event_count": 6,
+      "events": [
+        {
+          "event": "financial-year-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "financial-year-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "financial-year-deleted-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "account-created-v1",
+          "additional_payload": "year, id"
+        },
+        {
+          "event": "account-updated-v1",
+          "additional_payload": "year, id"
+        },
+        {
+          "event": "account-deleted-v1",
+          "additional_payload": "year, id"
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic financial-years",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "invoices",
+      "event_count": 7,
+      "events": [
+        {
+          "event": "invoice-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "invoice-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "invoice-cancelled-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "invoice-bookkeep-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "invoicepayment-bookkeep-v1",
+          "additional_payload": "invoiceId, fullyPaid"
+        },
+        {
+          "event": "invoicepayment-deleted-v1",
+          "additional_payload": "invoiceId"
+        },
+        {
+          "event": "reminder-sent-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic invoices",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "messages",
+      "event_count": 1,
+      "events": [
+        {
+          "event": "send-push-notification-queued-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic messages",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "offers",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "offer-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "offer-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "offer-canceled-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic offers",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "orders",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "order-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "order-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "order-cancelled-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic orders",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "projects",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "project-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "project-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "project-deleted-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic projects",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "supplier-invoices",
+      "event_count": 4,
+      "events": [
+        {
+          "event": "supplier-invoice-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "supplier-invoice-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "supplier-invoice-cancelled-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "supplier-invoice-bookkeep-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic supplier-invoices",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "suppliers",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "supplier-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "supplier-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "supplier-deleted-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic suppliers",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "termsofdeliveries",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "termofdelivery-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "termofdelivery-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "termofdelivery-deleted-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic termsofdeliveries",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "termsofpayments",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "termsofpayments-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "termsofpayments-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "termsofpayments-deleted-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic termsofpayments",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "vouchers",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "voucher-created-v1",
+          "additional_payload": "year, series, id"
+        },
+        {
+          "event": "voucher-updated-v1",
+          "additional_payload": "year, series, id"
+        },
+        {
+          "event": "voucher-deleted-v1",
+          "additional_payload": "year, series, id"
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic vouchers",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "warehouse-stockbalances",
+      "event_count": 1,
+      "events": [
+        {
+          "event": "warehouse-stockbalance-changed-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic warehouse-stockbalances",
+      "ship_status": "shipped",
+      "notes": ""
+    },
+    {
+      "topic": "waysofdeliveries",
+      "event_count": 3,
+      "events": [
+        {
+          "event": "waysofdeliveries-created-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "waysofdeliveries-updated-v1",
+          "additional_payload": ""
+        },
+        {
+          "event": "waysofdeliveries-deleted-v1",
+          "additional_payload": ""
+        }
+      ],
+      "cli_command": "fortnox-api-tool ws topics add --topic waysofdeliveries",
+      "ship_status": "shipped",
+      "notes": ""
+    }
+  ],
+  "notes": [
+    "Events are minimal in payload; official docs tell clients to look up the entity for more information.",
+    "Official docs say topic replay offsets can replay events up to 14 days back."
+  ]
+}

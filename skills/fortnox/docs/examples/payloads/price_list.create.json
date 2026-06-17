@@ -1,0 +1,7 @@
+{
+  "PriceList": {
+    "Code": "PL-1000",
+    "Description": "Standard retail pricing",
+    "Comments": "Example payload for plan-first price-list writes."
+  }
+}

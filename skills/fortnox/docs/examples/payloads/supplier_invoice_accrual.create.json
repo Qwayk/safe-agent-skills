@@ -1,0 +1,26 @@
+{
+  "SupplierInvoiceAccrual": {
+    "SupplierInvoiceNumber": 2001,
+    "Description": "Example supplier invoice accrual",
+    "AccrualAccount": 2990,
+    "CostAccount": 4010,
+    "StartDate": "2026-01-01",
+    "EndDate": "2026-03-31",
+    "Period": "MONTHLY",
+    "Times": 3,
+    "Total": 3000.0,
+    "VATIncluded": false,
+    "SupplierInvoiceAccrualRows": [
+      {
+        "Account": 2990,
+        "Credit": 1000.0,
+        "TransactionInformation": "Accrual month 1"
+      },
+      {
+        "Account": 4010,
+        "Debit": 1000.0,
+        "TransactionInformation": "Cost month 1"
+      }
+    ]
+  }
+}

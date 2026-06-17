@@ -1,0 +1,37 @@
+{
+  "example_kind": "representative-redacted-doc-example",
+  "example_note": "Representative redacted example only. This file shows the Fortnox apply-receipt shape and is not a live apply receipt captured from this workspace.",
+  "proof_status": "local-unit-tested-live-unverified",
+  "tool": "fortnox-api-tool",
+  "version": "0.1.0",
+  "applied_at_utc": "2026-01-01T00:00:00Z",
+  "env_fingerprint": "<REDACTED>",
+  "command": "fortnox-api-tool invoice-accruals create --apply --yes --plan-in docs/examples/plan.example.json",
+  "selector": "InvoiceAccrual payload for invoice 1001",
+  "changed": false,
+  "snapshot_status": "no_snapshot_available",
+  "before_state": {
+    "required": false,
+    "supported": false,
+    "status": "no_snapshot_available",
+    "saved_path": null,
+    "provider_backup_id": null,
+    "reason": "Create-style Fortnox examples do not have a meaningful before-state snapshot."
+  },
+  "verification": {
+    "ok": null,
+    "details": "Representative docs-only receipt. No live Fortnox apply was run from this workspace."
+  },
+  "diff_applied": [],
+  "recovery_notes": "No useful before-state snapshot is recorded before create. Recovery would be a separate manual cleanup or compensating change if needed.",
+  "recovery": {
+    "automatic_rollback": false,
+    "backups": [],
+    "snapshots": [],
+    "rollback_plan": null,
+    "end_state": "manual_recovery_only",
+    "restore_note": "No useful before-state snapshot is recorded before create. Recovery would be a separate manual cleanup or compensating change if needed."
+  },
+  "backups": [],
+  "rollback_plan": null
+}

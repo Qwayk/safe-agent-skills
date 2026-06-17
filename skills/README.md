@@ -73,6 +73,7 @@ Start here if you want store, order, product, merchant-feed, or payment-system w
 | [**Google Merchant Center**](google-merchant-api/README.md)<br><sub>Install slug: <code>google-merchant-api</code></sub> | Review and plan Google Merchant product, account, report, and promotion work | Google Merchant Center account | Reads + careful changes |
 | [**Stripe**](stripe/README.md)<br><sub>Install slug: <code>stripe</code></sub> | Review Stripe account data and make careful payment-system changes | Stripe account | Reads + careful changes |
 | [**PayPal**](paypal/README.md)<br><sub>Install slug: <code>paypal</code></sub> | Review and plan PayPal order, payment, payout, and dispute work | PayPal business account | Reads + careful changes |
+| [**Fortnox**](fortnox/README.md)<br><sub>Install slug: <code>fortnox</code></sub> | Review Fortnox invoices, supplier bills, bookkeeping, payroll, stock, and plan careful changes | Fortnox account | Reads + careful changes |
 | [**Mercury**](mercury/README.md)<br><sub>Install slug: <code>mercury</code></sub> | Check Mercury accounts and download statements, invoices, exports, and attachments | Mercury account | Read-only |
 
 ## Affiliate, partnerships, and publisher revenue

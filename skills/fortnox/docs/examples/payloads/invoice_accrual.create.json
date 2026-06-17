@@ -1,0 +1,26 @@
+{
+  "InvoiceAccrual": {
+    "InvoiceNumber": 1001,
+    "Description": "Example invoice accrual",
+    "AccrualAccount": 2990,
+    "RevenueAccount": 3041,
+    "StartDate": "2026-01-01",
+    "EndDate": "2026-03-31",
+    "Period": "MONTHLY",
+    "Times": 3,
+    "Total": 3000.0,
+    "VATIncluded": false,
+    "InvoiceAccrualRows": [
+      {
+        "Account": 2990,
+        "Credit": 1000.0,
+        "TransactionInformation": "Accrual month 1"
+      },
+      {
+        "Account": 3041,
+        "Debit": 1000.0,
+        "TransactionInformation": "Revenue month 1"
+      }
+    ]
+  }
+}

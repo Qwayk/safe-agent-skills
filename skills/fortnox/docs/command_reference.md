@@ -1,0 +1,566 @@
+# Command reference
+
+These commands cover Fortnox connection checks, REST reads, websocket topics, plan-first changes, receipts, and local run history. Start with company details, customers, suppliers, or invoices before asking for bookkeeping, payroll, warehouse, send, booking, upload, or delete work.
+
+For the guided path, start with [What you can ask the Fortnox skill to do](use_cases.md), [Set up your Fortnox connection step by step](onboarding.md), and [Quickstart](quickstart.md).
+
+## Onboarding
+
+- `fortnox-api-tool onboarding [--no-write-env]`
+
+## Auth
+
+- `fortnox-api-tool --output json --version`
+- `fortnox-api-tool auth check`
+- `fortnox-api-tool auth check --skip-live`
+- `fortnox-api-tool auth login [--scope companyinformation] [--state <value>] [--service-account]`
+- `fortnox-api-tool auth exchange-code --code <authorization_code> --state <state>`
+- `fortnox-api-tool auth refresh`
+- `fortnox-api-tool auth service-account-token [--scope companyinformation]`
+- `fortnox-api-tool auth token set --file token.json`
+- `fortnox-api-tool auth token status`
+
+Notes:
+- `auth check` is read-only. It uses the official `GET /3/me` endpoint unless you pass `--skip-live`.
+- `auth login` builds the official Fortnox authorize URL and saves a local state file under `.state/oauth_state.json`.
+- `auth exchange-code`, `auth refresh`, and `auth service-account-token` write a local token file under `.state/token.json` unless `FORTNOX_TOKEN_FILE` overrides it.
+
+## Websocket
+
+- `fortnox-api-tool ws tenants add [--access-token <tenant_access_token> ...] [--client-secret <client_secret>] [--include-child-tenants]`
+- `fortnox-api-tool ws tenants remove --tenant-id <tenant_id> [--tenant-id <tenant_id> ...]`
+- `fortnox-api-tool ws tenants list`
+- `fortnox-api-tool ws topics add [--topic <topic> ...] [--topic-offset <topic>=<offset> ...]`
+- `fortnox-api-tool ws subscribe start [--access-token <tenant_access_token> ...] [--client-secret <client_secret>] [--include-child-tenants] [--topic <topic> ...] [--topic-offset <topic>=<offset> ...] [--max-events <n>] [--idle-timeout-s <seconds>]`
+
+Notes:
+- `ws tenants add`, `ws tenants remove`, `ws tenants list`, and `ws topics add` send the official Fortnox websocket control commands exactly once on a fresh connection and return the first response.
+- `ws subscribe start` opens one live websocket connection, sends `add-tenants-v1`, then `add-topics-v1`, then `subscribe-v1`, and collects events until `--max-events` is reached or the stream is idle for `--idle-timeout-s`.
+- The CLI never prints raw websocket access tokens or client secrets back in command output.
+
+## Accounting reads
+
+- `fortnox-api-tool account-charts list`
+- `fortnox-api-tool accounts list`
+- `fortnox-api-tool accounts get --number <account_number>`
+- `fortnox-api-tool accounts create --json-file <account_payload.json> [--financial-year <id>]`
+- `fortnox-api-tool accounts update --number <account_number> --json-file <account_payload.json> [--financial-year <id>]`
+- `fortnox-api-tool accounts delete --number <account_number>`
+- `fortnox-api-tool article-file-connections list [--article-number <article_number>]`
+- `fortnox-api-tool article-file-connections get --file-id <file_id>`
+- `fortnox-api-tool article-file-connections create --json-file <article_file_connection_payload.json>`
+- `fortnox-api-tool article-file-connections remove --file-id <file_id>`
+- `fortnox-api-tool article-url-connections list [--article-number <article_number>]`
+- `fortnox-api-tool article-url-connections get --id <article_url_connection_id>`
+- `fortnox-api-tool article-url-connections create --json-file <article_url_connection_payload.json>`
+- `fortnox-api-tool article-url-connections update --id <article_url_connection_id> --json-file <article_url_connection_payload.json>`
+- `fortnox-api-tool article-url-connections delete --id <article_url_connection_id>`
+- `fortnox-api-tool asset-file-connections list`
+- `fortnox-api-tool asset-file-connections create --json-file <asset_file_connection_payload.json>`
+- `fortnox-api-tool asset-file-connections remove --file-id <file_id>`
+- `fortnox-api-tool asset-types list`
+- `fortnox-api-tool asset-types get --id <asset_type_id>`
+- `fortnox-api-tool asset-types create --json-file <asset_type_payload.json>`
+- `fortnox-api-tool asset-types update --id <asset_type_id> --json-file <asset_type_payload.json>`
+- `fortnox-api-tool asset-types delete --id <asset_type_id>`
+- `fortnox-api-tool assets list`
+- `fortnox-api-tool assets get --id <asset_id>`
+- `fortnox-api-tool assets create --json-file <asset_payload.json>`
+- `fortnox-api-tool assets update --id <asset_id> --json-file <asset_payload.json>`
+- `fortnox-api-tool assets delete --id <asset_id>`
+- `fortnox-api-tool assets assets-depreciation-list --to-date <yyyy-mm-dd>`
+- `fortnox-api-tool assets change-manual-ob-value-of-an-asset --id <asset_id> --json-file <asset_change_payload.json>`
+- `fortnox-api-tool assets perform-a-depreciation-of-an-asset --json-file <asset_action_payload.json>`
+- `fortnox-api-tool assets scrap-an-asset --id <asset_id> --json-file <asset_action_payload.json>`
+- `fortnox-api-tool assets sell-an-asset --id <asset_id> --json-file <asset_action_payload.json>`
+- `fortnox-api-tool assets write-down-an-asset --id <asset_id> --json-file <asset_action_payload.json>`
+- `fortnox-api-tool assets write-up-an-asset --id <asset_id> --json-file <asset_action_payload.json>`
+- `fortnox-api-tool archive get-root [--path <archive_path>] [--file-id <file_attachment_id>]`
+- `fortnox-api-tool archive get-file --id <archive_file_id>`
+- `fortnox-api-tool archive delete --id <archive_file_id> [--path <archive_path>]`
+- `fortnox-api-tool archive remove --path <archive_path>`
+- `fortnox-api-tool archive upload-a-file-to-a-specific-subdirectory --file <local_file> [--path <archive_path>] [--folder-id <archive_folder_id>]`
+- `fortnox-api-tool attachment get --entity-id <entity_id> [--entity-id <entity_id> ...] --entity-type <entity_type>`
+- `fortnox-api-tool attachment list --entity-id <entity_id> [--entity-id <entity_id> ...] --entity-type <entity_type>`
+- `fortnox-api-tool attachment attach-files-to-one-or-more-entities --json-file <attachment_array.json>`
+- `fortnox-api-tool attachment detach-file --attachment-id <attachment_id>`
+- `fortnox-api-tool attachment update --attachment-id <attachment_id> --json-file <attachment_payload.json>`
+- `fortnox-api-tool attachment validates-a-list-of-attachments-that-will-be-included-on-send --json-file <attachment_array.json>`
+- `fortnox-api-tool company-information get`
+- `fortnox-api-tool articles list-time-article-registrations [--from-date <yyyy-mm-dd>] [--to-date <yyyy-mm-dd>] [--customer-id <customer_id> ...] [--project-id <project_id> ...] [--item-id <item_id> ...] [--cost-center-id <cost_center_id> ...] [--owner-id <owner_id> ...] [--include-registrations-without-project <true|false>] [--invoiced <true|false>] [--in-invoice-basis <true|false>] [--internal-articles <true|false>] [--non-invoiceable <true|false>] [--include-non-invoiceable-price <true|false>]`
+- `fortnox-api-tool company-settings get`
+- `fortnox-api-tool inbox get-root`
+- `fortnox-api-tool inbox get-file --id <inbox_file_id>`
+- `fortnox-api-tool inbox remove --id <inbox_file_or_folder_id>`
+- `fortnox-api-tool inbox upload-a-file --file <local_file> [--path <inbox_path>] [--folder-id <inbox_folder_id>]`
+- `fortnox-api-tool integration-sales get-by-app-id --app-id <app_id>`
+- `fortnox-api-tool integration-sales get-by-app-id-and-tenant --app-id <app_id> --tenant-id <tenant_id>`
+- `fortnox-api-tool integration-sales resolves-sales-information-of-an-integration --integration-id <integration_id>`
+- `fortnox-api-tool integration-ratings list`
+- `fortnox-api-tool custom-document-types list`
+- `fortnox-api-tool custom-document-types get --type <custom_document_type>`
+- `fortnox-api-tool custom-document-types create --json-file <custom_document_type_payload.json>`
+- `fortnox-api-tool custom-inbound-documents get --type <custom_document_type> --id <document_id>`
+- `fortnox-api-tool custom-inbound-documents save --type <custom_document_type> --id <document_id> --json-file <custom_inbound_document_payload.json>`
+- `fortnox-api-tool custom-inbound-documents release --type <custom_document_type> --id <document_id> --json-file <custom_inbound_document_payload.json>`
+- `fortnox-api-tool custom-inbound-documents void --type <custom_document_type> --id <document_id> --json-file <custom_inbound_document_payload.json>`
+- `fortnox-api-tool custom-outbound-documents get --type <custom_document_type> --id <document_id>`
+- `fortnox-api-tool custom-outbound-documents save --type <custom_document_type> --id <document_id> --json-file <custom_outbound_document_payload.json>`
+- `fortnox-api-tool custom-outbound-documents release --type <custom_document_type> --id <document_id> --json-file <custom_outbound_document_payload.json>`
+- `fortnox-api-tool custom-outbound-documents void --type <custom_document_type> --id <document_id> --json-file <custom_outbound_document_payload.json>`
+- `fortnox-api-tool manual-documents list`
+- `fortnox-api-tool manual-inbound-documents get --id <document_id>`
+- `fortnox-api-tool manual-inbound-documents create --json-file <manual_inbound_document_payload.json>`
+- `fortnox-api-tool manual-inbound-documents update --id <document_id> --json-file <manual_inbound_document_payload.json>`
+- `fortnox-api-tool manual-inbound-documents update-note --id <document_id> --json-file <manual_inbound_document_note_payload.json>`
+- `fortnox-api-tool manual-inbound-documents release --id <document_id> --json-file <manual_inbound_document_payload.json>`
+- `fortnox-api-tool manual-inbound-documents void --id <document_id> --json-file <manual_inbound_document_payload.json>`
+- `fortnox-api-tool manual-outbound-documents get --id <document_id>`
+- `fortnox-api-tool manual-outbound-documents create --json-file <manual_outbound_document_payload.json>`
+- `fortnox-api-tool manual-outbound-documents update --id <document_id> --json-file <manual_outbound_document_payload.json>`
+- `fortnox-api-tool manual-outbound-documents update-note --id <document_id> --json-file <manual_outbound_document_note_payload.json>`
+- `fortnox-api-tool manual-outbound-documents release --id <document_id> --json-file <manual_outbound_document_payload.json>`
+- `fortnox-api-tool manual-outbound-documents void --id <document_id> --json-file <manual_outbound_document_payload.json>`
+- `fortnox-api-tool email-senders list`
+- `fortnox-api-tool email-senders add-a-new-email-address-as-trusted --json-file <trusted_sender_payload.json>`
+- `fortnox-api-tool email-senders delete --id <trusted_sender_id>`
+- `fortnox-api-tool eu-vat-limit-regulation get [--year <year>]`
+- `fortnox-api-tool customer-references list`
+- `fortnox-api-tool customer-references get --row-id <customer_reference_row_id>`
+- `fortnox-api-tool customer-references create --json-file <customer_reference_payload.json>`
+- `fortnox-api-tool customer-references update --row-id <customer_reference_row_id> --json-file <customer_reference_payload.json>`
+- `fortnox-api-tool customer-references delete --row-id <customer_reference_row_id>`
+- `fortnox-api-tool customers list [--filter <active|inactive>] [--sort-by <customernumber|name>] [--customer-number <customer_number>] [--name <name>] [--zip-code <zip_code>] [--city <city>] [--email <email>] [--phone <phone>] [--organisation-number <organisation_number>] [--gln <gln>] [--gln-delivery <gln_delivery>] [--last-modified <yyyy-mm-dd>]`
+- `fortnox-api-tool customers get --customer-number <customer_number>`
+- `fortnox-api-tool customers create --json-file <customer_payload.json>`
+- `fortnox-api-tool customers update --customer-number <customer_number> --json-file <customer_payload.json>`
+- `fortnox-api-tool customers delete --customer-number <customer_number>`
+- `fortnox-api-tool expenses list`
+- `fortnox-api-tool expenses get --expense-code <expense_code>`
+- `fortnox-api-tool expenses create --json-file <expense_payload.json>`
+- `fortnox-api-tool labels list`
+- `fortnox-api-tool labels create --json-file <label_payload.json>`
+- `fortnox-api-tool labels update --id <label_id> --json-file <label_payload.json>`
+- `fortnox-api-tool labels delete --id <label_id>`
+- `fortnox-api-tool locked-period get`
+- `fortnox-api-tool print-templates list`
+- `fortnox-api-tool suppliers list [--supplier-number <supplier_number>] [--name <name>] [--organisation-number <organisation_number>] [--phone <phone>] [--zip-code <zip_code>] [--city <city>] [--email <email>] [--last-modified <yyyy-mm-dd>]`
+- `fortnox-api-tool suppliers get --supplier-number <supplier_number>`
+- `fortnox-api-tool suppliers create --json-file <supplier_payload.json>`
+- `fortnox-api-tool suppliers update --supplier-number <supplier_number> --json-file <supplier_payload.json>`
+- `fortnox-api-tool tax-reductions list`
+- `fortnox-api-tool tax-reductions get --id <tax_reduction_id>`
+- `fortnox-api-tool tax-reductions create --json-file <tax_reduction_payload.json>`
+- `fortnox-api-tool tax-reductions update --id <tax_reduction_id> --json-file <tax_reduction_payload.json>`
+- `fortnox-api-tool tax-reductions remove --id <tax_reduction_id>`
+- `fortnox-api-tool employees list`
+- `fortnox-api-tool employees get --employee-id <employee_id>`
+- `fortnox-api-tool employees create --json-file <employee_payload.json>`
+- `fortnox-api-tool employees update --employee-id <employee_id> --json-file <employee_payload.json>`
+- `fortnox-api-tool absence-transactions list`
+- `fortnox-api-tool absence-transactions get --id <absence_transaction_id>`
+- `fortnox-api-tool absence-transactions get-by-employee-date-code --employee-id <employee_id> --date <yyyy-mm-dd> --code <code>`
+- `fortnox-api-tool absence-transactions create --json-file <absence_transaction_payload.json>`
+- `fortnox-api-tool absence-transactions update --id <absence_transaction_id> --json-file <absence_transaction_payload.json>`
+- `fortnox-api-tool absence-transactions delete --id <absence_transaction_id>`
+- `fortnox-api-tool attendance-transactions list`
+- `fortnox-api-tool attendance-transactions get --id <attendance_transaction_id>`
+- `fortnox-api-tool attendance-transactions get-by-employee-date-code --employee-id <employee_id> --date <yyyy-mm-dd> --code <code>`
+- `fortnox-api-tool attendance-transactions create --json-file <attendance_transaction_payload.json>`
+- `fortnox-api-tool attendance-transactions update --id <attendance_transaction_id> --json-file <attendance_transaction_payload.json>`
+- `fortnox-api-tool attendance-transactions delete --id <attendance_transaction_id>`
+- `fortnox-api-tool articles list [--filter <active|inactive>] [--sort-by <articlenumber|quantityinstock|reservedquantity|stockvalue>] [--article-number <article_number>] [--description <description>] [--ean <ean>] [--supplier-number <supplier_number>] [--manufacturer <manufacturer>] [--manufacturer-article-number <manufacturer_article_number>] [--webshop <webshop>] [--last-modified <yyyy-mm-dd>]`
+- `fortnox-api-tool articles get --article-number <article_number>`
+- `fortnox-api-tool articles create --json-file <article_payload.json>`
+- `fortnox-api-tool articles update --article-number <article_number> --json-file <article_payload.json>`
+- `fortnox-api-tool articles delete --article-number <article_number>`
+- `fortnox-api-tool price-lists list`
+- `fortnox-api-tool price-lists get --code <price_list_code>`
+- `fortnox-api-tool price-lists create --json-file <price_list_payload.json>`
+- `fortnox-api-tool price-lists update --code <price_list_code> --json-file <price_list_payload.json>`
+- `fortnox-api-tool prices list`
+- `fortnox-api-tool prices get --price-list <price_list_code> --article-number <article_number>`
+- `fortnox-api-tool prices get-by-from-quantity --price-list <price_list_code> --article-number <article_number> --from-quantity <from_quantity>`
+- `fortnox-api-tool prices list-sublist --price-list <price_list_code> --article-number <article_number>`
+- `fortnox-api-tool prices create --json-file <price_payload.json>`
+- `fortnox-api-tool prices update --price-list <price_list_code> --article-number <article_number> --json-file <price_payload.json>`
+- `fortnox-api-tool prices update-by-from-quantity --price-list <price_list_code> --article-number <article_number> --from-quantity <from_quantity> --json-file <price_payload.json>`
+- `fortnox-api-tool prices delete --price-list <price_list_code> --article-number <article_number> --from-quantity <from_quantity>`
+- `fortnox-api-tool projects list`
+- `fortnox-api-tool projects get --project-number <project_number>`
+- `fortnox-api-tool currencies list`
+- `fortnox-api-tool currencies get --code <currency_code>`
+- `fortnox-api-tool currencies create --json-file <currency_payload.json>`
+- `fortnox-api-tool currencies update --code <currency_code> --json-file <currency_payload.json>`
+- `fortnox-api-tool currencies remove --code <currency_code>`
+- `fortnox-api-tool units list`
+- `fortnox-api-tool units get --code <unit_code>`
+- `fortnox-api-tool units create --json-file <unit_payload.json>`
+- `fortnox-api-tool units update --code <unit_code> --json-file <unit_payload.json>`
+- `fortnox-api-tool units remove --code <unit_code>`
+- `fortnox-api-tool cost-centers list`
+- `fortnox-api-tool cost-centers get --code <cost_center_code>`
+- `fortnox-api-tool cost-centers create --json-file <cost_center_payload.json>`
+- `fortnox-api-tool cost-centers update --code <cost_center_code> --json-file <cost_center_payload.json>`
+- `fortnox-api-tool cost-centers remove --code <cost_center_code>`
+- `fortnox-api-tool terms-of-deliveries list`
+- `fortnox-api-tool terms-of-deliveries get --code <terms_of_delivery_code>`
+- `fortnox-api-tool terms-of-deliveries create --json-file <terms_of_delivery_payload.json>`
+- `fortnox-api-tool terms-of-deliveries update --code <terms_of_delivery_code> --json-file <terms_of_delivery_payload.json>`
+- `fortnox-api-tool way-of-deliveries list`
+- `fortnox-api-tool way-of-deliveries get --code <way_of_delivery_code>`
+- `fortnox-api-tool way-of-deliveries create --json-file <way_of_delivery_payload.json>`
+- `fortnox-api-tool way-of-deliveries update --code <way_of_delivery_code> --json-file <way_of_delivery_payload.json>`
+- `fortnox-api-tool way-of-deliveries remove --code <way_of_delivery_code>`
+- `fortnox-api-tool terms-of-payments list`
+- `fortnox-api-tool terms-of-payments get --code <terms_of_payment_code>`
+- `fortnox-api-tool terms-of-payments create --json-file <terms_of_payment_payload.json>`
+- `fortnox-api-tool terms-of-payments update --code <terms_of_payment_code> --json-file <terms_of_payment_payload.json>`
+- `fortnox-api-tool terms-of-payments remove --code <terms_of_payment_code>`
+- `fortnox-api-tool salary-transactions list`
+- `fortnox-api-tool salary-transactions get --salary-row <salary_row>`
+- `fortnox-api-tool salary-transactions create --json-file <salary_transaction_payload.json>`
+- `fortnox-api-tool salary-transactions update --salary-row <salary_row> --json-file <salary_transaction_payload.json>`
+- `fortnox-api-tool salary-transactions delete --salary-row <salary_row>`
+- `fortnox-api-tool schedule-times get --employee-id <employee_id> --date <yyyy-mm-dd>`
+- `fortnox-api-tool schedule-times update --employee-id <employee_id> --date <yyyy-mm-dd> --json-file <schedule_time_payload.json>`
+- `fortnox-api-tool schedule-times reset-day --employee-id <employee_id> --date <yyyy-mm-dd> --json-file <schedule_time_payload.json>`
+- `fortnox-api-tool registrations get`
+- `fortnox-api-tool sie get --type <sie_type> [--selection <value>] [--financial-year <id>] [--export-all <value>] [--from-date <yyyy-mm-dd>] [--to-date <yyyy-mm-dd>]`
+- `fortnox-api-tool stock-status get-stock-balance [--item-id <item_id> ...] [--stock-point-code <stock_point_code> ...]`
+- `fortnox-api-tool tenant get`
+- `fortnox-api-tool users fetch-user-information-for-a-single-published-integration-and-tenant --integration-id <integration_id> --tenant-id <tenant_id>`
+- `fortnox-api-tool vacation-debt-basis get --year <year> --month <month>`
+- `fortnox-api-tool projects create --json-file <project_payload.json>`
+- `fortnox-api-tool projects update --project-number <project_number> --json-file <project_payload.json>`
+- `fortnox-api-tool projects remove --project-number <project_number>`
+- `fortnox-api-tool financial-years list`
+- `fortnox-api-tool financial-years get --year-id <financial_year_id>`
+- `fortnox-api-tool financial-years create --json-file <financial_year_payload.json>`
+- `fortnox-api-tool fortnox-finans get --invoice-number <invoice_number>`
+- `fortnox-api-tool fortnox-finans send-an-invoice-with-fortnox-finans --json-file <nox_finans_invoice_payload.json>`
+- `fortnox-api-tool fortnox-finans action-pause --invoice-number <invoice_number> [--json-file <nox_finans_invoice_payload.json>]`
+- `fortnox-api-tool fortnox-finans action-report-payment --invoice-number <invoice_number> [--json-file <nox_finans_invoice_payload.json>]`
+- `fortnox-api-tool fortnox-finans action-stop --invoice-number <invoice_number>`
+- `fortnox-api-tool fortnox-finans action-take-fees --invoice-number <invoice_number>`
+- `fortnox-api-tool fortnox-finans action-unpause --invoice-number <invoice_number>`
+- `fortnox-api-tool predefined-accounts list`
+- `fortnox-api-tool predefined-accounts get --name <predefined_account_name>`
+- `fortnox-api-tool predefined-accounts update --name <predefined_account_name> --json-file <predefined_account_payload.json>`
+- `fortnox-api-tool predefined-voucher-series list`
+- `fortnox-api-tool predefined-voucher-series get --name <predefined_voucher_series_name>`
+- `fortnox-api-tool predefined-voucher-series update --name <predefined_voucher_series_name> --json-file <predefined_voucher_series_payload.json>`
+- `fortnox-api-tool modes-of-payments list`
+- `fortnox-api-tool modes-of-payments get --code <mode_of_payment_code>`
+- `fortnox-api-tool modes-of-payments create --json-file <mode_of_payment_payload.json>`
+- `fortnox-api-tool modes-of-payments update --code <mode_of_payment_code> --json-file <mode_of_payment_payload.json>`
+- `fortnox-api-tool modes-of-payments remove --code <mode_of_payment_code>`
+- `fortnox-api-tool voucher-series list`
+- `fortnox-api-tool voucher-series get --code <voucher_series_code>`
+- `fortnox-api-tool voucher-series create --json-file <voucher_series_payload.json>`
+- `fortnox-api-tool voucher-series update --code <voucher_series_code> --json-file <voucher_series_payload.json>`
+- `fortnox-api-tool voucher-file-connections list [--voucher-year <year>] [--voucher-description <description>] [--voucher-number <number>] [--voucher-series <series>]`
+- `fortnox-api-tool voucher-file-connections get --file-id <file_id>`
+- `fortnox-api-tool voucher-file-connections create --json-file <voucher_file_connection_payload.json>`
+- `fortnox-api-tool voucher-file-connections remove --file-id <file_id>`
+- `fortnox-api-tool vouchers list`
+- `fortnox-api-tool vouchers get --voucher-series <voucher_series_code> --voucher-number <voucher_number>`
+- `fortnox-api-tool vouchers list-by-series --voucher-series <voucher_series_code>`
+- `fortnox-api-tool vouchers list-current-financial-year`
+- `fortnox-api-tool vouchers create --json-file <voucher_payload.json> [--financial-year <id>]`
+- `fortnox-api-tool invoice-payments list`
+- `fortnox-api-tool invoice-payments get --number <invoice_payment_number>`
+- `fortnox-api-tool invoice-payments create --json-file <invoice_payment_payload.json>`
+- `fortnox-api-tool invoice-payments update --number <invoice_payment_number> --json-file <invoice_payment_payload.json>`
+- `fortnox-api-tool invoice-payments remove --number <invoice_payment_number>`
+- `fortnox-api-tool invoice-payments bookkeep --number <invoice_payment_number> --json-file <invoice_payment_payload.json>`
+- `fortnox-api-tool invoice-accruals list`
+- `fortnox-api-tool invoice-accruals get --invoice-number <invoice_number>`
+- `fortnox-api-tool invoice-accruals create --json-file <invoice_accrual_payload.json>`
+- `fortnox-api-tool invoice-accruals update --invoice-number <invoice_number> --json-file <invoice_accrual_payload.json>`
+- `fortnox-api-tool invoice-accruals remove --invoice-number <invoice_number>`
+- `fortnox-api-tool contract-accruals list`
+- `fortnox-api-tool contract-accruals get --document-number <contract_document_number>`
+- `fortnox-api-tool contract-accruals create --json-file <contract_accrual_payload.json>`
+- `fortnox-api-tool contract-accruals update --document-number <contract_document_number> --json-file <contract_accrual_payload.json>`
+- `fortnox-api-tool contract-accruals remove --document-number <contract_document_number>`
+- `fortnox-api-tool contract-templates list`
+- `fortnox-api-tool contract-templates get --template-number <template_number>`
+- `fortnox-api-tool contract-templates create --json-file <contract_template_payload.json>`
+- `fortnox-api-tool contract-templates update --template-number <template_number> --json-file <contract_template_payload.json>`
+- `fortnox-api-tool contracts list [--period-start <date>] [--period-end <date>] [--filter <active|inactive|finished>] [--document-number <document_number>] [--customer-number <customer_number>] [--template-number <template_number>] [--invoices-remaining <count>] [--last-modified <date>]`
+- `fortnox-api-tool contracts get --document-number <contract_document_number>`
+- `fortnox-api-tool contracts create --json-file <contract_payload.json>`
+- `fortnox-api-tool contracts update --document-number <contract_document_number> --json-file <contract_payload.json>`
+- `fortnox-api-tool contracts create-invoice --document-number <contract_document_number> [--json-file <contract_payload.json>] [--invoice-date <date>]`
+- `fortnox-api-tool contracts increase-invoice-count --document-number <contract_document_number> [--json-file <contract_payload.json>]`
+- `fortnox-api-tool contracts finish --document-number <contract_document_number> [--json-file <contract_payload.json>]`
+- `fortnox-api-tool supplier-invoice-accruals list`
+- `fortnox-api-tool supplier-invoice-accruals get --supplier-invoice-number <supplier_invoice_number>`
+- `fortnox-api-tool supplier-invoice-accruals create --json-file <supplier_invoice_accrual_payload.json>`
+- `fortnox-api-tool supplier-invoice-accruals update --supplier-invoice-number <supplier_invoice_number> --json-file <supplier_invoice_accrual_payload.json>`
+- `fortnox-api-tool supplier-invoice-accruals remove --supplier-invoice-number <supplier_invoice_number>`
+- `fortnox-api-tool supplier-invoice-external-url-connections get --id <external_url_connection_id>`
+- `fortnox-api-tool supplier-invoice-external-url-connections create --json-file <supplier_invoice_external_url_connection_payload.json>`
+- `fortnox-api-tool supplier-invoice-external-url-connections update --id <external_url_connection_id> --json-file <supplier_invoice_external_url_connection_payload.json>`
+- `fortnox-api-tool supplier-invoice-external-url-connections remove --id <external_url_connection_id>`
+- `fortnox-api-tool supplier-invoice-payments list`
+- `fortnox-api-tool supplier-invoice-payments get --number <supplier_invoice_payment_number>`
+- `fortnox-api-tool supplier-invoice-payments create --json-file <supplier_invoice_payment_payload.json>`
+- `fortnox-api-tool supplier-invoice-payments update --number <supplier_invoice_payment_number> --json-file <supplier_invoice_payment_payload.json>`
+- `fortnox-api-tool supplier-invoice-payments remove --number <supplier_invoice_payment_number>`
+- `fortnox-api-tool supplier-invoice-payments bookkeep --number <supplier_invoice_payment_number> --json-file <supplier_invoice_payment_payload.json>`
+- `fortnox-api-tool supplier-invoice-file-connections list [--supplier-invoice-number <supplier_invoice_number>]`
+- `fortnox-api-tool supplier-invoice-file-connections get --file-id <file_id>`
+- `fortnox-api-tool supplier-invoice-file-connections create --json-file <supplier_invoice_file_connection_payload.json>`
+- `fortnox-api-tool supplier-invoice-file-connections remove --file-id <file_id>`
+- `fortnox-api-tool supplier-invoices list`
+- `fortnox-api-tool supplier-invoices get --supplier-invoice-number <supplier_invoice_number>`
+- `fortnox-api-tool supplier-invoices create --json-file <supplier_invoice_payload.json>`
+- `fortnox-api-tool supplier-invoices update --supplier-invoice-number <supplier_invoice_number> --json-file <supplier_invoice_payload.json>`
+- `fortnox-api-tool supplier-invoices approvalbookkeep --supplier-invoice-number <supplier_invoice_number> [--json-file <supplier_invoice_payload.json>]`
+- `fortnox-api-tool supplier-invoices approvalpayment --supplier-invoice-number <supplier_invoice_number> [--json-file <supplier_invoice_payload.json>]`
+- `fortnox-api-tool supplier-invoices bookkeep --supplier-invoice-number <supplier_invoice_number> [--json-file <supplier_invoice_payload.json>]`
+- `fortnox-api-tool supplier-invoices cancel --supplier-invoice-number <supplier_invoice_number> [--json-file <supplier_invoice_payload.json>]`
+- `fortnox-api-tool supplier-invoices credit --supplier-invoice-number <supplier_invoice_number> [--json-file <supplier_invoice_payload.json>]`
+- `fortnox-api-tool invoices list`
+- `fortnox-api-tool invoices get --document-number <invoice_document_number>`
+- `fortnox-api-tool invoices preview --document-number <invoice_document_number> [--output-file <local_pdf_path>]`
+- `fortnox-api-tool invoices print --document-number <invoice_document_number> [--output-file <local_pdf_path>]`
+- `fortnox-api-tool invoices print-reminder --document-number <invoice_document_number> [--output-file <local_pdf_path>]`
+- `fortnox-api-tool invoices send-an-invoice-as-e-invoice --document-number <invoice_document_number>`
+- `fortnox-api-tool invoices send-an-invoice-as-e-print --document-number <invoice_document_number>`
+- `fortnox-api-tool invoices send-an-invoice-as-email --document-number <invoice_document_number>`
+- `fortnox-api-tool offers list`
+- `fortnox-api-tool offers get --document-number <offer_document_number>`
+- `fortnox-api-tool offers preview --document-number <offer_document_number> [--output-file <local_pdf_path>]`
+- `fortnox-api-tool offers print --document-number <offer_document_number> [--output-file <local_pdf_path>]`
+- `fortnox-api-tool offers send-given-offer-as-email --document-number <offer_document_number>`
+- `fortnox-api-tool offers create --json-file <offer_payload.json>`
+- `fortnox-api-tool offers update --document-number <offer_document_number> --json-file <offer_payload.json>`
+- `fortnox-api-tool offers cancel --document-number <offer_document_number> [--json-file <offer_payload.json>]`
+- `fortnox-api-tool offers create-invoice --document-number <offer_document_number> [--json-file <offer_payload.json>]`
+- `fortnox-api-tool offers create-order --document-number <offer_document_number> [--json-file <offer_payload.json>]`
+- `fortnox-api-tool offers externalprint --document-number <offer_document_number> [--json-file <offer_payload.json>]`
+- `fortnox-api-tool orders list`
+- `fortnox-api-tool orders get --document-number <order_document_number>`
+- `fortnox-api-tool orders preview --document-number <order_document_number> [--output-file <local_pdf_path>]`
+- `fortnox-api-tool orders print --document-number <order_document_number> [--output-file <local_pdf_path>]`
+- `fortnox-api-tool orders send-given-order-as-email --document-number <order_document_number>`
+- `fortnox-api-tool orders create --json-file <order_payload.json>`
+- `fortnox-api-tool orders update --document-number <order_document_number> --json-file <order_payload.json>`
+- `fortnox-api-tool orders cancel --document-number <order_document_number> [--json-file <order_payload.json>]`
+- `fortnox-api-tool orders create-invoice --document-number <order_document_number> [--json-file <order_payload.json>]`
+- `fortnox-api-tool orders externalprint --document-number <order_document_number> [--json-file <order_payload.json>]`
+- `fortnox-api-tool purchase-orders list`
+- `fortnox-api-tool purchase-orders get --id <purchase_order_id>`
+- `fortnox-api-tool purchase-orders get-csv`
+- `fortnox-api-tool purchase-orders get-note --id <purchase_order_id>`
+- `fortnox-api-tool purchase-orders list-matches --id <purchase_order_id>`
+- `fortnox-api-tool purchase-orders create --json-file <purchase_order_payload.json>`
+- `fortnox-api-tool purchase-orders update --id <purchase_order_id> --json-file <purchase_order_payload.json>`
+- `fortnox-api-tool purchase-orders partial-update-purchase-order --id <purchase_order_id> --json-file <partial_purchase_order_payload.json>`
+- `fortnox-api-tool purchase-orders manually-complete-dropship-order --id <purchase_order_id>`
+- `fortnox-api-tool purchase-orders manually-complete-purchase-order --id <purchase_order_id>`
+- `fortnox-api-tool purchase-orders send-purchase-order-via-email --id <purchase_order_id> --json-file <purchase_order_mail_settings.json>`
+- `fortnox-api-tool purchase-orders sends-multiple-purchase-orders-via-email --id <purchase_order_id> --id <purchase_order_id>`
+- `fortnox-api-tool purchase-orders update-response --id <purchase_order_id> --json-file <purchase_order_response_state.json>`
+- `fortnox-api-tool purchase-orders update-response-bulk --id <purchase_order_id> --id <purchase_order_id> --json-file <purchase_order_response_state.json>`
+- `fortnox-api-tool purchase-orders void --id <purchase_order_id>`
+- `fortnox-api-tool incoming-goods list`
+- `fortnox-api-tool incoming-goods get --id <incoming_goods_id>`
+- `fortnox-api-tool incoming-goods create --json-file <incoming_goods_payload.json>`
+- `fortnox-api-tool incoming-goods update --id <incoming_goods_id> --json-file <incoming_goods_payload.json>`
+- `fortnox-api-tool incoming-goods partial-update-incoming-goods-document --id <incoming_goods_id> --json-file <partial_incoming_goods_payload.json>`
+- `fortnox-api-tool incoming-goods complete-incoming-goods-document --id <incoming_goods_id> --date <yyyy-mm-dd>`
+- `fortnox-api-tool incoming-goods release --id <incoming_goods_id>`
+- `fortnox-api-tool incoming-goods void --id <incoming_goods_id>`
+- `fortnox-api-tool stock-points list [--q <text>] [--state <ALL|ACTIVE|INACTIVE>]`
+- `fortnox-api-tool stock-points get --id <stock_point_id_or_code>`
+- `fortnox-api-tool stock-points get-stock-locations --id <stock_point_id_or_code> [--q <text>]`
+- `fortnox-api-tool stock-points list-multi --id <stock_point_id> --id <stock_point_id> [--state <ALL|ACTIVE|INACTIVE>]`
+- `fortnox-api-tool stock-points create --json-file <stock_point_payload.json>`
+- `fortnox-api-tool stock-points update --id <stock_point_id> --json-file <stock_point_payload.json>`
+- `fortnox-api-tool stock-points append-stock-locations --id <stock_point_id> --json-file <stock_location_array.json>`
+- `fortnox-api-tool stock-points delete --id <stock_point_id>`
+- `fortnox-api-tool stock-taking list`
+- `fortnox-api-tool stock-taking get --id <stock_taking_id>`
+- `fortnox-api-tool stock-taking get-candidate-rows --id <stock_taking_id> [--item-id <item_id>] [--supplier-number <supplier_number>] [--stock-point-id <stock_point_id>] [--stock-location-id <stock_location_id>] [--transaction-date <yyyy-mm-dd>] [--item-id-search <text>] [--item-description-search <text>] [--exclude-zero-balance-items] [--include-non-inbound-items]`
+- `fortnox-api-tool stock-taking get-rows --id <stock_taking_id> [--item-id <item_id>] [--supplier-number <supplier_number>] [--stock-point-id <stock_point_id>] [--stock-location-id <stock_location_id>] [--transaction-date <yyyy-mm-dd>] [--item-id-search <text>] [--item-description-search <text>] [--exclude-zero-balance-items] [--secondary-sort-by <field>] [--secondary-order <order>] [--state-filter <all|notStockTaken|stockTakenNoDeviation|stockTakenWithDeviation>] [--starting-row-no <number>] [--starting-item-id <item_id>]`
+- `fortnox-api-tool stock-taking create --json-file <stock_taking_payload.json>`
+- `fortnox-api-tool stock-taking update --id <stock_taking_id> --json-file <stock_taking_payload.json>`
+- `fortnox-api-tool stock-taking add-rows --id <stock_taking_id> --json-file <stock_taking_rows.json>`
+- `fortnox-api-tool stock-taking add-rows-by-filter --id <stock_taking_id> [--item-id <item_id>] [--supplier-number <supplier_number>] [--stock-point-id <stock_point_id>] [--stock-location-id <stock_location_id>] [--transaction-date <yyyy-mm-dd>] [--item-id-search <text>] [--item-description-search <text>] [--exclude-zero-balance-items] [--exclude-non-inbound-items]`
+- `fortnox-api-tool stock-taking delete --id <stock_taking_id>`
+- `fortnox-api-tool stock-taking delete-row --id <stock_taking_id> --row-id <stock_taking_row_id>`
+- `fortnox-api-tool stock-taking delete-rows --id <stock_taking_id> [--item-id <item_id>] [--supplier-number <supplier_number>] [--stock-point-id <stock_point_id>] [--stock-location-id <stock_location_id>] [--transaction-date <yyyy-mm-dd>] [--item-id-search <text>] [--item-description-search <text>] [--exclude-zero-balance-items]`
+- `fortnox-api-tool stock-taking release --id <stock_taking_id>`
+- `fortnox-api-tool stock-taking void --id <stock_taking_id>`
+- `fortnox-api-tool stock-transfers get --id <stock_transfer_id>`
+- `fortnox-api-tool stock-transfers create --json-file <stock_transfer_payload.json>`
+- `fortnox-api-tool stock-transfers update --id <stock_transfer_id> --json-file <stock_transfer_payload.json>`
+- `fortnox-api-tool stock-transfers release --id <stock_transfer_id>`
+- `fortnox-api-tool stock-transfers void --id <stock_transfer_id>`
+- `fortnox-api-tool production-orders list`
+- `fortnox-api-tool production-orders get --id <production_order_id>`
+- `fortnox-api-tool production-orders get-bill-of-materials --item-id <item_id>`
+- `fortnox-api-tool production-orders create --json-file <production_order_payload.json>`
+- `fortnox-api-tool production-orders update --id <production_order_id> --json-file <production_order_payload.json>`
+- `fortnox-api-tool production-orders update-note --id <production_order_id> --json-file <production_order_note_payload.json>`
+- `fortnox-api-tool production-orders release --id <production_order_id>`
+- `fortnox-api-tool production-orders void --id <production_order_id>`
+- `fortnox-api-tool invoices create --json-file <invoice_payload.json>`
+- `fortnox-api-tool invoices update --document-number <invoice_document_number> --json-file <invoice_payload.json>`
+- `fortnox-api-tool invoices bookkeep --document-number <invoice_document_number> [--json-file <invoice_payload.json>]`
+- `fortnox-api-tool invoices cancel --document-number <invoice_document_number> [--json-file <invoice_payload.json>]`
+- `fortnox-api-tool invoices credit --document-number <invoice_document_number> [--json-file <invoice_payload.json>]`
+- `fortnox-api-tool invoices warehouseready --document-number <invoice_document_number> [--json-file <invoice_payload.json>]`
+- `fortnox-api-tool invoices externalprint --document-number <invoice_document_number> [--json-file <invoice_payload.json>]`
+
+Notes:
+- `offers create` and `offers update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json offers <create|update> ...`
+- `offers cancel`, `offers create-invoice`, `offers create-order`, and `offers externalprint` are dry-run by default and apply from a reviewed plan with `--yes`: `fortnox-api-tool --apply --yes --plan-in plan.json offers <cancel|create-invoice|create-order|externalprint> ...`
+- `orders create` and `orders update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json orders <create|update> ...`
+- `orders cancel`, `orders create-invoice`, and `orders externalprint` are dry-run by default and apply from a reviewed plan with `--yes`: `fortnox-api-tool --apply --yes --plan-in plan.json orders <cancel|create-invoice|externalprint> ...`
+- `purchase-orders create`, `purchase-orders update`, and `purchase-orders partial-update-purchase-order` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json purchase-orders <create|update|partial-update-purchase-order> ...`
+- `purchase-orders manually-complete-dropship-order`, `manually-complete-purchase-order`, `send-purchase-order-via-email`, `sends-multiple-purchase-orders-via-email`, `update-response`, and `update-response-bulk` are dry-run by default and apply from a reviewed plan with `--yes`: `fortnox-api-tool --apply --yes --plan-in plan.json purchase-orders <manually-complete-dropship-order|manually-complete-purchase-order|send-purchase-order-via-email|sends-multiple-purchase-orders-via-email|update-response|update-response-bulk> ...`
+- `purchase-orders void` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json purchase-orders void ...`
+- `purchase-orders` uses the official raw warehouse payload shape, keeps `--id` as the selector, and keeps the CSV endpoint separate from JSON parsing.
+- `incoming-goods create`, `incoming-goods update`, and `incoming-goods partial-update-incoming-goods-document` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json incoming-goods <create|update|partial-update-incoming-goods-document> ...`
+- `incoming-goods complete-incoming-goods-document` and `incoming-goods release` are dry-run by default and apply from a reviewed plan with `--yes`: `fortnox-api-tool --apply --yes --plan-in plan.json incoming-goods <complete-incoming-goods-document|release> ...`
+- `incoming-goods void` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json incoming-goods void ...`
+- `incoming-goods` uses the official raw warehouse payload shape, keeps `--id` as the selector, and sends the documented raw JSON string bookkeeping date on `complete-incoming-goods-document --date YYYY-MM-DD`.
+- `stock-points create`, `stock-points update`, and `stock-points append-stock-locations` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json stock-points <create|update|append-stock-locations> ...`
+- `stock-points delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json stock-points delete ...`
+- `stock-points` uses the official raw warehouse stock-point object for `create` and `update`, keeps `append-stock-locations` on the documented raw top-level stock-location array, keeps `list` and `list-multi` state filters explicit, and keeps code-or-id reads separate from UUID-only write selectors.
+- `stock-taking create`, `stock-taking update`, `stock-taking add-rows`, and `stock-taking add-rows-by-filter` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json stock-taking <create|update|add-rows|add-rows-by-filter> ...`
+- `stock-taking release` is dry-run by default and applies from a reviewed plan with `--yes`: `fortnox-api-tool --apply --yes --plan-in plan.json stock-taking release ...`
+- `stock-taking delete`, `stock-taking delete-row`, `stock-taking delete-rows`, and `stock-taking void` are dry-run by default and apply only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json stock-taking <delete|delete-row|delete-rows|void> ...`
+- `stock-taking` uses the official raw warehouse payload shape, keeps `--id` as the selector, keeps `add-rows` as the documented raw top-level row array, and keeps candidate-row and row-filter query names explicit on the CLI.
+- `stock-transfers create` and `stock-transfers update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json stock-transfers <create|update> ...`
+- `stock-transfers release` is dry-run by default and applies from a reviewed plan with `--yes`: `fortnox-api-tool --apply --yes --plan-in plan.json stock-transfers release ...`
+- `stock-transfers void` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json stock-transfers void ...`
+- `stock-transfers` uses the official raw warehouse payload shape, keeps `--id` as the selector, and verifies create, update, release, and void by follow-up GET.
+- `production-orders create`, `production-orders update`, and `production-orders update-note` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json production-orders <create|update|update-note> ...`
+- `production-orders release` is dry-run by default and applies from a reviewed plan with `--yes`: `fortnox-api-tool --apply --yes --plan-in plan.json production-orders release ...`
+- `production-orders void` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json production-orders void ...`
+- `production-orders` uses the official raw warehouse payload shape, keeps `--id` as the selector, keeps `get-bill-of-materials` on explicit `--item-id`, keeps the documented PATCH note path separate from full update, and verifies create, update, update-note, release, and void by follow-up GET.
+- `invoices create` and `invoices update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json invoices <create|update> ...`
+- `invoices bookkeep`, `invoices cancel`, `invoices credit`, `invoices warehouseready`, and `invoices externalprint` are dry-run by default and apply from a reviewed plan with `--yes`: `fortnox-api-tool --apply --yes --plan-in plan.json invoices <bookkeep|cancel|credit|warehouseready|externalprint> ...`
+- These shipped reads currently do the plain GET path only.
+- `invoice-accruals create` and `invoice-accruals update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json invoice-accruals <create|update> ...`
+- `invoice-accruals remove` is dry-run by default and applies only with `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json invoice-accruals remove ...`
+- `contract-accruals create` and `contract-accruals update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json contract-accruals <create|update> ...`
+- `contract-accruals remove` is dry-run by default and applies only with `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json contract-accruals remove ...`
+- `contract-templates create` and `contract-templates update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json contract-templates <create|update> ...`
+- `contracts create` and `contracts update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json contracts <create|update> ...`
+- `contracts create-invoice`, `contracts increase-invoice-count`, and `contracts finish` are dry-run by default and apply from a reviewed plan with `--yes`: `fortnox-api-tool --apply --yes --plan-in plan.json contracts <create-invoice|increase-invoice-count|finish> ...`
+- `invoice-payments create` and `invoice-payments update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json invoice-payments <create|update> ...`
+- `invoice-payments remove` is dry-run by default and applies only with `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json invoice-payments remove ...`
+- `invoice-payments bookkeep` is dry-run by default and is higher-risk; it requires `fortnox-api-tool --apply --yes --plan-in plan.json invoice-payments bookkeep ...`
+- `supplier-invoice-accruals create` and `supplier-invoice-accruals update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json supplier-invoice-accruals <create|update> ...`
+- `supplier-invoice-accruals remove` is dry-run by default and applies only with `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json supplier-invoice-accruals remove ...`
+- `supplier-invoice-payments create` and `supplier-invoice-payments update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json supplier-invoice-payments <create|update> ...`
+- `supplier-invoice-payments remove` is dry-run by default and applies only with `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json supplier-invoice-payments remove ...`
+- `supplier-invoice-payments bookkeep` is dry-run by default and is higher-risk; it requires `fortnox-api-tool --apply --yes --plan-in plan.json supplier-invoice-payments bookkeep ...`
+- `supplier-invoices create` and `supplier-invoices update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json supplier-invoices <create|update> ...`
+- `supplier-invoices approvalbookkeep`, `approvalpayment`, `bookkeep`, `cancel`, and `credit` are dry-run by default and apply from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --plan-in plan.json supplier-invoices <approvalbookkeep|approvalpayment|bookkeep|cancel|credit> ...`
+- `accounts create` and `accounts update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json accounts <create|update> ...`
+- `accounts delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json accounts delete ...`
+- `financial-years create` is dry-run by default and applies from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json financial-years create ...`
+- `fortnox-finans get` is a plain GET read, but `send-an-invoice-with-fortnox-finans` plus `action-pause|action-report-payment|action-stop|action-take-fees|action-unpause` are higher-risk and apply only with `fortnox-api-tool --apply --yes --plan-in plan.json fortnox-finans <...> ...`
+- `predefined-accounts update` is dry-run by default and applies from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json predefined-accounts update --name <predefined_account_name> ...`
+- `predefined-voucher-series update` is dry-run by default and applies from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json predefined-voucher-series update --name <predefined_voucher_series_name> ...`
+- `vouchers create` is dry-run by default and applies from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json vouchers create --financial-year <id> ...`
+- `customers create` and `customers update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json customers <create|update> ...`
+- `customers delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json customers delete ...`
+- `customer-references create` and `customer-references update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json customer-references <create|update> ...`
+- `customer-references delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json customer-references delete ...`
+- `expenses create` is dry-run by default and applies from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json expenses create ...`
+- `labels create` and `labels update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json labels <create|update> ...`
+- `labels delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json labels delete ...`
+- `locked-period get` and `print-templates list` are shipped as plain GET reads.
+- `suppliers create` and `suppliers update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json suppliers <create|update> ...`
+- `tax-reductions create` and `tax-reductions update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json tax-reductions <create|update> ...`
+- `tax-reductions remove` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json tax-reductions remove ...`
+- `employees create` and `employees update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json employees <create|update> ...`
+- `absence-transactions create` and `absence-transactions update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json absence-transactions <create|update> ...`
+- `absence-transactions delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json absence-transactions delete ...`
+- `attendance-transactions create` and `attendance-transactions update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json attendance-transactions <create|update> ...`
+- `attendance-transactions delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json attendance-transactions delete ...`
+- `articles create` and `articles update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json articles <create|update> ...`
+- `articles delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json articles delete ...`
+- `price-lists create` and `price-lists update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json price-lists <create|update> ...`
+- `prices create`, `prices update`, and `prices update-by-from-quantity` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json prices <create|update|update-by-from-quantity> ...`
+- `prices delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json prices delete ...`
+- `currencies create` and `currencies update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json currencies <create|update> ...`
+- `currencies remove` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json currencies remove ...`
+- `units create` and `units update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json units <create|update> ...`
+- `units remove` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json units remove ...`
+- `cost-centers create` and `cost-centers update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json cost-centers <create|update> ...`
+- `cost-centers remove` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json cost-centers remove ...`
+- `terms-of-deliveries create` and `terms-of-deliveries update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json terms-of-deliveries <create|update> ...`
+- `way-of-deliveries create` and `way-of-deliveries update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json way-of-deliveries <create|update> ...`
+- `way-of-deliveries remove` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json way-of-deliveries remove ...`
+- `terms-of-payments create` and `terms-of-payments update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json terms-of-payments <create|update> ...`
+- `terms-of-payments remove` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json terms-of-payments remove ...`
+- `salary-transactions create` and `salary-transactions update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json salary-transactions <create|update> ...`
+- `salary-transactions delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json salary-transactions delete ...`
+- `schedule-times update` and `schedule-times reset-day` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json schedule-times <update|reset-day> ...`
+- `projects create` and `projects update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json projects <create|update> ...`
+- `projects remove` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json projects remove ...`
+- `modes-of-payments create` and `modes-of-payments update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json modes-of-payments <create|update> ...`
+- `modes-of-payments remove` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json modes-of-payments remove ...`
+- `voucher-series create` and `voucher-series update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json voucher-series <create|update> ...`
+- `registrations get` uses the official `/api/time/registrations-v2` endpoint.
+- `vacation-debt-basis get` is shipped as a plain GET read.
+- Action-like GET endpoints such as email, e-print, preview, print, and reminder flows stay unshipped until they get a separate safety decision.
+- `articles list`, `customers list`, and `suppliers list` now keep the rendered official Fortnox query/filter names explicit on the CLI. The current rendered `price-lists` read docs do not show extra query params.
+
+## Payroll and time reporting
+
+- `fortnox-api-tool absence-transactions list`
+- `fortnox-api-tool absence-transactions get --id <absence_transaction_id>`
+- `fortnox-api-tool absence-transactions get-by-employee-date-code --employee-id <employee_id> --date <yyyy-mm-dd> --code <code>`
+- `fortnox-api-tool absence-transactions create --json-file <absence_transaction_payload.json>`
+- `fortnox-api-tool absence-transactions update --id <absence_transaction_id> --json-file <absence_transaction_payload.json>`
+- `fortnox-api-tool absence-transactions delete --id <absence_transaction_id>`
+- `fortnox-api-tool attendance-transactions list`
+- `fortnox-api-tool attendance-transactions get --id <attendance_transaction_id>`
+- `fortnox-api-tool attendance-transactions get-by-employee-date-code --employee-id <employee_id> --date <yyyy-mm-dd> --code <code>`
+- `fortnox-api-tool attendance-transactions create --json-file <attendance_transaction_payload.json>`
+- `fortnox-api-tool attendance-transactions update --id <attendance_transaction_id> --json-file <attendance_transaction_payload.json>`
+- `fortnox-api-tool attendance-transactions delete --id <attendance_transaction_id>`
+- `fortnox-api-tool salary-transactions list`
+- `fortnox-api-tool salary-transactions get --salary-row <salary_row>`
+- `fortnox-api-tool salary-transactions create --json-file <salary_transaction_payload.json>`
+- `fortnox-api-tool salary-transactions update --salary-row <salary_row> --json-file <salary_transaction_payload.json>`
+- `fortnox-api-tool salary-transactions delete --salary-row <salary_row>`
+- `fortnox-api-tool schedule-times get --employee-id <employee_id> --date <yyyy-mm-dd>`
+- `fortnox-api-tool schedule-times update --employee-id <employee_id> --date <yyyy-mm-dd> --json-file <schedule_time_payload.json>`
+- `fortnox-api-tool schedule-times reset-day --employee-id <employee_id> --date <yyyy-mm-dd> --json-file <schedule_time_payload.json>`
+- `fortnox-api-tool registrations get`
+- `fortnox-api-tool vacation-debt-basis get --year <year> --month <month>`
+
+Notes:
+- `absence-transactions create` and `absence-transactions update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json absence-transactions <create|update> ...`
+- `absence-transactions delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json absence-transactions delete ...`
+- `attendance-transactions create` and `attendance-transactions update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json attendance-transactions <create|update> ...`
+- `attendance-transactions delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json attendance-transactions delete ...`
+- `salary-transactions create` and `salary-transactions update` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json salary-transactions <create|update> ...`
+- `salary-transactions delete` is dry-run by default and applies only from a reviewed plan with confirmation: `fortnox-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json salary-transactions delete ...`
+- `schedule-times update` and `schedule-times reset-day` are dry-run by default and apply from a reviewed plan: `fortnox-api-tool --apply --plan-in plan.json schedule-times <update|reset-day> ...`
+- `registrations get` uses the official `/api/time/registrations-v2` endpoint.
+- `vacation-debt-basis get` is shipped as a plain GET read.
+
+## Jobs
+
+`jobs run` is intentionally unsupported in the public CLI right now.
+The old demo ping rows were removed, and no real registry-backed Fortnox batch rows are shipped yet.
+
+## Runs
+
+Write-capable commands save run artifacts under `.state/runs/` and append an index row to `.state/runs/index.jsonl`.
+
+- `fortnox-api-tool runs list [--limit 20]`
+- `fortnox-api-tool runs show --run-id <run_id>`

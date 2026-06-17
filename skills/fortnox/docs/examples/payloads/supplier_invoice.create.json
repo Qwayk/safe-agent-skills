@@ -1,0 +1,10 @@
+{
+  "SupplierInvoice": {
+    "GivenNumber": "2001",
+    "SupplierName": "Acme Inc.",
+    "Currency": "USD",
+    "InvoiceDate": "2026-06-09",
+    "DueDate": "2026-06-09",
+    "Booked": false
+  }
+}

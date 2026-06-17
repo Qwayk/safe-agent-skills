@@ -1,0 +1,8 @@
+{
+  "Currency": {
+    "Code": "SEK",
+    "Description": "Swedish krona",
+    "BuyRate": 1.0,
+    "SellRate": 1.0
+  }
+}

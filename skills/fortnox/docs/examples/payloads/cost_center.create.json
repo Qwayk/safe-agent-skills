@@ -1,0 +1,7 @@
+{
+  "CostCenter": {
+    "Code": "CC-1000",
+    "Description": "Sales East",
+    "Note": "Example payload for plan-first cost-center writes."
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "example_kind": "representative-redacted-doc-example",
+  "example_note": "Representative redacted example only. This file shows the local Fortnox CLI version output shape and is not evidence of a live Fortnox connection.",
+  "ok": true,
+  "tool": "fortnox-api-tool",
+  "version": "0.1.0"
+}

@@ -1,0 +1,8 @@
+{
+  "Account": {
+    "Number": "1630",
+    "Description": "General ledger test account",
+    "Name": "Test account",
+    "Active": true
+  }
+}
