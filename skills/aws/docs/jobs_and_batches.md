@@ -1,7 +1,20 @@
-# Jobs and batches
+# Jobs and Batches
 
-This AWS tool does not ship a separate background worker. Each command runs in one process so the account, region, operation, input, plan, and receipt stay easy to review.
+AWS batch work should stay boring and reviewable: one clear target, one named operation, one plan or receipt at a time.
 
-If you need batch work, keep the loop explicit and use named AWS service commands one target at a time. That keeps identity checks, account and region allowlists, dry-run plans, acknowledgement flags, and receipts attached to each action instead of hiding them inside a broad batch runner.
+This tool does not ship a separate background worker. Each command runs in one process.
 
-For write-capable commands, local proof still lives under `.state/runs/`. Review those run folders before repeating a change across many resources.
+## How to handle repeated AWS work
+
+- Keep the loop explicit.
+- Use named AWS service commands.
+- Run reads first when possible.
+- For writes, create and review plans before apply.
+- Do not hide many destructive targets behind one vague instruction.
+- Stop on the first unexpected refusal, access error, or verification limit.
+
+## Why this matters
+
+AWS batch mistakes can multiply quickly across regions, accounts, buckets, instances, queues, users, or policies. Keeping each target visible makes it easier to catch the wrong account, wrong region, missing permission, or high-risk operation before apply.
+
+The local proof for write-capable commands lives under `.state/runs/`.

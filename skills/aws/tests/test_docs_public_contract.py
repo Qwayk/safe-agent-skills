@@ -18,17 +18,17 @@ class TestDocsPublicContract(unittest.TestCase):
         self.assertIn("## Start with the work", text)
         self.assertIn("## Commands, setup, and fixes", text)
         self.assertIn("## Proof and details", text)
-        self.assertIn("[What you can do with AWS](use_cases.md)", text)
+        self.assertIn("[Choose useful AWS tasks](use_cases.md)", text)
         self.assertIn("[Set up AWS access locally](onboarding.md)", text)
-        self.assertIn("[Proof and verification](proof.md)", text)
         self.assertNotIn("Start here first:\n- `docs/", text)
 
     def test_onboarding_stays_non_technical_up_front(self) -> None:
         text = self._read("onboarding.md")
         opening = text.split("## Step 1:", 1)[0]
 
-        self.assertIn("Set up the local AWS identity first, then ask for one safe read.", text)
-        self.assertIn("You do not need to learn the command line first", text)
+        self.assertIn("# Connect your AWS account", text)
+        self.assertIn("Keep the setup files private.", text)
+        self.assertIn("You do not need to learn every AWS command first", text)
         self.assertIn("## What to ask your AI agent (examples)", text)
         self.assertIn("## What success looks like", text)
         self.assertNotIn("qwayk-aws-safe-agent-cli", opening)
@@ -42,7 +42,7 @@ class TestDocsPublicContract(unittest.TestCase):
         self.assertIn("## Review-first change jobs", text)
         self.assertIn("## What you should get back", text)
         self.assertIn("## When not to use it", text)
-        self.assertIn("which account will this touch", text)
+        self.assertIn("which account and region will this touch", text)
         self.assertNotIn("`qwayk-aws-safe-agent-cli", text)
         self.assertNotIn("--apply", text)
 
@@ -51,7 +51,7 @@ class TestDocsPublicContract(unittest.TestCase):
         opening = text.split("## What safe use looks like", 1)[0]
 
         self.assertIn(
-            "AWS changes are safer when the tool checks identity first, writes a plan second, and keeps a receipt last.",
+            "AWS safety starts with knowing the target.",
             opening,
         )
         self.assertNotIn("--apply", opening)
@@ -63,11 +63,14 @@ class TestDocsPublicContract(unittest.TestCase):
         command_reference = self._read("command_reference.md")
         opening = quickstart.split("## ", 1)[0].lower()
 
-        self.assertIn("The first useful result is to confirm which AWS identity the tool is actually using.", quickstart)
-        self.assertIn("[What the tool helps you do](use_cases.md)", quickstart)
+        self.assertIn("A good first ask is:", quickstart)
+        self.assertIn("Start with one small AWS read you can verify by eye", quickstart)
+        self.assertIn("## What you will do first", quickstart)
+        self.assertIn("## 3. Run one small first read", quickstart)
+        self.assertIn("[Choose useful AWS tasks](use_cases.md)", quickstart)
         self.assertIn("[Set up AWS access locally](onboarding.md)", quickstart)
-        self.assertIn("This is the exact command list for the AWS tool.", command_reference)
-        self.assertIn("[Read the safety model](safety_model.md)", command_reference)
+        self.assertIn("Use this technical page when you need the exact AWS CLI syntax", command_reference)
+        self.assertIn("[Understand safety and approvals](safety_model.md)", command_reference)
 
         banned_opening_bits = [
             "this page helps",
@@ -83,9 +86,10 @@ class TestDocsPublicContract(unittest.TestCase):
     def test_proof_opens_with_reassurance(self) -> None:
         text = self._read("proof.md")
 
-        self.assertIn("Most users do not need to run these checks every day.", text)
+        self.assertIn("This page shows what has actually been checked for the AWS skill so far.", text)
+        self.assertIn("If you only check one thing,", text)
         self.assertIn("No live AWS writes were run during local validation.", text)
-        self.assertIn("## What this page proves", text)
+        self.assertIn("## What this proves", text)
 
     def test_front_door_openings_reject_stock_ai_phrases(self) -> None:
         banned = [
@@ -140,12 +144,10 @@ class TestDocsPublicContract(unittest.TestCase):
         authentication = self._read("authentication.md")
         configuration = self._read("configuration.md")
         jobs = self._read("jobs_and_batches.md")
-        proof = self._read("proof.md")
 
         self.assertIn("Authentication means", authentication)
         self.assertIn("Configuration means", configuration)
-        self.assertIn("This AWS tool does not ship a separate background worker.", jobs)
-        self.assertIn("A receipt with `verification.status: limited`", proof)
+        self.assertIn("This tool does not ship a separate background worker.", jobs)
 
     def test_docs_reject_template_placeholders(self) -> None:
         banned = [

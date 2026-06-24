@@ -1,14 +1,15 @@
 # Configuration
 
-Configuration means the local settings that tell the CLI which AWS profile, region, timeout, and guardrails to use. AWS configuration is the local set of values that controls those choices for each run. Put private values in `.env` or the `--env-file`, keep them out of chat and Git, and use allowlists when you want the tool to refuse the wrong AWS account or region before a live call.
+Configuration means the local settings that tell the CLI which AWS profile, region, and guardrails to use.
 
-A good first configuration check is: "Show me which AWS region, profile, account allowlist, and region allowlist this run will use before any service command."
+AWS configuration is the local choice of profile, region, timeout, and account or region allowlists. Put private values in `.env` or the `--env-file` path, keep them out of chat and Git, and use allowlists when the wrong AWS account or region would be risky.
+
+A good first configuration check is: confirm `AWS_DEFAULT_REGION`, `AWS_PROFILE`, `AWS_ALLOWED_ACCOUNTS`, and `AWS_ALLOWED_REGIONS` before running `auth check` or planning a write.
 
 ## Files
 
-- `.env`: local private values for this workspace
-- `examples/example.env`: safe sample values
-- optional JSON config file passed with `--config`
+- `.env.example`: copy this to `.env`
+- `examples/example.env`: safe sample values for a local setup
 
 ## Environment variables
 
@@ -20,16 +21,18 @@ A good first configuration check is: "Show me which AWS region, profile, account
 | `AWS_ALLOWED_REGIONS` | Comma-separated list of allowed regions | blank |
 | `AWS_TIMEOUT_S` | Connect and read timeout in seconds | `30` |
 
-## Precedence
+## How the settings work
 
 - OS environment variables override `.env`.
-- A value passed through the CLI can override local defaults where that flag exists.
-- Boto3 still follows the normal AWS lookup order for credentials and region data.
+- Boto3 supplies the normal AWS lookup order for credentials and region data.
 - `AWS_ALLOWED_ACCOUNTS` and `AWS_ALLOWED_REGIONS` are guardrails, not secrets.
+- Allowlist values should be narrow for production or client accounts.
+- If a machine can reach several AWS accounts, set allowlists before asking for any live write plan.
 
 ## What not to put here
 
-- Access keys
-- Secret keys
-- Session tokens
-- Any value you would not want written to a local text file
+- AWS access keys
+- AWS secret keys
+- AWS session tokens
+- Customer secrets or passwords
+- Any value you would not want saved in a local text file

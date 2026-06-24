@@ -1,38 +1,59 @@
 # Troubleshooting
 
-When AWS work fails, the useful clue is usually in the exact JSON error output: missing credentials, wrong profile, blocked account, blocked region, invalid input, binary output, or a refused write gate. A good first troubleshooting ask is: "Read the exact JSON error output, explain the safest next check, and stop before retrying anything that could change AWS."
+Start with the exact JSON error output, because it usually says whether AWS credentials are missing, a profile is wrong, a region is blocked, a permission is missing, or a safety approval is required. The safest next check is to read the error, confirm the AWS identity and target, and stop before retrying any command that could change access, spend, public exposure, data movement, messages, secrets, or resources.
 
-Do not guess past an identity or allowlist error. Fix the local setup first, then run the smallest safe check again.
+A good first troubleshooting ask is: "Read this AWS JSON error output, explain the likely cause, and give me the safest next check without inventing missing data."
 
 ## Common issues
 
-### No credentials
+## No credentials
 
 If `auth check` returns `NoCredentialsError`, the machine does not have AWS credentials yet or the selected profile is wrong.
 
-Fix it by checking the local AWS profile, SSO login flow, shared config files, or environment-backed credentials.
+Check the local AWS profile, SSO login, role session, or shared config files. Nothing changed in AWS when the identity check fails this early.
 
-### Wrong account or region
+## Wrong account or region
 
-If the tool refuses because of `AWS_ALLOWED_ACCOUNTS` or `AWS_ALLOWED_REGIONS`, that is usually a good sign. It means the tool protected the wrong target.
+If the tool refuses because of `AWS_ALLOWED_ACCOUNTS` or `AWS_ALLOWED_REGIONS`, treat that as a useful stop. It means the configured guardrail protected the wrong AWS target.
 
-Check the active profile, account id, and region before changing the allowlist.
+Fix the profile, region, or allowlist before trying again.
 
-### Bad input
+## Permissions
 
-If the tool says the input JSON is invalid or a parameter is missing, re-check the command syntax in [the command reference](command_reference.md). The CLI validates input against the pinned Botocore operation model before it runs.
+If AWS returns an access-denied style error, the caller may be correct but under-permissioned for that service. Decide whether the requested read or change should be allowed before expanding permissions.
 
-### Write refusals
+Do not give broader AWS permissions just to make a command pass.
 
-If a write refuses, check whether the command needs a reviewed plan, `--apply`, `--plan-in`, `--yes`, `--ack-no-snapshot`, or `--ack-irreversible`.
+## Bad input
 
-Do not add acknowledgement flags until the plan is reviewed and the account, region, service, operation, and input are correct.
+If the tool says the input JSON is invalid or a parameter is missing, re-check the operation syntax in [the command reference](command_reference.md).
 
-### Binary output
+The CLI validates input against the pinned Botocore model for that operation.
 
-Some AWS operations return binary data. If the tool refuses with a binary-output error, add `--output-file <path>` so binary data is not printed into chat or logs.
+## Write refusals
 
-## More detail
+A write refusal usually means one of these is missing:
+
+- a dry-run plan
+- `--plan-in`
+- `--apply`
+- `--yes`
+- `--ack-no-snapshot`
+- `--ack-irreversible`
+
+Read the plan first. The missing flag is not just a command detail; it marks a real AWS risk that needs review.
+
+## Limited verification
+
+A receipt with `verification.status: limited` means the reviewed plan matched and the SDK response was captured, but the tool did not run an operation-specific read-back.
+
+For important infrastructure, identity, public access, or spend changes, run a separate read after apply to inspect the resulting resource state.
+
+## Binary output
+
+Some AWS operations return binary data. If the tool refuses with a binary-output error, add `--output-file <path>` so the payload is saved to a file instead of printed.
+
+## Debug errors
 
 - Use `--verbose` to see request start and end lines.
 - Use `--debug` only when you need a Python stack trace.

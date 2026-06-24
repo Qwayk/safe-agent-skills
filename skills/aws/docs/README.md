@@ -1,25 +1,25 @@
 # AWS docs
 
-AWS is easiest to use when you start with the real job, then check identity, account, region, and safety before asking an agent to do more. These docs explain how to inspect AWS identity, services, resources, access, and spend, what setup is needed, and where the tool stops before risky changes.
-
-If you are new, read the first few links before asking for AWS data or changes. They explain useful jobs, the setup path, and the safety limits.
+You do not need every page here on day one. The easiest path is to start with the real job: confirm the AWS account and region, run one safe read, and ask the agent for the IAM, EC2, S3, billing, logging, or infrastructure review you actually need. These docs explain how to set up access, run safe first checks, review risky AWS changes, and inspect proof without learning the whole AWS SDK first.
 
 ## Start with the work
-- [What you can do with AWS](use_cases.md) - real jobs to hand to an agent for AWS
-- [Quickstart](quickstart.md) - the shortest path to one useful first result
-- [Set up AWS access locally](onboarding.md) - what must be connected or confirmed before the first run
-- [How this stays safe](safety_model.md) - what the tool can and cannot change, and where approval is needed
+
+- [Choose useful AWS tasks](use_cases.md)
+- [Run the first safe AWS checks](quickstart.md)
+- [Set up AWS access locally](onboarding.md)
+- [Understand safety and approvals](safety_model.md)
 
 ## Commands, setup, and fixes
-- [Command reference](command_reference.md) - the exact commands and options
-- [Authentication details](authentication.md) - credential rules and safe auth checks
-- [Configuration](configuration.md) - local settings, environment values, and precedence rules
-- [Troubleshooting](troubleshooting.md) - what to check when a command fails or refuses to run
-- [Jobs and batch work](jobs_and_batches.md) - repeatable or larger jobs that need more care
+
+- [Use the exact command guide](command_reference.md)
+- [Understand AWS authentication](authentication.md)
+- [Review local configuration](configuration.md)
+- [Fix common AWS setup or runtime issues](troubleshooting.md)
 
 ## Proof and details
-- [Proof and verification](proof.md) - what has been checked and what still needs live verification
-- [API coverage](api_coverage.md) - the AWS surface this skill actually covers
-- [Source references](references.md) - source notes behind the implementation and docs
-- [Technical architecture](architecture.md) - how the command, config, AWS SDK, and output layers fit together
-- [Examples](examples/) - safe sample plans, receipts, and command outputs
+
+- [Review proof and verification](proof.md)
+- [Check the pinned coverage boundary](api_coverage.md)
+- [Understand the architecture](architecture.md)
+- [Review official AWS references](references.md)
+- [Open redacted examples](examples/)

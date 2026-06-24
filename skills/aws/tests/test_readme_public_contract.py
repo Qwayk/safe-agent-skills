@@ -51,6 +51,7 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertNotIn("# qwayk-aws-safe-agent-cli", text)
         self.assertIn("Install slug: `aws`", text)
         self.assertNotIn("Public admission is not live", text)
+        self.assertNotIn("Sh" + "ai", text)
         self.assertNotIn("source tree is the working copy", text)
 
         required_sections = [
@@ -66,20 +67,20 @@ class TestReadmePublicContract(unittest.TestCase):
 
         opening = text.split("## Start here first", 1)[0]
         self.assertIn("A good first ask is:", opening)
-        self.assertIn("AWS controls infrastructure, access, data, and spend.", opening)
-        self.assertIn("Check my AWS identity and show the safest first thing to review.", opening)
-        self.assertIn("IAM, EC2, S3, billing, messaging", opening)
+        self.assertIn("AWS is where one small mistake can touch real servers, access keys, storage buckets, customer data, or spend.", opening)
+        self.assertIn("Check my AWS identity and region, then show the safest AWS review to run before any change.", opening)
+        self.assertIn("IAM access reviews, EC2 instance inventory, S3 exposure checks, billing and quota review", opening)
 
     def test_helpful_docs_stay_human_facing(self) -> None:
         root = Path(__file__).resolve().parents[1]
         text = (root / "README.md").read_text(encoding="utf-8")
 
         self.assertIn("## Helpful docs", text)
-        self.assertIn("[Start with the user path](docs/README.md)", text)
-        self.assertIn("[Run the first safe checks](docs/quickstart.md)", text)
-        self.assertIn("[See the command list](docs/command_reference.md)", text)
-        self.assertIn("[Check the coverage boundary](docs/api_coverage.md)", text)
-        self.assertIn("[Check proof and examples](docs/proof.md)", text)
+        self.assertIn("[Browse the AWS docs hub](docs/README.md)", text)
+        self.assertIn("[Run the first safe AWS checks](docs/quickstart.md)", text)
+        self.assertIn("[Use the command guide](docs/command_reference.md)", text)
+        self.assertIn("[Check the pinned coverage boundary](docs/api_coverage.md)", text)
+        self.assertIn("[Review proof and examples](docs/proof.md)", text)
         self.assertNotIn("- `docs/use_cases.md`", text)
         self.assertNotIn("- `docs/onboarding.md`", text)
 
@@ -88,11 +89,11 @@ class TestReadmePublicContract(unittest.TestCase):
         text = (root / "README.md").read_text(encoding="utf-8")
 
         self.assertIn("## Start here first", text)
-        self.assertIn("[See the real jobs this tool helps with](docs/use_cases.md)", text)
+        self.assertIn("[See real AWS jobs this skill helps with](docs/use_cases.md)", text)
         self.assertIn("[Set up AWS access locally](docs/onboarding.md)", text)
-        self.assertIn("[Read the safety rules first](docs/safety_model.md)", text)
-        self.assertIn("[Run the first safe checks](docs/quickstart.md)", text)
-        self.assertIn("[See the command list](docs/command_reference.md)", text)
+        self.assertIn("[Understand the AWS safety rules](docs/safety_model.md)", text)
+        self.assertIn("[Run the first safe AWS checks](docs/quickstart.md)", text)
+        self.assertIn("[Use the exact command guide](docs/command_reference.md)", text)
         self.assertIn("[Install and first run](#install-and-first-run)", text)
         self.assertIn("[Helpful docs](#helpful-docs)", text)
 
@@ -101,8 +102,11 @@ class TestReadmePublicContract(unittest.TestCase):
         text = (root / "docs" / "quickstart.md").read_text(encoding="utf-8")
         opening = text.split("## ", 1)[0].lower()
 
-        self.assertIn("The first useful result is to confirm which AWS identity the tool is actually using.", text)
-        self.assertIn("[What the tool helps you do](use_cases.md)", text)
+        self.assertIn("A good first ask is:", text)
+        self.assertIn("Start with one small AWS read you can verify by eye", text)
+        self.assertIn("## What you will do first", text)
+        self.assertIn("## 3. Run one small first read", text)
+        self.assertIn("[Choose useful AWS tasks](use_cases.md)", text)
         self.assertIn("[Set up AWS access locally](onboarding.md)", text)
         self.assertNotIn("`docs/use_cases.md`", text)
         self.assertNotIn("`docs/onboarding.md`", text)

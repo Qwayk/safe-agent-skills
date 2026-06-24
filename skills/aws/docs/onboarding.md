@@ -1,60 +1,61 @@
 # Connect your AWS account
 
-Set up the local AWS identity first, then ask for one safe read. You do not need to learn the command line first. The important part is knowing which account, role, and region the agent is about to touch.
+You do not need to learn every AWS command first. Once setup is done, your agent can prove the caller, check the region, inspect AWS resources, and stop before risky changes.
 
-Keep the setup files private. Put local values in `.env` or your normal AWS config files, keep them out of chat, and do not commit secrets to Git.
+Keep the setup files private. Do not paste AWS access keys, secret keys, session tokens, local profile files, or `.env` values into chat.
 
-## What must already exist
+## Before you start
 
-The tool uses the normal AWS credential chain. That can mean an `AWS_PROFILE`, environment-backed credentials, SSO-backed credentials, or another local AWS setup already trusted on the machine.
+- You need a local AWS profile, SSO login, role, or credential setup that already works on this machine.
+- The local `.env` file is just the private settings file for this tool.
+- Account and region allowlists are optional guardrails that help prevent work in the wrong AWS target.
 
-You also need:
+## Step 1: choose the AWS identity
 
-- `AWS_DEFAULT_REGION` for the region the first read should use
-- optional `AWS_PROFILE` when you use a named local profile
-- optional `AWS_ALLOWED_ACCOUNTS` when the tool should refuse every other account
-- optional `AWS_ALLOWED_REGIONS` when the tool should refuse every other region
+Decide which local AWS profile or role the tool should use. If you use named profiles, choose the profile that already has the right permissions for the account you want to inspect.
 
-The first real AWS check is STS `GetCallerIdentity`. That check proves which identity is active before the agent touches any other AWS service.
+The tool follows the normal AWS credential chain through Boto3. It does not need secret values in chat.
 
-## Step 1: Create the local setup file
+## Step 2: add local settings
 
-Use the sample file if it is available in your private source folder, or create a local `.env` file with only the values you need.
+In the tool folder:
 
-```bash
-AWS_DEFAULT_REGION=us-east-1
-AWS_PROFILE=your-profile-name
-AWS_ALLOWED_ACCOUNTS=123456789012
-AWS_ALLOWED_REGIONS=us-east-1
-```
+1. Copy `.env.example` to `.env`.
+2. Keep `.env` private.
+3. Set `AWS_DEFAULT_REGION`.
+4. Add `AWS_PROFILE` if you use a named profile.
+5. Add `AWS_ALLOWED_ACCOUNTS` when the tool should refuse every other AWS account.
+6. Add `AWS_ALLOWED_REGIONS` when the tool should refuse every other region.
 
-Use your real account and region values. Do not paste access keys, session tokens, or secret values into the chat.
+If your host needs a visible sample, use `examples/example.env` as the placeholder guide.
 
-## Step 2: Run the setup helper
+## Step 3: run the setup helper
 
 ```bash
 qwayk-aws-safe-agent-cli onboarding
 ```
 
-This shows what local setup is missing. If you want instructions only and do not want the helper to write a local env file, add `--no-write-env`.
+Add `--no-write-env` if you only want instructions and do not want the helper to create `.env`.
 
-## Step 3: Confirm the connection
+## Step 4: confirm the connection
 
 ```bash
 qwayk-aws-safe-agent-cli --output json auth check
 ```
 
-A good result shows the AWS account, ARN, user id, selected region, and allowlist status. If the account or region is not the one you expected, stop and fix setup before running service commands.
+A good result shows the AWS account, ARN, user id, region, and allowlist status.
+
+## What success looks like
+
+Setup is complete when `auth check` succeeds and your agent can name the AWS identity, confirm the region, explain whether allowlists passed, and suggest one safe read without changing anything.
+
+If `auth check` fails on a clean machine, the usual causes are missing credentials, an expired login, a wrong profile name, a missing region, or an allowlist that correctly blocked the target.
 
 ## What to ask your AI agent (examples)
 
 - "Check which AWS account and region this workspace is using, then stop."
-- "Show the AWS inventory summary and tell me what kind of commands are available."
-- "Run one read-only AWS check and explain which account and region it touched."
-- "Prepare a dry-run plan for this change, but do not apply it."
-
-## What success looks like
-
-Setup is working when the agent can name the AWS identity, explain the region and allowlist result, run a harmless read, and tell you what would need a dry-run plan before any write.
-
-If `auth check` fails on a clean machine, the usual cause is missing local AWS credentials, an expired SSO session, a wrong profile, or a missing region.
+- "Show me what AWS resources you can review safely before any write."
+- "List IAM users and access keys we should review first."
+- "Check EC2 instances in this region and point out likely cost risk."
+- "Review S3 bucket settings before any policy change."
+- "Prepare a dry-run plan for this AWS change, but do not apply it."

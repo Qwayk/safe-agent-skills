@@ -40,6 +40,7 @@ class TestDocsFormatting(unittest.TestCase):
         banned = [
             "/home/",
             "/Users/",
+            "api-tools-for-" + "ai-agents",
             ".venv",
         ]
 

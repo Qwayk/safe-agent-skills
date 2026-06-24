@@ -1,36 +1,40 @@
 # Authentication
 
-Authentication means proving the tool is acting as the AWS identity you meant to use. AWS authentication is meant to be local: the tool uses the normal AWS credential chain through Boto3 and proves the active identity with STS before other service calls. Keep credentials on the machine, do not paste secrets into chat, and check the account and region before asking for any service read or planned change.
+Authentication means proving which AWS identity the tool is using before it touches your account.
 
-A good first auth check is: "Run the AWS auth check, tell me the account, ARN, user id, region, and whether the account and region allowlists passed."
+For AWS, authentication is meant to be local. The CLI follows the normal AWS credential chain through Boto3. If `AWS_PROFILE` is set, the tool uses that named profile. Otherwise it follows the default AWS lookup order on the machine. The rule is simple: do not paste secrets into chat; keep access keys, secret keys, session tokens, and local profile files on the machine.
 
-## Required values
-
-- `AWS_DEFAULT_REGION`: the region the first command should use.
-- `AWS_PROFILE`: optional named local profile.
-- `AWS_ALLOWED_ACCOUNTS`: optional comma-separated account allowlist.
-- `AWS_ALLOWED_REGIONS`: optional comma-separated region allowlist.
-
-The AWS access keys or SSO session are not stored in this repo. They come from the normal AWS setup on the machine.
+A good first auth check is: run `auth check`, confirm the account id, caller ARN, user id, region, and allowlist status, then stop if any target looks wrong.
 
 ## Safe check
 
-```bash
-qwayk-aws-safe-agent-cli --output json auth check
-```
+- `auth check` calls STS `GetCallerIdentity`.
+- The response shows the account, ARN, and user id that AWS sees.
+- The tool checks the selected region.
+- Optional account and region allowlists can block the wrong target.
+- Secret values are redacted before output or logging.
 
-The check calls STS `GetCallerIdentity`. The response shows the account, ARN, and user id that AWS sees, then the tool checks optional account and region allowlists.
+## What to set up
+
+- Put `AWS_DEFAULT_REGION` in `.env`.
+- Add `AWS_PROFILE` if you use a named local profile.
+- Add `AWS_ALLOWED_ACCOUNTS` when you want a hard account guardrail.
+- Add `AWS_ALLOWED_REGIONS` when you want a hard region guardrail.
+
+Do not put AWS access keys, secret keys, or session tokens into chat. Use the local AWS profile, SSO login, role, or credential setup your AWS account already uses.
 
 ## What success looks like
 
 - `auth check` returns `ok: true`.
-- The identity fields are present.
-- The region is the one you expected.
-- The allowlist result matches the account and region you wanted to use.
+- The account id is the account you expected.
+- The ARN matches the intended user or assumed role.
+- The region is the intended region.
+- The allowlist status matches the account and region you expected.
 
 ## What can fail
 
 - `NoCredentialsError` usually means the machine does not have AWS credentials yet.
-- An expired SSO session can make a profile fail even when the profile name is correct.
-- A refusal about account or region usually means the allowlist protected the wrong target.
+- An expired SSO or role session can make a previously working profile fail.
 - A bad or missing profile usually means the AWS profile name is wrong or incomplete.
+- A region error usually means `AWS_DEFAULT_REGION` is missing or not allowed.
+- An account or region refusal usually means the allowlist is doing its job.

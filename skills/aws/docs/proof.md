@@ -1,15 +1,16 @@
 # Proof and verification
 
-Most users do not need to run these checks every day. This page answers what has actually been checked for the AWS skill: install behavior, pinned inventory, dry-run planning, refused unsafe applies, receipt shape, and local proof files. It also says what was not proved live, so a 2xx AWS SDK response is not mistaken for full verification.
+This page shows what has actually been checked for the AWS skill so far. It answers whether the pinned Botocore inventory, generated commands, safety gates, docs, examples, and local tests agree with each other before anyone uses the skill on a real AWS account. The local code and tests are strong, but live AWS account behavior remains unverified until real credentials are used.
 
-If you only check one thing, read the "Last verified" section and confirm the 45-test run plus the public copy audit were run for the same AWS version you are using.
+If you only check one thing, check the latest local test result and the live-unverified notes before asking the agent to plan a change that could affect IAM, EC2, S3, billing, public exposure, secrets, data movement, or resource lifecycle.
 
-No live AWS writes were run during local validation. The write path is covered by mocked apply checks, plan and receipt shapes, refusal checks, and local run history.
+No live AWS writes were run during local validation. The write path is covered by mocked apply checks, plan and receipt shapes, refusal checks, redaction checks, and local run history.
 
-## What this page proves
+## What this proves
 
-- the tool installs and prints its version
-- the pinned AWS inventory is available locally
+- the package installs and prints its version
+- the pinned Boto3/Botocore 1.43.36 inventory is available locally
+- the inventory maps 428 services and 18,727 generated named AWS operation commands
 - the identity check reaches STS and shows the real error shape when no credentials are present
 - a mutating AWS operation produces a dry-run plan before any live write
 - a live write without a reviewed plan is refused before STS or AWS service calls
@@ -18,21 +19,21 @@ No live AWS writes were run during local validation. The write path is covered b
 - the example plan and receipt files match the AWS runtime shape
 - committed generated inventory and example outputs do not leak local machine paths
 - the coverage page links to a generated per-operation ledger with status and risk counts
-- the source docs pass the repo's new-tool audit
+- the AWS source and public mirror docs pass their AWS-specific contract tests
 
 ## Last verified
 
 - Date (UTC): 2026-06-24
 - Verified by: Codex
 - Tool version: 0.1.0
-- boto3 version: 1.43.36
-- botocore version: 1.43.36
+- Boto3 version: 1.43.36
+- Botocore version: 1.43.36
 
-## Smoke checks
+## Local verification
 
 Run inside the tool folder:
 
-1. Create venv + install
+1. Create venv and install
 
 ```bash
 python3 -m venv .venv
@@ -73,13 +74,15 @@ qwayk-aws-safe-agent-cli --output json ec2 terminate-instances --input-json '{"I
 
 This returns a refusal before any AWS service call because `--plan-in`, `--yes`, and the extra acknowledgement flags are missing.
 
-7. Local tests and audits
+7. Local tests
 
 ```bash
 .venv/bin/python -m unittest -q
 ```
 
-The final source check on 2026-06-24 passed the repo new-tool audit and 45 unit tests. Those tests cover dry-run writes, refused apply without a plan, mocked apply with a plan, verification receipt fields, stronger risk categories, generated coverage counts, and committed-proof path hygiene.
+The final quality-loop check on 2026-06-24 passed 45 unit tests. Those tests cover dry-run writes, refused apply without a plan, mocked apply with a plan, verification receipt fields, stronger risk categories, generated coverage counts, and committed-proof path hygiene.
+
+The repo-wide new-tool flow audit is not listed here as AWS proof because the current worktree has an unrelated GCP template-guide blocker outside this AWS skill.
 
 ## Example outputs
 
@@ -99,7 +102,13 @@ The final source check on 2026-06-24 passed the repo new-tool audit and 45 unit 
 - A binary output refusal means `--output-file` is required.
 - Refusal of removed starter-template commands means the starter template surface is gone.
 
+## Honest limits
+
+- These checks prove local behavior, generated coverage, and mocked apply safety. They do not prove that a real AWS account accepted or rejected every operation.
+- AWS eventual consistency can delay visible state after a successful write.
+- Some AWS operations have side effects that cannot be undone automatically. The tool slows those down with plan review and acknowledgement flags, but it does not make them risk-free.
+
 ## Links
 
-- [References](references.md)
-- [API coverage](api_coverage.md)
+- [Official and local references](references.md)
+- [Pinned coverage boundary](api_coverage.md)

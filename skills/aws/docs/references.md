@@ -1,6 +1,6 @@
 # References
 
-These references are the official AWS material behind the tool's behavior. They make identity, credentials, region handling, and the pinned model boundary easier to audit later.
+These are the official AWS and local sources behind identity checks, credentials, region handling, and the pinned model boundary.
 
 Prefer official docs. If a capability depends on a specific documented behavior, link the exact page.
 
@@ -20,9 +20,11 @@ Prefer official docs. If a capability depends on a specific documented behavior,
 | Source | Why it matters | Last verified (UTC) |
 | --- | --- | --- |
 | `docs/_generated/aws_botocore_inventory.json` | Pinned Botocore service model inventory used by the CLI | 2026-06-24 |
-| `src/aws_safe_agent_cli/aws_runtime.py` | Parser, safety gates, and write flow | 2026-06-24 |
+| `docs/api_coverage.md` | Human-readable coverage counts and selected service-model versions | 2026-06-24 |
+| `src/aws_safe_agent_cli/aws_runtime.py` | Parser, risk classification, safety gates, and write flow | 2026-06-24 |
+| `tests/` | Local proof for refusal behavior, mocked apply, redaction, generated coverage, and docs contracts | 2026-06-24 |
 
 ## Notes
 
 - Never include secrets in this file.
-- Update this file when the runtime changes in a way that depends on a doc or model source.
+- Update this file when the runtime changes in a way that depends on an AWS doc, Boto3 behavior, Botocore behavior, or generated model source.

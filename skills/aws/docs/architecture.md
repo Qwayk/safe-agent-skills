@@ -1,10 +1,14 @@
 # Architecture
 
-The AWS skill is built as a small command-line tool that loads a pinned Botocore model, creates named AWS commands, checks identity with STS, and writes redacted run proof. This matters when an agent is using the skill for real work. You need to know where the AWS model comes from, where safety checks happen, and where the proof files are saved before trusting a read or a planned change.
+AWS source changes are easier to review when the Botocore model boundary, identity checks, safety gates, and run-history files are easy to find.
 
-A good architecture check is: "Show me where the command loads the pinned AWS operation model, where it checks identity and allowlists, and where it writes the dry-run plan or receipt."
+The AWS skill is built as a small command-line tool around Boto3, the official AWS Python SDK. It loads a pinned Botocore model inventory, validates operation input against that model, checks AWS identity, classifies risk, and saves local proof for writes. This matters when an agent is using the skill for real work.
 
-## Main parts
+A good architecture check is: trace one command from `cli.py` into `aws_runtime.py`, confirm STS identity and allowlists run before AWS service calls, and verify that write commands produce plans and receipts.
+
+Read this after the user-facing docs, not before them.
+
+## Runtime
 
 - `cli.py`: the entrypoint that calls the AWS runtime.
 - `aws_runtime.py`: argument parsing, generated service commands, risk classification, dry-run plans, live apply gates, receipt verification, and output handling.
@@ -17,17 +21,6 @@ A good architecture check is: "Show me where the command loads the pinned AWS op
 - `audit_log.py`, `redaction.py`, and `output.py`: redacted events and the one-JSON-object stdout contract.
 - `json_files.py`: safe JSON helpers for plan and receipt files.
 
-## Runtime layers
-
-1. Load `.env` and project settings.
-2. Load the generated registry and the Botocore operation model.
-3. Check the AWS identity with STS before non-STS service calls.
-4. Validate the input JSON against the pinned operation model.
-5. Classify the operation as read, write, no-snapshot, unknown mutating, or irreversible.
-6. For reads, call the named Boto3 client operation.
-7. For writes, create a dry-run plan first. Live apply requires a reviewed plan, `--apply`, and `--yes`; higher-risk writes require the extra acknowledgement flags.
-8. Save redacted run proof under `.state/runs/` unless the caller disables artifacts.
-
 ## Generated inventory
 
 The coverage boundary comes from the packaged Botocore data in the pinned Boto3/Botocore wheel. The generator writes two files together:
@@ -35,4 +28,21 @@ The coverage boundary comes from the packaged Botocore data in the pinned Boto3/
 - `docs/_generated/aws_botocore_inventory.json`
 - `docs/api_coverage.md`
 
-If the pinned SDK version changes, regenerate both files and rerun the full AWS test suite before publishing a new claim.
+If the pinned SDK version changes, regenerate both files and rerun the full AWS test suite.
+
+The runtime does not load service models from `~/.aws/models` or `AWS_DATA_PATH`. That keeps the coverage claim tied to the package that was tested and mirrored.
+
+## Runtime flow
+
+1. Load `.env` and project settings.
+2. Load the generated registry and the Botocore operation model.
+3. Check the AWS identity with STS before non-STS service calls.
+4. Validate the input JSON against the pinned operation model.
+5. Classify the operation as read, write, no-snapshot, unknown mutating, irreversible, or another documented risk category.
+6. For reads, call the named Boto3 client operation.
+7. For writes, create a dry-run plan first. Live apply requires a reviewed plan, `--apply`, and `--yes`; higher-risk writes require the extra acknowledgement flags.
+8. Save redacted run proof under `.state/runs/` unless the caller disables artifacts.
+
+## Verification boundary
+
+Generic generated AWS writes cannot always infer the correct safe read-back operation. When no operation-specific read-back exists, the receipt says verification is `limited` and records the SDK response and plan checks instead of claiming full resource verification.

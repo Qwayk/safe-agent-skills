@@ -15,6 +15,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Generated coverage now records per-operation command status, mode, risk categories, and acknowledgement requirements.
 
 ### Changed
+- Rewrote the AWS public-facing docs around real account, region, IAM, EC2, S3, spend, public exposure, data movement, secrets, no-snapshot, and live-verification concerns.
 - Rewrote the README and docs front doors for the shipped AWS runtime.
 - Replaced template example env and example plan/receipt files with AWS-specific values.
 - Updated the public contract tests to reject the starter copy and placeholder text.
