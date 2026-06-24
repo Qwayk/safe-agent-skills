@@ -1,19 +1,20 @@
 # Quickstart
 
-Start with one small AWS read you can verify by eye: prove the account and region, then inspect IAM users, EC2 instances, or S3 buckets before asking for any change.
+Start with a result you can recognize: the account id, the role or user, the region, and one small read such as IAM users, EC2 instances, or S3 buckets. If any of those look wrong, stop before asking for a change.
 
 Need more ideas? See [Choose useful AWS tasks](use_cases.md). Need setup help? See [Set up AWS access locally](onboarding.md).
 
 A good first ask is:
 
-> Check my AWS identity and region, list IAM users and EC2 instances if permissions allow, and stop before creating, updating, deleting, exposing, sending, moving, or spending anything.
+> Check my AWS account, role, and region. Then list IAM users, EC2 instances, and S3 buckets if this role has permission, summarize anything that looks worth review, and stop before making any change.
 
 ## What you will do first
 
 1. Make sure the local tool can run.
 2. Confirm the AWS caller, account, and region.
 3. Run one small read that should be easy to recognize.
-4. Stop before any write, public exposure, data movement, identity change, or spend-related action.
+4. Ask the agent to explain the result in normal words.
+5. Stop before any write, public exposure, data movement, identity change, or spend-related action.
 
 ## 1. Check the tool version
 
@@ -47,7 +48,13 @@ qwayk-aws-safe-agent-cli ec2 describe-instances
 qwayk-aws-safe-agent-cli s3 list-buckets
 ```
 
-After the read, ask the agent to summarize the account, region, result size, and any obvious risk in normal words.
+After the read, ask the agent to summarize:
+
+- which account and region it used
+- which service it read
+- how many items came back
+- whether the result was empty, blocked, or surprising
+- what is safe to inspect next
 
 ## 4. Stop before anything risky
 
@@ -72,6 +79,16 @@ A good first AWS result should make these things clear:
 - whether the result looks empty, blocked, or unexpected
 - what is safe to inspect next
 - whether any plan, receipt, or saved output was written
+
+## Good next reads
+
+After the first check, choose the next read by the real job:
+
+- Access review: `iam list-users`, `iam list-roles`, or other IAM listing commands.
+- Server and cost review: `ec2 describe-instances`, load balancer reads, or quota/billing reads if the role allows them.
+- Public exposure review: `s3 list-buckets`, S3 bucket policy reads, security group reads, CloudFront reads, or Route 53 reads.
+- Incident review: CloudTrail, CloudWatch, Config, Health, or GuardDuty reads.
+- Change planning: build a dry-run plan and ask the agent to explain every approval flag before apply.
 
 ## Where to go next
 

@@ -1,8 +1,10 @@
 # Troubleshooting
 
-Start with the exact JSON error output, because it usually says whether AWS credentials are missing, a profile is wrong, a region is blocked, a permission is missing, or a safety approval is required. The safest next check is to read the error, confirm the AWS identity and target, and stop before retrying any command that could change access, spend, public exposure, data movement, messages, secrets, or resources.
+Start with the exact JSON error output. AWS failures are usually one of five things: no credentials, wrong profile, wrong region, missing permission, or a safety gate that correctly stopped a risky command.
 
 A good first troubleshooting ask is: "Read this AWS JSON error output, explain the likely cause, and give me the safest next check without inventing missing data."
+
+Before retrying anything that could change access, spend, public exposure, data movement, messages, secrets, or resources, confirm the account, role, region, and target resource again.
 
 ## Common issues
 
@@ -23,6 +25,8 @@ Fix the profile, region, or allowlist before trying again.
 If AWS returns an access-denied style error, the caller may be correct but under-permissioned for that service. Decide whether the requested read or change should be allowed before expanding permissions.
 
 Do not give broader AWS permissions just to make a command pass.
+
+For a read-only review, choose another safe read if the blocked service is not essential. For a real change, stop until the right person confirms the permission should exist.
 
 ## Bad input
 
@@ -48,6 +52,8 @@ Read the plan first. The missing flag is not just a command detail; it marks a r
 A receipt with `verification.status: limited` means the reviewed plan matched and the SDK response was captured, but the tool did not run an operation-specific read-back.
 
 For important infrastructure, identity, public access, or spend changes, run a separate read after apply to inspect the resulting resource state.
+
+For example, after a security group change, read the security group again. After an IAM user or policy change, read the IAM target again. After a bucket policy change, read the bucket policy and public-access settings again.
 
 ## Binary output
 

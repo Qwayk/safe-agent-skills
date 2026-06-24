@@ -1,6 +1,6 @@
 # API coverage
 
-AWS coverage shows exactly what the shipped commands can do from the pinned Boto3/Botocore package. It is a package boundary, not a promise that every AWS console feature, every newly released service, or every account-specific workflow is available.
+AWS coverage shows exactly what the shipped commands can do from the pinned Boto3/Botocore package. AWS has many services, many versions, and many account-specific features, so this page tells you which AWS service models this skill ships with and whether a command is part of the tested package or outside the current boundary.
 
 The boundary is the Boto3/Botocore 1.43.36 package shipped with the CLI. Botocore is the AWS SDK data layer that names services, operations, input shapes, paginators, waiters, and endpoints. The tool turns those packaged models into named commands and does not claim AWS surfaces outside that pinned package. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 

@@ -1,8 +1,8 @@
 # Proof and verification
 
-This page shows what has actually been checked for the AWS skill so far. It answers whether the pinned Botocore inventory, generated commands, safety gates, docs, examples, and local tests agree with each other before anyone uses the skill on a real AWS account. The local code and tests are strong, but live AWS account behavior remains unverified until real credentials are used.
+This page is the evidence trail for the AWS skill. It shows what has actually been checked in code and tests, what was checked against the public copy, and what still needs a real AWS account before anyone should treat it as live-account proof.
 
-If you only check one thing, check the latest local test result and the live-unverified notes before asking the agent to plan a change that could affect IAM, EC2, S3, billing, public exposure, secrets, data movement, or resource lifecycle.
+If you only check one thing, check the latest local test result and the live-unverified notes before asking the agent to plan a change that could affect IAM, EC2, S3, billing, public access, secrets, data movement, or resource lifecycle.
 
 No live AWS writes were run during local validation. The write path is covered by mocked apply checks, plan and receipt shapes, refusal checks, redaction checks, and local run history.
 
@@ -20,6 +20,13 @@ No live AWS writes were run during local validation. The write path is covered b
 - committed generated inventory and example outputs do not leak local machine paths
 - the coverage page links to a generated per-operation ledger with status and risk counts
 - the AWS source and public mirror docs pass their AWS-specific contract tests
+
+## What this does not prove
+
+- It does not prove a real AWS account accepted any write.
+- It does not prove every AWS operation has a useful operation-specific read-back.
+- It does not prove your AWS role has permission for IAM, EC2, S3, CloudTrail, CloudWatch, billing, quotas, or any other service.
+- It does not prove a `limited` receipt means the resource state changed correctly.
 
 ## Last verified
 

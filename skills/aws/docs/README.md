@@ -1,6 +1,8 @@
 # AWS docs
 
-You do not need every page here on day one. The easiest path is to start with the real job: confirm the AWS account and region, run one safe read, and ask the agent for the IAM, EC2, S3, billing, logging, or infrastructure review you actually need. These docs explain how to set up access, run safe first checks, review risky AWS changes, and inspect proof without learning the whole AWS SDK first.
+To start with the real job, confirm the account, role, and region, then ask for the review you actually need: IAM access, EC2 cost, S3 exposure, CloudTrail events, CloudWatch alarms, billing, quotas, or a careful change plan.
+
+These docs explain how to connect AWS locally, run safe first reads, review risky changes, and understand what the tool did without learning the whole AWS SDK first.
 
 ## Start with the work
 

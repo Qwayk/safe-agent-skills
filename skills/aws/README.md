@@ -1,10 +1,10 @@
 # AWS Safe Agent CLI
 
-AWS is where one small mistake can touch real servers, access keys, storage buckets, customer data, or spend. This skill gives your agent a safer way to work there: prove the account and region first, inspect what matters, then stop for a reviewed plan before any live change.
+AWS is where teams keep the servers, buckets, roles, keys, logs, queues, databases, and billing settings that run real products. This skill lets an agent help with that work without starting from a vague request like "fix AWS" or guessing which account it is touching.
 
-It is useful for practical AWS checks such as IAM access reviews, EC2 instance inventory, S3 exposure checks, billing and quota review, CloudWatch or CloudTrail lookups, and cautious change planning across the pinned AWS service models.
+Use it when you want the agent to answer practical AWS questions: "Which account am I in?", "Who has access?", "Are any buckets public?", "Which EC2 instances may be costing money?", "What changed in CloudTrail?", "What quota or budget might block this?", or "Can you prepare this change as a plan so I can review it first?"
 
-A good first ask is: `Check my AWS identity and region, then show the safest AWS review to run before any change.`
+A good first ask is: `Check my AWS account, role, and region. Then review IAM users, S3 buckets, and EC2 instances if this role has permission, and stop before making any change.`
 
 ## Start here first
 
@@ -18,26 +18,29 @@ If you already know the job, go to [Install and first run](#install-and-first-ru
 
 ## What this skill helps with
 
-- Confirm the AWS account, caller ARN, and region before touching another service.
-- Review IAM users, roles, policies, access keys, and other identity-sensitive resources.
-- Inspect common infrastructure areas such as EC2, S3, Lambda, RDS, CloudWatch, CloudTrail, Route 53, billing, quotas, and messaging services.
-- Flag whether a requested change may affect identity, secrets, public exposure, spend, data movement, messaging, or hard-to-undo resources.
-- Turn AWS writes into dry-run plans so a person or reviewer can inspect the exact service, operation, region, and input before apply.
-- Keep redacted local proof after write attempts so the next person can see what was planned, what ran, and what verification could or could not prove.
+- **Know the target first.** Confirm the AWS account id, caller ARN, role/user, and region before the agent looks at anything else.
+- **Review access.** Inspect IAM users, roles, policies, groups, access keys, MFA devices, and last-used signals when the account allows it.
+- **Check infrastructure.** Look at EC2 instances, security groups, load balancers, VPC resources, Lambda functions, RDS databases, ECS/EKS resources, CloudFront, Route 53, and other common AWS areas.
+- **Check storage and exposure.** Review S3 buckets, bucket policies, public-access settings, replication, backups, and data-movement services before any policy or sharing change.
+- **Check spend and limits.** Review billing, budgets, Cost Explorer, service quotas, marketplace, and capacity-related services before you change something that can cost money.
+- **Investigate recent events.** Use CloudTrail, CloudWatch, Config, Health, GuardDuty, or other readable services to gather evidence before changing a resource.
+- **Plan changes slowly.** Turn creates, updates, deletes, publishes, sends, permission changes, data movement, and spend changes into a dry-run plan first.
+- **Keep a record.** Save redacted plans, receipts, summaries, and run logs so the next person can see what was planned, what ran, and what still needs checking.
 
 ## Example requests
 
-- Check which AWS account, role, and region this workspace is using, then stop.
-- Show IAM users and access keys so we can decide what needs a human access review.
-- List EC2 instances in this region and point out anything that could cost money if left running.
-- Review S3 bucket access settings and tell me which buckets deserve a public-access check.
-- Check CloudTrail or CloudWatch for the safest recent evidence before we change a resource.
-- Show service quota or billing-related information that helps explain a spend risk.
-- Prepare a dry-run plan to create a limited IAM user named `reporting-bot`, but do not apply it.
-- Prepare a plan to stop one EC2 instance and explain the approval flags it would need.
-- Tell me whether this AWS request touches identity, secrets, spend, public exposure, messaging, data movement, or an irreversible action.
+- "Check which AWS account, role, and region this workspace is using, then stop."
+- "List IAM users and access keys and tell me which ones deserve a human access review."
+- "Show EC2 instances in this region, including state and instance type, and point out obvious cost risk."
+- "Review S3 buckets and bucket policies for public access or risky sharing."
+- "Check CloudTrail for recent events related to this instance, user, role, bucket, or security group."
+- "Look at CloudWatch alarms and logs that may explain this production issue."
+- "Show billing, budget, Cost Explorer, or quota information that could explain a spend or capacity problem."
+- "Prepare a dry-run plan to create a limited IAM user named `reporting-bot`, but do not apply it."
+- "Prepare a plan to stop one EC2 instance and explain the approval flags it would need."
+- "Tell me whether this AWS request touches identity, secrets, spend, public access, messaging, data movement, or a hard-to-undo action."
 
-## What access this skill needs
+## What access it needs
 
 - Local AWS credentials from the normal AWS credential chain, or an `AWS_PROFILE` that points to the intended role.
 - A region in `AWS_DEFAULT_REGION`.
@@ -63,7 +66,7 @@ Then:
 1. Run `qwayk-aws-safe-agent-cli --output json --version`.
 2. Run `qwayk-aws-safe-agent-cli onboarding`.
 3. Run `qwayk-aws-safe-agent-cli --output json auth check`.
-4. Ask for one read-only AWS review, such as IAM users, EC2 instances, S3 bucket settings, or the pinned inventory summary.
+4. Ask for one read-only AWS review, such as IAM users, EC2 instances, S3 bucket settings, CloudTrail events, billing/quota data, or the pinned inventory summary.
 
 ## How this skill stays safe
 
@@ -114,6 +117,7 @@ Then:
 - Generic generated AWS writes do not currently save operation-specific before-state. Receipts say `limited` when verification only proves that the reviewed plan matched and the AWS SDK returned a captured response.
 - The coverage boundary is the pinned Boto3/Botocore 1.43.36 package shipped with this tool. It does not load extra service models from `~/.aws/models` or `AWS_DATA_PATH`.
 - The CLI exposes named commands generated from the pinned models. It is not a raw AWS call-anything bridge.
+- AWS permissions still decide what the caller can see or change. If the account denies a read, the agent should say what was blocked instead of guessing from missing data.
 
 ## Helpful docs
 

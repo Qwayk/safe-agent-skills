@@ -35,7 +35,7 @@ class TestInventoryGeneration(unittest.TestCase):
         self.assertNotIn("/home/", payload["botocore_data_dir"])
         self.assertNotIn("/Users/", payload["botocore_data_dir"])
         self.assertNotIn(".venv", payload["botocore_data_dir"])
-        self.assertNotIn("api-tools-for-" + "ai-agents", payload["botocore_data_dir"])
+        self.assertNotIn("api-tools-" + "for-ai-agents", payload["botocore_data_dir"])
 
     def test_coverage_markdown_includes_known_counts_and_stays_specific(self) -> None:
         text = self.coverage_path.read_text(encoding="utf-8")

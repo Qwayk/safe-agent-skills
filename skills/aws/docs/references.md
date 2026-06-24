@@ -1,6 +1,6 @@
 # References
 
-These are the official AWS and local sources behind identity checks, credentials, region handling, and the pinned model boundary.
+These are the official AWS and local sources behind the main claims in the AWS skill: how identity is checked, how local credentials and regions are found, and why coverage is tied to the pinned Botocore package.
 
 Prefer official docs. If a capability depends on a specific documented behavior, link the exact page.
 

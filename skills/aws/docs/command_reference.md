@@ -1,6 +1,6 @@
 # Command reference
 
-Use this technical page when you need the exact AWS CLI syntax after you already know the account, region, and service operation you want.
+Use this technical page after you know the AWS account, region, service, and operation you want. For choosing what to inspect first, start with the use cases and quickstart.
 
 For the guided path, start with [Choose useful AWS tasks](use_cases.md), [Set up AWS access locally](onboarding.md), and [Understand safety and approvals](safety_model.md).
 
@@ -28,6 +28,14 @@ qwayk-aws-safe-agent-cli iam list-users
 qwayk-aws-safe-agent-cli ec2 describe-instances
 qwayk-aws-safe-agent-cli s3 list-buckets
 ```
+
+Other useful first reads depend on your permissions:
+
+- IAM access review: `iam list-users`, `iam list-roles`, `iam list-policies`
+- EC2 review: `ec2 describe-instances`, `ec2 describe-security-groups`
+- S3 review: `s3 list-buckets`, then bucket-specific reads when you know the bucket name
+- Logging review: CloudTrail, CloudWatch, Config, Health, or GuardDuty read operations
+- Spend review: billing, budgets, Cost Explorer, service quota, or capacity-related read operations
 
 Example dry-run write plan:
 

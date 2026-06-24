@@ -1,6 +1,6 @@
 # Configuration
 
-Configuration means the local settings that tell the CLI which AWS profile, region, and guardrails to use.
+Configuration means the local settings that tell the CLI which AWS profile, region, timeout, and guardrails to use.
 
 AWS configuration is the local choice of profile, region, timeout, and account or region allowlists. Put private values in `.env` or the `--env-file` path, keep them out of chat and Git, and use allowlists when the wrong AWS account or region would be risky.
 
@@ -28,6 +28,13 @@ A good first configuration check is: confirm `AWS_DEFAULT_REGION`, `AWS_PROFILE`
 - `AWS_ALLOWED_ACCOUNTS` and `AWS_ALLOWED_REGIONS` are guardrails, not secrets.
 - Allowlist values should be narrow for production or client accounts.
 - If a machine can reach several AWS accounts, set allowlists before asking for any live write plan.
+
+## Good configuration examples
+
+- Local sandbox review: set the sandbox profile and one sandbox region.
+- Production read review: set the production read-only profile, production account id, and the one region you intend to inspect first.
+- Client account work: set the client account id in `AWS_ALLOWED_ACCOUNTS` so a wrong profile stops before service calls.
+- Multi-region review: start with one region, then repeat intentionally for each additional region instead of letting the agent wander.
 
 ## What not to put here
 

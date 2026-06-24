@@ -67,9 +67,10 @@ class TestReadmePublicContract(unittest.TestCase):
 
         opening = text.split("## Start here first", 1)[0]
         self.assertIn("A good first ask is:", opening)
-        self.assertIn("AWS is where one small mistake can touch real servers, access keys, storage buckets, customer data, or spend.", opening)
-        self.assertIn("Check my AWS identity and region, then show the safest AWS review to run before any change.", opening)
-        self.assertIn("IAM access reviews, EC2 instance inventory, S3 exposure checks, billing and quota review", opening)
+        self.assertIn("AWS is where teams keep the servers, buckets, roles, keys, logs, queues, databases, and billing settings", opening)
+        self.assertIn("Which account am I in?", opening)
+        self.assertIn("Check my AWS account, role, and region.", opening)
+        self.assertIn("IAM users, S3 buckets, and EC2 instances", opening)
 
     def test_helpful_docs_stay_human_facing(self) -> None:
         root = Path(__file__).resolve().parents[1]
@@ -103,9 +104,10 @@ class TestReadmePublicContract(unittest.TestCase):
         opening = text.split("## ", 1)[0].lower()
 
         self.assertIn("A good first ask is:", text)
-        self.assertIn("Start with one small AWS read you can verify by eye", text)
+        self.assertIn("Start with a result you can recognize", text)
         self.assertIn("## What you will do first", text)
         self.assertIn("## 3. Run one small first read", text)
+        self.assertIn("## Good next reads", text)
         self.assertIn("[Choose useful AWS tasks](use_cases.md)", text)
         self.assertIn("[Set up AWS access locally](onboarding.md)", text)
         self.assertNotIn("`docs/use_cases.md`", text)

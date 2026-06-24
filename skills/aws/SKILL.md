@@ -5,9 +5,9 @@ description: Inspect AWS identity, resources, and reviewed change plans with acc
 
 # Skill: AWS Safe Agent CLI
 
-Use this skill when the user wants an agent to check AWS resources or prepare an AWS change without guessing the account, region, or risk.
+Use this skill when the user wants help with AWS account review, IAM access, EC2 inventory, S3 exposure, logs, billing, quotas, or a careful AWS change plan.
 
-The safe order is AWS identity first, read before planning, plan before apply, and receipt after any live attempt.
+Work in this order: prove the AWS identity first, read before planning, plan before apply, and read the receipt after any live attempt.
 
 ## Core rules
 

@@ -1,10 +1,10 @@
 # Safety model
 
-AWS safety starts with knowing the target. This tool looks at the account and region first, asks for review before risky changes, and records what it could prove afterward.
+AWS safety starts with a simple rule: the agent must know the account, role, and region before it does useful work. A good AWS answer should never leave you wondering which account was touched.
 
-That matters because AWS mistakes can create access, expose data, move data, send messages, delete resources, or increase spend.
+After that, the safest path is read first, plan second, apply last. That matters because an AWS mistake can create access, expose a bucket, open a network rule, move data, send messages, delete resources, or increase spend.
 
-A good safety ask is: "Check the AWS identity and region first, show me the plan for any change, and only run the change after I approve the reviewed plan and any no-snapshot or irreversible risk."
+A good safety ask is: "Show me the AWS account, role, and region first. Read the target resource if possible. If a change is needed, show the plan and the extra approval flags before anything runs."
 
 ## What safe use looks like
 
@@ -20,25 +20,25 @@ A good safety ask is: "Check the AWS identity and region first, show me the plan
 
 ## AWS risk categories
 
-The tool classifies each pinned operation conservatively. These categories help a reviewer know what to slow down:
+The tool classifies each pinned operation conservatively. These labels are not there to sound technical; they tell the reviewer what kind of real-world harm to slow down for:
 
-- `security_identity`: IAM, roles, policies, credentials, SSO, KMS, or permission-related changes.
-- `secret`: secrets, keys, tokens, certificates, or credential-like material.
-- `spend_quota`: billing, quotas, capacity, compute, marketplace, or usage-related changes.
-- `public_exposure`: public access, DNS, CDN, firewall, route, or sharing changes.
-- `data_movement`: imports, exports, replication, streams, transfers, backups, or downloads.
-- `messaging`: email, SMS, notifications, queues, topics, or publish/send actions.
-- `no_snapshot`: no generic safe before-state or read-back is available.
-- `unknown_mutating`: the model suggests mutation, but the generic path cannot classify it more narrowly.
-- `irreversible`: delete-like or hard-to-undo actions.
+- `security_identity`: could affect IAM, roles, policies, credentials, SSO, KMS, or permissions.
+- `secret`: could touch secrets, keys, tokens, certificates, or credential-like material.
+- `spend_quota`: could affect billing, quotas, capacity, compute, marketplace, or usage.
+- `public_exposure`: could affect public access, DNS, CDN, firewall, routes, sharing, or internet reachability.
+- `data_movement`: could import, export, replicate, stream, transfer, back up, or download data.
+- `messaging`: could send, publish, notify, queue, email, or text someone.
+- `no_snapshot`: the generic AWS path cannot save a reliable before-state or read-back for this operation.
+- `unknown_mutating`: the AWS model suggests mutation, but the generic path cannot classify the effect more narrowly.
+- `irreversible`: delete-like or hard-to-undo.
 
 ## What the flags mean
 
-- `--plan-out` saves the dry-run plan.
+- `--plan-out` saves the dry-run plan so a person can review it.
 - `--plan-in` loads the reviewed plan for live apply.
-- `--receipt-out` saves the apply receipt.
-- `--ack-no-snapshot` says the action cannot save a reliable before-state or generic read-back.
-- `--ack-irreversible` says the action is hard to undo.
+- `--receipt-out` saves the apply receipt after a live attempt.
+- `--ack-no-snapshot` says you understand the tool cannot save a reliable before-state or generic read-back for this operation.
+- `--ack-irreversible` says you understand the action is delete-like or hard to undo.
 - `--output-file` is required when an AWS response returns binary data.
 
 ## Normal change flow

@@ -1,12 +1,10 @@
 # Architecture
 
-AWS source changes are easier to review when the Botocore model boundary, identity checks, safety gates, and run-history files are easy to find.
+Read this page when you want to check how the AWS skill is built. Normal users should start with the quickstart and use cases; this page is for people reviewing the code path behind the promises.
 
-The AWS skill is built as a small command-line tool around Boto3, the official AWS Python SDK. It loads a pinned Botocore model inventory, validates operation input against that model, checks AWS identity, classifies risk, and saves local proof for writes. This matters when an agent is using the skill for real work.
+The AWS skill is built as a small command-line tool around Boto3, the official AWS Python SDK. It loads a pinned Botocore model inventory, turns AWS operations into named commands, checks identity with STS, validates input, classifies risk, creates dry-run plans for writes, and saves redacted receipts after live attempts. This matters when an agent is using the skill for real work.
 
 A good architecture check is: trace one command from `cli.py` into `aws_runtime.py`, confirm STS identity and allowlists run before AWS service calls, and verify that write commands produce plans and receipts.
-
-Read this after the user-facing docs, not before them.
 
 ## Runtime
 
