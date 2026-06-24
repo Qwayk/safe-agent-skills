@@ -1,0 +1,75 @@
+{
+  "applied": false,
+  "applied_at_utc": "2026-06-24T00:00:00Z",
+  "example": true,
+  "identity": {
+    "account": "123456789012",
+    "arn": "arn:aws:iam::123456789012:user/example-user",
+    "user_id": "AIDAEXAMPLEUSER"
+  },
+  "input": {
+    "UserName": "example-user"
+  },
+  "notes": "Example receipt shape only. No live AWS apply was run for this file.",
+  "operation": "create-user",
+  "region": "us-east-1",
+  "response": {
+    "ResponseMetadata": {
+      "HTTPStatusCode": 200
+    },
+    "User": {
+      "Arn": "arn:aws:iam::123456789012:user/example-user",
+      "CreateDate": "2026-06-24T00:00:00Z",
+      "Path": "/",
+      "UserId": "AIDAEXAMPLEUSER",
+      "UserName": "example-user"
+    }
+  },
+  "service": "iam",
+  "tool": "qwayk-aws-safe-agent-cli",
+  "verification": {
+    "checked_plan_operation": "create-user",
+    "checked_plan_service": "iam",
+    "checks": [
+      {
+        "checked": "The boto3 call returned control to the CLI without raising an exception.",
+        "name": "aws_call_completed_without_exception",
+        "ok": true
+      },
+      {
+        "checked": "The saved plan matched service, operation, region, and input before apply.",
+        "name": "reviewed_plan_matched_command",
+        "ok": true
+      },
+      {
+        "checked": "The AWS response was captured for the receipt after redaction.",
+        "name": "response_captured_and_redacted",
+        "ok": true
+      },
+      {
+        "checked": "ResponseMetadata.HTTPStatusCode was 200.",
+        "name": "response_metadata_http_status",
+        "ok": true,
+        "value": 200
+      }
+    ],
+    "limits": [
+      "This verification confirms the reviewed plan matched and the AWS SDK call returned a captured response.",
+      "It does not claim resource state was read back unless an operation-specific read-back check is added later.",
+      "AWS eventual consistency can delay visible state after a successful write."
+    ],
+    "read_back": {
+      "attempted": false,
+      "reason": "No generic safe read-back can be inferred for every pinned Botocore operation."
+    },
+    "risk_categories": [
+      "no_snapshot",
+      "security_identity"
+    ],
+    "ran": true,
+    "service": "iam",
+    "operation": "create-user",
+    "status": "limited"
+  },
+  "version": "0.1.0"
+}

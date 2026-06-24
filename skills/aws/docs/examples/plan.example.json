@@ -1,0 +1,42 @@
+{
+  "allowlists": {
+    "allowed_accounts": [
+      "123456789012"
+    ],
+    "allowed_regions": [
+      "us-east-1"
+    ]
+  },
+  "botocore_operation": "CreateUser",
+  "example": true,
+  "generated_at_utc": "2026-06-24T00:00:00Z",
+  "identity": null,
+  "input": {
+    "UserName": "example-user"
+  },
+  "notes": "Example plan shape only. No live AWS apply was run for this file.",
+  "operation": "create-user",
+  "profile": "demo-profile",
+  "region": "us-east-1",
+  "risk": {
+    "high_risk": true,
+    "is_read": false,
+    "is_write": true,
+    "mode": "remote_write",
+    "requires_ack_irreversible": false,
+    "requires_ack_no_snapshot": true,
+    "requires_plan": true,
+    "risk_categories": [
+      "no_snapshot",
+      "security_identity"
+    ],
+    "risk_reasons": [
+      "can affect AWS identity, access, permissions, or trust",
+      "the generic AWS model path does not have operation-specific before-state capture"
+    ],
+    "sensitive_service": true
+  },
+  "service": "iam",
+  "tool": "qwayk-aws-safe-agent-cli",
+  "version": "0.1.0"
+}

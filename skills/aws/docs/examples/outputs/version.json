@@ -1,0 +1,125 @@
+{
+  "boto3_version": "1.43.36",
+  "botocore_version": "1.43.36",
+  "inventory_counts": {
+    "boto3_version": "1.43.36",
+    "botocore_version": "1.43.36",
+    "date": "2026-06-24",
+    "endpoints_model_version": 3,
+    "operation_count": 18727,
+    "paginator_count": 3186,
+    "paginator_service_count": 343,
+    "partitions_count": 8,
+    "service_count": 428,
+    "services_with_multiple_versions": [
+      {
+        "available_api_versions": [
+          "2018-10-01",
+          "2019-01-25"
+        ],
+        "selected_api_version": "2019-01-25",
+        "service": "appmesh"
+      },
+      {
+        "available_api_versions": [
+          "2016-05-10",
+          "2017-01-11"
+        ],
+        "selected_api_version": "2017-01-11",
+        "service": "clouddirectory"
+      },
+      {
+        "available_api_versions": [
+          "2014-05-31",
+          "2014-10-21",
+          "2014-11-06",
+          "2015-04-17",
+          "2015-07-27",
+          "2015-09-17",
+          "2016-01-13",
+          "2016-01-28",
+          "2016-08-01",
+          "2016-08-20",
+          "2016-09-07",
+          "2016-09-29",
+          "2016-11-25",
+          "2017-03-25",
+          "2017-10-30",
+          "2018-06-18",
+          "2018-11-05",
+          "2019-03-26",
+          "2020-05-31"
+        ],
+        "selected_api_version": "2020-05-31",
+        "service": "cloudfront"
+      },
+      {
+        "available_api_versions": [
+          "2011-02-01",
+          "2013-01-01"
+        ],
+        "selected_api_version": "2013-01-01",
+        "service": "cloudsearch"
+      },
+      {
+        "available_api_versions": [
+          "2014-09-01",
+          "2014-10-01",
+          "2015-03-01",
+          "2015-04-15",
+          "2015-10-01",
+          "2016-04-01",
+          "2016-09-15",
+          "2016-11-15"
+        ],
+        "selected_api_version": "2016-11-15",
+        "service": "ec2"
+      },
+      {
+        "available_api_versions": [
+          "2014-09-30",
+          "2015-02-02"
+        ],
+        "selected_api_version": "2015-02-02",
+        "service": "elasticache"
+      },
+      {
+        "available_api_versions": [
+          "2014-02-03",
+          "2015-10-07"
+        ],
+        "selected_api_version": "2015-10-07",
+        "service": "events"
+      },
+      {
+        "available_api_versions": [
+          "2015-08-18",
+          "2016-02-16"
+        ],
+        "selected_api_version": "2016-02-16",
+        "service": "inspector"
+      },
+      {
+        "available_api_versions": [
+          "2014-11-11",
+          "2015-03-31"
+        ],
+        "selected_api_version": "2015-03-31",
+        "service": "lambda"
+      },
+      {
+        "available_api_versions": [
+          "2014-09-01",
+          "2014-10-31"
+        ],
+        "selected_api_version": "2014-10-31",
+        "service": "rds"
+      }
+    ],
+    "waiter_count": 367,
+    "waiter_service_count": 68
+  },
+  "ok": true,
+  "tool": "qwayk-aws-safe-agent-cli",
+  "version": "0.1.0"
+}
