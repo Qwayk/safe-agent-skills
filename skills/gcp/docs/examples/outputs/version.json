@@ -1,0 +1,13 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "example_kind": "local_command_example",
+  "example_note": "Local version command shape. This is not proof that a live Google Cloud account was read.",
+  "live_google_cloud_account_verified": false,
+  "ok": true,
+  "run_id": null,
+  "runs_index": ".state/runs/index.jsonl",
+  "tool": "qwayk-gcp-safe-agent-cli",
+  "version": "0.1.0"
+}

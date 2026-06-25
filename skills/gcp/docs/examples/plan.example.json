@@ -1,0 +1,48 @@
+{
+  "tool": "qwayk-gcp-safe-agent-cli",
+  "version": "0.1.0",
+  "example_kind": "redacted_shape_example",
+  "live_google_cloud_account_verified": false,
+  "example_note": "Shape-only dry-run plan example. This is not proof that a live Google Cloud write ran.",
+  "generated_at_utc": "2026-01-01T00:00:00Z",
+  "command": "qwayk-gcp-safe-agent-cli --output json --plan-out plan.json compute instances-delete --input-json input.json",
+  "service_id": "compute",
+  "service_title": "Compute Engine API",
+  "service_version": "v1",
+  "operation_name": "instances-delete",
+  "operation_id": "compute.instances.delete",
+  "classification": "irreversible",
+  "http_method": "DELETE",
+  "path_template": "projects/{project}/zones/{zone}/instances/{instance}",
+  "risk_categories": [
+    "compute_delete",
+    "irreversible",
+    "network",
+    "no_snapshot",
+    "spend_quota"
+  ],
+  "quota_project": "***REDACTED***",
+  "quota_project_fingerprint": "<REDACTED>",
+  "request_preview": {
+    "method": "DELETE",
+    "path_template": "projects/{project}/zones/{zone}/instances/{instance}",
+    "path_values": {
+      "project": "***REDACTED***",
+      "zone": "***REDACTED***",
+      "instance": "***REDACTED***"
+    },
+    "query": {},
+    "body": null
+  },
+  "input": {
+    "path": {
+      "project": "***REDACTED***",
+      "zone": "***REDACTED***",
+      "instance": "***REDACTED***"
+    },
+    "query": {},
+    "body": null
+  },
+  "input_fingerprint": "<REDACTED>",
+  "plan_fingerprint": "<REDACTED>"
+}

@@ -1,0 +1,39 @@
+{
+  "tool": "qwayk-gcp-safe-agent-cli",
+  "version": "0.1.0",
+  "example_kind": "mocked_local_shape_example",
+  "live_google_cloud_account_verified": false,
+  "mocked_response": true,
+  "example_note": "Shape-only example for a successful Compute Engine instances-list read. This is not proof that a live Google Cloud account was read.",
+  "command": "qwayk-gcp-safe-agent-cli --output json compute instances-list --input-json input.json",
+  "ok": true,
+  "dry_run": false,
+  "service_id": "compute",
+  "operation_name": "instances-list",
+  "classification": "read",
+  "risk_categories": [
+    "network"
+  ],
+  "request": {
+    "method": "GET",
+    "url": "https://compute.googleapis.com/compute/v1/projects/***REDACTED***/zones/***REDACTED***/instances",
+    "params": {
+      "maxResults": 1
+    },
+    "body": null
+  },
+  "response_status": 200,
+  "response": {
+    "items": [
+      {
+        "id": "***REDACTED***",
+        "name": "example-instance",
+        "zone": "https://www.googleapis.com/compute/v1/projects/***REDACTED***/zones/us-central1-a",
+        "machineType": "https://www.googleapis.com/compute/v1/projects/***REDACTED***/zones/us-central1-a/machineTypes/e2-small",
+        "status": "RUNNING"
+      }
+    ],
+    "nextPageToken": "***REDACTED***"
+  },
+  "response_url": "https://compute.googleapis.com/compute/v1/projects/***REDACTED***/zones/***REDACTED***/instances?maxResults=1"
+}

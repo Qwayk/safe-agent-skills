@@ -1,0 +1,13 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "example_kind": "redacted_local_auth_error_example",
+  "example_note": "Redacted local auth-check example. This is not proof that a live Google Cloud account was read.",
+  "live_google_cloud_account_verified": false,
+  "error": "Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.",
+  "error_type": "DefaultCredentialsError",
+  "ok": false,
+  "run_id": null,
+  "runs_index": ".state/runs/index.jsonl"
+}
