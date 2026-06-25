@@ -16,7 +16,7 @@ class TestDocsPublicContract(unittest.TestCase):
         text = self._read("README.md")
         opening = text.split("## ", 1)[0]
 
-        self.assertIn("confirm the Google Cloud target", opening)
+        self.assertIn("confirm the project", opening)
         self.assertIn("Live Google Cloud account behavior", opening)
         self.assertIn("not live account proof", opening)
         self.assertIn("## Start with the work", text)
@@ -75,11 +75,11 @@ class TestDocsPublicContract(unittest.TestCase):
         command_reference = self._read("command_reference.md")
         opening = quickstart.split("## ", 1)[0].lower()
 
-        self.assertIn("Start with a result you can recognize", quickstart)
+        self.assertIn("Start by listing Compute Engine instances", quickstart)
         self.assertIn("inventory summary", quickstart)
         self.assertIn("Use the command reference when you already know the Google Cloud job", command_reference)
         self.assertIn("For the guided path, start with", command_reference)
-        self.assertIn("[What this skill can help you do](use_cases.md)", command_reference)
+        self.assertIn("[Useful Google Cloud asks](use_cases.md)", command_reference)
 
         banned_opening_bits = [
             "this page helps",

@@ -5,9 +5,9 @@ description: Use when the agent needs to inspect Google Cloud or prepare careful
 
 # GCP Safe CLI
 
-Use this skill when the user wants help with Google Cloud projects, IAM access, servers, IP addresses, storage buckets, Cloud Run, Cloud SQL, networking, logs, enabled services, billing context, quota context, or a planned infrastructure change.
+Trigger this skill when the user wants help with Google Cloud projects, IAM access, servers, IP addresses, storage buckets, Cloud Run, Cloud SQL, networking, logs, enabled services, billing context, quota context, or a planned infrastructure change.
 
-Start with a safe read. A good first move is to check Google Cloud access, name the project or quota context, run one small read the user can recognize, and stop before any live change.
+Start with a safe read. A good first move is to check Google Cloud access, name the project or quota context, run one small read the user can recognize, explain the result in normal words, and stop before any live change.
 
 ## Access
 
@@ -26,7 +26,7 @@ Never ask the user to paste `.env`, service account JSON, OAuth files, tokens, o
 
 1. Run `qwayk-gcp-safe-agent-cli --output json auth check`.
 2. Run `inventory summary` only to inspect packaged coverage. For live verification, run one known project service read, such as Compute Engine instances, enabled services, storage buckets, or Cloud Run services.
-3. Explain the result in plain English before showing raw output.
+3. Explain the result in normal words before showing raw output.
 4. For any write, create a dry-run plan first.
 5. Apply only from the reviewed saved plan with `--plan-in`, `--apply`, and `--yes`.
 6. Add `--ack-no-snapshot` or `--ack-irreversible` when the runtime requires it.

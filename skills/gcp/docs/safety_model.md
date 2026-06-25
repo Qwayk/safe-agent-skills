@@ -1,6 +1,6 @@
 # Safety model
 
-Google Cloud mistakes can break apps, expose data, change permissions, delete resources, or create cost. This tool is built around a simple rule: look first, plan second, change last.
+Google Cloud mistakes can break apps, expose buckets, change IAM, delete resources, or create spend. This tool is built around a simple rule: look first, plan second, change last.
 
 Safe use should feel calm. The agent checks the target, explains what it found, shows a plan before risky work, and leaves a record after live work. Secrets stay local.
 
@@ -58,7 +58,7 @@ That check tells you whether the local Google credential path is available. The 
 
 ## Run history
 
-For write-capable commands, the tool can write local run records under `.state/runs/`. Those records help answer questions later, such as what changed last time, which plan was reviewed, and whether verification passed.
+For commands that can change Google Cloud, the tool can write local run records under `.state/runs/`. Those records help answer questions later, such as what changed last time, which plan was reviewed, and whether verification passed.
 
 Local run records are not public proof. Keep them private and never include secrets.
 

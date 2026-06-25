@@ -1,6 +1,6 @@
 # API coverage
 
-Google Cloud coverage shows exactly what the shipped commands can do: which official Google services and operations have explicit generated commands, which safety class they use, and which official source backed each row. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+Google Cloud coverage shows exactly what the shipped commands can do: which official Google services and operations have explicit generated commands, which safety class they use, and which official source backs each row. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
 This is source coverage, not live account proof. It shows which official Google Cloud operations the tool generated commands for, how those operations are classified for safety, and which official source was used.
 

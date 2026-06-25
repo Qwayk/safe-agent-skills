@@ -2,7 +2,7 @@
 
 Start the same way you would start a careful cloud review: choose the Google identity, confirm the project or quota context, run one small read, then stop before any change.
 
-You do not need to learn every command first. You do need local Google Cloud access and enough IAM permission for the resource you want the agent to inspect. IAM is Google Cloud's permission system.
+You do not need to learn every command first. Google Cloud setup has two parts: local Application Default Credentials, and enough IAM permission for the resource you want the agent to inspect. IAM is Google Cloud's permission system.
 
 Keep the setup files private. Do not paste `.env`, service account JSON, OAuth files, tokens, or keys into chat.
 

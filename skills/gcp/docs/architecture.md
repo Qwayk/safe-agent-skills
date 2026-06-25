@@ -18,7 +18,7 @@ The command shape is always:
 qwayk-gcp-safe-agent-cli <service> <operation> --input-json input.json
 ```
 
-There is no raw request bridge and no arbitrary URL caller.
+There is no catch-all command for arbitrary Google URLs or operations.
 
 ## Main files
 

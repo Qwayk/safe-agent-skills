@@ -4,7 +4,7 @@ Start here when the tool does not connect, the output looks wrong, or the agent 
 
 Most setup failures mean one of three things is missing: a Google Cloud credential path, the right project or quota context, or IAM permission for the resource you asked to read.
 
-A good first troubleshooting ask is: "Read the exact JSON error output, explain the likely missing setting or permission in plain English, and tell me the safest next check without inventing missing data." If the target, project, or permission is unclear, stop before retrying a write or broader read.
+A good first troubleshooting ask is: "Read the exact JSON error output, explain the likely missing setting or permission in normal words, and tell me the safest next check without inventing missing data." If the target, project, or permission is unclear, stop before retrying a write or broader read.
 
 ## Common checks
 

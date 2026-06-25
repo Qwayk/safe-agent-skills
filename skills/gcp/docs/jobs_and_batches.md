@@ -1,8 +1,8 @@
 # Jobs and batches
 
-Use this page to understand the current batch limit before you ask an agent to repeat work across many Google Cloud resources.
+Google Cloud batch work is easy to get wrong because one repeated command can touch many resources. This source build does not ship a CSV batch runner yet, so repeat work should stay one reviewed generated command at a time.
 
-A CSV file is a simple spreadsheet-style file. This source build does not ship a CSV batch runner yet, because a safe GCP batch runner must expand each row into an explicit generated `service operation` command and keep the same plan and apply gates.
+A CSV file is a simple spreadsheet-style file. A safe GCP batch runner must expand each row into an explicit generated `service operation` command and keep the same plan and apply gates.
 
 ## What to do today
 
@@ -13,7 +13,7 @@ A CSV file is a simple spreadsheet-style file. This source build does not ship a
 
 ## Future batch rule
 
-When a batch runner is added later, it must not become a raw request bridge.
+When a batch runner is added later, it must not become one command that can call any Google URL.
 
 It should:
 

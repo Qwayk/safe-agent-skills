@@ -1,6 +1,6 @@
 # Quickstart
 
-Start with a result you can recognize: the Google Cloud identity, the project or quota context, and one small read such as Compute Engine instances, enabled services, a storage bucket list, or Cloud Run services. If the target looks wrong, stop before asking for a change.
+Start by listing Compute Engine instances in a project and zone you recognize. If that project does not use Compute Engine, use a similarly small read such as enabled services, Cloud Storage buckets, or Cloud Run services. The goal is to prove the agent is looking at the right Google Cloud target before it plans any change.
 
 Need more ideas? See [Useful Google Cloud asks](use_cases.md). Need setup help? See [Connect Google Cloud safely](onboarding.md).
 
@@ -12,8 +12,8 @@ A good first ask is:
 
 1. Make sure the local tool can run.
 2. Confirm Google Application Default Credentials are available.
-3. Optionally check the generated service inventory without touching a cloud resource.
-4. Run one small read against a project and zone you recognize.
+3. Run one small read against a project and zone you recognize.
+4. Optionally check the packaged service map without touching a cloud resource.
 5. Stop before any write, IAM change, public exposure change, delete, service enablement, or cost-sensitive action.
 
 ## 1. Install for local source use
@@ -81,13 +81,13 @@ qwayk-gcp-safe-agent-cli --output json auth check
 
 The auth check proves that the local credential path can be found. It does not prove that every live Google Cloud read will work.
 
-To check the packaged generated service map without touching a Google Cloud account, run:
+To check the packaged service map without touching a Google Cloud account, run:
 
 ```bash
 qwayk-gcp-safe-agent-cli --output json inventory summary
 ```
 
-This reads the packaged coverage inventory only. It is useful for seeing what the source tool knows how to call, but it does not touch your Google Cloud account.
+This reads the packaged coverage inventory only. It is useful for seeing which Google Cloud operations the skill can call, but it does not touch your Google Cloud account.
 
 ## What a useful first result includes
 

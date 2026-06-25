@@ -24,8 +24,11 @@ class TestReadmePublicContract(unittest.TestCase):
 
         self.assertLessEqual(len(self.opening.split()), 220)
         self.assertLessEqual(len(paragraphs), 3)
-        self.assertIn("Before your agent changes Google Cloud", self.opening)
-        self.assertIn("what is running, who has access, and what might cost money", self.opening)
+        self.assertIn("Google Cloud work often starts with one risky question", self.opening)
+        self.assertIn("are we looking at the right project", self.opening)
+        self.assertIn("inspect running resources", self.opening)
+        self.assertIn("review IAM access", self.opening)
+        self.assertIn("spot cost or exposure risks", self.opening)
         self.assertIn("A good first ask is:", self.opening)
 
         first_ask = self.opening.split("A good first ask is:", 1)[1].splitlines()[0]
@@ -43,9 +46,9 @@ class TestReadmePublicContract(unittest.TestCase):
             "running",
             "access",
             "cost",
-            "project reviews",
-            "access checks",
-            "cost-risk checks",
+            "cloud admin reviews",
+            "cleanup planning",
+            "exposure checks",
             "reviewed change plans",
             "A good first ask is:",
             "Change level: **Reads + careful changes**",
@@ -139,7 +142,7 @@ class TestReadmePublicContract(unittest.TestCase):
         text = (self.root / "docs" / "quickstart.md").read_text(encoding="utf-8")
         opening = text.split("## ", 1)[0].lower()
 
-        self.assertIn("Start with a result you can recognize", text)
+        self.assertIn("Start by listing Compute Engine instances", text)
         self.assertIn("Compute Engine instances", text)
         self.assertIn("enabled services", text)
         self.assertIn('"project": "my-gcp-project"', text)

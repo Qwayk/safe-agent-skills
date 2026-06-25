@@ -1,10 +1,10 @@
 # Google Cloud Platform Safe CLI
 
-Before your agent changes Google Cloud, use this skill to see what is running, who has access, and what might cost money. It helps turn a broad request like "check my cloud" into a careful review before anything changes.
+Google Cloud work often starts with one risky question: are we looking at the right project? This skill helps your agent confirm the target, inspect running resources, review IAM access, and spot cost or exposure risks before it plans a change.
 
-A good first ask is: "Check which Google Cloud project this account can see, show what is running, who has access, and what might cost money, then stop before any change."
+A good first ask is: "Check the project this account can see, list one safe area such as Compute Engine or Cloud Run, flag cost or access risks, and stop before any change."
 
-Use it for project reviews, access checks, cost-risk checks, exposure checks, and reviewed change plans. It is not for bypassing Google Cloud permissions, testing random API calls, or making vague live changes. Change level: **Reads + careful changes**. Live Google Cloud account behavior has not been verified yet.
+Best for cloud admin reviews, cleanup planning, access checks, exposure checks, and reviewed change plans. Not for bypassing Google Cloud permissions, testing random API calls, or making vague live changes. Change level: **Reads + careful changes**. Live Google Cloud account behavior has not been verified yet.
 
 ## Start here first
 
@@ -23,7 +23,7 @@ If you want evidence before trusting it, start with [Proof and verification](doc
 - **Check infrastructure.** Review Compute Engine instances, disks, images, IP addresses, load balancers, VPC networks, subnets, routes, and firewall-related resources.
 - **Review app and data services.** Inspect Cloud Storage buckets, Cloud Run services, Cloud SQL instances, databases, Pub/Sub, Cloud Build, Artifact Registry, logs, monitoring, and enabled services where permissions allow.
 - **Watch cost-sensitive areas.** Check running machines, reserved IPs, databases, quotas, billing scope, and enabled APIs before cleanup or expansion work.
-- **Plan changes slowly.** Prepare a dry-run plan for creates, updates, deletes, service enablement, IAM changes, network changes, and other risky work before anything goes live.
+- **Plan changes with review.** Prepare a dry-run plan for creates, updates, deletes, service enablement, IAM changes, network changes, and other risky work before it runs.
 - **Leave a review trail.** Save plans, receipts, run summaries, and redacted examples so a reviewer can see what was planned and what happened.
 
 ## Example requests
@@ -83,7 +83,7 @@ Check that Google Cloud access is connected, tell me which project or quota cont
 - Higher-risk work may also require `--ack-no-snapshot` or `--ack-irreversible`.
 - The tool can refuse targets outside project, folder, organization, billing account, or region allowlists.
 - Plans, receipts, logs, and examples are redacted.
-- There is no raw request bridge or arbitrary URL caller.
+- There is no catch-all command for arbitrary Google URLs or operations.
 
 ## What it covers today
 

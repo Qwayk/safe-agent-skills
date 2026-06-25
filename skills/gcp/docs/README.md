@@ -1,6 +1,6 @@
 # Google Cloud docs
 
-For Google Cloud, start with the real job: confirm the Google Cloud target, inspect one safe area, then decide whether a reviewed change plan is needed. These docs explain how to connect Google Cloud, ask useful first questions, understand approval rules, and check what has actually been verified.
+For Google Cloud, start with the real job: confirm the project, inspect one safe area, then decide whether a reviewed change plan is needed. These docs explain how to connect local Google access, ask useful first questions, understand approval rules, and check what has actually been verified.
 
 Live Google Cloud account behavior still needs a separate safe-target run. Local tests and mocked examples are useful, but they are not live account proof.
 

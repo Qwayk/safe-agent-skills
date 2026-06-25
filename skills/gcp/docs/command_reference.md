@@ -2,7 +2,7 @@
 
 Use the command reference when you already know the Google Cloud job and need the exact service, operation, input file shape, and safety flags.
 
-For the guided path, start with [What this skill can help you do](use_cases.md), [Set up your Google Cloud access](onboarding.md), and [See how this skill stays safe](safety_model.md).
+For the guided path, start with [Useful Google Cloud asks](use_cases.md), [Set up your Google Cloud access](onboarding.md), and [See how this skill stays safe](safety_model.md).
 
 ## Global flags
 
@@ -119,4 +119,4 @@ Use `--ack-no-snapshot` for high-risk or no-snapshot writes and `--ack-irreversi
 
 This source build does not ship a separate CSV batch runner yet.
 
-For repeated work, prepare one reviewed generated command plan at a time, or add a future batch runner that expands into explicit generated `service operation` commands instead of a generic bridge.
+For repeated work, prepare one reviewed generated command plan at a time, or add a future batch runner that expands into explicit generated `service operation` commands instead of one unsafe catch-all command.
