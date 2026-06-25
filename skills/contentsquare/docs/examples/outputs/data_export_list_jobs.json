@@ -1,0 +1,22 @@
+{
+  "changed": false,
+  "dry_run": false,
+  "method": "GET",
+  "ok": true,
+  "operation": "list-export-jobs",
+  "path": "/v1/exports",
+  "result": {
+    "payload": [
+      {
+        "format": "CSV",
+        "frequency": "daily",
+        "jobId": 123,
+        "name": "Redacted daily views export",
+        "scope": "views",
+        "state": "completed"
+      }
+    ],
+    "success": true
+  },
+  "verified": true
+}

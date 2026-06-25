@@ -1,0 +1,22 @@
+{
+  "changed": false,
+  "dry_run": false,
+  "method": "GET",
+  "ok": true,
+  "operation": "site-bounce-rate",
+  "path": "/v1/metrics/site/bounce-rate",
+  "result": {
+    "payload": {
+      "values": [
+        {
+          "endDate": "2026-06-07T00:00:00.000Z",
+          "name": "bounceRate",
+          "startDate": "2026-06-01T00:00:00.000Z",
+          "value": 42.5
+        }
+      ]
+    },
+    "success": true
+  },
+  "verified": true
+}

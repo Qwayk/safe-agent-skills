@@ -1,0 +1,39 @@
+{
+  "command": "contentsquare-safe-cli data-export create-job --body-json body.json",
+  "method": "POST",
+  "operation": "create-export-job",
+  "path": "/v1/exports",
+  "preconditions": [
+    "The reviewer confirmed the JSON body belongs to the intended Contentsquare project or integration.",
+    "The reviewer confirmed the target account and scope are correct."
+  ],
+  "proposed_changes": {
+    "dateRange": {
+      "from": "2026-06-01",
+      "to": "2026-06-07"
+    },
+    "name": "weekly_sessions_export",
+    "projectId": 123456
+  },
+  "risk_level": "high",
+  "risk_reasons": [
+    "This Contentsquare operation can change server-side state.",
+    "No automatic rollback or safe before/after snapshot is documented for this operation."
+  ],
+  "rollback": {
+    "notes": "Contentsquare docs do not document a universal rollback for this operation.",
+    "supported": false
+  },
+  "selector": {
+    "body_keys": [
+      "dateRange",
+      "name",
+      "projectId"
+    ],
+    "command": "data-export create-job",
+    "path": "/v1/exports"
+  },
+  "tool": "contentsquare-safe-cli",
+  "verification_plan": "Use the returned Contentsquare response and any provider-side IDs. Run a follow-up read command when the API exposes one.",
+  "version": "0.1.0"
+}

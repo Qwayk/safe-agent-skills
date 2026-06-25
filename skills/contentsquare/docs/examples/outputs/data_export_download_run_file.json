@@ -1,0 +1,13 @@
+{
+  "bytes_written": 128,
+  "changed": true,
+  "file": {
+    "expiration_date": "2026-06-30T00:00:00Z",
+    "file_index": 0,
+    "part_id": 1
+  },
+  "ok": true,
+  "operation": "download-run-file",
+  "output_file": "exports/redacted-run-part-1.jsonl",
+  "verified": true
+}

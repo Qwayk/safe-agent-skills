@@ -1,0 +1,17 @@
+{
+  "changed": true,
+  "command": "contentsquare-safe-cli --plan-in plan.example.json --apply --yes data-export create-job",
+  "operation": "create-export-job",
+  "receipt_note": "Redacted example only; no live Contentsquare account was changed during source build.",
+  "response": {
+    "id": "export_job_redacted",
+    "status": "created"
+  },
+  "rollback_plan": null,
+  "tool": "contentsquare-safe-cli",
+  "verification": {
+    "details": "No safe universal read-back is documented for this operation.",
+    "ok": null
+  },
+  "version": "0.1.0"
+}
