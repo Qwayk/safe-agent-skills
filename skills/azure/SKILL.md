@@ -1,38 +1,30 @@
-# azure-safe-cli
+---
+name: azure
+description: Inspect Azure subscriptions, resources, access, exposure, and reviewed change plans with tenant and subscription guardrails.
+---
 
-**Capability:** Safe Azure reads and controlled writes for agents.
+# Skill: Azure
 
-## Install
+Use this skill when the user wants help with Azure subscriptions, resources, role assignments, storage or network exposure, cost-sensitive areas, or a careful Azure change plan.
 
-Install this skill from `Qwayk/safe-agent-skills` and use it with:
+Start with a safe read. A good first move is to confirm the tenant and subscription, list a small area the user can recognize, explain the result in normal words, and stop before any live change.
 
-```bash
-qwayk-azure-safe-agent-cli
-```
+## Core Rules
 
-## Start here first
+- Never ask the user to paste Azure tokens, client secrets, tenant secrets, or `.env` contents into chat.
+- Confirm the tenant and subscription before reading broad resources or planning changes.
+- Prefer narrow reads first: resource groups, role assignments, storage exposure, network exposure, or cost-sensitive resources.
+- Writes must start as reviewed plans and require the tool's approval flags before any live change.
+- Use receipts, saved plans, and run history when the user needs proof of what happened.
 
-Use this exact request:
+## Good First Ask
 
 ```text
-Use this skill to run safe Azure reads first. Give me a short summary and stop before any live changes.
+Show me what is running in this Azure subscription, flag public exposure and spend risks, and stop before any live change.
 ```
 
-## What this skill is for
+## Useful Follow-Ups
 
-- Read Azure resources safely from generated ARM/data-plane commands.
-- Prepare preview plans before write operations.
-- Run write operations only with explicit confirmation and risk acknowledgments.
-
-## Safety guardrails
-
-- Read-first behavior is available for non-destructive inspection.
-- Write actions require all of: `--plan-in`, `--apply`, and `--yes`.
-- `--ack-no-snapshot` and `--ack-irreversible` are required for matching risk classes.
-- Live Azure execution is confirmed only with real credentials and target access.
-
-## Useful prompts
-
-- "Run a read-only check for this subscription and summarize issues." 
-- "Generate a write plan for these changes and wait for approval." 
-- "Review the plan output and confirm if any irreversible action is present."
+- "Check role assignments and tell me who has broad access."
+- "Review storage accounts and public exposure risk."
+- "Prepare a change plan for this resource and wait for approval."
