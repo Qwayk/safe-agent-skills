@@ -67,5 +67,5 @@ Planned success-example paths, once credentials are available:
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
+- Coverage source of truth: `docs/api_coverage.md`
 - Debug history: `docs/engineering_notes.md`

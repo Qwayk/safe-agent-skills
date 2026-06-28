@@ -1,6 +1,6 @@
 # What you can do with Figma
 
-Figma work usually starts with one practical question: what is in this file, library, comment thread, or team resource, and what needs attention before anyone changes the design system? Start with a read, then ask for a reviewed plan only after the target is clear.
+Figma work is usually about understanding a file, library, comment thread, or team resource before anyone changes the design system. Start with a read, then ask for a reviewed plan only after the target is clear.
 
 Need setup first? Start with [Connect your account](onboarding.md). Need exact commands? Use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 

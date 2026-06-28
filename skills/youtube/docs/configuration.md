@@ -8,8 +8,7 @@ A good first configuration check is: "Show me which YouTube values are required,
 
 ## Files
 
-- `examples/example.env`: copy this to `.env` (do not commit `.env`)
-- `.env.example`: available in the source checkout as another local env template
+- Create `.env` locally and do not commit it.
 - `.state/token.json`: optional OAuth token storage (gitignored). The current auth helpers can inspect this file, but they do not create or replace it automatically today.
 
 By default, `.state/token.json` is stored next to your `--env-file`.

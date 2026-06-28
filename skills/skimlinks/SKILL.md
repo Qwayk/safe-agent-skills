@@ -1,4 +1,4 @@
-# Skimlinks Safe CLI
+# Skill: Skimlinks
 
 This page is the agent-facing rule sheet for the public Skimlinks skill.
 If you just want to use the skill, start with the README plus the use-cases and onboarding docs.

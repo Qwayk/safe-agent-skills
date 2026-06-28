@@ -20,7 +20,7 @@
     "status": "blocked",
     "supported": false
   },
-  "command": "instagram-api-tool --output json --env-file examples/example.env --no-artifacts media publish --ig-user-id 17841400000000000 --creation-id 17890000000000000",
+  "command": "instagram-api-tool --output json --env-file .env --no-artifacts media publish --ig-user-id 17841400000000000 --creation-id 17890000000000000",
   "command_id": "media.publish",
   "env_fingerprint": "https://graph.instagram.com",
   "generated_at_utc": "2026-06-04T00:00:00Z",

@@ -1,10 +1,9 @@
-# What you can do with Threads
+# Use cases
+
+Use this page when you want practical Threads jobs to hand to your agent.
+If you need setup first, start with [Connect your Threads account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 Threads work usually starts with account identity and recent conversation context: profile, posts, replies, mentions, insights, and what the account is allowed to publish or moderate.
-
-Ask the agent to confirm the account and read recent context before it prepares publishing, reply, repost, moderation, or delete work.
-
-For setup, start with [Connect your Threads account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Good jobs to give the agent
 

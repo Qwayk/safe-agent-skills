@@ -55,6 +55,12 @@ After this, ask the agent to summarize what came back in plain English and name 
 
 Ask for a reviewed plan before product, feed, account, shipping, promotion, or supplemental data changes. If no snapshot is available, the apply step must say that clearly.
 
+```bash
+google-merchant-api-tool --output json --plan-out plan.json accounts product-inputs insert --parent accounts/123456 --body-json '{"channel":"ONLINE","contentLanguage":"en","offerId":"SKU-RED-123","feedLabel":"US"}'
+```
+
+Only apply a no-snapshot write after you have read the plan and approve the extra `--ack-no-snapshot` warning.
+
 ## What a useful first result includes
 
 A good first result should make these things clear:

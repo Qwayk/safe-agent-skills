@@ -1,4 +1,4 @@
-# Skill: PayPal REST API (Safe CLI)
+# Skill: PayPal REST API
 
 This page is the agent-facing rule sheet for the public PayPal skill.
 If you just want to use the skill, start with the README plus the use-cases and onboarding docs.

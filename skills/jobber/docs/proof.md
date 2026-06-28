@@ -79,4 +79,4 @@ Run these when safe connectivity is available:
 ## Links
 
 - Sources used: [References](references.md)
-- Coverage main reference: [API coverage](api_coverage.md)
+- Coverage source of truth: [API coverage](api_coverage.md)

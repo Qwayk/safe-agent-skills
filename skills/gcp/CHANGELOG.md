@@ -17,7 +17,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Reworked the GCP first-reader docs and docs-contract tests around a clearer project-first Google Cloud review path.
 - Updated the README, docs hub, and skill wrapper wording for public `gcp` install while keeping live Google Cloud account behavior marked unverified.
 - Tightened the README opening and README contract test so the first screen leads with the user's cloud-admin job instead of a Google Cloud inventory list.
-- Updated `.env.example`, `examples/example.env`, and onboarding output to use Google Application Default Credentials, optional quota projects, and optional allowlists.
+- Updated `.env.example`, `.env`, and onboarding output to use Google Application Default Credentials, optional quota projects, and optional allowlists.
 - Regenerated the GCP boundary to include Cloud Tasks, Analytics Hub, and Data Labeling through an official googleapis proto fallback.
 - Regenerated the GCP boundary to include Application Integration v1 and v2 through Google's official REST reference after the live Discovery URL returned 404.
 - Tightened region allowlists so zones and common `locations/...` resource names are checked against `GCP_ALLOWED_REGIONS`.

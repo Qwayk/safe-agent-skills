@@ -24,11 +24,9 @@ class TestReadmePublicContract(unittest.TestCase):
 
         self.assertLessEqual(len(self.opening.split()), 220)
         self.assertLessEqual(len(paragraphs), 3)
-        self.assertIn("Google Cloud work often starts with one risky question", self.opening)
-        self.assertIn("are we looking at the right project", self.opening)
-        self.assertIn("inspect running resources", self.opening)
-        self.assertIn("review IAM access", self.opening)
-        self.assertIn("spot cost or exposure risks", self.opening)
+        self.assertIn("Google Cloud work should start by proving the project, identity, and what is running", self.opening)
+        self.assertIn("The agent can review IAM access and check compute, storage, Cloud Run, cost signals", self.opening)
+        self.assertIn("exposure risks", self.opening)
         self.assertIn("A good first ask is:", self.opening)
 
         first_ask = self.opening.split("A good first ask is:", 1)[1].splitlines()[0]
@@ -46,16 +44,12 @@ class TestReadmePublicContract(unittest.TestCase):
             "running",
             "access",
             "cost",
-            "cloud admin reviews",
-            "cleanup planning",
-            "exposure checks",
-            "reviewed change plans",
             "A good first ask is:",
-            "Change level: **Reads + careful changes**",
-            "Live Google Cloud account behavior has not been verified",
         ]
         for phrase in required:
             self.assertIn(phrase, self.opening)
+        self.assertNotIn("Change level:", self.opening)
+        self.assertNotIn("Live Google Cloud account behavior has not been verified", self.opening)
 
     def test_public_readme_opening_avoids_technical_proof_and_template_voice(self) -> None:
         banned_opening_snippets = [
@@ -97,7 +91,7 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertNotIn("--", self.opening)
 
     def test_public_readme_required_sections_are_present(self) -> None:
-        self.assertTrue(self.text.startswith("# Google Cloud Platform Safe CLI\n"))
+        self.assertTrue(self.text.startswith("# Google Cloud\n"))
         self.assertNotIn("## Simplicity lock", self.text)
         self.assertNotIn("# qwayk-gcp-safe-agent-cli", self.text)
 

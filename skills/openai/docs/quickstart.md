@@ -55,6 +55,14 @@ After this, ask the agent to summarize what came back in plain English and name 
 
 Ask for a reviewed plan before file uploads, batch work, fine-tuning, project changes, generated operations, or anything that can create cost.
 
+```bash
+openai-api-tool jobs run --file jobs.csv --plan-out plan.json
+```
+
+```bash
+openai-api-tool --apply --yes --plan-in plan.json jobs run --file jobs.csv
+```
+
 ## What a useful first result includes
 
 A good first result should make these things clear:

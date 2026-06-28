@@ -36,8 +36,6 @@ In the tool folder:
 5. Add `AWS_ALLOWED_ACCOUNTS` when the tool should refuse every other AWS account.
 6. Add `AWS_ALLOWED_REGIONS` when the tool should refuse every other region.
 
-If your host needs a visible sample, use `examples/example.env` as the placeholder guide.
-
 ## Step 3: run the setup helper
 
 ```bash

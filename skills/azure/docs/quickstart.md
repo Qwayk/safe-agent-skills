@@ -17,8 +17,7 @@ You will make one small read against Azure, confirm the token can see the expect
 ## 1) Check local setup
 
 ```bash
-cp examples/example.env .env
-# Fill AZURE_API_TOKEN and endpoints, then run:
+# Create .env locally and fill AZURE_API_TOKEN and endpoints, then run:
 qwayk-azure-safe-agent-cli auth check
 ```
 

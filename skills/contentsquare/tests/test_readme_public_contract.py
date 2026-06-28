@@ -47,7 +47,7 @@ class TestReadmePublicContract(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         text = (root / "README.md").read_text(encoding="utf-8")
 
-        self.assertTrue(text.startswith("# Contentsquare Safe CLI\n"))
+        self.assertTrue(text.startswith("# Contentsquare\n"))
         self.assertNotIn("## Simplicity lock", text)
         self.assertNotIn("# contentsquare-safe-cli", text)
 
@@ -64,6 +64,9 @@ class TestReadmePublicContract(unittest.TestCase):
         opening = text.split("## Start here first", 1)[0]
         self.assertIn("A good first ask is:", opening)
         self.assertIn("Contentsquare is where teams check", opening)
+        self.assertNotIn("Best for ", opening)
+        self.assertNotIn("Not for ", opening)
+        self.assertNotIn("Live Contentsquare account behavior has not been verified", opening)
 
     def test_helpful_docs_stay_human_facing(self) -> None:
         root = Path(__file__).resolve().parents[1]

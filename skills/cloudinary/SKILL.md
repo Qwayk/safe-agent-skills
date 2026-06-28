@@ -1,4 +1,4 @@
-# Skill: Cloudinary REST API (Safe CLI)
+# Skill: Cloudinary REST API
 
 This page is the agent-facing rule sheet for the public Cloudinary skill.
 If you just want to use the skill, start with the README plus the use-cases and onboarding docs.

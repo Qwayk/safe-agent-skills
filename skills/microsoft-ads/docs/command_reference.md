@@ -31,7 +31,7 @@ Services:
 - `ad-insight`
 - `customer-management`
 
-Full mapping (main reference):
+Full mapping (source of truth):
 - `docs/api_coverage.md`
 
 ## Jobs

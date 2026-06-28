@@ -1,12 +1,12 @@
 # Changelog
 
-All notable Contentsquare Safe CLI changes are tracked here.
+All notable Contentsquare tool changes are tracked here.
 
 ## [0.1.0] - 2026-06-25
 
 ### Added
 
-- Initial Contentsquare Safe CLI for Data Export, Metrics, Enrichment, and Speed Analysis Lab.
+- Initial Contentsquare API skill for Data Export, Metrics, Enrichment, and Speed Analysis Lab.
 - Server-to-server OAuth configuration and redacted auth checks.
 - Explicit named commands for the official server-side REST endpoint surface.
 - Dry-run, reviewed apply, plan, and receipt flow for write operations.

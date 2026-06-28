@@ -2,7 +2,7 @@
 
 Start with a small Cloudinary read: checking assets, folders, tags, and account access before you move or delete media.
 
-Need more ideas? See [What you can do with Cloudinary](use_cases.md). Need setup help? See [Connect your Cloudinary account](onboarding.md).
+Need more ideas? See [What you can do with Cloudinary](use_cases.md). Need setup help? See [Connect your account](onboarding.md).
 
 A good first ask is:
 
@@ -68,6 +68,6 @@ A good first result should make these things clear:
 ## Where to go next
 
 - For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your Cloudinary account](onboarding.md).
+- For setup details, read [Connect your account](onboarding.md).
 - For exact command options, read [Command reference](command_reference.md).
 - For approval rules and limits, read [How this skill stays safe](safety_model.md).

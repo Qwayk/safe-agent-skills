@@ -1,10 +1,10 @@
 # What you can do with Freepik
 
+Use this page when you want practical Freepik jobs to hand to your agent.
+
+If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+
 Freepik work is usually a search, shortlist, preview, approval, and download flow. The important thing is not to jump from a broad search straight into a licensed download.
-
-Ask the agent to search widely, narrow the shortlist, preview the best candidates, and only prepare downloads for assets you have actually approved.
-
-For setup, start with [Connect your account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Common jobs
 

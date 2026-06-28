@@ -34,7 +34,7 @@ Open Google Cloud Console, select or create a project, and enable **YouTube Data
 
 In the tool folder:
 
-1. Copy `examples/example.env` to `.env`. In a source checkout, `.env.example` may also be available.
+1. Create `.env` locally.
 2. Open `.env` in a text editor.
 3. Fill what you need:
    - `YOUTUBE_API_KEY=...` for public reads

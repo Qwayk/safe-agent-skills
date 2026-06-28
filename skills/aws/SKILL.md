@@ -3,7 +3,7 @@ name: aws
 description: Inspect AWS identity, resources, and reviewed change plans with account and region guardrails.
 ---
 
-# Skill: AWS Safe Agent CLI
+# Skill: AWS
 
 Use this skill when the user wants help with AWS account review, IAM access, EC2 inventory, S3 exposure, logs, billing, quotas, or a careful AWS change plan.
 

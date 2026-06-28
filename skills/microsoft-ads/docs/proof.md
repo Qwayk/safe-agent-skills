@@ -24,16 +24,16 @@ Run inside the tool folder:
 - `.venv/bin/python -m pip install -e .`
 
 2) Version (no `.env` required):
-- `msads-api-tool --output json --no-artifacts --env-file examples/example.env --version`
+- `msads-api-tool --output json --no-artifacts --env-file .env --version`
 
 3) Auth/config check (read-only):
-- `msads-api-tool --output json --no-artifacts --env-file examples/example.env auth check`
+- `msads-api-tool --output json --no-artifacts --env-file .env auth check`
 
 4) One representative read query:
 - Offline plan (no network):
-  - `msads-api-tool --output json --no-artifacts --env-file examples/example.env customer-management get-accounts-info`
+  - `msads-api-tool --output json --no-artifacts --env-file .env customer-management get-accounts-info`
 - Live read (requires credentials + explicit opt-in):
-  - `msads-api-tool --output json --no-artifacts --env-file examples/example.env --live customer-management get-accounts-info`
+  - `msads-api-tool --output json --no-artifacts --env-file .env --live customer-management get-accounts-info`
 
 ## Example outputs (redacted)
 
@@ -53,5 +53,5 @@ These files are committed (unlike `.state/`):
 ## Links
 
 - Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
+- Coverage source of truth: `docs/api_coverage.md`
 - Debug history: `docs/engineering_notes.md`

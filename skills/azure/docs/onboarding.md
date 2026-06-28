@@ -8,7 +8,7 @@ Before you start, decide which Azure subscription or resource group the first ch
 
 ## Step 1: Prepare environment file
 
-1. In the tool folder, copy `examples/example.env` to `.env`.
+1. In the tool folder, create `.env`.
 2. Keep `.env` private and never paste token values in chat.
 3. Fill required values:
 

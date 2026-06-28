@@ -22,7 +22,7 @@ Required fields for `auth check`:
 
 Important notes for this tool:
 
-- Authentication follows a strict endpoint map, not one universal auth rule.
+- The tool uses a strict endpoint map, not one universal auth rule.
 - `auth check` is pinned to `GET /advertisers/{advertiserId}/publishers` and sends:
   - `Authorization: Bearer <AWIN_API_TOKEN>`
   - `accessToken=<AWIN_API_TOKEN>` query param
@@ -34,4 +34,4 @@ Important notes for this tool:
 For transaction batch validation specifically:
 
 - `POST /advertisers/{advertiserId}/transactions/batch` is documented with both `Authorization` and an `accessToken` label in the batch header area.
-- For transaction batch validation, send `Authorization: Bearer <AWIN_API_TOKEN>` plus `accessToken=<AWIN_API_TOKEN>` as a query parameter.
+- This tool uses a deterministic choice: `Authorization: Bearer <AWIN_API_TOKEN>` plus `accessToken=<AWIN_API_TOKEN>` as a query parameter.

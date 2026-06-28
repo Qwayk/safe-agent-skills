@@ -2,7 +2,7 @@
 
 Salesforce Platform work is usually about understanding the org before anyone changes records, metadata, jobs, approvals, or connected workflows.
 
-The shipped commands can inspect REST resources, limits, object metadata, records, list views, approval data, quick actions, layouts, and Bulk API jobs. It is especially helpful when a team needs a calm first read of a messy org: what exists, what is allowed, what failed, and what should be planned next.
+This skill can inspect REST resources, limits, object metadata, records, list views, approval data, quick actions, layouts, and Bulk API jobs. It is especially helpful when a team needs a calm first read of a messy org: what exists, what is allowed, what failed, and what should be planned next.
 
 If you need setup first, start with [Connect your Salesforce account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
@@ -29,7 +29,7 @@ The agent should return a decision-ready summary, not a dump of records with no 
 
 ## Metadata and org checks
 
-Use it when you need to understand the shape of the org:
+Use this skill when you need to understand the shape of the org:
 
 1. Check available REST resources and limits.
 2. Describe the target object and fields.

@@ -4,7 +4,7 @@ Configuration means the local settings the CLI reads before it contacts Azure. F
 
 ## Files
 
-- `examples/example.env` -> copy as `.env`.
+- Create `.env` locally and keep it private.
 - `.env` is private and must not be committed.
 - `.state/token.json` is used by token helper commands.
 

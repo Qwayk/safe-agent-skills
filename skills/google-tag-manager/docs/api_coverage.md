@@ -1,10 +1,10 @@
 # API coverage
 
-Google Tag Manager coverage shows exactly what the shipped commands can do with accounts, containers, workspaces, tags, triggers, variables, and versions. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Google Tag Manager coverage shows exactly what this skill can do with accounts, containers, workspaces, tags, triggers, variables, and versions. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether the shipped commands can inspect this workspace, list tags and triggers, and show which publish or edit actions are covered."
+A good first coverage check is: "Check whether this skill can inspect this workspace, list tags and triggers, and show which publish or edit actions are covered."
 
 ## Coverage notes
 

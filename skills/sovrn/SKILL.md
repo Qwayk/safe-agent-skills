@@ -1,4 +1,4 @@
-# Sovrn Safe CLI
+# Skill: Sovrn
 
 Sovrn work starts with publisher revenue questions across the official Commerce HTTP APIs or the official Advertising Reporting APIs.
 

@@ -1,9 +1,9 @@
 ---
 name: contentsquare-safe-cli
-description: Use the local Contentsquare Safe CLI for server-side Data Export, Metrics, Enrichment, and Speed Analysis Lab work with safe dry-run/review/apply gates.
+description: Use Contentsquare for server-side Data Export, Metrics, Enrichment, and Speed Analysis Lab work with safe dry-run/review/apply gates.
 ---
 
-# Contentsquare Safe CLI
+# Skill: Contentsquare
 
 Trigger this skill when the user wants help with Contentsquare Data Export, metrics, enrichment batches, Speed Analysis Lab reports, or a reviewed server-side Contentsquare change.
 

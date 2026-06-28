@@ -16,6 +16,6 @@ If you need bulk work:
 
 ## Why there is no shipped batch runner yet
 
-- the official Cloudinary API area is large and mixed across product, account, public, binary, and sensitive endpoints
+- the official Cloudinary REST surface is large and mixed across product, account, public, binary, and sensitive endpoints
 - a generic batch runner would need more command-specific review rules before it would be safe for non-technical users
-- explicit commands plus local run history are the safer first version
+- explicit commands plus local run history are the safer current release

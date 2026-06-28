@@ -1,10 +1,10 @@
-# Google Cloud Platform Safe CLI
+# Google Cloud
 
-Google Cloud work often starts with one risky question: are we looking at the right project? This skill helps your agent confirm the target, inspect running resources, review IAM access, and spot cost or exposure risks before it plans a change.
+**Capability:** Reads + careful changes
 
-A good first ask is: "Check the project this account can see, list one safe area such as Compute Engine or Cloud Run, flag cost or access risks, and stop before any change."
+Google Cloud work should start by proving the project, identity, and what is running before the agent reads or changes resources. The agent can review IAM access and check compute, storage, Cloud Run, cost signals, exposure risks and careful change plans without guessing the target.
 
-Best for cloud admin reviews, cleanup planning, access checks, exposure checks, and reviewed change plans. Not for bypassing Google Cloud permissions, testing random API calls, or making vague live changes. Change level: **Reads + careful changes**. Live Google Cloud account behavior has not been verified yet.
+A good first ask is: Check the project this account can see, list one safe area such as Compute Engine or Cloud Run, flag risks, and stop before any change.
 
 ## Start here first
 

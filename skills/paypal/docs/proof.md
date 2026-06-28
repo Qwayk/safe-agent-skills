@@ -106,5 +106,5 @@ Notes:
 ## Links
 
 - Sources: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
+- Coverage source of truth: `docs/api_coverage.md`
 - Build notes: `docs/engineering_notes.md`

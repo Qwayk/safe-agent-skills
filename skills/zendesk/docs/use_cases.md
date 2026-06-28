@@ -1,8 +1,11 @@
 # What you can do with Zendesk
 
-Zendesk work often mixes support operations with sensitive customer details. Start by asking the agent to inspect, count, and explain the records before changing tickets, users, organizations, tags, or workflows.
+Use this page when you want practical Zendesk jobs to hand to your agent.
+If you need setup first, start with [Connect your Zendesk account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
-For setup, start with [Connect your Zendesk account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+## Why this helps with Zendesk work
+
+Zendesk work often mixes operational questions with sensitive customer details. The agent should inspect, count, and plan carefully before changing tickets, users, organizations, tags, or workflows.
 
 ## Good jobs to give the agent
 

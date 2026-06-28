@@ -2,7 +2,7 @@
 
 WooCommerce work usually means checking a live store before someone changes products, orders, coupons, customers, shipping, tax, or checkout settings.
 
-The shipped commands can help with store reviews, catalog cleanup, order checks, coupon planning, customer or review research, and careful batch-change plans. The value is practical: find the exact store data that matters, explain it clearly, and stop before risky changes until a human approves.
+This skill can help with store reviews, catalog cleanup, order checks, coupon planning, customer or review research, and careful batch-change plans. The value is practical: find the exact store data that matters, explain it clearly, and stop before risky changes until a human approves.
 
 If you need setup first, start with [Connect your WooCommerce store](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 

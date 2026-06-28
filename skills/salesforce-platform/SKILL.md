@@ -1,4 +1,4 @@
-# Skill: Salesforce Platform REST API (Safe CLI)
+# Skill: Salesforce Platform REST API
 
 This page is the agent-facing rule sheet for the public Salesforce skill.
 If you just want to use the skill, start with the README plus the use-cases and onboarding docs.

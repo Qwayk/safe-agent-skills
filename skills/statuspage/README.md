@@ -71,7 +71,7 @@ This skill covers:
 - scheduled maintenance
 - listed components when the page publishes them in the summary response
 
-## What happens before live changes
+## What happens before a real change
 
 There are no live changes in this skill. It reads public data and returns structured output you can review, save, or compare.
 

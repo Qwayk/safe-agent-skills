@@ -1,4 +1,4 @@
-# Skill: WooCommerce REST API (Safe CLI)
+# Skill: WooCommerce REST API
 
 This page is the agent-facing rule sheet for the public WooCommerce skill.
 If you just want to use the skill, start with the README plus the use-cases and onboarding docs.

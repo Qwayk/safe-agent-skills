@@ -1,10 +1,10 @@
-# AWS Safe Agent CLI
+# AWS
 
-AWS is where teams keep the servers, buckets, roles, keys, logs, queues, databases, and billing settings that run real products. This skill lets an agent help with that work without starting from a vague request like "fix AWS" or guessing which account it is touching.
+**Capability:** Reads + careful changes
 
-Use it when you want the agent to answer practical AWS questions: "Which account am I in?", "Who has access?", "Are any buckets public?", "Which EC2 instances may be costing money?", "What changed in CloudTrail?", "What quota or budget might block this?", or "Can you prepare this change as a plan so I can review it first?"
+AWS work should start by proving the account, role, and region before the agent reads or changes resources. The agent can review IAM access, S3 exposure, EC2 costs, CloudTrail events, quotas, billing signals, and careful change plans without guessing which account it is touching.
 
-A good first ask is: `Check my AWS account, role, and region. Then review IAM users, S3 buckets, and EC2 instances if this role has permission, and stop before making any change.`
+A good first ask is: Check my AWS account, role, and region, then review IAM users, S3 buckets, and EC2 instances if this role has permission.
 
 ## Start here first
 

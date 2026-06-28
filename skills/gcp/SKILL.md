@@ -3,7 +3,7 @@ name: gcp
 description: Use when the agent needs to inspect Google Cloud or prepare careful Google Cloud changes through qwayk-gcp-safe-agent-cli.
 ---
 
-# GCP Safe CLI
+# Skill: Google Cloud
 
 Trigger this skill when the user wants help with Google Cloud projects, IAM access, servers, IP addresses, storage buckets, Cloud Run, Cloud SQL, networking, logs, enabled services, billing context, quota context, or a planned infrastructure change.
 

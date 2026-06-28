@@ -1,12 +1,8 @@
 # Logging and auditing
 
-WordPress work can touch real posts, media, captions, categories, and publishing state. Use audit logs when you need a record of what the command planned, applied, and verified.
-
-Add `--log-file audit.jsonl` to write JSONL audit events. JSONL means one JSON object per line, which makes the log easy to inspect or process later.
+Use `--log-file audit.jsonl` to write JSONL audit events.
 
 Secrets are redacted.
-
-Keep audit logs local unless you have reviewed them. They may include post titles, media URLs, IDs, and other site details.
 
 ## Example
 

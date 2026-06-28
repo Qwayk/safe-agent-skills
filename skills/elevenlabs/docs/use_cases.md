@@ -1,8 +1,7 @@
-# What you can do with ElevenLabs
+# Use cases
 
-ElevenLabs work can spend credits or create files, so the first useful move is to check the account, voices, models, and usage before generating anything. The agent should preview generation, transcription, or admin work before a live apply.
-
-For setup, start with [Connect your account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Use this page when you want practical ElevenLabs jobs to hand to your agent.
+If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Why this helps with voice and media work
 

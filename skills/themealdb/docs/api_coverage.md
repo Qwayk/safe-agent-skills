@@ -1,14 +1,14 @@
 # API coverage
 
-TheMealDB coverage shows exactly what the shipped commands can do with public meals, ingredients, categories, areas, and recipe lookups. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+TheMealDB coverage shows exactly what this skill can do with public meals, ingredients, categories, areas, and recipe lookups. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether the shipped commands can search meals, list ingredients, and show which TheMealDB endpoints are included."
+A good first coverage check is: "Check whether this skill can search meals, list ingredients, and show which TheMealDB endpoints are included."
 
 ## Coverage notes
 
-This file is the main reference for the free TheMealDB V1 read surface this tool covers.
+This file is the source of truth for the free TheMealDB V1 read surface this tool covers.
 
 ## Summary
 

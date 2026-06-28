@@ -1,15 +1,15 @@
 # API coverage
 
-Skimlinks coverage shows exactly what the shipped commands can do with merchant search, reporting, Product Key lookups, and local link wrapping. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Skimlinks coverage shows exactly what this skill can do with merchant search, reporting, Product Key lookups, and local link wrapping. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether the shipped commands can search merchants, review reports, and show which Skimlinks workflows are covered."
+A good first coverage check is: "Check whether this skill can search merchants, review reports, and show which Skimlinks workflows are covered."
 
 ## Coverage notes
 
 Last verified: **2026-06-08**
-This is the main reference for the Skimlinks command surface. It accounts for the official Skimlinks developer-center boundary and the shipped v0.1.0 CLI surface.
+This is the source of truth for the Skimlinks command surface. It accounts for the official Skimlinks developer-center boundary and the shipped v0.1.0 CLI surface.
 
 ## Official Sources
 

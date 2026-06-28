@@ -8,8 +8,7 @@ A good first configuration check is: confirm `AWS_DEFAULT_REGION`, `AWS_PROFILE`
 
 ## Files
 
-- `.env.example`: copy this to `.env`
-- `examples/example.env`: safe sample values for a local setup
+- Create `.env` locally and keep it private.
 
 ## Environment variables
 

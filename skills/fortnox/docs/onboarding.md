@@ -22,7 +22,7 @@ In the skill folder:
    - `FORTNOX_CLIENT_SECRET`
    - `FORTNOX_REDIRECT_URI`
 
-If your host needs a visible sample, use `examples/example.env` as the placeholder guide. If you are setting up the Fortnox app right now, open the Fortnox Developer Portal, create or open your integration, and copy those exact values into `.env`.
+If you are setting up the Fortnox app right now, open the Fortnox Developer Portal, create or open your integration, and copy those exact values into `.env`.
 
 ## Step 2: ask the agent to start the Fortnox login flow
 

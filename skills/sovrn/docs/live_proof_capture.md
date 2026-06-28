@@ -1,10 +1,10 @@
 # Live proof capture
 
-This proof guide is for the moment real Sovrn credentials are available and the last customer-ready examples need to be captured. The goal is to prove the shipped auth bundles work without exposing secrets or private business data.
+Use this page when real Sovrn credentials are available and you need to close the final customer-ready proof gap.
 
 ## Goal
 
-Capture redacted successful outputs for the shipped auth bundles:
+Capture redacted successful outputs for the real shipped auth bundles:
 
 - Commerce secret-header
 - Commerce site-key

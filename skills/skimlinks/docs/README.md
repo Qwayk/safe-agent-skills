@@ -6,9 +6,9 @@ If you are new, read the first few links before asking for account data or chang
 
 ## Start with the work
 - [What you can do with Skimlinks](use_cases.md) - real jobs to hand to an agent for Skimlinks
-- [Quickstart](quickstart.md) - the shortest path to one useful first result
 - [Connect your Skimlinks account](onboarding.md) - what must be connected or confirmed before the first run
-- [How this stays safe](safety_model.md) - what the tool can and cannot change, and where approval is needed
+- [How this skill stays safe](safety_model.md) - what the tool can and cannot change, and where approval is needed
+- [Quickstart](quickstart.md) - the shortest path to one useful first result
 
 ## Commands, setup, and fixes
 - [Command reference](command_reference.md) - the exact commands and options

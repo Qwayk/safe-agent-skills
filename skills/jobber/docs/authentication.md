@@ -8,7 +8,7 @@ A good first auth check is: "Check which Jobber credential path is configured, r
 
 ## Authentication notes
 
-Authentication means proving to Jobber that the shipped commands can run the actions you requested.
+Authentication means proving to Jobber that this tool can run the actions you requested.
 
 ## OAuth flow for this tool
 

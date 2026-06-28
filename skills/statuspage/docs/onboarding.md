@@ -30,5 +30,5 @@ Keep `.env` local on your machine.
 
 ## What to avoid
 
-- Do not ask for private incident data from a public Statuspage URL. The tool can only read what the status page exposes publicly.
+- Do not ask for private incident data from a public Statuspage URL. This tool reads what the page exposes publicly.
 - Do not rely on a summary alone during an outage. Ask the agent to show the incident title, status, affected components, and latest update time.

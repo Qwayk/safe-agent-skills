@@ -20,7 +20,7 @@
       "statement": "LinkedIn Ads live writes are blocked when no saved snapshot is available for this operation.",
       "supported": false
     },
-    "command": "linkedin-ads-api-tool --output json --no-artifacts --env-file examples/example.env ad-campaigns create --ad-account-id 123456 --body-json {\"name\":\"Sample campaign\",\"status\":\"PAUSED\"}",
+    "command": "linkedin-ads-api-tool --output json --no-artifacts --env-file .env ad-campaigns create --ad-account-id 123456 --body-json {\"name\":\"Sample campaign\",\"status\":\"PAUSED\"}",
     "env_fingerprint": "7832d32cb622c16ac0f41f2c8e9ef26a7c06f57256a6684e43e3321666e03f85",
     "generated_at_utc": "2026-06-04T11:24:38Z",
     "operation": {

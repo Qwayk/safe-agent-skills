@@ -46,7 +46,7 @@ class TestReadmePublicContract(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         text = (root / "README.md").read_text(encoding="utf-8")
 
-        self.assertTrue(text.startswith("# AWS Safe Agent CLI\n"))
+        self.assertTrue(text.startswith("# AWS\n"))
         self.assertNotIn("## Simplicity lock", text)
         self.assertNotIn("# qwayk-aws-safe-agent-cli", text)
         self.assertIn("Install slug: `aws`", text)
@@ -67,9 +67,9 @@ class TestReadmePublicContract(unittest.TestCase):
 
         opening = text.split("## Start here first", 1)[0]
         self.assertIn("A good first ask is:", opening)
-        self.assertIn("AWS is where teams keep the servers, buckets, roles, keys, logs, queues, databases, and billing settings", opening)
-        self.assertIn("Which account am I in?", opening)
-        self.assertIn("Check my AWS account, role, and region.", opening)
+        self.assertIn("AWS work should start by proving the account, role, and region", opening)
+        self.assertIn("The agent can review IAM access, S3 exposure, EC2 costs", opening)
+        self.assertIn("Check my AWS account, role, and region", opening)
         self.assertIn("IAM users, S3 buckets, and EC2 instances", opening)
 
     def test_helpful_docs_stay_human_facing(self) -> None:

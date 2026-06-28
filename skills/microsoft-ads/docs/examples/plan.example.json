@@ -14,7 +14,7 @@
       "statement": "Demo write apply requires explicit no-snapshot approval when no saved snapshot is available.",
       "supported": false
     },
-    "command": "msads-api-tool --output json --no-artifacts --env-file examples/example.env demo write --selector demo-resource",
+    "command": "msads-api-tool --output json --no-artifacts --env-file .env demo write --selector demo-resource",
     "env_fingerprint": "msads:prod",
     "generated_at_utc": "2026-06-04T11:17:14Z",
     "preconditions": [

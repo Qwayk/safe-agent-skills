@@ -14,7 +14,7 @@ There are no live Skimlinks mutation commands in this release.
 
 ## Safety rules
 
-- No unreviewed direct API passthrough.
+- No raw request bridge.
 - No hidden endpoints.
 - No credentials or access tokens in stdout, stderr, logs, examples, or docs.
 - Product Key access is not flattened into the shared auth model.

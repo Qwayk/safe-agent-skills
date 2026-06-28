@@ -1,10 +1,10 @@
-# Contentsquare Safe CLI
+# Contentsquare
 
-Contentsquare is where teams check what visitors actually did, what changed conversion, and where site or app speed may be hurting the experience. This skill lets an AI agent pull export jobs, metrics, enrichment batches, and Speed Analysis Lab reports through the official server-side APIs, then pause before any live change.
+**Capability:** Reads + careful changes
 
-A good first ask is: “Check which Contentsquare metrics this account can read, then show me the bounce rate for this project last week.”
+Contentsquare is where teams check what visitors actually did, what changed conversion, and where site or app speed may be hurting the experience. The agent can pull export jobs, metrics, enrichment batches, and Speed Analysis Lab reports through the official server-side APIs, then pause before any live change.
 
-Best for Contentsquare reporting, export review, enrichment planning, Speed Analysis checks, and reviewed server-side changes. Not for installing the Web Tag, setting up mobile SDK tracking, or bypassing Contentsquare permissions. Change level: **Reads + careful changes**. Live Contentsquare account behavior has not been verified yet.
+A good first ask is: "Check which Contentsquare metrics this account can read, then show me the bounce rate for this project last week."
 
 ## Start here first
 

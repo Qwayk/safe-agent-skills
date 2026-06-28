@@ -1,8 +1,8 @@
-# Azure Safe CLI
+# Azure
 
-Azure can hide expensive, public, or risky changes behind small-looking settings. This skill helps your agent inspect what is running, find exposure, and prepare careful plans before anything changes.
+**Capability:** Reads + careful changes
 
-Ask it to find exposed resources, compare what is running in a subscription, check role assignments, review storage or network risk, or prepare a careful change plan you can read first.
+Azure work should start by confirming the tenant, subscription, reachable resources, access, and cost-sensitive areas before anything live changes. The agent can review what is running, flag public exposure, check roles, and prepare careful plans you can read first.
 
 A good first ask is: Show me what is running in this Azure subscription, flag public exposure and spend risks, and stop before any live change.
 

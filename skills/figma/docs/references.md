@@ -3,7 +3,7 @@
 Provider: Figma  
 Last verified (UTC): `2026-05-27`
 
-## Official main reference documents
+## Official source-of-truth documents
 
 - `Figma REST API` home: https://developers.figma.com/docs/rest-api/
 - OpenAPI spec: https://raw.githubusercontent.com/figma/rest-api-spec/main/openapi/openapi.yaml
@@ -23,9 +23,9 @@ Last verified (UTC): `2026-05-27`
 - library analytics endpoints: https://developers.figma.com/docs/rest-api/library-analytics-endpoints/
 - oembed endpoints: https://developers.figma.com/docs/rest-api/oembed-endpoints/
 
-## Project-owned operation map
+## Project-owned source-of-truth module
 
-- The shipped CLI includes an operation map that pins the supported Figma endpoints and their safety behavior.
+- `this skill folder/src/figma_safe_agent_cli/operation_specs.py`
 
 ## Validation note
 

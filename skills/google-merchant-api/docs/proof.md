@@ -63,4 +63,4 @@ You do not need to run these commands yourself for normal customer use. They exi
 
 - This tool is customer-ready for explicit local planning, command discovery, documentation, and safe wrapper usage.
 - It is not yet fully live-proved against Google’s production Merchant service in this workspace.
-- `docs/api_coverage.md` is the main reference for what ships, what is only accounted for, and why.
+- `docs/api_coverage.md` is the source of truth for what ships, what is only accounted for, and why.

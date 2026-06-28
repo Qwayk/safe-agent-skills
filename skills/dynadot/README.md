@@ -6,7 +6,7 @@ Dynadot is where domain mistakes can become expensive fast: the wrong name serve
 
 Use it for jobs like "Which domains expire soon?", "What name servers are these domains using?", "Can we preview this account-to-account push?", or "What auctions or marketplace listings match these filters?"
 
-Read work can cover domains, pricing, transfers, orders, contacts, DNS, name servers, auctions, and marketplace research. Riskier work starts as a dry-run plan, bulk jobs keep pacing controls, and live Dynadot writes need explicit no-snapshot approval because this tool cannot save a real restore point for those write families yet.
+Read work can cover domains, pricing, transfers, orders, contacts, DNS, name servers, auctions, and marketplace research. Riskier work starts as a dry-run plan, bulk jobs keep pacing controls, and live Dynadot writes need explicit no-snapshot approval because the shipped commands cannot save a real restore point for those write families yet.
 
 A good first ask is: "Check the Dynadot skill is connected, list my active domains, flag anything expiring soon, and show me the safest next step before any changes."
 

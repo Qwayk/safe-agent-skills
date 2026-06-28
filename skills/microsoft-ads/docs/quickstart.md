@@ -55,6 +55,14 @@ After this, ask the agent to summarize what came back in plain English and name 
 
 Ask for a reviewed plan before campaign, budget, bid, ad, keyword, audience, account, or bulk changes.
 
+```bash
+msads-api-tool jobs run --file jobs.csv --plan-out plan.json
+```
+
+```bash
+msads-api-tool --apply --yes --plan-in plan.json jobs run --file jobs.csv
+```
+
 ## What a useful first result includes
 
 A good first result should make these things clear:

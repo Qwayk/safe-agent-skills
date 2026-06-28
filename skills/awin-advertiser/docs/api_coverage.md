@@ -1,10 +1,10 @@
 # API coverage
 
-Awin Advertiser coverage shows exactly what the shipped commands can do with advertiser transactions, publisher checks, offers, product feeds, and conversion work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Awin Advertiser coverage shows exactly what this skill can do with advertiser transactions, publisher checks, offers, product feeds, and conversion work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether the shipped commands can review advertiser transactions, publisher details, and product-feed coverage for this account."
+A good first coverage check is: "Check whether this skill can review advertiser transactions, publisher details, and product-feed coverage for this account."
 
 ## Summary
 
@@ -19,7 +19,7 @@ A good first coverage check is: "Check whether the shipped commands can review a
 |---|---|---|---|---|---|
 | GET `/advertisers/{advertiserId}/transactions/` | list transactions | `transactions list` | implemented | none | Officially used list endpoint; query uses `startDate`, `endDate`, optional `dateType`, `publisherId`, `status`, `timezone`, and `showBasketProducts`. |
 | GET `/advertisers/{advertiserId}/transactions` | transactions by ids | `transactions by-ids` | implemented | none | Implemented now for comma-separated `ids` lookups; shares request shape with list endpoint except path and ID query. |
-| POST `/advertisers/{advertiserId}/transactions/batch` | batch validate (approve/decline/amend/amendTrackingParameters) | `transactions batch validate` | implemented | `--apply --yes --ack-irreversible --plan-in`, `--plan-out`, `--receipt-out` | Local validation enforces action/object requirements, target selection, and max 40,000 actions before request. Apply path posts JSON array to endpoint and rejects provider responses with failure markers. Auth uses `Authorization: Bearer <token>` plus `accessToken=<token>` for parity with other non-conversion transaction commands. The batch page is ambiguous in docs (`accessToken` appears as a header label), so the command uses the documented bearer-plus-query pattern. |
+| POST `/advertisers/{advertiserId}/transactions/batch` | batch validate (approve/decline/amend/amendTrackingParameters) | `transactions batch validate` | implemented | `--apply --yes --ack-irreversible --plan-in`, `--plan-out`, `--receipt-out` | Local validation enforces action/object requirements, target selection, and max 40,000 actions before request. Apply path posts JSON array to endpoint and rejects provider responses with failure markers. Auth uses `Authorization: Bearer <token>` plus `accessToken=<token>` for deterministic parity with other non-conversion transaction commands. Batch page is ambiguous in docs (`accessToken` appears as a header label); this tool uses a documented deterministic choice. |
 | GET `/advertisers/{advertiserId}/transactions/jobs` | transaction job status list | `transactions jobs list` | implemented | none | Header-only `Bearer`. |
 | GET `/advertisers/{advertiserId}/transactions/jobs/{jobId}` | transaction job status detail | `transactions jobs show` | implemented | none | Header-only `Bearer` with optional `output` query param (`errors` or `all`). |
 | POST `/s2s/advertiser/{advertiser_id}/orders` | conversion order posting | `conversion orders create` | implemented | `--apply --yes --ack-irreversible --plan-in`, `--plan-out` | `x-api-key` only. `orders` required. Supports dry-run by default with optional `--webhook-url` and receipt output on apply. |
@@ -31,7 +31,7 @@ A good first coverage check is: "Check whether the shipped commands can review a
 
 ## Implementation notes and live limits
 
-- `publishers`, `transactions`, `transactions/jobs`, reports, offers, product-feeds, conversion orders create, and transaction batch validate are implemented as consistent JSON in this tool.
+- `publishers`, `transactions`, `transactions/jobs`, reports, offers, product-feeds, conversion orders create, and transaction batch validate are implemented as deterministic JSON in this tool.
 - `transactions/jobs`, `offers`, and `product-feeds` use header-only bearer auth; `publishers`, `transactions`, `reports`, and `transactions batch validate` use bearer + access-token query.
 - Conversion uses `x-api-key` auth for POST `/s2s/advertiser/{advertiser_id}/orders`. Conversion command is dry-run by default with explicit write gates and optional plan/receipt artifacts.
 - Run history is implemented for local tracking.

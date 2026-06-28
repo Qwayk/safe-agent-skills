@@ -83,7 +83,7 @@ class TestReadmePublicContract(unittest.TestCase):
     def test_public_readme_opening_stays_user_facing(self) -> None:
         text = self._readme()
 
-        self.assertTrue(text.startswith("# Azure Safe CLI\n"))
+        self.assertTrue(text.startswith("# Azure\n"))
         self.assertNotIn("## Simplicity lock", text)
         self.assertNotIn("# qwayk-azure-safe-agent-cli", text)
 

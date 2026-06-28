@@ -1,10 +1,9 @@
 # What you can do with Bluesky
 
+Use this page when you want practical Bluesky jobs to hand to your agent.
+If you need setup first, start with [Connect your Bluesky account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+
 Bluesky work can touch public posts, follows, lists, records, chat, and moderation. The safest first move is to inspect the account and endpoint before planning any write.
-
-These are good starting points when you want an agent to review a Bluesky account, explain what it can safely read, or prepare a change without applying it too early.
-
-For setup, start with [Connect your Bluesky account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Good jobs to give the agent
 

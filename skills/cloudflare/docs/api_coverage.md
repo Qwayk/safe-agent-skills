@@ -1,10 +1,10 @@
 # API coverage
 
-Cloudflare coverage shows exactly what the shipped commands can do with zones, DNS, Workers, routes, security settings, logs, and infrastructure. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Cloudflare coverage shows exactly what this skill can do with zones, DNS, Workers, routes, security settings, logs, and infrastructure. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether the shipped commands can inspect this zone, DNS records, and Worker routes, then show which change paths require a reviewed plan."
+A good first coverage check is: "Check whether this skill can inspect this zone, DNS records, and Worker routes, then show which change paths require a reviewed plan."
 
 ## Coverage notes
 
@@ -38,7 +38,7 @@ The per-operation evidence is summarized in the generated coverage ledgers.
 
 - Every live operation is exposed through an explicit allowlisted command only: `cloudflare-api-tool operations <area> <op_key>`.
 - Named front doors can sit on top of those allowlisted operations for common workflows (for example `browser-run ...` for Browser Rendering quick actions).
-- There is no unreviewed direct API passthrough.
+- There is no raw request bridge.
 - Sensitive reads and sensitive write results stay file-only.
 - State-changing writes stay plan-first and require `--apply --yes`.
 - Secret-bearing or destructive operations require `--ack-irreversible`.

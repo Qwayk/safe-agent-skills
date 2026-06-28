@@ -1,10 +1,10 @@
 # API coverage
 
-Jobber coverage shows exactly what the shipped commands can do with service-business clients, requests, jobs, quotes, invoices, and scheduling data. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Jobber coverage shows exactly what this skill can do with service-business clients, requests, jobs, quotes, invoices, and scheduling data. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether the shipped commands can inspect clients, jobs, and invoices, then show which service-business changes need a reviewed plan."
+A good first coverage check is: "Check whether this skill can inspect clients, jobs, and invoices, then show which service-business changes need a reviewed plan."
 
 ## Official sources verified 2026-06-11
 - API endpoint and request shape: https://developer.getjobber.com/docs/using_jobbers_api/api_queries_and_mutations/
@@ -1133,7 +1133,7 @@ Write commands always include before-state metadata in every plan and receipt:
 |  45 | USER_CREATE | webhooks topics USER_CREATE | topic-listed/live-unverified |
 |  46 | USER_UPDATE | webhooks topics USER_UPDATE | topic-listed/live-unverified |
 
-## API inventory main reference references
+## API inventory source of truth references
 - Source counts: 384 Query fields, 596 Mutation fields, 46 webhook topics.
 - API schema version header source: `api_version_header: 2025-04-16`.
 - Source fetched UTC date: 2026-06-11.

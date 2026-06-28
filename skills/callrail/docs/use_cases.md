@@ -1,8 +1,7 @@
-# What you can do with CallRail
+# Use cases
 
-CallRail is useful when you need to understand where leads came from before touching calls, texts, trackers, tags, integrations, or webhooks. Start by asking the agent to read the account and explain what it found in plain English.
-
-For setup, start with [Connect your account](onboarding.md). For exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
+Use this page when you want practical CallRail jobs to hand to your agent.
+If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
 
 ## Why this helps with CallRail work
 
