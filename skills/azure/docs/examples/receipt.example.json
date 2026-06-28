@@ -1,0 +1,36 @@
+{
+  "azure_async_polling": {
+    "attempts": 1,
+    "polling_performed": true,
+    "response": {
+      "status": "Succeeded"
+    },
+    "status": "succeeded"
+  },
+  "changed": true,
+  "classification": "write",
+  "generated_at_utc": "2026-06-28T08:02:00Z",
+  "operation_name": "resourcegroups_createorupdate_2025-04-01_148562",
+  "plan_fingerprint": "b3bd736f41060bc038a2745c783e77c9ccb96068290e6e3a149f454d6f982bba",
+  "response": {
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg",
+    "location": "eastus",
+    "name": "example-rg",
+    "properties": {
+      "provisioningState": "Succeeded"
+    }
+  },
+  "response_status": 200,
+  "response_url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/example-rg?api-version=2025-04-01",
+  "risk_categories": [
+    "no_snapshot",
+    "public_exposure",
+    "write"
+  ],
+  "service_id": "resources-management",
+  "tool": "qwayk-azure-safe-agent-cli",
+  "verification_note": "Azure returned a successful response; generated operation-specific read-back is live-unverified.",
+  "verification_status": "limited_verification",
+  "verified": false,
+  "version": "0.1.0"
+}

@@ -1,0 +1,18 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "data_plane_endpoint": null,
+  "env_token_present": false,
+  "live_verified": false,
+  "management_endpoint": "https://management.azure.com",
+  "note": "This local check confirms configuration shape only; live Azure identity is unverified until a safe token and target are available.",
+  "oauth_token": {
+    "exists": false,
+    "path": "/path/to/azure-skill/.state/token.json"
+  },
+  "ok": true,
+  "run_id": null,
+  "runs_index": "/path/to/azure-skill/.state/runs/index.jsonl",
+  "tenant_id_configured": false
+}

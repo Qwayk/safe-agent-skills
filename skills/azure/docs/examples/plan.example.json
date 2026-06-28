@@ -1,0 +1,44 @@
+{
+  "api_version": "2025-04-01",
+  "classification": "write",
+  "command": "qwayk-azure-safe-agent-cli --plan-out plan.json resources-management resourcegroups_createorupdate_2025-04-01_148562 --input-json input.json",
+  "generated_at_utc": "2026-06-28T07:58:45Z",
+  "http_method": "PUT",
+  "input_fingerprint": "e3290f49b244ed1a4929505eb451001459bd716bc325e296d777be7653721960",
+  "lifecycle": "stable",
+  "operation_id": "ResourceGroups_CreateOrUpdate",
+  "operation_name": "resourcegroups_createorupdate_2025-04-01_148562",
+  "path_template": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}",
+  "plan_fingerprint": "b3bd736f41060bc038a2745c783e77c9ccb96068290e6e3a149f454d6f982bba",
+  "request_preview": {
+    "body": {
+      "location": "***REDACTED***",
+      "tags": {
+        "owner": "***REDACTED***"
+      }
+    },
+    "method": "PUT",
+    "path": {
+      "resourceGroupName": "***REDACTED***",
+      "subscriptionId": "***REDACTED***"
+    },
+    "path_template": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}",
+    "query": {
+      "api-version": "2025-04-01"
+    }
+  },
+  "risk_categories": [
+    "no_snapshot",
+    "public_exposure",
+    "write"
+  ],
+  "rollback": {
+    "notes": "Azure generated writes do not claim automatic rollback; review the plan before applying.",
+    "supported": false
+  },
+  "service": "resources",
+  "service_id": "resources-management",
+  "tool": "qwayk-azure-safe-agent-cli",
+  "verification_plan": "Provider response is checked; operation-specific read-back is marked limited until safe target credentials are available.",
+  "version": "0.1.0"
+}
