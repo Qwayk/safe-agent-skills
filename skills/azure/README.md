@@ -2,9 +2,11 @@
 
 **Capability:** Reads + careful changes
 
-Azure work should start by confirming the tenant, subscription, reachable resources, access, and cost-sensitive areas before anything live changes. The agent can review what is running, flag public exposure, check roles, and prepare careful plans you can read first.
+Azure holds infrastructure that can break products, expose data, or waste money when changed casually. This safe skill lets an agent inspect a subscription, find public exposure, broad access, and spend risk, and prepare reviewed change plans without changing live resources by accident.
 
-A good first ask is: Show me what is running in this Azure subscription, flag public exposure and spend risks, and stop before any live change.
+Instead of letting a generic agent improvise Azure API calls, it keeps the work inside explicit commands. The agent reads first, plans before writes, asks before risky actions, redacts secrets, and leaves receipts you can check.
+
+A good first ask is: Check this Azure subscription for public exposure, broad access, and spend risk, then stop before any live change.
 
 ## Start here first
 

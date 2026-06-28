@@ -105,12 +105,24 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertIn("A good first ask is:", opening)
         self.assertIn("subscription", opening)
 
+    def test_opening_explains_safe_skill_value(self) -> None:
+        opening = self._opening().lower()
+
+        self.assertIn("safe skill", opening)
+        self.assertIn("generic agent", opening)
+        self.assertIn("explicit commands", opening)
+        self.assertIn("reads first", opening)
+        self.assertIn("plans before writes", opening)
+        self.assertIn("receipts", opening)
+
     def test_skill_wrapper_opening_stays_user_facing(self) -> None:
         text = (self._root() / "SKILL.md").read_text(encoding="utf-8")
 
         self.assertIn("# Skill: Azure", text)
         self.assertIn("tenant and subscription", text)
         self.assertIn("Start with a safe read", text)
+        self.assertIn("does not improvise Azure API calls", text)
+        self.assertIn("explicit commands", text)
         self.assertNotIn("# azure-safe-cli", text)
         self.assertNotIn("Safe Azure reads and controlled writes", text)
 

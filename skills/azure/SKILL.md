@@ -7,6 +7,8 @@ description: Inspect Azure subscriptions, resources, access, exposure, and revie
 
 Use this skill when the user wants help with Azure subscriptions, resources, role assignments, storage or network exposure, cost-sensitive areas, or a careful Azure change plan.
 
+The value is that the agent does not improvise Azure API calls. It works through explicit commands, reads first, plans before writes, asks before risky actions, redacts secrets, and leaves receipts the user can check.
+
 Start with a safe read. A good first move is to confirm the tenant and subscription, list a small area the user can recognize, explain the result in normal words, and stop before any live change.
 
 ## Core Rules
