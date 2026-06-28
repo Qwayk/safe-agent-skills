@@ -1,109 +1,190 @@
 # Azure
 
-**Capability:** Reads + careful changes
+Put an agent on real Azure review work without handing it a blank API key and hoping it guesses the right thing. This skill gives the agent a controlled way to inspect Azure resources, explain what looks risky, and prepare changes you can approve before anything live happens.
 
-Azure is where production apps, data, access, and spend live. This safe skill is for the moment you want an agent to help review an Azure subscription without giving it room to guess, skip review, or change live resources by accident.
+Use it when you want help with questions like: what is running in this subscription, what is exposed publicly, which role assignments look too broad, which storage or network settings need review, and what change plan should be checked before someone applies it.
 
-Ask it to map what is running and find public exposure. It can review broad role assignments, check storage or network risk, flag expensive resources, and prepare careful change plans you can read first.
+The important difference is control. A generic Azure helper is usually about reaching the API. This safe skill is about keeping the agent inside named Azure commands, starting with reads, separating writes into reviewed plans, redacting secret-like values, and leaving plans or receipts you can check later.
 
-Instead of letting a generic agent improvise Azure API calls, it keeps the work inside explicit commands. The agent reads first, plans before writes, asks before risky actions, redacts secrets, and leaves receipts you can check.
+A useful first ask:
 
-A good first ask is: Check this Azure subscription for public exposure, broad access, and spend risk, then stop before any live change.
+```text
+Use the Azure skill to inspect this subscription, flag public exposure, broad access, and spend-sensitive resources, then stop before making any live change.
+```
 
-## Start here first
+## What You Can Ask It To Do
 
-- Want ideas for real work? [What this skill can help you do](docs/use_cases.md)
-- Need setup? [Set up your account step by step](docs/onboarding.md)
-- Want the safety story first? [See how this skill keeps changes safe](docs/safety_model.md)
-
-If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
-
-## What this skill helps with
-
-- See what is running in a subscription before you decide what to touch.
+- Map subscriptions, resource groups, and resource state before you decide what to touch.
 - Find public exposure in storage, networking, and reachable resources.
-- Review role assignments and spot broad access that should be checked.
-- Flag cost-sensitive resources and cleanup candidates.
-- Prepare Azure change plans that stop for review before anything live changes.
-- Keep local plans, receipts, and run history so the work can be checked later.
+- Review role assignments and other access settings that could be too broad.
+- Look for cost-sensitive resources, quota-sensitive areas, and cleanup candidates.
+- Inspect data-plane objects when a management-plane read is not enough.
+- Turn a proposed change or batch input into a dry-run plan you can review first.
+- Keep local records so another person can see what was planned, refused, or applied.
 
-## Why this skill is different
+## Why This Skill Is Different
 
-Many Azure API helpers make it easy for an agent to call endpoints. That is not enough when the account contains production resources, customer data, identity rules, or spend controls.
+Azure is not a small account API. It can control production apps, identity, networking, databases, secrets, quotas, and spend. That is why this skill does not let the agent improvise endpoints or blend reads and writes in one loose step.
 
-This safe skill keeps the agent inside named commands generated from the official Azure REST API boundary. It starts with reads, shows plans before writes, asks for stronger approval on risky actions, redacts secrets from normal output, and leaves receipts so you can check what happened later.
+It uses explicit commands generated from the official Azure REST API specs. Read commands can run as normal checks. Write commands are plan-first: the tool writes a plan, you review the target and risk, and only then can the agent apply the saved plan with the required approval flags.
 
-That makes it better for real Azure account work than a generic API shortcut, especially when you want useful help from an agent but still need control over live infrastructure.
+For higher-risk Azure work, the tool asks for stronger approval instead of pretending every write is the same. Secret-like read values are redacted by default, and the run can leave a local plan, receipt, refusal reason, or run-history record.
 
-## What access this skill needs
+## Good First Jobs
 
-- A Microsoft Entra bearer token for the Azure tenant and subscription you want to inspect.
-- The normal Azure management endpoint, which defaults to `https://management.azure.com`.
-- A data-plane endpoint only when you ask for a data-plane command.
-- Optional allowlists for tenants, subscriptions, resource groups, locations, and service commands.
+Start with reads and summaries. These are the kinds of asks that fit the skill well:
 
-## Install and first run
+```text
+Check which subscription this token can read and stop before any change.
+```
 
-Install slug: `azure`
+```text
+List resource groups and flag public, expensive, or security-sensitive resources.
+```
+
+```text
+Review role assignments for broad access and prepare a summary only.
+```
+
+```text
+Create a dry-run plan for these Azure changes from my input file, but do not apply it.
+```
+
+A good answer should tell you which subscription or resource group was checked, which command ran, whether it was read-only, what looked risky, and whether the agent stopped before a live change.
+
+## Install
+
+Install slug:
+
+```text
+azure
+```
 
 Ask your agent to install the `azure` skill from `Qwayk/safe-agent-skills`.
 
-If your host does not let the agent install skills directly, run:
+If your host needs a command, run:
 
 ```bash
 npx skills add Qwayk/safe-agent-skills@azure -g -y
 ```
 
-Then try:
+## Access You Need
 
-```text
-Connect this skill to my Azure account and run the first safe inventory check. Do not apply any change.
+You need an Azure bearer token for the tenant and subscription you want to inspect.
+
+Set these locally in the tool environment:
+
+```bash
+AZURE_API_TOKEN=<your-token>
+AZURE_MANAGEMENT_ENDPOINT=https://management.azure.com
 ```
 
-## How this skill stays safe
+For data-plane commands, also set the service endpoint:
 
-- Safe checks can run without a live write approval.
-- Live changes start as a dry-run plan.
-- Riskier Azure changes need a reviewed plan and clear approval.
-- High-risk or no-snapshot changes need an extra acknowledgement.
-- Irreversible changes need one more acknowledgement.
-- Secrets and tokens are redacted from normal output.
+```bash
+AZURE_DATA_PLANE_ENDPOINT=<service-endpoint>
+```
 
-## What it covers today
+You can limit where the tool is allowed to operate with optional allowlists:
 
-- 340 service commands.
-- 26,337 selected operations from 214,231 candidates.
-- Inventory source pinned at `ada8601c3b75c15f06f21e50f9368d9476229305`.
-- Coverage scope is official Azure `resource-manager` and `data-plane` specs only.
-- Non-Azure Microsoft products are excluded (for example Graph, M365, Azure DevOps, GitHub, Xbox, Dynamics).
+```bash
+AZURE_ALLOWED_TENANTS=
+AZURE_ALLOWED_SUBSCRIPTIONS=
+AZURE_ALLOWED_RESOURCE_GROUPS=
+AZURE_ALLOWED_LOCATIONS=
+AZURE_ALLOWED_SERVICES=
+```
 
-## What happens before live changes
+Keep `.env`, token files, and subscription secrets private. Do not paste bearer tokens into chat.
 
-- The agent creates a plan first.
-- You review the target, operation, input, and risk.
-- The live command must use the saved plan.
-- The tool records a receipt after the provider responds.
-- Generated Azure writes are marked live-unverified until real credentials and safe targets are available.
+## First Safe Check
 
-## What proof it leaves behind
+Start with local setup and inventory. These do not change Azure:
 
-- Local run history under `.state/runs/`.
-- Plan files for dry-run writes.
-- Receipt files for live applies.
-- Redacted example files in `docs/examples/`.
-- The pinned official inventory in `docs/official_inventory.json`.
+```bash
+qwayk-azure-safe-agent-cli onboarding
+qwayk-azure-safe-agent-cli auth check
+qwayk-azure-safe-agent-cli inventory summary
+```
 
-## Limits
+Then run one small read with a real input file:
 
-- This is for Azure cloud REST APIs only.
-- It does not cover Microsoft Graph, Microsoft 365, Microsoft Ads, Azure DevOps, GitHub, Dynamics, Power Platform, or other separate Microsoft products.
-- Data-plane commands need the right service endpoint.
-- Live Azure account behavior remains unverified until safe credentials and targets are available.
+```bash
+qwayk-azure-safe-agent-cli <service-command> <read-operation-name> \
+  --input-json read.json
+```
 
-## Helpful docs
+If you are not sure which service command fits, ask the agent to inspect the command catalog first and run only a read.
 
-- [Browse all docs](docs/README.md)
+## How Changes Work
+
+Writes are review-first.
+
+First, create a plan:
+
+```bash
+qwayk-azure-safe-agent-cli <service-command> <write-operation-name> \
+  --input-json change.json \
+  --plan-out plan.json
+```
+
+Then review the target, request body, risk class, and expected effect.
+
+Only after review, apply from the saved plan:
+
+```bash
+qwayk-azure-safe-agent-cli --plan-in plan.json --apply --yes \
+  <service-command> <write-operation-name> \
+  --input-json change.json
+```
+
+Some operations need extra acknowledgement before the tool will send the live request:
+
+```bash
+--ack-no-snapshot
+--ack-irreversible
+```
+
+The tool refuses the live write if the required plan, apply flags, approval flags, or risk checks are missing. Azure rollback is not automatic, so the plan and receipt are the record to review.
+
+## Coverage
+
+The command catalog is built from a pinned official Azure REST API spec snapshot.
+
+- 340 Azure service commands.
+- 26,337 selected operations from 214,231 operation candidates.
+- 20,673 management-plane operations and 5,664 data-plane operations.
+- 12,904 read operations and 13,433 write operations.
+- 411 sensitive read operations with default value redaction.
+- Stable and preview Azure specs are included, with lifecycle noted in the coverage docs.
+- Scope is official Azure `resource-manager` and `data-plane` specs only.
+
+This is Azure cloud REST API coverage. It does not cover Microsoft Graph, Microsoft 365, Microsoft Ads, Azure DevOps, GitHub, Dynamics, Power Platform, Xbox, or other separate Microsoft products.
+
+## Proof And Limits
+
+The local proof shows that the command catalog is generated from the pinned Azure REST API specs, local startup works, auth readiness is reported, write gates exist, sensitive-read redaction is covered, and checked-in examples are redacted.
+
+Live Azure behavior is still unverified in this repo snapshot without safe Azure credentials and safe targets. That means local checks can prove command shape and safety behavior, but they do not prove every command's real Azure response path.
+
+Do not treat a live change as proved unless you have a receipt from the real target and have checked the result in Azure.
+
+## Records Left Behind
+
+Runs can leave local evidence such as:
+
+- dry-run plan JSON
+- live apply receipt JSON
+- run history under `.state/runs/`
+- refusal reasons when the tool blocks an unsafe or incomplete request
+- redacted example output under `docs/examples/`
+
+## Read More
+
+- [Use cases](docs/use_cases.md)
+- [Onboarding](docs/onboarding.md)
 - [Quickstart](docs/quickstart.md)
-- [Command guide](docs/command_reference.md)
-- [Proof and verification](docs/proof.md)
+- [Safety model](docs/safety_model.md)
+- [Command reference](docs/command_reference.md)
 - [API coverage](docs/api_coverage.md)
+- [Proof and verification](docs/proof.md)
