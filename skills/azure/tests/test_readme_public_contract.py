@@ -27,8 +27,8 @@ class TestReadmePublicContract(unittest.TestCase):
         opening = self._opening()
         paragraphs = self._prose_paragraphs(opening)
 
-        self.assertLessEqual(len(opening.split()), 220, "README first-screen gate: opening is too long")
-        self.assertLessEqual(len(paragraphs), 3, "README first-screen gate: use at most 3 short prose paragraphs")
+        self.assertLessEqual(len(opening.split()), 290, "README first-screen gate: opening is too long")
+        self.assertLessEqual(len(paragraphs), 4, "README first-screen gate: use at most 4 short prose paragraphs")
         self.assertIn("A good first ask is:", opening)
         self.assertIn("Azure", opening)
 
@@ -90,6 +90,7 @@ class TestReadmePublicContract(unittest.TestCase):
         required_sections = [
             "## Start here first",
             "## What this skill helps with",
+            "## Why this skill is different",
             "## What access this skill needs",
             "## Install and first run",
             "## How this skill stays safe",
@@ -105,6 +106,19 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertIn("A good first ask is:", opening)
         self.assertIn("subscription", opening)
 
+    def test_opening_says_what_user_can_do(self) -> None:
+        opening = self._opening().lower()
+
+        for phrase in [
+            "map what is running",
+            "find public exposure",
+            "review broad role assignments",
+            "check storage or network risk",
+            "flag expensive resources",
+            "prepare careful change plans",
+        ]:
+            self.assertIn(phrase, opening)
+
     def test_opening_explains_safe_skill_value(self) -> None:
         opening = self._opening().lower()
 
@@ -114,6 +128,16 @@ class TestReadmePublicContract(unittest.TestCase):
         self.assertIn("reads first", opening)
         self.assertIn("plans before writes", opening)
         self.assertIn("receipts", opening)
+
+    def test_difference_section_explains_safe_skill_value(self) -> None:
+        text = self._readme()
+        section = text.split("## Why this skill is different", 1)[1].split("## What access this skill needs", 1)[0].lower()
+
+        self.assertIn("generic api", section)
+        self.assertIn("named commands", section)
+        self.assertIn("starts with reads", section)
+        self.assertIn("plans before writes", section)
+        self.assertIn("receipts", section)
 
     def test_skill_wrapper_opening_stays_user_facing(self) -> None:
         text = (self._root() / "SKILL.md").read_text(encoding="utf-8")

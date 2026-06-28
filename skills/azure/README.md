@@ -2,7 +2,9 @@
 
 **Capability:** Reads + careful changes
 
-Azure holds infrastructure that can break products, expose data, or waste money when changed casually. This safe skill lets an agent inspect a subscription, find public exposure, broad access, and spend risk, and prepare reviewed change plans without changing live resources by accident.
+Azure is where production apps, data, access, and spend live. This safe skill is for the moment you want an agent to help review an Azure subscription without giving it room to guess, skip review, or change live resources by accident.
+
+Ask it to map what is running and find public exposure. It can review broad role assignments, check storage or network risk, flag expensive resources, and prepare careful change plans you can read first.
 
 Instead of letting a generic agent improvise Azure API calls, it keeps the work inside explicit commands. The agent reads first, plans before writes, asks before risky actions, redacts secrets, and leaves receipts you can check.
 
@@ -18,9 +20,20 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 
 ## What this skill helps with
 
-- Find and read resources across Azure management and data-plane APIs.
-- Build a full write plan before any apply step.
-- Keep local records of plan, receipt, and run history for review.
+- See what is running in a subscription before you decide what to touch.
+- Find public exposure in storage, networking, and reachable resources.
+- Review role assignments and spot broad access that should be checked.
+- Flag cost-sensitive resources and cleanup candidates.
+- Prepare Azure change plans that stop for review before anything live changes.
+- Keep local plans, receipts, and run history so the work can be checked later.
+
+## Why this skill is different
+
+Many Azure API helpers make it easy for an agent to call endpoints. That is not enough when the account contains production resources, customer data, identity rules, or spend controls.
+
+This safe skill keeps the agent inside named commands generated from the official Azure REST API boundary. It starts with reads, shows plans before writes, asks for stronger approval on risky actions, redacts secrets from normal output, and leaves receipts so you can check what happened later.
+
+That makes it better for real Azure account work than a generic API shortcut, especially when you want useful help from an agent but still need control over live infrastructure.
 
 ## What access this skill needs
 
