@@ -15,6 +15,7 @@ If you already know the product, click it below. If not, start with the section 
 - [Measurement, search, and monitoring](#measurement-search-and-monitoring) for reporting, search visibility, tracking, incidents, or monitoring
 - [Ads, acquisition, and local presence](#ads-acquisition-and-local-presence) for ad accounts or local business surfaces
 - [CRM, outreach, support, and email](#crm-outreach-support-and-email) for leads, pipelines, support, or lifecycle messaging
+- [Automation and integration](#automation-and-integration) for app connections, Zaps, inboxes, or AI Actions
 - [Commerce, stores, and payments](#commerce-stores-and-payments) for stores, products, orders, merchant feeds, or payment systems
 - [Affiliate, partnerships, and publisher revenue](#affiliate-partnerships-and-publisher-revenue) for affiliate product research or creator catalog work
 - [Publishing and social channels](#publishing-and-social-channels) for websites, posts, or social accounts
@@ -62,6 +63,14 @@ Start here if you want lead, pipeline, support, outreach, or lifecycle work.
 | [**Instantly**](instantly/README.md)<br><sub>Install slug: <code>instantly</code></sub> | Review Instantly outreach, campaigns, leads, sending accounts, analytics, and webhooks | Instantly account | Reads + careful changes |
 | [**Klaviyo**](klaviyo/README.md)<br><sub>Install slug: <code>klaviyo</code></sub> | Review Klaviyo accounts, profiles, lists, campaigns, flows, forms, events, catalogs, and tags | Klaviyo account | Reads + careful changes |
 | [**Zendesk**](zendesk/README.md)<br><sub>Install slug: <code>zendesk</code></sub> | Review Zendesk support data and make careful ticketing changes | Zendesk account | Reads + careful changes |
+
+## Automation and integration
+
+Start here if you want app-to-app workflows, automation review, or careful Zapier changes.
+
+| Product | What it helps with | What you connect | Mode |
+| --- | --- | --- | --- |
+| [**Zapier**](zapier/README.md)<br><sub>Install slug: <code>zapier</code></sub> | Review apps, actions, Zaps, authentications, trigger inboxes, promotions, and AI Actions, then prepare careful automation changes | Zapier account | Reads + careful changes |
 
 ## Commerce, stores, and payments
 

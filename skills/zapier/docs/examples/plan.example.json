@@ -1,0 +1,23 @@
+{
+  "tool": "qwayk-zapier-safe-agent-cli",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-06-29T00:00:00Z",
+  "env_fingerprint": "access-token:sha256:example00000000",
+  "command": "qwayk-zapier-safe-agent-cli partner post-zaps --body-json <redacted-body-json>",
+  "operation_id": "post-zaps",
+  "operation": "post-zaps",
+  "method": "POST",
+  "path": "/v2/zaps",
+  "base_url": "https://api.zapier.com",
+  "base_url_ref": "partner",
+  "risk_level": "high",
+  "risk_reasons": ["write_or_sensitive_operation"],
+  "path_params": {},
+  "query": {},
+  "body_present": true,
+  "body_sha256": "8c6976e5b7cb9f4e5d6a7f7f1ecf5c6a8f6a3f7f6b6df7f5f...",
+  "plan_instructions": [
+    "Run with --apply and --plan-in after reviewing this plan first.",
+    "For high-risk operations include --yes or --ack-no-snapshot/--ack-irreversible."
+  ]
+}

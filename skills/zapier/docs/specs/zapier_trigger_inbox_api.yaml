@@ -1,0 +1,1862 @@
+openapi: 3.1.0
+info:
+  title: Trigger Inbox API
+  description: >-
+    Manage trigger inboxes and their messages — create, pause, resume, and
+    delete inboxes; list, lease, and acknowledge messages.
+  version: 1.0.0
+  contact:
+    url: https://docs.zapier.com
+servers:
+  - url: https://api.zapier.com
+    description: Production
+tags:
+  - name: inbox
+    description: Inbox API endpoints
+  - name: message
+    description: Message API endpoints
+security:
+  - OAuth: []
+paths:
+  /trigger-inbox/v1/inboxes:
+    get:
+      operationId: listTriggerInboxes
+      description: List all inboxes for the authenticated user.
+      summary: List all inboxes.
+      parameters:
+        - name: limit
+          required: false
+          in: query
+          description: Number of results to return per page.
+          schema:
+            type: integer
+        - in: query
+          name: name
+          schema:
+            type: string
+        - name: offset
+          required: false
+          in: query
+          description: The initial index from which to return the results.
+          schema:
+            type: integer
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum:
+              - active
+              - deleting
+              - initialization_failure
+              - initializing
+              - paused
+          description: |-
+            * `initializing` - initializing
+            * `active` - active
+            * `paused` - paused
+            * `deleting` - deleting
+            * `initialization_failure` - initialization_failure
+      tags:
+        - inbox
+      security:
+        - OAuth:
+            - external
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInboxList'
+          description: ''
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: 'Validation Error: Return fields with errors.'
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+      x-zapier-collection-response-exempt: true
+    post:
+      operationId: createTriggerInbox
+      description: >-
+        Create a new inbox. If a name is provided and an inbox with that name
+        already exists for this user, returns 409 Conflict. Use PUT for
+        idempotent get-or-create semantics.
+      summary: Create an inbox.
+      parameters:
+        - in: header
+          name: Zapier-Causation-Id
+          schema:
+            type: string
+          description: >-
+            Optional UUID identifying the event or action that caused this
+            request.
+        - in: header
+          name: Zapier-Correlation-Id
+          schema:
+            type: string
+          description: Optional UUID to trace this request through downstream systems.
+      tags:
+        - inbox
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Inbox'
+            examples:
+              WithName:
+                value:
+                  name: example_inbox
+                  subscription:
+                    app_key: SlackCLIAPI@1.0.0
+                    action_key: example_action
+                    connection_id: 029a64f8-ced3-889b-aa1a-9d37bcd59ddb
+                    inputs:
+                      channel: C1234567890
+                summary: with_name
+              WithoutName:
+                value:
+                  subscription:
+                    app_key: SlackCLIAPI@1.0.0
+                    action_key: example_action
+                    connection_id: 5678
+                    inputs:
+                      channel: C1234567890
+                summary: without_name
+              WithSlugAppKey:
+                value:
+                  name: example_inbox
+                  subscription:
+                    app_key: slack
+                    action_key: example_action
+                    connection_id: 029a64f8-ced3-889b-aa1a-9d37bcd59ddb
+                    inputs:
+                      channel: C1234567890
+                summary: Resolve app_key from a slug
+                description: >-
+                  A versionless slug is resolved to the latest version; the
+                  response's subscription.app_key is the fully-versioned form.
+        required: true
+      security:
+        - OAuth:
+            - external
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inbox'
+          description: ''
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: >-
+            Validation error, e.g. the app_key could not be resolved to a single
+            app (unknown or ambiguous), or a claim input was invalid.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: >-
+            Conflict error when an inbox with the same name already exists for
+            the user.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+    put:
+      operationId: ensureTriggerInbox
+      description: >-
+        Idempotently ensure a named inbox exists. Returns the existing inbox if
+        one with the same name and matching configuration already exists, or
+        creates a new one. Returns 409 if an inbox with the same name but
+        different configuration exists.
+      summary: Ensure a named inbox exists.
+      parameters:
+        - in: header
+          name: Zapier-Causation-Id
+          schema:
+            type: string
+          description: >-
+            Optional UUID identifying the event or action that caused this
+            request.
+        - in: header
+          name: Zapier-Correlation-Id
+          schema:
+            type: string
+          description: Optional UUID to trace this request through downstream systems.
+      tags:
+        - inbox
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InboxEnsure'
+            examples:
+              EnsureInbox:
+                value:
+                  name: example_inbox
+                  subscription:
+                    app_key: SlackCLIAPI@1.0.0
+                    action_key: example_action
+                    connection_id: 029a64f8-ced3-889b-aa1a-9d37bcd59ddb
+                    inputs:
+                      channel: C1234567890
+                summary: ensure_inbox
+        required: true
+      security:
+        - OAuth:
+            - external
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inbox'
+          description: ''
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inbox'
+          description: ''
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: >-
+            Validation error, e.g. missing required name field, or the app_key
+            could not be resolved to a single app (unknown or ambiguous).
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: >-
+            Conflict error when an inbox with the same name and a different
+            subscription already exists for the user.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+  /trigger-inbox/v1/inboxes/{id}:
+    get:
+      operationId: getTriggerInbox
+      description: Return the details of an inbox by unique ID.
+      summary: Get inbox details.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - inbox
+      security:
+        - OAuth:
+            - external
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inbox'
+          description: ''
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: 'Validation Error: Return fields with errors.'
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+    patch:
+      operationId: patchTriggerInbox
+      description: >-
+        Partially update an inbox. Currently only notification_url can be
+        updated.
+      summary: Update inbox settings.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - inbox
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInboxPatch'
+            examples:
+              SetNotificationUrl:
+                value:
+                  notification_url: https://example.com/webhook
+                summary: set_notification_url
+      security:
+        - OAuth:
+            - external
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inbox'
+          description: ''
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: 'Validation Error: Return fields with errors.'
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+    delete:
+      operationId: deleteTriggerInbox
+      description: Mark an inbox for deletion for the authenticated user.
+      summary: Mark an inbox for deletion.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - inbox
+      security:
+        - OAuth:
+            - external
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inbox'
+          description: ''
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: 'Validation Error: Return fields with errors.'
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Conflict error when an inbox cannot be marked for deletion.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+  /trigger-inbox/v1/inboxes/{id}/pause:
+    post:
+      operationId: pauseTriggerInbox
+      description: >-
+        Pause an inbox for the authenticated user resulting in messages
+        collection being temporarily halted.
+      summary: Pause an inbox.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - inbox
+      security:
+        - OAuth:
+            - external
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inbox'
+          description: ''
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: 'Validation Error: Return fields with errors.'
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Conflict error when an inbox cannot be paused.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+  /trigger-inbox/v1/inboxes/{id}/resume:
+    post:
+      operationId: resumeTriggerInbox
+      description: >-
+        Resume an inbox for the authenticated user resulting in messages
+        collection being resumed.
+      summary: Resume an inbox.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - inbox
+      security:
+        - OAuth:
+            - external
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inbox'
+          description: ''
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inbox'
+          description: ''
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: 'Validation Error: Return fields with errors.'
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Conflict error when an inbox cannot be resumed.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+  /trigger-inbox/v1/inboxes/{inbox_id}/events:
+    get:
+      operationId: getTriggerInboxEvents
+      tags:
+        - inbox
+      summary: Subscribe to inbox notifications over SSE.
+      description: >-
+        Opens a Server-Sent Events stream that emits one frame per batch of
+        newly-available messages on the inbox. The connection stays open until
+        the JWT expires, at which point the server closes it.
+
+
+        Two kinds of frames are emitted:
+
+
+        - **Data frames** (`data: {...}\n\n`) signal availability only, they do
+        not include message content. Consumers should call the lease endpoint to
+        retrieve messages. The JSON payload is described by the response schema
+        below.
+
+        - **Heartbeat frames** (`: keep-alive\n\n`) are SSE comment lines sent
+        when no notification has arrived within the heartbeat interval. They are
+        ignored by EventSource clients and exist only to keep intermediaries
+        from closing the connection as idle.
+      security:
+        - OAuth:
+            - external
+      parameters:
+        - name: inbox_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The unique identifier of the inbox to subscribe to.
+      responses:
+        '200':
+          description: >-
+            SSE stream opened. The response body is an open-ended sequence of
+            `text/event-stream` frames.
+          content:
+            text/event-stream:
+              schema:
+                type: object
+                description: >-
+                  JSON payload carried by each `data:` frame. Heartbeat frames
+                  carry no payload.
+                properties:
+                  inbox_id:
+                    type: string
+                    format: uuid
+                    description: The unique identifier of the inbox that has new messages.
+                  count:
+                    type: integer
+                    minimum: 1
+                    description: The number of notifications coalesced into this frame.
+                required:
+                  - inbox_id
+                  - count
+        '401':
+          description: Missing or invalid JWT in the Authorization header.
+        '404':
+          description: No inbox with the given id is visible to the authenticated user.
+        '503':
+          description: >-
+            The notification backend was not reachable in time. Clients should
+            retry.
+  /trigger-inbox/v1/inboxes/{inbox_id}/messages:
+    get:
+      operationId: listTriggerInboxMessages
+      description: List messages from an inbox for the authenticated user.
+      summary: List messages from an inbox.
+      parameters:
+        - name: cursor
+          required: false
+          in: query
+          description: The pagination cursor value.
+          schema:
+            type: string
+        - in: path
+          name: inbox_id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - message
+      security:
+        - OAuth:
+            - external
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMessageList'
+          description: ''
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: 'Validation Error: Return fields with errors.'
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+      x-zapier-collection-response-exempt: true
+  /trigger-inbox/v1/inboxes/{inbox_id}/messages/lease:
+    post:
+      operationId: leaseTriggerInboxMessages
+      description: Lease messages from an inbox for the authenticated user.
+      summary: Lease messages from an inbox.
+      parameters:
+        - in: path
+          name: inbox_id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - message
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaseRequest'
+            examples:
+              LeaseMessage:
+                value:
+                  lease_limit: 1
+                summary: lease_message
+                description: Lease a single message for 60 seconds.
+              LeaseMessages:
+                value:
+                  lease_limit: 10
+                  lease_seconds: 60
+                summary: lease_messages
+                description: Lease up to 10 messages for 60 seconds.
+      security:
+        - OAuth:
+            - external
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaseResponse'
+              examples:
+                LeaseEmpty:
+                  value:
+                    lease_id: null
+                    leased_until: null
+                    results: []
+                    inbox_attributes:
+                      status: active
+                      paused_reason: null
+                  summary: lease_empty
+                  description: An empty lease when no messages are available.
+          description: Response for a message lease request to an inbox.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaseResponse'
+              examples:
+                LeaseMessages:
+                  value:
+                    lease_id: 019ce2fe-5ed1-7318-8a60-33dffd911f6a
+                    leased_until: '2026-03-12T17:00:47.185Z'
+                    results:
+                      - id: 019ce2fe-5ed1-7318-8a60-33dffd911f6b
+                        created_at: '2026-03-12T16:59:47.185Z'
+                        status: leased
+                        payload:
+                          key: value
+                        message_attributes:
+                          lease_count: 1
+                          error_message: null
+                          possible_duplicate_data: false
+                    inbox_attributes:
+                      status: active
+                      paused_reason: null
+                  summary: lease_messages
+                  description: Lease a single message for 60 seconds.
+                LeaseMessagesWithError:
+                  value:
+                    lease_id: 019ce2fe-5ed1-7318-8a60-33dffd911f6a
+                    leased_until: '2026-03-12T17:00:47.185Z'
+                    results:
+                      - id: 019ce2fe-5ed1-7318-8a60-33dffd911f6b
+                        created_at: '2026-03-12T16:59:47.185Z'
+                        status: leased
+                        payload:
+                          key: value
+                        message_attributes:
+                          lease_count: 1
+                          error_message: >-
+                            Error while hydrating data from Slack (1.24.0): Your
+                            Slack account on Zapier is expired/invalid. Please
+                            reconnect it to fix this.
+                          possible_duplicate_data: false
+                    inbox_attributes:
+                      status: active
+                      paused_reason: null
+                  summary: lease_messages_with_error
+                  description: Lease a message from a batch that had a hydration error.
+                LeaseMessagesWithPossibleDuplicates:
+                  value:
+                    lease_id: 019ce2fe-5ed1-7318-8a60-33dffd911f6a
+                    leased_until: '2026-03-12T17:00:47.185Z'
+                    results:
+                      - id: 019ce2fe-5ed1-7318-8a60-33dffd911f6b
+                        created_at: '2026-03-12T16:59:47.185Z'
+                        status: leased
+                        payload:
+                          key: value
+                        message_attributes:
+                          lease_count: 1
+                          error_message: null
+                          possible_duplicate_data: true
+                    inbox_attributes:
+                      status: active
+                      paused_reason: null
+                  summary: lease_messages_with_possible_duplicates
+                  description: >-
+                    Lease a message that may contain duplicate data due to a
+                    dedupe key change.
+          description: Response for a message lease request to an inbox.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: 'Validation Error: Return fields with errors.'
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaseConflictResponse'
+              examples:
+                LeaseConflict:
+                  value:
+                    detail: Inbox is paused and fully drained.
+                    inbox_attributes:
+                      status: paused
+                      paused_reason: authentication
+                      paused_at: '2026-03-12T16:59:47.185Z'
+                  summary: lease_conflict
+                  description: Inbox is paused and fully drained — no more messages.
+          description: Response when leasing from a paused and fully drained inbox.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+  /trigger-inbox/v1/inboxes/{inbox_id}/messages/ack:
+    post:
+      operationId: acknowledgeTriggerInboxMessages
+      description: Acknowledge messages from an inbox for the authenticated user.
+      summary: Acknowledge messages from an inbox.
+      parameters:
+        - in: path
+          name: inbox_id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - message
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AckRequest'
+            examples:
+              Ack:
+                value:
+                  lease_id: 019ce2fe-5ed1-7318-8a60-33dffd911f6a
+                summary: ack
+                description: Acknowledge an entire lease.
+              AckMessageIds:
+                value:
+                  lease_id: 019ce2fe-5ed1-7318-8a60-33dffd911f6a
+                  message_ids:
+                    - 019ce303-cf30-7efb-aa91-89488a407dc2
+                summary: ack_message_ids
+                description: Acknowledge specific messages within a lease.
+        required: true
+      security:
+        - OAuth:
+            - external
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AckResponse'
+              examples:
+                AckEmpty:
+                  value:
+                    acked_id: null
+                    results: []
+                  summary: ack_empty
+                  description: An empty acknowledgment when no messages are acknowledged.
+          description: Response for a message acknowledge request to an inbox.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AckResponse'
+              examples:
+                AckMessages:
+                  value:
+                    acked_id: 019ce305-35be-764b-bcae-70ba567b7357
+                    results:
+                      - id: 019ce2fe-5ed1-7318-8a60-33dffd911f6b
+                        created_at: '2026-03-12T16:59:47.185Z'
+                        status: acked
+                        message_attributes:
+                          lease_count: 1
+                          error_message: null
+                          possible_duplicate_data: false
+                  summary: ack_messages
+                  description: Acknowledgement of leased messages.
+          description: Response for a message acknowledge request to an inbox.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: 'Validation Error: Return fields with errors.'
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+  /trigger-inbox/v1/inboxes/{inbox_id}/messages/release:
+    post:
+      operationId: releaseTriggerInboxMessages
+      description: >-
+        Release the lease on one or more leased messages without acknowledging
+        them. The messages become immediately available for leasing again. The
+        original lease still counts against the per-message lease limit;
+        releasing does not refund the attempt.
+      summary: Release leased messages back to an inbox without acknowledging them.
+      parameters:
+        - in: path
+          name: inbox_id
+          schema:
+            type: string
+            format: uuid
+          required: true
+      tags:
+        - message
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReleaseRequest'
+            examples:
+              Release:
+                value:
+                  lease_id: 019ce2fe-5ed1-7318-8a60-33dffd911f6a
+                summary: release
+                description: Release every message held under a lease.
+              ReleaseMessageIds:
+                value:
+                  lease_id: 019ce2fe-5ed1-7318-8a60-33dffd911f6a
+                  message_ids:
+                    - 019ce303-cf30-7efb-aa91-89488a407dc2
+                summary: release_message_ids
+                description: Release specific messages within a lease.
+        required: true
+      security:
+        - OAuth:
+            - external
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReleaseResponse'
+              examples:
+                ReleaseEmpty:
+                  value:
+                    released_id: null
+                    results: []
+                  summary: release_empty
+                  description: An empty release when no messages match the lease.
+          description: Response for a message release request to an inbox.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReleaseResponse'
+              examples:
+                ReleaseMessages:
+                  value:
+                    released_id: 019ce305-35be-764b-bcae-70ba567b7357
+                    results:
+                      - id: 019ce2fe-5ed1-7318-8a60-33dffd911f6b
+                        created_at: '2026-03-12T16:59:47.185Z'
+                        status: available
+                        message_attributes:
+                          lease_count: 1
+                          error_message: null
+                          possible_duplicate_data: false
+                  summary: release_messages
+                  description: Release of leased messages.
+          description: Response for a message release request to an inbox.
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: 'Validation Error: Return fields with errors.'
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '429':
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Too many requests.
+components:
+  schemas:
+    AckRequest:
+      type: object
+      description: Request to acknowledge a leased message from an inbox.
+      properties:
+        lease_id:
+          type: string
+          format: uuid
+          description: The unique identifier for the lease.
+        message_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: >-
+            The list of message IDs to acknowledge. If not specified all
+            messages matching the lease_id will be acknowledged.
+          minItems: 1
+      required:
+        - lease_id
+    AckResponse:
+      type: object
+      description: Response for a message acknowledge request to an inbox.
+      properties:
+        acked_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: The unique identifier for the acknowledged messages.
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          description: The list of messages acknowledged.
+      required:
+        - acked_id
+        - results
+    ErrorDetail:
+      type: object
+      description: >-
+        Per the schema defined in the engineering index.
+
+
+        https://engineering.zapier.com/guides/api-design-guidelines/error-handling/
+      properties:
+        code:
+          type: string
+          description: A unique identifier for this particular occurrence of the problem.
+        detail:
+          type: string
+          description: >-
+            A human-readable explanation specific to this occurrence of the
+            problem.
+        status:
+          type: integer
+          description: HTTP status code for that error.
+        title:
+          type: string
+          description: A short summary of the problem.
+        source:
+          type: object
+          additionalProperties: {}
+          description: An object containing references to the primary source of the error.
+      required:
+        - code
+        - detail
+    Errors:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+          description: An array of error objects.
+      required:
+        - errors
+    LeaseConflictAttributes:
+      type: object
+      description: Inbox attributes included in a 409 conflict response, with paused_at.
+      properties:
+        status:
+          type: string
+          readOnly: true
+          description: The current status of the inbox.
+        paused_reason:
+          readOnly: true
+          description: |-
+            The reason the inbox was paused, if applicable.
+
+            * `user` - user
+            * `authentication` - authentication
+            * `authentication_access_revoked` - authentication_access_revoked
+            * `partner_revoked` - partner_revoked
+            * `subscribe_failed` - subscribe_failed
+            * `migrate_failed` - migrate_failed
+            * `abandoned` - abandoned
+            * `unknown` - unknown
+            * `upstream_failures` - upstream_failures
+          oneOf:
+            - $ref: '#/components/schemas/PausedReasonEnum'
+            - $ref: '#/components/schemas/NullEnum'
+        paused_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          readOnly: true
+          description: When the inbox was paused, in ISO 8601 format.
+      required:
+        - paused_at
+        - paused_reason
+        - status
+    InboxAttributes:
+      type: object
+      description: Inbox state surfaced alongside lease responses.
+      properties:
+        status:
+          type: string
+          readOnly: true
+          description: The current status of the inbox.
+        paused_reason:
+          readOnly: true
+          description: |-
+            The reason the inbox was paused, if applicable.
+
+            * `user` - user
+            * `authentication` - authentication
+            * `authentication_access_revoked` - authentication_access_revoked
+            * `partner_revoked` - partner_revoked
+            * `subscribe_failed` - subscribe_failed
+            * `migrate_failed` - migrate_failed
+            * `abandoned` - abandoned
+            * `unknown` - unknown
+            * `upstream_failures` - upstream_failures
+          oneOf:
+            - $ref: '#/components/schemas/PausedReasonEnum'
+            - $ref: '#/components/schemas/NullEnum'
+      required:
+        - paused_reason
+        - status
+    ReleaseResponse:
+      type: object
+      description: Response for a message release request to an inbox.
+      properties:
+        released_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: The unique identifier for the released messages.
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          description: The list of messages whose leases were released.
+      required:
+        - released_id
+        - results
+    InboxEnsure:
+      type: object
+      description: Serializer for PUT ensure endpoint — name is required.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: The unique identifier for the inbox.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp in ISO 8601 format.
+        name:
+          type: string
+          description: Name for the inbox. Required for ensure.
+          maxLength: 100
+        status:
+          type: string
+          readOnly: true
+          description: The status of the inbox.
+        paused_reason:
+          description: |-
+            The reason the inbox was paused, if applicable.
+
+            * `user` - user
+            * `authentication` - authentication
+            * `authentication_access_revoked` - authentication_access_revoked
+            * `partner_revoked` - partner_revoked
+            * `subscribe_failed` - subscribe_failed
+            * `migrate_failed` - migrate_failed
+            * `abandoned` - abandoned
+            * `unknown` - unknown
+            * `upstream_failures` - upstream_failures
+          oneOf:
+            - $ref: '#/components/schemas/PausedReasonEnum'
+            - $ref: '#/components/schemas/BlankEnum'
+            - $ref: '#/components/schemas/NullEnum'
+        notification_url:
+          type:
+            - string
+            - 'null'
+          format: uri
+          description: URL to POST notifications to when messages become available.
+          maxLength: 2048
+        subscription:
+          $ref: '#/components/schemas/TriggerSubscription'
+      required:
+        - created_at
+        - id
+        - name
+        - status
+        - subscription
+    TriggerSubscription:
+      type: object
+      description: Trigger subscription configuration for an inbox.
+      properties:
+        connection_id:
+          oneOf:
+            - type: string
+              format: uuid
+            - type: integer
+              format: integer
+            - type: 'null'
+          description: The ID of the connection associated with this inbox.
+        app_key:
+          type: string
+          description: >-
+            App identifier. Accepts a fully-versioned selected_api
+            (`SlackCLIAPI@1.0.0`, used as-is), a versionless selected_api
+            (`SlackCLIAPI`), the `@latest` sentinel (`SlackCLIAPI@latest`), or a
+            service slug (`slack`). Versionless, `@latest`, and slug forms are
+            resolved to the latest published version at creation time; the inbox
+            always stores and returns the fully-versioned form. Returns 400 if
+            the identifier matches no app or is ambiguous (matches more than
+            one).
+        action_key:
+          type: string
+          description: The key of the app action associated with this inbox.
+        inputs:
+          type: object
+          additionalProperties: {}
+          description: The inputs provided to the app action associated with this inbox.
+      required:
+        - action_key
+        - app_key
+        - inputs
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: The unique identifier for the message.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp in ISO 8601 format.
+        status:
+          allOf:
+            - $ref: '#/components/schemas/StatusEnum'
+          description: The status of the message.
+          readOnly: true
+        message_attributes:
+          allOf:
+            - $ref: '#/components/schemas/MessageAttributes'
+          readOnly: true
+          description: >-
+            Attributes associated with the message, such as lease count and
+            error information.
+      required:
+        - created_at
+        - id
+        - message_attributes
+        - status
+    PausedReasonEnum:
+      enum:
+        - user
+        - authentication
+        - authentication_access_revoked
+        - partner_revoked
+        - subscribe_failed
+        - migrate_failed
+        - abandoned
+        - unknown
+        - upstream_failures
+      type: string
+      description: |-
+        * `user` - user
+        * `authentication` - authentication
+        * `authentication_access_revoked` - authentication_access_revoked
+        * `partner_revoked` - partner_revoked
+        * `subscribe_failed` - subscribe_failed
+        * `migrate_failed` - migrate_failed
+        * `abandoned` - abandoned
+        * `unknown` - unknown
+        * `upstream_failures` - upstream_failures
+    NullEnum:
+      type: 'null'
+    LeasedMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: The unique identifier for the message.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp in ISO 8601 format.
+        status:
+          allOf:
+            - $ref: '#/components/schemas/StatusEnum'
+          description: The status of the message.
+          readOnly: true
+        message_attributes:
+          allOf:
+            - $ref: '#/components/schemas/MessageAttributes'
+          readOnly: true
+          description: >-
+            Attributes associated with the message, such as lease count and
+            error information.
+        payload:
+          type: object
+          additionalProperties: {}
+          description: The payload of the message.
+          readOnly: true
+      required:
+        - created_at
+        - id
+        - message_attributes
+        - payload
+        - status
+    PaginatedMessageList:
+      type: object
+      required:
+        - next
+        - previous
+        - results
+      properties:
+        next:
+          type: string
+          description: Link to next page of results if any.
+          nullable: true
+          format: uri
+          example: https://api.example.org/accounts/?cursor=cD00ODY%3D
+        previous:
+          type: string
+          description: Link to previous page of results if any.
+          nullable: true
+          format: uri
+          example: https://api.example.org/accounts/?cursor=cj0xJnA9NDg3
+        results:
+          description: Array of results for the current page.
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+    MessageAttributes:
+      type: object
+      properties:
+        lease_count:
+          type: integer
+          readOnly: true
+          description: Number of times this message has been leased.
+        error_message:
+          type:
+            - string
+            - 'null'
+          readOnly: true
+          description: Error message from the batch that produced this message, if any.
+        possible_duplicate_data:
+          type: boolean
+          readOnly: true
+          description: >-
+            True when the message may contain duplicate data due to a change in
+            the deduplication key. Consumers should treat this data with caution
+            and may want to apply their own deduplication logic.
+      required:
+        - error_message
+        - lease_count
+        - possible_duplicate_data
+    PaginatedInboxList:
+      type: object
+      required:
+        - count
+        - results
+      properties:
+        count:
+          type: integer
+          description: Total number of results across all pages.
+          example: 123
+        next:
+          type: string
+          description: Link to next page of results if any.
+          nullable: true
+          format: uri
+          example: https://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          description: Link to previous page of results if any.
+          nullable: true
+          format: uri
+          example: https://api.example.org/accounts/?offset=200&limit=100
+        results:
+          description: Array of results for the current page.
+          type: array
+          items:
+            $ref: '#/components/schemas/Inbox'
+    StatusEnum:
+      enum:
+        - available
+        - leased
+        - acked
+        - quarantined
+      type: string
+    Inbox:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: The unique identifier for the inbox.
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp in ISO 8601 format.
+        name:
+          type:
+            - string
+            - 'null'
+          description: >-
+            An optional name for the inbox. Must be unique per user within the
+            context of an account.
+          maxLength: 100
+        status:
+          type: string
+          readOnly: true
+          description: The status of the inbox.
+        paused_reason:
+          description: |-
+            The reason the inbox was paused, if applicable.
+
+            * `user` - user
+            * `authentication` - authentication
+            * `authentication_access_revoked` - authentication_access_revoked
+            * `partner_revoked` - partner_revoked
+            * `subscribe_failed` - subscribe_failed
+            * `migrate_failed` - migrate_failed
+            * `abandoned` - abandoned
+            * `unknown` - unknown
+            * `upstream_failures` - upstream_failures
+          oneOf:
+            - $ref: '#/components/schemas/PausedReasonEnum'
+            - $ref: '#/components/schemas/BlankEnum'
+            - $ref: '#/components/schemas/NullEnum'
+        notification_url:
+          type:
+            - string
+            - 'null'
+          format: uri
+          description: URL to POST notifications to when messages become available.
+          maxLength: 2048
+        subscription:
+          $ref: '#/components/schemas/TriggerSubscription'
+      required:
+        - created_at
+        - id
+        - status
+        - subscription
+    LeaseConflictResponse:
+      type: object
+      description: Response when leasing from a paused and fully drained inbox.
+      properties:
+        detail:
+          type: string
+          readOnly: true
+          description: A human-readable explanation of why the lease was rejected.
+        inbox_attributes:
+          allOf:
+            - $ref: '#/components/schemas/LeaseConflictAttributes'
+          readOnly: true
+          description: Current inbox state including pause details.
+      required:
+        - detail
+        - inbox_attributes
+    BlankEnum:
+      enum:
+        - ''
+    ReleaseRequest:
+      type: object
+      description: >-
+        Request to release a leased message back to the inbox without
+        acknowledging it.
+      properties:
+        lease_id:
+          type: string
+          format: uuid
+          description: The unique identifier for the lease.
+        message_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: >-
+            The list of message IDs to release. If not specified all messages
+            matching the lease_id will be released.
+          minItems: 1
+      required:
+        - lease_id
+    LeaseResponse:
+      type: object
+      description: Response for a message lease request to an inbox.
+      properties:
+        lease_id:
+          type:
+            - string
+            - 'null'
+          format: uuid
+          description: The unique identifier for the lease.
+        leased_until:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: >-
+            The timestamp until which the messages are leased in ISO 8601
+            format.
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeasedMessage'
+          description: The list of messages leased.
+        inbox_attributes:
+          allOf:
+            - $ref: '#/components/schemas/InboxAttributes'
+          readOnly: true
+          description: Current inbox state surfaced alongside the lease.
+      required:
+        - inbox_attributes
+        - lease_id
+        - leased_until
+        - results
+    LeaseRequest:
+      type: object
+      description: Request to lease message from an inbox.
+      properties:
+        lease_seconds:
+          type: integer
+          maximum: 3600
+          minimum: 1
+          default: 300
+          description: The number of seconds to lease the message for.
+        lease_limit:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 10
+          description: The number of messages to lease.
+    PatchedInboxPatch:
+      type: object
+      properties:
+        notification_url:
+          type:
+            - string
+            - 'null'
+          format: uri
+          description: URL to POST notifications to when messages become available.
+          maxLength: 2048
+  headers:
+    X-RateLimit-Reset:
+      schema:
+        type: string
+      description: The time at which the current rate limit window resets in seconds.
+      required: true
+    X-RateLimit-Remaining:
+      schema:
+        type: string
+      description: The number of requests left for the window.
+      required: true
+    Retry-After:
+      schema:
+        type: number
+      description: The number of seconds to wait before making a new request.
+      required: true
+    X-RateLimit-Limit:
+      schema:
+        type: string
+      description: The rate limit ceiling for that given request.
+      required: true
+  securitySchemes:
+    OAuth:
+      type: oauth2
+      description: OAuth 2.0 authentication.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://zapier.com/oauth/authorize
+          tokenUrl: https://zapier.com/oauth/token
+          scopes:
+            external: Scope that gives access to all Public APIs
+        clientCredentials:
+          tokenUrl: https://zapier.com/oauth/token
+          scopes:
+            external: Scope that gives access to all Public APIs

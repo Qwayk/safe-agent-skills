@@ -1,0 +1,22 @@
+{
+  "tool": "qwayk-zapier-safe-agent-cli",
+  "version": "0.1.0",
+  "applied_at_utc": "2026-06-29T00:00:01Z",
+  "env_fingerprint": "access-token:sha256:example00000000",
+  "command": "qwayk-zapier-safe-agent-cli --apply --yes --plan-in docs/examples/plan.example.json partner post-zaps --body-json <redacted-body-json>",
+  "operation": "post-zaps",
+  "operation_id": "post-zaps",
+  "method": "POST",
+  "base_url": "https://api.zapier.com",
+  "path": "/v2/zaps",
+  "status": 200,
+  "plan": {},
+  "response": { "ok": true },
+  "query": {},
+  "path_params": {},
+  "verification": {
+    "type": "response_code",
+    "status": 200,
+    "verified_at": "2026-06-29T00:00:01Z"
+  }
+}

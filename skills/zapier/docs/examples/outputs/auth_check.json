@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "command": "qwayk-zapier-safe-agent-cli auth check",
+  "status": 200,
+  "auth": {
+    "credential_fingerprint": "access-token:sha256:example00000000",
+    "base_url": "https://api.zapier.com",
+    "ai_actions_base_url": "https://actions.zapier.com",
+    "trigger_inbox_base_url": "https://api.zapier.com"
+  }
+}
