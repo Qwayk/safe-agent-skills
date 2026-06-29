@@ -1,0 +1,58 @@
+{
+  "tool": "make-com-safe",
+  "version": "0.1.0",
+  "generated_at_utc": "2026-06-29T08:24:07Z",
+  "env_fingerprint": "https://eu1.make.com/api/v2",
+  "credential_fingerprint": "sha256:example-redacted-credential-fingerprint",
+  "command": "make-com-safe api scenarios create-scenario --body-file <redacted-path>",
+  "operation": {
+    "family": "scenarios",
+    "command": "create-scenario",
+    "summary": "Create scenario",
+    "method": "POST",
+    "path": "/scenarios",
+    "source_url": "https://developers.make.com/api-documentation/api-reference/scenarios.md",
+    "scopes": [
+      "scenarios:write"
+    ]
+  },
+  "target": {
+    "path_params": {},
+    "query": {}
+  },
+  "target_fingerprints": {
+    "path_params_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4f84d762e91b3d2c87faef48a8",
+    "query_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4f84d762e91b3d2c87faef48a8"
+  },
+  "request_body": {
+    "blueprint": "<REDACTED>",
+    "teamId": 123,
+    "scheduling": "{\"type\":\"indefinitely\"}"
+  },
+  "request_body_sha256": "98c7b5334cc455fb520a37e51420d38907f23249aa85a3e8d33fbcad17a016f3",
+  "risk_level": "high",
+  "risk_reasons": [
+    "make-write",
+    "method:POST",
+    "no-snapshot",
+    "sensitive-make-resource"
+  ],
+  "preconditions": [
+    "review operation, target IDs, query, and redacted body",
+    "apply must use this saved plan with --plan-in",
+    "base URL must match the plan env_fingerprint",
+    "Make credential fingerprint must match the reviewed plan"
+  ],
+  "snapshot": {
+    "available": false,
+    "warning": "Make does not document a guaranteed safe before-state read for this operation in the pinned inventory. Applying it requires explicit no-snapshot approval."
+  },
+  "verification_plan": {
+    "type": "http-status-and-response",
+    "notes": "Verify the Make API response and, when available, follow with a read command for the target."
+  },
+  "rollback": {
+    "supported": false,
+    "notes": "No generic rollback is promised for Make API writes."
+  }
+}

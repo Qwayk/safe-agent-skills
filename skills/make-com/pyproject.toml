@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "make-com-safe-agent-cli"
+version = "0.1.0"
+description = "Safe Make.com API CLI with explicit commands, read-first behavior, and review-first writes."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "requests>=2.31.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.8.0",
+  "ruff>=0.6.0",
+  "types-requests>=2.31.0.0",
+]
+
+[project.scripts]
+make-com-safe = "make_com_safe_agent_cli.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+make_com_safe_agent_cli = ["data/*.json"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+exclude = [".venv", "build", "dist", "src/**.egg-info"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+check_untyped_defs = true
+show_error_codes = true
+pretty = false
+exclude = "(^\\.venv/|^build/|^dist/|^src/.*\\.egg-info/)"

@@ -1,0 +1,36 @@
+{
+  "tool": "make-com-safe",
+  "version": "0.1.0",
+  "applied_at_utc": "2026-06-29T08:30:00Z",
+  "env_fingerprint": "https://eu1.make.com/api/v2",
+  "credential_fingerprint": "sha256:example-redacted-credential-fingerprint",
+  "operation": {
+    "family": "scenarios",
+    "command": "create-scenario",
+    "summary": "Create scenario",
+    "method": "POST",
+    "path": "/scenarios"
+  },
+  "target": {
+    "path_params": {},
+    "query": {}
+  },
+  "snapshot": {
+    "available": false
+  },
+  "verification": {
+    "ok": true,
+    "response_status": 200
+  },
+  "response": {
+    "status": 200,
+    "url": "https://eu1.make.com/api/v2/scenarios",
+    "body": {
+      "scenario": {
+        "id": 123456,
+        "name": "Created scenario"
+      }
+    }
+  },
+  "rollback_plan": null
+}
