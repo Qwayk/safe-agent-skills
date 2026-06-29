@@ -71,6 +71,7 @@ Start here if you want app-to-app workflows, automation review, or careful autom
 | Product | What it helps with | What you connect | Mode |
 | --- | --- | --- | --- |
 | [**Make.com**](make-com/README.md)<br><sub>Install slug: <code>make-com</code></sub> | Review scenarios, teams, hooks, connections, data stores, keys, users, audit logs, and other Make API resources, then prepare reviewed changes | Make.com account | Reads + careful changes |
+| [**n8n**](n8n/README.md)<br><sub>Install slug: <code>n8n</code></sub> | Review workflows, executions, credentials, users, projects, folders, tags, variables, data tables, and packages, then prepare reviewed changes | n8n account | Reads + careful changes |
 | [**Zapier**](zapier/README.md)<br><sub>Install slug: <code>zapier</code></sub> | Review apps, actions, Zaps, authentications, trigger inboxes, promotions, and AI Actions, then prepare careful automation changes | Zapier account | Reads + careful changes |
 
 ## Commerce, stores, and payments

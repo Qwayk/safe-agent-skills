@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "base_url": "https://example.app.n8n.cloud/api/v1",
+  "credential_fingerprint": "examplefingerprint",
+  "sample_request": {
+    "method": "GET",
+    "path": "/workflows",
+    "query": {
+      "limit": "1"
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "data": []
+    }
+  }
+}

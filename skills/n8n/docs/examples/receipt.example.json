@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "applied": true,
+  "operation": {
+    "family": "workflow",
+    "command": "create-workflow",
+    "operation_id": "createWorkflow",
+    "summary": "Create a workflow",
+    "method": "POST",
+    "path": "/workflows"
+  },
+  "target": {
+    "path_params": {},
+    "query": {}
+  },
+  "request_body_sha256": "example-body-hash",
+  "risk_reasons": ["method:POST", "n8n-write", "no-snapshot", "production-risk"],
+  "response": {
+    "status": 200,
+    "url": "https://example.app.n8n.cloud/api/v1/workflows",
+    "body": {
+      "id": "workflow-id",
+      "name": "Example workflow"
+    }
+  }
+}

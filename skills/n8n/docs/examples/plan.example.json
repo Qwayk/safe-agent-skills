@@ -1,0 +1,30 @@
+{
+  "tool": "n8n-safe-agent-cli",
+  "version": "0.1.0",
+  "env_fingerprint": "https://example.app.n8n.cloud/api/v1",
+  "credential_fingerprint": "examplefingerprint",
+  "operation": {
+    "family": "workflow",
+    "command": "create-workflow",
+    "operation_id": "createWorkflow",
+    "summary": "Create a workflow",
+    "method": "POST",
+    "path": "/workflows",
+    "scopes": ["workflow:create"]
+  },
+  "target": {
+    "path_params": {},
+    "query": {}
+  },
+  "request_body": {
+    "name": "Example workflow",
+    "nodes": [],
+    "connections": {}
+  },
+  "risk_level": "high",
+  "risk_reasons": ["method:POST", "n8n-write", "no-snapshot", "production-risk"],
+  "snapshot": {
+    "available": false,
+    "warning": "n8n does not guarantee a safe before-state read for this operation from the pinned public API spec. Live apply requires explicit no-snapshot approval."
+  }
+}
