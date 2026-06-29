@@ -1,0 +1,16 @@
+{
+  "api_key_present": true,
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "base_url": "https://generativelanguage.googleapis.com",
+  "live_request": "not_run",
+  "note": "This checks local Gemini API key configuration without printing the key.",
+  "oauth_token": {
+    "exists": false,
+    "path": "examples/.state/token.json"
+  },
+  "ok": true,
+  "run_id": null,
+  "runs_index": "examples/.state/runs/index.jsonl"
+}

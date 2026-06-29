@@ -1,0 +1,32 @@
+{
+  "dry_run": true,
+  "next_step": "Review the plan, then apply with --plan-in, --apply, --yes, and required acknowledgements.",
+  "ok": true,
+  "plan": {
+    "body": null,
+    "command": [
+      "cached-contents",
+      "delete"
+    ],
+    "media_file": null,
+    "method": "DELETE",
+    "operation_id": "generativelanguage.cachedContents.delete",
+    "path_values": {
+      "name": "cachedContents/example"
+    },
+    "query_values": {},
+    "review_required": true,
+    "risk_flags": [
+      "destructive",
+      "irreversible",
+      "no_snapshot"
+    ],
+    "safety_class": "state_changing",
+    "url": "https://generativelanguage.googleapis.com/v1beta/cachedContents/example",
+    "warnings": [
+      "no_snapshot_available",
+      "destructive_action"
+    ]
+  },
+  "status": "review_required"
+}

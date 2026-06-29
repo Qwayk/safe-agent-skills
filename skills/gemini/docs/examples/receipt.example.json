@@ -1,0 +1,27 @@
+{
+  "applied": true,
+  "dry_run": false,
+  "ok": true,
+  "operation_id": "generativelanguage.cachedContents.delete",
+  "request": {
+    "body": null,
+    "headers": {
+      "Content-Type": "application/json",
+      "x-goog-api-key": "[REDACTED]"
+    },
+    "media_file": null,
+    "media_type": null,
+    "method": "DELETE",
+    "params": {},
+    "url": "https://generativelanguage.googleapis.com/v1beta/cachedContents/example"
+  },
+  "response": {
+    "json": {
+      "name": "cachedContents/example"
+    },
+    "ok": true,
+    "status_code": 200,
+    "url": "https://generativelanguage.googleapis.com/v1beta/cachedContents/example"
+  },
+  "verification": "Provider response captured; live read-back is operation-specific and not assumed."
+}

@@ -130,6 +130,7 @@ Start here if you want infrastructure, domain, account, or AI-platform work.
 | [**Cloudflare**](cloudflare/README.md)<br><sub>Install slug: <code>cloudflare</code></sub> | Review Cloudflare zones, DNS, Workers, Pages, security, storage, and account settings | Cloudflare account | Reads + careful changes |
 | [**Dynadot**](dynadot/README.md)<br><sub>Install slug: <code>dynadot</code></sub> | Review and plan domain, DNS, auction, transfer, and account work | Dynadot account | Reads + careful changes |
 | [**OpenAI Platform**](openai/README.md)<br><sub>Install slug: <code>openai</code></sub> | Review and plan OpenAI API operations through a safer local workflow | OpenAI account | Reads + careful changes |
+| [**Gemini API**](gemini/README.md)<br><sub>Install slug: <code>gemini</code></sub> | Review Gemini models, token counts, generation calls, files, cached context, batches, and file-search stores | Gemini API key | Reads + careful changes |
 | [**Qdrant Cloud**](qdrant-cloud/README.md)<br><sub>Install slug: <code>qdrant-cloud</code></sub> | Review Qdrant Cloud resources and use provider backup or restore workflows where supported | Qdrant Cloud account | Reads + careful changes |
 
 ## Public data and reference

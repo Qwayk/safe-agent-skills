@@ -1,0 +1,2643 @@
+{
+  "operation_count_by_version": {
+    "v1": 32,
+    "v1beta": 79
+  },
+  "operations": [
+    {
+      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.",
+      "family": "batches",
+      "flat_path": "v1beta/batches/{batchesId}:cancel",
+      "http_method": "POST",
+      "method_name": "cancel",
+      "method_original": "cancel",
+      "operation_id": "generativelanguage.batches.cancel",
+      "path": "v1beta/{+name}:cancel",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Empty",
+      "risk_flags": [
+        "bulk",
+        "irreversible",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}:cancel",
+        "v1beta": "v1beta/{+name}:cancel"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.",
+      "family": "batches",
+      "flat_path": "v1beta/batches/{batchesId}",
+      "http_method": "DELETE",
+      "method_name": "delete",
+      "method_original": "delete",
+      "operation_id": "generativelanguage.batches.delete",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Empty",
+      "risk_flags": [
+        "bulk",
+        "destructive",
+        "irreversible",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "DELETE",
+        "v1beta": "DELETE"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}",
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.",
+      "family": "batches",
+      "flat_path": "v1beta/batches/{batchesId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.batches.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Operation",
+      "risk_flags": [
+        "bulk"
+      ],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}",
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "family": "batches",
+      "flat_path": "v1beta/batches",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.batches.list",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "filter",
+        "pageSize",
+        "pageToken",
+        "returnPartialSuccess"
+      ],
+      "request_ref": null,
+      "response_ref": "ListOperationsResponse",
+      "risk_flags": [
+        "bulk"
+      ],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}",
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Updates a batch of EmbedContent requests for batch processing.",
+      "family": "batches",
+      "flat_path": "v1beta/batches/{batchesId}:updateEmbedContentBatch",
+      "http_method": "PATCH",
+      "method_name": "update-embed-content-batch",
+      "method_original": "updateEmbedContentBatch",
+      "operation_id": "generativelanguage.batches.updateEmbedContentBatch",
+      "path": "v1beta/{+name}:updateEmbedContentBatch",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "updateMask"
+      ],
+      "request_ref": "EmbedContentBatch",
+      "response_ref": "EmbedContentBatch",
+      "risk_flags": [
+        "bulk",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "PATCH",
+        "v1beta": "PATCH"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}:updateEmbedContentBatch",
+        "v1beta": "v1beta/{+name}:updateEmbedContentBatch"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Updates a batch of GenerateContent requests for batch processing.",
+      "family": "batches",
+      "flat_path": "v1beta/batches/{batchesId}:updateGenerateContentBatch",
+      "http_method": "PATCH",
+      "method_name": "update-generate-content-batch",
+      "method_original": "updateGenerateContentBatch",
+      "operation_id": "generativelanguage.batches.updateGenerateContentBatch",
+      "path": "v1beta/{+name}:updateGenerateContentBatch",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "updateMask"
+      ],
+      "request_ref": "GenerateContentBatch",
+      "response_ref": "GenerateContentBatch",
+      "risk_flags": [
+        "bulk",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "PATCH",
+        "v1beta": "PATCH"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}:updateGenerateContentBatch",
+        "v1beta": "v1beta/{+name}:updateGenerateContentBatch"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Creates CachedContent resource.",
+      "family": "cached-contents",
+      "flat_path": "v1beta/cachedContents",
+      "http_method": "POST",
+      "method_name": "create",
+      "method_original": "create",
+      "operation_id": "generativelanguage.cachedContents.create",
+      "path": "v1beta/cachedContents",
+      "path_params": [],
+      "query_params": [],
+      "request_ref": "CachedContent",
+      "response_ref": "CachedContent",
+      "risk_flags": [
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/cachedContents"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Deletes CachedContent resource.",
+      "family": "cached-contents",
+      "flat_path": "v1beta/cachedContents/{cachedContentsId}",
+      "http_method": "DELETE",
+      "method_name": "delete",
+      "method_original": "delete",
+      "operation_id": "generativelanguage.cachedContents.delete",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Empty",
+      "risk_flags": [
+        "destructive",
+        "irreversible",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "DELETE"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Reads CachedContent resource.",
+      "family": "cached-contents",
+      "flat_path": "v1beta/cachedContents/{cachedContentsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.cachedContents.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "CachedContent",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Lists CachedContents.",
+      "family": "cached-contents",
+      "flat_path": "v1beta/cachedContents",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.cachedContents.list",
+      "path": "v1beta/cachedContents",
+      "path_params": [],
+      "query_params": [
+        "pageSize",
+        "pageToken"
+      ],
+      "request_ref": null,
+      "response_ref": "ListCachedContentsResponse",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/cachedContents"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Updates CachedContent resource (only expiration is updatable).",
+      "family": "cached-contents",
+      "flat_path": "v1beta/cachedContents/{cachedContentsId}",
+      "http_method": "PATCH",
+      "method_name": "patch",
+      "method_original": "patch",
+      "operation_id": "generativelanguage.cachedContents.patch",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "updateMask"
+      ],
+      "request_ref": "CachedContent",
+      "response_ref": "CachedContent",
+      "risk_flags": [
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "PATCH"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Creates an empty `Corpus`.",
+      "family": "corpora",
+      "flat_path": "v1beta/corpora",
+      "http_method": "POST",
+      "method_name": "create",
+      "method_original": "create",
+      "operation_id": "generativelanguage.corpora.create",
+      "path": "v1beta/corpora",
+      "path_params": [],
+      "query_params": [],
+      "request_ref": "Corpus",
+      "response_ref": "Corpus",
+      "risk_flags": [
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/corpora"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Deletes a `Corpus`.",
+      "family": "corpora",
+      "flat_path": "v1beta/corpora/{corporaId}",
+      "http_method": "DELETE",
+      "method_name": "delete",
+      "method_original": "delete",
+      "operation_id": "generativelanguage.corpora.delete",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "force"
+      ],
+      "request_ref": null,
+      "response_ref": "Empty",
+      "risk_flags": [
+        "destructive",
+        "irreversible",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "DELETE"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Gets information about a specific `Corpus`.",
+      "family": "corpora",
+      "flat_path": "v1beta/corpora/{corporaId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.corpora.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Corpus",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Lists all `Corpora` owned by the user.",
+      "family": "corpora",
+      "flat_path": "v1beta/corpora",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.corpora.list",
+      "path": "v1beta/corpora",
+      "path_params": [],
+      "query_params": [
+        "pageSize",
+        "pageToken"
+      ],
+      "request_ref": null,
+      "response_ref": "ListCorporaResponse",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/corpora"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.",
+      "family": "corpora-operations",
+      "flat_path": "v1beta/corpora/{corporaId}/operations/{operationsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.corpora.operations.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Operation",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}",
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Create a permission to a specific resource.",
+      "family": "corpora-permissions",
+      "flat_path": "v1beta/corpora/{corporaId}/permissions",
+      "http_method": "POST",
+      "method_name": "create",
+      "method_original": "create",
+      "operation_id": "generativelanguage.corpora.permissions.create",
+      "path": "v1beta/{+parent}/permissions",
+      "path_params": [
+        "parent"
+      ],
+      "query_params": [],
+      "request_ref": "Permission",
+      "response_ref": "Permission",
+      "risk_flags": [
+        "no_snapshot",
+        "permission"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+parent}/permissions"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Deletes the permission.",
+      "family": "corpora-permissions",
+      "flat_path": "v1beta/corpora/{corporaId}/permissions/{permissionsId}",
+      "http_method": "DELETE",
+      "method_name": "delete",
+      "method_original": "delete",
+      "operation_id": "generativelanguage.corpora.permissions.delete",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Empty",
+      "risk_flags": [
+        "destructive",
+        "irreversible",
+        "no_snapshot",
+        "permission"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "DELETE"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Gets information about a specific Permission.",
+      "family": "corpora-permissions",
+      "flat_path": "v1beta/corpora/{corporaId}/permissions/{permissionsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.corpora.permissions.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Permission",
+      "risk_flags": [
+        "permission"
+      ],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Lists permissions for the specific resource.",
+      "family": "corpora-permissions",
+      "flat_path": "v1beta/corpora/{corporaId}/permissions",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.corpora.permissions.list",
+      "path": "v1beta/{+parent}/permissions",
+      "path_params": [
+        "parent"
+      ],
+      "query_params": [
+        "pageToken",
+        "pageSize"
+      ],
+      "request_ref": null,
+      "response_ref": "ListPermissionsResponse",
+      "risk_flags": [
+        "permission"
+      ],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+parent}/permissions"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Updates the permission.",
+      "family": "corpora-permissions",
+      "flat_path": "v1beta/corpora/{corporaId}/permissions/{permissionsId}",
+      "http_method": "PATCH",
+      "method_name": "patch",
+      "method_original": "patch",
+      "operation_id": "generativelanguage.corpora.permissions.patch",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "updateMask"
+      ],
+      "request_ref": "Permission",
+      "response_ref": "Permission",
+      "risk_flags": [
+        "no_snapshot",
+        "permission"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "PATCH"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Generates a model response given an input `GenerateContentRequest`. Refer to the [text generation guide](https://ai.google.dev/gemini-api/docs/text-generation) for detailed usage information. Input capabilities differ between models, including tuned models. Refer to the [model guide](https://ai.google.dev/gemini-api/docs/models/gemini) and [tuning guide](https://ai.google.dev/gemini-api/docs/model-tuning) for details.",
+      "family": "dynamic",
+      "flat_path": "v1beta/dynamic/{dynamicId}:generateContent",
+      "http_method": "POST",
+      "method_name": "generate-content",
+      "method_original": "generateContent",
+      "operation_id": "generativelanguage.dynamic.generateContent",
+      "path": "v1beta/{+model}:generateContent",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "GenerateContentRequest",
+      "response_ref": "GenerateContentResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:generateContent",
+        "v1beta": "v1beta/{+model}:generateContent"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Generates a [streamed response](https://ai.google.dev/gemini-api/docs/text-generation?lang=python#generate-a-text-stream) from the model given an input `GenerateContentRequest`.",
+      "family": "dynamic",
+      "flat_path": "v1beta/dynamic/{dynamicId}:streamGenerateContent",
+      "http_method": "POST",
+      "method_name": "stream-generate-content",
+      "method_original": "streamGenerateContent",
+      "operation_id": "generativelanguage.dynamic.streamGenerateContent",
+      "path": "v1beta/{+model}:streamGenerateContent",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "GenerateContentRequest",
+      "response_ref": "GenerateContentResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:streamGenerateContent",
+        "v1beta": "v1beta/{+model}:streamGenerateContent"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Creates an empty `FileSearchStore`.",
+      "family": "file-search-stores",
+      "flat_path": "v1beta/fileSearchStores",
+      "http_method": "POST",
+      "method_name": "create",
+      "method_original": "create",
+      "operation_id": "generativelanguage.fileSearchStores.create",
+      "path": "v1beta/fileSearchStores",
+      "path_params": [],
+      "query_params": [],
+      "request_ref": "FileSearchStore",
+      "response_ref": "FileSearchStore",
+      "risk_flags": [
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/fileSearchStores"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Deletes a `FileSearchStore`.",
+      "family": "file-search-stores",
+      "flat_path": "v1beta/fileSearchStores/{fileSearchStoresId}",
+      "http_method": "DELETE",
+      "method_name": "delete",
+      "method_original": "delete",
+      "operation_id": "generativelanguage.fileSearchStores.delete",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "force"
+      ],
+      "request_ref": null,
+      "response_ref": "Empty",
+      "risk_flags": [
+        "destructive",
+        "irreversible",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "DELETE"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Gets information about a specific `FileSearchStore`.",
+      "family": "file-search-stores",
+      "flat_path": "v1beta/fileSearchStores/{fileSearchStoresId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.fileSearchStores.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "FileSearchStore",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Imports a `File` from File Service to a `FileSearchStore`.",
+      "family": "file-search-stores",
+      "flat_path": "v1beta/fileSearchStores/{fileSearchStoresId}:importFile",
+      "http_method": "POST",
+      "method_name": "import-file",
+      "method_original": "importFile",
+      "operation_id": "generativelanguage.fileSearchStores.importFile",
+      "path": "v1beta/{+fileSearchStoreName}:importFile",
+      "path_params": [
+        "fileSearchStoreName"
+      ],
+      "query_params": [],
+      "request_ref": "ImportFileRequest",
+      "response_ref": "Operation",
+      "risk_flags": [
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+fileSearchStoreName}:importFile"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Lists all `FileSearchStores` owned by the user.",
+      "family": "file-search-stores",
+      "flat_path": "v1beta/fileSearchStores",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.fileSearchStores.list",
+      "path": "v1beta/fileSearchStores",
+      "path_params": [],
+      "query_params": [
+        "pageSize",
+        "pageToken"
+      ],
+      "request_ref": null,
+      "response_ref": "ListFileSearchStoresResponse",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/fileSearchStores"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Deletes a `Document`.",
+      "family": "file-search-stores-documents",
+      "flat_path": "v1beta/fileSearchStores/{fileSearchStoresId}/documents/{documentsId}",
+      "http_method": "DELETE",
+      "method_name": "delete",
+      "method_original": "delete",
+      "operation_id": "generativelanguage.fileSearchStores.documents.delete",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "force"
+      ],
+      "request_ref": null,
+      "response_ref": "Empty",
+      "risk_flags": [
+        "destructive",
+        "irreversible",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "DELETE"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Gets information about a specific `Document`.",
+      "family": "file-search-stores-documents",
+      "flat_path": "v1beta/fileSearchStores/{fileSearchStoresId}/documents/{documentsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.fileSearchStores.documents.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Document",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Lists all `Document`s in a `Corpus`.",
+      "family": "file-search-stores-documents",
+      "flat_path": "v1beta/fileSearchStores/{fileSearchStoresId}/documents",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.fileSearchStores.documents.list",
+      "path": "v1beta/{+parent}/documents",
+      "path_params": [
+        "parent"
+      ],
+      "query_params": [
+        "pageSize",
+        "pageToken"
+      ],
+      "request_ref": null,
+      "response_ref": "ListDocumentsResponse",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+parent}/documents"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.",
+      "family": "file-search-stores-operations",
+      "flat_path": "v1beta/fileSearchStores/{fileSearchStoresId}/operations/{operationsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.fileSearchStores.operations.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Operation",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}",
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.",
+      "family": "file-search-stores-upload-operations",
+      "flat_path": "v1beta/fileSearchStores/{fileSearchStoresId}/upload/operations/{operationsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.fileSearchStores.upload.operations.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Operation",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}",
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Deletes the `File`.",
+      "family": "files",
+      "flat_path": "v1beta/files/{filesId}",
+      "http_method": "DELETE",
+      "method_name": "delete",
+      "method_original": "delete",
+      "operation_id": "generativelanguage.files.delete",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Empty",
+      "risk_flags": [
+        "destructive",
+        "irreversible",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "DELETE"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Gets the metadata for the given `File`.",
+      "family": "files",
+      "flat_path": "v1beta/files/{filesId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.files.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "File",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Lists the metadata for `File`s owned by the requesting project.",
+      "family": "files",
+      "flat_path": "v1beta/files",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.files.list",
+      "path": "v1beta/files",
+      "path_params": [],
+      "query_params": [
+        "pageSize",
+        "pageToken"
+      ],
+      "request_ref": null,
+      "response_ref": "ListFilesResponse",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/files"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Registers a Google Cloud Storage files with FileService. The user is expected to provide Google Cloud Storage URIs and will receive a File resource for each URI in return. Note that the files are not copied, just registered with File API. If one file fails to register, the whole request fails.",
+      "family": "files",
+      "flat_path": "v1beta/files:register",
+      "http_method": "POST",
+      "method_name": "register",
+      "method_original": "register",
+      "operation_id": "generativelanguage.files.register",
+      "path": "v1beta/files:register",
+      "path_params": [],
+      "query_params": [],
+      "request_ref": "RegisterFilesRequest",
+      "response_ref": "RegisterFilesResponse",
+      "risk_flags": [
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/files:register"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Lists the generated files owned by the requesting project.",
+      "family": "generated-files",
+      "flat_path": "v1beta/generatedFiles",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.generatedFiles.list",
+      "path": "v1beta/generatedFiles",
+      "path_params": [],
+      "query_params": [
+        "pageToken",
+        "pageSize"
+      ],
+      "request_ref": null,
+      "response_ref": "ListGeneratedFilesResponse",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/generatedFiles"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.",
+      "family": "generated-files-operations",
+      "flat_path": "v1beta/generatedFiles/{generatedFilesId}/operations/{operationsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.generatedFiles.operations.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Operation",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}",
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Creates a `File`.",
+      "family": "media",
+      "flat_path": "v1beta/files",
+      "http_method": "POST",
+      "method_name": "upload",
+      "method_original": "upload",
+      "operation_id": "generativelanguage.media.upload",
+      "path": "v1beta/files",
+      "path_params": [],
+      "query_params": [],
+      "request_ref": "CreateFileRequest",
+      "response_ref": "CreateFileResponse",
+      "risk_flags": [
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": true,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/files"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Uploads data to a FileSearchStore, preprocesses and chunks before storing it in a FileSearchStore Document.",
+      "family": "media",
+      "flat_path": "v1beta/fileSearchStores/{fileSearchStoresId}:uploadToFileSearchStore",
+      "http_method": "POST",
+      "method_name": "upload-to-file-search-store",
+      "method_original": "uploadToFileSearchStore",
+      "operation_id": "generativelanguage.media.uploadToFileSearchStore",
+      "path": "v1beta/{+fileSearchStoreName}:uploadToFileSearchStore",
+      "path_params": [
+        "fileSearchStoreName"
+      ],
+      "query_params": [],
+      "request_ref": "UploadToFileSearchStoreRequest",
+      "response_ref": "CustomLongRunningOperation",
+      "risk_flags": [
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": true,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+fileSearchStoreName}:uploadToFileSearchStore"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Enqueues a batch of `EmbedContent` requests for batch processing. We have a `BatchEmbedContents` handler in `GenerativeService`, but it was synchronized. So we name this one to be `Async` to avoid confusion.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:asyncBatchEmbedContent",
+      "http_method": "POST",
+      "method_name": "async-batch-embed-content",
+      "method_original": "asyncBatchEmbedContent",
+      "operation_id": "generativelanguage.models.asyncBatchEmbedContent",
+      "path": "v1beta/{+model}:asyncBatchEmbedContent",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "AsyncBatchEmbedContentRequest",
+      "response_ref": "Operation",
+      "risk_flags": [
+        "bulk"
+      ],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:asyncBatchEmbedContent",
+        "v1beta": "v1beta/{+model}:asyncBatchEmbedContent"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Generates multiple embedding vectors from the input `Content` which consists of a batch of strings represented as `EmbedContentRequest` objects.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:batchEmbedContents",
+      "http_method": "POST",
+      "method_name": "batch-embed-contents",
+      "method_original": "batchEmbedContents",
+      "operation_id": "generativelanguage.models.batchEmbedContents",
+      "path": "v1beta/{+model}:batchEmbedContents",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "BatchEmbedContentsRequest",
+      "response_ref": "BatchEmbedContentsResponse",
+      "risk_flags": [
+        "bulk"
+      ],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:batchEmbedContents",
+        "v1beta": "v1beta/{+model}:batchEmbedContents"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Generates multiple embeddings from the model given input text in a synchronous call.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:batchEmbedText",
+      "http_method": "POST",
+      "method_name": "batch-embed-text",
+      "method_original": "batchEmbedText",
+      "operation_id": "generativelanguage.models.batchEmbedText",
+      "path": "v1beta/{+model}:batchEmbedText",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "BatchEmbedTextRequest",
+      "response_ref": "BatchEmbedTextResponse",
+      "risk_flags": [
+        "bulk"
+      ],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+model}:batchEmbedText"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Enqueues a batch of `GenerateContent` requests for batch processing.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:batchGenerateContent",
+      "http_method": "POST",
+      "method_name": "batch-generate-content",
+      "method_original": "batchGenerateContent",
+      "operation_id": "generativelanguage.models.batchGenerateContent",
+      "path": "v1beta/{+model}:batchGenerateContent",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "BatchGenerateContentRequest",
+      "response_ref": "Operation",
+      "risk_flags": [
+        "bulk"
+      ],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:batchGenerateContent",
+        "v1beta": "v1beta/{+model}:batchGenerateContent"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Runs a model's tokenizer on a string and returns the token count.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:countMessageTokens",
+      "http_method": "POST",
+      "method_name": "count-message-tokens",
+      "method_original": "countMessageTokens",
+      "operation_id": "generativelanguage.models.countMessageTokens",
+      "path": "v1beta/{+model}:countMessageTokens",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "CountMessageTokensRequest",
+      "response_ref": "CountMessageTokensResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+model}:countMessageTokens"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Runs a model's tokenizer on a text and returns the token count.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:countTextTokens",
+      "http_method": "POST",
+      "method_name": "count-text-tokens",
+      "method_original": "countTextTokens",
+      "operation_id": "generativelanguage.models.countTextTokens",
+      "path": "v1beta/{+model}:countTextTokens",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "CountTextTokensRequest",
+      "response_ref": "CountTextTokensResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+model}:countTextTokens"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Runs a model's tokenizer on input `Content` and returns the token count. Refer to the [tokens guide](https://ai.google.dev/gemini-api/docs/tokens) to learn more about tokens.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:countTokens",
+      "http_method": "POST",
+      "method_name": "count-tokens",
+      "method_original": "countTokens",
+      "operation_id": "generativelanguage.models.countTokens",
+      "path": "v1beta/{+model}:countTokens",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "CountTokensRequest",
+      "response_ref": "CountTokensResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:countTokens",
+        "v1beta": "v1beta/{+model}:countTokens"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Generates a text embedding vector from the input `Content` using the specified [Gemini Embedding model](https://ai.google.dev/gemini-api/docs/models/gemini#text-embedding).",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:embedContent",
+      "http_method": "POST",
+      "method_name": "embed-content",
+      "method_original": "embedContent",
+      "operation_id": "generativelanguage.models.embedContent",
+      "path": "v1beta/{+model}:embedContent",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "EmbedContentRequest",
+      "response_ref": "EmbedContentResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:embedContent",
+        "v1beta": "v1beta/{+model}:embedContent"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Generates an embedding from the model given an input message.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:embedText",
+      "http_method": "POST",
+      "method_name": "embed-text",
+      "method_original": "embedText",
+      "operation_id": "generativelanguage.models.embedText",
+      "path": "v1beta/{+model}:embedText",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "EmbedTextRequest",
+      "response_ref": "EmbedTextResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+model}:embedText"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Generates a grounded answer from the model given an input `GenerateAnswerRequest`.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:generateAnswer",
+      "http_method": "POST",
+      "method_name": "generate-answer",
+      "method_original": "generateAnswer",
+      "operation_id": "generativelanguage.models.generateAnswer",
+      "path": "v1beta/{+model}:generateAnswer",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "GenerateAnswerRequest",
+      "response_ref": "GenerateAnswerResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+model}:generateAnswer"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Generates a model response given an input `GenerateContentRequest`. Refer to the [text generation guide](https://ai.google.dev/gemini-api/docs/text-generation) for detailed usage information. Input capabilities differ between models, including tuned models. Refer to the [model guide](https://ai.google.dev/gemini-api/docs/models/gemini) and [tuning guide](https://ai.google.dev/gemini-api/docs/model-tuning) for details.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:generateContent",
+      "http_method": "POST",
+      "method_name": "generate-content",
+      "method_original": "generateContent",
+      "operation_id": "generativelanguage.models.generateContent",
+      "path": "v1beta/{+model}:generateContent",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "GenerateContentRequest",
+      "response_ref": "GenerateContentResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:generateContent",
+        "v1beta": "v1beta/{+model}:generateContent"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Generates a response from the model given an input `MessagePrompt`.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:generateMessage",
+      "http_method": "POST",
+      "method_name": "generate-message",
+      "method_original": "generateMessage",
+      "operation_id": "generativelanguage.models.generateMessage",
+      "path": "v1beta/{+model}:generateMessage",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "GenerateMessageRequest",
+      "response_ref": "GenerateMessageResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+model}:generateMessage"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Generates a response from the model given an input message.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:generateText",
+      "http_method": "POST",
+      "method_name": "generate-text",
+      "method_original": "generateText",
+      "operation_id": "generativelanguage.models.generateText",
+      "path": "v1beta/{+model}:generateText",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "GenerateTextRequest",
+      "response_ref": "GenerateTextResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+model}:generateText"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Gets information about a specific `Model` such as its version number, token limits, [parameters](https://ai.google.dev/gemini-api/docs/models/generative-models#model-parameters) and other metadata. Refer to the [Gemini models guide](https://ai.google.dev/gemini-api/docs/models/gemini) for detailed model information.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.models.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Model",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}",
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Lists the [`Model`s](https://ai.google.dev/gemini-api/docs/models/gemini) available through the Gemini API.",
+      "family": "models",
+      "flat_path": "v1beta/models",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.models.list",
+      "path": "v1beta/models",
+      "path_params": [],
+      "query_params": [
+        "pageSize",
+        "pageToken"
+      ],
+      "request_ref": null,
+      "response_ref": "ListModelsResponse",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/models",
+        "v1beta": "v1beta/models"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Performs a prediction request.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:predict",
+      "http_method": "POST",
+      "method_name": "predict",
+      "method_original": "predict",
+      "operation_id": "generativelanguage.models.predict",
+      "path": "v1beta/{+model}:predict",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "PredictRequest",
+      "response_ref": "PredictResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+model}:predict"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Same as Predict but returns an LRO.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:predictLongRunning",
+      "http_method": "POST",
+      "method_name": "predict-long-running",
+      "method_original": "predictLongRunning",
+      "operation_id": "generativelanguage.models.predictLongRunning",
+      "path": "v1beta/{+model}:predictLongRunning",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "PredictLongRunningRequest",
+      "response_ref": "Operation",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+model}:predictLongRunning"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Generates a [streamed response](https://ai.google.dev/gemini-api/docs/text-generation?lang=python#generate-a-text-stream) from the model given an input `GenerateContentRequest`.",
+      "family": "models",
+      "flat_path": "v1beta/models/{modelsId}:streamGenerateContent",
+      "http_method": "POST",
+      "method_name": "stream-generate-content",
+      "method_original": "streamGenerateContent",
+      "operation_id": "generativelanguage.models.streamGenerateContent",
+      "path": "v1beta/{+model}:streamGenerateContent",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "GenerateContentRequest",
+      "response_ref": "GenerateContentResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:streamGenerateContent",
+        "v1beta": "v1beta/{+model}:streamGenerateContent"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.",
+      "family": "models-operations",
+      "flat_path": "v1beta/models/{modelsId}/operations/{operationsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.models.operations.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Operation",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}",
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "family": "models-operations",
+      "flat_path": "v1beta/models/{modelsId}/operations",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.models.operations.list",
+      "path": "v1beta/{+name}/operations",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "filter",
+        "pageSize",
+        "pageToken",
+        "returnPartialSuccess"
+      ],
+      "request_ref": null,
+      "response_ref": "ListOperationsResponse",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}/operations",
+        "v1beta": "v1beta/{+name}/operations"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.",
+      "family": "operations",
+      "flat_path": "v1/operations/{operationsId}",
+      "http_method": "DELETE",
+      "method_name": "delete",
+      "method_original": "delete",
+      "operation_id": "generativelanguage.operations.delete",
+      "path": "v1/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Empty",
+      "risk_flags": [
+        "destructive",
+        "irreversible",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "DELETE"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}"
+      },
+      "versions": [
+        "v1"
+      ]
+    },
+    {
+      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "family": "operations",
+      "flat_path": "v1/operations",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.operations.list",
+      "path": "v1/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "pageToken",
+        "pageSize",
+        "returnPartialSuccess",
+        "filter"
+      ],
+      "request_ref": null,
+      "response_ref": "ListOperationsResponse",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}"
+      },
+      "versions": [
+        "v1"
+      ]
+    },
+    {
+      "description": "Enqueues a batch of `EmbedContent` requests for batch processing. We have a `BatchEmbedContents` handler in `GenerativeService`, but it was synchronized. So we name this one to be `Async` to avoid confusion.",
+      "family": "tuned-models",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}:asyncBatchEmbedContent",
+      "http_method": "POST",
+      "method_name": "async-batch-embed-content",
+      "method_original": "asyncBatchEmbedContent",
+      "operation_id": "generativelanguage.tunedModels.asyncBatchEmbedContent",
+      "path": "v1beta/{+model}:asyncBatchEmbedContent",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "AsyncBatchEmbedContentRequest",
+      "response_ref": "Operation",
+      "risk_flags": [
+        "bulk"
+      ],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:asyncBatchEmbedContent",
+        "v1beta": "v1beta/{+model}:asyncBatchEmbedContent"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Enqueues a batch of `GenerateContent` requests for batch processing.",
+      "family": "tuned-models",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}:batchGenerateContent",
+      "http_method": "POST",
+      "method_name": "batch-generate-content",
+      "method_original": "batchGenerateContent",
+      "operation_id": "generativelanguage.tunedModels.batchGenerateContent",
+      "path": "v1beta/{+model}:batchGenerateContent",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "BatchGenerateContentRequest",
+      "response_ref": "Operation",
+      "risk_flags": [
+        "bulk"
+      ],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:batchGenerateContent",
+        "v1beta": "v1beta/{+model}:batchGenerateContent"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Creates a tuned model. Check intermediate tuning progress (if any) through the [google.longrunning.Operations] service. Access status and results through the Operations service. Example: GET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222",
+      "family": "tuned-models",
+      "flat_path": "v1beta/tunedModels",
+      "http_method": "POST",
+      "method_name": "create",
+      "method_original": "create",
+      "operation_id": "generativelanguage.tunedModels.create",
+      "path": "v1beta/tunedModels",
+      "path_params": [],
+      "query_params": [
+        "tunedModelId"
+      ],
+      "request_ref": "TunedModel",
+      "response_ref": "Operation",
+      "risk_flags": [
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/tunedModels"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Deletes a tuned model.",
+      "family": "tuned-models",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}",
+      "http_method": "DELETE",
+      "method_name": "delete",
+      "method_original": "delete",
+      "operation_id": "generativelanguage.tunedModels.delete",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Empty",
+      "risk_flags": [
+        "destructive",
+        "irreversible",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "DELETE"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Generates a model response given an input `GenerateContentRequest`. Refer to the [text generation guide](https://ai.google.dev/gemini-api/docs/text-generation) for detailed usage information. Input capabilities differ between models, including tuned models. Refer to the [model guide](https://ai.google.dev/gemini-api/docs/models/gemini) and [tuning guide](https://ai.google.dev/gemini-api/docs/model-tuning) for details.",
+      "family": "tuned-models",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}:generateContent",
+      "http_method": "POST",
+      "method_name": "generate-content",
+      "method_original": "generateContent",
+      "operation_id": "generativelanguage.tunedModels.generateContent",
+      "path": "v1beta/{+model}:generateContent",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "GenerateContentRequest",
+      "response_ref": "GenerateContentResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:generateContent",
+        "v1beta": "v1beta/{+model}:generateContent"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Generates a response from the model given an input message.",
+      "family": "tuned-models",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}:generateText",
+      "http_method": "POST",
+      "method_name": "generate-text",
+      "method_original": "generateText",
+      "operation_id": "generativelanguage.tunedModels.generateText",
+      "path": "v1beta/{+model}:generateText",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "GenerateTextRequest",
+      "response_ref": "GenerateTextResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+model}:generateText"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Gets information about a specific TunedModel.",
+      "family": "tuned-models",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.tunedModels.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "TunedModel",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Lists created tuned models.",
+      "family": "tuned-models",
+      "flat_path": "v1beta/tunedModels",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.tunedModels.list",
+      "path": "v1beta/tunedModels",
+      "path_params": [],
+      "query_params": [
+        "pageSize",
+        "pageToken",
+        "filter"
+      ],
+      "request_ref": null,
+      "response_ref": "ListTunedModelsResponse",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/tunedModels"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Updates a tuned model.",
+      "family": "tuned-models",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}",
+      "http_method": "PATCH",
+      "method_name": "patch",
+      "method_original": "patch",
+      "operation_id": "generativelanguage.tunedModels.patch",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "updateMask"
+      ],
+      "request_ref": "TunedModel",
+      "response_ref": "TunedModel",
+      "risk_flags": [
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "PATCH"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Generates a [streamed response](https://ai.google.dev/gemini-api/docs/text-generation?lang=python#generate-a-text-stream) from the model given an input `GenerateContentRequest`.",
+      "family": "tuned-models",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}:streamGenerateContent",
+      "http_method": "POST",
+      "method_name": "stream-generate-content",
+      "method_original": "streamGenerateContent",
+      "operation_id": "generativelanguage.tunedModels.streamGenerateContent",
+      "path": "v1beta/{+model}:streamGenerateContent",
+      "path_params": [
+        "model"
+      ],
+      "query_params": [],
+      "request_ref": "GenerateContentRequest",
+      "response_ref": "GenerateContentResponse",
+      "risk_flags": [],
+      "safety_class": "compute_read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST",
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+model}:streamGenerateContent",
+        "v1beta": "v1beta/{+model}:streamGenerateContent"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Transfers ownership of the tuned model. This is the only way to change ownership of the tuned model. The current owner will be downgraded to writer role.",
+      "family": "tuned-models",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}:transferOwnership",
+      "http_method": "POST",
+      "method_name": "transfer-ownership",
+      "method_original": "transferOwnership",
+      "operation_id": "generativelanguage.tunedModels.transferOwnership",
+      "path": "v1beta/{+name}:transferOwnership",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": "TransferOwnershipRequest",
+      "response_ref": "TransferOwnershipResponse",
+      "risk_flags": [
+        "irreversible",
+        "no_snapshot",
+        "permission"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}:transferOwnership"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.",
+      "family": "tuned-models-operations",
+      "flat_path": "v1/tunedModels/{tunedModelsId}/operations/{operationsId}:cancel",
+      "http_method": "POST",
+      "method_name": "cancel",
+      "method_original": "cancel",
+      "operation_id": "generativelanguage.tunedModels.operations.cancel",
+      "path": "v1/{+name}:cancel",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": "CancelOperationRequest",
+      "response_ref": "Empty",
+      "risk_flags": [
+        "irreversible",
+        "no_snapshot"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "POST"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}:cancel"
+      },
+      "versions": [
+        "v1"
+      ]
+    },
+    {
+      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.",
+      "family": "tuned-models-operations",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}/operations/{operationsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.tunedModels.operations.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Operation",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}",
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "family": "tuned-models-operations",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}/operations",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.tunedModels.operations.list",
+      "path": "v1beta/{+name}/operations",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "filter",
+        "pageToken",
+        "pageSize",
+        "returnPartialSuccess"
+      ],
+      "request_ref": null,
+      "response_ref": "ListOperationsResponse",
+      "risk_flags": [],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1": "GET",
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1": "v1/{+name}/operations",
+        "v1beta": "v1beta/{+name}/operations"
+      },
+      "versions": [
+        "v1beta",
+        "v1"
+      ]
+    },
+    {
+      "description": "Create a permission to a specific resource.",
+      "family": "tuned-models-permissions",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}/permissions",
+      "http_method": "POST",
+      "method_name": "create",
+      "method_original": "create",
+      "operation_id": "generativelanguage.tunedModels.permissions.create",
+      "path": "v1beta/{+parent}/permissions",
+      "path_params": [
+        "parent"
+      ],
+      "query_params": [],
+      "request_ref": "Permission",
+      "response_ref": "Permission",
+      "risk_flags": [
+        "no_snapshot",
+        "permission"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "POST"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+parent}/permissions"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Deletes the permission.",
+      "family": "tuned-models-permissions",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}/permissions/{permissionsId}",
+      "http_method": "DELETE",
+      "method_name": "delete",
+      "method_original": "delete",
+      "operation_id": "generativelanguage.tunedModels.permissions.delete",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Empty",
+      "risk_flags": [
+        "destructive",
+        "irreversible",
+        "no_snapshot",
+        "permission"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "DELETE"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Gets information about a specific Permission.",
+      "family": "tuned-models-permissions",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}/permissions/{permissionsId}",
+      "http_method": "GET",
+      "method_name": "get",
+      "method_original": "get",
+      "operation_id": "generativelanguage.tunedModels.permissions.get",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [],
+      "request_ref": null,
+      "response_ref": "Permission",
+      "risk_flags": [
+        "permission"
+      ],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Lists permissions for the specific resource.",
+      "family": "tuned-models-permissions",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}/permissions",
+      "http_method": "GET",
+      "method_name": "list",
+      "method_original": "list",
+      "operation_id": "generativelanguage.tunedModels.permissions.list",
+      "path": "v1beta/{+parent}/permissions",
+      "path_params": [
+        "parent"
+      ],
+      "query_params": [
+        "pageToken",
+        "pageSize"
+      ],
+      "request_ref": null,
+      "response_ref": "ListPermissionsResponse",
+      "risk_flags": [
+        "permission"
+      ],
+      "safety_class": "read",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "GET"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+parent}/permissions"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "description": "Updates the permission.",
+      "family": "tuned-models-permissions",
+      "flat_path": "v1beta/tunedModels/{tunedModelsId}/permissions/{permissionsId}",
+      "http_method": "PATCH",
+      "method_name": "patch",
+      "method_original": "patch",
+      "operation_id": "generativelanguage.tunedModels.permissions.patch",
+      "path": "v1beta/{+name}",
+      "path_params": [
+        "name"
+      ],
+      "query_params": [
+        "updateMask"
+      ],
+      "request_ref": "Permission",
+      "response_ref": "Permission",
+      "risk_flags": [
+        "no_snapshot",
+        "permission"
+      ],
+      "safety_class": "state_changing",
+      "supports_media_download": false,
+      "supports_media_upload": false,
+      "version_http_methods": {
+        "v1beta": "PATCH"
+      },
+      "version_paths": {
+        "v1beta": "v1beta/{+name}"
+      },
+      "versions": [
+        "v1beta"
+      ]
+    }
+  ],
+  "revisions": {
+    "v1": "20260626",
+    "v1beta": "20260626"
+  },
+  "source_urls": {
+    "v1": "https://generativelanguage.googleapis.com/$discovery/rest?version=v1",
+    "v1beta": "https://generativelanguage.googleapis.com/$discovery/rest?version=v1beta"
+  },
+  "unique_operation_count": 82
+}
