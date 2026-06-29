@@ -21,7 +21,7 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 ## What this skill helps with
 
 - Check local OpenAI API setup and confirm live access safely.
-- Review the pinned OpenAI operation catalog before making a live call.
+- Review the current pinned OpenAI operation catalog before making a live call.
 - Inspect models, files, assistants, threads, vector stores, usage, projects, and other OpenAI resources.
 - Plan careful write actions across the shipped OpenAI command surface.
 - Review spend-money and delete-like actions before the request runs.
@@ -58,8 +58,8 @@ Connect the OpenAI skill, list the available operations, and show me a safe live
 ## How this skill stays safe
 
 - No network call happens without `--live`, even for reads.
-- Write-capable operations start as dry-run plans first.
-- Spend-money actions can require `--plan-in`, `--yes`, and `--ack-spend-money`.
+- Write-capable operations start as dry-run plans first and require `--plan-in` before apply.
+- Spend-money actions also require `--yes` and `--ack-spend-money`.
 - Delete-like or irreversible actions can also require `--ack-irreversible`.
 - When no saved before-state exists, live writes also need `--ack-no-snapshot`.
 - Approved live-write receipts can record the no-snapshot approval and recovery limit.
@@ -71,6 +71,7 @@ Connect the OpenAI skill, list the available operations, and show me a safe live
 This skill covers:
 
 - the pinned OpenAI operation catalog shipped in this repo
+- 273 documented OpenAI API operations from the 2026-06-29 documented OpenAPI refresh
 - local onboarding, auth checks, operation discovery, and jobs
 - explicit OpenAI API commands for reads and writes across the documented surface
 - local run history and proof files for review
@@ -80,8 +81,8 @@ This skill covers:
 - The agent should show the dry-run plan first.
 - You review the operation, inputs, target, and recovery limits.
 - Real network reads still need `--live`.
-- Write-capable actions need `--live --apply`.
-- Spend-money actions can also require `--plan-in`, `--yes`, and `--ack-spend-money`.
+- Write-capable actions need `--live --apply --plan-in <plan.json>`.
+- Spend-money actions also require `--yes` and `--ack-spend-money`.
 - Delete-like actions can also require `--ack-irreversible`.
 - Writes without saved before-state also need `--ack-no-snapshot`.
 
@@ -97,7 +98,7 @@ This skill covers:
 ## Limits
 
 - Many live writes still do not have saved before-state or a built-in undo path.
-- The shipped surface follows the pinned OpenAI operation list in this repo, not whatever may have changed upstream later.
+- The shipped surface follows the 2026-06-29 pinned OpenAI operation list in this repo. If OpenAI changes the documented API later, refresh the inventory before claiming new coverage.
 - Spend-money operations are intentionally slower because they need stronger approval.
 - You still need valid OpenAI access, scopes, and billing permissions for real account work.
 

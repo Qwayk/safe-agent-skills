@@ -23,7 +23,7 @@ For the guided path, start with [What you can do with OpenAI](use_cases.md), [Co
 
   - `--live`: allow real HTTP calls (all commands are plan-only by default)
   - `--apply`: attempt a write after review; writes require explicit no-snapshot approval before OpenAI HTTP when no saved snapshot is available
-  - `--plan-out <file>` / `--plan-in <file>`: store or re-use deterministic plans (spend-money writes require `--plan-in`)
+  - `--plan-out <file>` / `--plan-in <file>`: store or re-use deterministic plans; every write apply requires `--plan-in`
   - `--yes`: additional confirmation for high-risk/batch writes; spend-money operations need `--yes` plus `--plan-in`
   - `--receipt-out <file>`: capture a receipt when an approved supported command really runs; refusals for missing approval or failed safety checks do not create write receipts
   - `--ack-spend-money`: required for inference, embeddings, images/audio generation, fine-tunes, batches, moderations, etc.; spend-money operations demand `--live --apply --plan-in <plan.json> --yes --ack-spend-money`

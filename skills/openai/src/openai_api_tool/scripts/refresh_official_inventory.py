@@ -15,6 +15,12 @@ import yaml
 DOCS_OVERVIEW_URL = "https://developers.openai.com/api/reference/overview"
 DOCS_ROOT = "https://developers.openai.com"
 OPENAPI_YAML_URL = "https://app.stainless.com/api/spec/documented/openai/openapi.documented.yml"
+DOCS_API_REFERENCE = f"{DOCS_ROOT}/api/reference"
+
+
+_ALLOWED_METHODS = {"get", "post", "put", "patch", "delete", "head"}
+
+_CURL_BETA_RE = re.compile(r"OpenAI-Beta:\s*([^\"\\]+)")
 
 
 def _utc_date() -> str:
@@ -46,53 +52,167 @@ def _write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
-def _parse_overview_method_links(html: str) -> list[str]:
-    links = set(re.findall(r'href="(/api/reference/[^"]+)"', html))
-    method_links = sorted([l for l in links if "/methods/" in l])
-    return method_links
+def _parse_overview_method_links(html: str) -> set[str]:
+    links = set(re.findall(r'href="(/api/reference/[^"]+)"', html or ""))
+    return {l for l in links if "/methods/" in l}
 
 
-_API_URL_RE = re.compile(r"https://api\.openai\.com/v1[^\s\"\\]+", re.IGNORECASE)
-_CURL_X_RE = re.compile(r"\s-X\s+(GET|POST|PUT|PATCH|DELETE|HEAD)\b", re.IGNORECASE)
-_CURL_HAS_DATA_RE = re.compile(r"\s(-d|--data\b|--data-raw\b|-F\b)", re.IGNORECASE)
-_CURL_BETA_RE = re.compile(r"OpenAI-Beta:\s*([^\"\\]+)")
+def _resource_key(value: str) -> str:
+    return re.sub(r"[-_]", "", str(value).lower()).rstrip("s")
 
 
-def _infer_doc_operation_from_doc_page(html: str) -> tuple[str, str, str | None, bool]:
-    # The API reference pages are syntax-highlighted; strip HTML tags to make regex matching stable.
-    plain = re.sub(r"<[^>]+>", "", html or "")
+def _normalize_snake(value: str) -> str:
+    s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", str(value))
+    s = re.sub(r"\W+", "_", s)
+    return re.sub(r"_+", "_", s).strip("_").lower()
 
-    # Find the first mention of an OpenAI API URL (most method pages include one in the curl example).
-    m = _API_URL_RE.search(plain)
-    if not m:
-        raise RuntimeError("Could not find curl example with https://api.openai.com/v1/... in doc page")
-    url = str(m.group(0) or "").strip().strip('"').strip("'")
-    if "/v1" not in url:
-        raise RuntimeError(f"Unexpected curl URL (missing /v1): {url}")
-    path = url.split("/v1", 1)[1] or ""
-    if not path.startswith("/"):
-        path = "/" + path
-    path = path.split("?", 1)[0]
 
-    # Heuristic: infer method from the nearest curl block around the URL.
-    start = max(0, m.start() - 2000)
-    end = min(len(plain), m.end() + 2000)
-    around = plain[start:end]
+def _extract_doc_method_from_meta_path(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    raw = value.strip()
+    if not raw:
+        return None
 
-    # Infer method from -X; otherwise: POST if data/form is present, else GET.
-    mx = _CURL_X_RE.search(around)
-    has_data = bool(_CURL_HAS_DATA_RE.search(around))
-    if mx:
-        method = str(mx.group(1) or "").upper()
-    else:
-        method = "POST" if has_data else "GET"
+    # Keep common simple route slugs and reject long natural language text.
+    token = raw.split()[0]
+    if not re.fullmatch(r"[a-zA-Z0-9_/-]+", token):
+        return None
 
-    beta = None
-    bm = _CURL_BETA_RE.search(around)
-    if bm:
-        beta = str(bm.group(1) or "").strip().strip("'").strip('"') or None
+    method = token.strip("/").lower()
+    if not method:
+        return None
+    if method in _ALLOWED_METHODS:
+        return None
+    return method.replace("_", "_")
 
-    return method, path, beta, has_data
+
+def _extract_doc_method_from_name(value: str, method: str) -> str | None:
+    if not value:
+        return None
+    tokens = [t.lower() for t in re.findall(r"[a-z0-9_\\-]+", str(value))]
+    for token in tokens:
+        if token in {"create", "generate", "new"}:
+            return "create"
+        if token in {"list"}:
+            return "list"
+        if token in {"retrieve", "get", "read"}:
+            return "retrieve"
+        if token in {"update", "modify", "edit"}:
+            return "update"
+        if token in {"delete", "remove", "remove-method"}:
+            return "delete"
+        if token in {"cancel", "abort"}:
+            return "cancel"
+        if token in {"count", "num"}:
+            return "count"
+    return None
+
+
+def _extract_doc_method_from_operation_id(operation_id: str, method: str) -> str | None:
+    if not operation_id:
+        return None
+    tokens = _normalize_snake(operation_id).split("_")
+    for token in tokens:
+        if token in {"list", "create", "retrieve", "update", "delete", "cancel", "count"}:
+            return token
+    return None
+
+
+def _best_doc_method(op_obj: dict[str, Any], method: str) -> str:
+    meta = op_obj.get("x-oaiMeta")
+    if isinstance(meta, dict):
+        for candidate in (meta.get("path"), meta.get("name")):
+            slug = _extract_doc_method_from_meta_path(candidate)
+            if slug:
+                return slug
+            slug = _extract_doc_method_from_name(str(candidate or ""), method)
+            if slug:
+                return slug
+
+    # Preserve request operation semantics.
+    fallback = {
+        "get": "retrieve",
+        "post": "create",
+        "put": "update",
+        "patch": "update",
+        "delete": "delete",
+        "head": "get",
+    }
+    default = fallback.get(method.lower(), method.lower())
+    op_id = str(op_obj.get("operationId") or "").strip()
+    if op_id:
+        found = _extract_doc_method_from_operation_id(op_id, method)
+        if found:
+            return found
+    return default
+
+
+def _resource_segments_for_path(api_path: str, group: str | None, method_slug: str | None = None) -> list[str]:
+    static_segments = [seg for seg in str(api_path).split("/") if seg and "{" not in seg]
+    if not static_segments:
+        return []
+
+    if method_slug and static_segments[-1].lower().replace("_", "-") == method_slug.lower().replace("_", "-"):
+        static_segments = static_segments[:-1]
+    if not static_segments:
+        return []
+
+    root_index = 0
+    if isinstance(group, str):
+        g = group.strip()
+        if g:
+            for idx, seg in enumerate(static_segments):
+                if _resource_key(seg) == _resource_key(g):
+                    root_index = idx
+                    break
+
+    parts: list[str] = [static_segments[root_index]]
+    for seg in static_segments[root_index + 1 :]:
+        parts.extend(["subresources", seg])
+    return parts
+
+
+def _operation_doc_url(
+    *,
+    api_path: str,
+    method: str,
+    op_obj: dict[str, Any],
+    overview_method_links: set[str],
+) -> str:
+    meta = op_obj.get("x-oaiMeta")
+    if not isinstance(meta, dict):
+        return DOCS_OVERVIEW_URL
+
+    group = str(meta.get("group") or "").strip()
+    if not group and not api_path:
+        return DOCS_OVERVIEW_URL
+
+    segments = _resource_segments_for_path(api_path, group or None)
+    if not segments:
+        return DOCS_OVERVIEW_URL
+
+    beta = _extract_beta_from_openapi_op(op_obj)
+    method_slug = _best_doc_method(op_obj, method.lower())
+    segments = _resource_segments_for_path(api_path, group or None, method_slug)
+
+    if not segments:
+        return DOCS_OVERVIEW_URL
+
+    candidates: list[str] = []
+
+    base = f"{DOCS_API_REFERENCE}/resources"
+    if beta:
+        candidates.append("/".join([f"{base}/beta", *segments, "methods", method_slug]))
+    candidates.append("/".join([base, *segments, "methods", method_slug]))
+    if segments and segments[0] == "organization":
+        candidates.append("/".join([base, "admin", "subresources", *segments, "methods", method_slug]))
+
+    for candidate in candidates:
+        rel = candidate.replace(DOCS_ROOT, "", 1)
+        if rel in overview_method_links:
+            return candidate
+    return DOCS_OVERVIEW_URL
 
 
 def _extract_beta_from_openapi_op(op_obj: dict[str, Any]) -> str | None:
@@ -113,227 +233,6 @@ def _extract_beta_from_openapi_op(op_obj: dict[str, Any]) -> str | None:
         return None
     v = str(m.group(1) or "").strip().strip("'").strip('"')
     return v or None
-
-
-def _openapi_ops_index(openapi_obj: dict[str, Any]) -> dict[tuple[str, str], dict[str, Any]]:
-    paths = openapi_obj.get("paths")
-    if not isinstance(paths, dict):
-        raise RuntimeError("OpenAPI missing paths")
-
-    idx: dict[tuple[str, str], dict[str, Any]] = {}
-    for path, path_item in paths.items():
-        if not isinstance(path_item, dict):
-            continue
-        for method, op in path_item.items():
-            ml = str(method or "").lower()
-            if ml not in {"get", "post", "put", "patch", "delete", "head"}:
-                continue
-            if not isinstance(op, dict):
-                continue
-            key = (ml.upper(), str(path))
-            idx[key] = op
-    return idx
-
-
-def _path_template_matches(concrete: str, template: str) -> bool:
-    if concrete == template:
-        return True
-    parts = [p for p in str(template).split("/") if p != ""]
-    pat_parts: list[str] = []
-    for seg in parts:
-        if seg.startswith("{") and seg.endswith("}") and len(seg) >= 3:
-            pat_parts.append(r"[^/]+")
-        else:
-            pat_parts.append(re.escape(seg))
-    pat = "^/" + "/".join(pat_parts) + "$"
-    return re.match(pat, str(concrete)) is not None
-
-
-def _count_template_params(template: str) -> int:
-    return len(re.findall(r"{[a-zA-Z0-9_\\-]+}", template))
-
-
-def _match_openapi_operation(
-    *,
-    method: str,
-    concrete_path: str,
-    openapi_obj: dict[str, Any],
-    openapi_idx: dict[tuple[str, str], dict[str, Any]],
-) -> tuple[str, dict[str, Any], dict[str, Any]]:
-    """
-    Returns: (path_template, path_item_obj, op_obj)
-    """
-    paths_obj = openapi_obj.get("paths")
-    if not isinstance(paths_obj, dict):
-        raise RuntimeError("OpenAPI missing paths")
-
-    # Exact match first.
-    direct = openapi_idx.get((method, concrete_path))
-    if direct is not None:
-        path_item = paths_obj.get(concrete_path)
-        if isinstance(path_item, dict):
-            return concrete_path, path_item, direct
-        return concrete_path, {}, direct
-
-    # Match doc example paths (with concrete ids) against OpenAPI templates.
-    candidates: list[tuple[str, dict[str, Any], dict[str, Any]]] = []
-    for path_template, path_item in paths_obj.items():
-        if not isinstance(path_item, dict):
-            continue
-        op_obj = path_item.get(method.lower())
-        if not isinstance(op_obj, dict):
-            continue
-        if _path_template_matches(concrete_path, str(path_template)):
-            candidates.append((str(path_template), path_item, op_obj))
-
-    if not candidates:
-        raise RuntimeError(f"No OpenAPI operation matches {method} {concrete_path}")
-
-    # Pick the most specific: fewer params, then longer literal (more stable), then stable sort.
-    candidates_sorted = sorted(
-        candidates,
-        key=lambda c: (
-            _count_template_params(c[0]),
-            -len(c[0]),
-            c[0],
-        ),
-    )
-    return candidates_sorted[0]
-
-
-def _is_probably_id_segment(seg: str) -> bool:
-    s = str(seg or "").strip()
-    if not s or len(s) < 6:
-        return False
-    if any(ch.isdigit() for ch in s) and ("_" in s or "-" in s):
-        return True
-    # Common OpenAI id-ish prefixes seen in docs.
-    for prefix in (
-        "file-",
-        "asst_",
-        "thread_",
-        "run_",
-        "msg_",
-        "proj_",
-        "org_",
-        "batch_",
-        "ftjob_",
-        "vs_",
-        "eval_",
-        "evalrun_",
-        "cksess_",
-        "cons_",
-    ):
-        if s.startswith(prefix) and any(ch.isdigit() for ch in s):
-            return True
-    return False
-
-
-def _split_path(path: str) -> list[str]:
-    return [p for p in str(path or "").split("/") if p != ""]
-
-
-def _template_prefix_matches(concrete_path: str, template_path: str) -> bool:
-    c = _split_path(concrete_path)
-    t = _split_path(template_path)
-    if len(t) > len(c):
-        return False
-    for i, tseg in enumerate(t):
-        cseg = c[i]
-        if tseg.startswith("{") and tseg.endswith("}") and len(tseg) >= 3:
-            continue
-        if tseg != cseg:
-            return False
-    return True
-
-
-def _synthesize_missing_openapi_operation(
-    *,
-    method: str,
-    concrete_path: str,
-    openapi_obj: dict[str, Any],
-    beta_from_doc: str | None,
-    has_data: bool,
-) -> tuple[str, dict[str, Any], dict[str, Any]]:
-    paths_obj = openapi_obj.get("paths")
-    if not isinstance(paths_obj, dict):
-        raise RuntimeError("OpenAPI missing paths")
-
-    best_template: str | None = None
-    best_item: dict[str, Any] | None = None
-    for tpl, item in paths_obj.items():
-        if not isinstance(item, dict):
-            continue
-        tpl_s = str(tpl)
-        if not _template_prefix_matches(concrete_path, tpl_s):
-            continue
-        # Longest prefix wins; tie-breaker prefers fewer params.
-        if best_template is None:
-            best_template, best_item = tpl_s, item
-            continue
-        if len(_split_path(tpl_s)) > len(_split_path(best_template)):
-            best_template, best_item = tpl_s, item
-            continue
-        if len(_split_path(tpl_s)) == len(_split_path(best_template)):
-            if _count_template_params(tpl_s) < _count_template_params(best_template):
-                best_template, best_item = tpl_s, item
-
-    csegs = _split_path(concrete_path)
-
-    if best_template and best_item is not None:
-        tsegs = _split_path(best_template)
-        remainder = csegs[len(tsegs) :]
-        synthesized_remainder: list[str] = []
-        id_idx = 1
-        for seg in remainder:
-            if _is_probably_id_segment(seg):
-                synthesized_remainder.append("{id" + str(id_idx) + "}")
-                id_idx += 1
-            else:
-                synthesized_remainder.append(seg)
-        new_template = "/" + "/".join(tsegs + synthesized_remainder)
-
-        # Use a best-effort op object for tags and parameter requirements.
-        op_obj = best_item.get(str(method).lower())
-        if not isinstance(op_obj, dict):
-            op_obj = {}
-            for k in ("get", "post", "put", "patch", "delete", "head"):
-                cand = best_item.get(k)
-                if isinstance(cand, dict):
-                    op_obj = cand
-                    break
-        # This operation is not in the OpenAPI snapshot; avoid reusing operationIds from the prefix op.
-        if isinstance(op_obj, dict) and "operationId" in op_obj:
-            op_obj = dict(op_obj)
-            op_obj.pop("operationId", None)
-
-        # If the doc indicates a beta header but OpenAPI doesn't, keep it for later.
-        if beta_from_doc and not _extract_beta_from_openapi_op(op_obj):
-            # Do not mutate the OpenAPI snapshot object; copy and attach a minimal x-oaiMeta curl snippet.
-            op_obj = dict(op_obj)
-            op_obj.setdefault("x-oaiMeta", {"examples": {"request": {"curl": f'-H \"OpenAI-Beta: {beta_from_doc}\"'}}})
-
-        # If doc shows request data but OpenAPI doesn't mark required_body, attach best-effort.
-        if has_data and not _required_body(op_obj):
-            op_obj = dict(op_obj)
-            op_obj.setdefault("requestBody", {"required": False})
-
-        return new_template, best_item, op_obj
-
-    # No prefix match: generalize the full concrete path by replacing id-like segments.
-    out: list[str] = []
-    id_idx = 1
-    for seg in csegs:
-        if _is_probably_id_segment(seg):
-            out.append("{id" + str(id_idx) + "}")
-            id_idx += 1
-        else:
-            out.append(seg)
-    new_template = "/" + "/".join(out)
-    op_obj: dict[str, Any] = {}
-    if beta_from_doc:
-        op_obj["x-oaiMeta"] = {"examples": {"request": {"curl": f'-H \"OpenAI-Beta: {beta_from_doc}\"'}}}
-    return new_template, {}, op_obj
 
 
 def _required_path_params(openapi_obj: dict[str, Any], op_obj: dict[str, Any], path_item: dict[str, Any]) -> list[str]:
@@ -386,72 +285,61 @@ def main() -> int:
     openapi_sha = _sha256_bytes(openapi_yml_path.read_bytes())
 
     overview_html = _fetch_text(DOCS_OVERVIEW_URL)
-    method_links = _parse_overview_method_links(overview_html)
-    if not method_links:
+    overview_method_links = _parse_overview_method_links(overview_html)
+    if not overview_method_links:
         raise RuntimeError("No /methods/ links found in overview page")
 
-    openapi_idx = _openapi_ops_index(openapi_obj)
+    paths_obj = openapi_obj.get("paths")
+    if not isinstance(paths_obj, dict):
+        raise RuntimeError("OpenAPI missing paths")
 
-    seen_keys: set[tuple[str, str]] = set()
-    rows: list[dict[str, Any]] = []
-    for rel in method_links:
-        url = DOCS_ROOT + rel
-        page_html = _fetch_text(url)
-        try:
-            method, concrete_path, beta_from_doc, has_data = _infer_doc_operation_from_doc_page(page_html)
-        except Exception as e:  # noqa: BLE001
-            raise RuntimeError(f"Failed to infer method/path from doc page: {url}: {type(e).__name__}: {e}") from None
-
-        match = None
-        try:
-            match = _match_openapi_operation(
-                method=method,
-                concrete_path=concrete_path,
-                openapi_obj=openapi_obj,
-                openapi_idx=openapi_idx,
-            )
-        except Exception:
-            match = None
-
-        if match:
-            path_template, path_item, op_obj = match
-        else:
-            # Some navigation method pages are not present in the OpenAPI snapshot. Synthesize a template
-            # path using the closest matching OpenAPI prefix to keep path params stable when possible.
-            path_template, path_item, op_obj = _synthesize_missing_openapi_operation(
-                method=method,
-                concrete_path=concrete_path,
-                openapi_obj=openapi_obj,
-                beta_from_doc=beta_from_doc,
-                has_data=has_data,
-            )
-
-        key = (method, path_template)
-        if key in seen_keys:
+    openapi_ops: list[tuple[str, str, dict[str, Any], dict[str, Any]]] = []
+    for path_template, path_item in paths_obj.items():
+        if not isinstance(path_item, dict):
             continue
-        seen_keys.add(key)
+        for method, op_obj in path_item.items():
+            method_l = str(method or "").lower()
+            if method_l not in _ALLOWED_METHODS:
+                continue
+            if isinstance(op_obj, dict):
+                openapi_ops.append((method_l.upper(), str(path_template), op_obj, path_item))
 
-        operation_id = str((op_obj or {}).get("operationId") or "").strip()
+    openapi_operation_count = len(openapi_ops)
+    if openapi_operation_count == 0:
+        raise RuntimeError("No method/path operations found in OpenAPI")
+
+    # OpenAPI is the operation boundary now. One row per declared method/path.
+    rows: list[dict[str, Any]] = []
+    for method, path_template, op_obj, path_item in openapi_ops:
+        operation_id = str(op_obj.get("operationId") or "").strip()
         if not operation_id:
             # Fallback: deterministic derived name
-            derived = method.lower() + "_" + path_template.strip("/").replace("/", "_").replace("{", "").replace("}", "")
-            operation_id = derived
+            operation_id = (
+                method.lower() + "_" + path_template.strip("/").replace("/", "_").replace("{", "").replace("}", "")
+            )
 
-        tags_raw = (op_obj or {}).get("tags") or []
+        tags_raw = op_obj.get("tags") or []
         tags = sorted([t.strip() for t in tags_raw if isinstance(t, str) and t.strip()])
 
-        required_path = _required_path_params(openapi_obj, op_obj or {}, path_item or {})
+        required_path = _required_path_params(openapi_obj, op_obj, path_item)
         template_params = sorted(set(re.findall(r"{([a-zA-Z0-9_\\-]+)}", path_template)))
         required_path = sorted(set(required_path) | set(template_params))
-        required_body = _required_body(op_obj or {}) or bool(has_data and method in {"POST", "PUT", "PATCH"})
-        beta = _extract_beta_from_openapi_op(op_obj or {}) or beta_from_doc
+        required_body = _required_body(op_obj)
+        beta = _extract_beta_from_openapi_op(op_obj)
+
+        doc_url = _operation_doc_url(
+            api_path=path_template,
+            method=method,
+            op_obj=op_obj,
+            overview_method_links=overview_method_links,
+        )
 
         rows.append(
             {
                 "operation_command": operation_id,
                 "method": method,
                 "path": path_template,
-                "doc_url": url,
+                "doc_url": doc_url,
                 "tags": tags,
                 "required_path": required_path,
                 "required_body": required_body,
@@ -494,7 +382,9 @@ def main() -> int:
                 "openapi_sha256": openapi_sha,
                 "ops_file": str(ops_path),
                 "ops_count": len(rows_sorted),
-                "unique_method_path_count": len(seen_keys),
+                "openapi_operation_count": openapi_operation_count,
+                "ops_count_matches_openapi_count": len(rows_sorted) == openapi_operation_count,
+                "unique_method_path_count": len(rows_sorted),
             },
             indent=2,
             sort_keys=True,

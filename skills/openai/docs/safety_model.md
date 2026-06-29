@@ -34,7 +34,7 @@ Current workflow for writes:
 
 1) Generate a plan (dry-run).
 2) Review the plan (human/Codex).
-3) Try apply with the required gates (`--live --apply`, and the extra flags for spend-money or irreversible operations).
+3) Try apply with the required gates (`--live --apply --plan-in <plan.json>`, and the extra flags for spend-money or irreversible operations).
 4) If no real before-state can be saved, the tool requires explicit no-snapshot approval before OpenAI API key use or HTTP. Approved supported writes proceed and create receipts; missing approval or failed safety checks refuse honestly.
 
 ## Plans, refusals, and receipts
@@ -55,7 +55,7 @@ Plans/receipts must never include secrets.
 
 If a command supports writes, it should also support file outputs:
 - `--plan-out <path>`: write the dry-run plan JSON to a file (for review)
-- `--plan-in <path>`: apply from a saved plan file (for high-risk/batch)
+- `--plan-in <path>`: apply from a saved plan file; required for every API write apply
 - `--receipt-out <path>`: write a receipt when an approved supported command really runs; refusals for missing approval or failed safety checks do not create write receipts
 
 This makes the workflow repeatable in CI and easier to review.
@@ -64,7 +64,8 @@ This makes the workflow repeatable in CI and easier to review.
 
 - Any command that would hit the OpenAI network requires `--live`; the CLI stays plan-only without that flag.
 - Write actions also demand `--apply`; without it the tool never executes mutations beyond the plan.
-- Spend-money operations (model inference/generation, embeddings, images/audio, fine-tunes, batches, moderations, etc.) layer on `--plan-in <plan.json>`, `--yes`, and `--ack-spend-money` in addition to `--live --apply` so a saved plan can be audited before applying.
+- API writes require `--plan-in <plan.json>` in addition to `--live --apply` so a saved plan can be audited before applying.
+- Spend-money operations (model inference/generation, embeddings, images/audio, fine-tunes, batches, moderations, etc.) layer on `--yes` and `--ack-spend-money`.
 - Deletes and other irreversible actions additionally require `--ack-irreversible` on top of the write gates.
 - After those gates pass, writes require explicit no-snapshot approval before OpenAI API key use or HTTP when command-specific saved snapshot support is not available.
 - Reference `docs/examples/plan_spend_money.example.json` for a spend-money plan whose `classification.gates.plan_in`, `classification.gates.yes`, and `classification.gates.ack_spend_money` are all `true`, proving the emitted gate state.

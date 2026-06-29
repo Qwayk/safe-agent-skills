@@ -10,8 +10,10 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 ### Added
 - More inventory refresh utilities and safety tests.
 - OpenAI write plans now include a `no_snapshot_available` `before_state` contract and an explicit no-snapshot approval verification plan.
+- 2026-06-29 documented OpenAI OpenAPI snapshot plus 273-operation pinned inventory.
 
 ### Changed
+- Inventory refresh now uses the official documented OpenAPI spec as the operation boundary instead of inferring method/path from API reference page examples.
 - API writes, demo writes, and jobs with write rows now require explicit no-snapshot approval before OpenAI API key use, OpenAI HTTP, or stub receipt output when command-specific before-state support is not available.
 - Existing spend-money, irreversible, `--live`, `--yes`, and `--plan-in` gates still run before the broader explicit no-snapshot approval.
 

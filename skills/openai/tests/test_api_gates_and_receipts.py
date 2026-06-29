@@ -340,8 +340,27 @@ class TestApiCommands(unittest.TestCase):
             self.assertTrue(payload_plan_missing.get("refused"))
             self.assertTrue(any("--plan-in" in reason for reason in payload_plan_missing.get("reasons", [])))
 
+    def test_ordinary_write_apply_requires_plan_in(self) -> None:
+        args = self._args("CreateContainer", body_json='{"name": "demo"}')
+        ctx = self._ctx(
+            apply=True,
+            live=True,
+            yes=True,
+            ack_no_snapshot=True,
+        )
+        buf = io.StringIO()
+        with patch("openai_api_tool.commands.api.HttpClient.request") as mock_request:
+            mock_request.side_effect = AssertionError("HttpClient.request should not run when plan-in missing")
+            with redirect_stdout(buf):
+                rc = cmd_api_call(args, ctx)
+        self.assertEqual(rc, 0)
+        payload = json.loads(buf.getvalue())
+        self.assertTrue(payload.get("refused"))
+        self.assertTrue(any("--plan-in" in reason for reason in payload.get("reasons", [])))
+        mock_request.assert_not_called()
+
     def test_live_refuses_with_missing_required_inputs(self) -> None:
-        args = self._args("CreateContainer")
+        args = self._args("CreateContainerFile")
         with tempfile.TemporaryDirectory() as tmpd:
             ctx = self._ctx(
                 artifacts_dir=Path(tmpd),

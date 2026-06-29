@@ -63,7 +63,7 @@ def _classify_operation(op: Any) -> dict[str, Any]:
     gates = {
         "apply": is_write,
         "live": is_write,
-        "plan_in": spend_money or irreversible,
+        "plan_in": is_write,
         "yes": spend_money or irreversible,
         "ack_spend_money": spend_money,
         "ack_irreversible": irreversible,

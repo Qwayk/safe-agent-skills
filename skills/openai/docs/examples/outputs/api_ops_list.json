@@ -2,12 +2,12 @@
   "artifacts_dir": null,
   "audit_log": null,
   "audit_log_global": null,
-  "count": 240,
+  "count": 273,
   "ok": true,
   "ops": [
     {
       "beta_header": "chatkit_beta=v1",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/sessions/methods/cancel",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "CancelChatSessionMethod",
       "path": "/chatkit/sessions/{session_id}/cancel",
@@ -24,17 +24,17 @@
       "operation_command": "Compactconversation",
       "path": "/responses/compact",
       "required_path_params": [],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": []
     },
     {
       "beta_header": "chatkit_beta=v1",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/sessions/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "CreateChatSessionMethod",
       "path": "/chatkit/sessions",
       "required_path_params": [],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": []
     },
     {
@@ -44,7 +44,7 @@
       "operation_command": "CreateContainer",
       "path": "/containers",
       "required_path_params": [],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": []
     },
     {
@@ -66,7 +66,7 @@
       "operation_command": "CreateSkill",
       "path": "/skills",
       "required_path_params": [],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Skills"
       ]
@@ -80,43 +80,43 @@
       "required_path_params": [
         "skill_id"
       ],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Skills"
       ]
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/create_character",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "CreateVideoCharacter",
       "path": "/videos/characters",
       "required_path_params": [],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Videos"
       ]
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/edit",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "CreateVideoEdit",
       "path": "/videos/edits",
       "required_path_params": [],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Videos"
       ]
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/extend",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "CreateVideoExtend",
       "path": "/videos/extensions",
       "required_path_params": [],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Videos"
       ]
@@ -130,7 +130,7 @@
       "required_path_params": [
         "video_id"
       ],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Videos"
       ]
@@ -190,8 +190,8 @@
       ]
     },
     {
-      "beta_header": "chatkit_beta=v1",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/threads/methods/delete",
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "DeleteThreadMethod",
       "path": "/chatkit/threads/{thread_id}",
@@ -275,7 +275,7 @@
     },
     {
       "beta_header": "chatkit_beta=v1",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/threads/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "GetThreadMethod",
       "path": "/chatkit/threads/{thread_id}",
@@ -301,7 +301,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/get_character",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "GetVideoCharacter",
       "path": "/videos/characters/{character_id}",
@@ -315,17 +315,17 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/responses/subresources/input_tokens/methods/count",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "Getinputtokencounts",
       "path": "/responses/input_tokens",
       "required_path_params": [],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": []
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/containers/subresources/files/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/containers/subresources/files/methods/retrieve",
       "method": "GET",
       "operation_command": "ListContainerFiles",
       "path": "/containers/{container_id}/files",
@@ -337,7 +337,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/containers/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/containers/methods/retrieve",
       "method": "GET",
       "operation_command": "ListContainers",
       "path": "/containers",
@@ -373,7 +373,7 @@
     },
     {
       "beta_header": "chatkit_beta=v1",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/threads/methods/list_items",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "ListThreadItemsMethod",
       "path": "/chatkit/threads/{thread_id}/items",
@@ -385,7 +385,7 @@
     },
     {
       "beta_header": "chatkit_beta=v1",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/chatkit/subresources/threads/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "ListThreadsMethod",
       "path": "/chatkit/threads",
@@ -445,7 +445,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/videos/methods/download_content",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "RetrieveVideoContent",
       "path": "/videos/{video_id}/content",
@@ -466,7 +466,7 @@
       "required_path_params": [
         "skill_id"
       ],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Skills"
       ]
@@ -487,7 +487,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/activate",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/certificates/methods/activate",
       "method": "POST",
       "operation_command": "activateOrganizationCertificates",
       "path": "/organization/certificates/activate",
@@ -499,7 +499,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/certificates/methods/activate",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/certificates/methods/activate",
       "method": "POST",
       "operation_command": "activateProjectCertificates",
       "path": "/organization/projects/{project_id}/certificates/activate",
@@ -513,7 +513,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/users/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "add-group-user",
       "path": "/organization/groups/{group_id}/users",
@@ -527,7 +527,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/groups/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "add-project-group",
       "path": "/organization/projects/{project_id}/groups",
@@ -541,7 +541,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/uploads/subresources/parts/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "addUploadPart",
       "path": "/uploads/{upload_id}/parts",
@@ -555,7 +555,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/admin_api_keys/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys/methods/create",
       "method": "POST",
       "operation_command": "admin-api-keys-create",
       "path": "/organization/admin_api_keys",
@@ -565,7 +565,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/admin_api_keys/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys/methods/delete",
       "method": "DELETE",
       "operation_command": "admin-api-keys-delete",
       "path": "/organization/admin_api_keys/{key_id}",
@@ -577,7 +577,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/admin_api_keys/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys/methods/retrieve",
       "method": "GET",
       "operation_command": "admin-api-keys-get",
       "path": "/organization/admin_api_keys/{key_id}",
@@ -589,7 +589,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/admin_api_keys/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/admin_api_keys/methods/list",
       "method": "GET",
       "operation_command": "admin-api-keys-list",
       "path": "/organization/admin_api_keys",
@@ -599,7 +599,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/methods/archive",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/methods/archive",
       "method": "POST",
       "operation_command": "archive-project",
       "path": "/organization/projects/{project_id}/archive",
@@ -613,7 +613,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/roles/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "assign-group-role",
       "path": "/organization/groups/{group_id}/roles",
@@ -627,7 +627,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/groups/subresources/roles/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "assign-project-group-role",
       "path": "/projects/{project_id}/groups/{group_id}/roles",
@@ -642,7 +642,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/users/subresources/roles/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "assign-project-user-role",
       "path": "/projects/{project_id}/users/{user_id}/roles",
@@ -657,7 +657,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/subresources/roles/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "assign-user-role",
       "path": "/organization/users/{user_id}/roles",
@@ -681,6 +681,21 @@
       "required_request_body": false,
       "tags": [
         "Batch"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/methods/cancel",
+      "method": "POST",
+      "operation_command": "cancelEvalRun",
+      "path": "/evals/{eval_id}/runs/{run_id}",
+      "required_path_params": [
+        "eval_id",
+        "run_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Evals"
       ]
     },
     {
@@ -713,7 +728,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/cancel",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "cancelRun",
       "path": "/threads/{thread_id}/runs/{run_id}/cancel",
@@ -724,6 +739,35 @@
       "required_request_body": false,
       "tags": [
         "Assistants"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/uploads/methods/cancel",
+      "method": "POST",
+      "operation_command": "cancelUpload",
+      "path": "/uploads/{upload_id}/cancel",
+      "required_path_params": [
+        "upload_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Uploads"
+      ]
+    },
+    {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/cancel",
+      "method": "POST",
+      "operation_command": "cancelVectorStoreFileBatch",
+      "path": "/vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel",
+      "required_path_params": [
+        "batch_id",
+        "vector_store_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Vector stores"
       ]
     },
     {
@@ -742,7 +786,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/groups/methods/create",
       "method": "POST",
       "operation_command": "create-group",
       "path": "/organization/groups",
@@ -754,7 +798,19 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/spend_alerts/methods/create",
+      "method": "POST",
+      "operation_command": "create-organization-spend-alert",
+      "path": "/organization/spend_alerts",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Spend alerts"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/methods/create",
       "method": "POST",
       "operation_command": "create-project",
       "path": "/organization/projects",
@@ -766,7 +822,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/roles/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "create-project-role",
       "path": "/projects/{project_id}/roles",
@@ -780,7 +836,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/service_accounts/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/service_accounts/methods/create",
       "method": "POST",
       "operation_command": "create-project-service-account",
       "path": "/organization/projects/{project_id}/service_accounts",
@@ -794,7 +850,21 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/users/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/spend_alerts/methods/create",
+      "method": "POST",
+      "operation_command": "create-project-spend-alert",
+      "path": "/organization/projects/{project_id}/spend_alerts",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Spend alerts"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/users/methods/create",
       "method": "POST",
       "operation_command": "create-project-user",
       "path": "/organization/projects/{project_id}/users",
@@ -804,6 +874,18 @@
       "required_request_body": true,
       "tags": [
         "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
+      "method": "POST",
+      "operation_command": "create-realtime-call",
+      "path": "/realtime/calls",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Realtime"
       ]
     },
     {
@@ -844,7 +926,19 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/roles/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/resources/realtime/subresources/translations/subresources/client_secrets/methods/create",
+      "method": "POST",
+      "operation_command": "create-realtime-translation-client-secret",
+      "path": "/realtime/translations/client_secrets",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Realtime"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/roles/methods/create",
       "method": "POST",
       "operation_command": "create-role",
       "path": "/organization/roles",
@@ -855,8 +949,8 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/create",
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "createAssistant",
       "path": "/assistants",
@@ -909,14 +1003,14 @@
       "operation_command": "createConversation",
       "path": "/conversations",
       "required_path_params": [],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Conversations"
       ]
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/subresources/items/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "createConversationItems",
       "path": "/conversations/{conversation_id}/items",
@@ -968,7 +1062,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/files/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "createFile",
       "path": "/files",
@@ -1006,7 +1100,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/images/methods/generate",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "createImage",
       "path": "/images/generations",
@@ -1018,7 +1112,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/images/methods/edit",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "createImageEdit",
       "path": "/images/edits",
@@ -1030,7 +1124,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/images/methods/create_variation",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "createImageVariation",
       "path": "/images/variations",
@@ -1042,7 +1136,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/messages/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "createMessage",
       "path": "/threads/{thread_id}/messages",
@@ -1079,8 +1173,8 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/create",
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "createRun",
       "path": "/threads/{thread_id}/runs",
@@ -1105,20 +1199,20 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/methods/create",
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "createThread",
       "path": "/threads",
       "required_path_params": [],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Assistants"
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/methods/create_and_run",
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "createThreadAndRun",
       "path": "/threads/runs",
@@ -1211,7 +1305,7 @@
       "operation_command": "createVideo",
       "path": "/videos",
       "required_path_params": [],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Videos"
       ]
@@ -1242,7 +1336,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/deactivate",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/certificates/methods/deactivate",
       "method": "POST",
       "operation_command": "deactivateOrganizationCertificates",
       "path": "/organization/certificates/deactivate",
@@ -1254,7 +1348,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/certificates/methods/deactivate",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/certificates/methods/deactivate",
       "method": "POST",
       "operation_command": "deactivateProjectCertificates",
       "path": "/organization/projects/{project_id}/certificates/deactivate",
@@ -1268,7 +1362,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/groups/methods/delete",
       "method": "DELETE",
       "operation_command": "delete-group",
       "path": "/organization/groups/{group_id}",
@@ -1282,7 +1376,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/invites/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/invites/methods/delete",
       "method": "DELETE",
       "operation_command": "delete-invite",
       "path": "/organization/invites/{invite_id}",
@@ -1296,12 +1390,26 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/api_keys/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/spend_alerts/methods/delete",
+      "method": "DELETE",
+      "operation_command": "delete-organization-spend-alert",
+      "path": "/organization/spend_alerts/{alert_id}",
+      "required_path_params": [
+        "alert_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Spend alerts"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/api_keys/methods/delete",
       "method": "DELETE",
       "operation_command": "delete-project-api-key",
-      "path": "/organization/projects/{project_id}/api_keys/{key_id}",
+      "path": "/organization/projects/{project_id}/api_keys/{api_key_id}",
       "required_path_params": [
-        "key_id",
+        "api_key_id",
         "project_id"
       ],
       "required_request_body": false,
@@ -1311,7 +1419,21 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/roles/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/model_permissions/methods/delete",
+      "method": "DELETE",
+      "operation_command": "delete-project-model-permissions",
+      "path": "/organization/projects/{project_id}/model_permissions",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "delete-project-role",
       "path": "/projects/{project_id}/roles/{role_id}",
@@ -1326,7 +1448,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/service_accounts/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/service_accounts/methods/delete",
       "method": "DELETE",
       "operation_command": "delete-project-service-account",
       "path": "/organization/projects/{project_id}/service_accounts/{service_account_id}",
@@ -1341,7 +1463,22 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/users/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/spend_alerts/methods/delete",
+      "method": "DELETE",
+      "operation_command": "delete-project-spend-alert",
+      "path": "/organization/projects/{project_id}/spend_alerts/{alert_id}",
+      "required_path_params": [
+        "alert_id",
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Spend alerts"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/users/methods/delete",
       "method": "DELETE",
       "operation_command": "delete-project-user",
       "path": "/organization/projects/{project_id}/users/{user_id}",
@@ -1356,7 +1493,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/roles/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/roles/methods/delete",
       "method": "DELETE",
       "operation_command": "delete-role",
       "path": "/organization/roles/{role_id}",
@@ -1370,7 +1507,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/users/methods/delete",
       "method": "DELETE",
       "operation_command": "delete-user",
       "path": "/organization/users/{user_id}",
@@ -1384,7 +1521,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "deleteAssistant",
       "path": "/assistants/{assistant_id}",
@@ -1398,7 +1535,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/certificates/methods/delete",
       "method": "DELETE",
       "operation_command": "deleteCertificate",
       "path": "/organization/certificates/{certificate_id}",
@@ -1440,7 +1577,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/subresources/items/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "deleteConversationItem",
       "path": "/conversations/{conversation_id}/items/{item_id}",
@@ -1497,8 +1634,23 @@
       ]
     },
     {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/checkpoints/subresources/permissions/methods/delete",
+      "method": "DELETE",
+      "operation_command": "deleteFineTuningCheckpointPermission",
+      "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}",
+      "required_path_params": [
+        "fine_tuned_model_checkpoint",
+        "permission_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Fine-tuning"
+      ]
+    },
+    {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/messages/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "deleteMessage",
       "path": "/threads/{thread_id}/messages/{message_id}",
@@ -1541,7 +1693,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "deleteThread",
       "path": "/threads/{thread_id}",
@@ -1598,7 +1750,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/files/methods/content",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "downloadFile",
       "path": "/files/{file_id}/content",
@@ -1612,7 +1764,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "getAssistant",
       "path": "/assistants/{assistant_id}",
@@ -1626,7 +1778,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/certificates/methods/retrieve",
       "method": "GET",
       "operation_command": "getCertificate",
       "path": "/organization/certificates/{certificate_id}",
@@ -1654,7 +1806,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/chat/subresources/completions/subresources/messages/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "getChatCompletionMessages",
       "path": "/chat/completions/{completion_id}/messages",
@@ -1682,7 +1834,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/subresources/items/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "getConversationItem",
       "path": "/conversations/{conversation_id}/items/{item_id}",
@@ -1742,7 +1894,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/subresources/output_items/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/subresources/output_items/methods/retrieve",
       "method": "GET",
       "operation_command": "getEvalRunOutputItems",
       "path": "/evals/{eval_id}/runs/{run_id}/output_items",
@@ -1757,7 +1909,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "getEvalRuns",
       "path": "/evals/{eval_id}/runs",
@@ -1771,7 +1923,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/messages/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "getMessage",
       "path": "/threads/{thread_id}/messages/{message_id}",
@@ -1800,7 +1952,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "getRun",
       "path": "/threads/{thread_id}/runs/{run_id}",
@@ -1815,7 +1967,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/subresources/steps/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "getRunStep",
       "path": "/threads/{thread_id}/runs/{run_id}/steps/{step_id}",
@@ -1831,7 +1983,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "getThread",
       "path": "/threads/{thread_id}",
@@ -1903,51 +2055,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/checkpoints/subresources/permissions/methods/delete",
-      "method": "GET",
-      "operation_command": "get_fine_tuning_checkpoints_fine_tuned_model_checkpoint_permissions_permission_id",
-      "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}",
-      "required_path_params": [
-        "fine_tuned_model_checkpoint",
-        "permission_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Fine-tuning"
-      ]
-    },
-    {
-      "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/uploads/methods/cancel",
-      "method": "GET",
-      "operation_command": "get_uploads_upload_id_cancel",
-      "path": "/uploads/{upload_id}/cancel",
-      "required_path_params": [
-        "upload_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Uploads"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/list_files",
-      "method": "GET",
-      "operation_command": "get_vector_stores_vector_store_id_files_batches_id1_files",
-      "path": "/vector_stores/{vector_store_id}/files_batches/{id1}/files",
-      "required_path_params": [
-        "id1",
-        "vector_store_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Vector stores"
-      ]
-    },
-    {
-      "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/realtime/subresources/calls/methods/hangup",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "hangup-realtime-call",
       "path": "/realtime/calls/{call_id}/hangup",
@@ -1961,7 +2069,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/invites/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/invites/methods/create",
       "method": "POST",
       "operation_command": "inviteUser",
       "path": "/organization/invites",
@@ -1973,7 +2081,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "list-audit-logs",
       "path": "/organization/audit_logs",
@@ -1985,7 +2093,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/roles/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/groups/subresources/roles/methods/list",
       "method": "GET",
       "operation_command": "list-group-role-assignments",
       "path": "/organization/groups/{group_id}/roles",
@@ -1999,7 +2107,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/users/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/groups/subresources/users/methods/list",
       "method": "GET",
       "operation_command": "list-group-users",
       "path": "/organization/groups/{group_id}/users",
@@ -2013,7 +2121,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/groups/methods/list",
       "method": "GET",
       "operation_command": "list-groups",
       "path": "/organization/groups",
@@ -2025,7 +2133,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/invites/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/invites/methods/list",
       "method": "GET",
       "operation_command": "list-invites",
       "path": "/organization/invites",
@@ -2037,7 +2145,19 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/api_keys/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/spend_alerts/methods/list",
+      "method": "GET",
+      "operation_command": "list-organization-spend-alerts",
+      "path": "/organization/spend_alerts",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Spend alerts"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/api_keys/methods/list",
       "method": "GET",
       "operation_command": "list-project-api-keys",
       "path": "/organization/projects/{project_id}/api_keys",
@@ -2051,7 +2171,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/groups/subresources/roles/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "list-project-group-role-assignments",
       "path": "/projects/{project_id}/groups/{group_id}/roles",
@@ -2066,7 +2186,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/groups/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/groups/methods/list",
       "method": "GET",
       "operation_command": "list-project-groups",
       "path": "/organization/projects/{project_id}/groups",
@@ -2080,7 +2200,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/rate_limits/methods/list_rate_limits",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "list-project-rate-limits",
       "path": "/organization/projects/{project_id}/rate_limits",
@@ -2094,7 +2214,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/roles/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "list-project-roles",
       "path": "/projects/{project_id}/roles",
@@ -2108,7 +2228,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/service_accounts/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/service_accounts/methods/list",
       "method": "GET",
       "operation_command": "list-project-service-accounts",
       "path": "/organization/projects/{project_id}/service_accounts",
@@ -2122,7 +2242,21 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/users/subresources/roles/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/spend_alerts/methods/list",
+      "method": "GET",
+      "operation_command": "list-project-spend-alerts",
+      "path": "/organization/projects/{project_id}/spend_alerts",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Spend alerts"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "list-project-user-role-assignments",
       "path": "/projects/{project_id}/users/{user_id}/roles",
@@ -2137,7 +2271,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/users/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/users/methods/list",
       "method": "GET",
       "operation_command": "list-project-users",
       "path": "/organization/projects/{project_id}/users",
@@ -2151,7 +2285,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/methods/list",
       "method": "GET",
       "operation_command": "list-projects",
       "path": "/organization/projects",
@@ -2163,7 +2297,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/roles/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/roles/methods/list",
       "method": "GET",
       "operation_command": "list-roles",
       "path": "/organization/roles",
@@ -2175,7 +2309,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/subresources/roles/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/users/subresources/roles/methods/list",
       "method": "GET",
       "operation_command": "list-user-role-assignments",
       "path": "/organization/users/{user_id}/roles",
@@ -2189,7 +2323,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/users/methods/list",
       "method": "GET",
       "operation_command": "list-users",
       "path": "/organization/users",
@@ -2201,7 +2335,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "listAssistants",
       "path": "/assistants",
@@ -2237,7 +2371,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/conversations/subresources/items/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "listConversationItems",
       "path": "/conversations/{conversation_id}/items",
@@ -2274,8 +2408,23 @@
       ]
     },
     {
+      "beta_header": "assistants=v2",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
+      "method": "GET",
+      "operation_command": "listFilesInVectorStoreBatch",
+      "path": "/vector_stores/{vector_store_id}/file_batches/{batch_id}/files",
+      "required_path_params": [
+        "batch_id",
+        "vector_store_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Vector stores"
+      ]
+    },
+    {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/checkpoints/subresources/permissions/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "listFineTuningCheckpointPermissions",
       "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions",
@@ -2289,7 +2438,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/methods/list_events",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "listFineTuningEvents",
       "path": "/fine_tuning/jobs/{fine_tuning_job_id}/events",
@@ -2331,7 +2480,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/messages/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "listMessages",
       "path": "/threads/{thread_id}/messages",
@@ -2357,7 +2506,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/certificates/methods/list",
       "method": "GET",
       "operation_command": "listOrganizationCertificates",
       "path": "/organization/certificates",
@@ -2381,7 +2530,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/certificates/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/certificates/methods/list",
       "method": "GET",
       "operation_command": "listProjectCertificates",
       "path": "/organization/projects/{project_id}/certificates",
@@ -2395,7 +2544,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/subresources/steps/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "listRunSteps",
       "path": "/threads/{thread_id}/runs/{run_id}/steps",
@@ -2410,7 +2559,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/list",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "listRuns",
       "path": "/threads/{thread_id}/runs",
@@ -2462,7 +2611,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "modify-project",
       "path": "/organization/projects/{project_id}",
@@ -2476,7 +2625,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/users/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "modify-project-user",
       "path": "/organization/projects/{project_id}/users/{user_id}",
@@ -2491,7 +2640,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "modify-user",
       "path": "/organization/users/{user_id}",
@@ -2505,7 +2654,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/assistants/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "modifyAssistant",
       "path": "/assistants/{assistant_id}",
@@ -2519,7 +2668,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "modifyCertificate",
       "path": "/organization/certificates/{certificate_id}",
@@ -2533,7 +2682,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/messages/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "modifyMessage",
       "path": "/threads/{thread_id}/messages/{message_id}",
@@ -2548,7 +2697,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "modifyRun",
       "path": "/threads/{thread_id}/runs/{run_id}",
@@ -2563,7 +2712,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "modifyThread",
       "path": "/threads/{thread_id}",
@@ -2577,7 +2726,7 @@
     },
     {
       "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "modifyVectorStore",
       "path": "/vector_stores/{vector_store_id}",
@@ -2605,36 +2754,6 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/evals/subresources/runs/methods/cancel",
-      "method": "POST",
-      "operation_command": "post_evals_eval_id_runs_run_id_cancel",
-      "path": "/evals/{eval_id}/runs/{run_id}/cancel",
-      "required_path_params": [
-        "eval_id",
-        "run_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Evals"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/cancel",
-      "method": "POST",
-      "operation_command": "post_vector_stores_vector_store_id_files_batches_id1_cancel",
-      "path": "/vector_stores/{vector_store_id}/files_batches/{id1}/cancel",
-      "required_path_params": [
-        "id1",
-        "vector_store_id"
-      ],
-      "required_request_body": true,
-      "tags": [
-        "Vector stores"
-      ]
-    },
-    {
-      "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/resources/realtime/subresources/calls/methods/refer",
       "method": "POST",
       "operation_command": "refer-realtime-call",
@@ -2656,14 +2775,14 @@
       "required_path_params": [
         "call_id"
       ],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Realtime"
       ]
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/users/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "remove-group-user",
       "path": "/organization/groups/{group_id}/users/{user_id}",
@@ -2678,7 +2797,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/groups/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "remove-project-group",
       "path": "/organization/projects/{project_id}/groups/{group_id}",
@@ -2707,7 +2826,51 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/invites/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/groups/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-group",
+      "path": "/organization/groups/{group_id}",
+      "required_path_params": [
+        "group_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Groups"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/groups/subresources/roles/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-group-role",
+      "path": "/organization/groups/{group_id}/roles/{role_id}",
+      "required_path_params": [
+        "group_id",
+        "role_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Group organization role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/groups/subresources/users/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-group-user",
+      "path": "/organization/groups/{group_id}/users/{user_id}",
+      "required_path_params": [
+        "group_id",
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Group users"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/invites/methods/retrieve",
       "method": "GET",
       "operation_command": "retrieve-invite",
       "path": "/organization/invites/{invite_id}",
@@ -2721,7 +2884,33 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/data_retention/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-organization-data-retention",
+      "path": "/organization/data_retention",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Data retention"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/spend_alerts/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-organization-spend-alert",
+      "path": "/organization/spend_alerts/{alert_id}",
+      "required_path_params": [
+        "alert_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Spend alerts"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/methods/retrieve",
       "method": "GET",
       "operation_command": "retrieve-project",
       "path": "/organization/projects/{project_id}",
@@ -2735,12 +2924,12 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/api_keys/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/api_keys/methods/retrieve",
       "method": "GET",
       "operation_command": "retrieve-project-api-key",
-      "path": "/organization/projects/{project_id}/api_keys/{key_id}",
+      "path": "/organization/projects/{project_id}/api_keys/{api_key_id}",
       "required_path_params": [
-        "key_id",
+        "api_key_id",
         "project_id"
       ],
       "required_request_body": false,
@@ -2750,7 +2939,95 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/service_accounts/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/data_retention/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-project-data-retention",
+      "path": "/organization/projects/{project_id}/data_retention",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Data retention"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/groups/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-project-group",
+      "path": "/organization/projects/{project_id}/groups/{group_id}",
+      "required_path_params": [
+        "group_id",
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Project groups"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
+      "method": "GET",
+      "operation_command": "retrieve-project-group-role",
+      "path": "/projects/{project_id}/groups/{group_id}/roles/{role_id}",
+      "required_path_params": [
+        "group_id",
+        "project_id",
+        "role_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Project group role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/hosted_tool_permissions/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-project-hosted-tool-permissions",
+      "path": "/organization/projects/{project_id}/hosted_tool_permissions",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Hosted tools"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/model_permissions/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-project-model-permissions",
+      "path": "/organization/projects/{project_id}/model_permissions",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
+      "method": "GET",
+      "operation_command": "retrieve-project-role",
+      "path": "/projects/{project_id}/roles/{role_id}",
+      "required_path_params": [
+        "project_id",
+        "role_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Roles"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/service_accounts/methods/retrieve",
       "method": "GET",
       "operation_command": "retrieve-project-service-account",
       "path": "/organization/projects/{project_id}/service_accounts/{service_account_id}",
@@ -2765,7 +3042,22 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/users/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/spend_alerts/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-project-spend-alert",
+      "path": "/organization/projects/{project_id}/spend_alerts/{alert_id}",
+      "required_path_params": [
+        "alert_id",
+        "project_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Spend alerts"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/users/methods/retrieve",
       "method": "GET",
       "operation_command": "retrieve-project-user",
       "path": "/organization/projects/{project_id}/users/{user_id}",
@@ -2780,7 +3072,37 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/methods/retrieve",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
+      "method": "GET",
+      "operation_command": "retrieve-project-user-role",
+      "path": "/projects/{project_id}/users/{user_id}/roles/{role_id}",
+      "required_path_params": [
+        "project_id",
+        "role_id",
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Project user role assignments"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/roles/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-role",
+      "path": "/organization/roles/{role_id}",
+      "required_path_params": [
+        "role_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "Roles"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/users/methods/retrieve",
       "method": "GET",
       "operation_command": "retrieve-user",
       "path": "/organization/users/{user_id}",
@@ -2790,6 +3112,21 @@
       "required_request_body": false,
       "tags": [
         "Users"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/users/subresources/roles/methods/retrieve",
+      "method": "GET",
+      "operation_command": "retrieve-user-role",
+      "path": "/organization/users/{user_id}/roles/{role_id}",
+      "required_path_params": [
+        "role_id",
+        "user_id"
+      ],
+      "required_request_body": false,
+      "tags": [
+        "User organization role assignments"
       ]
     },
     {
@@ -2850,7 +3187,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/vector_stores/subresources/files/methods/content",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "retrieveVectorStoreFileContent",
       "path": "/vector_stores/{vector_store_id}/files/{file_id}/content",
@@ -2865,7 +3202,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/alpha/subresources/graders/methods/run",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "runGrader",
       "path": "/fine_tuning/alpha/graders/run",
@@ -2890,8 +3227,8 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/resources/beta/subresources/threads/subresources/runs/methods/submit_tool_outputs",
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "submitToolOuputsToRun",
       "path": "/threads/{thread_id}/runs/{run_id}/submit_tool_outputs",
@@ -2906,7 +3243,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/subresources/roles/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "unassign-group-role",
       "path": "/organization/groups/{group_id}/roles/{role_id}",
@@ -2921,7 +3258,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/groups/subresources/roles/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "unassign-project-group-role",
       "path": "/projects/{project_id}/groups/{group_id}/roles/{role_id}",
@@ -2937,7 +3274,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/users/subresources/roles/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "unassign-project-user-role",
       "path": "/projects/{project_id}/users/{user_id}/roles/{role_id}",
@@ -2953,7 +3290,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/users/subresources/roles/methods/delete",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "unassign-user-role",
       "path": "/organization/users/{user_id}/roles/{role_id}",
@@ -2968,7 +3305,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/groups/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/groups/methods/update",
       "method": "POST",
       "operation_command": "update-group",
       "path": "/organization/groups/{group_id}",
@@ -2982,7 +3319,75 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/projects/subresources/rate_limits/methods/update_rate_limit",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/data_retention/methods/update",
+      "method": "POST",
+      "operation_command": "update-organization-data-retention",
+      "path": "/organization/data_retention",
+      "required_path_params": [],
+      "required_request_body": true,
+      "tags": [
+        "Data retention"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/spend_alerts/methods/update",
+      "method": "POST",
+      "operation_command": "update-organization-spend-alert",
+      "path": "/organization/spend_alerts/{alert_id}",
+      "required_path_params": [
+        "alert_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Spend alerts"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/data_retention/methods/update",
+      "method": "POST",
+      "operation_command": "update-project-data-retention",
+      "path": "/organization/projects/{project_id}/data_retention",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Data retention"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
+      "method": "POST",
+      "operation_command": "update-project-hosted-tool-permissions",
+      "path": "/organization/projects/{project_id}/hosted_tool_permissions",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Hosted tools"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
+      "method": "POST",
+      "operation_command": "update-project-model-permissions",
+      "path": "/organization/projects/{project_id}/model_permissions",
+      "required_path_params": [
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "update-project-rate-limits",
       "path": "/organization/projects/{project_id}/rate_limits/{rate_limit_id}",
@@ -2997,7 +3402,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/projects/subresources/roles/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "update-project-role",
       "path": "/projects/{project_id}/roles/{role_id}",
@@ -3012,7 +3417,37 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/roles/methods/update",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/service_accounts/methods/update",
+      "method": "POST",
+      "operation_command": "update-project-service-account",
+      "path": "/organization/projects/{project_id}/service_accounts/{service_account_id}",
+      "required_path_params": [
+        "project_id",
+        "service_account_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Projects"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/spend_alerts/methods/update",
+      "method": "POST",
+      "operation_command": "update-project-spend-alert",
+      "path": "/organization/projects/{project_id}/spend_alerts/{alert_id}",
+      "required_path_params": [
+        "alert_id",
+        "project_id"
+      ],
+      "required_request_body": true,
+      "tags": [
+        "Spend alerts"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/roles/methods/update",
       "method": "POST",
       "operation_command": "update-role",
       "path": "/organization/roles/{role_id}",
@@ -3047,7 +3482,7 @@
       "required_path_params": [
         "conversation_id"
       ],
-      "required_request_body": true,
+      "required_request_body": false,
       "tags": [
         "Conversations"
       ]
@@ -3097,7 +3532,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/certificates/methods/create",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "uploadCertificate",
       "path": "/organization/certificates",
@@ -3109,7 +3544,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_audio_speeches",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "usage-audio-speeches",
       "path": "/organization/usage/audio_speeches",
@@ -3121,7 +3556,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_audio_transcriptions",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "usage-audio-transcriptions",
       "path": "/organization/usage/audio_transcriptions",
@@ -3133,7 +3568,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_code_interpreter_sessions",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "usage-code-interpreter-sessions",
       "path": "/organization/usage/code_interpreter_sessions",
@@ -3145,7 +3580,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_completions",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage/methods/completions",
       "method": "GET",
       "operation_command": "usage-completions",
       "path": "/organization/usage/completions",
@@ -3157,7 +3592,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/methods/get_costs",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "usage-costs",
       "path": "/organization/costs",
@@ -3169,7 +3604,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_embeddings",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage/methods/embeddings",
       "method": "GET",
       "operation_command": "usage-embeddings",
       "path": "/organization/usage/embeddings",
@@ -3181,7 +3616,19 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_images",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
+      "method": "GET",
+      "operation_command": "usage-file-search-calls",
+      "path": "/organization/usage/file_search_calls",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage/methods/images",
       "method": "GET",
       "operation_command": "usage-images",
       "path": "/organization/usage/images",
@@ -3193,7 +3640,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_moderations",
+      "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage/methods/moderations",
       "method": "GET",
       "operation_command": "usage-moderations",
       "path": "/organization/usage/moderations",
@@ -3205,7 +3652,7 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/organization/subresources/audit_logs/subresources/usage/methods/get_vector_stores",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "GET",
       "operation_command": "usage-vector-stores",
       "path": "/organization/usage/vector_stores",
@@ -3217,7 +3664,19 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/resources/fine_tuning/subresources/alpha/subresources/graders/methods/validate",
+      "doc_url": "https://developers.openai.com/api/reference/overview",
+      "method": "GET",
+      "operation_command": "usage-web-search-calls",
+      "path": "/organization/usage/web_search_calls",
+      "required_path_params": [],
+      "required_request_body": false,
+      "tags": [
+        "Usage"
+      ]
+    },
+    {
+      "beta_header": null,
+      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
       "operation_command": "validateGrader",
       "path": "/fine_tuning/alpha/graders/validate",
@@ -3227,7 +3686,5 @@
         "Fine-tuning"
       ]
     }
-  ],
-  "run_id": null,
-  "runs_index": "/dev/.state/runs/index.jsonl"
+  ]
 }
