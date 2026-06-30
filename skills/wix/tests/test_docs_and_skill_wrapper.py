@@ -9,6 +9,21 @@ from wix_safe_agent_cli.cli import build_parser
 
 class TestWixSkillWrapper(unittest.TestCase):
     @staticmethod
+    def _skill_path(root: Path) -> Path:
+        candidates = [
+            root / "skills" / "wix" / "SKILL.md",
+            root / "SKILL.md",
+        ]
+        for path in candidates:
+            if path.exists():
+                return path
+        raise AssertionError("Missing shipped wrapper file at skills/wix/SKILL.md or SKILL.md")
+
+    @classmethod
+    def _skill_text(cls, root: Path) -> str:
+        return cls._skill_path(root).read_text(encoding="utf-8")
+
+    @staticmethod
     def _expected_command_names() -> list[str]:
         return [
             "onboarding",
@@ -1553,23 +1568,22 @@ class TestWixSkillWrapper(unittest.TestCase):
 
     def test_skill_wrapper_path_exists_and_slug_matches(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        skill_path = root / "skills" / "wix" / "SKILL.md"
         docs_wrappers = root / "docs" / "skills_wrappers.md"
         readme = root / "README.md"
 
-        self.assertTrue(skill_path.exists(), "Missing shipped wrapper file at skills/wix/SKILL.md")
-        skill_text = skill_path.read_text(encoding="utf-8")
+        skill_text = self._skill_text(root)
         docs_text = docs_wrappers.read_text(encoding="utf-8")
         readme_text = readme.read_text(encoding="utf-8")
 
         self.assertIn("name: wix", skill_text)
         self.assertIn("Install slug: `wix`", readme_text)
-        self.assertIn("Canonical location (tool-root relative): `skills/wix/SKILL.md`", docs_text)
+        self.assertIn("Source wrapper: `skills/wix/SKILL.md`", docs_text)
+        self.assertIn("Public mirror wrapper: `SKILL.md`", docs_text)
         self.assertIn("wix-safe-agent-cli", skill_text)
 
     def test_wrapper_and_command_reference_cover_the_same_shipped_surface(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        skill_text = (root / "skills" / "wix" / "SKILL.md").read_text(encoding="utf-8")
+        skill_text = self._skill_text(root)
         docs_wrappers_text = (root / "docs" / "skills_wrappers.md").read_text(encoding="utf-8")
         command_reference_text = (root / "docs" / "command_reference.md").read_text(encoding="utf-8")
         parser_paths = set(self._collect_parser_command_paths())
@@ -2510,7 +2524,7 @@ class TestWixSkillWrapper(unittest.TestCase):
             root / "docs" / "skills_wrappers.md",
             root / "docs" / "authentication.md",
             root / "CHANGELOG.md",
-            root / "skills" / "wix" / "SKILL.md",
+            self._skill_path(root),
         ]
         banned_phrases = [
             "this slice",
@@ -2580,7 +2594,7 @@ class TestWixSkillWrapper(unittest.TestCase):
         coverage_text = (root / "docs" / "api_coverage.md").read_text(encoding="utf-8")
         command_reference_text = (root / "docs" / "command_reference.md").read_text(encoding="utf-8")
         wrappers_text = (root / "docs" / "skills_wrappers.md").read_text(encoding="utf-8")
-        skill_text = (root / "skills" / "wix" / "SKILL.md").read_text(encoding="utf-8")
+        skill_text = self._skill_text(root)
 
         self.assertNotIn("| Get Paid | not-yet-implemented | n/a |", coverage_text)
         self.assertNotIn("| Headless | not-yet-implemented | n/a |", coverage_text)
@@ -2648,7 +2662,7 @@ class TestWixSkillWrapper(unittest.TestCase):
         auth_text = (root / "docs" / "authentication.md").read_text(encoding="utf-8")
         onboarding_text = (root / "docs" / "onboarding.md").read_text(encoding="utf-8")
         wrappers_text = (root / "docs" / "skills_wrappers.md").read_text(encoding="utf-8")
-        skill_text = (root / "skills" / "wix" / "SKILL.md").read_text(encoding="utf-8")
+        skill_text = self._skill_text(root)
         proof_text = (root / "docs" / "proof.md").read_text(encoding="utf-8")
         changelog_text = (root / "CHANGELOG.md").read_text(encoding="utf-8")
 

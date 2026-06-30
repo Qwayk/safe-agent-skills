@@ -40,7 +40,9 @@ Most end users do not need this page first. It is here for the source install pa
 
 ## Where the skill lives
 
-- Canonical location (tool-root relative): `skills/wix/SKILL.md`.
+- Source wrapper: `skills/wix/SKILL.md`.
+- Public mirror wrapper: `SKILL.md`.
+- Public install slug: `wix`.
 - Users can copy or symlink the skill into their runtime skills folder.
 
 ## Wrapper command surface (declared boundary)
