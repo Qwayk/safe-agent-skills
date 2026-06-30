@@ -7,6 +7,10 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ## [Unreleased]
 
+### Changed
+
+- Finalized the public install slug as `wix`, published the public package with top-level `SKILL.md`, and verified live GitHub readback at `Qwayk/safe-agent-skills`.
+
 ### Added
 
 - Added the official Wix Viewer Cache and SEO Tags slice with explicit `viewer-cache invalidate`, `viewer-seo-tags resolve-item`, and `viewer-seo-tags resolve-static` commands, cache invalidation plan safety, SEO read helpers, official inventory, command docs, proof, and focused tests.

@@ -36,8 +36,9 @@ Most users do not need to run these commands. They are here so an agent, reviewe
 - `2026-06-24-marketing-email-setup-contract-run`: early marketing email setup proof run kept as a named regression anchor.
 - Final inventory cleanup: `docs/official_inventory.json` moved from partial to complete after the callable ledger reached zero open rows.
 - Final source validation: 1809 local source tests passed after the public install slug was finalized as `wix`.
-- Final public-copy validation: 1809 local public-copy tests passed from the mirrored `skills/wix` folder.
-- Public slug check: README, catalog row, and `SKILL.md` all use install slug `wix`.
+- Final public-layout validation: 1809 local public-copy tests passed from the mirrored `skills/wix` folder with top-level `SKILL.md`.
+- Public slug check: README, catalog row, and top-level `SKILL.md` all use install slug `wix`.
+- Live publish readback: GitHub `Qwayk/safe-agent-skills` has the Wix catalog row, `skills/wix/README.md`, and `skills/wix/SKILL.md`.
 
 ## Shipped family proof map
 
