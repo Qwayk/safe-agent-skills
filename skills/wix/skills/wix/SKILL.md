@@ -1,0 +1,2308 @@
+---
+name: wix
+description: Run `wix-safe-agent-cli` with explicit command families, read-first behavior, and explicit write safety flow.
+---
+
+This page is the agent-facing rule sheet for the public Wix skill.
+If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+
+You are a safe wrapper for `wix-safe-agent-cli`.
+
+This file is the implemented command surface contract while official Wix coverage is accounted in docs/api_coverage.md.
+
+## Core rules
+
+- Use only explicit implemented commands listed in this file and in `docs/api_coverage.md`.
+- Prefer `wix-safe-agent-cli --output json ...` for predictable structured output when an agent is reading results.
+- Keep reads first and use `auth check` before write planning.
+- Never ask users to paste secrets. Never print token values.
+- Run no free-form shell commands; run only CLI commands shown in this file.
+- Placeholder-only examples in this sheet: `<your_site_id>`, `<collection_id>`, and fake IDs.
+
+## Command families (`implemented`)
+
+- `onboarding`
+  - `onboarding`
+- `auth`
+  - `auth check`
+  - `auth token create`
+  - `auth token request`
+  - `auth token refresh`
+  - `auth token inspect`
+  - `auth token set`
+  - `auth token status`
+- `runs` (local proof review)
+  - `runs list`
+  - `runs show`
+- `contacts`
+  - `contacts list`
+  - `contacts get`
+  - `contacts query`
+- `members`
+  - `members list`
+  - `members get`
+  - `members query`
+  - `members get-my`
+  - `members create`
+  - `members update`
+  - `members delete`
+  - `members delete-my`
+  - `members bulk-delete`
+  - `members approve`
+  - `members block`
+  - `members mute`
+  - `members unmute`
+  - `members disconnect`
+  - `members delete-addresses`
+  - `members delete-emails`
+  - `members delete-phones`
+  - `members bulk-approve`
+  - `members bulk-block`
+  - `members bulk-delete-by-filter`
+  - `members join-community`
+  - `members leave-community`
+  - `members update-member-slug`
+  - `members update-my-slug`
+- `activity-counters`
+  - `activity-counters get`
+  - `activity-counters query`
+  - `activity-counters set`
+- `badges-v4`
+  - `badges-v4 get`
+  - `badges-v4 query`
+  - `badges-v4 create`
+  - `badges-v4 update`
+  - `badges-v4 delete`
+  - `badges-v4 move`
+- `badge-assignments`
+  - `badge-assignments query`
+  - `badge-assignments create`
+  - `badge-assignments delete`
+  - `badge-assignments bulk-create`
+  - `badge-assignments bulk-delete`
+  - `badge-assignments bulk-update-tags`
+  - `badge-assignments bulk-update-tags-by-filter`
+- `member-reports`
+  - `member-reports query`
+  - `member-reports report`
+  - `member-reports delete`
+- `members-followers`
+  - `members-followers follow`
+  - `members-followers unfollow`
+  - `members-followers list-followers`
+  - `members-followers list-following`
+  - `members-followers list-my-followers`
+  - `members-followers list-my-following`
+  - `members-followers query-connections`
+  - `members-followers query-my-connections`
+- `user-members`
+  - `user-members query`
+- `member-authentication`
+  - `member-authentication send-set-password-email`
+- `member-abouts`
+  - `member-abouts create`
+  - `member-abouts get`
+  - `member-abouts update`
+  - `member-abouts delete`
+  - `member-abouts query`
+  - `member-abouts get-my`
+- `member-privacy`
+  - `member-privacy get-default`
+  - `member-privacy set-default`
+  - `member-privacy get-settings`
+  - `member-privacy set-settings`
+- `member-custom-fields`
+  - `member-custom-fields create`
+  - `member-custom-fields update`
+  - `member-custom-fields delete`
+  - `member-custom-fields get`
+  - `member-custom-fields hide`
+  - `member-custom-fields list`
+  - `member-custom-fields update-order`
+- `member-custom-field-applications`
+  - `member-custom-field-applications create`
+  - `member-custom-field-applications update`
+  - `member-custom-field-applications delete`
+  - `member-custom-field-applications get`
+  - `member-custom-field-applications list-applications`
+  - `member-custom-field-applications get-members`
+  - `member-custom-field-applications get-roles`
+- `member-custom-field-suggestions`
+  - `member-custom-field-suggestions query`
+  - `member-custom-field-suggestions list`
+- `app-installations`
+  - `app-installations query`
+  - `app-installations search`
+- `app-installation`
+  - `app-installation get-installed`
+  - `app-installation is-permitted`
+  - `app-installation install`
+  - `app-installation install-from-share-url`
+  - `app-installation uninstall`
+  - `app-installation bulk-install`
+  - `app-installation bulk-uninstall`
+- `app-instance`
+  - `app-instance get`
+- `bi-event`
+  - `bi-event send`
+- `embedded-scripts`
+  - `embedded-scripts get`
+  - `embedded-scripts embed`
+- `custom-embeds`
+  - `custom-embeds list`
+  - `custom-embeds get`
+  - `custom-embeds create`
+  - `custom-embeds update`
+  - `custom-embeds delete`
+- `secrets`
+  - `secrets list`
+  - `secrets get-value`
+  - `secrets create`
+  - `secrets patch`
+  - `secrets delete`
+- `sender-emails`
+  - `sender-emails list`
+  - `sender-emails get`
+  - `sender-emails create`
+  - `sender-emails delete`
+  - `sender-emails get-or-create`
+  - `sender-emails send-verification-code`
+  - `sender-emails verify`
+- `sender-details`
+  - `sender-details list`
+  - `sender-details get`
+  - `sender-details create`
+  - `sender-details update`
+  - `sender-details delete`
+  - `sender-details get-default`
+  - `sender-details mark-default`
+- `sending-domains`
+  - `sending-domains get`
+  - `sending-domains query`
+  - `sending-domains authenticate`
+- `marketing-consent`
+  - `marketing-consent get`
+  - `marketing-consent query`
+  - `marketing-consent get-by-identifier`
+  - `marketing-consent create`
+  - `marketing-consent update`
+  - `marketing-consent delete`
+  - `marketing-consent upsert`
+  - `marketing-consent bulk-upsert`
+  - `marketing-consent remove`
+- `referral-program`
+  - `referral-program get`
+  - `referral-program get-premium-features`
+  - `referral-program get-ai-social-media-posts-suggestions`
+  - `referral-program activate`
+  - `referral-program pause`
+  - `referral-program generate-ai-social-media-posts-suggestions`
+  - `referral-program update`
+- `referral-rewards`
+  - `referral-rewards get`
+  - `referral-rewards query`
+- `referring-customers`
+  - `referring-customers get`
+  - `referring-customers query`
+  - `referring-customers get-by-referral-code`
+  - `referring-customers generate-for-contact`
+  - `referring-customers delete`
+- `referred-friends`
+  - `referred-friends get`
+  - `referred-friends query`
+  - `referred-friends get-by-contact-id`
+  - `referred-friends create`
+  - `referred-friends update`
+  - `referred-friends delete`
+- `referral-tracker`
+  - `referral-tracker get`
+  - `referral-tracker query`
+  - `referral-tracker get-statistics`
+- `email-campaigns`
+  - `email-campaigns list`
+  - `email-campaigns get`
+  - `email-campaigns get-audience`
+  - `email-campaigns list-statistics`
+  - `email-campaigns list-recipients`
+  - `email-campaigns pause-scheduling`
+  - `email-campaigns reschedule`
+  - `email-campaigns send-test`
+  - `email-campaigns publish`
+  - `email-campaigns reuse`
+  - `email-campaigns delete`
+  - `email-campaigns identify-sender-address`
+- `donation-campaigns`
+  - `donation-campaigns get`
+  - `donation-campaigns get-metrics`
+  - `donation-campaigns query`
+  - `donation-campaigns create`
+  - `donation-campaigns update`
+  - `donation-campaigns bulk-create`
+  - `donation-campaigns bulk-update`
+  - `donation-campaigns bulk-update-tags`
+  - `donation-campaigns bulk-update-tags-by-filter`
+- `pricing-plans`
+  - `pricing-plans get`
+  - `pricing-plans query`
+  - `pricing-plans search`
+  - `pricing-plans count`
+  - `pricing-plans create`
+  - `pricing-plans update`
+  - `pricing-plans delete`
+  - `pricing-plans bulk-update`
+- `orders`
+  - `orders search`
+  - `orders get`
+  - `orders create`
+  - `orders update`
+  - `orders cancel`
+  - `orders bulk-update`
+- `bookings-time-slots-v2`
+  - `bookings-time-slots-v2 list-availability`
+  - `bookings-time-slots-v2 get-availability`
+  - `bookings-time-slots-v2 list-event`
+  - `bookings-time-slots-v2 get-event`
+  - `bookings-time-slots-v2 list-multi-service`
+  - `bookings-time-slots-v2 get-multi-service`
+- `bookings-reader-v2`
+  - `bookings-reader-v2 query-extended-bookings`
+  - `bookings-reader-v2 count-extended-bookings`
+- `bookings-services-v2`
+  - `bookings-services-v2 get`
+  - `bookings-services-v2 query`
+  - `bookings-services-v2 search`
+  - `bookings-services-v2 count`
+  - `bookings-services-v2 create`
+  - `bookings-services-v2 update`
+  - `bookings-services-v2 delete`
+  - `bookings-services-v2 bulk-create`
+  - `bookings-services-v2 bulk-update`
+  - `bookings-services-v2 bulk-update-by-filter`
+  - `bookings-services-v2 bulk-delete`
+  - `bookings-services-v2 bulk-delete-by-filter`
+  - `bookings-services-v2 query-policies`
+  - `bookings-services-v2 query-locations`
+  - `bookings-services-v2 query-categories`
+  - `bookings-services-v2 set-service-locations`
+  - `bookings-services-v2 enable-pricing-plans`
+  - `bookings-services-v2 disable-pricing-plans`
+  - `bookings-services-v2 set-custom-slug`
+  - `bookings-services-v2 validate-slug`
+  - `bookings-services-v2 clone`
+  - `bookings-services-v2 create-add-on-group`
+  - `bookings-services-v2 delete-add-on-group`
+  - `bookings-services-v2 list-add-on-groups-by-service-id`
+  - `bookings-services-v2 set-add-ons-for-group`
+  - `bookings-services-v2 update-add-on-group`
+- `bookings-resources-v2`
+  - `bookings-resources-v2 get`
+  - `bookings-resources-v2 query`
+  - `bookings-resources-v2 search`
+  - `bookings-resources-v2 count`
+  - `bookings-resources-v2 create`
+  - `bookings-resources-v2 update`
+  - `bookings-resources-v2 delete`
+  - `bookings-resources-v2 bulk-create`
+  - `bookings-resources-v2 bulk-update`
+  - `bookings-resources-v2 bulk-delete`
+- `bookings-resource-types-v2`
+  - `bookings-resource-types-v2 get`
+  - `bookings-resource-types-v2 query`
+  - `bookings-resource-types-v2 count`
+  - `bookings-resource-types-v2 create`
+  - `bookings-resource-types-v2 update`
+  - `bookings-resource-types-v2 delete`
+- `bookings-policies`
+  - `bookings-policies get`
+  - `bookings-policies query`
+  - `bookings-policies count`
+  - `bookings-policies strictest`
+  - `bookings-policies create`
+  - `bookings-policies update`
+  - `bookings-policies delete`
+  - `bookings-policies set-default`
+- `bookings-policy-snapshots`
+  - `bookings-policy-snapshots list`
+- `bookings-attendance`
+  - `bookings-attendance get`
+  - `bookings-attendance query`
+  - `bookings-attendance count`
+  - `bookings-attendance set`
+  - `bookings-attendance bulk-set`
+  - `bookings-attendance delete`
+  - `bookings-attendance bulk-delete`
+- `bookings-waitlist`
+  - `bookings-waitlist list`
+  - `bookings-waitlist register`
+  - `bookings-waitlist leave`
+  - `bookings-waitlist book`
+- `calendar-schedules-v3`
+  - `calendar-schedules-v3 get`
+  - `calendar-schedules-v3 query`
+  - `calendar-schedules-v3 create`
+  - `calendar-schedules-v3 update`
+  - `calendar-schedules-v3 cancel`
+- `calendar-schedule-time-frames-v3`
+  - `calendar-schedule-time-frames-v3 get`
+  - `calendar-schedule-time-frames-v3 list`
+- `calendar-events-v3`
+  - `calendar-events-v3 create`
+  - `calendar-events-v3 get`
+  - `calendar-events-v3 update`
+  - `calendar-events-v3 query`
+  - `calendar-events-v3 list`
+  - `calendar-events-v3 bulk-create`
+  - `calendar-events-v3 bulk-update`
+  - `calendar-events-v3 bulk-cancel`
+  - `calendar-events-v3 cancel`
+  - `calendar-events-v3 list-by-contact`
+  - `calendar-events-v3 list-by-member`
+  - `calendar-events-v3 restore-defaults`
+  - `calendar-events-v3 split-recurring`
+- `calendar-event-views-v3`
+  - `calendar-event-views-v3 get`
+- `calendar-participations-v3`
+  - `calendar-participations-v3 create`
+  - `calendar-participations-v3 get`
+  - `calendar-participations-v3 update`
+  - `calendar-participations-v3 delete`
+  - `calendar-participations-v3 query`
+- `bookings-external-calendars-v2`
+  - `bookings-external-calendars-v2 list-providers`
+  - `bookings-external-calendars-v2 connect-by-credentials`
+  - `bookings-external-calendars-v2 connect-by-oauth`
+  - `bookings-external-calendars-v2 list-connections`
+  - `bookings-external-calendars-v2 get-connection`
+  - `bookings-external-calendars-v2 update-sync-config`
+  - `bookings-external-calendars-v2 list-calendars`
+  - `bookings-external-calendars-v2 list-events`
+  - `bookings-external-calendars-v2 disconnect`
+- `bookings-service-options-v1`
+  - `bookings-service-options-v1 get`
+  - `bookings-service-options-v1 get-by-service-id`
+  - `bookings-service-options-v1 query`
+  - `bookings-service-options-v1 create`
+  - `bookings-service-options-v1 update`
+  - `bookings-service-options-v1 delete`
+  - `bookings-service-options-v1 clone`
+- `bookings-writer-v2`
+  - `bookings-writer-v2 create`
+  - `bookings-writer-v2 bulk-create`
+  - `bookings-writer-v2 bulk-calculate-allowed-actions`
+  - `bookings-writer-v2 bulk-confirm-or-decline`
+  - `bookings-writer-v2 confirm-or-decline`
+  - `bookings-writer-v2 confirm`
+  - `bookings-writer-v2 decline`
+  - `bookings-writer-v2 cancel`
+  - `bookings-writer-v2 reschedule`
+  - `bookings-writer-v2 mark-pending`
+  - `bookings-writer-v2 set-submission-id`
+  - `bookings-writer-v2 update-extended-fields`
+  - `bookings-writer-v2 update-participants`
+  - `bookings-writer-v2 create-multi-service`
+  - `bookings-writer-v2 get-multi-service`
+  - `bookings-writer-v2 get-multi-service-availability`
+  - `bookings-writer-v2 add-to-multi-service`
+  - `bookings-writer-v2 remove-from-multi-service`
+  - `bookings-writer-v2 cancel-multi-service`
+  - `bookings-writer-v2 confirm-multi-service`
+  - `bookings-writer-v2 decline-multi-service`
+  - `bookings-writer-v2 reschedule-multi-service`
+  - `bookings-writer-v2 mark-multi-service-pending`
+  - `bookings-writer-v2 bulk-get-multi-service-allowed-actions`
+  - `bookings-writer-v2 get-anonymous-action-token`
+  - `bookings-writer-v2 get-anonymous`
+  - `bookings-writer-v2 get-service-anonymous`
+  - `bookings-writer-v2 cancel-anonymous`
+  - `bookings-writer-v2 reschedule-anonymous`
+- `bookings-staff-members`
+  - `bookings-staff-members get`
+  - `bookings-staff-members query`
+  - `bookings-staff-members search`
+  - `bookings-staff-members count`
+  - `bookings-staff-members get-deleted`
+  - `bookings-staff-members list-deleted`
+  - `bookings-staff-members create`
+  - `bookings-staff-members update`
+  - `bookings-staff-members delete`
+  - `bookings-staff-members assign-working-hours-schedule`
+  - `bookings-staff-members bulk-update-tags`
+  - `bookings-staff-members bulk-update-tags-by-filter`
+  - `bookings-staff-members connect-to-user`
+  - `bookings-staff-members disconnect-from-user`
+  - `bookings-staff-members remove-from-trash`
+- `stores-products-v3`
+  - `stores-products-v3 get`
+  - `stores-products-v3 get-by-slug`
+  - `stores-products-v3 get-all-products-category`
+  - `stores-products-v3 query`
+  - `stores-products-v3 search`
+  - `stores-products-v3 count`
+  - `stores-products-v3 create`
+  - `stores-products-v3 update`
+  - `stores-products-v3 delete`
+  - `stores-products-v3 bulk-create`
+  - `stores-products-v3 bulk-delete`
+  - `stores-products-v3 bulk-update`
+  - `stores-products-v3 create-with-inventory`
+  - `stores-products-v3 update-with-inventory`
+  - `stores-products-v3 bulk-create-with-inventory`
+  - `stores-products-v3 bulk-update-with-inventory`
+  - `stores-products-v3 bulk-add-info-sections`
+  - `stores-products-v3 bulk-add-info-sections-by-filter`
+  - `stores-products-v3 bulk-add-to-categories-by-filter`
+  - `stores-products-v3 bulk-adjust-variants-by-filter`
+  - `stores-products-v3 bulk-delete-by-filter`
+  - `stores-products-v3 bulk-remove-info-sections`
+  - `stores-products-v3 bulk-remove-info-sections-by-filter`
+  - `stores-products-v3 bulk-remove-from-categories-by-filter`
+  - `stores-products-v3 bulk-update-variants-by-filter`
+  - `stores-products-v3 bulk-update-by-filter`
+- `read-only-variants-v3`
+  - `read-only-variants-v3 query`
+  - `read-only-variants-v3 search`
+- `brands-v3`
+  - `brands-v3 get`
+  - `brands-v3 query`
+  - `brands-v3 create`
+  - `brands-v3 update`
+  - `brands-v3 delete`
+  - `brands-v3 bulk-create`
+  - `brands-v3 bulk-delete`
+  - `brands-v3 bulk-update`
+  - `brands-v3 get-or-create`
+  - `brands-v3 bulk-get-or-create`
+- `ribbons-v3`
+  - `ribbons-v3 get`
+  - `ribbons-v3 query`
+  - `ribbons-v3 create`
+  - `ribbons-v3 update`
+  - `ribbons-v3 delete`
+  - `ribbons-v3 bulk-create`
+  - `ribbons-v3 bulk-delete`
+  - `ribbons-v3 bulk-update`
+  - `ribbons-v3 get-or-create`
+  - `ribbons-v3 bulk-get-or-create`
+- `stores-info-sections-v3`
+  - `stores-info-sections-v3 get`
+  - `stores-info-sections-v3 query`
+  - `stores-info-sections-v3 create`
+  - `stores-info-sections-v3 update`
+  - `stores-info-sections-v3 delete`
+  - `stores-info-sections-v3 bulk-create`
+  - `stores-info-sections-v3 bulk-delete`
+  - `stores-info-sections-v3 bulk-update`
+  - `stores-info-sections-v3 get-or-create`
+  - `stores-info-sections-v3 bulk-get-or-create`
+- `customizations-v3`
+  - `customizations-v3 get`
+  - `customizations-v3 query`
+  - `customizations-v3 create`
+  - `customizations-v3 update`
+  - `customizations-v3 delete`
+  - `customizations-v3 bulk-create`
+  - `customizations-v3 bulk-update`
+  - `customizations-v3 add-choices`
+  - `customizations-v3 bulk-add-choices`
+  - `customizations-v3 remove-choices`
+  - `customizations-v3 set-choices`
+- `categories`
+  - `categories get`
+  - `categories get-by-slug`
+  - `categories query`
+  - `categories search`
+  - `categories count`
+  - `categories list-trees`
+  - `categories get-arranged-items`
+  - `categories list-categories-for-item`
+  - `categories list-categories-for-items`
+  - `categories list-items-in-category`
+  - `categories create`
+  - `categories update`
+  - `categories delete`
+  - `categories bulk-update`
+  - `categories update-visibility`
+  - `categories bulk-show`
+  - `categories bulk-add-items-to-category`
+  - `categories bulk-add-item-to-categories`
+  - `categories bulk-remove-items-from-category`
+  - `categories bulk-remove-item-from-categories`
+  - `categories move`
+  - `categories set-arranged-items`
+- `stores-inventory-items-v3`
+  - `stores-inventory-items-v3 get`
+  - `stores-inventory-items-v3 query`
+  - `stores-inventory-items-v3 search`
+  - `stores-inventory-items-v3 create`
+  - `stores-inventory-items-v3 update`
+  - `stores-inventory-items-v3 delete`
+- `stores-locations-v3`
+  - `stores-locations-v3 get`
+  - `stores-locations-v3 query`
+- `catalog-versioning`
+  - `catalog-versioning get`
+- `order-billing`
+  - `order-billing get-order-refundability`
+  - `order-billing calculate-refund`
+  - `order-billing authorize-charge-with-saved-payment-method`
+  - `order-billing capture-authorized-payments`
+  - `order-billing void-authorized-payments`
+  - `order-billing generate-receipts`
+  - `order-billing redeem-gift-card`
+  - `order-billing refund-payments`
+- `payments`
+  - `payments transactions-list`
+- `benefit-items`
+  - `benefit-items get`
+  - `benefit-items list`
+  - `benefit-items query`
+  - `benefit-items count`
+  - `benefit-items create`
+  - `benefit-items update`
+  - `benefit-items delete`
+  - `benefit-items bulk-create`
+  - `benefit-items bulk-delete`
+  - `benefit-items bulk-update`
+  - `benefit-items bulk-delete-by-filter`
+- `balances`
+  - `balances get`
+  - `balances list`
+  - `balances query`
+  - `balances change`
+  - `balances revert-change`
+- `gift-cards`
+  - `gift-cards create`
+  - `gift-cards get`
+  - `gift-cards query`
+  - `gift-cards search`
+  - `gift-cards count`
+  - `gift-cards disable`
+  - `gift-cards send-email`
+- `coupons`
+  - `coupons get`
+  - `coupons query`
+  - `coupons create`
+  - `coupons update`
+  - `coupons delete`
+  - `coupons bulk-create`
+  - `coupons bulk-delete`
+- `campaign-validation`
+  - `campaign-validation validate-link`
+  - `campaign-validation validate-html-links`
+- `events-settings`
+  - `events-settings get`
+  - `events-settings update`
+- `portfolio-settings`
+  - `portfolio-settings get`
+  - `portfolio-settings update`
+- `portfolio-collections`
+  - `portfolio-collections create`
+  - `portfolio-collections get`
+  - `portfolio-collections update`
+  - `portfolio-collections delete`
+  - `portfolio-collections query`
+  - `portfolio-collections list`
+- `portfolio-projects`
+  - `portfolio-projects create`
+  - `portfolio-projects get`
+  - `portfolio-projects update`
+  - `portfolio-projects delete`
+  - `portfolio-projects query`
+  - `portfolio-projects list`
+  - `portfolio-projects bulk-update`
+- `portfolio-project-items`
+  - `portfolio-project-items create`
+  - `portfolio-project-items get`
+  - `portfolio-project-items update`
+  - `portfolio-project-items delete`
+  - `portfolio-project-items list`
+  - `portfolio-project-items bulk-create`
+  - `portfolio-project-items bulk-update`
+  - `portfolio-project-items bulk-delete`
+  - `portfolio-project-items duplicate`
+- `suppliers-hub-products`
+  - `suppliers-hub-products get`
+  - `suppliers-hub-products query`
+  - `suppliers-hub-products search`
+  - `suppliers-hub-products query-categories`
+  - `suppliers-hub-products create`
+  - `suppliers-hub-products update`
+  - `suppliers-hub-products delete`
+  - `suppliers-hub-products bulk-create`
+  - `suppliers-hub-products bulk-update`
+  - `suppliers-hub-products bulk-delete`
+  - `suppliers-hub-products bulk-add-to-store`
+  - `suppliers-hub-products bulk-update-tags`
+  - `suppliers-hub-products bulk-update-tags-by-filter`
+- `suppliers-hub-suppliers`
+  - `suppliers-hub-suppliers get`
+  - `suppliers-hub-suppliers query`
+  - `suppliers-hub-suppliers create`
+  - `suppliers-hub-suppliers update`
+  - `suppliers-hub-suppliers delete`
+  - `suppliers-hub-suppliers bulk-create`
+  - `suppliers-hub-suppliers bulk-update`
+  - `suppliers-hub-suppliers bulk-delete`
+  - `suppliers-hub-suppliers bulk-update-tags`
+  - `suppliers-hub-suppliers bulk-update-tags-by-filter`
+- `suppliers-hub-marketplace-provider-submissions`
+  - `suppliers-hub-marketplace-provider-submissions submit-generated-mockups`
+- `events-v3`
+  - `events-v3 create`
+  - `events-v3 get`
+  - `events-v3 update`
+  - `events-v3 delete`
+  - `events-v3 query`
+  - `events-v3 bulk-cancel-by-filter`
+  - `events-v3 bulk-delete-by-filter`
+  - `events-v3 cancel`
+  - `events-v3 clone`
+  - `events-v3 count-by-status`
+  - `events-v3 get-by-slug`
+  - `events-v3 list-by-category`
+  - `events-v3 publish-draft`
+- `events-ticket-definitions-v3`
+  - `events-ticket-definitions-v3 create`
+  - `events-ticket-definitions-v3 get`
+  - `events-ticket-definitions-v3 update`
+  - `events-ticket-definitions-v3 delete`
+  - `events-ticket-definitions-v3 query`
+  - `events-ticket-definitions-v3 bulk-delete-by-filter`
+  - `events-ticket-definitions-v3 change-currency`
+  - `events-ticket-definitions-v3 count`
+  - `events-ticket-definitions-v3 reorder`
+- `events-categories`
+  - `events-categories create`
+  - `events-categories bulk-create`
+  - `events-categories update`
+  - `events-categories delete`
+  - `events-categories query`
+  - `events-categories assign-events`
+  - `events-categories unassign-events`
+  - `events-categories bulk-assign-events`
+  - `events-categories bulk-unassign-events`
+  - `events-categories get`
+  - `events-categories reorder-events`
+- `events-schedule-items`
+  - `events-schedule-items get`
+  - `events-schedule-items query`
+  - `events-schedule-items add`
+  - `events-schedule-items create-bookmark`
+  - `events-schedule-items delete-bookmark`
+  - `events-schedule-items delete`
+  - `events-schedule-items discard-draft`
+  - `events-schedule-items list-bookmarks`
+  - `events-schedule-items list`
+  - `events-schedule-items publish-draft`
+  - `events-schedule-items reschedule-draft`
+  - `events-schedule-items update`
+- `events-policies-v2`
+  - `events-policies-v2 create`
+  - `events-policies-v2 get`
+  - `events-policies-v2 update`
+  - `events-policies-v2 delete`
+  - `events-policies-v2 query`
+  - `events-policies-v2 reorder`
+- `events-staff-members`
+  - `events-staff-members create`
+  - `events-staff-members get`
+  - `events-staff-members update`
+  - `events-staff-members delete`
+  - `events-staff-members query`
+- `events-guests`
+  - `events-guests query`
+- `events-rsvps-v2`
+  - `events-rsvps-v2 create`
+  - `events-rsvps-v2 get`
+  - `events-rsvps-v2 update`
+  - `events-rsvps-v2 delete`
+  - `events-rsvps-v2 query`
+  - `events-rsvps-v2 search`
+  - `events-rsvps-v2 bulk-update`
+  - `events-rsvps-v2 bulk-delete-by-filter`
+  - `events-rsvps-v2 check-in`
+  - `events-rsvps-v2 cancel-check-in`
+  - `events-rsvps-v2 count`
+  - `events-rsvps-v2 list-summary`
+- `events-ticket-reservations`
+  - `events-ticket-reservations create`
+  - `events-ticket-reservations get`
+  - `events-ticket-reservations delete`
+  - `events-ticket-reservations bulk-update-tags`
+  - `events-ticket-reservations bulk-update-tags-by-filter`
+  - `events-ticket-reservations cancel`
+- `events-tickets`
+  - `events-tickets get`
+  - `events-tickets list`
+  - `events-tickets update`
+  - `events-tickets bulk-update`
+  - `events-tickets check-in`
+  - `events-tickets delete-check-in`
+- `events-orders`
+  - `events-orders list`
+  - `events-orders get`
+  - `events-orders update`
+  - `events-orders bulk-update`
+  - `events-orders confirm`
+  - `events-orders get-summary`
+  - `events-orders get-checkout-options`
+  - `events-orders list-available-tickets`
+  - `events-orders query-available-tickets`
+  - `events-orders create-reservation`
+  - `events-orders cancel-reservation`
+  - `events-orders checkout`
+  - `events-orders update-checkout`
+  - `events-orders get-invoice`
+- `events-forms`
+  - `events-forms get-form`
+  - `events-forms discard-draft`
+  - `events-forms add-control`
+  - `events-forms update-control`
+  - `events-forms delete-control`
+  - `events-forms update-messages`
+  - `events-forms publish-draft`
+- `restaurants-menus`
+  - `restaurants-menus list`
+  - `restaurants-menus get`
+  - `restaurants-menus query`
+  - `restaurants-menus create`
+  - `restaurants-menus update`
+  - `restaurants-menus delete`
+  - `restaurants-menus bulk-create`
+  - `restaurants-menus bulk-update`
+  - `restaurants-menus duplicate`
+  - `restaurants-menus update-extended-fields`
+- `restaurants-sections`
+  - `restaurants-sections list`
+  - `restaurants-sections get`
+  - `restaurants-sections query`
+  - `restaurants-sections create`
+  - `restaurants-sections update`
+  - `restaurants-sections delete`
+  - `restaurants-sections bulk-create`
+  - `restaurants-sections bulk-delete`
+  - `restaurants-sections bulk-update`
+  - `restaurants-sections duplicate`
+- `restaurants-items`
+  - `restaurants-items list`
+  - `restaurants-items get`
+  - `restaurants-items query`
+  - `restaurants-items search`
+  - `restaurants-items count`
+  - `restaurants-items create`
+  - `restaurants-items update`
+  - `restaurants-items delete`
+  - `restaurants-items bulk-create`
+  - `restaurants-items bulk-delete`
+  - `restaurants-items bulk-update`
+- `restaurants-item-labels`
+  - `restaurants-item-labels list`
+  - `restaurants-item-labels get`
+  - `restaurants-item-labels query`
+  - `restaurants-item-labels create`
+  - `restaurants-item-labels update`
+  - `restaurants-item-labels delete`
+- `restaurants-item-variants`
+  - `restaurants-item-variants list`
+  - `restaurants-item-variants get`
+  - `restaurants-item-variants query`
+  - `restaurants-item-variants count`
+  - `restaurants-item-variants create`
+  - `restaurants-item-variants update`
+  - `restaurants-item-variants delete`
+  - `restaurants-item-variants bulk-create`
+  - `restaurants-item-variants bulk-delete`
+  - `restaurants-item-variants bulk-update`
+- `restaurants-item-modifiers`
+  - `restaurants-item-modifiers list`
+  - `restaurants-item-modifiers get`
+  - `restaurants-item-modifiers query`
+  - `restaurants-item-modifiers count`
+  - `restaurants-item-modifiers create`
+  - `restaurants-item-modifiers update`
+  - `restaurants-item-modifiers delete`
+  - `restaurants-item-modifiers bulk-create`
+  - `restaurants-item-modifiers bulk-delete`
+  - `restaurants-item-modifiers bulk-update`
+- `restaurants-item-modifier-groups`
+  - `restaurants-item-modifier-groups list`
+  - `restaurants-item-modifier-groups get`
+  - `restaurants-item-modifier-groups query`
+  - `restaurants-item-modifier-groups count`
+  - `restaurants-item-modifier-groups create`
+  - `restaurants-item-modifier-groups update`
+  - `restaurants-item-modifier-groups delete`
+  - `restaurants-item-modifier-groups bulk-create`
+  - `restaurants-item-modifier-groups bulk-update`
+- `restaurants-online-order-operation-groups`
+  - `restaurants-online-order-operation-groups get`
+  - `restaurants-online-order-operation-groups query`
+  - `restaurants-online-order-operation-groups create`
+  - `restaurants-online-order-operation-groups update`
+  - `restaurants-online-order-operation-groups delete`
+  - `restaurants-online-order-operation-groups bulk-create`
+  - `restaurants-online-order-operation-groups bulk-delete`
+  - `restaurants-online-order-operation-groups bulk-update`
+  - `restaurants-online-order-operation-groups bulk-update-tags`
+  - `restaurants-online-order-operation-groups bulk-update-tags-by-filter`
+- `restaurants-online-order-operations`
+  - `restaurants-online-order-operations get`
+  - `restaurants-online-order-operations list`
+  - `restaurants-online-order-operations query`
+  - `restaurants-online-order-operations first-available-time-slot-per-fulfillment-type`
+  - `restaurants-online-order-operations first-available-time-slots-per-operation`
+  - `restaurants-online-order-operations first-available-time-slots-per-menu`
+  - `restaurants-online-order-operations available-time-slots-for-date`
+  - `restaurants-online-order-operations available-dates-in-range`
+  - `restaurants-online-order-operations validate-address`
+  - `restaurants-online-order-operations update`
+  - `restaurants-online-order-operations delete`
+  - `restaurants-online-order-operations bulk-update-tags`
+  - `restaurants-online-order-operations bulk-update-tags-by-filter`
+- `restaurants-online-order-menu-ordering-settings`
+  - `restaurants-online-order-menu-ordering-settings get`
+  - `restaurants-online-order-menu-ordering-settings update`
+  - `restaurants-online-order-menu-ordering-settings query`
+  - `restaurants-online-order-menu-ordering-settings list-menus-availability-status`
+  - `restaurants-online-order-menu-ordering-settings bulk-update`
+  - `restaurants-online-order-menu-ordering-settings bulk-update-tags`
+  - `restaurants-online-order-menu-ordering-settings bulk-update-tags-by-filter`
+  - `restaurants-online-order-menu-ordering-settings update-extended-fields`
+  - `restaurants-online-order-menu-ordering-settings upsert-by-menu-id`
+- `restaurants-online-order-fulfillment-methods`
+  - `restaurants-online-order-fulfillment-methods list`
+  - `restaurants-online-order-fulfillment-methods get`
+  - `restaurants-online-order-fulfillment-methods query`
+  - `restaurants-online-order-fulfillment-methods list-available-for-address`
+  - `restaurants-online-order-fulfillment-methods get-accumulated-availability`
+  - `restaurants-online-order-fulfillment-methods get-combined-availability`
+  - `restaurants-online-order-fulfillment-methods get-aggregated-availability`
+  - `restaurants-online-order-fulfillment-methods create`
+  - `restaurants-online-order-fulfillment-methods bulk-create`
+  - `restaurants-online-order-fulfillment-methods update`
+  - `restaurants-online-order-fulfillment-methods delete`
+  - `restaurants-online-order-fulfillment-methods bulk-update-tags`
+  - `restaurants-online-order-fulfillment-methods bulk-update-tags-by-filter`
+- `restaurants-online-order-availability-exceptions`
+  - `restaurants-online-order-availability-exceptions get`
+  - `restaurants-online-order-availability-exceptions query`
+  - `restaurants-online-order-availability-exceptions create`
+  - `restaurants-online-order-availability-exceptions bulk-create`
+  - `restaurants-online-order-availability-exceptions update`
+  - `restaurants-online-order-availability-exceptions bulk-update`
+  - `restaurants-online-order-availability-exceptions delete`
+  - `restaurants-online-order-availability-exceptions bulk-update-tags`
+  - `restaurants-online-order-availability-exceptions bulk-update-tags-by-filter`
+- `restaurants-online-order-service-fees`
+  - `restaurants-online-order-service-fees calculate`
+  - `restaurants-online-order-service-fees list`
+  - `restaurants-online-order-service-fees get`
+  - `restaurants-online-order-service-fees query`
+  - `restaurants-online-order-service-fees create`
+  - `restaurants-online-order-service-fees bulk-create`
+  - `restaurants-online-order-service-fees update`
+  - `restaurants-online-order-service-fees bulk-update`
+  - `restaurants-online-order-service-fees delete`
+  - `restaurants-online-order-service-fees bulk-delete`
+  - `restaurants-online-order-service-fees bulk-update-tags`
+  - `restaurants-online-order-service-fees bulk-update-tags-by-filter`
+- `restaurants-online-order-notification-recipients`
+  - `restaurants-online-order-notification-recipients get`
+  - `restaurants-online-order-notification-recipients query`
+  - `restaurants-online-order-notification-recipients create`
+  - `restaurants-online-order-notification-recipients bulk-create`
+  - `restaurants-online-order-notification-recipients update`
+  - `restaurants-online-order-notification-recipients bulk-update`
+  - `restaurants-online-order-notification-recipients delete`
+  - `restaurants-online-order-notification-recipients bulk-delete`
+  - `restaurants-online-order-notification-recipients bulk-update-tags`
+  - `restaurants-online-order-notification-recipients bulk-update-tags-by-filter`
+- `restaurants-reservations`
+  - `restaurants-reservations create`
+  - `restaurants-reservations get`
+  - `restaurants-reservations update`
+  - `restaurants-reservations delete`
+  - `restaurants-reservations query`
+  - `restaurants-reservations list`
+  - `restaurants-reservations search`
+  - `restaurants-reservations bulk-archive`
+  - `restaurants-reservations bulk-unarchive`
+  - `restaurants-reservations cancel`
+  - `restaurants-reservations create-held`
+  - `restaurants-reservations reserve`
+- `restaurants-reservation-locations`
+  - `restaurants-reservation-locations get`
+  - `restaurants-reservation-locations update`
+  - `restaurants-reservation-locations query`
+  - `restaurants-reservation-locations list`
+- `restaurants-reservation-time-slots`
+  - `restaurants-reservation-time-slots check`
+  - `restaurants-reservation-time-slots get-scheduled`
+  - `restaurants-reservation-time-slots get`
+- `restaurants-reservation-experiences`
+  - `restaurants-reservation-experiences create`
+  - `restaurants-reservation-experiences get`
+  - `restaurants-reservation-experiences update`
+  - `restaurants-reservation-experiences query`
+  - `restaurants-reservation-experiences search`
+  - `restaurants-reservation-experiences bulk-update-tags`
+  - `restaurants-reservation-experiences bulk-update-tags-by-filter`
+  - `restaurants-reservation-experiences get-by-slug`
+- `blog-posts-stats`
+  - `blog-posts-stats get`
+  - `blog-posts-stats query`
+  - `blog-posts-stats list`
+  - `blog-posts-stats get-by-slug`
+  - `blog-posts-stats get-metrics`
+  - `blog-posts-stats get-total`
+  - `blog-posts-stats query-count`
+- `blog-draft-posts`
+  - `blog-draft-posts create`
+  - `blog-draft-posts get`
+  - `blog-draft-posts update`
+  - `blog-draft-posts delete`
+  - `blog-draft-posts query`
+  - `blog-draft-posts list`
+  - `blog-draft-posts bulk-create`
+  - `blog-draft-posts bulk-delete`
+  - `blog-draft-posts bulk-update`
+  - `blog-draft-posts get-deleted`
+  - `blog-draft-posts list-deleted`
+  - `blog-draft-posts publish`
+  - `blog-draft-posts remove-from-trash-bin`
+  - `blog-draft-posts restore-from-trash-bin`
+- `blog-categories`
+  - `blog-categories create`
+  - `blog-categories get`
+  - `blog-categories update`
+  - `blog-categories delete`
+  - `blog-categories query`
+  - `blog-categories list`
+  - `blog-categories get-by-slug`
+- `blog-tags`
+  - `blog-tags get`
+  - `blog-tags delete`
+  - `blog-tags query`
+  - `blog-tags create`
+  - `blog-tags get-by-label`
+  - `blog-tags get-by-slug`
+- `blog-likes`
+  - `blog-likes create`
+  - `blog-likes get`
+  - `blog-likes delete`
+  - `blog-likes query`
+  - `blog-likes delete-by-fqdn-entity-id`
+- Wix Forum is disabled and non-callable because Wix discontinued Forum on March 1, 2026.
+- `market-listing`
+  - `market-listing search`
+- `editor-deep-link`
+  - `editor-deep-link create`
+- `site-plugins`
+  - `site-plugins get-placement-status`
+- `app-permissions`
+  - `app-permissions list`
+  - `app-permissions create`
+  - `app-permissions delete`
+- `contact-labels`
+  - `contact-labels query`
+  - `contact-labels list`
+  - `contact-labels find-or-create`
+  - `contact-labels get`
+  - `contact-labels update`
+  - `contact-labels delete`
+- `contact-extended-fields`
+  - `contact-extended-fields get`
+  - `contact-extended-fields list`
+  - `contact-extended-fields query`
+  - `contact-extended-fields find-or-create`
+  - `contact-extended-fields update`
+  - `contact-extended-fields delete`
+- `contact-notes`
+  - `contact-notes get`
+  - `contact-notes query`
+  - `contact-notes create`
+  - `contact-notes update`
+  - `contact-notes delete`
+- `contact-attachments`
+  - `contact-attachments get`
+  - `contact-attachments list`
+  - `contact-attachments generate-upload-url`
+  - `contact-attachments delete`
+- `crm-tasks`
+  - `crm-tasks get|query|count`
+  - `crm-tasks create|update|delete|move-after`
+- `crm-pipelines`
+  - `crm-pipelines get|query`
+  - `crm-pipelines create|update|delete|bulk-update-tags|bulk-update-tags-by-filter`
+- `crm-cards`
+  - `crm-cards get|query|search|search-by-stage`
+  - `crm-cards create|update|delete|bulk-update-tags|bulk-update-tags-by-filter|move`
+- `ai-site-chat-widget-settings`
+  - `ai-site-chat-widget-settings get|set`
+- `ai-site-chat-widget-settings-v2`
+  - `ai-site-chat-widget-settings-v2 get|update`
+- `ai-site-chat-conversations`
+  - `ai-site-chat-conversations get`
+- `ai-site-chat-messages`
+  - `ai-site-chat-messages list`
+  - `ai-site-chat-messages bulk-create`
+  - `ai-site-chat-messages bulk-get-by-inbox`
+  - `ai-site-chat-messages media-upload-url`
+- `contacts`
+  - `contacts list|get|query|list-facets|query-facets|get-bulk-job|preview-merge`
+  - `contacts create|update|delete|merge|label|unlabel|bulk-delete|bulk-update|bulk-label-unlabel`
+- `form-schemas`
+  - `form-schemas list|get|query|count|get-deleted|list-deleted|query-deleted|count-deleted|list-providers-configs|get-summary`
+  - `form-schemas create|bulk-create|update|clone|bulk-clone|delete|bulk-delete|restore|remove-from-trash|bulk-remove-deleted-field`
+  - `form-schemas list`, `form-schemas get`, `form-schemas query`, `form-schemas count`, `form-schemas get-deleted`, `form-schemas list-deleted`, `form-schemas query-deleted`, `form-schemas count-deleted`, `form-schemas list-providers-configs`, `form-schemas get-summary`
+  - `form-schemas create`, `form-schemas bulk-create`, `form-schemas update`, `form-schemas clone`, `form-schemas bulk-clone`, `form-schemas delete`, `form-schemas bulk-delete`, `form-schemas restore`, `form-schemas remove-from-trash`, `form-schemas bulk-remove-deleted-field`
+- `chat-settings`
+  - `chat-settings get|query`
+  - `chat-settings create|update|delete`
+  - `chat-settings get`, `chat-settings query`, `chat-settings create`, `chat-settings update`, `chat-settings delete`
+- `interactive-form-sessions`
+  - `interactive-form-sessions generate-summary`
+  - `interactive-form-sessions create|create-streamed|send-message|send-message-streamed`
+  - `interactive-form-sessions create`, `interactive-form-sessions create-streamed`, `interactive-form-sessions send-message`, `interactive-form-sessions send-message-streamed`, `interactive-form-sessions generate-summary`
+- `intake-forms`
+  - `intake-forms query|create-customer-submission-link`
+  - `intake-forms archive|unarchive|update-expiration-period|delete`
+  - `intake-forms query`, `intake-forms create-customer-submission-link`, `intake-forms archive`, `intake-forms unarchive`, `intake-forms update-expiration-period`, `intake-forms delete`
+- `intake-form-submissions`
+  - `intake-form-submissions query|search|count-by-intake-form-ids|list-data-by-contacts`
+  - `intake-form-submissions cancel|extend|exempt|delete`
+  - `intake-form-submissions query`, `intake-form-submissions search`, `intake-form-submissions count-by-intake-form-ids`, `intake-form-submissions list-data-by-contacts`, `intake-form-submissions cancel`, `intake-form-submissions extend`, `intake-form-submissions exempt`, `intake-form-submissions delete`
+- `community-groups`
+  - `community-groups list|get|get-by-slug|query`
+  - `community-groups create|update|delete`
+  - `community-groups list`, `community-groups get`, `community-groups get-by-slug`, `community-groups query`, `community-groups create`, `community-groups update`, `community-groups delete`
+- `community-group-rules`
+  - `community-group-rules list`
+  - `community-group-rules create-or-replace`
+  - `community-group-rules list`, `community-group-rules create-or-replace`
+- `community-group-requests`
+  - `community-group-requests list|query`
+  - `community-group-requests approve|reject`
+  - `community-group-requests list`, `community-group-requests query`, `community-group-requests approve`, `community-group-requests reject`
+- `community-group-members`
+  - `community-group-members list|list-memberships|query|query-memberships`
+  - `community-group-members add|remove`
+  - `community-group-members list`, `community-group-members list-memberships`, `community-group-members query`, `community-group-members query-memberships`, `community-group-members add`, `community-group-members remove`
+- `community-group-roles`
+  - `community-group-roles assign|unassign`
+  - `community-group-roles assign`, `community-group-roles unassign`
+- `community-join-requests`
+  - `community-join-requests list|query`
+  - `community-join-requests approve|reject`
+  - `community-join-requests list`, `community-join-requests query`, `community-join-requests approve`, `community-join-requests reject`
+- `community-membership-questions`
+  - `community-membership-questions list|list-answers`
+  - `community-membership-questions create-or-replace`
+  - `community-membership-questions list`, `community-membership-questions list-answers`, `community-membership-questions create-or-replace`
+- `community-comments`
+  - `community-comments get|query|count|list-by-resource|get-thread`
+  - `community-comments create|update|delete|moderate-draft-content|mark|unmark|hide|publish|bulk-publish|bulk-hide|bulk-delete|bulk-moderate-draft-content|bulk-move-by-filter`
+  - `community-comments create`, `community-comments get`, `community-comments update`, `community-comments delete`, `community-comments moderate-draft-content`, `community-comments query`, `community-comments mark`, `community-comments unmark`, `community-comments hide`, `community-comments publish`, `community-comments count`, `community-comments list-by-resource`, `community-comments get-thread`, `community-comments bulk-publish`, `community-comments bulk-hide`, `community-comments bulk-delete`, `community-comments bulk-moderate-draft-content`, `community-comments bulk-move-by-filter`
+- `community-reports`
+  - `community-reports get|query|count-by-reason-types`
+  - `community-reports create|update|upsert|delete|bulk-delete-by-filter`
+  - `community-reports get`, `community-reports query`, `community-reports count-by-reason-types`, `community-reports create`, `community-reports update`, `community-reports upsert`, `community-reports delete`, `community-reports bulk-delete-by-filter`
+- `community-reviews`
+  - `community-reviews get|query|count`
+  - `community-reviews create|update|delete|bulk-create|bulk-delete|remove-reply|set-reply|update-moderation-status|bulk-update-moderation-status`
+  - `community-reviews get`, `community-reviews query`, `community-reviews count`, `community-reviews create`, `community-reviews update`, `community-reviews delete`, `community-reviews bulk-create`, `community-reviews bulk-delete`, `community-reviews remove-reply`, `community-reviews set-reply`, `community-reviews update-moderation-status`, `community-reviews bulk-update-moderation-status`
+- `community-review-requests`
+  - `community-review-requests get|query|count`
+  - `community-review-requests create|delete|bulk-cancel-by-filter`
+  - `community-review-requests create`, `community-review-requests get`, `community-review-requests delete`, `community-review-requests query`, `community-review-requests count`, `community-review-requests bulk-cancel-by-filter`
+- `community-moderation-rules`
+  - `community-moderation-rules get|query|check-content`
+  - `community-moderation-rules create|update|delete`
+  - `community-moderation-rules create`, `community-moderation-rules get`, `community-moderation-rules update`, `community-moderation-rules delete`, `community-moderation-rules query`, `community-moderation-rules check-content`
+- `inbox-conversations`
+  - `inbox-conversations get|get-or-create`
+  - `inbox-conversations get`, `inbox-conversations get-or-create`
+- `inbox-messages`
+  - `inbox-messages list|send`
+  - `inbox-messages list`, `inbox-messages send`
+- `loyalty-program`
+  - `loyalty-program get|premium-features`
+  - `loyalty-program update|activate|pause|enable-points-expiration|disable-points-expiration`
+  - `loyalty-program get`, `loyalty-program premium-features`, `loyalty-program update`, `loyalty-program activate`, `loyalty-program pause`, `loyalty-program enable-points-expiration`, `loyalty-program disable-points-expiration`
+- `loyalty-earning-rules`
+  - `loyalty-earning-rules list|get`
+  - `loyalty-earning-rules create|update|delete|bulk-create|create-custom|delete-automation`
+  - `loyalty-earning-rules list`, `loyalty-earning-rules get`, `loyalty-earning-rules create`, `loyalty-earning-rules update`, `loyalty-earning-rules delete`, `loyalty-earning-rules bulk-create`, `loyalty-earning-rules create-custom`, `loyalty-earning-rules delete-automation`
+- `loyalty-tiers`
+  - `loyalty-tiers list|get|get-program-settings`
+  - `loyalty-tiers create|update|delete|bulk-create|get-program|create-program-settings|update-program-settings`
+  - `loyalty-tiers list`, `loyalty-tiers get`, `loyalty-tiers create`, `loyalty-tiers update`, `loyalty-tiers delete`, `loyalty-tiers bulk-create`, `loyalty-tiers get-program`, `loyalty-tiers create-program-settings`, `loyalty-tiers get-program-settings`, `loyalty-tiers update-program-settings`
+- `loyalty-accounts`
+  - `loyalty-accounts list|get|query|search|count|get-program-totals|get-current-member-account|get-by-secondary-id`
+  - `loyalty-accounts create|adjust-points|bulk-adjust-points|earn-points`
+  - `loyalty-accounts list`, `loyalty-accounts get`, `loyalty-accounts query`, `loyalty-accounts search`, `loyalty-accounts count`, `loyalty-accounts get-program-totals`, `loyalty-accounts get-current-member-account`, `loyalty-accounts get-by-secondary-id`, `loyalty-accounts create`, `loyalty-accounts adjust-points`, `loyalty-accounts bulk-adjust-points`, `loyalty-accounts earn-points`
+- `loyalty-transactions`
+  - `loyalty-transactions get|query`
+  - `loyalty-transactions get`, `loyalty-transactions query`
+- `loyalty-social-media`
+  - `loyalty-social-media list`
+  - `loyalty-social-media create`
+  - `loyalty-social-media list`, `loyalty-social-media create`
+- `loyalty-imports`
+  - `loyalty-imports get|query|get-error-file-download-url`
+  - `loyalty-imports create-file-url|create|execute`
+  - `loyalty-imports get`, `loyalty-imports query`, `loyalty-imports create-file-url`, `loyalty-imports create`, `loyalty-imports execute`, `loyalty-imports get-error-file-download-url`
+- `loyalty-rewards`
+  - `loyalty-rewards list|get|query`
+  - `loyalty-rewards create|bulk-create|update|delete`
+  - `loyalty-rewards list`, `loyalty-rewards get`, `loyalty-rewards query`, `loyalty-rewards create`, `loyalty-rewards bulk-create`, `loyalty-rewards update`, `loyalty-rewards delete`
+- `loyalty-checkout-discounts`
+  - `loyalty-checkout-discounts query`
+  - `loyalty-checkout-discounts apply`
+  - `loyalty-checkout-discounts query`, `loyalty-checkout-discounts apply`
+- `loyalty-coupons`
+  - `loyalty-coupons get|query|get-current-member`
+  - `loyalty-coupons redeem-current-member|redeem|delete`
+  - `loyalty-coupons get`, `loyalty-coupons query`, `loyalty-coupons get-current-member`, `loyalty-coupons redeem-current-member`, `loyalty-coupons redeem`, `loyalty-coupons delete`
+- `email-subscriptions`
+  - `email-subscriptions query`
+  - `email-subscriptions upsert|bulk-upsert|generate-unsubscribe-link`
+  - `email-subscriptions query`, `email-subscriptions upsert`, `email-subscriptions bulk-upsert`, `email-subscriptions generate-unsubscribe-link`
+- `data-indexes`
+  - `data-indexes list`
+  - `data-indexes create`
+  - `data-indexes drop`
+- `data-folders`
+  - `data-folders get`
+  - `data-folders create`
+  - `data-folders update`
+  - `data-folders delete`
+  - `data-folders create-collection-reference`
+  - `data-folders get-collection-references`
+  - `data-folders delete-collection-reference`
+- `data-extension-schemas`
+  - `data-extension-schemas list`
+  - `data-extension-schemas create`
+  - `data-extension-schemas update`
+  - `data-extension-schemas delete-user-defined-fields`
+- `data-permissions`
+  - `data-permissions get`
+  - `data-permissions get-my`
+  - `data-permissions update`
+  - `data-permissions add-special`
+  - `data-permissions update-special`
+  - `data-permissions remove-special`
+- `data-sharing`
+  - `data-sharing list-policies`
+  - `data-sharing get-policy`
+  - `data-sharing list-shared-collections`
+  - `data-sharing create-policy`
+  - `data-sharing update-policy`
+  - `data-sharing delete-policy`
+  - `data-sharing connect`
+  - `data-sharing disconnect`
+- `form-submissions`
+  - `form-submissions get-submission`
+  - `form-submissions query-submissions-by-namespace`
+  - `form-submissions count-submissions`
+  - `form-submissions get-media-upload-url`
+  - `form-submissions create-submission`
+  - `form-submissions update-submission`
+  - `form-submissions delete-submission`
+  - `form-submissions confirm-submission`
+  - `form-submissions bulk-mark-submissions-as-seen`
+- `accounts` (contract-gated account-level reads)
+  - `accounts get`
+  - `accounts list-child-accounts`
+- `contributors` (site contributor methods)
+  - `contributors query`
+  - `contributors remove`
+  - `contributors change-role`
+  - `contributors change-contributor-location`
+- `ai-credits`
+  - `ai-credits get-balance`
+- `analytics-data`
+  - `analytics-data get`
+- `analytics-sessions`
+  - `analytics-sessions get-list-job-result`
+  - `analytics-sessions list-async`
+  - `analytics-sessions mark-recordings-deleted`
+  - `analytics-sessions mark-session-recorded`
+- `analytics-semantic-models`
+  - `analytics-semantic-models list`
+  - `analytics-semantic-models get`
+  - `analytics-semantic-models query`
+- `automation-storage-items`
+  - `automation-storage-items create`
+  - `automation-storage-items get`
+  - `automation-storage-items query`
+  - `automation-storage-items bulk-update-tags`
+  - `automation-storage-items bulk-update-tags-by-filter`
+  - `automation-storage-items update-counter-by`
+  - `automation-storage-items update-value`
+- `automations-v2`
+  - `automations-v2 create`
+  - `automations-v2 get`
+  - `automations-v2 update`
+  - `automations-v2 delete`
+  - `automations-v2 query`
+  - `automations-v2 validate`
+- `async-jobs`
+  - `async-jobs get`
+  - `async-jobs list-items`
+- `branches`
+  - `branches get-default`
+  - `branches get`
+  - `branches query`
+- `site-search`
+  - `site-search search`
+- `domains`
+  - `domains check-availability`
+  - `domains suggest`
+- `domain-dns`
+  - `domain-dns get-zone`
+  - `domain-dns preview-zone`
+  - `domain-dns create-zone`
+  - `domain-dns update-zone`
+  - `domain-dns delete-zone`
+- `dns-propagation`
+  - `dns-propagation get`
+- `tags`
+  - `tags list`
+  - `tags get`
+  - `tags create`
+  - `tags update`
+  - `tags delete`
+- `locations`
+  - `locations list`
+  - `locations query`
+  - `locations get`
+  - `locations create`
+  - `locations update`
+  - `locations archive`
+  - `locations set-default`
+- `site-properties`
+  - `site-properties get`
+  - `site-properties update-business-contact`
+  - `site-properties update-business-profile`
+  - `site-properties update-business-schedule`
+  - `site-properties update-consent-policy`
+- `cookie-consent-policy`
+  - `cookie-consent-policy get-cookie-banner-settings`
+  - `cookie-consent-policy update-cookie-banner-settings`
+  - `cookie-consent-policy get-cmp-config`
+  - `cookie-consent-policy update-cmp-config`
+  - `cookie-consent-policy create-consent-config`
+  - `cookie-consent-policy get-consent-config`
+  - `cookie-consent-policy update-consent-config`
+  - `cookie-consent-policy delete-consent-config`
+  - `cookie-consent-policy query-consent-configs`
+  - `cookie-consent-policy bulk-create-consent-configs`
+  - `cookie-consent-policy bulk-delete-consent-configs`
+  - `cookie-consent-policy bulk-update-consent-configs`
+  - `cookie-consent-policy bulk-update-consent-config-tags`
+  - `cookie-consent-policy bulk-update-consent-config-tags-by-filter`
+  - `cookie-consent-policy list-apps-and-storage`
+- `dashboard-favorite-list`
+  - `dashboard-favorite-list create`
+  - `dashboard-favorite-list update`
+  - `dashboard-favorite-list delete`
+  - `dashboard-favorite-list add-favorite`
+  - `dashboard-favorite-list delete-favorite`
+  - `dashboard-favorite-list get`
+- `faq-category-v2`
+  - `faq-category-v2 create`
+  - `faq-category-v2 get`
+  - `faq-category-v2 update`
+  - `faq-category-v2 delete`
+  - `faq-category-v2 query`
+  - `faq-category-v2 list`
+  - `faq-category-v2 update-extended-fields`
+- `faq-question-entry-v2`
+  - `faq-question-entry-v2 list`
+  - `faq-question-entry-v2 create`
+  - `faq-question-entry-v2 get`
+  - `faq-question-entry-v2 delete`
+  - `faq-question-entry-v2 update`
+  - `faq-question-entry-v2 query`
+  - `faq-question-entry-v2 bulk-delete`
+  - `faq-question-entry-v2 bulk-update`
+  - `faq-question-entry-v2 set-labels`
+  - `faq-question-entry-v2 update-extended-fields`
+- `functions-v1`
+  - `functions-v1 create`
+  - `functions-v1 get`
+  - `functions-v1 update`
+  - `functions-v1 delete`
+  - `functions-v1 query`
+  - `functions-v1 bulk-update-tags`
+  - `functions-v1 bulk-update-tags-by-filter`
+- `function-types`
+  - `function-types get`
+  - `function-types query`
+- `function-templates`
+  - `function-templates get`
+  - `function-templates query`
+- `function-productions`
+  - `function-productions create`
+  - `function-productions update`
+  - `function-productions delete`
+- `builderless-productions`
+  - `builderless-productions create`
+  - `builderless-productions get`
+  - `builderless-productions update`
+- `function-methods`
+  - `function-methods create`
+  - `function-methods delete`
+  - `function-methods query`
+- `function-activations`
+  - `function-activations upsert`
+  - `function-activations delete`
+- `function-spi-configurations`
+  - `function-spi-configurations create`
+  - `function-spi-configurations get`
+  - `function-spi-configurations update`
+  - `function-spi-configurations delete`
+  - `function-spi-configurations query`
+  - `function-spi-configurations validate`
+- `billable-items`
+  - `billable-items create`
+  - `billable-items get`
+  - `billable-items update`
+  - `billable-items delete`
+  - `billable-items query`
+  - `billable-items search`
+  - `billable-items bulk-create`
+  - `billable-items bulk-delete`
+  - `billable-items bulk-update`
+  - `billable-items bulk-update-tags`
+  - `billable-items bulk-update-tags-by-filter`
+- `payment-links`
+  - `payment-links create`
+  - `payment-links get`
+  - `payment-links delete`
+  - `payment-links query`
+  - `payment-links search`
+  - `payment-links activate`
+  - `payment-links deactivate`
+  - `payment-links initiate-payment`
+  - `payment-links send`
+  - `payment-links set-note`
+  - `payment-links update-extended-fields`
+  - `payment-links bulk-update-tags`
+  - `payment-links bulk-update-tags-by-filter`
+- `payment-link-payments`
+  - `payment-link-payments query`
+  - `payment-link-payments search`
+  - `payment-link-payments issue-receipt`
+- `receipts`
+  - `receipts create`
+  - `receipts get`
+  - `receipts query`
+  - `receipts get-latest-number`
+  - `receipts regenerate-document`
+  - `receipts send-email`
+  - `receipts update-extended-fields`
+- `receipt-presets`
+  - `receipt-presets create`
+  - `receipt-presets get`
+  - `receipt-presets update`
+  - `receipt-presets delete`
+  - `receipt-presets list`
+  - `receipt-presets get-default`
+  - `receipt-presets set-default`
+  - `receipt-presets update-extended-fields`
+- `receipts-settings`
+  - `receipts-settings get`
+  - `receipts-settings update`
+- `payment-link-settings`
+  - `payment-link-settings get`
+  - `payment-link-settings update`
+- `headless-oauth-apps`
+  - `headless-oauth-apps create`
+  - `headless-oauth-apps get`
+  - `headless-oauth-apps update`
+  - `headless-oauth-apps query`
+- `headless-authentication`
+  - `headless-authentication login-v2`
+  - `headless-authentication retrieve-tokens`
+  - `headless-authentication register-v2`
+  - `headless-authentication change-password`
+  - `headless-authentication logout`
+  - `headless-authentication sign-on`
+- `headless-recovery`
+  - `headless-recovery send-recovery-email`
+- `headless-redirects`
+  - `headless-redirects create-redirect-session`
+- `headless-sitemap`
+  - `headless-sitemap list-pages`
+- `headless-verification`
+  - `headless-verification verify-during-authentication`
+- `site-urls`
+  - `site-urls get-editor-urls`
+  - `site-urls list-published-site-urls`
+- `notifications`
+  - `notifications notify`
+- `connected-domains`
+  - `connected-domains list`
+  - `connected-domains get`
+  - `connected-domains get-setup-info`
+  - `connected-domains create`
+  - `connected-domains delete`
+- `files`
+  - `files list`
+  - `files get`
+  - `files batch-get`
+  - `files search`
+  - `files query`
+  - `files list-deleted`
+  - `files update`
+  - `files bulk-delete`
+  - `files bulk-restore`
+  - `files generate-upload-url`
+  - `files generate-resumable-upload-url`
+  - `files import`
+  - `files generate-download-url`
+- `media-folders`
+  - `media-folders list`
+  - `media-folders get`
+  - `media-folders search`
+  - `media-folders query`
+  - `media-folders list-deleted`
+  - `media-folders create`
+  - `media-folders update`
+  - `media-folders bulk-delete`
+  - `media-folders bulk-restore`
+  - `media-folders generate-download-url`
+- `rich-content-ricos`
+  - `rich-content-ricos convert-from`
+  - `rich-content-ricos convert-to`
+  - `rich-content-ricos validate`
+- `pro-gallery`
+  - `pro-gallery list-galleries`
+  - `pro-gallery get-gallery`
+  - `pro-gallery create-gallery`
+  - `pro-gallery update-gallery`
+  - `pro-gallery delete-gallery`
+  - `pro-gallery list-gallery-items`
+  - `pro-gallery get-gallery-item`
+  - `pro-gallery create-gallery-item`
+  - `pro-gallery update-gallery-item`
+  - `pro-gallery delete-gallery-item`
+  - `pro-gallery bulk-delete-gallery-items`
+- `sites` (account-level reads)
+  - `sites query`
+  - `sites count`
+- `site-actions` (account-level site actions)
+  - `site-actions bulk-delete`
+  - `site-actions duplicate`
+  - `site-actions publish`
+- `projects` (account-level project actions)
+  - `projects create-project`
+- `site-folders` (account-level folder management)
+  - `site-folders query`
+  - `site-folders get-folder-by-site`
+  - `site-folders create`
+  - `site-folders update`
+  - `site-folders delete`
+  - `site-folders move-folders`
+  - `site-folders move-sites`
+- `data-items`
+  - `data-items get`
+  - `data-items query`
+  - `data-items count`
+  - `data-items aggregate`
+  - `data-items aggregate-pipeline`
+  - `data-items distinct`
+  - `data-items search`
+  - `data-items query-referenced`
+  - `data-items is-referenced`
+  - `data-items insert-reference`
+  - `data-items remove-reference`
+  - `data-items replace-references`
+  - `data-items insert`
+  - `data-items save`
+  - `data-items truncate`
+  - `data-items bulk-insert`
+  - `data-items bulk-patch`
+  - `data-items bulk-remove`
+  - `data-items bulk-save`
+  - `data-items bulk-update`
+  - `data-items bulk-insert-references`
+  - `data-items bulk-remove-references`
+  - `data-items update`
+  - `data-items patch`
+  - `data-items remove`
+- `data-collections`
+  - `data-collections list`
+  - `data-collections get`
+  - `data-collections create`
+  - `data-collections update`
+  - `data-collections patch`
+  - `data-collections delete`
+  - `data-collections create-field`
+  - `data-collections update-field`
+  - `data-collections patch-field`
+  - `data-collections delete-field`
+  - `data-collections add-plugin`
+  - `data-collections delete-plugin`
+
+## Context and auth notes
+
+- Account-level site reads (`sites query`, `sites count`) require:
+  - `WIX_API_KEY`
+  - `WIX_ACCOUNT_ID`
+- Account-level account reads (`accounts get`, `accounts list-child-accounts`) use the same auth path:
+  - `WIX_API_KEY`
+  - `WIX_ACCOUNT_ID`
+  - official Wix docs say the Accounts API is only open to companies with a signed contract with Wix
+- Site contributor commands (`contributors query`, `contributors remove`, `contributors change-role`, `contributors change-contributor-location`) use the site/app auth path:
+  - `WIX_APP_ID`
+  - `WIX_APP_SECRET`
+  - `WIX_INSTANCE_ID`
+  - or a valid local token path created by `auth token create`/`auth token set`
+  - official Wix docs say this family is for customer access to one site and needs `Manage Contributors`
+  - `contributors remove` also requires `--site-id` in this tool and only applies with `--apply --yes --ack-irreversible`
+  - `contributors change-role` also requires `--site-id`, explicit role GUIDs in `--role-ids-json`, and only applies with `--apply --yes`
+  - `contributors change-role` replaces all existing role assignments for that contributor and verifies apply with provider `newAssignedRoles` plus readback query, not perfect role-state proof
+- `contributors change-contributor-location` also requires `--site-id`, explicit location GUIDs in `--location-ids-json`, and only applies with `--apply --yes`
+  - `contributors change-contributor-location` replaces all existing location assignments for that contributor's role assignments and verifies apply with provider `newAssignedLocations` plus readback query, not perfect full location-state proof
+  - the official `change-contributor-location` method page currently lists permission `SITE_ROLES.CHANGE_LOCATION` with scope text `View SEO Settings: SCOPE.PROMOTE.VIEW-SEO`
+  - the nearby `Get Roles Info` discovery API is beta-gated in Wix docs and is `excluded`; callers must supply role GUIDs directly
+  - location lookup is `excluded` from the Contributors surface; official Wix docs say to get location IDs from the Locations API
+- `analytics-data get` is read-only and uses site/app auth (app token or local token path), with required permissions `Site Analytics - read permissions`, explicit measurement-type validation, and the documented recent 62-day data window.
+- `analytics-sessions get-list-job-result`, `list-async`, `mark-recordings-deleted`, and `mark-session-recorded` use site/app auth, require `Manage Session Recording Analytics - all permissions`, and are select-beta-only in official Wix docs.
+- `analytics-sessions list-async` is a reviewed-plan named async job starter and requires one session filter plus one time period. `mark-recordings-deleted` and `mark-session-recorded` require `--ack-irreversible`.
+- `automation-storage-items create`, `get`, `query`, `bulk-update-tags`, `bulk-update-tags-by-filter`, `update-counter-by`, and `update-value` use site/app auth, require `Set Up Automations`, and keep the 100-item cap, immutable key/type boundary, and no-delete-method boundary explicit. `bulk-update-tags-by-filter` requires `--ack-irreversible` because an empty filter can update all storage items.
+- `automations-v2 create`, `get`, `update`, `delete`, `query`, and `validate` use site/app auth and require `Set Up Automations`. `validate` is a safe preflight helper; create, update, and delete require `--ack-irreversible` because they can activate, change, or remove site workflows.
+- `analytics-semantic-models list`, `get`, and `query` are read-only and use the same site/app auth path, with required permissions `Site Analytics - read permissions`.
+- `analytics-semantic-models query` requires the official top-level query object and refuses apply if `interval` is missing because Wix docs say semantic-model queries cannot run without a date range.
+- `async-jobs get` and `async-jobs list-items` are read-only and use the same site/app auth path, with required permissions `READ ASYNC JOBS`.
+- `async-jobs` keeps the repo’s no-generic-jobs-runner rule intact by shipping only the official named read methods.
+- AI Credits read commands (`ai-credits ...`) use `WIX_API_KEY` only in this boundary:
+  - `Authorization` only
+  - no `wix-account-id`
+- `app-instance get` is read-only, app-token-based, and maps to `GET /apps/v1/instance`.
+- `app-installations query` and `app-installations search` remain the shipped read inventory commands for installed-app lookup.
+- `app-installation get-installed` is read-only, uses the current site/app token path, and redacts returned `appToken` values.
+- `app-installation is-permitted` is a preflight helper, not a write.
+- `app-installation install`, `app-installation install-from-share-url`, `app-installation uninstall`, `app-installation bulk-install`, and `app-installation bulk-uninstall` are reviewed-plan writes. They use `--plan-out`, then `--plan-in --apply --yes --ack-irreversible`, and recovery is manual because before-state snapshots are not guaranteed for arbitrary tenant context.
+- Official App Installation pages say only logged-in Wix users or API key admins can use the API, and the installed-app read page shows `Manage SEO Settings` while the install/uninstall pages show `Manage Events`, so this boundary keeps the mismatch explicit and stays live-unverified.
+- `bi-event send` is a reviewed-plan write that uses `--plan-out` then `--plan-in --apply --yes`. It sends one named Wix BI event and keeps the no-rollback limit explicit.
+- `embedded-scripts get` is read-only, uses this CLI's existing token-based app path, and keeps the current Wix docs auth mismatch explicit: the family intro says Wix App while the method page says Wix app or Wix user identity.
+- `embedded-scripts embed` is the reviewed-plan write for the same family. It uses `--plan-out` then `--plan-in --apply --yes`, captures a before-state snapshot from the get method, and verifies apply with a read-after-write check.
+- `custom-embeds list` and `custom-embeds get` are read-only and use the same site/app auth path. The family intro and write pages say Wix app or Wix user identity auth, while the get/list pages may omit the auth paragraph, so this boundary keeps that docs mismatch explicit.
+- `custom-embeds create`, `custom-embeds update`, and `custom-embeds delete` are reviewed-plan writes. `custom-embeds delete` also needs `--ack-irreversible`, and `custom-embeds update` requires the current revision number.
+- `benefit-items` is the shipped Items slice of Benefit Programs. `benefit-items get`, `benefit-items list`, `benefit-items query`, and `benefit-items count` are read-only and use the same site/app auth path as other site-context families.
+- `benefit-items create`, `benefit-items update`, `benefit-items delete`, `benefit-items bulk-create`, `benefit-items bulk-update`, `benefit-items bulk-delete`, and `benefit-items bulk-delete-by-filter` are reviewed-plan writes. `benefit-items delete`, `benefit-items bulk-delete`, and `benefit-items bulk-delete-by-filter` also require `--ack-irreversible`.
+- Sites using this API must install the Pricing Plans app. Reads use `SCOPE.BENEFIT_PROGRAMS.READ (PII)` and writes use `Manage benefit programs`. `benefit-items query` defaults to paging limit `50`, `benefit-items list` returns up to `1000` items, `benefit-items update` and `benefit-items bulk-update` require the current `revision`, delete paths remove the benefit association immediately and may affect active pools, and the CLI refuses empty filters for `benefit-items bulk-delete-by-filter`.
+- `balances` is the shipped Balances slice of Benefit Programs. `balances get`, `balances list`, and `balances query` are read-only and use the same site/app auth path as other site-context families.
+- `balances change` and `balances revert-change` are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- Sites using this API must install the Pricing Plans app. Reads use `SCOPE.BENEFIT_PROGRAMS.READ (PII)` and writes use `Manage benefit programs`. `balances query` defaults to paging limit `50`, supported filters include `id`, `createdDate`, `beneficiary.memberId`, and `beneficiary.wixUserId`, `change` works on one `poolId`, and `revert-change` is a specific transaction undo path rather than a blanket rollback promise.
+- `secrets list` is read-only metadata and never returns secret values.
+- `secrets get-value` is read-only but returns the actual secret value, so keep it in backend-safe workflows only.
+- `secrets create`, `secrets patch`, and `secrets delete` are reviewed-plan writes.
+- `secrets delete` also needs `--ack-irreversible`.
+- Plans and receipts never store secret values. They keep metadata only.
+- Wix docs say the Members Area app must be installed before a site can create or manage secrets, but it is not required for `secrets get-value`.
+- Wix docs also say deleting a secret, or changing its name or value, breaks code using that secret.
+- `sender-emails list` and `sender-emails get` are live reads.
+- `sender-emails create`, `sender-emails delete`, `sender-emails get-or-create`, `sender-emails send-verification-code`, and `sender-emails verify` are reviewed-plan writes.
+- `sender-emails delete` also needs `--ack-irreversible`.
+- `sender-emails send-verification-code` only proves provider acceptance here; inbox delivery happens outside this CLI.
+- `sender-emails verify` rereads the sender email and expects `verified: true`.
+- `sender-details list`, `sender-details get`, and `sender-details get-default` are live reads.
+- `sender-details create`, `sender-details update`, `sender-details delete`, and `sender-details mark-default` are reviewed-plan writes.
+- `sender-details delete` also needs `--ack-irreversible`.
+- Wix docs say sender details can only use verified sender email addresses.
+- `sending-domains get` and `sending-domains query` are live reads.
+- `sending-domains authenticate` is a reviewed-plan write and this wrapper refuses it unless the current status is `NOT_AUTHENTICATED`.
+- Official sending-domain docs require query filtering by `domain` or `id` and note that DNS propagation can take up to 48 hours.
+- `marketing-consent get`, `query`, and `get-by-identifier` are live reads.
+- `marketing-consent create`, `update`, `upsert`, `bulk-upsert`, and `remove` are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- `marketing-consent delete` is an irreversible reviewed-plan delete that also requires `--ack-irreversible`.
+- `marketing-consent query` returns up to 100 items per request and defaults to sort `id ASC`.
+- `marketing-consent create` is limited here to confirmed single-confirmation consent and refuses existing identifiers so the caller must switch to `upsert`.
+- `marketing-consent update` requires `--mask-json` plus a payload `id`, and existing email consent state stays at the provider’s current value if the caller tries to patch it to `UNKNOWN_STATE`.
+- `marketing-consent upsert` is the path for double-confirmation or other state changes.
+- `marketing-consent bulk-upsert` accepts a raw array or an `info` object and enforces the official `500`-item limit before send.
+- `marketing-consent remove` changes the state to `REVOKED` but does not delete the entity.
+- The official `get-by-identifier` page currently renders the query parameters badly, and the official `remove` page says `lastRevokeActivity` is required even though the curl example omits it. This wrapper keeps both docs quirks explicit and stays strict on revoke input.
+- `referral-program get`, `get-premium-features`, and `get-ai-social-media-posts-suggestions` are live reads.
+- `referral-program activate`, `pause`, `generate-ai-social-media-posts-suggestions`, and `update` are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- Official Referral Program docs require a qualifying Wix site plan, at least one supported Wix business app, and only one referral program per site. `update` requires the current program revision, and Program Updated stays callback-only.
+- `referral-rewards get` and `query` are live read/helper commands for referral reward records. Official docs require a qualifying Wix site plan, at least one supported Wix business app, Wix app or Wix user identity auth, and `Manage Referrals`.
+- `referring-customers get`, `query`, and `get-by-referral-code` are live read/helper commands for referring customer records. `generate-for-contact` is a reviewed-plan write using a `contactId` body, and `delete` is an irreversible reviewed-plan delete that sends the current `revision` as a REST query parameter. Official docs require a qualifying Wix site plan, at least one supported Wix business app, Wix app or Wix user identity auth, and `Manage Referrals`.
+- `referred-friends get`, `query`, and `get-by-contact-id` are live read/helper commands for referred friend records. `create` is a reviewed-plan write using a 12-character `referralCode`, `update` is a reviewed-plan write using the official `referredFriend` object and current `revision`, and `delete` is an irreversible reviewed-plan delete that sends the current `revision` as a REST query parameter. Official docs require a qualifying Wix site plan, at least one supported Wix business app, `Manage Referrals`, and member identity for create.
+- `referral-tracker get`, `query`, and `get-statistics` are live read/helper commands for referral events and referral statistics. Official docs require the Wix Loyalty Program app, a qualifying Wix site plan, at least one supported Wix business app, Wix app or Wix user identity auth, and `Manage Referrals`.
+- `email-campaigns list`, `get`, `get-audience`, `list-statistics`, `list-recipients`, and `identify-sender-address` are live read/helper calls in this campaign slice.
+- `email-campaigns pause-scheduling`, `reschedule`, `send-test`, `publish`, `reuse`, and `delete` are reviewed-plan writes. `pause-scheduling` rereads the campaign and expects `distributionStatus=PAUSED`. `reschedule` is provider-response-only because the current read surface does not prove the scheduled time directly. `send-test` is rate-limited in the official docs and is provider-response-only here because inbox delivery happens outside this CLI. `publish` may be landing-page-only when no `emailDistributionOptions` are supplied, `reuse` creates a new campaign copy, and `delete` is permanent and requires `--ack-irreversible`.
+- `donation-campaigns get`, `get-metrics`, and `query` are live reads.
+- `donation-campaigns create`, `update`, `bulk-create`, `bulk-update`, `bulk-update-tags`, and `bulk-update-tags-by-filter` are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- Official Wix docs say Wix Donations must be installed, the current command set uses `Manage Donation Campaigns`, `query` defaults to `createdDate ASC` with `cursorPaging.limit 100`, `create` and `bulk-create` require `customAmountEnabled`, `predefinedDonationAmounts`, or both, campaign status is automatic, and `update` / `bulk-update` require the current `revision`.
+- `donation-campaigns get-metrics` returns aggregated totals only, needs a configured `campaignGoal`, and stays in the site's default currency. `bulk-update-tags-by-filter` is async and this wrapper verifies returned `jobId` only. Although official docs allow an empty filter, this boundary refuses empty-filter all-campaign retagging.
+- `pricing-plans get`, `query`, `search`, and `count` are live reads.
+- `pricing-plans create` and `update` are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- `pricing-plans delete` is an irreversible reviewed-plan delete that also requires `--ack-irreversible`.
+- `pricing-plans bulk-update` is a reviewed-plan bulk write with `--plan-out` then `--plan-in --apply --yes`. This wrapper rejects duplicate target plan IDs, rejects plan-name changes in bulk update, normalizes either a raw plans array or a full body object into the official request body, and defaults `returnEntity` to `true` when omitted so verification has fuller provider context.
+- Official Wix docs say reads use `Read Orders` and `Read Pricing Plans`, while writes use `Manage Pricing Plans`.
+- `pricing-plans query` defaults to `createdDate ASC` with `cursorPaging.limit 100`, `search` can include aggregations, the update page currently renders the path placeholder as `{plan.id}`, and official bulk-update docs say one request can include up to `100` plans and can't change plan names.
+- `orders search` and `get` are live reads.
+- `orders create`, `update`, and `bulk-update` are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- `orders cancel` is an irreversible reviewed-plan write and also requires `--ack-irreversible`.
+- Official Wix docs say Orders uses Wix app or Wix user identity auth with `Manage Orders`.
+- `orders create` is for manual orders or external systems.
+- `orders update` only covers the documented subset of order fields.
+- `orders bulk-update` supports up to `100` orders.
+- `orders cancel` changes status to `CANCELED`, has no automatic rollback, and may trigger buyer-email or restock side effects.
+- `bookings-time-slots-v2 list-availability`, `get-availability`, `list-event`, `get-event`, `list-multi-service`, and `get-multi-service` are live reads/helpers for the current shipped Time Slots V2 availability slice. Official Wix docs say Wix Bookings must be installed, the permission is `Read Bookings Calendar Availability`, the scope is `SCOPE.DC-BOOKINGS.READ-CALENDAR`, and the docs list applicable identities `APP`, `MEMBER`, and `VISITOR`. `get-event` is Developer Preview. This boundary covers single-service appointment availability, class event time slots, and multi-service appointment availability, and remains live-unverified.
+- `bookings-reader-v2 query-extended-bookings` and `bookings-reader-v2 count-extended-bookings` are live reads/helpers for the first bounded Bookings Reader V2 slice in this tool. Official Wix docs say Wix Bookings must be installed, there is no get-by-id method, query results are capped at `100`, the default sort is `id ASC`, `cursorPaging.limit` defaults to `50`, course bookings use `scheduleId`, `withBookingAllowedActions` is optional, UTC date filters are required, and the family remains live-unverified.
+- `bookings-writer-v2 get-multi-service`, `get-multi-service-availability`, `bulk-calculate-allowed-actions`, `bulk-get-multi-service-allowed-actions`, `get-anonymous-action-token`, `get-anonymous`, and `get-service-anonymous` are reads/helpers and remain live-unverified. Other `bookings-writer-v2` commands are reviewed-plan writes. `cancel`, `decline`, `reschedule`, `update-participants`, `bulk-confirm-or-decline`, `remove-from-multi-service`, `cancel-multi-service`, `decline-multi-service`, `reschedule-multi-service`, `cancel-anonymous`, and `reschedule-anonymous` also require `--ack-irreversible`. Official Wix docs say Wix Bookings must be installed, bulk create supports up to `12` bookings, Time Slots V2 should be checked before create/reschedule, multi-service bookings support 2-8 sequential appointment bookings at one location, anonymous tokens are credentials, single-service reads stay in Reader V2, and attendance/payment flows stay in separate official APIs.
+- `bookings-services-v2 get`, `query`, `search`, `count`, `query-policies`, `query-locations`, `query-categories`, `validate-slug`, and `list-add-on-groups-by-service-id` are live reads/helpers and remain live-unverified. `bookings-services-v2 create`, `update`, `bulk-create`, `bulk-update`, `bulk-update-by-filter`, `enable-pricing-plans`, `set-custom-slug`, `clone`, `create-add-on-group`, and `update-add-on-group` are reviewed-plan writes. `bookings-services-v2 delete`, `bulk-delete`, `bulk-delete-by-filter`, `set-service-locations`, `disable-pricing-plans`, `delete-add-on-group`, and `set-add-ons-for-group` are reviewed-plan writes that also require `--ack-irreversible`. Official Wix docs say Wix Bookings must be installed, write methods use `Manage Bookings`, service create requires core service fields, appointment services need capacity `1` and at least one staff member, bulk create/update support up to `100` services, setting locations replaces service locations, disabling pricing plans can make a service unbookable, and service events stay callback-only.
+- `bookings-resources-v2 get`, `query`, `search`, and `count` are live reads/helpers and remain live-unverified. `bookings-resources-v2 create`, `update`, `bulk-create`, and `bulk-update` are reviewed-plan writes. `bookings-resources-v2 delete` and `bulk-delete` are reviewed-plan writes that also require `--ack-irreversible` because Wix cancels resource schedules during deletion. Official Wix docs say Wix Bookings must be installed, reads use `Read Bookings - Public Data`, writes use `Manage Bookings`, create requires `resource.name`, update requires the current `resource.revision`, bulk create/update/delete support up to `50` resources or IDs, Resource Types V2 is separate, and Resources V2 should not be used to manage staff resources.
+- `bookings-resource-types-v2 get`, `query`, and `count` are live reads/helpers and remain live-unverified. `bookings-resource-types-v2 create` and `update` are reviewed-plan writes. `bookings-resource-types-v2 delete` is a reviewed-plan write that also requires `--ack-irreversible` because Wix deletes all connected resources. Official Wix docs say Wix Bookings must be installed, reads use `Read Bookings - Public Data`, `get` also lists `Read Bookings Calendar`, writes use `Manage Bookings`, create requires `resourceType.name`, update requires the current `resourceType.revision`, Resources V2 is separate, and staff resource types are automatically managed by Wix.
+- `bookings-policies get`, `query`, `count`, and `strictest` are live reads/helpers and remain live-unverified. `bookings-policies create` and `update` are reviewed-plan writes. `bookings-policies delete` and `set-default` are reviewed-plan writes that also require `--ack-irreversible`. Official Wix docs say Wix Bookings must be installed, reads use `Read Bookings - Public Data`, writes use `Manage Bookings Services and Settings`, update requires the current `bookingPolicy.revision`, the default policy can be updated but cannot be deleted before another policy is set as default, query defaults to `createdDate ASC` with `cursorPaging.limit 100`, and daylight saving time can affect policy windows.
+- `bookings-policy-snapshots list` is a live read/helper and remains live-unverified. Official Wix docs say the method retrieves policy snapshots by booking IDs, uses `Read Bookings - Public Data`, every booking with a related eCommerce order has exactly one policy snapshot, bookings without a related eCommerce order do not have a policy snapshot, and snapshots cannot be created through this API. The Booking Policy Service Plugin remains outside this CLI because it is a Developer Preview service-plugin surface hosted by an app deployment URI.
+- `bookings-attendance get`, `query`, and `count` are live reads/helpers and remain live-unverified. `bookings-attendance count` is Developer Preview and only works with a site member identity. `bookings-attendance set` and `bulk-set` are reviewed-plan writes. `bookings-attendance delete` and `bulk-delete` are reviewed-plan writes that also require `--ack-irreversible`. Official Wix docs say reads use `Read Bookings - Including Participants`, writes use `Manage Bookings`, query can use booking or session perspective, only one filter is processed per query, query defaults to `id ASC` with `cursorPaging.limit 50`, and Set Attendance validation is limited, so callers must validate attendee counts against attendance status and booking participant counts.
+- `bookings-waitlist list` is a live read/helper and remains live-unverified. `bookings-waitlist register` is a reviewed-plan write requiring `--ack-event-session`. `bookings-waitlist leave` and `book` are reviewed-plan writes that require `--ack-event-session` and also require `--ack-irreversible`. Official Wix docs mark all Waitlist methods Developer Preview, say waitlist functionality is currently limited to sessions with `type = EVENT`, reads use `Read Bookings - Public Data`, writes use `Manage Bookings`, `list` requires one or more `waitingResources`, `register` requires `waitingResource` and `formInfo`, `leave` requires `registrationId` and `waitingResource` and cancels the associated pending booking, and `book` checks out the associated booking and changes registration status to `ENROLLED`.
+- `calendar-schedules-v3 get` and `query` are live reads/helpers and remain live-unverified. `calendar-schedules-v3 create` and `update` are reviewed-plan writes. `calendar-schedules-v3 cancel` is a reviewed-plan write that also requires `--ack-irreversible` because Wix says cancelled schedules cannot be reactivated, updated, or assigned new events. Official Wix docs say Bookings-visible schedules must set `schedule.appId` to `13d21c63-b5ec-5912-8397-c3a5ddb27a97`, update requires the current `schedule.revision`, query defaults to active schedules unless status is filtered, supported filters are `id`, `externalId`, `appId`, and `status`, and schedule events stay callback-only.
+- `calendar-schedule-time-frames-v3 get` and `list` are live read-only commands and remain live-unverified. Official Wix docs say `get` reads `GET /calendar/v3/schedules/timeframe/{id}`, `list` reads `GET /calendar/v3/schedules/timeframe` with one to 100 schedule IDs in the `ids` query parameter, both commands support optional `timeZone`, and schedule time frames cannot be updated through this API. Schedule Time Frame Updated stays callback-only.
+- `calendar-events-v3 get`, `query`, `list`, `list-by-contact`, and `list-by-member` are live reads/helpers for Business Management Calendar events and remain live-unverified. This is separate from Wix Events & Tickets `events-v3`. `calendar-events-v3 create`, `update`, `bulk-create`, and `bulk-update` are reviewed-plan writes. `calendar-events-v3 cancel`, `bulk-cancel`, `restore-defaults`, and `split-recurring` are reviewed-plan writes that also require `--ack-irreversible`. Official Wix docs say `create` requires `event.scheduleId`, `event.start.localDate`, and `event.end.localDate`, recurring master events require `recurrenceRule.frequency` and `recurrenceRule.days`, `update` requires the current `event.revision`, list accepts up to 100 event IDs, bulk operations accept up to 50 events or IDs, and contact/member listing uses the documented date-window or cursor/event-ID rule. Event Created, Event Updated, Event Cancelled, and Event Recurring Split stay callback-only.
+- `calendar-event-views-v3 get` is a live read/helper and remains live-unverified. Official Wix docs say it reads `GET /calendar/v3/events/view`, returns the current event view end date and future duration, does not return event details, is complete for at least one full year into the future, cannot be manually extended or updated, and can be paired with `calendar-events-v3 query` by using `eventsView.endDate` as `toLocalDate`. Events View Extended and Events View Projection Updated stay callback-only.
+- `calendar-participations-v3 get` and `query` are live reads/helpers and remain live-unverified. `calendar-participations-v3 create` and `update` are reviewed-plan writes. `calendar-participations-v3 delete` is a reviewed-plan write that also requires `--ack-irreversible`. Official Wix docs say create, update, and delete automatically update the corresponding event `participants` and `remainingCapacity`, update requires the current `participation.revision`, each participation targets either an `eventId` or `scheduleId`, `partySize` must be 1 to 1000, query defaults to `createdDate DESC` with `cursorPaging.limit` 50, and supported filters are `id`, `eventId`, `scheduleId`, and `externalId`. Do not use this family to mutate Wix Bookings-managed participation details. Participation Created, Participation Deleted, and Participation Updated stay callback-only.
+- Calendar Skills / default business hours is docs-only, not a CLI command family. Official Wix docs describe a recipe that uses existing Calendar Schedules V3 and Calendar Events V3 APIs. Use `calendar-schedules-v3 query` to find the business schedule by external ID `4e0579a5-491e-4e70-a872-d097eed6e520`, then use `calendar-events-v3 query` for existing `WORKING_HOURS` MASTER events, `calendar-events-v3 bulk-update` to update existing hours, or `calendar-events-v3 bulk-cancel` plus `calendar-events-v3 bulk-create` to replace hours. Do not invent `calendar-skills`, and keep the underlying Calendar Events V3 reviewed-plan and irreversible-write gates.
+- Captcha is gated and non-callable in this REST CLI. Official Wix docs expose Developer Preview Authorize at `POST /captcharator/api/v1/authorize` for Wix site or Blocks app backend code after the Wix reCAPTCHA element generates a token, but the Captcha introduction says Headless or REST API users cannot use the API. Do not expose or invent `captcha authorize`.
+- `bookings-external-calendars-v2 list-providers`, `list-connections`, `get-connection`, `list-calendars`, and `list-events` are live reads/helpers and remain live-unverified. `bookings-external-calendars-v2 connect-by-credentials`, `connect-by-oauth`, and `update-sync-config` are reviewed-plan writes. `connect-by-credentials` requires `--ack-external-credentials` and redacts secret fields in plans and receipts. `disconnect` is a reviewed-plan write that also requires `--ack-irreversible` because Wix says it deletes Wix calendar events from the external calendar. Official Wix docs say all methods use `Manage External Calendars`, providers determine OAuth vs credentials support, OAuth returns an `oAuthUrl` for account-owner approval, `list-events` requires `from` and `to` unless using `cursorPaging.cursor`, PI fields such as `title` require `OWN_PI`, and legacy Bookings Calendar V1 is compatibility-only.
+- `bookings-service-options-v1 get`, `get-by-service-id`, and `query` are live reads/helpers and remain live-unverified. `bookings-service-options-v1 create`, `update`, and `clone` are reviewed-plan writes. `bookings-service-options-v1 delete` is a reviewed-plan write that also requires `--ack-irreversible` because Wix says deleting service options removes varied pricing from the service. Official Wix docs say only one serviceOptionsAndVariants object is allowed per service, only one option is currently supported per object, variants must be manually defined, update requires the current `serviceOptionsAndVariants.revision`, query defaults to `id ASC` with `cursorPaging.limit 100`, and created/deleted/updated events stay callback-only.
+- Course-specific Bookings flow is accounted through shipped explicit command families rather than a separate course command. Use `bookings-services-v2` for course service `schedule`, `defaultCapacity`, and `bookingPolicy.bookAfterStart`; `bookings-service-options-v1 get-by-service-id` for varied options; `bookings-reader-v2 query-extended-bookings` filtered by `bookedEntity.item.schedule.serviceId` to sum `attendance.numberOfAttendees`; and `bookings-writer-v2 create` with `booking.bookedEntity.schedule.scheduleId`. Official Wix docs keep course availability outside Time Slots V2, and Forms/checkout dependencies stay in their own coverage rows.
+- `bookings-staff-members get`, `query`, `search`, `count`, `get-deleted`, and `list-deleted` are live reads/helpers and remain live-unverified. `bookings-staff-members create`, `update`, `assign-working-hours-schedule`, `bulk-update-tags`, `bulk-update-tags-by-filter`, `connect-to-user`, and `disconnect-from-user` are reviewed-plan writes. `bookings-staff-members delete` and `remove-from-trash` are reviewed-plan writes that also require `--ack-irreversible`. Official Wix docs say Wix Bookings must be installed, reads use `BOOKINGS.STAFF_MEMBER_READ`, writes use `Manage Bookings`, update requires the current `staffMember.revision`, bulk tag update by IDs supports up to `100` staff members, bulk tag update by filter is async and returns a job ID, and Wix automatically manages staff resources and staff resource types.
+- `stores-products-v3 get`, `get-by-slug`, `get-all-products-category`, `query`, `search`, and `count` are live reads/helpers.
+- `stores-products-v3 create`, `update`, `bulk-create`, `bulk-update`, `create-with-inventory`, `update-with-inventory`, `bulk-create-with-inventory`, `bulk-update-with-inventory`, add-info-section helpers, add-to-categories helpers, adjust-variants helpers, and filter update helpers are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- `stores-products-v3 delete`, `bulk-delete`, `bulk-delete-by-filter`, remove-info-section helpers, and `bulk-remove-from-categories-by-filter` also require `--ack-irreversible`.
+- Official Wix docs say the shipped Stores Products V3 boundary is Catalog V3-only. Reads use `Read v3 catalog`, non-visible products may also need `Product v3 read admin`, normal writes use `Product write in v3 catalog`, and inventory-coupled writes also use `Inventory write in v3 catalog`.
+- `stores-products-v3 update`, `bulk-update`, `update-with-inventory`, and `bulk-update-with-inventory` require the current product `revision`.
+- `stores-products-v3 query` and `search` return up to `100` products and do not include full variant detail, so the wrapper keeps `get`, `get-by-slug`, and `read-only-variants-v3` explicit.
+- `read-only-variants-v3 query` and `search` are live reads/helpers.
+- Official Wix docs say the Wix Stores app must be installed. Reads use `Read products in v3 catalog`, non-visible variants may also need `Product v3 read admin`, and `query` should use `productData.productId` together with `variantId` as the unique variant key because `id` is deprecated and not globally unique.
+- `read-only-variants-v3 query` and `search` each support up to `1,000` variants. `read-only-variants-v3 search` defaults to `productData.updatedDate DESC`, then `productData.productId ASC`, then `variantId ASC`.
+- Official Wix docs also say this family is eventually consistent with Products V3 writes, so critical real-time checks may still need a Products V3 reread.
+- `brands-v3 get` and `query` are live reads/helpers.
+- `brands-v3 create`, `update`, `bulk-create`, `bulk-update`, `get-or-create`, and `bulk-get-or-create` are reviewed-plan writes.
+- `brands-v3 delete` and `bulk-delete` are irreversible reviewed-plan writes and also require `--ack-irreversible`.
+- Official Wix docs say the Wix Stores app must be installed. Reads use `Read brands in catalog v3`, and `query` returns up to `100` brands by default with `createdDate DESC` and `cursorPaging.limit 100`.
+- Official Wix docs say writes use `Brand write in v3 catalog`, update methods require the current `revision`, deleting a brand removes it from products that reference it, and get-or-create methods may create a brand when no matching name exists.
+- `ribbons-v3 get` and `query` are live reads/helpers.
+- `ribbons-v3 create`, `update`, `bulk-create`, `bulk-update`, `get-or-create`, and `bulk-get-or-create` are reviewed-plan writes.
+- `ribbons-v3 delete` and `bulk-delete` are irreversible reviewed-plan writes and also require `--ack-irreversible`.
+- Official Wix docs say the Wix Stores app must be installed. Reads use `Read ribbons in v3 catalog`, and `query` returns up to `100` ribbons by default with `createdDate DESC` and `cursorPaging.limit 100`.
+- Official Wix docs say writes use `Ribbon write in v3 catalog`, update methods require the current `revision`, deleting a ribbon removes it from products that reference it, and get-or-create methods may create a ribbon when no matching name exists.
+- `stores-info-sections-v3 get` and `query` are live reads/helpers.
+- `stores-info-sections-v3 create`, `update`, `bulk-create`, `bulk-update`, `get-or-create`, and `bulk-get-or-create` are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- `stores-info-sections-v3 delete` and `bulk-delete` are irreversible reviewed-plan writes and also require `--ack-irreversible`.
+- Official Wix docs say reads use `Read info sections in v3 catalog`, writes use `Info section write in v3 catalog`, `update` and `bulk-update` require the current `revision`, `query` defaults to `createdDate DESC` with `cursorPaging.limit 100`, deleting an info section also removes it from products that use it, and get-or-create methods require `uniqueName` plus `title` when creating a missing info section.
+- `customizations-v3 get` and `query` are live reads/helpers.
+- `customizations-v3 create`, `update`, `bulk-create`, `bulk-update`, `add-choices`, and `bulk-add-choices` are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- `customizations-v3 delete`, `remove-choices`, and `set-choices` are irreversible reviewed-plan writes and also require `--ack-irreversible`.
+- Official Wix docs say the Wix Stores app must be installed. Reads use `Read customizations in v3 catalog`, writes use `Customization write in v3 catalog`, `update` and `bulk-update` require the current `revision`, and `query` returns up to `100` customizations by default with `createdDate DESC` and `cursorPaging.limit 100`.
+- Deleting a customization or removing choices can remove them from products and variants that use them.
+- `categories get`, `get-by-slug`, `query`, `search`, `count`, `list-trees`, `get-arranged-items`, `list-categories-for-item`, `list-categories-for-items`, and `list-items-in-category` are live reads/helpers.
+- `categories create`, `update`, `bulk-update`, `update-visibility`, `bulk-show`, `bulk-add-items-to-category`, `bulk-add-item-to-categories`, and `move` are reviewed-plan writes. `delete`, `bulk-remove-items-from-category`, `bulk-remove-item-from-categories`, and `set-arranged-items` also require `--ack-irreversible`.
+- Official Wix docs say the Wix Stores app must be installed. Reads use `Read categories`, writes use category write permissions in the official docs, the family is Catalog V3-only, hidden categories require explicit `includeHiddenCategories: true` in query/search bodies, update and bulk update require the current revision, deleting a category also deletes subcategories, `get-by-slug` is Developer Preview, and every request depends on the official `treeReference` with `appNamespace: "@wix/stores"` and `treeKey: null`.
+- `stores-inventory-items-v3 get`, `query`, and `search` are live reads/helpers.
+- `stores-inventory-items-v3 create` and `update` are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- `stores-inventory-items-v3 delete` is an irreversible reviewed-plan write and also requires `--ack-irreversible`.
+- Official Wix docs say the Wix Stores app must be installed. Reads use `Read inventory in v3 catalog`, writes use `Inventory write in v3 catalog`, the combination of `variantId` and `locationId` must be unique, and the product read-only inventory field reflects the default location only.
+- `stores-inventory-items-v3 update` requires the current inventory-item `revision`.
+- `stores-inventory-items-v3 query` returns up to `1,000` items. `stores-inventory-items-v3 search` defaults to `createdDate DESC` with `cursorPaging.limit 100`.
+- `stores-locations-v3 get` and `query` are live reads/helpers.
+- Official Wix docs say Stores Locations V3 is read-only, the Wix Stores app must be installed, only locations with `INVENTORY` in `locationTypes` appear here, and the default location is used for inventory items without a specific location assigned.
+- Official Wix docs also say location creation or updates belong in the Wix Locations API instead of this Stores family.
+- `catalog-versioning get` is a live read/helper.
+- Official Wix docs say each site supports either Catalog V1 or Catalog V3, callers should check this at the start of a Stores flow, the endpoint takes no parameters, the result is permanent for a given site, and the Wix Stores app must be installed.
+- `order-billing get-order-refundability` and `order-billing calculate-refund` are live reads/helpers. `order-billing authorize-charge-with-saved-payment-method`, `capture-authorized-payments`, `void-authorized-payments`, `generate-receipts`, `redeem-gift-card`, and `refund-payments` are reviewed-plan writes. Capture, void, redeem, and refund only apply live with `--plan-out` then `--plan-in --apply --yes --ack-irreversible`. Official Wix docs say authorization needs a saved payment method, capture/void only work on authorized payments, capture is currently full-amount only, refund methods support payment service provider payments, and `generate-receipts` plus `redeem-gift-card` are Developer Preview.
+- `payments transactions-list` is a live read/helper for Cashier Payments transactions. Official Wix docs say it uses `GET /payments/v2/transactions`, supports pagination, accepts query filters for created/updated dates, status, payment method/provider, refunds, and totals, and currently marks the `currency` and `appId` filters deprecated with target removal date 2026-06-30.
+- Payment-provider and checkout plugin surfaces stay outside this CLI because they are plugin, hosted, or callback-driven surfaces, not normal one-shot CLI calls.
+- `gift-cards get`, `query`, `search`, and `count` are live reads.
+- `gift-cards create`, `disable`, and `send-email` are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- `gift-cards disable` is an irreversible reviewed-plan write and also requires `--ack-irreversible`.
+- Official Wix docs say the Wix Gift Card app must be installed, all shipped methods use `Manage eCommerce - all permissions`, `send-email` also needs a premium site plan, gift card codes are obfuscated outside the create response, `count` is currently Developer Preview, and the deprecated list-by-email method stays out of this shipped subset.
+- `coupons get` and `query` are live reads.
+- `coupons create`, `update`, and `bulk-create` are reviewed-plan writes with `--plan-out` then `--plan-in --apply --yes`.
+- `coupons delete` and `bulk-delete` are irreversible reviewed-plan writes and also require `--ack-irreversible`.
+- Official Wix docs say the site must have one of `stores`, `bookings`, `events`, or `pricingPlans` installed, all coupon methods use `Manage Coupons`, `query` returns at most 100 coupons per request, coupon codes are case and space sensitive, and only one coupon can be applied per order.
+- `campaign-validation validate-link` and `validate-html-links` are live read/helper validation calls.
+- `events-settings get` is a live read for Wix Events & Tickets app settings.
+- `events-settings update` is a reviewed-plan write and is Developer Preview in official Wix docs. Official docs say the Wix Events & Tickets app must be installed, the family requires `Manage Events`, update can be called as a Wix app or Wix user identity, and most settings are read-only except specific payment-related settings.
+- `portfolio-settings get` is a live read for Wix Portfolio app settings.
+- `portfolio-settings update` is a reviewed-plan write. Official docs say the Wix Portfolio app must be installed, each site has one settings record created automatically when the app is installed, the family requires `Manage Portfolio`, update can be called as a Wix app or Wix user identity, update requires the current `revision`, and Portfolio Settings Created is a webhook/event surface.
+- `portfolio-collections list`, `get`, and `query` are live reads/helpers for Wix Portfolio collections.
+- `portfolio-collections create` and `update` are reviewed-plan writes, and `delete` is an irreversible reviewed-plan write that also requires `--ack-irreversible`. Official docs say the Wix Portfolio app must be installed, query returns up to `100` collections with default sort `id ASC`, update requires the current `revision`, and Collection Created/Updated/Deleted are webhook/event surfaces. Current read/event pages show an unrelated-looking permission label, `Wix Multilingual - Nile Wrapper Domain Events Read`, so this wrapper keeps that docs mismatch explicit.
+- `portfolio-projects list`, `get`, and `query` are live reads/helpers for Wix Portfolio projects.
+- `portfolio-projects create`, `update`, and `bulk-update` are reviewed-plan writes, and `delete` is an irreversible reviewed-plan write that also requires `--ack-irreversible`. Official docs say the Wix Portfolio app must be installed, cover images and videos must first be uploaded or imported through Wix Media Manager, query returns up to `100` projects with default sort `id ASC`, update requires the current `revision`, and Project Created/Updated/Deleted are webhook/event surfaces. The official bulk update page currently renders `/portfolio/projects/projects/api/v1/bulk/portfolio/projects/update`, so this wrapper keeps that path oddity explicit.
+- `portfolio-project-items list` and `get` are live reads/helpers for project items in existing Wix Portfolio projects.
+- `portfolio-project-items create`, `update`, `bulk-create`, `bulk-update`, and `duplicate` are reviewed-plan writes, while `delete` and `bulk-delete` are irreversible reviewed-plan writes that also require `--ack-irreversible`. Official docs say the Wix Portfolio app must be installed, project items belong to existing projects, images and videos must first be uploaded or imported through Wix Media Manager, and Project Item Created/Updated/Deleted are webhook/event surfaces. Current get/list/event pages show an unrelated-looking permission label, `Wix Multilingual - Nile Wrapper Domain Events Read`, and several write pages omit a clear auth block, so this wrapper keeps that docs mismatch explicit.
+- `suppliers-hub-products get`, `query`, `search`, and `query-categories` are live reads/helpers for Wix Suppliers Hub Marketplace products and product categories.
+- `suppliers-hub-products create`, `update`, `bulk-create`, `bulk-update`, `bulk-add-to-store`, and `bulk-update-tags` are reviewed-plan writes, while `delete`, `bulk-delete`, and `bulk-update-tags-by-filter` are stronger reviewed-plan writes that also require `--ack-irreversible`. Official docs mark this API Developer Preview and say access is only for approved Wix business partners with a signed business agreement. `query` is the strongly consistent operational read, `search` is eventually consistent for discovery, `bulk-update-tags-by-filter` returns an async `jobId` and an empty filter can update all products, and the product events are webhook/event surfaces. The Bulk Add Products To Store page currently has a generated endpoint and curl example path mismatch; this wrapper uses the generated Method API Endpoint and records the mismatch in inventory.
+- `suppliers-hub-suppliers get` and `query` are live reads for Wix Suppliers Hub suppliers.
+- `suppliers-hub-suppliers create`, `update`, `bulk-create`, `bulk-update`, and `bulk-update-tags` are reviewed-plan writes, while `delete`, `bulk-delete`, and `bulk-update-tags-by-filter` are stronger reviewed-plan writes that also require `--ack-irreversible`. Official docs mark this API Developer Preview and say access is only for approved Wix business partners with a signed business agreement. Supplier `update` and `bulk-update` require the current supplier `revision`, so the CLI reads before-state, injects the current revision when omitted, and refuses stale provided revisions. `bulk-update-tags-by-filter` returns an async `jobId` and an empty filter can update all suppliers; supplier events are webhook/event surfaces.
+- `suppliers-hub-marketplace-provider-submissions submit-generated-mockups` is a reviewed-plan provider-backend reporting write for mockup generation results. Official docs mark this API Developer Preview, cap each submission at 100 mockups, and say Wix keys each result by authenticated provider, `providerProductId`, and `imageType`. The Submit Generated Mockups page currently has a generated endpoint and curl example path mismatch; this wrapper uses the generated Method API Endpoint and records the mismatch in inventory.
+- `events-v3 get`, `query`, `count-by-status`, `get-by-slug`, and `list-by-category` are live reads/helpers for Wix Events & Tickets events. `list-by-category` is Developer Preview in official Wix docs.
+- `events-v3 create`, `update`, `clone`, and `publish-draft` are reviewed-plan writes.
+- `events-v3 cancel`, `bulk-cancel-by-filter`, `delete`, and `bulk-delete-by-filter` are reviewed-plan writes that also require `--ack-irreversible` because cancellation closes registration and can send notifications, while deletion leaves GDPR access request as the documented retrieval path.
+- Official Wix Events V3 docs say Wix Events & Tickets must be installed, reads use `Read Events`, and writes use `Manage Events`.
+- `events-ticket-definitions-v3 get`, `query`, and `count` are live reads/helpers for Wix Events ticket definitions.
+- `events-ticket-definitions-v3 create`, `update`, and `reorder` are reviewed-plan writes. `update` requires the current `ticketDefinition.revision`.
+- `events-ticket-definitions-v3 delete`, `bulk-delete-by-filter`, and `change-currency` are reviewed-plan writes that also require `--ack-irreversible` because they can affect event ticket sales, paid-ticket accounting, or many ticket definitions at once.
+- `events-categories get` and `query` are live reads/helpers for Wix Events categories.
+- `events-categories create`, `bulk-create`, `update`, `assign-events`, `bulk-assign-events`, and `reorder-events` are reviewed-plan writes.
+- `events-categories delete`, `unassign-events`, and `bulk-unassign-events` are reviewed-plan writes that also require `--ack-irreversible` because they remove category records or event/category relationships.
+- `events-schedule-items get`, `list`, `query`, and `list-bookmarks` are live reads/helpers for Wix Events schedule items and current-member bookmarks.
+- `events-schedule-items add`, `update`, `publish-draft`, `reschedule-draft`, `create-bookmark`, and `delete-bookmark` are reviewed-plan writes.
+- `events-schedule-items delete` and `discard-draft` are reviewed-plan writes that also require `--ack-irreversible` because they remove draft schedule content or clear all draft schedule changes.
+- Official Wix Events Schedule Items docs say Wix Events & Tickets must be installed, each event has one published schedule and one draft schedule, and schedule item methods require `Manage Events`.
+- `events-policies-v2 get` and `query` are live reads/helpers for Wix Events policy records.
+- `events-policies-v2 create`, `update`, and `reorder` are reviewed-plan writes.
+- `events-policies-v2 delete` is a reviewed-plan write that also requires `--ack-irreversible` because it permanently deletes the policy.
+- Official Wix Events Policies V2 docs say Wix Events & Tickets must be installed, each event can have up to 3 policies, reads use `Read Policies`, writes use `Manage Policies`, and update requires the current policy `revision`.
+- `events-staff-members get` and `query` are live reads/helpers for Wix Events staff member records.
+- `events-staff-members create` and `update` are reviewed-plan writes.
+- `events-staff-members update` requires the current `staffMember.revision`.
+- `events-staff-members delete` is a reviewed-plan write that also requires `--ack-irreversible` because it permanently removes the staff member from the staff member list.
+- Official Wix Events Staff Members docs say Wix Events & Tickets must be installed, methods require `Manage Events - all permissions`, and query defaults to `createdDate ASC` with paging limit `100` and offset `0`.
+- `events-guests query` is a live read/helper for Wix Events guest records.
+- Official Wix Event Guests docs say Wix Events & Tickets must be installed, guest details require the `guestDetails` fieldset, Query Event Guests requires `Read Event Tickets and Guest List`, and query defaults to `createdDate ASC` with paging limit `100` and offset `0`.
+- `events-rsvps-v2 get`, `query`, `search`, `count`, and `list-summary` are live reads/helpers for RSVP records and summaries.
+- `events-rsvps-v2 create`, `update`, `bulk-update`, and `check-in` are reviewed-plan writes; `delete`, `bulk-delete-by-filter`, and `cancel-check-in` also require `--ack-irreversible`.
+- Official Wix Events RSVP V2 docs say Wix Events & Tickets must be installed. Reads require `Read Event Tickets and Guest List`; create requires `Manage Events`; update, delete, bulk actions, check-in, and cancel check-in require `Manage Guest List`. Update and bulk update require RSVP revisions, bulk update accepts up to `100` RSVPs, check-in and cancel check-in accept up to `11` guests, query defaults to `createdDate ASC` with paging limit `100` and offset `0`, and RSVP created/updated/deleted pages are webhook/event surfaces rather than CLI commands.
+- `events-ticket-reservations get` is a live read/helper for one Wix Events ticket reservation.
+- `events-ticket-reservations create` and `bulk-update-tags` are reviewed-plan writes; `delete`, `bulk-update-tags-by-filter`, and `cancel` also require `--ack-irreversible`.
+- Official Wix Events Ticket Reservations docs say Wix Events & Tickets must be installed. Create/get/cancel require `Events Checkout`, delete and bulk tag updates require `Manage Orders`, create starts a `PENDING` reservation that auto-expires, `ticketReservation.tickets` supports 1-50 line items, known-ID bulk tag updates use `ids` for up to `100` reservations, by-filter bulk tag updates are asynchronous and an empty filter updates all reservations, delete cannot be undone, cancel cannot be restored, and Ticket Reservation created/deleted/updated pages are webhook/event surfaces rather than CLI commands.
+- `events-tickets get` and `list` are live reads/helpers for generated event tickets.
+- `events-tickets update`, `bulk-update`, and `check-in` are reviewed-plan writes; `delete-check-in` also requires `--ack-irreversible` because it removes attendance check-in evidence.
+- Official Wix Events Tickets docs say Wix Events & Tickets must be installed, tickets are generated by the Orders API, get/list require `Read Event Tickets and Guest List`, write methods require `Manage Guest List`, list returns up to `100` tickets, batch methods use the official `ticketNumber` array with a local `100`-ticket cap, and Order Updated is a webhook/event surface rather than a CLI command.
+- `events-orders list`, `get`, `get-summary`, `get-checkout-options`, `list-available-tickets`, `query-available-tickets`, and `get-invoice` are live reads/helpers for event orders and checkout pricing/ticket availability.
+- `events-orders update`, `bulk-update`, and `update-checkout` are reviewed-plan writes; `confirm`, `create-reservation`, `cancel-reservation`, and `checkout` also require `--ack-irreversible`.
+- Official Wix Events Orders docs say Wix Events & Tickets must be installed, paid checkout requires a premium plan plus at least one configured payment method, order reads require `Read Basic Events Order Info`, order writes require `Manage Orders`, checkout methods require `Events Checkout`, Confirm Order can mark eligible orders `PAID` and send ticket confirmation email, Checkout can create orders and contacts and affect payment/ticket inventory, `query-available-tickets` uses max `limit` `1000` and min `offset` `0`, the old checkout reservation endpoints are deprecated, and order/deprecated reservation pages are webhook/event surfaces rather than CLI commands.
+- `events-forms get-form` is a live read/helper for one event registration form.
+- `events-forms add-control` and `update-control` are reviewed-plan writes; `discard-draft`, `delete-control`, `update-messages`, and `publish-draft` also require `--ack-irreversible`.
+- Official Wix Events Form docs say Wix Events & Tickets must be installed, `get-form` requires `Read Events`, write methods require `Manage Events` and Wix app or Wix user identity, name and email controls are required and pinned to the top of the form, add/update/delete control changes can automatically trigger form publishing, `discard-draft` and `publish-draft` are deprecated, and Form Event Updated is a webhook/event surface rather than a CLI command.
+- `restaurants-menus list`, `get`, and `query` are live reads/helpers for Wix Restaurants menu records.
+- `restaurants-menus create`, `update`, `bulk-create`, `bulk-update`, `duplicate`, and `update-extended-fields` are reviewed-plan writes; `delete` also requires `--ack-irreversible`.
+- Official Wix Restaurants Menus docs say the Wix Restaurants Menus app must be installed, the family is Developer Preview, writes use `Manage Restaurants - all permissions`, update and bulk update require the current menu revision, list/query can return up to `500` menus, rendered pages use `/restaurants/menus-menu/v1` public paths while markdown schema also exposes `/restaurants/menus/v1`, and Menu Created/Updated/Deleted are webhook/event surfaces rather than CLI commands.
+- `restaurants-sections list`, `get`, and `query` are live reads/helpers for Wix Restaurants menu section records.
+- `restaurants-sections create`, `update`, `bulk-create`, `bulk-update`, and `duplicate` are reviewed-plan writes; `delete` and `bulk-delete` also require `--ack-irreversible`.
+- Official Wix Restaurants Sections docs say the Wix Restaurants Menus app must be installed, the family is Developer Preview, methods use `Manage Restaurants - all permissions`, update and bulk update require the current section revision, list/query can return up to `500` sections, rendered pages use `/restaurants/menus-section/v1` public paths while markdown schema also exposes `/restaurants/menus/v1`, reusing one section across multiple menus can break Wix site functionality, and Section Created/Updated/Deleted are webhook/event surfaces rather than CLI commands.
+- `restaurants-items list`, `get`, `query`, `search`, and `count` are live reads/helpers for Wix Restaurants menu item records.
+- `restaurants-items create`, `update`, `bulk-create`, and `bulk-update` are reviewed-plan writes; `delete` and `bulk-delete` also require `--ack-irreversible`.
+- Official Wix Restaurants Items docs say the Wix Restaurants Menus app must be installed, methods use `Manage Restaurants - all permissions`, update and bulk update require the current item revision, list returns up to `500` items, search defaults to `paging.limit` `500`, `paging.offset` `0`, and `createdDate` ascending, count can count all items when no filter is sent, bulk update handles up to `100` items, rendered pages use `/restaurants/menus-item/v1` public paths while markdown schema also exposes `/restaurants/menus/v1`, current rendered method pages do not show a stable method-level Developer Preview marker for this Items slice, and Item Created/Updated/Deleted are webhook/event surfaces rather than CLI commands.
+- `restaurants-item-labels list`, `get`, and `query` are live reads/helpers for Wix Restaurants item-label records.
+- `restaurants-item-labels create` and `update` are reviewed-plan writes; `delete` also requires `--ack-irreversible`.
+- Official Wix Restaurants Item Labels docs say the Wix Restaurants Menus app must be installed, the family is Developer Preview, rendered pages use `/restaurants/item-labels/v1` public paths, create/update/delete use `Manage Restaurants - all permissions`, current rendered get/list/query pages show `Wix Multilingual - Nile Wrapper Domain Events Read`, update requires the current label revision, list/query can return up to `500` labels, and Item Label Created/Updated/Deleted are webhook/event surfaces rather than CLI commands.
+- `restaurants-item-variants list`, `get`, `query`, and `count` are live reads/helpers for Wix Restaurants item-variant records.
+- `restaurants-item-variants create`, `update`, `bulk-create`, and `bulk-update` are reviewed-plan writes; `delete` and `bulk-delete` also require `--ack-irreversible`.
+- Official Wix Restaurants Item Variants docs say the Wix Restaurants Menus app must be installed, the family is Developer Preview, rendered pages use `/restaurants/item-variants/v1` public paths, methods use `Manage Restaurants - all permissions`, update and bulk update require the current variant revision, list/query can return up to `500` variants, count can count all variants when no filter is sent, bulk update returns up to `100` item variants, and Item Variant Created/Updated/Deleted are webhook/event surfaces rather than CLI commands.
+- `restaurants-item-modifiers list`, `get`, `query`, and `count` are live reads/helpers for Wix Restaurants item-modifier records.
+- `restaurants-item-modifiers create`, `update`, `bulk-create`, and `bulk-update` are reviewed-plan writes; `delete` and `bulk-delete` also require `--ack-irreversible`.
+- Official Wix Restaurants Item Modifiers docs say the Wix Restaurants Menus app must be installed, the family is Developer Preview, rendered pages use `/restaurants/item-modifiers/v1` public paths, methods use `Manage Restaurants - all permissions`, update and bulk update require the current modifier revision, list/query can return up to `500` modifiers, count can count all modifiers when no filter is sent, and Item Modifier Created/Updated/Deleted are webhook/event surfaces rather than CLI commands.
+- `restaurants-item-modifier-groups list`, `get`, `query`, and `count` are live reads/helpers for Wix Restaurants item-modifier-group records.
+- `restaurants-item-modifier-groups create`, `update`, `bulk-create`, and `bulk-update` are reviewed-plan writes; `delete` also requires `--ack-irreversible`.
+- Official Wix Restaurants Item Modifier Groups docs say the Wix Restaurants Menus app must be installed, the family is Developer Preview, rendered pages use `/restaurants/item-modifier-group/v1` public paths, methods use `Manage Restaurants - all permissions`, update and bulk update require the current modifier group revision, list/query can return up to `500` modifier groups, count can count all modifier groups when no filter is sent, bulk create accepts up to `100` modifier groups, bulk update can return up to `100` modifier groups, the official bulk update page renders `/restaurants/item-modifier-group/v1/bulk/modifiers-groups/update`, and Item Modifier Group Created/Updated/Deleted are webhook/event surfaces rather than CLI commands.
+- `restaurants-online-order-operation-groups get` and `query` are live reads/helpers for Wix Restaurants Online Orders operation groups.
+- `restaurants-online-order-operation-groups create`, `update`, `bulk-create`, `bulk-update`, and `bulk-update-tags` are reviewed-plan writes; `delete`, `bulk-delete`, and `bulk-update-tags-by-filter` also require `--ack-irreversible`.
+- Official Wix Restaurants Online Orders Operation Groups docs say the Wix Restaurants Orders app must be installed, methods use `Manage Restaurants - all permissions`, update and bulk update require current operation group revisions, deleting an operation group deletes its operations, `bulk-update-tags-by-filter` is async and can update all operation groups when no filter is sent, and Operation Group Created/Updated/Deleted are webhook/event surfaces rather than CLI commands.
+- `restaurants-online-order-operations get`, `list`, `query`, availability calculations, and `validate-address` are live reads/helpers for Wix Restaurants Online Orders operations.
+- `restaurants-online-order-operations update` and `bulk-update-tags` are reviewed-plan writes; `delete` and `bulk-update-tags-by-filter` also require `--ack-irreversible`.
+- Official Wix Restaurants Online Orders Operations docs say the Wix Restaurants Orders app must be installed, current rendered pages show Developer Preview and `/restaurants-operations/v1` public paths, methods use `Manage Restaurants - all permissions`, update requires the current operation revision, operations are automatically created from operation groups and locations, and `bulk-update-tags-by-filter` is async and can update all operations when no filter is sent.
+- `restaurants-online-order-menu-ordering-settings get`, `query`, and `list-menus-availability-status` are live reads/helpers for Wix Restaurants Online Orders menu ordering settings.
+- `restaurants-online-order-menu-ordering-settings update`, `bulk-update`, `bulk-update-tags`, `update-extended-fields`, and `upsert-by-menu-id` are reviewed-plan writes; `bulk-update-tags-by-filter` also requires `--ack-irreversible`.
+- Official Wix Restaurants Online Orders Menu Ordering Settings docs say the Wix Restaurants Orders app and Wix Restaurants Menus app must be installed, current rendered pages show Developer Preview and `/menu-ordering-settings/v1` public paths, methods use `Manage Restaurants - all permissions`, update and bulk update require current revisions, menu ordering settings are created automatically for each menu, `bulk-update-tags-by-filter` is async and can update all menu ordering settings when no filter is sent, and Menu Ordering Settings Created/Deleted/Updated are webhook/event surfaces rather than CLI commands.
+- `restaurants-online-order-fulfillment-methods list`, `get`, `query`, `list-available-for-address`, `get-accumulated-availability`, `get-combined-availability`, and `get-aggregated-availability` are live reads/helpers for Wix Restaurants Online Orders fulfillment methods.
+- `restaurants-online-order-fulfillment-methods create`, `bulk-create`, `update`, and `bulk-update-tags` are reviewed-plan writes; `delete` and `bulk-update-tags-by-filter` also require `--ack-irreversible`.
+- Official Wix Restaurants Online Orders Fulfillment Methods docs say the Wix Restaurants Orders app must be installed, current rendered pages show Developer Preview and `/fulfillment-methods/v1` public paths, methods use `Manage Restaurants - all permissions`, update requires the current revision, Get Accumulated Fulfillment Methods Availability and Get Combined Method Availability are deprecated, and Fulfillment Method Created/Deleted/Updated are webhook/event surfaces rather than CLI commands.
+- `restaurants-online-order-availability-exceptions get` and `query` are live reads/helpers for Wix Restaurants Online Orders availability exceptions.
+- `restaurants-online-order-availability-exceptions create`, `bulk-create`, `update`, `bulk-update`, and `bulk-update-tags` are reviewed-plan writes; `delete` and `bulk-update-tags-by-filter` also require `--ack-irreversible`.
+- Official Wix Restaurants Online Orders Availability Exceptions docs say the Wix Restaurants Orders app must be installed, each availability exception requires an operation ID, current rendered pages show Developer Preview and `/restaurants-availability-exceptions/v1` public paths, methods use `Manage Restaurants - all permissions`, update and bulk update require current revisions, and Availability Exception Created/Deleted/Updated are webhook/event surfaces rather than CLI commands.
+- `restaurants-online-order-service-fees calculate`, `list`, `get`, and `query` are live reads/helpers for Wix Restaurants Online Orders service fee rules.
+- `restaurants-online-order-service-fees create`, `bulk-create`, `update`, `bulk-update`, and `bulk-update-tags` are reviewed-plan writes; `delete`, `bulk-delete`, and `bulk-update-tags-by-filter` also require `--ack-irreversible`.
+- Official Wix Restaurants Online Orders Service Fees docs say the Wix Restaurants Orders app must be installed, current rendered pages show Developer Preview and `/service-fees/v1` public paths, methods use `Manage Restaurants - all permissions`, update and bulk update require current rule revisions, `bulk-update-tags-by-filter` is async and can update all rules when no filter is sent, and Rule Created/Deleted/Updated are webhook/event surfaces rather than CLI commands.
+- `restaurants-online-order-notification-recipients get` and `query` are live reads/helpers for Wix Restaurants Online Orders notification recipients.
+- `restaurants-online-order-notification-recipients create`, `bulk-create`, `update`, `bulk-update`, and `bulk-update-tags` are reviewed-plan writes; `delete`, `bulk-delete`, and `bulk-update-tags-by-filter` also require `--ack-irreversible`.
+- Official Wix Restaurants Online Orders Notification Recipients docs say the Wix Restaurants Orders app must be installed, current rendered pages show Developer Preview and `/rest-notification-recipients/v1` public paths, methods use `Manage Restaurants - all permissions`, update and bulk update require current recipient revisions, broad tag-by-filter changes can affect many recipients, and Recipient Created/Deleted/Updated are webhook/event surfaces rather than CLI commands.
+- `restaurants-reservations get`, `list`, `query`, and `search` are live reads/helpers for Wix Restaurants Reservations.
+- `restaurants-reservations create`, `update`, `bulk-archive`, `bulk-unarchive`, `create-held`, and `reserve` are reviewed-plan writes; `delete` and `cancel` also require `--ack-irreversible`.
+- Official Wix Restaurants Reservations docs say the Wix Table Reservations app must be installed and at least 1 business location configured, current rendered pages show Developer Preview and `/table-reservations/reservations/v1` public paths, `update` requires the current reservation revision, `create-held` reservations expire after 10 minutes, `reserve` converts held reservations to `RESERVED` or `REQUESTED`, `delete` only deletes `HELD` reservations, archived reservations cannot be updated until unarchived, and Reservation Created/Deleted/Updated are webhook/event surfaces rather than CLI commands.
+- `restaurants-reservation-locations get`, `list`, and `query` are live reads/helpers for Wix Restaurants Reservation Locations.
+- `restaurants-reservation-locations update` is a reviewed-plan write and requires the current `reservationLocation.revision`.
+- Official Wix Restaurants Reservation Locations docs say the Wix Table Reservations app must be installed, current rendered pages show Developer Preview and `/table-reservations/reservation-locations/v1` public paths, reservation locations can only be created and archived through the Dashboard or Locations API, and Reservation Location Created/Updated are webhook/event surfaces rather than CLI commands.
+- `restaurants-reservation-time-slots check`, `get-scheduled`, and `get` are live reads/helpers for Wix Restaurants Reservation Time Slots availability.
+- Official Wix Restaurants Reservation Time Slots docs say the Wix Table Reservations app must be installed and at least 1 business location configured, current rendered pages show Developer Preview and `/table-reservations/reservations/v1` public paths, `check` uses `Manage Reservations (Medium)`, `get-scheduled` and `get` use `Manage Reservations (Basic)`, scheduled slots follow the reservation location `businessSchedule`, nearby slots can be requested with `slotsBefore` and `slotsAfter`, and time slot responses can show `AVAILABLE`, `UNAVAILABLE`, or `NON_WORKING_HOURS`.
+- `restaurants-reservation-experiences get`, `query`, `search`, and `get-by-slug` are live reads/helpers for Wix Restaurants Experiences.
+- `restaurants-reservation-experiences create`, `update`, and `bulk-update-tags` are reviewed-plan writes; `bulk-update-tags-by-filter` also requires `--ack-irreversible`.
+- Official Wix Restaurants Experiences docs say the Wix Table Reservations app must be installed and at least 1 reservation location configured, current rendered pages show Developer Preview and `/table-reservations/experiences/v1` public paths, `update` requires the current `experience.revision`, broad tag updates by filter can affect many experiences, and Experience Created/Tags Modified/Updated are webhook/event surfaces rather than CLI commands.
+- `blog-posts-stats get`, `query`, `list`, `get-by-slug`, `get-metrics`, `get-total`, and `query-count` are live reads/helpers for published Wix Blog posts and post stats.
+- Official Wix Blog Posts & Stats docs say these methods use `Read Blog`, query/list return up to `100` posts, query/list default to `firstPublishedDate` descending with pinned posts first, `paging.limit` `50`, and `paging.offset` `0`, and Post Created/Deleted/Liked/Unliked/Updated are webhook/event surfaces rather than CLI commands.
+- `blog-draft-posts get`, `query`, `list`, `get-deleted`, and `list-deleted` are live reads/helpers for Wix Blog draft posts and trashed draft posts.
+- `blog-draft-posts create`, `update`, `delete`, `bulk-create`, `bulk-update`, `bulk-delete`, `publish`, `remove-from-trash-bin`, and `restore-from-trash-bin` are reviewed-plan writes; `delete --permanent`, `bulk-delete`, and `remove-from-trash-bin` also require `--ack-irreversible`.
+- Official Wix Blog Draft Posts docs say these methods require Wix app or Wix user authentication and `Manage Blog`; draft posts have a `400KB` size limit; third-party app creates require `memberId`; unknown category IDs are silently omitted; query/list return up to `100` draft posts and default to `editedDate DESC`, `paging.limit` `50`, and `paging.offset` `0`; publishing creates or updates the published post; Draft Deleted/Created/Updated are webhook/event surfaces rather than CLI commands.
+- `blog-categories get`, `query`, `list`, and `get-by-slug` are live reads/helpers for Wix Blog categories.
+- `blog-categories create` and `update` are reviewed-plan writes; `delete` is a reviewed-plan write that also requires `--ack-irreversible`.
+- Official Wix Blog Categories docs say create/update/delete require Wix app or Wix user authentication and `Manage Blog`; reads require `Read Blog`; sites can have up to `100` categories per language and up to `10` categories per post; query/list default to `paging.limit` `50` and `paging.offset` `0`; `list` sorts by `displayPosition DESC` and cannot be overridden; Category Created/Deleted/Updated are webhook/event surfaces rather than CLI commands.
+- `blog-tags get`, `query`, `get-by-label`, and `get-by-slug` are live reads/helpers for Wix Blog tags.
+- `blog-tags create` is a reviewed-plan write; `delete` is a reviewed-plan write that also requires `--ack-irreversible`.
+- Official Wix Blog Tags docs say create/delete require Wix app or Wix user authentication and `Manage Blog`; reads require `Read Blog`; a post can have up to `30` tags; query returns up to `500` tags and defaults to `postCount DESC`, `paging.limit` `50`, and `paging.offset` `0`; deleting a tag removes it from every blog post that contains it; Tag Created/Deleted/Updated are webhook/event surfaces rather than CLI commands.
+- `blog-likes get` and `query` are live reads/helpers for likes created by the currently authenticated site visitor or member through the API.
+- `blog-likes create` is a reviewed-plan write; `delete` and `delete-by-fqdn-entity-id` are reviewed-plan writes that also require `--ack-irreversible`.
+- Official Wix Blog Likes docs say the Wix Blog app must be installed, create/delete require visitor or member authentication and `Manage Blog`, reads require `Read Blog`, blog post likes use FQDN `wix.blog.v3.post`, query returns up to `100` current-user API-created likes and defaults to `createdDate DESC`, `paging.limit` `50`, and `paging.offset` `0`; Like Created/Deleted are Developer Preview webhook/event surfaces rather than CLI commands.
+- Forum is intentionally disabled: official Wix docs say Forum APIs were deprecated on October 15, 2025 and Wix Forum was discontinued on March 1, 2026, after which forum data was deleted. Do not call or invent `forum-*` commands; use Groups API for migration work.
+- Official Wix Ticket Definitions V3 docs say Wix Events & Tickets must be installed, callable methods require `Manage Ticket Definitions`, and Orders API generates tickets after purchase.
+- Official Wix docs say campaigns must already exist in Wix before API access, the site email-marketing account must be `ACTIVE` with quota available, `list-statistics` supports up to 100 campaign IDs, and `list-recipients` requires an `activity` filter.
+- Campaign lifecycle writes are now shipped in the current subset: `pause-scheduling`, `reschedule`, `send-test`, `publish`, `reuse`, and `delete`.
+- `editor-deep-link create` is a helper POST that returns a URL. It keeps the legacy-custom-element-only note explicit and does not claim that the site has already changed.
+- `app-permissions list` follows the shipped app/user-token command path in this tool and is read-only.
+- `app-permissions create` and `app-permissions delete` are reviewed-plan writes.
+- `app-permissions create` and `app-permissions delete` use account API-key auth (`Authorization` + `wix-account-id`) in this boundary.
+- Official App Permissions docs show all three methods on `"/apps/v1/app-permissions/v1/app-permissions"` and mixed auth wording, so this family is implemented but live-unverified.
+- `contact-labels query`, `contact-labels list`, and `contact-labels get` are live reads with app/user identity context.
+- `contact-labels query`, `contact-labels list`, and `contact-labels get` use permission `Manage Contact Labels`.
+- `contact-labels find-or-create`, `contact-labels update`, and `contact-labels delete` are reviewed-plan writes.
+- `contact-labels find-or-create` can create a new label, so it stays a write.
+- `contact-labels update` verifies by reread.
+- `contact-labels delete` requires `--ack-irreversible`, verifies by read-back `404`, and is live-unverified without live-site end-to-end confirmation.
+- `contact-extended-fields get`, `contact-extended-fields list`, and `contact-extended-fields query` are live reads with app/user identity context.
+- `contact-extended-fields find-or-create`, `contact-extended-fields update`, and `contact-extended-fields delete` are reviewed-plan writes.
+- `contact-extended-fields delete` requires `--ack-irreversible` because Wix says deleting an extended field permanently deletes any contact data stored in that field.
+- `contact-notes get` and `contact-notes query` are live reads with app/user identity context.
+- `contact-notes create`, `contact-notes update`, and `contact-notes delete` are reviewed-plan writes.
+- `contact-notes delete` requires `--ack-irreversible` because it removes a saved note from the contact history. Official docs say notes must belong to an existing contact, note text is capped at 2048 characters, and updates require the current note revision.
+- `contact-attachments get` and `contact-attachments list` are live reads in this boundary.
+- `contact-attachments generate-upload-url` and `contact-attachments delete` are reviewed-plan writes.
+- `contact-attachments delete` requires `--ack-irreversible` because it removes a saved file attachment from the contact. Official docs say attachments belong to a contact ID and upload URL creation works with the Upload API.
+- `crm-tasks get`, `crm-tasks query`, and `crm-tasks count` are live reads/helpers in this boundary.
+- `crm-tasks create`, `crm-tasks update`, `crm-tasks move-after`, and `crm-tasks delete` are reviewed-plan writes. `crm-tasks delete` also requires `--ack-irreversible` because it removes a CRM task. Official docs say task query defaults to `createdDate DESC`, update requires the existing task revision, count can filter tasks, and move-after can place a task first when `beforeTaskId` is omitted. Task Created, Task Deleted, Task Overdue, and Task Updated are callback-only events.
+- `crm-pipelines get` and `crm-pipelines query` are live Developer Preview reads/helpers in this boundary.
+- `crm-pipelines create`, `crm-pipelines update`, `crm-pipelines bulk-update-tags`, `crm-pipelines bulk-update-tags-by-filter`, and `crm-pipelines delete` are Developer Preview reviewed-plan writes. `delete` and `bulk-update-tags-by-filter` also require `--ack-irreversible`; delete permanently removes a pipeline, and filtered tag updates can affect every pipeline when no filter is sent. Official docs say update requires the current pipeline revision and the filtered tag update returns an async job ID. Pipeline Created, Pipeline Deleted, and Pipeline Updated are callback-only events.
+- `crm-cards get`, `crm-cards query`, `crm-cards search`, and `crm-cards search-by-stage` are live Developer Preview reads/helpers in this boundary.
+- `crm-cards create`, `crm-cards update`, `crm-cards bulk-update-tags`, `crm-cards bulk-update-tags-by-filter`, `crm-cards move`, and `crm-cards delete` are Developer Preview reviewed-plan writes. `delete` and `bulk-update-tags-by-filter` also require `--ack-irreversible`; delete permanently removes a card, and filtered tag updates can affect every card in a pipeline when no filter is sent. Official docs say update requires the current card revision, move stays inside one pipeline, and the filtered tag update returns an async job ID. Card Assigned, Card Created, Card Deleted, Card Moved, Card Overdue, Card Stale, and Card Updated are callback-only events.
+- AI Site-Chat commands cover Widget Settings, Widget Settings V2, Conversations, and Messages. Conversations and visitor-scoped Messages methods require site visitor or site member identity. `ai-site-chat-messages bulk-create` is a reviewed-plan write requiring `--ack-irreversible` because it sends chat messages. V1 Widget Settings commands are kept with Wix's October 25, 2026 deprecation warning.
+- `contacts list`, `contacts get`, `contacts query`, `contacts list-facets`, `contacts query-facets`, `contacts get-bulk-job`, and `contacts preview-merge` are live reads in this boundary.
+- `contacts create`, `contacts update`, `contacts label`, and `contacts unlabel` are reviewed-plan writes.
+- `contacts delete`, `contacts merge`, `contacts bulk-delete`, `contacts bulk-update`, and `contacts bulk-label-unlabel` require `--ack-irreversible` because they can permanently remove, overwrite, or broadly change contacts. `contacts update` requires the current `contact.revision`, and bulk commands return Wix bulk jobs that can be checked with `contacts get-bulk-job`.
+- `form-schemas list`, `get`, `query`, `count`, deleted-form reads, provider configs, and summaries are live reads in this boundary.
+- `form-schemas create`, `bulk-create`, `update`, `clone`, `bulk-clone`, and `restore` are reviewed-plan writes.
+- `form-schemas delete`, `bulk-delete`, `remove-from-trash`, and `bulk-remove-deleted-field` require `--ack-irreversible` because they move schemas to trash or permanently remove schemas or deleted fields.
+- `chat-settings get` and `query` are live reads for Wix Forms AI chat settings.
+- `chat-settings create` and `update` are reviewed-plan writes. `chat-settings update` requires the current `chatSettings.revision`.
+- `chat-settings delete` requires `--ack-irreversible` because it removes AI chat settings for a form. Official docs say the Wix Forms app must be installed, each form has exactly one chat settings entity, and the chat settings ID matches the form ID.
+- `interactive-form-sessions generate-summary` is a non-mutating helper for Developer Preview Wix Interactive Form Sessions.
+- `interactive-form-sessions create`, `create-streamed`, `send-message`, and `send-message-streamed` are reviewed-plan writes because an interactive session can collect and submit form data when the official `dryRun` body field is false.
+- Streamed Interactive Form Sessions commands request the official `text/event-stream` response and return JSON when possible or raw response text when Wix streams events.
+- `intake-forms query` and `create-customer-submission-link` are reads/helpers. `archive`, `unarchive`, and `update-expiration-period` are reviewed-plan writes. `delete` also requires `--ack-irreversible` because Wix deletes the underlying form and orphaned submissions are hidden from the submissions API.
+- `intake-form-submissions query`, `search`, `count-by-intake-form-ids`, and `list-data-by-contacts` are reads/helpers. `cancel`, `extend`, `exempt`, and `delete` are reviewed-plan writes. `cancel` and `delete` also require `--ack-irreversible`; canceled submissions cannot be reactivated.
+- `community-groups list`, `get`, `get-by-slug`, and `query` are live reads for Wix Community Groups.
+- `community-groups create` and `update` are reviewed-plan writes. Official docs say only group admins can update groups and that group visibility changes can approve or reject pending join requests.
+- `community-groups delete` requires `--ack-irreversible` because it removes a community group. Official docs say list and query return up to 100 groups, secret groups are visible only to admins and members, and group creation may become a pending create request depending on the site's dashboard setting.
+- `community-group-rules list` reads rules for one community group. `community-group-rules create-or-replace` is a reviewed-plan replacement write and requires `--ack-irreversible` because official docs say it replaces all existing rules when rules already exist. Group Rules Updated is callback-only.
+- `community-group-requests list` and `query` read group creation requests across a site. `community-group-requests approve` and `reject` are reviewed-plan writes and require `--ack-irreversible` because they decide site-member requests to create groups. Group Request Approved and Group Request Rejected are callback-only.
+- `community-group-members list`, `list-memberships`, `query`, and `query-memberships` read group member or membership records. `community-group-members add` and `remove` are reviewed-plan writes and require `--ack-irreversible` because they change group membership. Member Added and Member Removed are callback-only.
+- `community-group-roles assign` and `unassign` are reviewed-plan writes and require `--ack-irreversible` because they change group permissions. Official docs say assigning overrides the current `role.value`, unassigning only supports `ADMIN`, and Role Assigned/Unassigned events are callback-only.
+- `community-join-requests list` and `query` read join requests for one private group. `community-join-requests approve` and `reject` are reviewed-plan writes and require `--ack-irreversible` because they decide pending private-group membership. Join Group Request Approved and Rejected are callback-only.
+- `community-membership-questions list` reads a group's membership questions, and `list-answers` reads submitted answers by explicit official `memberIds` and `paging` inputs. `community-membership-questions create-or-replace` is a reviewed-plan replacement write and requires `--ack-irreversible` because it replaces the full question set; `--questions-json` must be Wix's official object with a `questions` array, and an empty questions array removes all questions.
+- `community-comments get`, `query`, `count`, `list-by-resource`, and `get-thread` read comment records, counts, resource lists, or threads. `community-comments create` and `update` are reviewed-plan writes. `community-comments delete`, `moderate-draft-content`, `mark`, `unmark`, `hide`, `publish`, and all bulk commands require `--ack-irreversible` because they change public moderation state, move comments, or delete comment content. Comment moderation events are callback-only.
+- `community-reports get`, `query`, and `count-by-reason-types` read Reports V2 records and counts. Official docs say Reports V2 is currently supported for Wix Comments only. `community-reports create`, `update`, and `upsert` are reviewed-plan writes. `community-reports delete` and `bulk-delete-by-filter` require `--ack-irreversible` because official docs say they remove reports from the dashboard report list, and bulk delete can remove multiple reports.
+- `community-reviews get`, `query`, and `count` read Reviews records and counts. Official docs say Reviews is currently only available with the `stores` namespace. `community-reviews create`, `update`, and `set-reply` are reviewed-plan writes. `community-reviews delete`, `bulk-create`, `bulk-delete`, `remove-reply`, `update-moderation-status`, and `bulk-update-moderation-status` require `--ack-irreversible` because they delete review content or replies, change moderation/publication state, or affect multiple reviews.
+- `community-review-requests get`, `query`, and `count` read review request records and counts. Official docs say Review Requests is currently only available with the `stores` namespace. `community-review-requests create` is a reviewed-plan write. `community-review-requests delete` and `bulk-cancel-by-filter` require `--ack-irreversible` because delete removes canceled requests and bulk cancel starts an async job that can cancel multiple review requests.
+- `community-moderation-rules get`, `query`, and `check-content` read rules or return moderation actions for submitted content. `community-moderation-rules create`, `update`, and `delete` are reviewed-plan writes and require `--ack-irreversible` because moderation rules automate how newly submitted comments or reviews are approved, rejected, or sent for manual approval.
+- `inbox-conversations get` reads one Inbox conversation, and `get-or-create` is a reviewed-plan write because it can create a conversation for a participant. `inbox-messages list` reads messages, and `send` is a reviewed-plan write that requires `--ack-irreversible` because it sends a message and can send notifications.
+- `loyalty-program get` reads the current Loyalty Program, and `premium-features` reads premium feature availability. `loyalty-program update`, `activate`, `pause`, `enable-points-expiration`, and `disable-points-expiration` are reviewed-plan writes and require `--ack-irreversible` because they change program-wide loyalty settings, status, or points-expiration behavior.
+- `loyalty-earning-rules list` reads automated and non-automated earning rules, and `get` reads one non-automated earning rule. `loyalty-earning-rules create`, `update`, `delete`, `bulk-create`, `create-custom`, and `delete-automation` are reviewed-plan writes and require `--ack-irreversible` because earning rules change how customers earn loyalty points.
+- `loyalty-tiers list`, `get`, and `get-program-settings` are reads. `loyalty-tiers create`, `update`, `delete`, `bulk-create`, `get-program`, `create-program-settings`, and `update-program-settings` are reviewed-plan writes and require `--ack-irreversible` because they change tier definitions, point thresholds, or global tier program settings. Official docs say `get-program` creates default program settings if none exist.
+- `loyalty-accounts list`, `get`, `query`, `search`, `count`, `get-program-totals`, `get-current-member-account`, and `get-by-secondary-id` read loyalty accounts or account totals. `list` is deprecated by Wix and exposed only for compatibility. `loyalty-accounts create`, `adjust-points`, `bulk-adjust-points`, and `earn-points` are reviewed-plan writes and require `--ack-irreversible` because they create loyalty accounts or change point balances. Official docs say `bulk-adjust-points` returns an async job ID; use `async-jobs` commands to inspect that named job.
+- `loyalty-transactions get` and `query` are read-only and retrieve loyalty account activity records. Official docs say transaction types include earn, redeem, adjust, refund, expire, and earn-attempt records.
+- `loyalty-social-media list` reads followed social media channels for the current visitor/member identity. `loyalty-social-media create` is a reviewed-plan write and requires `--ack-irreversible` because following a channel can award loyalty points. Official docs say both methods require visitor or member authentication and members can only follow dashboard-enabled channels.
+- `loyalty-imports get`, `query`, and `get-error-file-download-url` read loyalty import status, import lists, or failed-row download URLs. `loyalty-imports create-file-url` is a reviewed-plan helper write without `--ack-irreversible`. `loyalty-imports create` and `execute` are reviewed-plan writes and require `--ack-irreversible` because imports can overwrite customer point balances. Official docs say import files must be CSV, include email and points balance columns, can continue despite row-level errors, and have a 10MB max file size.
+- `loyalty-rewards list`, `get`, and `query` read customer-redeemable reward definitions. `loyalty-rewards create`, `bulk-create`, `update`, and `delete` are reviewed-plan writes and require `--ack-irreversible` because they change what customers can redeem with loyalty points. Official docs say `active` defaults to `false`, reward `type` cannot be changed after creation, and `configsByTier` controls tier-specific costs or discounts.
+- `loyalty-checkout-discounts query` reads loyalty checkout discounts. `loyalty-checkout-discounts apply` is a reviewed-plan write and requires `--ack-irreversible` because it can redeem loyalty points or apply a customer reward, loyalty coupon, or referral reward to an eCommerce checkout.
+- `loyalty-coupons get`, `query`, and `get-current-member` read loyalty coupons. `loyalty-coupons redeem-current-member`, `redeem`, and `delete` are reviewed-plan writes and require `--ack-irreversible` because they redeem loyalty points or remove loyalty coupon records. Official docs say a loyalty coupon creates a corresponding reference coupon, and deleting the loyalty coupon does not affect that reference coupon.
+- `email-subscriptions query` is a live read/helper for Developer Preview Wix Email Subscriptions. Official docs currently support querying by `email` with the `$in` array filter.
+- `email-subscriptions upsert`, `bulk-upsert`, and `generate-unsubscribe-link` are reviewed-plan writes. Official docs say the unsubscribe link changes status only if the recipient uses the link.
+- Email Subscriptions methods require `Manage Email Subscriptions`; Email Subscription Changed is callback-only and not a CLI command.
+- `form-submissions` methods are shipped as mixed read/helper and reviewed-plan writes in this boundary.
+- Every `form-submissions` call requires site-app context to pass a runtime `wix_forms` precheck via `app-instance` inspection.
+- `form-submissions create-submission`, `update-submission`, `delete-submission`, `confirm-submission`, and `bulk-mark-submissions-as-seen` are reviewed-plan writes in this boundary.
+- `delete-submission` needs `--ack-irreversible` on apply.
+- `bulk-mark-submissions-as-seen` refuses empty IDs unless `--all-unseen` is explicitly set.
+- `update-submission` uses explicit revision checks.
+- `confirm-submission` is only valid for `PENDING` submissions.
+- Account-level site actions (`site-actions ...`) use the same auth path:
+  - `WIX_API_KEY`
+  - `WIX_ACCOUNT_ID`
+  - `site-actions publish` uses `wix-site-id` in Wix API-key calls.
+- Domain read commands (`domains ...`) use the same account-level auth path:
+  - `WIX_API_KEY`
+  - `WIX_ACCOUNT_ID`
+- Domain DNS read commands (`domain-dns ...`) use the same account-level auth path:
+  - `WIX_API_KEY`
+  - `WIX_ACCOUNT_ID`
+- Connected domains commands (`connected-domains ...`) use the same account-level auth path:
+  - `WIX_API_KEY`
+  - `WIX_ACCOUNT_ID`
+  - `connected-domains create` also sends `wix-site-id` in this tool and requires `--site-id`.
+- Account-level project actions (`projects create-project`) use the same auth path:
+  - `WIX_API_KEY`
+  - `WIX_ACCOUNT_ID`
+  - local boundary requires `--type WIX`.
+- Account-level site folder commands (`site-folders ...`) use the same auth path:
+  - `WIX_API_KEY`
+  - `WIX_ACCOUNT_ID`
+  - official Wix docs also mark this API as available to selected beta users
+- Business Management commands (`analytics-data`, `analytics-semantic-models`, `async-jobs`, `branches`, `site-search`, `locations`, `site-properties`, `cookie-consent-policy`, `dashboard-favorite-list`, `site-urls`) use app-token auth path by default:
+  - `WIX_APP_ID`
+  - `WIX_APP_SECRET`
+  - `WIX_INSTANCE_ID`
+  - or a valid local token path created by `auth token create`/`auth token set`
+- `branches get-default`, `branches get`, and `branches query` are read-only, need permission `Manage Site Branches`, only manage branch metadata, and `branches query` defaults to `updatedDate DESC` with `paging.limit 50` and `paging.offset 0` unless overridden.
+- `site-search search` is read-only, needs permission `Read Site Documents`, and requires the Wix Site Search app to be installed on the site.
+- `site-search search` accepts only the current official document types in this tool: `BLOG_POSTS`, `BOOKING_SERVICES`, `EVENTS`, `FORUM_CONTENT`, `ONLINE_PROGRAMS`, `PROGALLERY_ITEM`, and `STORES_PRODUCTS`.
+- Wix Site Search docs currently show two REST URL shapes for the same method: the main method page and curl example use `POST /_api/site-search/v1/search`, while the markdown schema currently shows a shortened `/v1/search` URL. This boundary follows the main method page path and keeps the docs mismatch explicit.
+- `locations update` is full-object replacement and verifies by reread.
+- `locations archive` is irreversible and needs `--ack-irreversible`.
+- `tags` uses the same site/app auth path as other Business Management families in this tool.
+- `notifications notify` uses the same site/app context auth path and requires `WIX_APP_ID`, `WIX_APP_SECRET`, `WIX_INSTANCE_ID` or a valid local token path.
+- `notifications notify` needs `Manage Notifications` (`SCOPE.DC-NOTIFICATIONS.MANAGE-NOTIFICATIONS`).
+- `notifications notify` requires `--notification-template-id` and expects `--dynamic-values-json` to map placeholders to objects with `text`.
+- `notifications notify` is plan-first and can require `--apply --yes`; no delivery proof is returned, only provider response `notificationBatchId`.
+- `notifications notify` is bounded by the official provider limit of 100,000 calls per month per site and is live-unverified by design.
+- `multilingual-locale-settings` covers the official Wix Multilingual Locale Settings API. Commands are `multilingual-locale-settings get`, `multilingual-locale-settings set-mode`, and `multilingual-locale-settings update`. Writes are reviewed-plan commands; applying `set-mode --enabled false` also requires `--ack-irreversible` because Wix says disabling multilingual mode removes translated content and resets locale settings.
+- `multilingual-locales` covers the official Wix Multilingual Locales API. Commands are `multilingual-locales create`, `multilingual-locales get`, `multilingual-locales update`, `multilingual-locales delete`, `multilingual-locales query`, `multilingual-locales bulk-create`, `multilingual-locales bulk-delete`, `multilingual-locales bulk-update`, `multilingual-locales create-new-primary`, `multilingual-locales get-new-primary-status`, `multilingual-locales list-supported`, and `multilingual-locales set-visitor-primary`. Locale deletes and primary-locale changes require `--ack-irreversible`.
+- `multilingual-translation-schemas` covers the official Wix Multilingual Translation Schema API. Commands are `multilingual-translation-schemas create`, `multilingual-translation-schemas get`, `multilingual-translation-schemas update`, `multilingual-translation-schemas delete`, `multilingual-translation-schemas query`, `multilingual-translation-schemas list-site`, and `multilingual-translation-schemas get-by-key`. Writes are reviewed-plan commands; schema deletes and updates that remove fields require `--ack-irreversible`.
+- `multilingual-translation-contents` covers the official Wix Multilingual Translation Content API. Commands are `multilingual-translation-contents create`, `multilingual-translation-contents get`, `multilingual-translation-contents update`, `multilingual-translation-contents delete`, `multilingual-translation-contents query`, `multilingual-translation-contents search`, `multilingual-translation-contents bulk-create`, `multilingual-translation-contents bulk-delete`, `multilingual-translation-contents bulk-update`, `multilingual-translation-contents bulk-update-by-key`, and `multilingual-translation-contents update-by-key`. Writes are reviewed-plan commands; deletes, bulk deletes, and updates that remove fields require `--ack-irreversible`. Content events are callback-only.
+- `multilingual-translation-published-contents` covers the official Wix Multilingual Translation Published Content API. The callable command is `multilingual-translation-published-contents query`; it is read-only and requires the official `schemaKey.appId`, `schemaKey.entityType`, and `schemaKey.scope` filters. Published content events are callback-only.
+- `multilingual-machine-translation` covers the official Wix Multilingual Machine Translation API. Commands are `multilingual-machine-translation translate` and `multilingual-machine-translation bulk-translate`. Both are reviewed-plan commands; successful translation consumes word credits, so live apply requires `--ack-irreversible`.
+- `multilingual-machine-translation-credit-data` covers the official Wix Multilingual Machine Translation Credit Data API. Commands are `multilingual-machine-translation-credit-data get` and `multilingual-machine-translation-credit-data check-sufficient`. These are read/helper commands; `check-sufficient` uses the official `wordCount` body and does not spend credits.
+- `online-programs-programs` covers the official Wix Online Programs Programs API. Commands are `online-programs-programs create`, `get`, `update`, `delete`, `query`, `search`, `count`, `bulk-update`, `archive`, `duplicate`, `end`, `list-samples`, and `publish`. Writes are reviewed-plan commands; `delete`, `archive`, and `end` require `--ack-irreversible`.
+- Full Online Programs command names are `online-programs-programs create`, `online-programs-programs get`, `online-programs-programs update`, `online-programs-programs delete`, `online-programs-programs query`, `online-programs-programs search`, `online-programs-programs count`, `online-programs-programs bulk-update`, `online-programs-programs archive`, `online-programs-programs duplicate`, `online-programs-programs end`, `online-programs-programs list-samples`, and `online-programs-programs publish`.
+- `online-programs-instructor-v2` covers the official Wix Online Programs Instructor V2 API. Commands are `online-programs-instructor-v2 create`, `online-programs-instructor-v2 update`, `online-programs-instructor-v2 query`, `online-programs-instructor-v2 assign`, `online-programs-instructor-v2 change-program-instructors`, `online-programs-instructor-v2 invite`, `online-programs-instructor-v2 list`, and `online-programs-instructor-v2 unassign`. Writes are reviewed-plan commands; `invite`, `change-program-instructors`, and `unassign` require `--ack-irreversible`.
+- `b2b-site-transfer` covers the official Wix B2B Site Management Business Site Transfer V1 method. Command is `b2b-site-transfer transfer`. It uses account-level API-key auth with `wix-account-id` as the target account header, requires `siteTransfer.siteId` and `siteTransfer.sourceAccountId`, and live apply requires `--ack-irreversible`.
+- `partner-profiles` covers the official Developer Preview Wix Partner Profile V1 API. Commands are `partner-profiles create`, `partner-profiles update`, `partner-profiles delete`, `partner-profiles get-current`, `partner-profiles get-public`, and `partner-profiles find-public-by-slug`. Owner-facing commands use account-level API-key auth; public reads use no auth; `partner-profiles delete` requires `--ack-irreversible`; and the official `contact-partner` method is first-party-only and not exposed.
+- `viewer-cache` and `viewer-seo-tags` cover the official Wix Viewer Cache and SEO Tags APIs. Commands are `viewer-cache invalidate`, `viewer-seo-tags resolve-item`, and `viewer-seo-tags resolve-static`. Cache invalidation is reviewed-plan and limited by Wix to developing sites using Web Methods or Router APIs; SEO tag resolution commands are read-only.
+- GraphQL is docs-only/non-callable in this safe CLI. Official Wix GraphQL docs describe arbitrary queries and mutations against a unified schema, so no generic `graphql` bridge command is exposed.
+- Generic async job runner is docs-only/non-callable. Official Async Job read methods are already shipped as `async-jobs get` and `async-jobs list-items`; no generic job runner command is exposed.
+- `tags list` requires `--fqdn`. Official Wix docs currently say list support is for the Orders FQDN `wix.ecom.v1.order`.
+- `tags create`, `tags update`, and `tags delete` are reviewed-plan writes in this tool.
+- `tags update` requires `--tag-id` plus a payload with `revision` and `name`, preserves the current immutable `fqdn`, and verifies by rereading the tag.
+- `tags delete` is irreversible and needs `--ack-irreversible`.
+- `site-properties update-business-schedule` is overwrite-style and may clear values not sent in the payload.
+- `cookie-consent-policy` is separate from `site-properties update-consent-policy`; it covers Cookie Banner Settings, CMP Config, and Consent Configs.
+- `cookie-consent-policy` writes are plan-first. `delete-consent-config`, `bulk-delete-consent-configs`, and `bulk-update-consent-config-tags-by-filter` also require `--ack-irreversible`; `update-consent-config` requires current `consentConfig.revision`; `bulk-update-consent-configs` is Developer Preview in the official Wix docs.
+- `dashboard-favorite-list` covers the official Dashboard Favorite List API. `get` reads the current Wix user's list. `create`, `update`, and `add-favorite` are plan-first writes; `delete` and `delete-favorite` also require `--ack-irreversible`; `update` requires current `favoriteList.revision`.
+- `faq-category-v2` covers the official FAQ Category V2 API. `create`, `update`, and `update-extended-fields` are plan-first writes; `delete` also requires `--ack-irreversible` because deleting a category deletes its question entries; `update` requires current `category.revision`.
+- `faq-question-entry-v2` covers the official FAQ Question Entry V2 API. `create`, `update`, `bulk-update`, `set-labels`, and `update-extended-fields` are plan-first writes; `delete` and `bulk-delete` also require `--ack-irreversible`; `update` and `bulk-update` require current `questionEntry.revision`; `set-labels` replaces all labels.
+- `functions-v1` covers the official Functions V1 API. `get` and `query` are reads. `create`, `update`, and `bulk-update-tags` are plan-first writes; `delete` and `bulk-update-tags-by-filter` also require `--ack-irreversible`; `update` requires current `function.revision`; and `bulk-update-tags-by-filter` can affect all functions when the filter is empty.
+- `function-types` covers the official Function Types API. It is read-only. `get` retrieves one function type by app definition ID and function type ID; `query` retrieves available function types and does not support filters or sorting.
+- `function-templates` covers the official Function Templates API. It is read-only. `get` retrieves one function template by app definition ID and function template ID; `query` requires `appDefId` and `functionExtensionId` filters and returns templates that can start basic or builderless function creation.
+- `function-productions` covers the official Function Productions API. `create` and `update` are plan-first writes for creating or maintaining a function together with its automation, service plugin configuration, and function method dependencies; `delete` also requires `--ack-irreversible` because it removes the production and all associated entities.
+- `builderless-productions` covers the official Builderless Productions API. `get` is read-only; `create` and `update` are plan-first writes for templates with `formTemplateExtensionId`, and Wix says update may have no effect after related entities are changed through other APIs.
+- `function-methods` covers the official Function Methods API. `query` is read-only. `create` is a plan-first write for a function-to-automation link; `delete` also requires `--ack-irreversible`. Wix recommends Function Productions or Builderless Productions for full function creation.
+- `function-activations` covers the official Function Activations API. `upsert` and `delete` are plan-first writes that also require `--ack-irreversible` because they publish function logic live or deactivate a function.
+- `function-spi-configurations` covers the official Function SPI Configurations API. `get`, `query`, and `validate` are reads/helpers. `create` and `update` are plan-first writes; `update` requires current `functionSpiConfiguration.revision`; and `delete` also requires `--ack-irreversible`. Reactivate the function when updated configuration data should go live.
+- `billable-items` covers the official Get Paid Billable Items API. `get`, `query`, and `search` are reads/helpers; search is Developer Preview. Writes are plan-first. `update` requires current `billableItem.revision`; delete and bulk delete require `--ack-irreversible`; filtered bulk tag updates are async and require `--ack-irreversible` because an empty filter updates all billable items. Create and bulk update are Developer Preview.
+- `payment-links` covers the official Get Paid Payment Links API. `get`, `query`, and `search` are reads/helpers. Writes are plan-first. `create`, `delete`, `activate`, `deactivate`, `send`, and filtered bulk tag updates require `--ack-irreversible`; create locks payment values such as price and payment limit, send can notify up to 50 recipients, activation changes payment acceptance, and an empty filter updates all payment links. `initiate-payment` creates a Wix eCommerce checkout and is not the normal payment link flow.
+- `payment-link-payments` covers the official Get Paid Payment Link Payments API. `query` and `search` are reads/helpers. `issue-receipt` is a plan-first write because it creates a Get Paid receipt for the selected payment link payment; verify with provider response plus payment query/search readback for `receiptId`.
+- `receipts` covers the official Get Paid Receipts API. `get`, `query`, and `get-latest-number` are reads/helpers. Writes are plan-first. `create` and `send-email` require `--ack-irreversible`; receipts cannot be deleted after creation, only one receipt can be created per transaction, and send-email notifies customers. `regenerate-document` is for failed or stuck documents; `update-extended-fields` updates custom fields only and does not increment revision.
+- `receipt-presets` covers the official Get Paid Receipt Presets API. `get`, `list`, and `get-default` are reads/helpers. Writes are plan-first. `update` requires current `receiptPreset.revision`; `delete` also requires `--ack-irreversible` because it permanently deletes the preset; `set-default` changes which preset future receipt creation uses when no preset is specified or found; `update-extended-fields` does not increment revision.
+- `receipts-settings` covers the official Get Paid Receipts Settings API. `get` reads site-level receipt numbering settings. `update` is a plan-first write, requires current `receiptsSettings.revision`, and verifies by provider response plus `receipts-settings get`; receipts settings cannot be deleted.
+- `payment-link-settings` covers the official Get Paid Payment Link Settings API. `get` is read-only. `update` is a plan-first write for payment link checkout settings and verifies by provider response plus `payment-link-settings get`. Get Paid Bulk Downloads is accounted as Developer Preview and is not exposed as a stable command.
+- `headless-oauth-apps` covers the official Headless OAuth Apps API. `get` and `query` are reads/helpers; query uses the official POST query endpoint. `create` and `update` are plan-first writes because OAuth apps authorize external clients to authenticate with a Wix Headless project or site. `update` requires `oAuthApp.id` and `mask.paths`, and Wix only updates fields named in `mask.paths`.
+- `headless-authentication` covers the official Headless Authentication API. `login-v2` and `retrieve-tokens` are sensitive auth helpers and redact passwords, auth codes, session tokens, access tokens, and refresh tokens from output. `register-v2`, `change-password`, `logout`, and `sign-on` are plan-first; `change-password` and `sign-on` also require `--ack-irreversible`. Plans and receipts redact password, cookie, code, and token fields.
+- `headless-recovery` covers the official Headless Recovery API. `send-recovery-email` is plan-first and requires `--ack-irreversible` because it sends a password-reset email. Official docs say the connected Wix site must be published and any post-password-change redirect URL must be an allowed authorization redirect URI.
+- `headless-redirects` covers the official Headless Redirects API. `create-redirect-session` is plan-first and requires `--ack-irreversible` because it creates a single-use visitor redirect URL for Wix-managed auth, logout, checkout, product, or booking flows. Session tokens are redacted, returned redirect URLs are preserved, and the current official endpoint-path mismatch is documented in the command reference.
+- `headless-sitemap` covers the official Headless Sitemap API. `list-pages` is read-only and lists sitemap entries by official item type with cursor paging; the current official endpoint-path mismatch is documented in the command reference.
+- `headless-verification` covers the official Developer Preview Headless Verification API. `verify-during-authentication` is plan-first because it submits an email verification code and state token during member authentication; code, state token, and returned session/token values are redacted, and the current official endpoint-path mismatch is documented in the command reference.
+- `media-folders` uses the same site/app auth path as Media Manager files in this tool.
+- `files update`, `files bulk-delete`, `files bulk-restore`, and `files import` are reviewed-plan writes in this tool.
+- `files bulk-delete` is destructive and needs `--ack-irreversible`.
+- `files bulk-delete` only captures before-state snapshots when the target request stays within the shipped `100`-file batch-get snapshot limit.
+- `files bulk-restore` keeps recovery limits explicit because this tool does not have a direct deleted-file get-by-id read path for trash-bin state.
+- `files import` keeps recovery limits explicit because the target file does not exist in Wix before import starts.
+- `files generate-upload-url`, `files generate-resumable-upload-url`, and `files generate-download-url` are non-mutating helper calls that return official Wix helper URLs.
+- `media-folders create`, `media-folders update`, `media-folders bulk-delete`, and `media-folders bulk-restore` are reviewed-plan writes in this tool.
+- `media-folders bulk-delete` is destructive and needs `--ack-irreversible`.
+- `media-folders bulk-restore` keeps recovery limits explicit because this tool does not have a direct trash-bin get-by-id snapshot path for deleted folders.
+- Wix Skills / Media skills is docs-only, not a CLI command family. Official Wix Skills docs describe installable `SKILL.md` instructions for AI tools; the callable Media Manager API remains `files` and `media-folders`.
+- Account Level Sites Skills is docs-only, not a CLI command family. Official Wix docs describe recipes that use existing APIs; use `sites query`, `projects create-project`, `site-actions publish`, and `headless-oauth-apps create` for the shipped explicit pieces. Do not invent a `sites-skills` command.
+- `resellers` covers the official Account Level Resellers package and product-instance API. Reads use account-level API-key auth. Writes are reviewed-plan commands, and `cancel-package` plus `cancel-product-instance` also require `--ack-irreversible` because they remove customer access.
+- Resellers commands are `resellers get`, `resellers query`, `resellers create-package`, `resellers adjust-product-instance`, `resellers assign-product-instance`, `resellers unassign-product-instance`, `resellers update-package-external-id`, `resellers cancel-package`, and `resellers cancel-product-instance`.
+- HTTP Functions is site-defined and non-callable in this generic safe CLI. Official docs expose a custom Velo function invoker by `functionName`; do not add a generic `http-functions call` command because that would be a call-anything bridge.
+- `rich-content-ricos convert-from`, `convert-to`, and `validate` are non-mutating POST helpers for official Ricos Documents conversion and validation. They require `Manage Ricos Document` and remain live-unverified.
+- `pro-gallery` reads inspect galleries and gallery items. `create-gallery`, `update-gallery`, `create-gallery-item`, and `update-gallery-item` are reviewed-plan writes. `delete-gallery`, `delete-gallery-item`, and `bulk-delete-gallery-items` also need `--ack-irreversible`. Official docs say API-created galleries are backend-only until connected manually in the Wix Editor, media items must already exist in Media Manager, and the deprecated Delete Gallery Items method should be replaced by Bulk Delete Gallery Items.
+- `site-urls` methods are read-only in this contract.
+- Most other non-account families depend on site/app context:
+  - `WIX_APP_ID`
+  - `WIX_APP_SECRET`
+  - `WIX_INSTANCE_ID`
+  - or a valid local token path created by `auth token create`/`auth token set`.
+- Many non-account-level commands also require required app installation and per-app permissions on the target site.
+
+## Write flow for this tool
+
+1. Read or generate a dry-run plan first.
+2. Review the plan and any output, then ask for explicit approval.
+3. Apply with explicit flags only:
+   - `--apply`
+   - `--yes`
+   - `--plan-in <path>` when replaying a previously saved plan
+   - `--plan-out <path>` when generating a fresh plan for review
+4. Keep verification honest:
+   - use output and read-after-write behavior as supported
+   - always store receipts with `--receipt-out <path>` for applies
+5. Use `--ack-irreversible` when the command is irreversible and requires it.
+6. For risky Wix writes, do not skip straight to `--apply --yes`; use a reviewed saved plan first.
+7. Bookings Validation Service Plugin is accounted as a callback-only Developer Preview boundary, not a CLI command. Do not try to run it through this wrapper; Wix calls provider-hosted validation callbacks under `{DEPLOYMENT-URI}`.
+
+Site Actions safety notes:
+
+- `site-actions bulk-delete` is move-to-trash behavior in the official docs, but this tool still requires `--ack-irreversible` for live apply because it is a destructive site action.
+- `site-actions bulk-delete` supports up to 20 site IDs and refuses missing IDs during preflight.
+- `site-actions duplicate` uses the same account-level auth path as sites.
+- `site-actions duplicate` is dry-run first, requires `--apply --yes` for live apply, supports `--plan-out`, `--plan-in`, `--receipt-out`, does not require `--ack-irreversible`, and verifies the new site via provider `newSiteId`.
+- `site-actions duplicate` preflights source-site existence through `sites query` and refuses missing source site IDs.
+- `site-actions publish` is dry-run first, requires `--apply --yes` for live apply, does not require `--ack-irreversible`, supports `--plan-out`, `--plan-in`, and `--receipt-out`, preflights the target site through `sites query`, and verifies publish by checking that re-read site state shows `published=true`.
+- `site-actions publish` may return an empty object `{}` on successful provider response; success is accepted only after read-back publish-state verification.
+
+Domain search notes:
+
+- `domains check-availability` checks one full domain for availability.
+- `domains suggest` sends `query`, optional `tlds` and `maxLength` to `GET /domain-search/v2/suggest-domains`.
+- `domains suggest` validates `--paging-limit` (1-20), `--max-length` (3-63), and `--tlds-json` (max 10, no leading-dot items).
+- Domain docs show REST with `Authorization` header and SDK with `ApiKeyStrategy`; this tool follows the account-api-key resolver path and does not expose generic raw-call fallbacks.
+- Domain DNS docs also require the account API-key path. `domain-dns get-zone` maps to `GET /domains/v1/dns-zones/{domainName}`, `domain-dns preview-zone` maps to `GET /domains/v1/dns-zones/{domainName}/preview`, `domain-dns create-zone` maps to `POST /domains/v1/dns-zones`, `domain-dns update-zone` maps to `PATCH /domains/v1/dns-zones/{domainName}`, and `domain-dns delete-zone` maps to `DELETE /domains/v1/dns-zones/{domainName}`.
+- `domain-dns get-zone` and `domain-dns preview-zone` are read-only, require `--domain-name`, and validate a hostname with TLD.
+- `domain-dns create-zone`, `domain-dns update-zone`, and `domain-dns delete-zone` are reviewed-plan writes in this boundary.
+- `domain-dns delete-zone` always requires `--ack-irreversible`.
+- `domain-dns update-zone` requires `--ack-irreversible` when record deletions are requested.
+- `domain-dns create-zone` requires `--ack-irreversible` when replacing an existing DNS zone.
+- Official Wix docs say the broader DNS family caps records at 50 values per type, and update methods are nameserver-gated for external domains connected by nameservers to Wix sites.
+- `dns-propagation get` maps to `GET /premium/domains/v1/dns-propagations/{dnsPropagationId}` and is a read-only account-level status call. Wix docs say the ID is the domain name including the TLD and propagation can take up to 48 hours.
+- Connected domains use account headers (`Authorization` + `wix-account-id`) in this tool and map to `GET /domains/v1/connected-domains*`, `POST /domains/v1/connected-domains`, and `DELETE /domains/v1/connected-domains/{connectedDomainId}`; official docs show mixed auth strategy wording, so this boundary keeps that mismatch explicit.
+- `connected-domains create` is dry-run first, requires `--apply --yes`, supports `--plan-out`, `--plan-in`, and `--receipt-out`, preflights the target site through `sites query`, and verifies that the connected-domain object exists after apply.
+- `connected-domains create` does not prove DNS propagation is complete. Wix docs say the connection process can take up to 48 hours and real flows can depend on Premium-plan and registrar-side setup.
+- `connected-domains delete` is dry-run first, requires `--apply --yes --ack-irreversible`, supports `--plan-out`, `--plan-in`, and `--receipt-out`, and verifies delete by expecting read-back `404`.
+
+Projects create-project safety notes:
+
+- `projects create-project` is dry-run first, requires `--apply --yes` for live apply, and does not require `--ack-irreversible`.
+- `projects create-project` supports `--plan-out`, `--plan-in`, and `--receipt-out`.
+- `projects create-project` requires `--name` in this boundary and uses a local `--type WIX` guardrail.
+- `projects create-project` verifies success from the response with `project.metaSiteId` and `project.siteId`; requested `templateId`/`apps` values are checked against response when provided.
+- This boundary has no project read command yet, so read-after-write is response-only.
+
+Site Folders safety notes:
+
+- `site-folders update` is rename-only in this boundary.
+- `site-folders delete` requires `--ack-irreversible`.
+- `site-folders move-folders` requires exactly one target form: `--target-folder-id <id>` or `--to-root`.
+- `site-folders move-sites` requires exactly one target form: `--target-folder-id <id>` or `--to-root`.
+
+Business Management safety notes:
+
+- `locations create` is dry-run first and plan-first in this tool.
+- `locations update` is full-object replacement and verifies by rereading the location resource.
+- `locations archive` requires `--plan-in` and `--apply --yes --ack-irreversible`.
+- `site-properties` writes are plan-first and read-after-write verified; `update-business-schedule` overwrites the existing schedule object values supplied by payload.
+- `site-urls` methods are read-only.
+- `data-collections` reads are live reads. `data-collections create`, `update`, `patch`, `create-field`, `update-field`, `patch-field`, `add-plugin`, and `delete-plugin` are reviewed-plan writes. `data-collections delete` and `data-collections delete-field` also need `--ack-irreversible`. `data-collections delete-field` can remove values from existing items across the collection, `data-collections add-plugin` and `data-collections delete-plugin` can change collection behavior broadly, and `data-collections patch` stays narrow to `displayName`, `displayField`, and `permissions`.
+- All `data-collections` writes use Wix app or Wix user identity auth and require `Manage Data Collections`.
+- `data-collections` writes verify by collection reread where the method supports it.
+- `data-indexes list` is a live read.
+- `data-indexes create` and `data-indexes drop` are reviewed-plan writes.
+- All `data-indexes` writes use Wix app or Wix user identity auth and require `Manage Data Indexes`.
+- Official Wix docs say Wix Data APIs require the site code editor to be enabled.
+- `data-indexes create` and `drop` are async state changes, so this wrapper verifies by rereading the index list and checking index status instead of claiming an immediate final result.
+- This wrapper refuses dropping `SYSTEM` indexes when current readback proves the index is system-generated.
+- `data-folders get` is a live read. Omitting `--folder-id` returns the root folder.
+- `data-folders create`, `update`, `delete`, `create-collection-reference`, and `delete-collection-reference` are reviewed-plan writes.
+- `data-folders delete` requires `--ack-irreversible`.
+- All `data-folders` writes use Wix app or Wix user identity auth and require `Manage Data Collections`.
+- Official Wix docs say only the root folder may contain other folders, and the root folder cannot be updated or deleted.
+- `data-extension-schemas list` is a live read. It requires an explicit FQDN for the object being extended.
+- `data-extension-schemas create`, `update`, and `delete-user-defined-fields` are reviewed-plan writes.
+- `data-extension-schemas delete-user-defined-fields` requires `--ack-irreversible`.
+- `data-extension-schemas` uses Wix app or Wix user identity auth in this boundary for the target site context.
+- The API manages user-defined schema content for a target FQDN. Schema-plugin setup still starts in the app dashboard and is released through app versioning.
+- `data-extension-schemas` writes verify by rereading the schema list for the same FQDN and checking that user-defined fields are gone after delete.
+- `data-folders create` and `update` verify by rereading the folder after apply.
+- `data-folders create-collection-reference` and `delete-collection-reference` verify by rereading collection references for the same collection name.
+- `data-folders delete` verifies by expecting folder read-back `404` and keeps the manual-only recovery limit explicit because Wix moves collection references back to the root folder.
+- `data-permissions get` and `data-permissions get-my` are live reads.
+- `data-items save`, `truncate`, `bulk-remove`, `bulk-save`, `bulk-update`, `bulk-insert-references`, and `bulk-remove-references` are reviewed-plan writes in this boundary.
+- `data-items truncate` and `bulk-remove` need `--ack-irreversible` on apply.
+- `data-items save` and `bulk-save` are upsert writes and do not promise rollback.
+- `data-items bulk-save` refuses live apply for items without explicit IDs unless `--return-entity` is enabled for safe verification.
+- `data-items bulk-update` is full-object replacement and every item must include `id`.
+- `data-items bulk-insert-references` and `bulk-remove-references` verify through official `is-referenced` readback and refuse obvious no-op apply runs.
+- `data-permissions update`, `data-permissions add-special`, `data-permissions update-special`, and `data-permissions remove-special` are reviewed-plan writes.
+- All `data-permissions` writes use Wix app or Wix user identity auth and require `Manage Data Collections`.
+- Official Wix docs say this family only applies to collections created in the CMS or through the Data Collections API. Wix app collections, shared collections, and external collections are excluded from this family.
+- `data-permissions add-special` and `update-special` require exactly one of `--user-id` or `--policy-id`.
+- `data-permissions update-special` is replace-style in official docs, so this wrapper requires all four special access flags explicitly.
+- `data-permissions update-special` and `remove-special` also require `--data-collection-id` in this tool so apply can verify with official `get-permissions` readback instead of trusting the write response alone.
+- Wix app collections are reference-only in official docs and do not create a separate CLI command family. Use `data-collections list|get` and `data-items get|query|search` with official app collection IDs such as `Stores/Products`, `Bookings/Services`, and `Events/Events`. App collections are system collections with fixed permissions and read-only fields managed by the relevant Wix business app.
+- `data-sharing list-policies`, `get-policy`, and `list-shared-collections` are live reads.
+- `data-sharing create-policy`, `update-policy`, and `connect` are reviewed-plan writes.
+- `data-sharing delete-policy` and `disconnect` are reviewed-plan writes that also require `--ack-irreversible`.
+- All `data-sharing` methods use Wix app or Wix user identity auth and require `Manage Data Collection Sharing`.
+- Official Wix docs say Data Sharing only works between sites in the same Wix account, external collections and Wix App collections cannot be shared, collection permissions remain unchanged, `update-policy` can only change `dataItemsFilter`, and updates automatically apply to connected sites.
+- Deleting a sharing policy disconnects all associated connections and can break target-site code. Disconnecting removes the current site's local view of the shared collection.
+
+If a requested command is not in the implemented list, reply that it is out of scope for this boundary and that that command is not exposed in this safe CLI boundary.
+
+## Flag contract matrix
+
+| Command or family | Read/live write state | Required flags for live write | Receipt / verification contract |
+|---|---|---|---|
+| pure reads (`auth check`, `contacts`, `members`, `app-installations`, `app-instance get`, `embedded-scripts get`, `custom-embeds list|get`, `secrets list|get-value`, `sender-emails list|get`, `sender-details list|get|get-default`, `sending-domains get|query`, `marketing-consent get|query|get-by-identifier`, `referral-program get|get-premium-features|get-ai-social-media-posts-suggestions`, `referral-rewards get|query`, `referring-customers get|query|get-by-referral-code`, `referred-friends get|query|get-by-contact-id`, `email-campaigns list|get|get-audience|list-statistics|list-recipients|identify-sender-address`, `donation-campaigns get|get-metrics|query`, `orders search|get`, `payments transactions-list`, `bookings-time-slots-v2 list-availability|get-availability|list-event|get-event|list-multi-service|get-multi-service`, `bookings-reader-v2 query-extended-bookings|count-extended-bookings`, `bookings-services-v2 get|query|search|count|query-policies|query-locations|query-categories|validate-slug|list-add-on-groups-by-service-id`, `bookings-resources-v2 get|query|search|count`, `bookings-resource-types-v2 get|query|count`, `bookings-staff-members get|query|search|count|get-deleted|list-deleted`, `stores-products-v3 get|get-by-slug|get-all-products-category|query|search|count`, `read-only-variants-v3 query|search`, `brands-v3 get|query`, `ribbons-v3 get|query`, `stores-info-sections-v3 get|query`, `customizations-v3 get|query`, `categories get|get-by-slug|query|search|count|list-trees|get-arranged-items|list-categories-for-item|list-categories-for-items|list-items-in-category`, `stores-inventory-items-v3 get|query|search`, `stores-locations-v3 get|query`, `catalog-versioning get`, `order-billing get-order-refundability|calculate-refund`, `benefit-items get|list|query|count`, `balances get|list|query`, `pricing-plans get|query|search|count`, `gift-cards get|query|search|count`, `coupons get|query`, `campaign-validation validate-link|validate-html-links`, `portfolio-settings get`, `portfolio-projects get|query|list`, `portfolio-project-items get|list`, `events-policies-v2 get|query`, `events-staff-members get|query`, `events-guests query`, `events-rsvps-v2 get|query|search|count|list-summary`, `events-ticket-reservations get`, `events-tickets get|list`, `events-orders list|get|get-summary|get-checkout-options|list-available-tickets|query-available-tickets|get-invoice`, `events-forms get-form`, `restaurants-menus list|get|query`, `restaurants-sections list|get|query`, `restaurants-items list|get|query|search|count`, `restaurants-item-labels list|get|query`, `restaurants-item-variants list|get|query|count`, `restaurants-item-modifiers list|get|query|count`, `restaurants-item-modifier-groups list|get|query|count`, `restaurants-online-order-operation-groups get|query`, `restaurants-online-order-operations get|list|query|first-available-time-slot-per-fulfillment-type|first-available-time-slots-per-operation|first-available-time-slots-per-menu|available-time-slots-for-date|available-dates-in-range|validate-address`, `restaurants-online-order-menu-ordering-settings get|query|list-menus-availability-status`, `restaurants-online-order-fulfillment-methods list|get|query|list-available-for-address|get-accumulated-availability|get-combined-availability|get-aggregated-availability`, `restaurants-online-order-availability-exceptions get|query`, `restaurants-online-order-service-fees calculate|list|get|query`, `restaurants-online-order-notification-recipients get|query`, `restaurants-reservations get|list|query|search`, `restaurants-reservation-locations get|list|query`, `restaurants-reservation-time-slots check|get-scheduled|get`, `restaurants-reservation-experiences get|query|search|get-by-slug`, `blog-posts-stats get|query|list|get-by-slug|get-metrics|get-total|query-count`, `blog-draft-posts get|query|list|get-deleted|list-deleted`, `blog-categories get|query|list|get-by-slug`, `blog-tags get|query|get-by-label|get-by-slug`, `market-listing search`, `editor-deep-link create`, `app-permissions list`, `contact-labels query`, `contact-labels list`, `contact-labels get`, `contact-extended-fields get|list|query`, `contact-notes get|query`, `contact-attachments get|list`, `data-indexes list`, `data-folders get`, `data-folders get-collection-references`, `data-extension-schemas list`, `data-permissions get/get-my`, `form-submissions get-submission/query-submissions-by-namespace/count-submissions/get-media-upload-url`, `analytics-data get`, `analytics-semantic-models list|get|query`, `async-jobs get|list-items`, `branches get-default|get|query`, `site-search search`, `files list|get/batch-get/search/query/list-deleted/generate-upload-url/generate-resumable-upload-url/generate-download-url`, `media-folders list|get/search/query/list-deleted/generate-download-url`, `sites`, `domains`, `domain-dns get-zone/preview-zone`, `dns-propagation get`, `site-urls`, `accounts`, `contributors query`, `tags list|get`, `data-items get/query/count/aggregate/aggregate-pipeline/distinct/search/query-referenced/is-referenced`, `data-collections list|get`) | read-only | none | normal command output only |
+| `referring-customers generate-for-contact` | reviewed-plan write | none | may create a referring customer for the provided contact ID or `me`; provider response plus reread |
+| `referring-customers delete` | irreversible reviewed-plan write | `--ack-irreversible` | deletes a referring customer by ID and current revision query parameter |
+| `referred-friends create` | reviewed-plan write | none | may create or return an existing referred friend for the current member identity and referral code; provider response plus reread |
+| `referred-friends update` | reviewed-plan write | none | updates a referred friend using the official referredFriend object and current revision |
+| `referred-friends delete` | irreversible reviewed-plan write | `--ack-irreversible` | deletes a referred friend by ID and current revision query parameter |
+| `app-installation get-installed`, `app-installation is-permitted` | read-only | none | normal command output only |
+| `blog-likes create` | plan-first write | `--plan-out` for review, then `--plan-in --apply --yes` | use `--receipt-out` when applying; verify by provider result plus readback when supported |
+| `blog-likes delete`, `blog-likes delete-by-fqdn-entity-id` | irreversible write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; verify by readback/provider result |
+| `suppliers-hub-products get|query|search|query-categories` | read-only | none | normal command output only |
+| `suppliers-hub-products delete`, `suppliers-hub-products bulk-delete`, `suppliers-hub-products bulk-update-tags-by-filter` | irreversible or broad async write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; before-state is captured when IDs are known; filtered tag updates verify async `jobId` creation |
+| `suppliers-hub-products create|update|bulk-create|bulk-update|bulk-add-to-store|bulk-update-tags` | plan-first write | `--plan-out` for review, then `--plan-in --apply --yes` | use `--receipt-out` when applying; verify by provider response or readback for known IDs |
+| `suppliers-hub-suppliers get|query` | read-only | none | normal command output only |
+| `suppliers-hub-suppliers delete`, `suppliers-hub-suppliers bulk-delete`, `suppliers-hub-suppliers bulk-update-tags-by-filter` | irreversible or broad async write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; before-state is captured when IDs are known; filtered tag updates verify async `jobId` creation |
+| `suppliers-hub-suppliers create|update|bulk-create|bulk-update|bulk-update-tags` | plan-first write | `--plan-out` for review, then `--plan-in --apply --yes` | use `--receipt-out` when applying; update and bulk update read before-state and refuse stale supplier revisions |
+| `suppliers-hub-marketplace-provider-submissions submit-generated-mockups` | plan-first provider reporting write | `--plan-out` for review, then `--plan-in --apply --yes` | use `--receipt-out` when applying; verify by provider response and bulkActionMetadata |
+| `contributors remove`, `connected-domains delete`, `locations archive`, `tags delete`, `secrets delete`, `sender-emails delete`, `sender-details delete`, `email-campaigns delete`, `pricing-plans delete`, `orders cancel`, `bookings-services-v2 delete`, `bookings-services-v2 bulk-delete`, `bookings-services-v2 bulk-delete-by-filter`, `bookings-services-v2 set-service-locations`, `bookings-services-v2 disable-pricing-plans`, `bookings-services-v2 delete-add-on-group`, `bookings-services-v2 set-add-ons-for-group`, `bookings-resources-v2 delete`, `bookings-resources-v2 bulk-delete`, `bookings-resource-types-v2 delete`, `bookings-staff-members delete`, `bookings-staff-members remove-from-trash`, `stores-products-v3 delete`, `stores-products-v3 bulk-delete`, `stores-products-v3 bulk-delete-by-filter`, `stores-products-v3 bulk-remove-info-sections`, `stores-products-v3 bulk-remove-info-sections-by-filter`, `stores-products-v3 bulk-remove-from-categories-by-filter`, `brands-v3 delete`, `brands-v3 bulk-delete`, `ribbons-v3 delete`, `ribbons-v3 bulk-delete`, `stores-info-sections-v3 delete`, `stores-info-sections-v3 bulk-delete`, `customizations-v3 delete`, `customizations-v3 remove-choices`, `customizations-v3 set-choices`, `stores-inventory-items-v3 delete`, `order-billing capture-authorized-payments`, `order-billing void-authorized-payments`, `order-billing redeem-gift-card`, `order-billing refund-payments`, `coupons delete`, `coupons bulk-delete`, `gift-cards disable`, `files bulk-delete`, `media-folders bulk-delete`, `site-actions bulk-delete`, `site-folders delete`, `data-items remove`, `data-collections delete`, `data-collections delete-field`, `data-folders delete`, `data-extension-schemas delete-user-defined-fields`, `domain-dns delete-zone`, `events-policies-v2 delete`, `events-staff-members delete`, `events-rsvps-v2 delete`, `events-rsvps-v2 bulk-delete-by-filter`, `events-rsvps-v2 cancel-check-in`, `events-ticket-reservations delete`, `events-ticket-reservations bulk-update-tags-by-filter`, `events-ticket-reservations cancel`, `events-tickets delete-check-in`, `events-orders confirm`, `events-orders create-reservation`, `events-orders cancel-reservation`, `events-orders checkout`, `events-forms discard-draft`, `events-forms delete-control`, `events-forms update-messages`, `events-forms publish-draft`, `restaurants-menus delete`, `restaurants-sections delete`, `restaurants-sections bulk-delete`, `restaurants-items delete`, `restaurants-items bulk-delete`, `restaurants-item-labels delete`, `restaurants-item-variants delete`, `restaurants-item-variants bulk-delete`, `restaurants-item-modifiers delete`, `restaurants-item-modifiers bulk-delete`, `restaurants-item-modifier-groups delete`, `restaurants-online-order-operation-groups delete`, `restaurants-online-order-operation-groups bulk-delete`, `restaurants-online-order-operation-groups bulk-update-tags-by-filter`, `restaurants-online-order-operations delete`, `restaurants-online-order-operations bulk-update-tags-by-filter`, `restaurants-online-order-menu-ordering-settings bulk-update-tags-by-filter`, `restaurants-online-order-fulfillment-methods delete`, `restaurants-online-order-fulfillment-methods bulk-update-tags-by-filter`, `restaurants-online-order-availability-exceptions delete`, `restaurants-online-order-availability-exceptions bulk-update-tags-by-filter`, `restaurants-online-order-service-fees delete`, `restaurants-online-order-service-fees bulk-delete`, `restaurants-online-order-service-fees bulk-update-tags-by-filter`, `restaurants-online-order-notification-recipients delete`, `restaurants-online-order-notification-recipients bulk-delete`, `restaurants-online-order-notification-recipients bulk-update-tags-by-filter`, `restaurants-reservations delete`, `restaurants-reservations cancel`, `restaurants-reservation-experiences bulk-update-tags-by-filter`, `blog-draft-posts bulk-delete`, `blog-draft-posts remove-from-trash-bin`, `blog-draft-posts delete --permanent`, `blog-categories delete`, `blog-tags delete`, `portfolio-projects delete`, `portfolio-project-items delete`, `portfolio-project-items bulk-delete` | irreversible write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; verify by readback/provider result |
+| `contact-labels find-or-create`, `contact-labels update`, `contact-labels delete` | reviewed-plan write | `--plan-out` for review, then `--plan-in --apply --yes` | use `--receipt-out` when applying; verify by provider result plus reread, `404` after delete |
+| `contact-extended-fields find-or-create`, `contact-extended-fields update`, `contact-extended-fields delete` | reviewed-plan write | `--plan-out` for review, then `--plan-in --apply --yes` | `delete` also requires `--ack-irreversible`; use `--receipt-out` when applying |
+| `contact-notes create`, `contact-notes update`, `contact-notes delete` | reviewed-plan write | `--plan-out` for review, then `--plan-in --apply --yes` | `delete` also requires `--ack-irreversible`; use `--receipt-out` when applying |
+| `contact-attachments generate-upload-url`, `contact-attachments delete` | reviewed-plan write | `--plan-out` for review, then `--plan-in --apply --yes` | `delete` also requires `--ack-irreversible`; use `--receipt-out` when applying |
+| `contacts create`, `contacts update`, `contacts delete`, `contacts merge`, `contacts label`, `contacts unlabel`, `contacts bulk-delete`, `contacts bulk-update`, `contacts bulk-label-unlabel` | reviewed-plan write | `--plan-out` for review, then `--plan-in --apply --yes` | `delete`, `merge`, and all bulk write jobs also require `--ack-irreversible`; use `--receipt-out` when applying |
+| `app-permissions create`, `app-permissions delete`, `contributors change-role`, `contributors change-contributor-location`, `connected-domains create`, `locations create`, `locations update`, `locations set-default`, `notifications notify`, `tags create`, `tags update`, `custom-embeds create`, `custom-embeds update`, `secrets create`, `secrets patch`, `sender-emails create`, `sender-emails get-or-create`, `sender-emails send-verification-code`, `sender-emails verify`, `sender-details create`, `sender-details update`, `sender-details mark-default`, `sending-domains authenticate`, `marketing-consent create`, `marketing-consent update`, `marketing-consent upsert`, `marketing-consent bulk-upsert`, `marketing-consent remove`, `referral-program activate`, `referral-program pause`, `referral-program generate-ai-social-media-posts-suggestions`, `referral-program update`, `email-campaigns publish`, `email-campaigns reuse`, `email-campaigns pause-scheduling`, `email-campaigns reschedule`, `email-campaigns send-test`, `donation-campaigns create`, `donation-campaigns update`, `donation-campaigns bulk-create`, `donation-campaigns bulk-update`, `donation-campaigns bulk-update-tags`, `donation-campaigns bulk-update-tags-by-filter`, `orders create`, `orders update`, `orders bulk-update`, `bookings-services-v2 create`, `bookings-services-v2 update`, `bookings-services-v2 bulk-create`, `bookings-services-v2 bulk-update`, `bookings-services-v2 bulk-update-by-filter`, `bookings-services-v2 enable-pricing-plans`, `bookings-services-v2 set-custom-slug`, `bookings-services-v2 clone`, `bookings-services-v2 create-add-on-group`, `bookings-services-v2 update-add-on-group`, `bookings-resources-v2 create`, `bookings-resources-v2 update`, `bookings-resources-v2 bulk-create`, `bookings-resources-v2 bulk-update`, `bookings-resource-types-v2 create`, `bookings-resource-types-v2 update`, `bookings-staff-members create`, `bookings-staff-members update`, `bookings-staff-members assign-working-hours-schedule`, `bookings-staff-members bulk-update-tags`, `bookings-staff-members bulk-update-tags-by-filter`, `bookings-staff-members connect-to-user`, `bookings-staff-members disconnect-from-user`, `stores-products-v3 create`, `stores-products-v3 update`, `stores-products-v3 bulk-create`, `stores-products-v3 bulk-update`, `stores-products-v3 create-with-inventory`, `stores-products-v3 update-with-inventory`, `stores-products-v3 bulk-create-with-inventory`, `stores-products-v3 bulk-update-with-inventory`, `stores-products-v3 bulk-add-info-sections`, `stores-products-v3 bulk-add-info-sections-by-filter`, `stores-products-v3 bulk-add-to-categories-by-filter`, `stores-products-v3 bulk-adjust-variants-by-filter`, `stores-products-v3 bulk-update-variants-by-filter`, `stores-products-v3 bulk-update-by-filter`, `brands-v3 create`, `brands-v3 update`, `brands-v3 bulk-create`, `brands-v3 bulk-update`, `brands-v3 get-or-create`, `brands-v3 bulk-get-or-create`, `ribbons-v3 create`, `ribbons-v3 update`, `ribbons-v3 bulk-create`, `ribbons-v3 bulk-update`, `ribbons-v3 get-or-create`, `ribbons-v3 bulk-get-or-create`, `stores-info-sections-v3 create`, `stores-info-sections-v3 update`, `stores-info-sections-v3 bulk-create`, `stores-info-sections-v3 bulk-update`, `stores-info-sections-v3 get-or-create`, `stores-info-sections-v3 bulk-get-or-create`, `customizations-v3 create`, `customizations-v3 update`, `customizations-v3 bulk-create`, `customizations-v3 bulk-update`, `customizations-v3 add-choices`, `customizations-v3 bulk-add-choices`, `stores-inventory-items-v3 create`, `stores-inventory-items-v3 update`, `order-billing authorize-charge-with-saved-payment-method`, `order-billing generate-receipts`, `benefit-items create`, `benefit-items update`, `benefit-items bulk-create`, `benefit-items bulk-update`, `balances change`, `balances revert-change`, `pricing-plans create`, `pricing-plans update`, `pricing-plans bulk-update`, `coupons create`, `coupons update`, `coupons bulk-create`, `gift-cards create`, `gift-cards send-email`, `portfolio-settings update`, `portfolio-projects create`, `portfolio-projects update`, `portfolio-projects bulk-update`, `portfolio-project-items create`, `portfolio-project-items update`, `portfolio-project-items bulk-create`, `portfolio-project-items bulk-update`, `portfolio-project-items duplicate`, `files update`, `files bulk-restore`, `files import`, `media-folders create`, `media-folders update`, `media-folders bulk-restore`, `site-properties update-business-contact`, `site-properties update-business-profile`, `site-properties update-business-schedule`, `site-properties update-consent-policy`, `projects create-project`, `site-actions duplicate`, `site-actions publish`, `site-folders create`, `site-folders update`, `site-folders move-folders`, `site-folders move-sites`, `data-items insert`, `data-items update`, `data-items patch`, `data-items insert-reference`, `data-items remove-reference`, `data-items replace-references`, `data-items bulk-insert`, `data-items bulk-patch`, `data-extension-schemas create`, `data-extension-schemas update`, `data-collections create`, `data-collections update`, `data-collections patch`, `data-collections create-field`, `data-collections update-field`, `data-collections patch-field`, `data-collections add-plugin`, `data-collections delete-plugin`, `data-indexes create`, `data-indexes drop`, `data-folders create`, `data-folders update`, `data-folders create-collection-reference`, `data-folders delete-collection-reference`, `data-permissions update`, `data-permissions add-special`, `data-permissions update-special`, `data-permissions remove-special`, `domain-dns create-zone`, `domain-dns update-zone`, `events-policies-v2 create`, `events-policies-v2 update`, `events-policies-v2 reorder`, `events-staff-members create`, `events-staff-members update`, `events-rsvps-v2 create`, `events-rsvps-v2 update`, `events-rsvps-v2 bulk-update`, `events-rsvps-v2 check-in`, `events-ticket-reservations create`, `events-ticket-reservations bulk-update-tags`, `events-tickets update`, `events-tickets bulk-update`, `events-tickets check-in`, `events-orders update`, `events-orders bulk-update`, `events-orders update-checkout`, `events-forms add-control`, `events-forms update-control`, `restaurants-menus create`, `restaurants-menus update`, `restaurants-menus bulk-create`, `restaurants-menus bulk-update`, `restaurants-menus duplicate`, `restaurants-menus update-extended-fields`, `restaurants-sections create`, `restaurants-sections update`, `restaurants-sections bulk-create`, `restaurants-sections bulk-update`, `restaurants-sections duplicate`, `restaurants-items create`, `restaurants-items update`, `restaurants-items bulk-create`, `restaurants-items bulk-update`, `restaurants-reservation-experiences create`, `restaurants-reservation-experiences update`, `restaurants-reservation-experiences bulk-update-tags`, `blog-categories create`, `blog-categories update` | plan-first write | `--plan-out` for review, then `--plan-in --apply --yes` | use `--receipt-out` when applying; verify by provider result plus readback when supported |
+| `custom-embeds delete` | irreversible write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; verify by readback `404`, with manual-only recovery notes |
+| `app-installation install`, `app-installation install-from-share-url`, `app-installation uninstall`, `app-installation bulk-install`, `app-installation bulk-uninstall` | plan-first write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; verify by provider result only, with manual recovery notes because before-state snapshots are not guaranteed for arbitrary tenant context |
+| `form-submissions create-submission`, `form-submissions update-submission`, `form-submissions delete-submission`, `form-submissions confirm-submission`, `form-submissions bulk-mark-submissions-as-seen` | plan-first write | `--plan-out` for review, then `--plan-in --apply --yes` | use `--receipt-out` when applying; verify with provider/result checks and explicit preconditions (`ack`/`revision`/`PENDING`/`all-unseen`) |
+| `community-group-rules create-or-replace` | irreversible replacement write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say existing rules are replaced |
+| `community-group-requests approve`, `community-group-requests reject` | irreversible decision write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say only Wix users can approve or reject group requests |
+| `community-group-members add`, `community-group-members remove` | irreversible membership write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say adding members can invite private members and removing members changes group membership |
+| `community-group-roles assign`, `community-group-roles unassign` | irreversible role/permission write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say assigning overrides current `role.value` and unassigning only supports `ADMIN` roles |
+| `community-join-requests approve`, `community-join-requests reject` | irreversible private-group membership decision | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say approval adds the site member to the private group |
+| `community-membership-questions create-or-replace` | irreversible replacement write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say existing questions are replaced and an empty questions array removes all questions |
+| `community-comments delete`, `community-comments moderate-draft-content`, `community-comments mark`, `community-comments unmark`, `community-comments hide`, `community-comments publish`, `community-comments bulk-publish`, `community-comments bulk-hide`, `community-comments bulk-delete`, `community-comments bulk-moderate-draft-content`, `community-comments bulk-move-by-filter` | irreversible comment moderation write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say delete removes comment content and bulk operations can affect multiple comments |
+| `community-reports delete`, `community-reports bulk-delete-by-filter` | irreversible report deletion | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say reports are removed from the dashboard report list and bulk delete can remove multiple reports |
+| `community-reviews delete`, `community-reviews bulk-create`, `community-reviews bulk-delete`, `community-reviews remove-reply`, `community-reviews update-moderation-status`, `community-reviews bulk-update-moderation-status` | irreversible review or moderation write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say Reviews is stores-only, delete removes reviews, and bulk or moderation writes can affect public review state |
+| `community-review-requests delete`, `community-review-requests bulk-cancel-by-filter` | irreversible review-request write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say only canceled requests can be deleted and bulk cancel starts an async job |
+| `community-moderation-rules create`, `community-moderation-rules update`, `community-moderation-rules delete` | irreversible moderation policy write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say moderation rules automate content moderation and each trigger needs a separate rule |
+| `inbox-messages send` | irreversible message send | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say it sends a message to the business or participant and can send notifications |
+| `loyalty-program update`, `loyalty-program activate`, `loyalty-program pause`, `loyalty-program enable-points-expiration`, `loyalty-program disable-points-expiration` | irreversible program-wide loyalty write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say these methods change the loyalty program settings, status, or points-expiration behavior |
+| `loyalty-earning-rules create`, `loyalty-earning-rules update`, `loyalty-earning-rules delete`, `loyalty-earning-rules bulk-create`, `loyalty-earning-rules create-custom`, `loyalty-earning-rules delete-automation` | irreversible loyalty earning-rule write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say earning rules control how customers earn points, and bulk create can partially succeed |
+| `loyalty-tiers create`, `loyalty-tiers update`, `loyalty-tiers delete`, `loyalty-tiers bulk-create`, `loyalty-tiers get-program`, `loyalty-tiers create-program-settings`, `loyalty-tiers update-program-settings` | irreversible loyalty tier write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say tiers control point thresholds and global tier program settings, and `get-program` creates default settings if none exist |
+| `loyalty-accounts create`, `loyalty-accounts adjust-points`, `loyalty-accounts bulk-adjust-points`, `loyalty-accounts earn-points` | irreversible loyalty account or point-balance write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say these methods create loyalty accounts or change account point balances, and bulk adjust returns an async job ID |
+| `loyalty-social-media create` | irreversible followed-channel loyalty write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | requires visitor/member auth; verify with `loyalty-social-media list` using the same identity |
+| `loyalty-imports create-file-url` | loyalty import upload-url helper write | `--plan-out` for review, then `--plan-in --apply --yes` | use returned `filePath` and `uploadUrl` only for the official Loyalty Imports CSV upload flow |
+| `loyalty-imports create`, `loyalty-imports execute` | irreversible loyalty points import write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; verify with `loyalty-imports get` and use `get-error-file-download-url` for failed rows |
+| `crm-tasks create`, `crm-tasks update`, `crm-tasks move-after`, `crm-tasks delete` | reviewed-plan CRM task write | `--plan-out` for review, then `--plan-in --apply --yes` | `delete` also requires `--ack-irreversible`; use `--receipt-out` when applying; verify with `crm-tasks get` or `query` |
+| `crm-pipelines create`, `crm-pipelines update`, `crm-pipelines bulk-update-tags`, `crm-pipelines bulk-update-tags-by-filter`, `crm-pipelines delete` | Developer Preview CRM pipeline write | `--plan-out` for review, then `--plan-in --apply --yes` | `delete` and `bulk-update-tags-by-filter` also require `--ack-irreversible`; use `--receipt-out` when applying; filtered tag updates return an async job ID |
+| `crm-cards create`, `crm-cards update`, `crm-cards bulk-update-tags`, `crm-cards bulk-update-tags-by-filter`, `crm-cards move`, `crm-cards delete` | Developer Preview CRM card write | `--plan-out` for review, then `--plan-in --apply --yes` | `delete` and `bulk-update-tags-by-filter` also require `--ack-irreversible`; use `--receipt-out` when applying; filtered tag updates return an async job ID |
+| `ai-site-chat-widget-settings set`, `ai-site-chat-widget-settings-v2 update`, `ai-site-chat-messages bulk-create` | AI Site-Chat reviewed-plan write | `--plan-out` for review, then `--plan-in --apply --yes` | `bulk-create` also requires `--ack-irreversible`; use `--receipt-out` when applying; verify with the related get/list command |
+| `analytics-sessions list-async`, `analytics-sessions mark-recordings-deleted`, `analytics-sessions mark-session-recorded` | beta Analytics Sessions write | `--plan-out` for review, then `--plan-in --apply --yes` | recording-state mutations also require `--ack-irreversible`; use `--receipt-out` when applying; `list-async` is a named async job starter only |
+| `automation-storage-items create`, `automation-storage-items bulk-update-tags`, `automation-storage-items update-counter-by`, `automation-storage-items update-value` | Automations storage reviewed-plan write | `--plan-out` for review, then `--plan-in --apply --yes` | use `--receipt-out` when applying; verify with `automation-storage-items get` using `--consistent-read true` when needed |
+| `automation-storage-items bulk-update-tags-by-filter` | irreversible filtered storage tag update | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | empty filter can update all storage items; provider returns a `jobId` |
+| `automations-v2 create`, `automations-v2 update`, `automations-v2 delete` | irreversible automation workflow write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `automations-v2 validate` before create/update when possible; update requires current revision |
+| `loyalty-rewards create`, `loyalty-rewards bulk-create`, `loyalty-rewards update`, `loyalty-rewards delete` | irreversible loyalty reward definition write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say these methods create, change, or remove reward definitions customers can redeem with loyalty points |
+| `loyalty-checkout-discounts apply` | irreversible loyalty checkout discount write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs say applying a discount can redeem points or apply a customer reward, loyalty coupon, or referral reward to a checkout |
+| `loyalty-coupons redeem-current-member`, `loyalty-coupons redeem`, `loyalty-coupons delete` | irreversible loyalty coupon write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; verify with `get-current-member`, `query`, or `get` as appropriate |
+| `interactive-form-sessions create`, `interactive-form-sessions create-streamed`, `interactive-form-sessions send-message`, `interactive-form-sessions send-message-streamed` | plan-first write | `--plan-out` for review, then `--plan-in --apply --yes` | use the official `dryRun` body field for test sessions where appropriate; streamed commands may return raw event-stream text |
+| `intake-forms archive`, `intake-forms unarchive`, `intake-forms update-expiration-period`, `intake-form-submissions extend`, `intake-form-submissions exempt` | plan-first write | `--plan-out` for review, then `--plan-in --apply --yes` | use `--receipt-out` when applying; verification is provider-response based |
+| `intake-forms delete`, `intake-form-submissions cancel`, `intake-form-submissions delete` | irreversible write | `--plan-out` for review, then `--plan-in --apply --yes --ack-irreversible` | use `--receipt-out` when applying; official docs warn about deleted/orphaned forms or non-reactivatable canceled submissions |
+
+## Example command invocations (placeholders only)
+
+- Version check:
+  - `wix-safe-agent-cli --output json --version`
+- Projects create preview:
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> projects create-project --name "<project_name>" --type WIX`
+- Projects create apply:
+  - `wix-safe-agent-cli --output json --apply --yes --plan-in <plan_json> projects create-project --name "<project_name>" --type WIX --receipt-out <receipt_json>`
+- Accounts reads:
+  - `wix-safe-agent-cli --output json accounts get --account-id <account_guid>`
+  - `wix-safe-agent-cli --output json accounts list-child-accounts --limit <n> --offset <n>`
+- Contributors read:
+  - `wix-safe-agent-cli --output json contributors query`
+  - `wix-safe-agent-cli --output json contributors query --policy-ids-json '["6600344420111308827"]'`
+- Contributors remove plan/apply:
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> contributors remove --account-id <account_id> --site-id <site_id>`
+  - `wix-safe-agent-cli --output json --apply --yes --ack-irreversible --plan-in <plan_json> contributors remove --account-id <account_id> --site-id <site_id> --receipt-out <receipt_json>`
+- Contributors change-role plan/apply:
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> contributors change-role --account-id <account_id> --site-id <site_id> --role-ids-json '["<role_guid>"]'`
+  - `wix-safe-agent-cli --output json --apply --yes --plan-in <plan_json> contributors change-role --account-id <account_id> --site-id <site_id> --role-ids-json '["<role_guid>"]' --receipt-out <receipt_json>`
+- Contributors change-contributor-location plan/apply:
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> contributors change-contributor-location --account-id <account_id> --site-id <site_id> --location-ids-json '["<location_guid>"]'`
+  - `wix-safe-agent-cli --output json --apply --yes --plan-in <plan_json> contributors change-contributor-location --account-id <account_id> --site-id <site_id> --location-ids-json '["<location_guid>"]' --receipt-out <receipt_json>`
+- Onboarding:
+  - `wix-safe-agent-cli onboarding`
+- Auth check:
+  - `wix-safe-agent-cli --output json auth check`
+- Review past runs:
+  - `wix-safe-agent-cli --output json runs list --limit <n>`
+  - `wix-safe-agent-cli --output json runs show --run-id <run_id>`
+- Sites read (account-level):
+  - `wix-safe-agent-cli --output json sites query`
+- Site actions write preview:
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> site-actions bulk-delete --site-ids-json <site_ids_json>`
+- Site actions publish preview:
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> site-actions publish --site-id <site_id>`
+- Site actions duplicate preview:
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> site-actions duplicate --source-site-id <source_site_id> --site-display-name <site_name>`
+- Site actions duplicate apply:
+  - `wix-safe-agent-cli --output json --apply --yes --plan-in <plan_json> site-actions duplicate --source-site-id <source_site_id> --site-display-name <site_name> --receipt-out <receipt_json>`
+- Site actions publish apply:
+  - `wix-safe-agent-cli --output json --apply --yes --plan-in <plan_json> site-actions publish --site-id <site_id> --receipt-out <receipt_json>`
+- Domain checks:
+  - `wix-safe-agent-cli --output json domains check-availability --domain <domain>`
+  - `wix-safe-agent-cli --output json domains suggest --query <query>`
+- Domain DNS:
+  - `wix-safe-agent-cli --output json domain-dns get-zone --domain-name <domain_name>`
+  - `wix-safe-agent-cli --output json domain-dns preview-zone --domain-name <domain_name>`
+- Connected domains:
+  - `wix-safe-agent-cli --output json connected-domains list`
+  - `wix-safe-agent-cli --output json connected-domains get --connected-domain-id <connected-domain-id>`
+  - `wix-safe-agent-cli --output json connected-domains get-setup-info --connected-domain-id <connected-domain-id>`
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> connected-domains create --domain <domain> --site-id <site_id>`
+  - `wix-safe-agent-cli --output json --apply --yes --plan-in <plan_json> connected-domains create --domain <domain> --site-id <site_id> --receipt-out <receipt_json>`
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> connected-domains delete --connected-domain-id <connected-domain-id>`
+  - `wix-safe-agent-cli --output json --apply --yes --ack-irreversible --plan-in <plan_json> connected-domains delete --connected-domain-id <connected-domain-id> --receipt-out <receipt_json>`
+- Site folders read:
+  - `wix-safe-agent-cli --output json site-folders query --filter-json <filter_json>`
+  - `wix-safe-agent-cli --output json site-folders get-folder-by-site --site-id <site_id>`
+- Site folders write preview:
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> site-folders update --folder-id <folder_id> --name <new_name>`
+- Site folders move preview:
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> site-folders move-folders --folder-ids-json <folder_ids_json> --target-folder-id <folder_id>`
+- `wix-safe-agent-cli --output json --plan-out <plan_json> site-folders move-sites --site-ids-json <site_ids_json> --target-folder-id <folder_id>`
+- Contacts query:
+  - `wix-safe-agent-cli --output json contacts query --query-json <contacts_query_json>`
+- CMS reads:
+  - `wix-safe-agent-cli --output json data-items query --data-collection-id <collection_id> --query-json <query_json> --limit <n>`
+  - `wix-safe-agent-cli --output json data-collections get --data-collection-id <collection_id>`
+- CMS write preview:
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> data-items patch --data-collection-id <collection_id> --data-item-id <item_id> --patch-json <patch_json>`
+- CMS write apply:
+  - `wix-safe-agent-cli --output json --apply --yes --plan-in <plan_json> data-items patch --data-collection-id <collection_id> --data-item-id <item_id> --patch-json <patch_json> --receipt-out <receipt_json>`
+- Relationship write preview:
+  - `wix-safe-agent-cli --output json --plan-out <plan_json> data-items insert-reference --data-collection-id <collection_id> --referring-item-field-name <field_name> --referring-item-id <referring_item_id> --referenced-item-id <referenced_item_id>`
+
+## Refusal examples
+
+- Missing required auth/app context for the target family.
+- Any `accounts` request for a Wix tenant that does not have the required signed-contract Accounts API access.
+- Any `site-actions` request without the required account API key path.
+- Any `site-folders` request without the required account API key path.
+- Any `projects create-project` request with unsupported `--type` values (`HEADLESS`, `BRANDED_APP`, `VIBE`).
+- Any write requested without the plan-first review step.
+- Any command that is not in the shipped list above.
+- Any attempt to use an unlisted generic/raw command pattern.

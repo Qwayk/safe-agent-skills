@@ -109,6 +109,7 @@ Start here if you want website publishing, content updates, or social account wo
 | --- | --- | --- | --- |
 | [**WordPress**](wordpress/README.md)<br><sub>Install slug: <code>wordpress</code></sub> | Review WordPress content and make careful content changes | WordPress site | Reads + careful changes |
 | [**Ghost**](ghost/README.md)<br><sub>Install slug: <code>ghost</code></sub> | Review Ghost content and make careful publishing changes | Ghost site | Reads + careful changes |
+| [**Wix**](wix/README.md)<br><sub>Install slug: <code>wix</code></sub> | Review Wix sites, apps, CRM, stores, bookings, events, marketing, restaurant, and business APIs, then prepare careful changes | Wix account and site | Reads + careful changes |
 | [**Pinterest**](pinterest/README.md)<br><sub>Install slug: <code>pinterest</code></sub> | Review Pinterest boards, pins, catalogs, and ads surfaces | Pinterest account | Reads + careful changes |
 | [**Reddit**](reddit/README.md)<br><sub>Install slug: <code>reddit</code></sub> | Review and plan Reddit account, post, subreddit, and API work | Reddit account | Reads + careful changes |
 | [**Bluesky**](bluesky/README.md)<br><sub>Install slug: <code>bluesky</code></sub> | Review and plan Bluesky account, feed, post, and session work | Bluesky account | Reads + careful changes |

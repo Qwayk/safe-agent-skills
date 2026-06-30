@@ -1,0 +1,23 @@
+{
+  "tool": "wix-safe-agent-cli",
+  "version": "0.1.0",
+  "applied_at_utc": "2026-06-22T00:00:00Z",
+  "env_fingerprint": "<REDACTED>",
+  "command": "wix-safe-agent-cli --output json --plan-in plan.json --apply --yes --ack-irreversible contributors remove --account-id acc_4f1d2a --site-id site_9c7b8a",
+  "selector": {
+    "kind": "wix-contributor",
+    "operation": "remove",
+    "account_id": "acc_4f1d2a",
+    "site_id": "site_9c7b8a"
+  },
+  "changed": true,
+  "verification": {
+    "ok": true,
+    "details": "Contributor query returned no record for account acc_4f1d2a under site_9c7b8a after apply."
+  },
+  "diff_applied": [
+    "removed contributor account acc_4f1d2a from site_9c7b8a"
+  ],
+  "backups": [],
+  "rollback_plan": "Unsupported for contributor removal"
+}
