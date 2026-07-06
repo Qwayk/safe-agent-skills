@@ -1,0 +1,107 @@
+{
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "families": [
+    {
+      "commands": [
+        "activate-ad-account",
+        "get-ad-account",
+        "pause-ad-account",
+        "update-ad-account"
+      ],
+      "count": 4,
+      "family": "ad-account"
+    },
+    {
+      "commands": [
+        "activate-ad-group",
+        "archive-ad-group",
+        "create-ad-group",
+        "get-ad-group",
+        "list-ad-groups",
+        "pause-ad-group",
+        "update-ad-group"
+      ],
+      "count": 7,
+      "family": "ad-groups"
+    },
+    {
+      "commands": [
+        "activate-ad",
+        "archive-ad",
+        "create-ad",
+        "get-ad",
+        "list-ads",
+        "pause-ad",
+        "update-ad"
+      ],
+      "count": 7,
+      "family": "ads"
+    },
+    {
+      "commands": [
+        "activate-campaign",
+        "archive-campaign",
+        "create-campaign",
+        "get-campaign",
+        "list-campaigns",
+        "pause-campaign",
+        "update-campaign"
+      ],
+      "count": 7,
+      "family": "campaigns"
+    },
+    {
+      "commands": [
+        "create-conversion-api-key",
+        "create-conversion-event-setting",
+        "create-conversion-source",
+        "list-conversion-event-settings",
+        "post-conversion-insights"
+      ],
+      "count": 5,
+      "family": "conversions"
+    },
+    {
+      "commands": [
+        "archive-custom-audience",
+        "create-custom-audience",
+        "create-custom-audience-upload",
+        "get-custom-audience",
+        "list-custom-audiences"
+      ],
+      "count": 5,
+      "family": "custom-audiences"
+    },
+    {
+      "commands": [
+        "upload-image"
+      ],
+      "count": 1,
+      "family": "files"
+    },
+    {
+      "commands": [
+        "get-ad-account-insights",
+        "get-ad-group-insights",
+        "get-ad-insights",
+        "get-campaign-insights"
+      ],
+      "count": 4,
+      "family": "insights"
+    },
+    {
+      "commands": [
+        "get-geo-lookup"
+      ],
+      "count": 1,
+      "family": "targeting"
+    }
+  ],
+  "family_count": 9,
+  "ok": true,
+  "operation_count": 41,
+  "run_id": null,
+  "runs_index": "<tool-root>/.state/runs/index.jsonl"
+}

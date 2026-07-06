@@ -1,0 +1,51 @@
+{
+  "command": "openai-ads-safe-agent-cli --env-file examples/example.env --output json --plan-out docs/examples/plan.example.json api campaigns create-campaign --body-json [REDACTED_BODY_JSON]",
+  "credential_fingerprint": null,
+  "env_fingerprint": "https://api.ads.openai.com/v1",
+  "generated_at_utc": "2026-07-06T08:30:35Z",
+  "operation": {
+    "command": "create-campaign",
+    "family": "campaigns",
+    "method": "POST",
+    "operation_id": "CreateCampaignMethod",
+    "path": "/campaigns",
+    "scopes": [],
+    "summary": "Create a campaign for an ad account"
+  },
+  "preconditions": [
+    "review operation, target IDs, query, and redacted body",
+    "apply must use this saved plan with --plan-in",
+    "base URL and credential fingerprint must match the reviewed plan",
+    "no-snapshot apply also needs --ack-no-snapshot"
+  ],
+  "request_body": {
+    "name": "West Coast test",
+    "status": "paused"
+  },
+  "request_body_sha256": "3fd97187a0dc07ff152b2fa9c9f3a958148464808a9949e99b67ab4fd609e129",
+  "risk_level": "high",
+  "risk_reasons": [
+    "method:POST",
+    "no-snapshot",
+    "openai-ads-write"
+  ],
+  "rollback": {
+    "notes": "No generic rollback is promised for OpenAI Ads campaign, ad group, ad, audience, file, account, or conversion changes.",
+    "supported": false
+  },
+  "snapshot": {
+    "available": false,
+    "warning": "OpenAI Ads does not guarantee a safe before-state read for this operation from the pinned public API spec. Live apply requires explicit no-snapshot approval."
+  },
+  "target": {
+    "path_params": {},
+    "query": {}
+  },
+  "target_sha256": "ab0d6f102da4ebdd1695bebf2eadaea8044d5da7d5f09b13d7047e22972ef3b3",
+  "tool": "openai-ads-safe-agent-cli",
+  "verification_plan": {
+    "notes": "After apply, inspect the OpenAI Ads response and follow with the closest read command when the API allows it.",
+    "type": "http-status-and-response"
+  },
+  "version": "0.1.0"
+}

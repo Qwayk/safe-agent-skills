@@ -1,0 +1,54 @@
+{
+  "command": "openai-ads-safe-agent-cli --env-file [REDACTED_ENV_FILE] --output json --plan-out docs/examples/outputs/conversion-plan.json measurement conversions-send --events-json [REDACTED]",
+  "credential_fingerprint": "be548e1cfda9a6f6",
+  "env_fingerprint": "https://bzr.openai.com/v1",
+  "generated_at_utc": "2026-07-06T08:31:26Z",
+  "operation": {
+    "command": "conversions-send",
+    "family": "measurement",
+    "method": "POST",
+    "source": "https://developers.openai.com/ads/conversions-api",
+    "url": "https://bzr.openai.com/v1/events?pid=px_...ret"
+  },
+  "preconditions": [
+    "review redacted event count and event types",
+    "apply must use this saved plan with --plan-in",
+    "Conversions API credential fingerprint must match",
+    "real event send requires --apply --yes --ack-irreversible --ack-no-snapshot"
+  ],
+  "request_body": {
+    "events": [
+      {
+        "id": "evt_1",
+        "source_url": "[REDACTED]",
+        "type": "order_created"
+      }
+    ],
+    "validate_only": true
+  },
+  "request_body_sha256": "9301c77d238928e9045608e5ffe292dff50647f8c01adf01ceab8128b4163190",
+  "risk_level": "high",
+  "risk_reasons": [
+    "measurement-change",
+    "conversion-event-send",
+    "no-snapshot"
+  ],
+  "rollback": {
+    "notes": "Conversion events cannot be unsent by this CLI.",
+    "supported": false
+  },
+  "snapshot": {
+    "available": false,
+    "warning": "Conversions API events cannot be safely snapshotted before send."
+  },
+  "target": {
+    "pixel_id": "px_...ret"
+  },
+  "target_sha256": "6e4e4e70853027dde523c4692e50678f3b145da61d154436d9a96d158b23dc79",
+  "tool": "openai-ads-safe-agent-cli",
+  "verification_plan": {
+    "notes": "OpenAI returns the Conversions API response. Follow Ads Manager reporting later for delivery effects.",
+    "type": "provider-response"
+  },
+  "version": "0.1.0"
+}

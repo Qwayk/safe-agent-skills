@@ -1,0 +1,12 @@
+{
+  "api_key_present": false,
+  "artifacts_dir": null,
+  "audit_log": null,
+  "audit_log_global": null,
+  "base_url": "https://api.ads.openai.com/v1",
+  "error": "Missing OPENAI_ADS_API_KEY",
+  "error_type": "ValidationError",
+  "ok": false,
+  "run_id": null,
+  "runs_index": "<tool-root>/.state/runs/index.jsonl"
+}

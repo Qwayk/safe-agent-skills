@@ -1,0 +1,32 @@
+{
+  "applied": true,
+  "generated_at_utc": "2026-07-06T00:00:00Z",
+  "ok": true,
+  "operation": {
+    "command": "create-campaign",
+    "family": "campaigns",
+    "method": "POST",
+    "path": "/campaigns"
+  },
+  "request_body_sha256": "<sha256>",
+  "response": {
+    "body": {
+      "id": "cmpn_redacted",
+      "status": "paused"
+    },
+    "status": 200,
+    "url": "https://api.ads.openai.com/v1/campaigns"
+  },
+  "risk_reasons": [
+    "openai-ads-write",
+    "no-snapshot"
+  ],
+  "target": {
+    "path_params": {},
+    "query": {}
+  },
+  "verification": {
+    "notes": "Example receipt only; live behavior was not verified.",
+    "status": "response-captured"
+  }
+}

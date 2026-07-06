@@ -1,0 +1,1915 @@
+{
+  "families": {
+    "ad-account": 4,
+    "ad-groups": 7,
+    "ads": 7,
+    "campaigns": 7,
+    "conversions": 5,
+    "custom-audiences": 5,
+    "files": 1,
+    "insights": 4,
+    "targeting": 1
+  },
+  "manual_surfaces": [
+    {
+      "capability": "JavaScript Pixel setup guidance",
+      "command": "pixel-guide",
+      "family_slug": "measurement",
+      "source_url": "https://developers.openai.com/ads/measurement-pixel",
+      "status": "implemented-local-guidance"
+    },
+    {
+      "capability": "Image tag or noscript fallback builder with redacted Pixel ID",
+      "command": "image-tag-build",
+      "family_slug": "measurement",
+      "source_url": "https://developers.openai.com/ads/image-tag",
+      "status": "implemented-local-guidance"
+    },
+    {
+      "capability": "Supported conversion event names and data types",
+      "command": "events-list",
+      "family_slug": "measurement",
+      "source_url": "https://developers.openai.com/ads/supported-events",
+      "status": "implemented-local-guidance"
+    },
+    {
+      "capability": "Server-side Conversions API event send to https://bzr.openai.com/v1/events",
+      "command": "conversions-send",
+      "family_slug": "measurement",
+      "source_url": "https://developers.openai.com/ads/conversions-api",
+      "status": "implemented-review-first-write"
+    },
+    {
+      "capability": "Product-feed workflow guidance; public API uses campaigns/ad groups/ads/insights, feed connection and catalog upload stay in Ads Manager/SFTP",
+      "command": "guide",
+      "family_slug": "product-feeds",
+      "source_url": "https://developers.openai.com/ads/product-feeds",
+      "status": "implemented-local-guidance"
+    },
+    {
+      "capability": "Campaign targeting guidance; live location lookup is covered by geo_lookup/search",
+      "command": "guide",
+      "family_slug": "targeting",
+      "source_url": "https://developers.openai.com/ads/campaign-targeting",
+      "status": "implemented-local-guidance"
+    }
+  ],
+  "openapi": "3.1.0",
+  "operation_count": 41,
+  "operations": [
+    {
+      "command": "activate-ad-account",
+      "description": "",
+      "family_slug": "ad-account",
+      "method": "POST",
+      "operation_id": "ActivateAdAccountMethod",
+      "parameters": [],
+      "path": "/ad_account/activate",
+      "request_body_required": false,
+      "risk_reasons": [
+        "account-level-change",
+        "openai-ads-write",
+        "serving-status-change"
+      ],
+      "snapshot_operation_id": "GetAdAccountMethod",
+      "source": "official-openapi",
+      "summary": "Activate the ad account.",
+      "write": true
+    },
+    {
+      "command": "get-ad-account",
+      "description": "",
+      "family_slug": "ad-account",
+      "method": "GET",
+      "operation_id": "GetAdAccountMethod",
+      "parameters": [],
+      "path": "/ad_account",
+      "request_body_required": false,
+      "risk_reasons": [],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get metadata for the ad account",
+      "write": false
+    },
+    {
+      "command": "pause-ad-account",
+      "description": "",
+      "family_slug": "ad-account",
+      "method": "POST",
+      "operation_id": "PauseAdAccountMethod",
+      "parameters": [],
+      "path": "/ad_account/pause",
+      "request_body_required": false,
+      "risk_reasons": [
+        "account-level-change",
+        "openai-ads-write",
+        "serving-status-change"
+      ],
+      "snapshot_operation_id": "GetAdAccountMethod",
+      "source": "official-openapi",
+      "summary": "Pause the ad account.",
+      "write": true
+    },
+    {
+      "command": "update-ad-account",
+      "description": "",
+      "family_slug": "ad-account",
+      "method": "POST",
+      "operation_id": "UpdateAdAccountMethod",
+      "parameters": [],
+      "path": "/ad_account/brand",
+      "request_body_required": false,
+      "risk_reasons": [
+        "account-level-change",
+        "openai-ads-write"
+      ],
+      "snapshot_operation_id": "GetAdAccountMethod",
+      "source": "official-openapi",
+      "summary": "Update ad account brand metadata.",
+      "write": true
+    },
+    {
+      "command": "activate-ad-group",
+      "description": "",
+      "family_slug": "ad-groups",
+      "method": "POST",
+      "operation_id": "ActivateAdGroupMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_group_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ad_groups/{ad_group_id}/activate",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "serving-status-change"
+      ],
+      "snapshot_operation_id": "GetAdGroupMethod",
+      "source": "official-openapi",
+      "summary": "Activate an ad group",
+      "write": true
+    },
+    {
+      "command": "archive-ad-group",
+      "description": "",
+      "family_slug": "ad-groups",
+      "method": "POST",
+      "operation_id": "ArchiveAdGroupMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_group_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ad_groups/{ad_group_id}/archive",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "serving-status-change"
+      ],
+      "snapshot_operation_id": "GetAdGroupMethod",
+      "source": "official-openapi",
+      "summary": "Archive an ad group",
+      "write": true
+    },
+    {
+      "command": "create-ad-group",
+      "description": "",
+      "family_slug": "ad-groups",
+      "method": "POST",
+      "operation_id": "CreateAdGroupMethod",
+      "parameters": [
+        {
+          "description": "Unique key for retrying this create request. If a matching prior create is visible, the existing object is returned instead of creating a duplicate. Must contain at least one non-whitespace character and be at most 255 characters.",
+          "in": "header",
+          "name": "Idempotency-Key",
+          "required": false,
+          "schema": {
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": ".*\\S.*",
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ad_groups",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Create an ad group for a campaign",
+      "write": true
+    },
+    {
+      "command": "get-ad-group",
+      "description": "",
+      "family_slug": "ad-groups",
+      "method": "GET",
+      "operation_id": "GetAdGroupMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_group_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ad_groups/{ad_group_id}",
+      "request_body_required": false,
+      "risk_reasons": [],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get an ad group",
+      "write": false
+    },
+    {
+      "command": "list-ad-groups",
+      "description": "",
+      "family_slug": "ad-groups",
+      "method": "GET",
+      "operation_id": "ListAdGroupsMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "query",
+          "name": "campaign_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "after",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "before",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "order",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/ListOrderParam"
+          }
+        }
+      ],
+      "path": "/ad_groups",
+      "request_body_required": false,
+      "risk_reasons": [],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get all ad groups for a campaign",
+      "write": false
+    },
+    {
+      "command": "pause-ad-group",
+      "description": "",
+      "family_slug": "ad-groups",
+      "method": "POST",
+      "operation_id": "PauseAdGroupMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_group_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ad_groups/{ad_group_id}/pause",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "serving-status-change"
+      ],
+      "snapshot_operation_id": "GetAdGroupMethod",
+      "source": "official-openapi",
+      "summary": "Pause an ad group",
+      "write": true
+    },
+    {
+      "command": "update-ad-group",
+      "description": "",
+      "family_slug": "ad-groups",
+      "method": "POST",
+      "operation_id": "UpdateAdGroupMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_group_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ad_groups/{ad_group_id}",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write"
+      ],
+      "snapshot_operation_id": "GetAdGroupMethod",
+      "source": "official-openapi",
+      "summary": "Update an ad group",
+      "write": true
+    },
+    {
+      "command": "activate-ad",
+      "description": "",
+      "family_slug": "ads",
+      "method": "POST",
+      "operation_id": "ActivateAdMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ads/{ad_id}/activate",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "serving-status-change"
+      ],
+      "snapshot_operation_id": "GetAdMethod",
+      "source": "official-openapi",
+      "summary": "Activate an ad",
+      "write": true
+    },
+    {
+      "command": "archive-ad",
+      "description": "",
+      "family_slug": "ads",
+      "method": "POST",
+      "operation_id": "ArchiveAdMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ads/{ad_id}/archive",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "serving-status-change"
+      ],
+      "snapshot_operation_id": "GetAdMethod",
+      "source": "official-openapi",
+      "summary": "Archive an ad",
+      "write": true
+    },
+    {
+      "command": "create-ad",
+      "description": "",
+      "family_slug": "ads",
+      "method": "POST",
+      "operation_id": "CreateAdMethod",
+      "parameters": [
+        {
+          "description": "Unique key for retrying this create request. If a matching prior create is visible, the existing object is returned instead of creating a duplicate. Must contain at least one non-whitespace character and be at most 255 characters.",
+          "in": "header",
+          "name": "Idempotency-Key",
+          "required": false,
+          "schema": {
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": ".*\\S.*",
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ads",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Create an ad for an ad group",
+      "write": true
+    },
+    {
+      "command": "get-ad",
+      "description": "",
+      "family_slug": "ads",
+      "method": "GET",
+      "operation_id": "GetAdMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ads/{ad_id}",
+      "request_body_required": false,
+      "risk_reasons": [],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get an ad",
+      "write": false
+    },
+    {
+      "command": "list-ads",
+      "description": "",
+      "family_slug": "ads",
+      "method": "GET",
+      "operation_id": "ListAdsMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "query",
+          "name": "ad_group_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "after",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "before",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "order",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/ListOrderParam"
+          }
+        }
+      ],
+      "path": "/ads",
+      "request_body_required": false,
+      "risk_reasons": [],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get all ads for an ad group",
+      "write": false
+    },
+    {
+      "command": "pause-ad",
+      "description": "",
+      "family_slug": "ads",
+      "method": "POST",
+      "operation_id": "PauseAdMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ads/{ad_id}/pause",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "serving-status-change"
+      ],
+      "snapshot_operation_id": "GetAdMethod",
+      "source": "official-openapi",
+      "summary": "Pause an ad",
+      "write": true
+    },
+    {
+      "command": "update-ad",
+      "description": "",
+      "family_slug": "ads",
+      "method": "POST",
+      "operation_id": "UpdateAdMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/ads/{ad_id}",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write"
+      ],
+      "snapshot_operation_id": "GetAdMethod",
+      "source": "official-openapi",
+      "summary": "Update an ad",
+      "write": true
+    },
+    {
+      "command": "activate-campaign",
+      "description": "",
+      "family_slug": "campaigns",
+      "method": "POST",
+      "operation_id": "ActivateCampaignMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "campaign_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/campaigns/{campaign_id}/activate",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "serving-status-change"
+      ],
+      "snapshot_operation_id": "GetCampaignMethod",
+      "source": "official-openapi",
+      "summary": "Activate a campaign",
+      "write": true
+    },
+    {
+      "command": "archive-campaign",
+      "description": "",
+      "family_slug": "campaigns",
+      "method": "POST",
+      "operation_id": "ArchiveCampaignMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "campaign_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/campaigns/{campaign_id}/archive",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "serving-status-change"
+      ],
+      "snapshot_operation_id": "GetCampaignMethod",
+      "source": "official-openapi",
+      "summary": "Archive a campaign",
+      "write": true
+    },
+    {
+      "command": "create-campaign",
+      "description": "",
+      "family_slug": "campaigns",
+      "method": "POST",
+      "operation_id": "CreateCampaignMethod",
+      "parameters": [
+        {
+          "description": "Unique key for retrying this create request. If a matching prior create is visible, the existing object is returned instead of creating a duplicate. Must contain at least one non-whitespace character and be at most 255 characters.",
+          "in": "header",
+          "name": "Idempotency-Key",
+          "required": false,
+          "schema": {
+            "maxLength": 255,
+            "minLength": 1,
+            "pattern": ".*\\S.*",
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/campaigns",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Create a campaign for an ad account",
+      "write": true
+    },
+    {
+      "command": "get-campaign",
+      "description": "",
+      "family_slug": "campaigns",
+      "method": "GET",
+      "operation_id": "GetCampaignMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "campaign_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/campaigns/{campaign_id}",
+      "request_body_required": false,
+      "risk_reasons": [],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get a campaign",
+      "write": false
+    },
+    {
+      "command": "list-campaigns",
+      "description": "",
+      "family_slug": "campaigns",
+      "method": "GET",
+      "operation_id": "ListCampaignsMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "after",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "before",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "order",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/ListOrderParam"
+          }
+        }
+      ],
+      "path": "/campaigns",
+      "request_body_required": false,
+      "risk_reasons": [],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get all campaigns for an ad account",
+      "write": false
+    },
+    {
+      "command": "pause-campaign",
+      "description": "",
+      "family_slug": "campaigns",
+      "method": "POST",
+      "operation_id": "PauseCampaignMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "campaign_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/campaigns/{campaign_id}/pause",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "serving-status-change"
+      ],
+      "snapshot_operation_id": "GetCampaignMethod",
+      "source": "official-openapi",
+      "summary": "Pause a campaign",
+      "write": true
+    },
+    {
+      "command": "update-campaign",
+      "description": "",
+      "family_slug": "campaigns",
+      "method": "POST",
+      "operation_id": "UpdateCampaignMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "campaign_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/campaigns/{campaign_id}",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write"
+      ],
+      "snapshot_operation_id": "GetCampaignMethod",
+      "source": "official-openapi",
+      "summary": "Update a campaign",
+      "write": true
+    },
+    {
+      "command": "create-conversion-api-key",
+      "description": "",
+      "family_slug": "conversions",
+      "method": "POST",
+      "operation_id": "CreateConversionApiKeyMethod",
+      "parameters": [],
+      "path": "/conversions/api_keys",
+      "request_body_required": false,
+      "risk_reasons": [
+        "measurement-change",
+        "openai-ads-write"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Create a Conversions API key for the currently authenticated ad account.",
+      "write": true
+    },
+    {
+      "command": "create-conversion-event-setting",
+      "description": "",
+      "family_slug": "conversions",
+      "method": "POST",
+      "operation_id": "CreateConversionEventSettingMethod",
+      "parameters": [],
+      "path": "/conversions/event_settings",
+      "request_body_required": false,
+      "risk_reasons": [
+        "measurement-change",
+        "openai-ads-write"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Create a conversion event setting for the currently authenticated ad account.",
+      "write": true
+    },
+    {
+      "command": "create-conversion-source",
+      "description": "",
+      "family_slug": "conversions",
+      "method": "POST",
+      "operation_id": "CreateConversionSourceMethod",
+      "parameters": [],
+      "path": "/conversions/pixels",
+      "request_body_required": false,
+      "risk_reasons": [
+        "measurement-change",
+        "openai-ads-write"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Create a conversion pixel.",
+      "write": true
+    },
+    {
+      "command": "list-conversion-event-settings",
+      "description": "",
+      "family_slug": "conversions",
+      "method": "GET",
+      "operation_id": "ListConversionEventSettingsMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "after",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "before",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "order",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/ListOrderParam"
+          }
+        }
+      ],
+      "path": "/conversions/event_settings",
+      "request_body_required": false,
+      "risk_reasons": [
+        "measurement-change"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "List conversion event settings for the currently authenticated ad account.",
+      "write": false
+    },
+    {
+      "command": "post-conversion-insights",
+      "description": "",
+      "family_slug": "conversions",
+      "method": "POST",
+      "operation_id": "PostConversionInsightsMethod",
+      "parameters": [],
+      "path": "/conversions/insights",
+      "request_body_required": false,
+      "risk_reasons": [
+        "measurement-change",
+        "openai-ads-write"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get attributed conversion totals for the authenticated ad account.",
+      "write": true
+    },
+    {
+      "command": "archive-custom-audience",
+      "description": "",
+      "family_slug": "custom-audiences",
+      "method": "POST",
+      "operation_id": "ArchiveCustomAudienceMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "custom_audience_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/custom_audiences/{custom_audience_id}/archive",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "serving-status-change",
+        "upload-or-audience-data"
+      ],
+      "snapshot_operation_id": "GetCustomAudienceMethod",
+      "source": "official-openapi",
+      "summary": "Archive a custom audience for the authenticated ad account.",
+      "write": true
+    },
+    {
+      "command": "create-custom-audience",
+      "description": "",
+      "family_slug": "custom-audiences",
+      "method": "POST",
+      "operation_id": "CreateCustomAudienceMethod",
+      "parameters": [],
+      "path": "/custom_audiences",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "upload-or-audience-data"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Create a custom audience for the authenticated ad account.",
+      "write": true
+    },
+    {
+      "command": "create-custom-audience-upload",
+      "description": "",
+      "family_slug": "custom-audiences",
+      "method": "POST",
+      "operation_id": "CreateCustomAudienceUploadMethod",
+      "parameters": [],
+      "path": "/custom_audiences/upload",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "upload-or-audience-data"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Create a custom audience from an uploaded file and start processing.",
+      "write": true
+    },
+    {
+      "command": "get-custom-audience",
+      "description": "",
+      "family_slug": "custom-audiences",
+      "method": "GET",
+      "operation_id": "GetCustomAudienceMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "custom_audience_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "path": "/custom_audiences/{custom_audience_id}",
+      "request_body_required": false,
+      "risk_reasons": [
+        "upload-or-audience-data"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get a custom audience for the authenticated ad account.",
+      "write": false
+    },
+    {
+      "command": "list-custom-audiences",
+      "description": "",
+      "family_slug": "custom-audiences",
+      "method": "GET",
+      "operation_id": "ListCustomAudiencesMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "after",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "before",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "order",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/ListOrderParam"
+          }
+        }
+      ],
+      "path": "/custom_audiences",
+      "request_body_required": false,
+      "risk_reasons": [
+        "upload-or-audience-data"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "List custom audiences for the authenticated ad account.",
+      "write": false
+    },
+    {
+      "command": "upload-image",
+      "description": "",
+      "family_slug": "files",
+      "method": "POST",
+      "operation_id": "UploadImageMethod",
+      "parameters": [],
+      "path": "/upload",
+      "request_body_required": false,
+      "risk_reasons": [
+        "openai-ads-write",
+        "upload-or-audience-data"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Upload an image URL or image file and return a file id",
+      "write": true
+    },
+    {
+      "command": "get-ad-account-insights",
+      "description": "",
+      "family_slug": "insights",
+      "method": "GET",
+      "operation_id": "GetAdAccountInsightsMethod",
+      "parameters": [
+        {
+          "description": "Time bucket size. `none` returns one bucket for the requested time range. Segmented requests support `none`, `daily`, and `monthly`.",
+          "in": "query",
+          "name": "time_granularity",
+          "required": false,
+          "schema": {
+            "description": "Time bucket size. `none` returns one bucket for the requested time range. Segmented requests support `none`, `daily`, and `monthly`.",
+            "enum": [
+              "hourly",
+              "daily",
+              "monthly",
+              "none"
+            ],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Entity grain inside the endpoint scope. Changing it from `campaign` to `ad` changes rows from campaign totals to ad totals; it does not widen the endpoint scope.",
+          "in": "query",
+          "name": "aggregation_level",
+          "required": false,
+          "schema": {
+            "description": "Entity grain inside the endpoint scope. Changing it from `campaign` to `ad` changes rows from campaign totals to ad totals; it does not widen the endpoint scope.",
+            "enum": [
+              "ad_account",
+              "campaign",
+              "ad_group",
+              "ad"
+            ],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Maximum number of rows to return. Defaults to 20.",
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "maximum": 2000,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "before",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "after",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "Report window filter. Send one JSON-encoded `unix_range` object with Unix timestamp `start` and `end` values in seconds, aligned to full-hour boundaries in the ad account timezone.",
+          "in": "query",
+          "name": "time_ranges",
+          "required": false,
+          "schema": {
+            "description": "Report window filter. Send one JSON-encoded `unix_range` object with Unix timestamp `start` and `end` values in seconds, aligned to full-hour boundaries in the ad account timezone.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Row filters encoded as JSON strings. Entity filters use `IN`; numeric metadata and grouped metric filters use `GREATER_THAN` or `LESS_THAN`. Multiple filters are ANDed together.",
+          "in": "query",
+          "name": "filters",
+          "required": false,
+          "schema": {
+            "description": "Row filters encoded as JSON strings. Entity filters use `IN`; numeric metadata and grouped metric filters use `GREATER_THAN` or `LESS_THAN`. Multiple filters are ANDed together.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Additional row keys to return. Every row includes `id`, `start_time`, and `end_time`; `fields[]` adds metrics, IDs, names, and metadata. Use canonical names such as `campaign.id`, `metadata.readable_time`, `product.feed_id`, `product.item_id`, `country.name`, and `device.type`.",
+          "in": "query",
+          "name": "fields",
+          "required": false,
+          "schema": {
+            "description": "Additional row keys to return. Every row includes `id`, `start_time`, and `end_time`; `fields[]` adds metrics, IDs, names, and metadata. Use canonical names such as `campaign.id`, `metadata.readable_time`, `product.feed_id`, `product.item_id`, `country.name`, and `device.type`.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Row ordering encoded as JSON strings with `field` and `direction`. Applied before `limit` and pagination. Directions are `asc` and `desc`.",
+          "in": "query",
+          "name": "sort",
+          "required": false,
+          "schema": {
+            "description": "Row ordering encoded as JSON strings with `field` and `direction`. Applied before `limit` and pagination. Directions are `asc` and `desc`.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Optional extra group-by dimension for enabled ad accounts. Supported values are `product`, `country`, and `device`; at most one segment is supported. `product` requires `fields[]` to include `product.feed_id` or `product.item_id`.",
+          "in": "query",
+          "name": "segments",
+          "required": false,
+          "schema": {
+            "description": "Optional extra group-by dimension for enabled ad accounts. Supported values are `product`, `country`, and `device`; at most one segment is supported. `product` requires `fields[]` to include `product.feed_id` or `product.item_id`.",
+            "items": {
+              "enum": [
+                "product",
+                "country",
+                "device"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Order of the aggregation level and requested segment. Include each exactly once.",
+          "in": "query",
+          "name": "override_segment_group_order",
+          "required": false,
+          "schema": {
+            "description": "Order of the aggregation level and requested segment. Include each exactly once.",
+            "items": {
+              "enum": [
+                "ad_account",
+                "campaign",
+                "ad_group",
+                "ad",
+                "product",
+                "country",
+                "device"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Optional result expansion. `zero_impression_products` is available only for enabled ad accounts and requires `segments[]=product` and `product` first in `override_segment_group_order[]`.",
+          "in": "query",
+          "name": "includes",
+          "required": false,
+          "schema": {
+            "description": "Optional result expansion. `zero_impression_products` is available only for enabled ad accounts and requires `segments[]=product` and `product` first in `override_segment_group_order[]`.",
+            "items": {
+              "enum": [
+                "zero_impression_items",
+                "zero_impression_products"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "path": "/ad_account/insights",
+      "request_body_required": false,
+      "risk_reasons": [],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get ad account insights aggregated by time granularity.",
+      "write": false
+    },
+    {
+      "command": "get-ad-group-insights",
+      "description": "",
+      "family_slug": "insights",
+      "method": "GET",
+      "operation_id": "GetAdGroupInsightsMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_group_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "Time bucket size. `none` returns one bucket for the requested time range. Segmented requests support `none`, `daily`, and `monthly`.",
+          "in": "query",
+          "name": "time_granularity",
+          "required": false,
+          "schema": {
+            "description": "Time bucket size. `none` returns one bucket for the requested time range. Segmented requests support `none`, `daily`, and `monthly`.",
+            "enum": [
+              "hourly",
+              "daily",
+              "monthly",
+              "none"
+            ],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Entity grain inside the endpoint scope. Changing it from `campaign` to `ad` changes rows from campaign totals to ad totals; it does not widen the endpoint scope.",
+          "in": "query",
+          "name": "aggregation_level",
+          "required": false,
+          "schema": {
+            "description": "Entity grain inside the endpoint scope. Changing it from `campaign` to `ad` changes rows from campaign totals to ad totals; it does not widen the endpoint scope.",
+            "enum": [
+              "ad_group",
+              "ad"
+            ],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Maximum number of rows to return. Defaults to 20.",
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "maximum": 2000,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "before",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "after",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "Report window filter. Send one JSON-encoded `unix_range` object with Unix timestamp `start` and `end` values in seconds, aligned to full-hour boundaries in the ad account timezone.",
+          "in": "query",
+          "name": "time_ranges",
+          "required": false,
+          "schema": {
+            "description": "Report window filter. Send one JSON-encoded `unix_range` object with Unix timestamp `start` and `end` values in seconds, aligned to full-hour boundaries in the ad account timezone.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Row filters encoded as JSON strings. Entity filters use `IN`; numeric metadata and grouped metric filters use `GREATER_THAN` or `LESS_THAN`. Multiple filters are ANDed together.",
+          "in": "query",
+          "name": "filters",
+          "required": false,
+          "schema": {
+            "description": "Row filters encoded as JSON strings. Entity filters use `IN`; numeric metadata and grouped metric filters use `GREATER_THAN` or `LESS_THAN`. Multiple filters are ANDed together.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Additional row keys to return. Every row includes `id`, `start_time`, and `end_time`; `fields[]` adds metrics, IDs, names, and metadata. Use canonical names such as `campaign.id`, `metadata.readable_time`, `product.feed_id`, `product.item_id`, `country.name`, and `device.type`.",
+          "in": "query",
+          "name": "fields",
+          "required": false,
+          "schema": {
+            "description": "Additional row keys to return. Every row includes `id`, `start_time`, and `end_time`; `fields[]` adds metrics, IDs, names, and metadata. Use canonical names such as `campaign.id`, `metadata.readable_time`, `product.feed_id`, `product.item_id`, `country.name`, and `device.type`.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Row ordering encoded as JSON strings with `field` and `direction`. Applied before `limit` and pagination. Directions are `asc` and `desc`.",
+          "in": "query",
+          "name": "sort",
+          "required": false,
+          "schema": {
+            "description": "Row ordering encoded as JSON strings with `field` and `direction`. Applied before `limit` and pagination. Directions are `asc` and `desc`.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Optional extra group-by dimension for enabled ad accounts. Supported values are `product`, `country`, and `device`; at most one segment is supported. `product` requires `fields[]` to include `product.feed_id` or `product.item_id`.",
+          "in": "query",
+          "name": "segments",
+          "required": false,
+          "schema": {
+            "description": "Optional extra group-by dimension for enabled ad accounts. Supported values are `product`, `country`, and `device`; at most one segment is supported. `product` requires `fields[]` to include `product.feed_id` or `product.item_id`.",
+            "items": {
+              "enum": [
+                "product",
+                "country",
+                "device"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Order of the aggregation level and requested segment. Include each exactly once.",
+          "in": "query",
+          "name": "override_segment_group_order",
+          "required": false,
+          "schema": {
+            "description": "Order of the aggregation level and requested segment. Include each exactly once.",
+            "items": {
+              "enum": [
+                "ad_account",
+                "campaign",
+                "ad_group",
+                "ad",
+                "product",
+                "country",
+                "device"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Optional result expansion. `zero_impression_products` is available only for enabled ad accounts and requires `segments[]=product` and `product` first in `override_segment_group_order[]`.",
+          "in": "query",
+          "name": "includes",
+          "required": false,
+          "schema": {
+            "description": "Optional result expansion. `zero_impression_products` is available only for enabled ad accounts and requires `segments[]=product` and `product` first in `override_segment_group_order[]`.",
+            "items": {
+              "enum": [
+                "zero_impression_items",
+                "zero_impression_products"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "path": "/ad_groups/{ad_group_id}/insights",
+      "request_body_required": false,
+      "risk_reasons": [],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get ad group insights aggregated by time granularity.",
+      "write": false
+    },
+    {
+      "command": "get-ad-insights",
+      "description": "",
+      "family_slug": "insights",
+      "method": "GET",
+      "operation_id": "GetAdInsightsMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "ad_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "Time bucket size. `none` returns one bucket for the requested time range. Segmented requests support `none`, `daily`, and `monthly`.",
+          "in": "query",
+          "name": "time_granularity",
+          "required": false,
+          "schema": {
+            "description": "Time bucket size. `none` returns one bucket for the requested time range. Segmented requests support `none`, `daily`, and `monthly`.",
+            "enum": [
+              "hourly",
+              "daily",
+              "monthly",
+              "none"
+            ],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Entity grain inside the endpoint scope. Changing it from `campaign` to `ad` changes rows from campaign totals to ad totals; it does not widen the endpoint scope.",
+          "in": "query",
+          "name": "aggregation_level",
+          "required": false,
+          "schema": {
+            "description": "Entity grain inside the endpoint scope. Changing it from `campaign` to `ad` changes rows from campaign totals to ad totals; it does not widen the endpoint scope.",
+            "enum": [
+              "ad"
+            ],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Maximum number of rows to return. Defaults to 20.",
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "maximum": 2000,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "before",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "after",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "Report window filter. Send one JSON-encoded `unix_range` object with Unix timestamp `start` and `end` values in seconds, aligned to full-hour boundaries in the ad account timezone.",
+          "in": "query",
+          "name": "time_ranges",
+          "required": false,
+          "schema": {
+            "description": "Report window filter. Send one JSON-encoded `unix_range` object with Unix timestamp `start` and `end` values in seconds, aligned to full-hour boundaries in the ad account timezone.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Row filters encoded as JSON strings. Entity filters use `IN`; numeric metadata and grouped metric filters use `GREATER_THAN` or `LESS_THAN`. Multiple filters are ANDed together.",
+          "in": "query",
+          "name": "filters",
+          "required": false,
+          "schema": {
+            "description": "Row filters encoded as JSON strings. Entity filters use `IN`; numeric metadata and grouped metric filters use `GREATER_THAN` or `LESS_THAN`. Multiple filters are ANDed together.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Additional row keys to return. Every row includes `id`, `start_time`, and `end_time`; `fields[]` adds metrics, IDs, names, and metadata. Use canonical names such as `campaign.id`, `metadata.readable_time`, `product.feed_id`, `product.item_id`, `country.name`, and `device.type`.",
+          "in": "query",
+          "name": "fields",
+          "required": false,
+          "schema": {
+            "description": "Additional row keys to return. Every row includes `id`, `start_time`, and `end_time`; `fields[]` adds metrics, IDs, names, and metadata. Use canonical names such as `campaign.id`, `metadata.readable_time`, `product.feed_id`, `product.item_id`, `country.name`, and `device.type`.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Row ordering encoded as JSON strings with `field` and `direction`. Applied before `limit` and pagination. Directions are `asc` and `desc`.",
+          "in": "query",
+          "name": "sort",
+          "required": false,
+          "schema": {
+            "description": "Row ordering encoded as JSON strings with `field` and `direction`. Applied before `limit` and pagination. Directions are `asc` and `desc`.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Optional extra group-by dimension for enabled ad accounts. Supported values are `product`, `country`, and `device`; at most one segment is supported. `product` requires `fields[]` to include `product.feed_id` or `product.item_id`.",
+          "in": "query",
+          "name": "segments",
+          "required": false,
+          "schema": {
+            "description": "Optional extra group-by dimension for enabled ad accounts. Supported values are `product`, `country`, and `device`; at most one segment is supported. `product` requires `fields[]` to include `product.feed_id` or `product.item_id`.",
+            "items": {
+              "enum": [
+                "product",
+                "country",
+                "device"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Order of the aggregation level and requested segment. Include each exactly once.",
+          "in": "query",
+          "name": "override_segment_group_order",
+          "required": false,
+          "schema": {
+            "description": "Order of the aggregation level and requested segment. Include each exactly once.",
+            "items": {
+              "enum": [
+                "ad_account",
+                "campaign",
+                "ad_group",
+                "ad",
+                "product",
+                "country",
+                "device"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Optional result expansion. `zero_impression_products` is available only for enabled ad accounts and requires `segments[]=product` and `product` first in `override_segment_group_order[]`.",
+          "in": "query",
+          "name": "includes",
+          "required": false,
+          "schema": {
+            "description": "Optional result expansion. `zero_impression_products` is available only for enabled ad accounts and requires `segments[]=product` and `product` first in `override_segment_group_order[]`.",
+            "items": {
+              "enum": [
+                "zero_impression_items",
+                "zero_impression_products"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "path": "/ads/{ad_id}/insights",
+      "request_body_required": false,
+      "risk_reasons": [],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get ad insights aggregated by time granularity.",
+      "write": false
+    },
+    {
+      "command": "get-campaign-insights",
+      "description": "",
+      "family_slug": "insights",
+      "method": "GET",
+      "operation_id": "GetCampaignInsightsMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "path",
+          "name": "campaign_id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "Time bucket size. `none` returns one bucket for the requested time range. Segmented requests support `none`, `daily`, and `monthly`.",
+          "in": "query",
+          "name": "time_granularity",
+          "required": false,
+          "schema": {
+            "description": "Time bucket size. `none` returns one bucket for the requested time range. Segmented requests support `none`, `daily`, and `monthly`.",
+            "enum": [
+              "hourly",
+              "daily",
+              "monthly",
+              "none"
+            ],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Entity grain inside the endpoint scope. Changing it from `campaign` to `ad` changes rows from campaign totals to ad totals; it does not widen the endpoint scope.",
+          "in": "query",
+          "name": "aggregation_level",
+          "required": false,
+          "schema": {
+            "description": "Entity grain inside the endpoint scope. Changing it from `campaign` to `ad` changes rows from campaign totals to ad totals; it does not widen the endpoint scope.",
+            "enum": [
+              "campaign",
+              "ad_group",
+              "ad"
+            ],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Maximum number of rows to return. Defaults to 20.",
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "maximum": 2000,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "before",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "after",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "description": "Report window filter. Send one JSON-encoded `unix_range` object with Unix timestamp `start` and `end` values in seconds, aligned to full-hour boundaries in the ad account timezone.",
+          "in": "query",
+          "name": "time_ranges",
+          "required": false,
+          "schema": {
+            "description": "Report window filter. Send one JSON-encoded `unix_range` object with Unix timestamp `start` and `end` values in seconds, aligned to full-hour boundaries in the ad account timezone.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Row filters encoded as JSON strings. Entity filters use `IN`; numeric metadata and grouped metric filters use `GREATER_THAN` or `LESS_THAN`. Multiple filters are ANDed together.",
+          "in": "query",
+          "name": "filters",
+          "required": false,
+          "schema": {
+            "description": "Row filters encoded as JSON strings. Entity filters use `IN`; numeric metadata and grouped metric filters use `GREATER_THAN` or `LESS_THAN`. Multiple filters are ANDed together.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Additional row keys to return. Every row includes `id`, `start_time`, and `end_time`; `fields[]` adds metrics, IDs, names, and metadata. Use canonical names such as `campaign.id`, `metadata.readable_time`, `product.feed_id`, `product.item_id`, `country.name`, and `device.type`.",
+          "in": "query",
+          "name": "fields",
+          "required": false,
+          "schema": {
+            "description": "Additional row keys to return. Every row includes `id`, `start_time`, and `end_time`; `fields[]` adds metrics, IDs, names, and metadata. Use canonical names such as `campaign.id`, `metadata.readable_time`, `product.feed_id`, `product.item_id`, `country.name`, and `device.type`.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Row ordering encoded as JSON strings with `field` and `direction`. Applied before `limit` and pagination. Directions are `asc` and `desc`.",
+          "in": "query",
+          "name": "sort",
+          "required": false,
+          "schema": {
+            "description": "Row ordering encoded as JSON strings with `field` and `direction`. Applied before `limit` and pagination. Directions are `asc` and `desc`.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Optional extra group-by dimension for enabled ad accounts. Supported values are `product`, `country`, and `device`; at most one segment is supported. `product` requires `fields[]` to include `product.feed_id` or `product.item_id`.",
+          "in": "query",
+          "name": "segments",
+          "required": false,
+          "schema": {
+            "description": "Optional extra group-by dimension for enabled ad accounts. Supported values are `product`, `country`, and `device`; at most one segment is supported. `product` requires `fields[]` to include `product.feed_id` or `product.item_id`.",
+            "items": {
+              "enum": [
+                "product",
+                "country",
+                "device"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Order of the aggregation level and requested segment. Include each exactly once.",
+          "in": "query",
+          "name": "override_segment_group_order",
+          "required": false,
+          "schema": {
+            "description": "Order of the aggregation level and requested segment. Include each exactly once.",
+            "items": {
+              "enum": [
+                "ad_account",
+                "campaign",
+                "ad_group",
+                "ad",
+                "product",
+                "country",
+                "device"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Optional result expansion. `zero_impression_products` is available only for enabled ad accounts and requires `segments[]=product` and `product` first in `override_segment_group_order[]`.",
+          "in": "query",
+          "name": "includes",
+          "required": false,
+          "schema": {
+            "description": "Optional result expansion. `zero_impression_products` is available only for enabled ad accounts and requires `segments[]=product` and `product` first in `override_segment_group_order[]`.",
+            "items": {
+              "enum": [
+                "zero_impression_items",
+                "zero_impression_products"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "path": "/campaigns/{campaign_id}/insights",
+      "request_body_required": false,
+      "risk_reasons": [],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Get campaign insights aggregated by time granularity.",
+      "write": false
+    },
+    {
+      "command": "get-geo-lookup",
+      "description": "",
+      "family_slug": "targeting",
+      "method": "GET",
+      "operation_id": "GetGeoLookupMethod",
+      "parameters": [
+        {
+          "description": "",
+          "in": "query",
+          "name": "q",
+          "required": true,
+          "schema": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        {
+          "description": "",
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          }
+        }
+      ],
+      "path": "/geo_lookup/search",
+      "request_body_required": false,
+      "risk_reasons": [
+        "targeting-read"
+      ],
+      "snapshot_operation_id": null,
+      "source": "official-openapi",
+      "summary": "Search DMA and standard region codes for advertiser geo targeting.",
+      "write": false
+    }
+  ],
+  "path_count": 33,
+  "server_url": "https://api.ads.openai.com/v1",
+  "source_file": "docs/specs/openai-ads-openapi.json",
+  "source_url": "https://developers.openai.com/ads/openapi.json",
+  "spec_sha256": "a45e81ff54294cc570543d48ce71330cae2304e9cb9eda85d894e177df8b9d3b",
+  "title": "OpenAI API",
+  "version": "2.3.0"
+}
