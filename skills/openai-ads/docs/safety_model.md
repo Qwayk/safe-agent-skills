@@ -1,44 +1,55 @@
 # Safety Model
 
-OpenAI Ads changes can affect spend, delivery, creative review, audience processing, account state, and conversion optimization. This CLI keeps the agent on a read-first, plan-first path.
+ChatGPT Ads changes can affect money, delivery, audiences, creative review, account state, and conversion reporting. The tool is built so the agent looks first and changes later.
 
-## Reads
+## What the agent can do by itself
 
-Read commands may run directly. They still redact API keys, auth headers, pixel IDs where private, raw audience rows, customer identifiers, emails, external IDs, and secret-looking URL parameters.
+The agent can run reads. It can check the account, list campaigns, inspect ads and ad groups, look up targeting, pull insights, list supported conversion events, and explain product-feed or tracking setup.
 
-## Writes
+Those reads still hide secrets and private customer or measurement values from normal output.
 
-Write commands do not apply by default. They create a plan with:
+## What waits for your approval
 
-- operation and command
-- target path and query values
-- redacted request body
-- risk reasons
-- before-state status
-- verification notes
-- rollback limits
+Anything that changes the account starts as a plan. This includes creating or updating campaigns, ads, ad groups, custom audiences, conversion settings, uploads, status changes, and server-side conversion event sends.
 
-Live apply requires:
+The plan shows:
 
-```bash
-openai-ads-safe-agent-cli --apply --yes --plan-in plan.json ...
-```
+- what the agent wants to do
+- which account object or measurement event is involved
+- the private values hidden from normal output
+- why the change is risky
+- whether the tool could check current state first
+- what the tool can check after the change
+- whether rollback is supported
 
-High-risk changes also require `--ack-irreversible`. No-snapshot changes also require `--ack-no-snapshot`. The CLI checks both the operation name and the request body, so a campaign body with a budget, active serving status, or targeting still gets the high-risk gate.
+The agent should show you the plan before continuing.
 
-## High-risk families
+## Changes that need extra care
 
-- Activating, pausing, or archiving ad accounts, campaigns, ad groups, or ads.
-- Budget, bid, targeting, and serving changes.
-- Custom audience creation, upload, and archive.
-- File upload.
-- Conversion API keys, event settings, pixels, and server-side conversion events.
-- Account brand and account serving state changes.
+Some changes need stronger approval because they can affect spend, delivery, data, or reporting:
 
-## Conversion events
+- activating, pausing, or archiving ad accounts, campaigns, ad groups, or ads
+- budget, bid, targeting, and serving changes
+- custom audience creation, upload, and archive
+- file upload
+- conversion API keys, event settings, pixels, and server-side conversion events
+- account brand and account serving-state changes
 
-Server-side conversion events default to validation behavior when planned. A real event send requires a reviewed plan and explicit approval because it can affect reporting and optimization. The CLI redacts event source URLs, identifiers, customer fields, and conversion API keys from normal output.
+The tool checks both the command and the request body. For example, if a campaign body includes a budget, active status, or targeting, the change is treated as high risk even if the command name sounds simple.
+
+## Server-side conversion events
+
+Conversion events can affect reporting and optimization, so the tool prepares them first. A real send needs your approval, the saved plan, and acknowledgement that the event cannot be unsent by this tool.
+
+Event source URLs, identifiers, customer fields, and conversion API keys are hidden from normal output.
 
 ## No rollback promise
 
-The CLI does not promise rollback for Ads changes. When it cannot save before-state, it says so in the plan and requires no-snapshot approval before apply.
+The tool does not promise rollback for Ads changes. When it cannot save a useful before-state, the plan says so and the agent must ask for no-snapshot approval before continuing.
+
+That means your safest workflow is:
+
+1. Ask the agent to read first.
+2. Review what it found.
+3. Ask for a plan.
+4. Approve only after the target, risk, and limit are clear.

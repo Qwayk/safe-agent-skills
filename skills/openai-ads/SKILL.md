@@ -1,42 +1,27 @@
 ---
 name: openai-ads
-description: Use when the user asks an agent to inspect, plan, report on, or safely change ChatGPT Ads / OpenAI Ads campaigns, ad groups, ads, insights, targeting, product-feed setup, custom audiences, files, conversions, pixels, image tags, or server-side conversion events.
+description: Use when the user asks an agent to check, report on, prepare, or carefully change ChatGPT Ads / OpenAI Ads campaigns, ad groups, ads, insights, targeting, product-feed setup, custom audiences, files, conversions, pixels, image tags, or server-side conversion events.
 ---
 
 # OpenAI Ads
 
-Use this skill when the user asks about ChatGPT Ads or OpenAI Ads work that should go through the official OpenAI Ads API.
+Use this skill for ChatGPT Ads / OpenAI Ads account work.
 
-This skill is safer than generic API access because the agent must stay inside the `openai-ads-safe-agent-cli` command surface. It can read account and campaign data directly, but live changes require a reviewed plan first. Spend, serving, upload, audience, account, auth, and measurement changes need extra approval. Secrets, pixel IDs where private, audience rows, customer IDs, raw emails, external IDs, and conversion API keys must not be printed.
+A user may ask for things like campaign stats, ads that are not running, a new paused campaign, audience review, tracking checks, product-feed guidance, or a server-side conversion event plan.
 
-## Start
-
-First check the available commands:
+Start by reading. Good first actions are:
 
 ```bash
 openai-ads-safe-agent-cli --output json api list
-```
-
-If credentials may not be set up, run:
-
-```bash
 openai-ads-safe-agent-cli onboarding
 openai-ads-safe-agent-cli auth check
-```
-
-## Use The CLI
-
-Use explicit commands only. Do not improvise raw HTTP calls.
-
-Safe read examples:
-
-```bash
 openai-ads-safe-agent-cli api campaigns list-campaigns --query limit=10
-openai-ads-safe-agent-cli api targeting get-geo-lookup --query q="San Francisco" --query limit=5
 openai-ads-safe-agent-cli measurement events-list
 ```
 
-Plan-first write example:
+If the user asks for a live change, show the planned change first. Do not continue until the user approves it.
+
+Plan example:
 
 ```bash
 openai-ads-safe-agent-cli --plan-out plan.json api campaigns create-campaign --body-json '{"name":"West Coast test","status":"paused"}'
@@ -48,8 +33,8 @@ Apply only after the user reviews the saved plan:
 openai-ads-safe-agent-cli --apply --yes --plan-in plan.json --ack-no-snapshot --ack-irreversible api campaigns create-campaign --body-json '{"name":"West Coast test","status":"paused"}'
 ```
 
-## Stop And Ask First
+Ask before creating, updating, pausing, activating, archiving, uploading, changing budgets or bids, changing targeting, changing audiences, changing account settings, or sending real conversion events.
 
-Ask the user before live apply, before sending real conversion events, before activating or pausing serving, before changing budget or bids, before uploading audience data, and before any account-level change.
+Do not print API keys, conversion API keys, private Pixel IDs, audience rows, customer IDs, raw emails, external IDs, or tracking URLs with private parameters.
 
-Do not use this skill for the broad OpenAI platform API, Ads Manager browser automation, or product-feed catalog upload over SFTP.
+Do not use this skill for normal OpenAI Platform API work, Ads Manager browser automation, or product-feed catalog upload over SFTP.

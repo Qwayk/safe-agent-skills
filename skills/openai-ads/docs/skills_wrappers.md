@@ -1,7 +1,11 @@
 # Skill Wrapper Notes
 
-The source skill wrapper lives at `skills/openai-ads/SKILL.md`.
+The skill wrapper is the short instruction file an agent reads before it works with ChatGPT Ads.
 
-The wrapper tells the agent to use this CLI when the user asks about ChatGPT Ads or OpenAI Ads campaigns, ad groups, ads, insights, targeting, product-feed setup, custom audiences, files, conversion settings, pixels, image tags, or server-side conversion events.
+It should point the agent to this tool when the user asks about OpenAI Ads campaigns, ad groups, ads, insights, targeting, product-feed setup, custom audiences, files, conversion settings, pixels, image tags, or server-side conversion events.
 
-It also tells the agent not to improvise raw API calls, not to use the broad OpenAI API skill for Ads Manager work, and not to apply live changes without a reviewed plan and the required approvals.
+It should keep the agent out of the wrong place too. This is not the broad OpenAI Platform tool, not Ads Manager browser automation, and not the place to upload product catalogs over SFTP.
+
+The safest first action is an account check or a small read, such as listing campaigns or checking targeting options. If the user asks for a live change, the agent should show the plan first and ask before continuing.
+
+The public wrapper is published as `SKILL.md` in the `openai-ads` skill folder.

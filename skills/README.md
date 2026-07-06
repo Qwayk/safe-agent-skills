@@ -44,7 +44,7 @@ Start here if you want campaign work, ad-account review, or local business surfa
 | Product | What it helps with | What you connect | Mode |
 | --- | --- | --- | --- |
 | [**Google Ads**](google-ads/README.md)<br><sub>Install slug: <code>google-ads</code></sub> | Review Google Ads accounts and make careful campaign changes | Google Ads account | Reads + careful changes |
-| [**OpenAI Ads**](openai-ads/README.md)<br><sub>Install slug: <code>openai-ads</code></sub> | Review ChatGPT Ads campaigns, ad groups, ads, insights, audiences, conversions, targeting, files, and measurement setup | OpenAI Ads Manager account | Reads + careful changes |
+| [**OpenAI Ads**](openai-ads/README.md)<br><sub>Install slug: <code>openai-ads</code></sub> | Check ChatGPT Ads results, find setup problems, prepare campaign and ad changes, review audiences, and check conversion tracking | OpenAI Ads Manager account | Reads + careful changes |
 | [**Meta Ads**](meta-ads/README.md)<br><sub>Install slug: <code>meta-ads</code></sub> | Review Meta Ads accounts, campaigns, ads, creatives, and insights | Meta Ads account | Read-only |
 | [**Microsoft Advertising**](microsoft-ads/README.md)<br><sub>Install slug: <code>microsoft-ads</code></sub> | Review and plan Microsoft Ads account work | Microsoft Advertising account | Reads + careful changes |
 | [**LinkedIn Ads**](linkedin-ads/README.md)<br><sub>Install slug: <code>linkedin-ads</code></sub> | Review and plan LinkedIn Ads account work | LinkedIn Ads account | Reads + careful changes |
