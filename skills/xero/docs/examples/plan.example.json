@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "plan_id": "0f5d04e8b6a945e387a51baf",
+  "created_at": 1784448000,
+  "catalog_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+  "auth_profile": "pkce",
+  "command": "accounting.create-invoices",
+  "method": "PUT",
+  "target": "https://api.xero.com/api.xro/2.0/Invoices",
+  "tenant": {
+    "connection_id": "00000000-0000-4000-8000-000000000001",
+    "tenant_id": "00000000-0000-4000-8000-000000000002",
+    "tenant_name": "Example Organisation",
+    "tenant_type": "ORGANISATION",
+    "region": "AU"
+  },
+  "input": {
+    "body": {
+      "Invoices": [
+        {
+          "Type": "ACCREC",
+          "Contact": {
+            "ContactID": "00000000-0000-4000-8000-000000000003"
+          },
+          "Status": "DRAFT",
+          "LineItems": [
+            {
+              "Description": "Example service",
+              "Quantity": 1,
+              "UnitAmount": 100,
+              "AccountCode": "200"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "input_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+  "plan_nonce": "00000000-0000-4000-8000-000000000005",
+  "file_metadata": null,
+  "minimum_scopes": [
+    "accounting.invoices"
+  ],
+  "risk_flags": [
+    "financial",
+    "write"
+  ],
+  "extra_approval": true,
+  "snapshot": null,
+  "no_snapshot": true,
+  "no_snapshot_warning": "Xero provides no reliable before-state for this exact action. Apply can proceed only with explicit no-snapshot acknowledgement.",
+  "idempotency_key": "00000000-0000-4000-8000-000000000004",
+  "verification_strategy": "provider_response_only",
+  "verification_command": null,
+  "integrity": "3333333333333333333333333333333333333333333333333333333333333333"
+}

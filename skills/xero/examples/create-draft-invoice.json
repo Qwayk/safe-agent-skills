@@ -1,0 +1,21 @@
+{
+  "body": {
+    "Invoices": [
+      {
+        "Type": "ACCREC",
+        "Contact": {
+          "ContactID": "00000000-0000-4000-8000-000000000003"
+        },
+        "Status": "DRAFT",
+        "LineItems": [
+          {
+            "Description": "Example service",
+            "Quantity": 1,
+            "UnitAmount": 100,
+            "AccountCode": "200"
+          }
+        ]
+      }
+    ]
+  }
+}

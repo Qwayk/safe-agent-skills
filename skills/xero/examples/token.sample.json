@@ -1,0 +1,10 @@
+{
+  "exists": true,
+  "path": "/private/path/.state/oauth/token.json",
+  "expires_at": 1784449800,
+  "has_refresh_token": true,
+  "scopes": [
+    "accounting.invoices.read",
+    "offline_access"
+  ]
+}

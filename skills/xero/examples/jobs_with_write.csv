@@ -1,0 +1,2 @@
+# Compatibility note: this CLI has no generic write-job runner.
+# Every provider write must create and apply its own reviewed saved plan.

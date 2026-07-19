@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "profile": "pkce",
+  "token": {
+    "exists": false,
+    "path": "/private/path/.state/oauth/token.json",
+    "has_refresh_token": null,
+    "expires_at": null,
+    "scopes": []
+  }
+}

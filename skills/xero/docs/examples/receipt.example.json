@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "plan_id": "0f5d04e8b6a945e387a51baf",
+  "plan_integrity": "3333333333333333333333333333333333333333333333333333333333333333",
+  "command": "accounting.create-invoices",
+  "tenant": {
+    "connection_id": "00000000-0000-4000-8000-000000000001",
+    "tenant_id": "00000000-0000-4000-8000-000000000002",
+    "tenant_name": "Example Organisation",
+    "tenant_type": "ORGANISATION",
+    "region": "AU"
+  },
+  "target": "https://api.xero.com/api.xro/2.0/Invoices",
+  "applied_at": 1784448060,
+  "provider_status": 200,
+  "provider_outcome": "accepted_not_stronger_state",
+  "provider_response": {
+    "Invoices": [
+      {
+        "InvoiceID": "***REDACTED***",
+        "Status": "***REDACTED***"
+      }
+    ]
+  },
+  "validation_errors": [],
+  "rate_limit_headers": {},
+  "verification": null,
+  "status_limit": "Accepted does not mean posted, paid, sent, completed, reconciled, or compliant."
+}

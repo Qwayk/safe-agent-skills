@@ -1,0 +1,10 @@
+{
+  "query": {
+    "Statuses": [
+      "AUTHORISED"
+    ],
+    "page": 1,
+    "pageSize": 20,
+    "summaryOnly": true
+  }
+}

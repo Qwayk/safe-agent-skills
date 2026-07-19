@@ -1,0 +1,2 @@
+# Compatibility note: this CLI has no generic jobs runner.
+# Use one fixed command and one reviewed JSON input file per operation.
