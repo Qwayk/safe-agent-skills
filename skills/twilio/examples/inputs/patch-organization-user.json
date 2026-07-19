@@ -1,0 +1,22 @@
+{
+  "path": {
+    "OrganizationSid": "OR00000000000000000000000000000000",
+    "UserSid": "US00000000000000000000000000000000"
+  },
+  "headers": {
+    "If-Match": "W/13"
+  },
+  "content_type": "application/scim+json",
+  "body": {
+    "schemas": [
+      "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+    ],
+    "Operations": [
+      {
+        "op": "replace",
+        "path": "active",
+        "value": false
+      }
+    ]
+  }
+}

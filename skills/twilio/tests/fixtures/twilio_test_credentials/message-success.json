@@ -1,0 +1,13 @@
+{
+  "command": "api-v2010.create-message",
+  "credential_mode": "twilio_test_credentials",
+  "input": {
+    "body": {
+      "Body": "Twilio test-credential fixture",
+      "From": "+15005550006",
+      "To": "+15005550006"
+    }
+  },
+  "live_executed": false,
+  "provider_effect": "No charge or real SMS when used with Twilio test credentials"
+}

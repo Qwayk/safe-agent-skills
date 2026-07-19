@@ -1,0 +1,11 @@
+{
+  "command": "api-v2010.create-incoming-phone-number",
+  "credential_mode": "twilio_test_credentials",
+  "input": {
+    "body": {
+      "PhoneNumber": "+15005550006"
+    }
+  },
+  "live_executed": false,
+  "provider_effect": "No charge or live number purchase when used with Twilio test credentials"
+}

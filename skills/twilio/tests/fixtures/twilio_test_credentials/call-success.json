@@ -1,0 +1,13 @@
+{
+  "command": "api-v2010.create-call",
+  "credential_mode": "twilio_test_credentials",
+  "input": {
+    "body": {
+      "From": "+15005550006",
+      "To": "+15005550006",
+      "Url": "https://demo.twilio.com/docs/voice.xml"
+    }
+  },
+  "live_executed": false,
+  "provider_effect": "No charge or real call when used with Twilio test credentials"
+}

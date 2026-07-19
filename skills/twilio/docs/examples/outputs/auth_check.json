@@ -1,0 +1,13 @@
+{
+  "account_fingerprint": "09ad2314fecb4f263c4bac1079dd498357f86e8af05f223d17d60ed6becdc809",
+  "auth": {
+    "fallback": false,
+    "method": "api_key_basic"
+  },
+  "configured": true,
+  "edge": "automatic",
+  "live_request": false,
+  "ok": true,
+  "region": "us1",
+  "warnings": []
+}

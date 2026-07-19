@@ -1,0 +1,12 @@
+{
+  "body": {
+    "port_in_target_url": "https://hooks.example.com/twilio/port-in",
+    "notifications_of": [
+      "PortInWaitingForSignature",
+      "PortInInProgress",
+      "PortInCompleted",
+      "PortInActionRequired",
+      "PortInCanceled"
+    ]
+  }
+}

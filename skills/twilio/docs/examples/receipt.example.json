@@ -1,0 +1,33 @@
+{
+  "account_fingerprint": "5396ef72104086312cb8c859d714a77d06fce3857e8275c504a41e49226b40f4",
+  "attempt": {
+    "note": "Twilio returned a successful HTTP response.",
+    "provider_response_received": true,
+    "status": "succeeded"
+  },
+  "command": "api-v2010.create-message",
+  "http_status": 201,
+  "plan_id": "0b7d581235cd37438715ca455d719d6cf14ffd2b367c499b14f099ebe5ffb4c6",
+  "provider_status": {
+    "accepted": true,
+    "completed": false,
+    "delivered": false,
+    "note": "Twilio did not report delivery; accepted, queued, sent, and completed are kept distinct.",
+    "provider_status": "queued"
+  },
+  "response": {
+    "body": "<REDACTED>",
+    "from": "<REDACTED>",
+    "sid": "<REDACTED>",
+    "status": "queued",
+    "to": "<REDACTED>"
+  },
+  "schema_version": 1,
+  "snapshot": null,
+  "tool": "qwayk-twilio-safe-agent-cli",
+  "verification": {
+    "performed": false,
+    "result": "provider_response_only",
+    "strategy": "fetch_created_resource_or_provider_status"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "command": "lookups-v2.fetch-phone-number",
+  "credential_mode": "twilio_test_credentials",
+  "input": {
+    "path": {
+      "PhoneNumber": "+12345678924"
+    },
+    "query": {
+      "Fields": "sim_swap"
+    }
+  },
+  "live_executed": false,
+  "provider_effect": "Returns Twilio's documented SIM-swap magic-number response without a real lookup"
+}
