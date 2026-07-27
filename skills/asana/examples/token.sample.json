@@ -1,0 +1,4 @@
+{
+  "oauth_lifecycle_supported": false,
+  "note": "Use an already-issued bearer token through ASANA_ACCESS_TOKEN. Never store a real token in this file."
+}

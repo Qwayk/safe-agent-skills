@@ -1,0 +1,48 @@
+{
+  "schema_version": 2,
+  "tool": "qwayk-asana-safe-agent-cli",
+  "generated_at_utc": "2026-07-27T00:00:00Z",
+  "plan_id": "00000000000000000000",
+  "operation_id": "updateTask",
+  "command": "update-task",
+  "method": "PUT",
+  "parameter_inputs": {
+    "task_gid": "1200000000000002"
+  },
+  "target": {
+    "path": "/tasks/1200000000000002",
+    "query": {}
+  },
+  "request_body": {
+    "data": {
+      "name": "Review launch checklist",
+      "due_on": "2026-08-03"
+    }
+  },
+  "files": [],
+  "risk_class": "write",
+  "risk_reasons": [],
+  "snapshot": {
+    "available": true,
+    "operation_id": "getTask",
+    "captured_at_utc": "2026-07-27T00:00:00Z",
+    "sha256": "d79caec330d2f8ebd87d0e848519e4c3e5f9a45ce9a0768b18046d7c303add64",
+    "data": {
+      "data": {
+        "gid": "1200000000000002",
+        "name": "Draft launch checklist",
+        "due_on": null
+      }
+    }
+  },
+  "verification_operation_id": "getTask",
+  "rollback": {
+    "supported": false,
+    "note": "A before-state is review evidence, not a promised restore path."
+  },
+  "integrity": {
+    "algorithm": "HMAC-SHA256",
+    "key_id": "0000000000000000",
+    "signature": "0000000000000000000000000000000000000000000000000000000000000000"
+  }
+}

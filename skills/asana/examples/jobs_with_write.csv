@@ -1,0 +1,4 @@
+fixed_command,mode
+create-task,plan-only
+update-task,plan-only
+delete-task,plan-only-stronger-approval

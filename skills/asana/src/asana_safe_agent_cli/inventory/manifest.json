@@ -1,0 +1,24 @@
+{
+  "api_version": "1.0",
+  "command_count": 248,
+  "family_count": 49,
+  "method_counts": {
+    "DELETE": 23,
+    "GET": 119,
+    "POST": 81,
+    "PUT": 26
+  },
+  "openapi": "3.0.0",
+  "operation_count": 249,
+  "path_count": 175,
+  "pinned_commit": "56796a67a3c093eedf55fd9682357957a2ebfd85",
+  "server": "https://app.asana.com/api/1.0",
+  "sha256": "cb3b90f4e0af56035eab0c648974f625b942a28a7144aa6c2326e38ca0bb3d56",
+  "status_counts": {
+    "implemented_access_gated_live_unverified": 31,
+    "implemented_deprecated_live_unverified": 4,
+    "implemented_developer_preview_live_unverified": 4,
+    "implemented_live_unverified": 209,
+    "intentionally_excluded": 1
+  }
+}

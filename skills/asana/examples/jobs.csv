@@ -1,0 +1,4 @@
+fixed_command,purpose
+get-workspaces,List visible workspaces
+get-tasks-for-project,Review tasks in one project
+get-goals,Review goals in one workspace or team

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tool": "qwayk-asana-safe-agent-cli",
+  "applied_at_utc": "2026-07-27T00:01:00Z",
+  "plan_id": "example-plan-not-applicable",
+  "operation_id": "updateTask",
+  "command": "update-task",
+  "provider_status": 200,
+  "request_id": "example-request-id",
+  "state": "request_completed",
+  "verification": {
+    "verified": true,
+    "method": "same-target readback",
+    "status": 200,
+    "requested_fields_match": true
+  },
+  "async_followup": null,
+  "result": {
+    "data": {
+      "gid": "1200000000000002",
+      "name": "Review launch checklist",
+      "due_on": "2026-08-03"
+    }
+  },
+  "rollback": {
+    "supported": false
+  }
+}

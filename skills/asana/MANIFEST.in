@@ -1,0 +1,11 @@
+include README.md
+include CHANGELOG.md
+include .env.example
+recursive-include docs *.md *.json
+recursive-include examples *.json *.env *.csv
+include skills/asana/SKILL.md
+exclude AGENTS.md
+exclude skills/AGENTS.md
+exclude TEMPLATE_GUIDE.md
+recursive-include specs *.yaml SHA256SUMS
+recursive-include scripts *.py

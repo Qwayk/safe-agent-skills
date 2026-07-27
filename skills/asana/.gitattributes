@@ -1,0 +1,2 @@
+# Preserve the pinned official specification byte-for-byte despite upstream trailing spaces.
+specs/asana_oas.yaml -whitespace

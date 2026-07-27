@@ -44,6 +44,7 @@ Start here if you want to review or carefully manage issues, projects, boards, b
 
 | Product | What it helps with | What you connect | Mode |
 | --- | --- | --- | --- |
+| [**Asana**](asana/README.md)<br><sub>Install slug: <code>asana</code></sub> | Review Asana workspaces, projects, tasks, goals, portfolios, teams, and automation, then prepare careful changes | Asana account | Reads + careful changes |
 | [**Jira Cloud**](jira/README.md)<br><sub>Install slug: <code>jira</code></sub> | Review Jira issues, projects, boards, backlogs, sprints, workflows, and settings, then prepare careful changes | Jira Cloud site | Reads + careful changes |
 
 ## Ads, acquisition, and local presence
