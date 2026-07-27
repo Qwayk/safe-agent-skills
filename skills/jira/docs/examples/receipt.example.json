@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "tool": "jira-safe",
+  "tool_version": "0.1.0",
+  "applied_at": "2026-07-27T00:00:00Z",
+  "operation": "createIssue",
+  "surface": "platform",
+  "command": "create-issue",
+  "method": "POST",
+  "base_url": "https://example.atlassian.net",
+  "path": "/rest/api/3/issue",
+  "plan_integrity_hmac_sha256": "EXAMPLE_PLAN_SIGNATURE",
+  "snapshot_saved": false,
+  "snapshot_error_type": null,
+  "high_risk_approved": false,
+  "no_snapshot_approved": true,
+  "provider_result": {
+    "status": 201,
+    "url": "https://example.atlassian.net/rest/api/3/issue",
+    "content_type": "application/json",
+    "body": {
+      "id": "10001",
+      "key": "EXAMPLE-123"
+    }
+  },
+  "verification": null,
+  "ok": true,
+  "live_unverified_build": true
+}

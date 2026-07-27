@@ -1,0 +1,30 @@
+{
+  "high_risk_write_count": 277,
+  "operation_count": 721,
+  "pinned_date": "2026-07-27",
+  "specs": [
+    {
+      "actual_sha256": "25a377a1f482640eb7272052cbe51f9ddd6c20c3195257f36610cd8d408d8f27",
+      "expected_operations": 616,
+      "file": "specs/jira-platform-v3.openapi.json",
+      "operation_count": 616,
+      "sha256": "25a377a1f482640eb7272052cbe51f9ddd6c20c3195257f36610cd8d408d8f27",
+      "surface": "platform",
+      "title": "The Jira Cloud platform REST API",
+      "url": "https://dac-static.atlassian.com/cloud/jira/platform/swagger-v3.v3.json",
+      "version": "1001.0.0-SNAPSHOT-b5920d1eaef179a2bd7f107d8da95822cab568b5"
+    },
+    {
+      "actual_sha256": "4e108d54b99064475c6ba0f986cce46dcace81336e034b58a5400b93174b927a",
+      "expected_operations": 105,
+      "file": "specs/jira-software.openapi.json",
+      "operation_count": 105,
+      "sha256": "4e108d54b99064475c6ba0f986cce46dcace81336e034b58a5400b93174b927a",
+      "surface": "software",
+      "title": "Jira Software Cloud API",
+      "url": "https://dac-static.atlassian.com/cloud/jira/software/swagger.v3.json",
+      "version": "1001.0.0"
+    }
+  ],
+  "unique_method_path_count": 721
+}

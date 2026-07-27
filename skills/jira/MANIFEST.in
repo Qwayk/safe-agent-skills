@@ -1,0 +1,10 @@
+include .env.example
+include AGENTS.md
+include CHANGELOG.md
+include README.md
+include generate_inventory.py
+recursive-include docs *.md *.json
+recursive-include examples *.env *.json
+recursive-include skills AGENTS.md SKILL.md
+recursive-include specs *.json
+recursive-include tests *.py

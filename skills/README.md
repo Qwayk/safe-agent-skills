@@ -13,6 +13,7 @@ Use the install slug under each product name when you want to tell the agent exa
 If you already know the product, click it below. If not, start with the section that matches the job you want done:
 
 - [Measurement, search, and monitoring](#measurement-search-and-monitoring) for reporting, search visibility, tracking, incidents, or monitoring
+- [Project and team work](#project-and-team-work) for issues, projects, boards, backlogs, sprints, or team planning
 - [Ads, acquisition, and local presence](#ads-acquisition-and-local-presence) for ad accounts or local business surfaces
 - [CRM, outreach, support, and email](#crm-outreach-support-and-email) for leads, pipelines, support, or lifecycle messaging
 - [Automation and integration](#automation-and-integration) for app connections, Zaps, inboxes, or AI Actions
@@ -36,6 +37,14 @@ Start here if you want reporting, tracking, search visibility, incidents, or acc
 | [**Contentsquare**](contentsquare/README.md)<br><sub>Install slug: <code>contentsquare</code></sub> | Review visitor behavior exports, metrics, enrichment batches, and Speed Analysis reports | Contentsquare account | Reads + careful changes |
 | [**CallRail**](callrail/README.md)<br><sub>Install slug: <code>callrail</code></sub> | Review CallRail accounts, calls, forms, companies, trackers, integrations, and webhooks | CallRail account | Reads + careful changes |
 | [**Statuspage**](statuspage/README.md)<br><sub>Install slug: <code>statuspage</code></sub> | Check public status, incidents, maintenance, and components | Public status page URL | Read-only |
+
+## Project and team work
+
+Start here if you want to review or carefully manage issues, projects, boards, backlogs, sprints, or team planning.
+
+| Product | What it helps with | What you connect | Mode |
+| --- | --- | --- | --- |
+| [**Jira Cloud**](jira/README.md)<br><sub>Install slug: <code>jira</code></sub> | Review Jira issues, projects, boards, backlogs, sprints, workflows, and settings, then prepare careful changes | Jira Cloud site | Reads + careful changes |
 
 ## Ads, acquisition, and local presence
 

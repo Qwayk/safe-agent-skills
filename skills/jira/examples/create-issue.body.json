@@ -1,0 +1,29 @@
+{
+  "fields": {
+    "description": {
+      "content": [
+        {
+          "content": [
+            {
+              "text": "Checkout returns an error after payment details are submitted.",
+              "type": "text"
+            }
+          ],
+          "type": "paragraph"
+        }
+      ],
+      "type": "doc",
+      "version": 1
+    },
+    "issuetype": {
+      "name": "Bug"
+    },
+    "project": {
+      "key": "EXAMPLE"
+    },
+    "summary": "Checkout fails after payment details",
+    "labels": [
+      "customer-reported"
+    ]
+  }
+}

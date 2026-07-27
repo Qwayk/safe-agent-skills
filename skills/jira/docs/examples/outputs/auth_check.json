@@ -1,0 +1,8 @@
+{
+  "artifacts_dir": null,
+  "error": "Missing JIRA_BASE_URL",
+  "error_type": "ValidationError",
+  "ok": false,
+  "run_id": null,
+  "runs_index": null
+}

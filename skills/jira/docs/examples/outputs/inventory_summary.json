@@ -1,0 +1,9 @@
+{
+  "operation_count": 721,
+  "platform_operations": 616,
+  "software_operations": 105,
+  "unique_method_path_count": 721,
+  "callable_with_supported_auth": 687,
+  "high_risk_write_count": 277,
+  "live_jira_requests_used_for_build": 0
+}

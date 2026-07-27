@@ -1,0 +1,29 @@
+{
+  "schema_version": 2,
+  "tool": "jira-safe",
+  "tool_version": "0.1.0",
+  "created_at": "2026-07-27T00:00:00Z",
+  "surface": "platform",
+  "command": "create-issue",
+  "operation_id": "createIssue",
+  "base_url": "https://example.atlassian.net",
+  "method": "POST",
+  "path": "/rest/api/3/issue",
+  "query": {},
+  "headers": {},
+  "body": {
+    "mode": "file",
+    "content_type": "application/json",
+    "path": "/path/to/create-issue.body.json",
+    "sha256": "GENERATED_FROM_THE_REAL_LOCAL_FILE",
+    "size": 0
+  },
+  "kind": "write",
+  "high_risk": false,
+  "snapshot_get_available": false,
+  "snapshot_query": {},
+  "no_snapshot_warning": "No reliable generic before-state read exists for this operation. Apply requires --ack-no-snapshot.",
+  "live_unverified": true,
+  "inputs": {},
+  "integrity_hmac_sha256": "GENERATED_LOCALLY_BY_JIRA_SAFE"
+}
