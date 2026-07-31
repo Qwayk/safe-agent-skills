@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "command": "porkbun utility ping-get",
+  "authenticated": false,
+  "response": {
+    "credentialsValid": false
+  }
+}

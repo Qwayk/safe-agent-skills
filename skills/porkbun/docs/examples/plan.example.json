@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "plan_id": "pcf1c0d2d1f6e3",
+  "operation_id": "domainUpdateAutoRenew",
+  "command": "porkbun domain domain-update-auto-renew",
+  "target": "POST /domain/updateAutoRenew/{domain} {\"path\": {\"domain\": \"example.com\"}}",
+  "path_params": {
+    "domain": "example.com"
+  },
+  "query_params": {},
+  "parameter_sha256": "058ecdab15e76384dd4ed1330dd7c0347f6e577ee1f04748e79f0450599aa822",
+  "payload": {
+    "status": "off"
+  },
+  "input_sha256": "b535bf84910eb261e9ca1cac7c17d83983e740c8e874905c2f151ef7d0848c7d",
+  "idempotency_key": "f4a1f0d2e9b4c1a7f4a1f0d2e9b4c1a7",
+  "risk_flags": {
+    "write": true,
+    "destructive": false,
+    "billable": false,
+    "terms_required": false,
+    "ack_send": false,
+    "ack_spend": false,
+    "ack_terms": false,
+    "ack_destructive": false,
+    "ack_secret": false,
+    "ack_no_snapshot": false
+  },
+  "snapshot": {
+    "requires_no_snapshot_ack": false,
+    "before_state_operation_id": "getDomain",
+    "readback_operation_id": "getDomain",
+    "honest_note": "Use `porkbun domain get-domain` after apply."
+  },
+  "snapshot_data": {},
+  "dry_run": {
+    "requested": false,
+    "signature": null,
+    "cost_signature": null,
+    "result": null
+  },
+  "validation": {
+    "ok": true
+  },
+  "created_at_utc": "2026-07-31T10:00:00Z",
+  "expires_at_utc": "2026-08-01T10:00:00Z",
+  "command_input_signature": "1c14d17a72fc6750fb381e1e0a781515a2ff96260e42daf6a49df0a135764574",
+  "plan_hash": "0c18e38356b25458286edadda8a36560fc53c79c5e40a8264d63b0b8baaf6f59",
+  "plan_signature": "hmac-sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "plan_out": ".state/plans/pcf1c0d2d1f6e3-3f7d2a.json"
+}

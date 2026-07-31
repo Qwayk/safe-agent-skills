@@ -1,0 +1,266 @@
+{
+  "api_version": "3.9",
+  "spec_sha256": "f4788709c27e0365e8a502180e0427bbcf7bd7558f3d7032bf34cf0a25dedd77",
+  "spec_source": "https://porkbun.com/api/json/v3/spec",
+  "production_servers": [
+    "https://api.porkbun.com/api/json/v3",
+    "https://api-ipv4.porkbun.com/api/json/v3"
+  ],
+  "family_slug_map": {
+    "Utility": "utility",
+    "Pricing": "pricing",
+    "API Key Management": "api-key",
+    "Domain": "domain",
+    "DNS": "dns",
+    "SSL": "ssl",
+    "Email Hosting": "email-hosting",
+    "Marketplace": "marketplace",
+    "Account": "account",
+    "Webhooks": "webhooks"
+  },
+  "family_order": [
+    "utility",
+    "pricing",
+    "api-key",
+    "domain",
+    "dns",
+    "ssl",
+    "email-hosting",
+    "marketplace",
+    "account",
+    "webhooks"
+  ],
+  "write_operations": [
+    "apikeyRequest",
+    "apikeyRetrieve",
+    "domainCreate",
+    "domainRenew",
+    "transferDomain",
+    "domainUpdateAutoRenew",
+    "domainUpdateNs",
+    "domainCreateGlue",
+    "domainUpdateGlue",
+    "domainDeleteGlue",
+    "domainAddUrlForward",
+    "domainDeleteUrlForward",
+    "dnsCreate",
+    "dnsEdit",
+    "dnsEditByNameType",
+    "dnsDelete",
+    "dnsDeleteByNameType",
+    "dnsCreateDnssecRecord",
+    "dnsDeleteDnssecRecord",
+    "emailSetPassword",
+    "createAccountInvite",
+    "webhookCreate",
+    "webhookUpdate",
+    "webhookRotateSecret",
+    "webhookTest",
+    "webhookDelete",
+    "webhookResend"
+  ],
+  "billable_operations": [
+    "domainCreate",
+    "domainRenew",
+    "transferDomain"
+  ],
+  "terms_required_operations": [
+    "domainCreate"
+  ],
+  "secret_bearing_results": [
+    "apikeyRequest",
+    "apikeyRetrieve",
+    "sslRetrieve",
+    "getSslRetrieve",
+    "createAccountInvite",
+    "webhookList",
+    "webhookGet",
+    "webhookUpdate",
+    "webhookRotateSecret",
+    "webhookCreate"
+  ],
+  "destructive_operations": [
+    "domainDeleteGlue",
+    "domainDeleteUrlForward",
+    "dnsDelete",
+    "dnsDeleteByNameType",
+    "dnsDeleteDnssecRecord",
+    "webhookDelete"
+  ],
+  "native_dry_run_operations": [
+    "domainCreate",
+    "domainRenew",
+    "transferDomain",
+    "domainUpdateNs",
+    "dnsCreate",
+    "dnsEdit",
+    "dnsEditByNameType",
+    "dnsDelete",
+    "dnsDeleteByNameType"
+  ],
+  "write_snapshot_policy": {
+    "apikeyRequest": {
+      "before_state_operation_id": null,
+      "readback_operation_id": null,
+      "requires_no_snapshot_ack": true,
+      "honest_note": "No on-provider readback command is guaranteed; re-check request status with provider workflows."
+    },
+    "apikeyRetrieve": {
+      "before_state_operation_id": null,
+      "readback_operation_id": null,
+      "requires_no_snapshot_ack": true,
+      "honest_note": "No guaranteed snapshot exists; verify state via subsequent key status checks."
+    },
+    "domainCreate": {
+      "before_state_operation_id": "domainCheckDomain",
+      "readback_operation_id": "getDomain",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun domain list-domains` or `porkbun domain get-domain` after apply."
+    },
+    "domainRenew": {
+      "before_state_operation_id": "getDomain",
+      "readback_operation_id": "getDomain",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun domain get-domain` after apply."
+    },
+    "transferDomain": {
+      "before_state_operation_id": "getTransferGet",
+      "readback_operation_id": "getTransferGet",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun domain get-transfer-get` after apply."
+    },
+    "domainUpdateAutoRenew": {
+      "before_state_operation_id": "getDomain",
+      "readback_operation_id": "getDomain",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun domain get-domain` after apply."
+    },
+    "domainUpdateNs": {
+      "before_state_operation_id": "getDomainNs",
+      "readback_operation_id": "getDomainNs",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun domain get-domain-ns` after apply."
+    },
+    "domainCreateGlue": {
+      "before_state_operation_id": "getDomainGlue",
+      "readback_operation_id": "getDomainGlue",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun domain domain-get-glue` after apply."
+    },
+    "domainUpdateGlue": {
+      "before_state_operation_id": "getDomainGlue",
+      "readback_operation_id": "getDomainGlue",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun domain domain-get-glue` after apply."
+    },
+    "domainDeleteGlue": {
+      "before_state_operation_id": "getDomainGlue",
+      "readback_operation_id": "getDomainGlue",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun domain domain-get-glue`; if missing, deletion likely succeeded."
+    },
+    "domainAddUrlForward": {
+      "before_state_operation_id": null,
+      "readback_operation_id": "getDomainUrlForwarding",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun domain domain-get-url-forwarding` after apply."
+    },
+    "domainDeleteUrlForward": {
+      "before_state_operation_id": "getDomainUrlForwarding",
+      "readback_operation_id": "getDomainUrlForwarding",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun domain domain-get-url-forwarding` after apply."
+    },
+    "dnsCreate": {
+      "before_state_operation_id": null,
+      "readback_operation_id": "getDnsRecords",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun dns get-dns-records` after apply."
+    },
+    "dnsEdit": {
+      "before_state_operation_id": "getDnsRecordById",
+      "readback_operation_id": "getDnsRecords",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun dns get-dns-records` after apply."
+    },
+    "dnsEditByNameType": {
+      "before_state_operation_id": "getDnsRecordsByNameType",
+      "readback_operation_id": "getDnsRecords",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun dns get-dns-records-by-name-type` after apply."
+    },
+    "dnsDelete": {
+      "before_state_operation_id": "getDnsRecordById",
+      "readback_operation_id": "getDnsRecords",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun dns get-dns-records` and confirm target record is absent."
+    },
+    "dnsDeleteByNameType": {
+      "before_state_operation_id": "getDnsRecordsByNameType",
+      "readback_operation_id": "getDnsRecords",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun dns get-dns-records-by-name-type` and confirm target record is absent."
+    },
+    "dnsCreateDnssecRecord": {
+      "before_state_operation_id": null,
+      "readback_operation_id": "getDnssecRecords",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun dns dns-get-dnssec-records` after apply."
+    },
+    "dnsDeleteDnssecRecord": {
+      "before_state_operation_id": "getDnssecRecords",
+      "readback_operation_id": "getDnssecRecords",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun dns dns-get-dnssec-records` and confirm record is absent."
+    },
+    "emailSetPassword": {
+      "before_state_operation_id": null,
+      "readback_operation_id": null,
+      "requires_no_snapshot_ack": true,
+      "honest_note": "No provider readback guarantee for existing mailbox credentials; capture output safely."
+    },
+    "createAccountInvite": {
+      "before_state_operation_id": null,
+      "readback_operation_id": "getAccountInviteStatus",
+      "requires_no_snapshot_ack": true,
+      "honest_note": "No reliable readback of invite state is documented in this slice."
+    },
+    "webhookCreate": {
+      "before_state_operation_id": null,
+      "readback_operation_id": "webhookGet",
+      "requires_no_snapshot_ack": true,
+      "honest_note": "Use `porkbun webhooks webhook-get` or `porkbun webhooks webhook-list` where applicable."
+    },
+    "webhookUpdate": {
+      "before_state_operation_id": "webhookGet",
+      "readback_operation_id": "webhookGet",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun webhooks webhook-get` or `porkbun webhooks webhook-list` after apply."
+    },
+    "webhookRotateSecret": {
+      "before_state_operation_id": "webhookGet",
+      "readback_operation_id": "webhookGet",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun webhooks webhook-get` and refresh local secrets with care."
+    },
+    "webhookTest": {
+      "before_state_operation_id": "webhookGet",
+      "readback_operation_id": "webhookDeliveries",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun webhooks webhook-deliveries` and confirm `webhookDelivery` includes a new result."
+    },
+    "webhookDelete": {
+      "before_state_operation_id": "webhookGet",
+      "readback_operation_id": "webhookList",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun webhooks webhook-list`; deleted hook should be absent."
+    },
+    "webhookResend": {
+      "before_state_operation_id": "webhookDelivery",
+      "readback_operation_id": "webhookDeliveries",
+      "requires_no_snapshot_ack": false,
+      "honest_note": "Use `porkbun webhooks webhook-deliveries` and confirm a resent delivery appears."
+    }
+  },
+  "read_only_summary": "All non-write operations are classed as read-only in this slice."
+}

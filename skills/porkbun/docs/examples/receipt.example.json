@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "receipt": {
+    "schema_version": 2,
+    "tool": "porkbun",
+    "version": "0.1.0",
+    "operation_id": "domainUpdateAutoRenew",
+    "command": "porkbun domain domain-update-auto-renew",
+    "target": "POST /domain/updateAutoRenew/{domain} {\"path\": {\"domain\": \"example.com\"}}",
+    "applied_at_utc": "2026-07-31T10:05:00Z",
+    "changed": true,
+    "idempotency_key": "f4a1f0d2e9b4c1a7f4a1f0d2e9b4c1a7",
+    "transport": {
+      "request_id": "019e04fa-9a2b-7f33-b4c5-2d7c4e1a9b11",
+      "api_version": "3.9",
+      "rate_limits": {
+        "x-ratelimit-limit": "50",
+        "x-ratelimit-remaining": "49",
+        "x-ratelimit-reset": "2026-07-31T11:00:00Z"
+      },
+      "retry_after": null
+    },
+    "result": {
+      "status": "SUCCESS",
+      "autoRenew": "off",
+      "domain": "example.com"
+    },
+    "verification": {
+      "requested": true,
+      "performed": true,
+      "confirmed": false,
+      "details": {
+        "status": "SUCCESS",
+        "domain": "example.com",
+        "autoRenew": "off"
+      },
+      "note": "Readback was captured but not semantically compared; review it before claiming the intended state."
+    },
+    "plan_hash": "0c18e38356b25458286edadda8a36560fc53c79c5e40a8264d63b0b8baaf6f59",
+    "input_sha256": "b535bf84910eb261e9ca1cac7c17d83983e740c8e874905c2f151ef7d0848c7d",
+    "command_input_signature": "1c14d17a72fc6750fb381e1e0a781515a2ff96260e42daf6a49df0a135764574"
+  },
+  "receipt_out": ".state/receipts/0c18e38356b25458.json",
+  "transport": {
+    "request_id": "019e04fa-9a2b-7f33-b4c5-2d7c4e1a9b11",
+    "api_version": "3.9",
+    "rate_limits": {
+      "x-ratelimit-limit": "50",
+      "x-ratelimit-remaining": "49",
+      "x-ratelimit-reset": "2026-07-31T11:00:00Z"
+    },
+    "retry_after": null
+  }
+}

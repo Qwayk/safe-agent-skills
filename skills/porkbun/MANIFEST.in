@@ -1,0 +1,21 @@
+include README.md
+include CHANGELOG.md
+include TEMPLATE_GUIDE.md
+include .env.example
+include pyproject.toml
+
+recursive-include docs *
+recursive-include docs/examples *
+recursive-include examples *
+recursive-include scripts *
+recursive-include skills *
+recursive-include vendor *
+recursive-include tests *.py
+
+exclude .env
+recursive-exclude .state *
+recursive-exclude .venv *
+recursive-exclude build *
+recursive-exclude dist *
+recursive-exclude *.egg-info *
+recursive-exclude __pycache__ *
