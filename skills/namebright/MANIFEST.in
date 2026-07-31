@@ -1,0 +1,19 @@
+include README.md
+include CHANGELOG.md
+include .env.example
+recursive-include docs *.md
+recursive-include docs *.json
+recursive-include docs *.sha256
+recursive-include examples *
+recursive-include tests *.py
+include skills/namebright-safe-cli/SKILL.md
+global-exclude AGENTS.md
+global-exclude .env
+global-exclude .state
+global-exclude .venv
+prune build
+prune dist
+prune .state
+prune .venv
+prune src/namebright_safe_cli.egg-info
+global-exclude *.egg-info/*

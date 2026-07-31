@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "tool": "namebright-safe-cli",
+  "tool_version": "0.1.0",
+  "operation": {
+    "family": "domains",
+    "command": "domains update",
+    "method": "PUT",
+    "path": "account/domains/{domain}?optOutOfLock={optOutOfLock}"
+  },
+  "generated_at_utc": "2026-07-31T00:00:05Z",
+  "plan_fingerprint": "NOT-APPLYABLE-EXAMPLE",
+  "applied": true,
+  "write": {
+    "ok": true,
+    "response": {
+      "ok": true,
+      "DomainName": "example.com"
+    }
+  },
+  "verification": {
+    "ok": true,
+    "results": [
+      {
+        "op": "domains:domains get",
+        "ok": true,
+        "payload": {
+          "DomainName": "example.com",
+          "Status": "active",
+          "Locked": true,
+          "AutoRenew": true,
+          "WhoIsPrivacy": false
+        }
+      }
+    ]
+  },
+  "snapshot_before": [
+    {
+      "op": "domains:domains get",
+      "ok": true,
+      "payload": {
+        "DomainName": "example.com",
+        "Status": "active",
+        "Locked": false,
+        "AutoRenew": true
+      }
+    }
+  ],
+  "rollback_supported": false
+}

@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "error_type": "ValidationError",
+  "error": "Missing configuration: NAMEBRIGHT_CLIENT_ID, NAMEBRIGHT_CLIENT_SECRET"
+}

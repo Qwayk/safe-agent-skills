@@ -1,0 +1,41 @@
+# References
+
+Source provenance for all documented NameBright coverage and command contracts.
+
+- Provider: NameBright
+- API docs home: https://api.namebright.com/rest/Help
+- OAuth docs home: https://api.namebright.com/auth/Help
+- Production endpoints:
+  - Domain API: https://api.namebright.com/rest
+  - OAuth token: https://api.namebright.com/auth/token
+- Official index retrieval date: 2026-07-31
+- Official index hashes from GOAL:
+  - `https://api.namebright.com/rest/Help` SHA-256: `34a1b5964a22ed757f414664a4dfdbd81d847d4fecffcecf63c2e1f39e55bbc0`
+  - `https://api.namebright.com/auth/Help` SHA-256: `a7f4a5f3be07a537e14004f7696bcefefad0e8b977a5273ece2df9c8f00267c7`
+- Request limits (official docs):
+  - 30 requests per 30-second period
+  - Do not send more than one request per second
+- Official client examples:
+  - Repository: https://github.com/NameBright/DomainApiClientExamples
+  - Pinned `master` commit retrieved on 2026-07-31: `128b70a2b7348742b4a3b94a1d2e9d26251de199`
+  - The official Bash/curl example obtains a token with an OAuth2 `client_credentials` form request, sends `Authorization: Bearer ...` to the Domain API, uses form fields for documented write bodies, and sends an empty body for bodyless `PUT` requests.
+  - The repository README says the full client ID uses `account name:application name`, API applications require an IPv4 whitelist, tokens last 30 minutes, and purchases draw from the account's pre-funded balance.
+- Manual-family classification used for runtime command surface:
+  - auth
+  - purchase
+  - account
+  - domains
+  - contacts
+  - nameservers
+  - host-records
+  - inbound-push
+  - outbound-push
+  - whois-accuracy
+  - contact-verification
+- Source mapping for operation files:
+  - Every checksum line in `docs/official_operation_pages.sha256` is `<sha> <filename>` where `filename` is exactly the NameBright operation page path slug.
+  - For domain operations: prepend `https://api.namebright.com/rest/Help/Api/` to the filename.
+  - For auth operation: prepend `https://api.namebright.com/auth/Help/Api/` (only `POST-token`).
+- Live-proof limits (honest record):
+  - No live NameBright token or Domain endpoint calls were made for this source build.
+  - Coverage, command mapping, and source mapping are fully derived from retrieved official docs and are marked live-unverified.
