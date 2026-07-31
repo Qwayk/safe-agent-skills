@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "command": "sav domains active",
+  "operation_id": "get_active_domains_in_account",
+  "api_host": "https://api.sav.com/domains_api_v1",
+  "read": {
+    "status": 200,
+    "response": [
+      {
+        "domain_name": "example.com",
+        "status": "active",
+        "nameservers": [
+          "ns1.example.com",
+          "ns2.example.com"
+        ]
+      }
+    ]
+  }
+}

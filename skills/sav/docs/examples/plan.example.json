@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "dry_run": true,
+  "command": "sav domains set-whois-contacts",
+  "operation_id": "update_domain_whois_contacts",
+  "plan_path": ".state/plans/set-whois-contacts.example.json",
+  "plan": {
+    "schema_version": 2,
+    "plan_id": "ab4f6a8fd7e2b3c1a9c4d5e6f7a8b0c1d2e3f4056a7b8c9d0e1f2a3b4c5d6e7f",
+    "key_id": "0000000000000000000000000000000000000000000000000000000000000000",
+    "command": "sav domains set-whois-contacts",
+    "operation_id": "update_domain_whois_contacts",
+    "endpoint": "https://api.sav.com/domains_api_v1/update_domain_whois_contacts",
+    "method": "GET",
+    "params": {
+      "domain_name": "example.com",
+      "name": "<redacted>",
+      "organization": "<redacted>",
+      "email_address": "<redacted>",
+      "street": "<redacted>",
+      "city": "<redacted>",
+      "country": "<redacted>",
+      "phone": "<redacted>",
+      "state": "<redacted>",
+      "postal_code": "<redacted>",
+      "update_registrant": "1",
+      "update_tech": "0",
+      "update_admin": "0"
+    },
+    "required_acks": [
+      "--apply",
+      "--yes",
+      "--ack-no-snapshot",
+      "--ack-high-risk"
+    ],
+    "snapshot_status": "unavailable",
+    "snapshot_reason": "The official SAV collection does not document a reliable before-state response for this operation.",
+    "independent_readback_available": false,
+    "rollback_available": false,
+    "plan_hmac": "0000000000000000000000000000000000000000000000000000000000000000"
+  }
+}

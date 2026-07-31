@@ -1,0 +1,14 @@
+.env
+.venv/
+*.pyc
+__pycache__/
+*.plan.json
+*.receipt.json
+.cache/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+.state/
