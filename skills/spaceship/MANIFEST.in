@@ -1,0 +1,28 @@
+include .env.example
+include CHANGELOG.md
+include README.md
+recursive-include docs *.md *.json
+recursive-include examples *.env
+recursive-include skills *.md
+recursive-include src *.py
+recursive-include tests *.py *.json
+exclude TEMPLATE_GUIDE.md
+exclude docs/jobs_and_batches.md
+exclude examples/jobs.csv
+exclude examples/jobs_with_write.csv
+exclude examples/token.sample.json
+exclude skills/AGENTS.md
+exclude src/spaceship_safe_agent_cli/oauth_tokens.py
+exclude src/spaceship_safe_agent_cli/project_config.py
+exclude src/spaceship_safe_agent_cli/commands/auth.py
+exclude src/spaceship_safe_agent_cli/commands/demo.py
+exclude src/spaceship_safe_agent_cli/commands/jobs.py
+exclude tests/test_jobs.py
+exclude tests/test_oauth_tokens.py
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude .DS_Store
+prune .state
+prune .venv
+prune build
+prune dist

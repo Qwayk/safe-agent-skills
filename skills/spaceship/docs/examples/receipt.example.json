@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "dry_run": false,
+  "refused": false,
+  "applied_at_utc": "2026-08-01T14:05:00Z",
+  "operation_id": "setDomainContacts",
+  "command": "qwayk-spaceship-safe-agent-cli domains set-contacts",
+  "selector": {
+    "command": ["qwayk-spaceship-safe-agent-cli", "domains", "set-contacts"],
+    "path": {
+      "template": "/v1/domains/{domain}/contacts",
+      "params": {"domain": "example.com"}
+    },
+    "query": {}
+  },
+  "plan_integrity": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "request_body_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "request_body": {
+    "redacted": true,
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "preflight": {
+    "operation_id": "getDomainInfo",
+    "payload_redacted": {"contacts": "***REDACTED***"},
+    "preflight_financial_fields": null
+  },
+  "transport": {
+    "status_code": 204,
+    "status_label": "completed",
+    "attempts": 1,
+    "rate_limited": false,
+    "retry_after": null,
+    "async_operation_id": null
+  },
+  "verification": {
+    "status": "verified",
+    "status_code": 200,
+    "selector": {
+      "command": ["qwayk-spaceship-safe-agent-cli", "domains", "get"],
+      "path": {
+        "template": "/v1/domains/{domain}",
+        "params": {"domain": "example.com"}
+      },
+      "query": {}
+    },
+    "payload": {"contacts": "***REDACTED***"}
+  }
+}

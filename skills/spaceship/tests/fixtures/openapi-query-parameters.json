@@ -1,0 +1,45 @@
+{
+  "source_sha256": "d4025290f62a5d14ad17142e2d75a59c19504f61066dfdaf7fab3d357cb75eeb",
+  "operations": {
+    "getResourceRecordsList": [
+      {"name": "take", "in": "query", "required": true, "schema": {"minimum": 1, "maximum": 500}},
+      {"name": "skip", "in": "query", "required": true, "schema": {"minimum": 0, "maximum": 2147483647}},
+      {"name": "orderBy", "in": "query", "required": false, "schema": {"items": {"enum": ["type", "-type", "name", "-name"]}}}
+    ],
+    "getDomainList": [
+      {"name": "take", "in": "query", "required": true, "schema": {"minimum": 1, "maximum": 100}},
+      {"name": "skip", "in": "query", "required": true, "schema": {"minimum": 0, "maximum": 2147483647}},
+      {"name": "orderBy", "in": "query", "required": false, "schema": {"items": {"enum": ["name", "-name", "unicodeName", "-unicodeName", "registrationDate", "-registrationDate", "expirationDate", "-expirationDate"]}}}
+    ],
+    "getSellerHubDomainList": [
+      {"name": "take", "in": "query", "required": true, "schema": {"minimum": 1, "maximum": 100}},
+      {"name": "skip", "in": "query", "required": true, "schema": {"minimum": 0, "maximum": 2147483647}}
+    ],
+    "getSoldDomains": [
+      {"name": "take", "in": "query", "required": true, "schema": {"minimum": 1, "maximum": 100}},
+      {"name": "cursor", "in": "query", "required": false, "schema": {"maxLength": 2048}},
+      {"$ref": "#/components/parameters/GetSoldDomainsQueryParams.saleDateTimeFrom"},
+      {"$ref": "#/components/parameters/GetSoldDomainsQueryParams.saleDateTimeTo"}
+    ],
+    "getSafePayTransactionList": [
+      {"name": "take", "in": "query", "required": true, "schema": {"minimum": 1, "maximum": 100}},
+      {"name": "skip", "in": "query", "required": true, "schema": {"minimum": 0, "maximum": 2147483647}}
+    ]
+  },
+  "components": {
+    "parameters": {
+      "GetSoldDomainsQueryParams.saleDateTimeFrom": {
+        "name": "saleDateTimeFrom",
+        "in": "query",
+        "required": false,
+        "schema": {"format": "date-time", "maxLength": 27}
+      },
+      "GetSoldDomainsQueryParams.saleDateTimeTo": {
+        "name": "saleDateTimeTo",
+        "in": "query",
+        "required": false,
+        "schema": {"format": "date-time", "maxLength": 27}
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "body_sha256": "14d835d35b9656e729edce9054feed3708468907db42690aed9406c3a77d483c",
+  "command": "qwayk-spaceship-safe-agent-cli domains renew",
+  "critical_request_fields": {
+    "currentExpirationDate": "2030-01-01",
+    "target": {"domain": "example.com"},
+    "years": 1
+  },
+  "dry_run": true,
+  "env_fingerprint": "https://spaceship.dev/api",
+  "financial_recheck": {
+    "available": false,
+    "fields": null,
+    "required": true,
+    "warning": "The official API exposes no reliable amount, currency, or fee recheck for this operation. Review the exact request fields and use --ack-no-snapshot before apply."
+  },
+  "generated_at_utc": "2026-08-01T14:02:45Z",
+  "method": "POST",
+  "no_snapshot_warning": "No reliable state snapshot or required financial recheck is available; this write requires --ack-no-snapshot",
+  "ok": true,
+  "operation_id": "domainRenew",
+  "path_params": {"domain": "example.com"},
+  "path_template": "/v1/domains/{domain}/renew",
+  "plan_integrity": "e85fff1c3575c9822366f3f66d204f05c89305dbc5068503a92b3c91c0c50532",
+  "plan_kind": "deterministic_only",
+  "query": {},
+  "redacted_body": {"currentExpirationDate": "2030-01-01", "years": 1},
+  "required_acknowledgements": ["ack-spend", "ack-ownership", "ack-no-snapshot"],
+  "risk_categories": ["ownership", "spend"],
+  "selector": {
+    "command": ["qwayk-spaceship-safe-agent-cli", "domains", "renew"],
+    "path": {
+      "params": {"domain": "example.com"},
+      "template": "/v1/domains/{domain}/renew"
+    },
+    "query": {}
+  },
+  "snapshot": {
+    "available": false,
+    "preflight": {"used": false},
+    "preflight_financial_fields": null
+  },
+  "tool": "qwayk-spaceship-safe-agent-cli",
+  "version": "0.1.0"
+}
