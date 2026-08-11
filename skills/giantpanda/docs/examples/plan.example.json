@@ -1,0 +1,38 @@
+{
+  "command": "domains add",
+  "dry_run": true,
+  "ok": true,
+  "plan": {
+    "operation": "domains add",
+    "host": "https://account.giantpanda.com",
+    "endpoint": "/api/v1/domains/add/",
+    "plan_id": "ddcc9e6bf64f9771ecb21e96cb69174344a6090e72e5e16d03be8efd1c655516",
+    "request_body": {
+      "domains": [
+        {
+          "name": "example.com"
+        },
+        {
+          "name": "shop.example.com"
+        }
+      ]
+    },
+    "apply_requirements": {
+      "apply": "--apply required",
+      "plan_in": "--plan-in required",
+      "approve_plan": "--approve-plan with exact plan id required",
+      "ack_no_snapshot": "--ack-no-snapshot required",
+      "snapshot_available": false,
+      "rollback_supported": false,
+      "safety_warning": "No snapshot, rollback, restore, or undo is available for this operation."
+    },
+    "snapshot_available": false,
+    "rollback_supported": false,
+    "safety_warning": "No snapshot, rollback, restore, or undo is available for this operation.",
+    "safety": {
+      "max_domains": 100,
+      "duplicates_removed": []
+    }
+  },
+  "plan_out": ".state/plans/ddcc9e6bf64f9771ecb21e96cb69174344a6090e72e5e16d03be8efd1c655516.json"
+}

@@ -1,0 +1,28 @@
+{
+  "ok": true,
+  "command": "domains stats",
+  "provider": {
+    "host": "https://account.giantpanda.com",
+    "endpoint": "/api/v1/domains/stats/",
+    "status": 200,
+    "url": "https://account.giantpanda.com/api/v1/domains/stats/",
+    "json": {
+      "_example_only": true,
+      "results": [
+        {
+          "date": "2026-08-01",
+          "domain": "example.com",
+          "requests": 120,
+          "queries": 40,
+          "clicks": 7,
+          "revenue": 0.95,
+          "rpm": 0.79,
+          "ctr": 17.5
+        }
+      ],
+      "page": 1,
+      "page_size": 50
+    }
+  },
+  "example_only_note": "The provider json block is synthetic for docs and does not claim the official schema."
+}

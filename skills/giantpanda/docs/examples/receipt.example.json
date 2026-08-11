@@ -1,0 +1,52 @@
+{
+  "ok": true,
+  "command": "domains add",
+  "plan_id": "ddcc9e6bf64f9771ecb21e96cb69174344a6090e72e5e16d03be8efd1c655516",
+  "provider": {
+    "host": "https://account.giantpanda.com",
+    "endpoint": "/api/v1/domains/add/",
+    "status": 200,
+    "url": "https://account.giantpanda.com/api/v1/domains/add/",
+    "verification": {
+      "_example_only": true,
+      "added": [
+        "example.com",
+        "shop.example.com"
+      ]
+    }
+  },
+  "receipt": {
+    "command": "domains add",
+    "tool": "giantpanda",
+    "version": "0.1.0",
+    "plan_id": "ddcc9e6bf64f9771ecb21e96cb69174344a6090e72e5e16d03be8efd1c655516",
+    "request": {
+      "domains": [
+        {
+          "name": "example.com"
+        },
+        {
+          "name": "shop.example.com"
+        }
+      ]
+    },
+    "provider": {
+      "host": "https://account.giantpanda.com",
+      "endpoint": "/api/v1/domains/add/",
+      "status": 200,
+      "url": "https://account.giantpanda.com/api/v1/domains/add/",
+      "verification": {
+        "_example_only": true,
+        "added": [
+          "example.com",
+          "shop.example.com"
+        ]
+      }
+    },
+    "verification_available": true,
+    "snapshot_available": false,
+    "rollback_supported": false
+  },
+  "applied": true,
+  "receipt_out": ".state/receipts/example-receipt.json"
+}

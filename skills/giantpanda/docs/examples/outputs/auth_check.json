@@ -1,0 +1,7 @@
+{
+  "ok": true,
+  "auth": {
+    "ready": false,
+    "token_present": false
+  }
+}
