@@ -2,6 +2,8 @@
 
 The tool is most useful when you describe the result you need and let the agent choose the fixed Twilio reads that support it.
 
+For a credential-free integration check, ask for local ConversationRelay TwiML or WebSocket validation, a webhook signature check, or the Agent Connect metadata contract. These checks do not contact Twilio or host a service; see [local voice and webhook checks](local_contracts.md).
+
 ## Check what happened
 
 - "Show me messages that failed today and group them by failure reason. Do not send anything."

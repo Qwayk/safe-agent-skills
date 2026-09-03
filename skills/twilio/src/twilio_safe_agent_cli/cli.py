@@ -6,12 +6,19 @@ import os
 import sys
 import traceback
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from . import __version__
 from .auth import build_auth
 from .config import Config, load_config
 from .errors import SafetyError, ToolError, ValidationError
+from .local_contracts import (
+    agent_connect_contract,
+    generate_conversation_relay,
+    validate_conversation_relay,
+    validate_conversation_relay_message,
+    validate_twilio_signature,
+)
 from .output import Output
 from .redaction import redact
 from .registry import CatalogRegistry, load_registry
@@ -115,6 +122,23 @@ def build_parser(registry: CatalogRegistry | None = None) -> argparse.ArgumentPa
         help="Run the safe api-v2010 fetch-account request after local validation",
     )
     auth_check.add_argument("--sensitive-out", help="Protected local file for the full account result")
+
+    twiml = top.add_parser("twiml", help="Validate or generate bounded ConversationRelay XML")
+    twiml_sub = twiml.add_subparsers(dest="local_command", required=True, parser_class=_ToolArgumentParser)
+    for name in ("conversation-relay-generate", "conversation-relay-validate"):
+        command = twiml_sub.add_parser(name)
+        command.add_argument("--input-json", required=True, help="Path to the local contract input JSON")
+    websocket = top.add_parser("websocket", help="Validate ConversationRelay WebSocket messages")
+    websocket_sub = websocket.add_subparsers(dest="local_command", required=True, parser_class=_ToolArgumentParser)
+    message = websocket_sub.add_parser("conversation-relay-message-validate")
+    message.add_argument("--input-json", required=True, help="Path to the local contract input JSON")
+    webhook = top.add_parser("webhook", help="Validate Twilio webhook signatures locally")
+    webhook_sub = webhook.add_subparsers(dest="local_command", required=True, parser_class=_ToolArgumentParser)
+    signature = webhook_sub.add_parser("twilio-signature-validate")
+    signature.add_argument("--input-json", required=True, help="Path to the local contract input JSON")
+    agent_connect = top.add_parser("agent-connect", help="Inspect the local Agent Connect metadata contract")
+    agent_connect_sub = agent_connect.add_subparsers(dest="local_command", required=True, parser_class=_ToolArgumentParser)
+    agent_connect_sub.add_parser("contract")
 
     for spec_id, operations in sorted(registry.by_spec.items()):
         spec = top.add_parser(spec_id, help=f"Fixed commands from {spec_id}")
@@ -251,11 +275,48 @@ def _load_operation_config(operation: dict[str, Any], env_file: str) -> Config:
     return load_config(env_file)
 
 
+def _run_local_contract(argv: list[str], out: Output) -> int | None:
+    """Handle credential-free local contracts without requiring the provider catalog."""
+    groups = {"twiml", "websocket", "webhook", "agent-connect"}
+    skip_value = False
+    group = None
+    for item in argv:
+        if skip_value:
+            skip_value = False
+            continue
+        if item in {"--output", "--env-file"}:
+            skip_value = True
+            continue
+        if not item.startswith("-"):
+            group = item if item in groups else None
+            break
+    if group is None:
+        return None
+    empty = CatalogRegistry(data={"operations": []}, inventory_hash="local-contracts")
+    parser = build_parser(empty)
+    args = parser.parse_args(argv)
+    input_obj = _read_input(cast(str | None, getattr(args, "input_json", None)))
+    if args.local_command == "conversation-relay-generate":
+        out.emit(generate_conversation_relay(input_obj))
+    elif args.local_command == "conversation-relay-validate":
+        out.emit(validate_conversation_relay(cast(str, input_obj.get("xml"))))
+    elif args.local_command == "conversation-relay-message-validate":
+        out.emit(validate_conversation_relay_message(input_obj))
+    elif args.local_command == "twilio-signature-validate":
+        out.emit(validate_twilio_signature(input_obj))
+    else:
+        out.emit(agent_connect_contract(input_obj))
+    return 0
+
+
 def main(argv: list[str]) -> int:
     out = Output(mode=_output_mode(argv))
     cfg: Config | None = None
     debug = "--debug" in argv
     try:
+        local_result = _run_local_contract(argv, out)
+        if local_result is not None:
+            return local_result
         registry = load_registry()
         parser = build_parser(registry)
         args = parser.parse_args(argv)

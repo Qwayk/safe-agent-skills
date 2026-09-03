@@ -1,0 +1,8 @@
+{
+  "kind": "json",
+  "url": "https://voice.example.test/webhook?bodySHA256=4d9f031491abddf443d8bcfc172a7fc14619e6b7e80cc2ba6b452aa303abf291",
+  "body": "{\"event\":\"completed\"}",
+  "body_sha256": "4d9f031491abddf443d8bcfc172a7fc14619e6b7e80cc2ba6b452aa303abf291",
+  "signature": "placeholder",
+  "auth_token_env": "TWILIO_LOCAL_AUTH_TOKEN"
+}

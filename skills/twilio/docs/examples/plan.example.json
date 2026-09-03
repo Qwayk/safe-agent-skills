@@ -1,12 +1,15 @@
 {
+  "schema_version": 1,
+  "tool": "qwayk-twilio-safe-agent-cli",
+  "plan_id": "6fdf304a95107b8c15977284951f369c8412611aeded1ade7ce511b21eb8c964",
   "binding": {
     "command": "api-v2010.create-message",
     "env_fingerprint": "5396ef72104086312cb8c859d714a77d06fce3857e8275c504a41e49226b40f4",
     "input_sha256": "e303a487ec49cd073e8ca54e5aa842e4d5b0fec376c8a12d4bb46aef9cffe4cb",
-    "inventory_sha256": "ea5319e71b2785f6a8596fd48bb9d514106e66614989cacd4f461bf725396f84",
+    "inventory_sha256": "70b0c58fb35631fb449a069c8b5127d010e0c3c06ddcd501f649f76432b7c482",
     "snapshot_sha256": null,
     "target_count": 1,
-    "tool_version": "0.1.0"
+    "tool_version": "0.2.0"
   },
   "expected_effect": "May contact a real person or route a communication.",
   "input_sha256": "e303a487ec49cd073e8ca54e5aa842e4d5b0fec376c8a12d4bb46aef9cffe4cb",
@@ -19,7 +22,6 @@
     "region": "us1",
     "server": "https://api.twilio.com"
   },
-  "plan_id": "0b7d581235cd37438715ca455d719d6cf14ffd2b367c499b14f099ebe5ffb4c6",
   "required_acknowledgements": [
     "ack_contact",
     "ack_no_snapshot",
@@ -31,7 +33,6 @@
     "spend",
     "write"
   ],
-  "schema_version": 1,
   "snapshot": {
     "file": null,
     "read_command": "api-v2010.list-message",
@@ -42,6 +43,5 @@
     "body": "<REDACTED>"
   },
   "target_count": 1,
-  "tool": "qwayk-twilio-safe-agent-cli",
   "verification_strategy": "fetch_created_resource_or_provider_status"
 }

@@ -4,18 +4,20 @@
 
 ### Added
 
-- A packaged catalog generated from 61 official Twilio OpenAPI specifications pinned at commit `1a9189c79a73781ddf45afcd0afd1f210742d68c`.
-- 1,325 fixed CLI commands with request validation from the pinned operation definitions and operation-specific official request contracts.
+- A packaged catalog generated from 60 official Twilio OpenAPI specifications pinned at commit `ef1d81e7b6e49e602530601e913eedc21aedd6da`.
+- 1,333 fixed CLI commands with request validation from the pinned operation definitions and operation-specific official request contracts.
 - A local `inventory show --command NAME` inspector for one command's fixed input contract.
 - API-key Basic authentication by default, a warned Account Auth Token fallback, operation-scoped OAuth, and paired region-and-edge routing.
 - Direct safe reads, protected sensitive-output files, plan-first paid reads and writes, approval acknowledgements, optional protected snapshot binding, receipts, and post-write checks.
 - Public guides, safe examples, the Twilio skill wrapper, generated API coverage, and local behavior tests.
+- Credential-free local contracts for strict ConversationRelay TwiML, documented WebSocket messages, webhook signatures, and Agent Connect metadata.
+- Bounded ConversationRelay `Language` children, `Connect` `GET`/`POST` methods, and Twilio-compatible repeated form-signature value canonicalization with strict size and shape limits.
 - A public skill package with the install slug `twilio` in `Qwayk/safe-agent-skills`.
 
 ### Safety
 
 - Removed the starter tool's generic request and jobs patterns. The Twilio tool has no raw URL, arbitrary method, SDK pass-through, or generic batch runner.
-- Audited all 81 writes that the pinned OpenAPI did not type completely against current Twilio documentation and Twilio-owned product schemas. Added 67 fixed commands, mapped two deprecated Preview Marketplace writes to stable v1 commands, and kept 12 rows non-callable with exact official evidence.
+- Audited all 81 writes that the pinned OpenAPI did not type completely against current Twilio documentation and Twilio-owned product schemas. Added 71 operation-specific manual request supplements; remaining audited rows retain explicit dispositions in the generated coverage ledger. The overall inventory separately records 205 legacy, 9 canonical-duplicate, 1 developer-preview, and 6 private-or-unavailable raw rows outside the callable command count.
 - Added a strict SCIM user PATCH with path-specific scalar types, paired equal username/email changes, required `If-Match`, redacted snapshots, and snapshot-version binding.
 - Added the Public Beta Porting webhook overwrite with HTTPS-only targets, the exact 12 POST-side notification values, required before-state snapshot, and paired-GET verification.
 - Allowed flexible JSON only in the exact field documented for that operation. Stringified form JSON is parsed, shape- and size-checked, and recursively redacted; undocumented optional branches remain refused.

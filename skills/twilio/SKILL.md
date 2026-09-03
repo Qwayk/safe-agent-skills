@@ -15,7 +15,9 @@ Before building an input file for an unfamiliar command, inspect its exact decla
 qwayk-twilio-safe-agent-cli inventory show --command api-v2010.create-message
 ```
 
-The fixed catalog currently exposes 1,325 commands from 1,550 pinned operations. Current commands include strict SCIM user PATCH, Public Beta Porting webhook configuration, Verify starts, Studio flows and executions, Video rooms, Sync data, Proxy sessions, Event Streams, and Numbers or TrustHub compliance resources. Inspect the exact command before using any of them; product names do not imply that every optional provider field is accepted.
+The fixed catalog currently exposes 1,333 commands from 1,554 pinned operations. Current commands include strict SCIM user PATCH, Public Beta Porting webhook configuration, Verify starts, Studio flows and executions, Video rooms, Sync data, Proxy sessions, Event Streams, and Numbers or TrustHub compliance resources. Inspect the exact command before using any of them; product names do not imply that every optional provider field is accepted.
+
+For credential-free local checks, use the fixed commands `twiml conversation-relay-generate`, `twiml conversation-relay-validate`, `websocket conversation-relay-message-validate`, `webhook twilio-signature-validate`, and `agent-connect contract`. These validate bounded inputs or report local integration metadata; they do not call Twilio or host a service.
 
 ## Safe workflow
 

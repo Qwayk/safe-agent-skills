@@ -4,7 +4,7 @@ The tool has three parts: a pinned operation catalog, a fixed request executor, 
 
 ## Pinned catalog
 
-`scripts/generate_twilio_inventory.py` reads 61 official JSON specifications from the pinned `twilio/twilio-oai` commit. It generates the packaged operation catalog and `docs/api_coverage.md` together, so command registration and the coverage ledger use the same rows.
+`scripts/generate_twilio_inventory.py` reads 60 official JSON specifications from the pinned `twilio/twilio-oai` commit. It generates the packaged operation catalog and `docs/api_coverage.md` together, so command registration and the coverage ledger use the same rows.
 
 The catalog records method, server, literal path, declared parameters, request schemas, auth requirements, private-data annotations, version relationships, risk labels, snapshot strategy, and post-write check strategy. The loader refuses a catalog whose disposition totals differ from the pinned boundary.
 

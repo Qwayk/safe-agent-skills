@@ -73,7 +73,7 @@ Start here if you want lead, pipeline, support, outreach, or lifecycle work.
 | [**Salesforce**](salesforce-platform/README.md)<br><sub>Install slug: <code>salesforce-platform</code></sub> | Review and plan Salesforce platform object, data, and metadata work | Salesforce account | Reads + careful changes |
 | [**Instantly**](instantly/README.md)<br><sub>Install slug: <code>instantly</code></sub> | Review Instantly outreach, campaigns, leads, sending accounts, analytics, and webhooks | Instantly account | Reads + careful changes |
 | [**Klaviyo**](klaviyo/README.md)<br><sub>Install slug: <code>klaviyo</code></sub> | Review Klaviyo accounts, profiles, lists, campaigns, flows, forms, events, catalogs, and tags | Klaviyo account | Reads + careful changes |
-| [**Twilio**](twilio/README.md)<br><sub>Install slug: <code>twilio</code></sub> | Review messages, calls, phone numbers, usage, Verify, Conversations, Studio, routing, identity, compliance, and other supported communications work | Twilio account | Reads + careful changes |
+| [**Twilio**](twilio/README.md)<br><sub>Install slug: <code>twilio</code></sub> | Review and safely prepare supported Twilio work, including calls, messaging, ConversationRelay, local TwiML, WebSocket, and webhook checks | Twilio account | Reads + careful changes |
 | [**Zendesk**](zendesk/README.md)<br><sub>Install slug: <code>zendesk</code></sub> | Review Zendesk support data and make careful ticketing changes | Zendesk account | Reads + careful changes |
 
 ## Automation and integration

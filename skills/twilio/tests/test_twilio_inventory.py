@@ -19,7 +19,7 @@ except ImportError:
     openapi_inventory = None  # type: ignore[assignment]
 
 
-PINNED_COMMIT = "1a9189c79a73781ddf45afcd0afd1f210742d68c"
+PINNED_COMMIT = "ef1d81e7b6e49e602530601e913eedc21aedd6da"
 _CHECKOUT_VALUE = os.environ.get("TWILIO_OAI_SPEC_ROOT")
 CHECKOUT_ROOT = Path(_CHECKOUT_VALUE) if _CHECKOUT_VALUE else None
 HAS_SOURCE_CHECKOUT = CHECKOUT_ROOT is not None and CHECKOUT_ROOT.exists()
@@ -43,23 +43,23 @@ class TestTwilioInventory(unittest.TestCase):
         source = self.catalog["source"]
         counts = self.catalog["counts"]
         self.assertEqual(source["commit"], PINNED_COMMIT)
-        self.assertEqual(source["spec_count"], 61)
-        self.assertEqual(source["path_count"], 982)
-        self.assertEqual(source["operation_count"], 1_550)
+        self.assertEqual(source["spec_count"], 60)
+        self.assertEqual(source["path_count"], 893)
+        self.assertEqual(source["operation_count"], 1_554)
         self.assertEqual(
             source["methods"],
-            {"DELETE": 231, "GET": 782, "PATCH": 12, "POST": 507, "PUT": 18},
+            {"DELETE": 230, "GET": 777, "PATCH": 12, "POST": 516, "PUT": 19},
         )
-        self.assertEqual(len(self.operations), 1_550)
+        self.assertEqual(len(self.operations), 1_554)
         self.assertEqual(
             counts,
             {
                 "canonical_duplicate": 9,
-                "command": 1_325,
-                "developer_preview": 5,
+                "command": 1_333,
+                "developer_preview": 1,
                 "legacy_eol": 205,
                 "private_or_unavailable": 6,
-                "raw_operations": 1_550,
+                "raw_operations": 1_554,
             },
         )
         self.assertTrue(all(row["operation_id"] for row in self.operations))
@@ -71,7 +71,7 @@ class TestTwilioInventory(unittest.TestCase):
 
         command_rows = [row for row in self.operations if row["disposition"] == "command"]
         commands = [row["command"] for row in command_rows]
-        self.assertEqual(len(commands), 1_325)
+        self.assertEqual(len(commands), 1_333)
         self.assertEqual(len(commands), len(set(commands)))
         self.assertTrue(
             all(re.fullmatch(r"[a-z0-9-]+\.[a-z0-9-]+", command) for command in commands)
@@ -123,7 +123,7 @@ class TestTwilioInventory(unittest.TestCase):
         self.assertTrue(all(row["duplicate_of"] is None for row in legacy))
         self.assertTrue(all(row["classification"]["legacy_eol"] for row in legacy))
 
-    def test_all_81_schema_gaps_have_audited_manual_dispositions(self) -> None:
+    def test_all_schema_gaps_have_audited_manual_dispositions(self) -> None:
         audited = [row for row in self.operations if row.get("manual_contract")]
         self.assertEqual(len(audited), 81)
         self.assertTrue(all(row["manual_contract"]["sources"] for row in audited))
@@ -140,10 +140,6 @@ class TestTwilioInventory(unittest.TestCase):
 
         expected_non_commands = {
             "accounts-v1.UpdateMessagingGeopermissions": "private_or_unavailable",
-            "assistants-v1.CreateKnowledge": "developer_preview",
-            "assistants-v1.UpdateKnowledge": "developer_preview",
-            "assistants-v1.CreateTool": "developer_preview",
-            "assistants-v1.UpdateTool": "developer_preview",
             "flex-v1.UpdateConfiguration": "private_or_unavailable",
             "flex-v1.CreateInteractionChannelParticipant": "private_or_unavailable",
             "flex-v1.CreateInteractionTransfer": "private_or_unavailable",
@@ -255,7 +251,7 @@ class TestTwilioInventory(unittest.TestCase):
     def test_pin_and_every_source_file_hash_match_the_supplied_specs(self) -> None:
         source = self.catalog["source"]
         files = source["spec_files"]
-        self.assertEqual(len(files), 61)
+        self.assertEqual(len(files), 60)
         self.assertIsNotNone(CHECKOUT_ROOT)
         spec_dir = openapi_inventory.resolve_spec_dir(CHECKOUT_ROOT)
         for entry in files:
@@ -275,18 +271,18 @@ class TestTwilioInventory(unittest.TestCase):
             if not requirements:
                 schemes["none"] += 1
                 continue
-            self.assertEqual(len(requirements), 1)
-            names = list(requirements[0])
-            self.assertEqual(len(names), 1)
-            schemes[names[0]] += 1
-            self.assertIn(names[0], row["security"]["schemes"])
+            for requirement in requirements:
+                for name in requirement:
+                    schemes[name] += 1
+                    self.assertIn(name, row["security"]["schemes"])
         self.assertEqual(
             schemes,
             {
-                "accountSid_authToken": 1_490,
-                "basic_apikey_or_accountsid": 41,
+                "accountSid_authToken": 1_492,
+                "basic_apikey_or_accountsid": 42,
                 "oAuth2ClientCredentials": 11,
-                "none": 8,
+                "access_token_bearer": 9,
+                "none": 9,
             },
         )
 
@@ -294,7 +290,7 @@ class TestTwilioInventory(unittest.TestCase):
         configuration = self._row("conversations-v2", "FetchConfiguration")
         self.assertEqual(
             [(item["name"], item["in"]) for item in configuration["parameters"]],
-            [("Sid", "path")],
+            [("ConfigurationSid", "path")],
         )
 
         message = self._row("api-v2010", "CreateMessage")
@@ -309,12 +305,28 @@ class TestTwilioInventory(unittest.TestCase):
         self.assertEqual(message["success_responses"][0]["status"], "201")
         self.assertIn("pathType", message["path_x_twilio"])
 
-        referenced_body = self._row("assistants-v1", "CreateAssistant")
-        resolved_schema = referenced_body["request"]["schemas"]["application/json"][
-            "resolved_schema"
-        ]
-        self.assertIn("properties", resolved_schema)
-        self.assertIn("name", resolved_schema["properties"])
+        self.assertNotIn("assistants-v1", {row["spec_id"] for row in self.operations})
+
+    def test_new_official_families_and_conversation_parameters_are_present(self) -> None:
+        self.assertTrue(any(row["spec_id"] == "routes-v3" for row in self.operations))
+        self.assertTrue(any(row["spec_id"] == "voice-v2" for row in self.operations))
+        self.assertTrue(any(row["spec_id"] == "voice-v3" for row in self.operations))
+        conversation_rows = [row for row in self.operations if row["spec_id"] == "conversations-v2"]
+        self.assertEqual(
+            sum(
+                p["name"] == "ConversationSid" and p["in"] == "path"
+                for row in conversation_rows
+                for p in row["parameters"]
+            ),
+            13,
+        )
+        self.assertFalse(
+            any(
+                p["in"] == "path" and p["name"] in {"id", "ConversationId", "ActionId"}
+                for row in conversation_rows
+                for p in row["parameters"]
+            )
+        )
 
     def test_reachable_twilio_pii_metadata_is_preserved(self) -> None:
         message = self._row("api-v2010", "CreateMessage")
@@ -437,13 +449,13 @@ class TestTwilioInventory(unittest.TestCase):
         self.assertEqual(
             {name: counts[name] for name in risk_families},
             {
-                "outbound_contact": 36,
-                "spend": 138,
+                "outbound_contact": 35,
+                "spend": 146,
                 "bulk": 6,
-                "destructive": 188,
-                "auth_or_permission": 137,
-                "identity_or_compliance": 128,
-                "production_change": 275,
+                "destructive": 187,
+                "auth_or_permission": 138,
+                "identity_or_compliance": 136,
+                "production_change": 296,
             },
         )
         allowed = set(risk_families) | {"preview", "read", "sensitive_data", "write"}

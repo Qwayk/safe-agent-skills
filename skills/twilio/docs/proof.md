@@ -2,25 +2,23 @@
 
 The source has local and mocked proof for its command boundary and safety behavior. It does not have live Twilio account proof.
 
+## Current verification — 2026-09-03
+
+The focused inventory suite against the pinned checkout passed **20/20** checks. The complete local suite passed **125 tests with 2 expected skips** when `TWILIO_OAI_SPEC_ROOT` was unset, and passed **125 tests with zero skips** when `TWILIO_OAI_SPEC_ROOT` pointed to the pinned checkout. Ruff is clean, mypy is clean across the current source and scripts, and the package build, clean installed validator, and local-contract smoke commands passed. No live Twilio request, credential check, or provider callback was used.
+
 ## Pinned boundary
 
-The generator reads 61 JSON specifications from official `twilio/twilio-oai` commit `1a9189c79a73781ddf45afcd0afd1f210742d68c` and accounts for 1,550 raw operations:
+The generator reads 60 JSON specifications from official `twilio/twilio-oai` commit `ef1d81e7b6e49e602530601e913eedc21aedd6da` and accounts for 1,554 raw operations:
 
-- 1,325 fixed commands
+- 1,333 fixed commands
 - 205 past-end-of-life rows
 - 9 exact older routes mapped to their canonical command
-- 5 developer-preview rows without a stable complete request contract
+- 1 developer-preview row without a stable complete request contract
 - 6 rows whose complete current request contract is not publicly available
 
 The catalog loader checks those totals before registering commands. Command names are unique, the generated catalog and `docs/api_coverage.md` come from the same rows, and no raw URL or arbitrary-method command exists.
 
-The pinned OpenAPI left 81 writes empty or partly untyped. The audit checked each one against current official Twilio docs and Twilio-owned product schemas. Sixty-seven now have fixed operation-specific commands. Two deprecated Preview Marketplace routes map to stable v1 commands. The other 12 stay non-callable with exact evidence: one removed Studio v1 operation, five developer-preview operations without stable complete contracts, and six operations without a complete public request contract.
-
-Those 12 are not one blanket schema category:
-
-- Studio v1 Engagement was removed by Twilio.
-- Four Assistants knowledge/tool writes and the Numbers v2 bulk hosted-number order are developer preview without a stable complete contract.
-- The Accounts Geo Permissions update, four Flex writes, and one Numbers signing configuration write lack a complete current public contract.
+The pinned OpenAPI left 81 writes empty or partly untyped. The audit checked each one against current official Twilio docs and Twilio-owned product schemas. Seventy-one now have operation-specific manual request supplements. The remaining audited rows retain explicit dispositions in the generated coverage ledger. Separately, the overall inventory has 205 legacy, 9 canonical-duplicate, 1 developer-preview, and 6 private-or-unavailable raw rows outside the callable command count; these categories are not a second manual-contract equation.
 
 The boundary still contains two Frontline commands for existing customers. Frontline is end-of-sale and scheduled to retire on September 30, 2026, so those commands are access-gated, live-unverified, and require a boundary review before that date.
 
@@ -39,20 +37,10 @@ The local suite covers:
 - request validation before dry-run planning, plan creation, account and input binding, changed-plan refusal, snapshot file permissions, category acknowledgements, paid Lookup planning, exact bulk target derivation, count matching, and the 25-target limit
 - receipt pre-creation before HTTP, existing and unwritable receipt refusal, one-attempt writes, `succeeded`/`failed`/`uncertain` attempt records, mocked post-write reads, and the difference between queued and delivered
 - safe example files, all four documented Twilio test-credential fixtures, wrapper-to-command alignment, documentation links, and packaged catalog access
+- local-contract validation for strict ConversationRelay TwiML, bounded nested Language children, GET/POST Connect methods, documented WebSocket messages, raw-body webhook signatures with environment-only Auth Token lookup and repeated-value canonicalization, and Agent Connect metadata; plus installed-boundary regression and validator smoke coverage
 - strict SCIM PatchOp paths/types, paired username/email rules, required optimistic locking, redacted version-only snapshots, snapshot command/account/target binding, Porting public-host HTTPS and event refusals, overwrite planning, mandatory snapshots, paired post-write GETs, and operation-specific normal-output, provider-error, and failed-receipt redaction
 
 These checks use local fixtures and mocked HTTP responses. They prove what the tool constructs, refuses, records, and reports without contacting Twilio.
-
-The final source-ready run on July 19, 2026, produced these results:
-
-- 101 tests passed with the pinned source checkout enabled.
-- Ruff found no issues.
-- mypy found no issues in 18 source and script files.
-- The source distribution and wheel built successfully.
-- A new Python 3.12 environment installed the wheel, reported the 1,325-command boundary, validated the shipped help without rollback or unconditional complete-response promises, and passed the installed SCIM PATCH and Porting acceptance/refusal guards, required snapshot provenance, public-host URL refusal, and operation-specific read/error/failed-receipt redaction. Earlier installed guards for Studio, Video, paid Lookup, and Bulk Eligibility remain covered by the full source suite.
-- A fresh generator run reproduced the checked-in catalog and coverage page byte-for-byte.
-- The `twilio` source wrapper passed the Codex skill validator.
-- With `TWILIO_OAI_SPEC_ROOT` unset, the clean-checkout inventory suite passed against the packaged catalog and skipped only the two checks that require the external pinned source tree. Supplying the pinned checkout enables and passes those source-hash and writer-regeneration checks.
 
 ## Not proved against Twilio
 

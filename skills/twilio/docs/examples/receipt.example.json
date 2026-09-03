@@ -7,7 +7,7 @@
   },
   "command": "api-v2010.create-message",
   "http_status": 201,
-  "plan_id": "0b7d581235cd37438715ca455d719d6cf14ffd2b367c499b14f099ebe5ffb4c6",
+  "plan_id": "6fdf304a95107b8c15977284951f369c8412611aeded1ade7ce511b21eb8c964",
   "provider_status": {
     "accepted": true,
     "completed": false,

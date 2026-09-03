@@ -16,11 +16,11 @@ class TestRegistryAndCli(unittest.TestCase):
         from twilio_safe_agent_cli.registry import load_registry
 
         registry = load_registry()
-        self.assertEqual(registry.summary()["raw_operations"], 1_550)
-        self.assertEqual(registry.summary()["commands"], 1_325)
+        self.assertEqual(registry.summary()["raw_operations"], 1_554)
+        self.assertEqual(registry.summary()["commands"], 1_333)
         self.assertEqual(registry.summary()["legacy_eol"], 205)
         self.assertEqual(registry.summary()["canonical_duplicates"], 9)
-        self.assertEqual(registry.summary()["developer_preview"], 5)
+        self.assertEqual(registry.summary()["developer_preview"], 1)
         self.assertEqual(registry.summary()["private_or_unavailable"], 6)
         self.assertEqual(
             registry.get("api-v2010.create-message")["operation_id"],
@@ -38,7 +38,7 @@ class TestRegistryAndCli(unittest.TestCase):
             rc = main(["--output", "json", "inventory", "summary"])
         payload = json.loads(stdout.getvalue())
         self.assertEqual(rc, 0)
-        self.assertEqual(payload["commands"], 1_325)
+        self.assertEqual(payload["commands"], 1_333)
         self.assertEqual(stdout.getvalue().count("\n"), 1)
 
     def test_inventory_show_explains_one_fixed_input_contract_without_credentials(self) -> None:

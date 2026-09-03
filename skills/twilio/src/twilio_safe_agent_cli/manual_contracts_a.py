@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
-OAI_COMMIT = "1a9189c79a73781ddf45afcd0afd1f210742d68c"
+OAI_COMMIT = "ef1d81e7b6e49e602530601e913eedc21aedd6da"
 OAI_ROOT = f"https://github.com/twilio/twilio-oai/blob/{OAI_COMMIT}/spec/json"
 
 
@@ -293,33 +293,50 @@ CONTRACTS: dict[tuple[str, str], dict[str, Any]] = {
             "The existing idempotency key remains required; payment writes are never automatically retried.",
         ),
     ),
-    ("twilio_assistants_v1.json", "CreateKnowledge"): _entry(
-        "https://www.twilio.com/en-us/blog/introducing-twilio-ai-assistants",
-        f"{OAI_ROOT}/twilio_assistants_v1.json",
-        disposition="developer_preview",
-        reason="The Assistants API is Developer Preview and its current public nested knowledge contract is incomplete.",
-        restrictions=("Use the separately documented Knowledge v1 command for Web, Text, or File sources.",),
+    ("twilio_voice_v2.json", "UpdateConfiguration"): _entry(
+        "https://www.twilio.com/docs/voice/api/configuration-resource",
+        f"{OAI_ROOT}/twilio_voice_v2.json",
+        schema_patches={JSON: (
+            (("properties", "unique_name"), {"type": "string", "maxLength": 256}),
+            (("properties", "description"), {"type": "string", "maxLength": 256}),
+            (("properties", "configuration"), _flexible_object()),
+        )},
+        risk_add=("production_change",),
+        restrictions=(
+            "Only unique_name, description, and the documented configuration object are accepted; arbitrary top-level fields are refused.",
+            "Configuration is the sole documented flexible JSON field and is bounded by the CLI request-size limit.",
+        ),
     ),
-    ("twilio_assistants_v1.json", "UpdateKnowledge"): _entry(
-        "https://www.twilio.com/en-us/blog/introducing-twilio-ai-assistants",
-        f"{OAI_ROOT}/twilio_assistants_v1.json",
-        disposition="developer_preview",
-        reason="The Assistants API is Developer Preview and its current public nested knowledge contract is incomplete.",
-        restrictions=("Use the separately documented Knowledge v1 command for Web, Text, or File sources.",),
+    ("twilio_voice_v2.json", "CreateConfiguration"): _entry(
+        "https://www.twilio.com/docs/voice/api/configuration-resource",
+        f"{OAI_ROOT}/twilio_voice_v2.json",
+        schema_patches={JSON: (
+            (("properties", "unique_name"), {"type": "string", "maxLength": 256}),
+            (("properties", "description"), {"type": "string", "maxLength": 256}),
+            (("properties", "configuration"), _flexible_object()),
+        )},
+        risk_add=("production_change",),
+        restrictions=("Only the documented configuration fields are accepted; configuration is the sole flexible JSON field.",),
     ),
-    ("twilio_assistants_v1.json", "CreateTool"): _entry(
-        "https://www.twilio.com/en-us/blog/developing-managing-tools-twilio-ai-assistants",
-        f"{OAI_ROOT}/twilio_assistants_v1.json",
-        disposition="developer_preview",
-        reason="The Assistants API is Developer Preview and does not publish a complete fixed Tool meta/policy request contract.",
-        restrictions=("No generic tool or policy bridge is exposed.",),
+    ("twilio_voice_v2.json", "CreateAccountDefaultConfiguration"): _entry(
+        "https://www.twilio.com/docs/voice/api/configuration-resource",
+        f"{OAI_ROOT}/twilio_voice_v2.json",
+        schema_patches={JSON: (
+            (("properties", "description"), {"type": "string", "maxLength": 256}),
+            (("properties", "configuration"), _flexible_object()),
+        )},
+        risk_add=("production_change",),
+        restrictions=("Configuration is the sole documented flexible JSON field.",),
     ),
-    ("twilio_assistants_v1.json", "UpdateTool"): _entry(
-        "https://www.twilio.com/en-us/blog/developing-managing-tools-twilio-ai-assistants",
-        f"{OAI_ROOT}/twilio_assistants_v1.json",
-        disposition="developer_preview",
-        reason="The Assistants API is Developer Preview and does not publish a complete fixed Tool meta/policy request contract.",
-        restrictions=("No generic tool or policy bridge is exposed.",),
+    ("twilio_voice_v2.json", "UpdateAccountDefaultConfiguration"): _entry(
+        "https://www.twilio.com/docs/voice/api/configuration-resource",
+        f"{OAI_ROOT}/twilio_voice_v2.json",
+        schema_patches={JSON: (
+            (("properties", "description"), {"type": "string", "maxLength": 256}),
+            (("properties", "configuration"), _flexible_object()),
+        )},
+        risk_add=("production_change",),
+        restrictions=("Configuration is the sole documented flexible JSON field.",),
     ),
     ("twilio_conversations_v2.json", "CreateConversationAction"): _entry(
         "https://www.twilio.com/docs/api/conversations/v2/action/create-conversation-action",

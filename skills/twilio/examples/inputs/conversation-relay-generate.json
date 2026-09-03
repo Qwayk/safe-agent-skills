@@ -1,0 +1,13 @@
+{
+  "url": "wss://voice.example.test/conversation-relay",
+  "action": "https://voice.example.test/relay-complete",
+  "method": "POST",
+  "welcomeGreeting": "Hello, how can I help?",
+  "reportInputDuringAgentSpeech": "speech",
+  "events": "speaker-events tokens-played",
+  "speechModel": "nova-3-general",
+  "eotThreshold": 0.8,
+  "partialPrompts": true,
+  "languages": [{"code": "en-US", "ttsProvider": "Google", "voice": "en-US-Neural2-A"}],
+  "parameters": [{"name": "tenant", "value": "demo"}]
+}

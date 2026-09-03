@@ -2,6 +2,8 @@
 
 The tracked `twilio` skill wrapper tells an agent when to choose this CLI and how to keep Twilio work inside its fixed command and approval rules.
 
+For credential-free checks, route to the fixed local commands in [local voice and webhook checks](local_contracts.md). Keep their strict `wss://`/TwiML and documented WebSocket limits intact; webhook signature checks use an environment-only Auth Token and raw request body, and Agent Connect is local SDK/middleware metadata only.
+
 ## Use it for
 
 Use the skill when the user wants to read, review, prepare, or change supported Twilio communications resources. Examples include message and call status, usage, phone numbers, messaging services, Verify configuration, Conversations, Studio, Serverless, TaskRouter, routing, identity, and account resources.

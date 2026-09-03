@@ -1,0 +1,3 @@
+{
+  "xml": "<Response><Connect><ConversationRelay url=\"wss://voice.example.test/conversation-relay\" welcomeGreeting=\"Hello\" /></Connect></Response>"
+}

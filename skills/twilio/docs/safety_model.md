@@ -1,5 +1,7 @@
 # What happens before Twilio changes
 
+Local contract commands are outside the provider-change workflow: they validate bounded TwiML, WebSocket messages, or signatures without credentials or network access. Signature validation reads a named environment-only Auth Token and requires the raw request body for JSON; it does not receive or store a token from the input file. Agent Connect output is metadata only, not hosting or an execution claim.
+
 The agent can run ordinary account reads by itself. Anything that can change the account, create cost, contact a person, or start bulk work stops at a plan first.
 
 ## Reads

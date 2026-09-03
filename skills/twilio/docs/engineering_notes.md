@@ -2,7 +2,9 @@
 
 ## 2026-07-18: one generated boundary
 
-The official source is `twilio/twilio-oai` at commit `1a9189c79a73781ddf45afcd0afd1f210742d68c`. The packaged catalog and the human coverage ledger are generated together. This avoids a CLI list that quietly differs from its documentation.
+The official source is `twilio/twilio-oai` at commit `ef1d81e7b6e49e602530601e913eedc21aedd6da`. The packaged catalog and the human coverage ledger are generated together. This avoids a CLI list that quietly differs from its documentation.
+
+The local-contract module is deliberately separate from the provider catalog. It validates strict ConversationRelay TwiML and current documented WebSocket message types, computes Twilio signatures from a named environment-only Auth Token, and reports Agent Connect SDK/middleware metadata. It has no hosting, provider, LLM, live-action, or compliance behavior.
 
 Command names are deterministic: `<spec-id>.<operation-id-kebab>`. The public CLI presents the same identity as `<spec-id> <operation-id-kebab>`.
 
@@ -18,7 +20,7 @@ Frontline is different because its retirement date is still in the future. Its t
 
 Referenced request schemas are resolved into the packaged catalog. The executor validates required, unknown, read-only, enum, object, array, and primitive fields before a request. If a body schema does not expose safe fields, a non-empty body is refused.
 
-The pinned OpenAPI left 81 writes empty or partly untyped. Each row was checked against current official Twilio documentation and Twilio-owned product schemas at Node repository commit `e9e546985dcc293e4f71888160725739e7b28c37`. This added 67 operation-specific commands. Two deprecated Preview Marketplace routes now point to the stable v1 commands. Twelve stay non-callable: the removed Studio v1 Engagement, five developer-preview operations without stable complete contracts, and six operations whose complete current contract is not public.
+The pinned OpenAPI left 81 writes empty or partly untyped. Each row was checked against current official Twilio documentation and Twilio-owned product schemas at Node repository commit `e9e546985dcc293e4f71888160725739e7b28c37`. Seventy-one now have operation-specific manual request supplements. The remaining audited rows retain explicit dispositions in the generated coverage ledger. Separately, the overall inventory has 205 legacy, 9 canonical-duplicate, 1 developer-preview, and 6 private-or-unavailable raw rows outside the callable command count; these categories are not a second manual-contract equation.
 
 The SCIM reference now documents the PatchOp fields on a newer GA route, while the pinned operation boundary still contains the older preview organization route. The command deliberately keeps that pinned route, uses only the documented scalar subset, and remains preview, access-gated, and live-unverified. Porting webhook configuration is Public Beta and behaves as an overwrite even though the pinned operation is named `Create`; it therefore uses fetch-before-change and requires the paired snapshot.
 

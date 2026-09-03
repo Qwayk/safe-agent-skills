@@ -5,12 +5,19 @@ import re
 import unittest
 from pathlib import Path
 
+from twilio_safe_agent_cli import __version__
 from twilio_safe_agent_cli.registry import load_registry
 
 TOOL_ROOT = Path(__file__).resolve().parents[1]
 
 
 class TestArtifactsExamplesAndWrapper(unittest.TestCase):
+    def test_version_output_example_matches_shipped_version(self) -> None:
+        value = json.loads(
+            (TOOL_ROOT / "docs/examples/outputs/version.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(value["version"], __version__)
+
     def test_every_committed_json_example_parses_and_contains_no_secret_value(self) -> None:
         paths = sorted((TOOL_ROOT / "examples").rglob("*.json"))
         paths += sorted((TOOL_ROOT / "docs/examples").rglob("*.json"))
@@ -90,7 +97,7 @@ class TestArtifactsExamplesAndWrapper(unittest.TestCase):
             input_obj,
             cfg,
             registry.inventory_hash,
-            "0.1.0",
+            __version__,
             snapshot_command=paired["command"] if paired else None,
         )
         actual = json.loads(

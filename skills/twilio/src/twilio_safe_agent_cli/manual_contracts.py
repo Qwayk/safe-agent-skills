@@ -6,7 +6,7 @@ from typing import Any
 
 
 def load_manual_contracts() -> dict[tuple[str, str], dict[str, Any]]:
-    """Load and validate the reviewed supplements for the 81 incomplete upstream schemas."""
+    """Load and validate the reviewed supplements for the incomplete upstream schemas."""
 
     from .manual_contracts_a import CONTRACTS as CONTRACTS_A
     from .manual_contracts_b import CONTRACTS as CONTRACTS_B

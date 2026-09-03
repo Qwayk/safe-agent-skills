@@ -18,3 +18,4 @@ class TestCliVersion(unittest.TestCase):
         self.assertTrue(payload["ok"])
         self.assertEqual(payload["tool"], "qwayk-twilio-safe-agent-cli")
         self.assertIn("version", payload)
+        self.assertEqual(payload["version"], "0.2.0")

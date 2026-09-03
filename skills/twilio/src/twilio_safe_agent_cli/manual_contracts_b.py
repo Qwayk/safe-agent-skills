@@ -13,7 +13,7 @@ Contract = dict[str, Any]
 Path = tuple[str, ...]
 SchemaPatch = tuple[Path, Any]
 
-_OAI_COMMIT = "1a9189c79a73781ddf45afcd0afd1f210742d68c"
+_OAI_COMMIT = "ef1d81e7b6e49e602530601e913eedc21aedd6da"
 _OAI_ROOT = f"https://github.com/twilio/twilio-oai/blob/{_OAI_COMMIT}/spec/json"
 
 

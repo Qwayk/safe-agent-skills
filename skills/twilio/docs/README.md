@@ -13,6 +13,7 @@ If this is your first time using the tool, [connect your account](onboarding.md)
 - **I want to know what was tested.** Read [proof and unverified behavior](proof.md).
 - **The command failed.** Try [troubleshooting](troubleshooting.md).
 - **I am connecting an agent.** Read [how the skill wrapper should behave](skills_wrappers.md).
+- **I need a credential-free voice or webhook check.** Use [local voice and webhook checks](local_contracts.md).
 
 ## For maintainers
 

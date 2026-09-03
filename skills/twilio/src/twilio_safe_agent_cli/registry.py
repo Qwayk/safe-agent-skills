@@ -151,11 +151,11 @@ def load_registry(path: str | Path | None = None) -> CatalogRegistry:
         raise ValidationError(f"Twilio operation catalog is unavailable or invalid: {type(exc).__name__}") from None
     if data.get("counts") != {
         "canonical_duplicate": 9,
-        "command": 1_325,
-        "developer_preview": 5,
+        "command": 1_333,
+        "developer_preview": 1,
         "legacy_eol": 205,
         "private_or_unavailable": 6,
-        "raw_operations": 1_550,
+        "raw_operations": 1_554,
     }:
         raise ValidationError("Twilio operation catalog failed its pinned count check")
     return CatalogRegistry(data=data, inventory_hash=hashlib.sha256(raw).hexdigest())

@@ -1,22 +1,24 @@
 # Twilio
 
-The Twilio API tool for agents helps you understand and manage the communications work in your Twilio account.
+The Twilio API tool for agents helps you review communication activity and safely prepare changes to your Twilio account.
 
-You can ask your agent to check message and call activity, review phone numbers and usage, inspect delivery or verification status, find account problems, and prepare changes across Twilio's public communications APIs.
+You can use it to review calls and messages, check number and messaging setup, and prepare bounded ConversationRelay or Agent Connect voice-agent work. You can also validate TwiML and webhook inputs locally before deploying anything.
 
-For example: "Show me messages that failed today," "Check this call's status," "List phone numbers that are not attached to an application," or "Prepare a new messaging service for this project."
+For example: "Show me calls and messages that failed today," "Check if any active numbers are missing their expected voice setup," "Draft a bounded ConversationRelay plan for one trial number," or "Tell me what phone-number bindings look incomplete."
 
-The agent looks first and explains what it found. If you ask it to contact someone, spend money, release a number, change routing or permissions, or make another live change, it shows you the exact plan and waits for the required approval before anything runs.
+The agent looks first, explains what it found, and keeps all changes in review-before-live mode.
 
 ## Start here first
 
 Ask your agent:
 
 ```text
-Connect to Twilio, confirm which account I gave you access to, and tell me what is worth checking first. Do not change anything.
+Connect to Twilio, confirm which Account SID and subaccount (if any), region, and edge you connected to, and do not change anything.
+
+Tell me what you think is best to inspect first.
 ```
 
-That gives you a useful account check without sending a message, making a call, buying a number, or changing live routing.
+This keeps you in review-first mode and avoids sending messages, placing calls, buying numbers, or changing live routing without explicit approval.
 
 - [Connect your Twilio account](docs/onboarding.md)
 - [Get the first safe result](docs/quickstart.md)
@@ -30,6 +32,8 @@ That gives you a useful account check without sending a message, making a call, 
 - Run an approved change through one fixed Twilio operation, then record what Twilio accepted and what could be checked afterward.
 
 The tool does not expose a raw request escape hatch. Every command names a pinned Twilio operation and accepts only the path, query, header, and body fields declared for that operation.
+
+Four credential-free local contracts are also available: generate or validate strict ConversationRelay TwiML, validate documented ConversationRelay WebSocket messages, validate a Twilio webhook signature, and inspect the local Agent Connect SDK/middleware metadata contract. These commands do not contact Twilio or host a webhook, WebSocket, model, or agent.
 
 ## What happens before live changes
 
@@ -74,9 +78,9 @@ Fill the new `.env` file before the auth check. The [onboarding guide](docs/onbo
 
 ## What it covers today
 
-The pinned official source contains 1,550 raw operations across 61 JSON specifications. The tool exposes 1,325 fixed commands. The remaining rows are 205 past-end-of-life operations, 9 exact older routes mapped to a current command, 5 developer-preview operations without a stable public contract, and 6 operations whose complete request contract is not publicly available. The equation is `1,325 + 205 + 9 + 5 + 6 = 1,550`.
+The pinned official source contains 1,554 raw operations across 60 JSON specifications. The tool exposes 1,333 fixed commands. The remaining rows are 205 past-end-of-life operations, 9 exact older routes mapped to a current command, 1 developer-preview operation without a stable public contract, and 6 operations whose complete request contract is not publicly available. The equation is `1,333 + 205 + 9 + 1 + 6 = 1,554`.
 
-An official-source review resolved the 81 write definitions that the pinned OpenAPI did not type completely. Sixty-seven now have operation-specific commands, including strict SCIM user PATCH and Public Beta Porting webhook configuration, Verify starts, Studio flows and executions, Video rooms, Sync writes, Proxy sessions, Event Streams, and regulatory writes. Two deprecated Preview Marketplace routes point to the stable Marketplace v1 commands. The other 12 stay non-callable: one removed Studio v1 operation, five developer-preview operations without a stable contract, and six operations whose complete current request shape is not public.
+An official-source review covered the 81 write definitions that the pinned OpenAPI did not type completely. Seventy-one now have operation-specific manual request supplements, including strict SCIM user PATCH and Public Beta Porting webhook configuration, Verify starts, Studio flows and executions, Video rooms, Sync writes, Proxy sessions, Event Streams, and regulatory writes. The remaining audited rows retain explicit dispositions in the coverage ledger. Separately, the overall boundary keeps 205 legacy, 9 canonical-duplicate, 1 developer-preview, and 6 private-or-unavailable raw rows out of the callable command count; these categories describe the generated inventory and are not a second manual-contract equation.
 
 SCIM user PATCH accepts only eight path-specific scalar replacements, requires paired equal username and primary-email changes, and binds `If-Match` to the protected paired-GET snapshot version. Porting webhook configuration accepts only its documented HTTPS targets on valid public hosts and 12 POST-side notification values; its plan states that POST overwrites the existing configuration and requires a paired snapshot. Both snapshots record and enforce the paired read command, account fingerprint, and exact read target. Normal SCIM and Porting output and provider errors hide user data and webhook URLs.
 
@@ -102,3 +106,4 @@ SendGrid, Segment, Twilio Console automation, webhook hosting, client-SDK-only h
 - [Understand approvals and receipts](docs/safety_model.md)
 - [Review what was checked](docs/proof.md)
 - [Check the official sources](docs/references.md)
+- [Run local voice and webhook checks](docs/local_contracts.md)

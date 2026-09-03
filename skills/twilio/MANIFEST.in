@@ -1,0 +1,4 @@
+include README.md CHANGELOG.md
+recursive-include docs *.md *.json
+recursive-include examples *.json
+recursive-include skills *.md

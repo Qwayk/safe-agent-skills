@@ -40,6 +40,20 @@ qwayk-twilio-safe-agent-cli auth check --live
 
 `onboarding` reports the needed settings. `--write-env` creates the selected env file at mode `600` and refuses to overwrite an existing file. `auth check` validates local credentials without a network request; `auth check --live` fetches the configured account.
 
+## Credential-free local contracts
+
+These fixed commands bypass provider configuration and make no network request:
+
+```bash
+qwayk-twilio-safe-agent-cli twiml conversation-relay-generate --input-json examples/inputs/conversation-relay-generate.json
+qwayk-twilio-safe-agent-cli twiml conversation-relay-validate --input-json examples/inputs/conversation-relay-validate.json
+qwayk-twilio-safe-agent-cli websocket conversation-relay-message-validate --input-json examples/inputs/conversation-relay-message.json
+qwayk-twilio-safe-agent-cli webhook twilio-signature-validate --input-json examples/inputs/twilio-signature-validate.json
+qwayk-twilio-safe-agent-cli agent-connect contract
+```
+
+ConversationRelay generation and validation accept only the strict `Response/Connect/ConversationRelay` shape and an absolute `wss://` URL. `Connect` supports only bounded relative-path or absolute HTTP(S) `action` references and `GET`/`POST` `method` values; nested `Language` children and `Parameter` children have independent cardinality and field limits. WebSocket validation accepts only the documented inbound and outbound message types. Signature validation reads the Auth Token from the environment variable named in `auth_token_env`; form parameters accept bounded scalar or repeated scalar values and use sorted unique Twilio canonicalization, while JSON requests hash the raw body and require the matching `bodySHA256` URL query value. Agent Connect output is local SDK/middleware metadata only.
+
 ## Global options
 
 Global options go before the command group:

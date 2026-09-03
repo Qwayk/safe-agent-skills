@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import Mock
 
+from twilio_safe_agent_cli import __version__
 from twilio_safe_agent_cli.cli import build_parser
 from twilio_safe_agent_cli.config import Config
 from twilio_safe_agent_cli.errors import SafetyError, ToolError, ValidationError
@@ -39,7 +40,7 @@ def _must_refuse_snapshot(
             input_obj,
             cfg,
             registry=registry,
-            tool_version="0.1.0",
+            tool_version=__version__,
             apply=False,
             yes=False,
             plan_out=None,
@@ -57,7 +58,7 @@ def _must_refuse_snapshot(
 
 def main() -> None:
     registry = load_registry()
-    assert registry.summary()["commands"] == 1_325
+    assert registry.summary()["commands"] == 1_333
     assert registry.summary()["private_or_unavailable"] == 6
 
     help_stdout = io.StringIO()
@@ -183,7 +184,7 @@ def main() -> None:
             porting_input,
             basic_cfg,
             registry=registry,
-            tool_version="0.1.0",
+            tool_version=__version__,
             apply=False,
             yes=False,
             plan_out=str(plan),
@@ -210,7 +211,7 @@ def main() -> None:
                 porting_input,
                 basic_cfg,
                 registry=registry,
-                tool_version="0.1.0",
+                tool_version=__version__,
                 apply=True,
                 yes=True,
                 plan_out=None,

@@ -18,7 +18,7 @@ from .manual_contracts import (
 )
 
 PINNED_REPOSITORY = "https://github.com/twilio/twilio-oai"
-PINNED_COMMIT = "1a9189c79a73781ddf45afcd0afd1f210742d68c"
+PINNED_COMMIT = "ef1d81e7b6e49e602530601e913eedc21aedd6da"
 CATALOG_SCHEMA_VERSION = 1
 
 HTTP_METHODS = ("get", "post", "delete", "put", "patch")
@@ -157,8 +157,8 @@ def build_inventory(spec_root: Path | str) -> dict[str, Any]:
 
     spec_dir = resolve_spec_dir(spec_root)
     spec_paths = sorted(spec_dir.glob("twilio_*.json"), key=lambda path: path.name)
-    if len(spec_paths) != 61:
-        raise ValueError(f"Expected 61 pinned JSON specs, found {len(spec_paths)} in {spec_dir}")
+    if len(spec_paths) != 60:
+        raise ValueError(f"Expected 60 pinned JSON specs, found {len(spec_paths)} in {spec_dir}")
 
     documents: dict[str, dict[str, Any]] = {}
     spec_hashes: dict[str, str] = {}
@@ -239,10 +239,10 @@ def build_inventory(spec_root: Path | str) -> dict[str, Any]:
     )
     disposition_counts = Counter(row["disposition"] for row in rows)
     expected_dispositions = {
-        "command": 1_325,
+        "command": 1_333,
         "legacy_eol": 205,
         "canonical_duplicate": 9,
-        "developer_preview": 5,
+        "developer_preview": 1,
         "private_or_unavailable": 6,
     }
     if dict(disposition_counts) != expected_dispositions:
@@ -343,9 +343,10 @@ def render_coverage(catalog: Mapping[str, Any]) -> str:
         "",
         "The pinned OpenAPI contained 81 writes with at least one empty or untyped request section. "
         "Each was audited against current official Twilio docs and Twilio-owned product schemas. "
-        "Sixty-seven now use operation-specific manual supplements. Flexible JSON is allowed only inside "
-        "the exact documented field; restricted commands reject optional undocumented branches. Every "
-        "audited row carries its official evidence in the table.",
+        "Seventy-one now use operation-specific manual supplements to expose callable schemas; the "
+        "remaining audited rows retain explicit non-command dispositions. Flexible JSON is allowed only "
+        "inside the exact documented field; restricted commands reject optional undocumented branches. "
+        "Every audited row carries its official evidence in the table.",
         "",
         "The full-contract comparison found "
         f"**{duplicate_analysis['full_contract_pairs']}** exact older/newer pairs: Chat "
@@ -435,8 +436,8 @@ def render_coverage(catalog: Mapping[str, Any]) -> str:
 def _validate_boundary(
     path_count: int, operation_count: int, method_counts: Mapping[str, int]
 ) -> None:
-    expected_methods = {"GET": 782, "POST": 507, "DELETE": 231, "PUT": 18, "PATCH": 12}
-    if path_count != 982 or operation_count != 1_550 or dict(method_counts) != expected_methods:
+    expected_methods = {"GET": 777, "POST": 516, "DELETE": 230, "PUT": 19, "PATCH": 12}
+    if path_count != 893 or operation_count != 1_554 or dict(method_counts) != expected_methods:
         raise ValueError(
             "Supplied specs do not match the pinned boundary: "
             f"paths={path_count}, operations={operation_count}, methods={dict(method_counts)}"
@@ -478,6 +479,8 @@ def _build_operation_row(
     duplicate_target = exact_duplicates.get((spec_id, operation_id))
     source_pointer = f"#/paths/{_json_pointer_escape(literal_path)}/{method}"
     parameters = _merged_parameters(path_item, operation, document)
+    if spec_id == "conversations-v2":
+        parameters = _replace_conversations_v2_parameters(parameters, literal_path)
     request = _request_metadata(operation, document)
     manual_contract = manual_contracts.get((filename, operation_id))
     originally_unbounded = bool(
@@ -724,6 +727,31 @@ def _merged_parameters(
             positions[key] = len(merged)
             merged.append(resolved)
     return merged
+
+
+def _replace_conversations_v2_parameters(
+    parameters: list[dict[str, Any]], literal_path: str
+) -> list[dict[str, Any]]:
+    """Use the resource-specific names required by the current Conversations v2 contract."""
+
+    replacements: dict[str, str] = {}
+    if "/ControlPlane/Configurations/" in literal_path:
+        replacements["id"] = "ConfigurationSid"
+    elif "/ControlPlane/Operations/" in literal_path:
+        replacements["id"] = "OperationSid"
+    elif "/Conversations/" in literal_path:
+        replacements["id"] = "ConversationSid"
+        replacements["ConversationId"] = "ConversationSid"
+        replacements["ActionId"] = "ActionSid"
+        if "/Participants/" in literal_path:
+            replacements["id"] = "ParticipantSid"
+        elif "/Communications/" in literal_path:
+            replacements["id"] = "CommunicationSid"
+    for parameter in parameters:
+        name = str(parameter.get("name", ""))
+        if name in replacements:
+            parameter["name"] = replacements[name]
+    return parameters
 
 
 def _request_metadata(

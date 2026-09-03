@@ -1,11 +1,11 @@
 # Official sources
 
-Checked on **2026-07-19**. The pinned OpenAPI commit supplies the raw operation inventory. Current Twilio docs and Twilio-owned product schemas supply supporting request detail where that pinned inventory is incomplete. They can narrow an existing operation to a fixed contract; they do not add routes outside the pinned boundary.
+Checked on **2026-09-02**. The pinned OpenAPI commit supplies the raw operation inventory. Current Twilio docs and Twilio-owned product schemas supply supporting request detail where that pinned inventory is incomplete. They can narrow an existing operation to a fixed contract; they do not add routes outside the pinned boundary.
 
 ## Boundary
 
 - [Twilio OpenAPI repository](https://github.com/twilio/twilio-oai)
-- [Pinned OpenAPI commit `1a9189c79a73781ddf45afcd0afd1f210742d68c`](https://github.com/twilio/twilio-oai/commit/1a9189c79a73781ddf45afcd0afd1f210742d68c)
+- [Pinned OpenAPI commit `ef1d81e7b6e49e602530601e913eedc21aedd6da`](https://github.com/twilio/twilio-oai/commit/ef1d81e7b6e49e602530601e913eedc21aedd6da)
 - [Twilio Node repository](https://github.com/twilio/twilio-node)
 - [Supporting Twilio-owned Node schema commit `e9e546985dcc293e4f71888160725739e7b28c37`](https://github.com/twilio/twilio-node/commit/e9e546985dcc293e4f71888160725739e7b28c37)
 - [Twilio API overview](https://www.twilio.com/docs/usage/api)
@@ -40,6 +40,8 @@ The generated [coverage ledger](api_coverage.md) links the exact official eviden
 - [SIM-swap test magic numbers](https://www.twilio.com/docs/lookup/magic-numbers-for-lookup/testing-sim-swap-with-magic-numbers)
 - [Twilio security guidance](https://www.twilio.com/docs/usage/security)
 - [Validate Twilio webhook signatures](https://www.twilio.com/docs/usage/security#validating-requests)
+- [ConversationRelay TwiML](https://www.twilio.com/docs/voice/twiml/connect/conversationrelay)
+- [ConversationRelay WebSocket messages](https://www.twilio.com/docs/voice/conversationrelay/websocket-messages)
 - [Twilio Messaging Policy](https://www.twilio.com/en-us/legal/messaging-policy)
 - [Voice dialing geographic permissions](https://www.twilio.com/docs/sip-trunking/voice-dialing-geographic-permissions)
 - [Voice Recording settings and encryption](https://www.twilio.com/docs/voice/recording-settings)
