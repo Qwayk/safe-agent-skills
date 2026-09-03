@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Sequence
 import re
+from collections.abc import Sequence
+from dataclasses import dataclass
+from typing import Any, cast
+
+from .generated_inventory import inventory_data
 
 
 @dataclass(frozen=True)
@@ -16,6 +19,19 @@ class Operation:
     safety: Sequence[str]
     doc_url: str
     sample_args: Sequence[str] = ()
+    required_path_params: Sequence[str] = ()
+    required_query_params: Sequence[str] = ()
+    query_params: Sequence[str] = ()
+    required_headers: Sequence[str] = ()
+    request_body_required: bool = False
+    request_body_content_types: Sequence[str] = ()
+    response_content_types: Sequence[str] = ()
+    request_body_fields: Sequence[str] = ()
+    request_body_required_fields: Sequence[str] = ()
+    request_file_fields: Sequence[str] = ()
+    request_file_required_fields: Sequence[str] = ()
+    request_body_open_prefixes: Sequence[str] = ()
+    webhook_events: Sequence[str] = ()
 
 
 @dataclass(frozen=True)
@@ -30,6 +46,19 @@ class InventoryEntry:
     safety: Sequence[str]
     cli_command: str | None = None
     sample_args: Sequence[str] = ()
+    required_path_params: Sequence[str] = ()
+    required_query_params: Sequence[str] = ()
+    query_params: Sequence[str] = ()
+    required_headers: Sequence[str] = ()
+    request_body_required: bool = False
+    request_body_content_types: Sequence[str] = ()
+    response_content_types: Sequence[str] = ()
+    request_body_fields: Sequence[str] = ()
+    request_body_required_fields: Sequence[str] = ()
+    request_file_fields: Sequence[str] = ()
+    request_file_required_fields: Sequence[str] = ()
+    request_body_open_prefixes: Sequence[str] = ()
+    webhook_events: Sequence[str] = ()
 
 
 _PLACEHOLDER_SAMPLE_VALUES: dict[str, str] = {
@@ -57,14 +86,14 @@ def _default_sample_args(entry: InventoryEntry) -> tuple[str, ...]:
     if method not in {"GET", "DELETE", "WEBSOCKET"}:
         args.extend(["--body", '{"example":"value"}'])
     safety = tuple(entry.safety or ())
-    needs_out = "binary_output" in safety or ("sensitive_output" in safety and "write" in safety)
+    needs_out = method != "WEBSOCKET" and ("binary_output" in safety or "sensitive_output" in safety)
     if needs_out:
         suffix = "bin" if "binary_output" in safety else "json"
         args.extend(["--out", f"sample.{suffix}"])
     return tuple(args)
 
 
-inventory_data: list[dict[str, object]] = [   {   "cli_command": "auth check",
+handwritten_inventory_data: list[dict[str, object]] = [   {   "cli_command": "auth check",
         "description": "Retrieve the workspace profile and API key status.",
         "doc_url": "https://elevenlabs.io/docs/api-reference/user/get",
         "method": "GET",
@@ -131,11 +160,11 @@ inventory_data: list[dict[str, object]] = [   {   "cli_command": "auth check",
         "status": "Implemented"},
     {   "cli_command": "stt realtime",
         "description": "WebSocket stream for live transcription.",
-        "doc_url": "https://elevenlabs.io/docs/api-reference/speech-to-text/realtime",
+        "doc_url": "https://elevenlabs.io/docs/api-reference/speech-to-text/v-1-speech-to-text-realtime",
         "method": "WEBSOCKET",
         "name": "speech_to_text_realtime",
         "path": "wss://api.elevenlabs.io/v1/speech-to-text/realtime",
-        "safety": ("write", "sensitive_output"),
+        "safety": ("write", "spend_money", "sensitive_output"),
         "section": "Speech-to-text",
         "status": "Implemented"},
     {   "cli_command": "music compose",
@@ -302,11 +331,11 @@ inventory_data: list[dict[str, object]] = [   {   "cli_command": "auth check",
         "status": "Implemented"},
     {   "cli_command": "usage get",
         "description": "Fetch workspace usage metrics and quotas.",
-        "doc_url": "https://elevenlabs.io/docs/api-reference/usage/character-stats",
-        "method": "GET",
-        "name": "usage_metrics",
-        "path": "/v1/usage/character-stats",
-        "safety": ("read",),
+        "doc_url": "https://elevenlabs.io/docs/api-reference/workspace/analytics/query/usage-by-product-over-time",
+        "method": "POST",
+        "name": "usage_by_product_over_time",
+        "path": "/v1/workspace/analytics/query/usage-by-product-over-time",
+        "safety": ("post_read",),
         "section": "Workspace",
         "status": "Implemented"},
     {   "cli_command": "tokens single-use create",
@@ -518,6 +547,25 @@ inventory_data: list[dict[str, object]] = [   {   "cli_command": "auth check",
         "section": "Conversations",
         "status": "Implemented",
         "sample_args": ("--param", "text_query=test", "--out", "conversation-search.json")},
+    {   "cli_command": "conversational-ai-triage-tickets workspace-list",
+        "description": "List Workspace Conversation Tickets",
+        "doc_url": "https://elevenlabs.io/docs/api-reference/triage-tickets/list-workspace-conversation-tickets",
+        "method": "GET",
+        "name": "list_workspace_conversation_tickets_route",
+        "path": "/v1/convai/triage-tickets",
+        "safety": ("read", "sensitive_output"),
+        "section": "Conversational AI triage tickets",
+        "status": "Implemented",
+        "sample_args": ("--out", "triage-tickets.json")},
+    {   "method": "GET",
+        "path": "/v1/convai/conversations/{conversation_id}/sip-messages",
+        "safety": ("read", "sensitive_output")},
+    {   "method": "GET",
+        "path": "/v1/convai/conversations/messages/smart-search",
+        "safety": ("read", "sensitive_output")},
+    {   "method": "GET",
+        "path": "/v1/convai/phone-numbers/{phone_number_id}/sip-messages",
+        "safety": ("read", "sensitive_output")},
     {   "cli_command": "convai tests list",
         "description": "List conversational tests in the workspace.",
         "doc_url": "https://elevenlabs.io/docs/api-reference/tests/list",
@@ -631,7 +679,9 @@ inventory_data: list[dict[str, object]] = [   {   "cli_command": "auth check",
         "section": "Authentication",
         "status": "Docs-only"}]
 
-INVENTORY: tuple[InventoryEntry, ...] = tuple(InventoryEntry(**entry) for entry in inventory_data)
+INVENTORY: tuple[InventoryEntry, ...] = tuple(
+    InventoryEntry(**cast(dict[str, Any], entry)) for entry in inventory_data
+)
 
 
 
@@ -649,6 +699,19 @@ def _operation_from_entry(entry: InventoryEntry) -> Operation:
         safety=entry.safety,
         doc_url=entry.doc_url,
         sample_args=sample_args,
+        required_path_params=entry.required_path_params,
+        required_query_params=entry.required_query_params,
+        query_params=entry.query_params,
+        required_headers=entry.required_headers,
+        request_body_required=entry.request_body_required,
+        request_body_content_types=entry.request_body_content_types,
+        response_content_types=entry.response_content_types,
+        request_body_fields=entry.request_body_fields,
+        request_body_required_fields=entry.request_body_required_fields,
+        request_file_fields=entry.request_file_fields,
+        request_file_required_fields=entry.request_file_required_fields,
+        request_body_open_prefixes=entry.request_body_open_prefixes,
+        webhook_events=entry.webhook_events,
     )
 
 

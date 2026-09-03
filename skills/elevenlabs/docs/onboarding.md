@@ -1,45 +1,35 @@
 # Connect your ElevenLabs account
 
-ElevenLabs needs a local API key before an agent can check voices, models, history, or account access.
+This CLI reads an ElevenLabs API key from a local `.env` file. Start with a plan-only command; add `--live` only when you intend to contact ElevenLabs.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+Keep `.env`, API keys, OAuth material, audio, transcripts, and saved response files out of chat and Git.
 
-After setup, start with a small account or voices read before asking for audio generation or downloads.
+## Setup
 
-## Step 1: Create the local `.env` file (on your machine)
-
-In the tool folder:
+From the tool folder:
 
 1. Copy `.env.example` to `.env`.
-2. Open `.env` in a text editor.
-3. Fill these values:
-   - `ELEVENLABS_API_BASE_URL=https://api.elevenlabs.io`
-   - `ELEVENLABS_API_KEY=<your ElevenLabs API key>`
-   - `ELEVENLABS_TIMEOUT_S=30`
+2. Set `ELEVENLABS_API_KEY` to a key created at [ElevenLabs API keys](https://elevenlabs.io/app/settings/api-keys).
+3. Keep `ELEVENLABS_API_BASE_URL=https://api.elevenlabs.io` and `ELEVENLABS_TIMEOUT_S=30` unless your environment requires another value.
 
-## Step 2: Get the API key
+The key is sent as the `xi-api-key` header. It is never printed by the CLI.
 
-1. Sign in to ElevenLabs.
-2. Open the API keys page at `https://elevenlabs.io/app/settings/api-keys`.
-3. Create a new API key if you do not already have one.
-4. Copy the key once and paste it into `.env` as `ELEVENLABS_API_KEY=...`.
+## First checks
 
-Never paste the key into chat. The tool reads it from `.env`.
+Use a local plan to confirm command syntax:
 
-## Step 3: What to ask your AI agent (examples)
+```text
+elevenlabs-api-tool --output json --env-file .env.example auth check
+```
 
-Ask your agent to start with a read-only check, then show a preview before any live generation or download.
+To check the real account, use `--live` and keep the sensitive response in a file:
 
-- “Confirm the tool is connected, then list my voices and available models.”
-- “Show my recent generation history before downloading anything.”
-- “Draft a text-to-speech plan first, then only generate the audio after I approve.”
-- “Check my ElevenLabs usage so I know whether I am close to my limits.”
+```text
+elevenlabs-api-tool --output json --env-file .env --live auth check --out ./auth.json --overwrite
+```
 
-## Step 4: If something fails
+Then ask your agent to list voices or models. Generation, transcription, music, voice design, and calls can spend credits or affect real people; review the plan and required approvals first.
 
-The most common issues are:
-- Missing or incorrect values in `.env`
-- Invalid or expired ElevenLabs API key
-- Network or permission restrictions in the connected account
+## If setup fails
 
-Common error help lives in `docs/troubleshooting.md`.
+Check the env-file path, key validity and workspace permissions. A plan-only run cannot validate a credential against ElevenLabs. See [authentication](authentication.md) and [troubleshooting](troubleshooting.md).

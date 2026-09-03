@@ -1,7 +1,12 @@
 from __future__ import annotations
 
-from typing import Any
-
+from ..commands._helpers import (
+    ensure_json_output_file,
+    find_operation,
+    plan_for_operation,
+    plan_from_file_for_apply,
+    write_json_file,
+)
 from ..errors import ToolError, ValidationError
 from ..plans import (
     BEFORE_STATE_REFUSAL_REASON,
@@ -10,13 +15,6 @@ from ..plans import (
     default_verification,
     summarize_request,
     write_receipt_to_file,
-)
-from ..commands._helpers import (
-    ensure_json_output_file,
-    find_operation,
-    plan_for_operation,
-    plan_from_file_for_apply,
-    write_json_file,
 )
 
 

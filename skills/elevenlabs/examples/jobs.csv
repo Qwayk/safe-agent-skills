@@ -1,3 +1,4 @@
-action
-read.ping
-
+command
+voices list
+models list
+usage get

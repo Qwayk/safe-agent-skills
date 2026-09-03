@@ -1,29 +1,21 @@
-# References (sources)
+# References
 
-Purpose:
-- Record what sources the tool implementation relies on (so behavior is auditable and reproducible).
-- Prefer official provider docs; use other sources only when needed and note why.
+The generated inventory is grounded in the pinned provider snapshot `openapi.json`.
 
-Rules:
-- Never include secrets (tokens, client secrets) in this file.
-- When a capability depends on a specific documented behavior (rate limits, required headers, download tracking), link the exact doc page.
-- Update this file whenever you add/change an endpoint or behavior based on new research.
+- Official API reference: https://elevenlabs.io/docs/api-reference/introduction
+- Official authentication: https://elevenlabs.io/docs/api-reference/authentication
+- Official streaming guidance: https://elevenlabs.io/docs/api-reference/streaming
+- Official speech-to-text realtime WebSocket: https://elevenlabs.io/docs/api-reference/speech-to-text/v-1-speech-to-text-realtime
+- Official ElevenAgents conversation WebSocket: https://elevenlabs.io/docs/eleven-agents/api-reference/eleven-agents/websocket
+- Official text-to-speech WebSocket: https://elevenlabs.io/docs/api-reference/text-to-speech/v-1-text-to-speech-voice-id-stream-input
+- Official text-to-speech multi-context WebSocket: https://elevenlabs.io/docs/api-reference/text-to-speech/v-1-text-to-speech-voice-id-multi-stream-input
+- Official text-to-dialogue WebSocket: https://elevenlabs.io/docs/api-reference/text-to-dialogue/ttd-websocket
+- Official text-to-dialogue multi-context WebSocket: https://elevenlabs.io/docs/api-reference/text-to-dialogue/ttd-multi-websocket
+- Official speech-engine upstream WebSocket: https://elevenlabs.io/docs/api-reference/speech-engine/speech-engine-upstream
+- Official native Twilio integration: https://elevenlabs.io/docs/eleven-agents/phone-numbers/twilio-integration/native-integration/
+- Official Twilio register-call integration: https://elevenlabs.io/docs/eleven-agents/phone-numbers/twilio-integration/register-call
+- Official Twilio conversation-initiation webhook: https://elevenlabs.io/docs/eleven-agents/phone-numbers/twilio-integration/customising-calls
 
-## Provider docs (official)
+Snapshot SHA-256: `a82cfab5db1adc845ac5890bf536552a2f2c75836bdebff8019a80c1bf647cd1`.
 
-- Provider: ElevenLabs (non-legacy API reference)
-- API docs home: https://elevenlabs.io/docs/api-reference/introduction
-- Auth docs (API key, `xi-api-key`, base URLs): https://elevenlabs.io/docs/api-reference/authentication
-- Streaming guide + media outputs: https://elevenlabs.io/docs/api-reference/streaming
-- Usage + rate limits hints: https://elevenlabs.io/docs/api-reference/usage/character-stats
-- Last verified (UTC): 2026-03-29
-
-Current doc notes validated in live testing:
-- `GET /v1/usage/character-stats` requires `start_unix` and `end_unix` query params.
-- Conversation search uses `text_query` rather than the older `query` wording still seen in some older examples.
-- Test invocation listing requires `agent_id`.
-- History download expects `history_item_ids`.
-
-## Other sources (only if needed)
-
-- None yet. Add extra references with a justification and verification date when you rely on non-official docs or vendor advisories.
+The snapshot yields 388 HTTP operations: 367 stable implemented and 21 deprecated. The manual ledger adds seven WebSocket surfaces (six plan-only commands and one callback-only reverse connection), one callback-only Twilio webhook, and one docs-only authentication row. These sources document interface shape; live provider behavior is unverified for the current account.

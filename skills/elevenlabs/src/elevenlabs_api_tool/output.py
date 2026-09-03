@@ -42,4 +42,4 @@ class Output:
                 return
             sys.stdout.write(json.dumps(obj, ensure_ascii=False, indent=2, sort_keys=False) + "\n")
         except BrokenPipeError:
-            raise SystemExit(0)
+            raise SystemExit(0) from None

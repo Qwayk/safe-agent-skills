@@ -1,25 +1,23 @@
 # ElevenLabs docs
 
-ElevenLabs is easiest to use when you start with the real job, then check setup, safety, and proof before asking an agent to do more. These docs explain how to check voices, usage, models, and text-to-speech setup, what access is needed, and where the tool stops before risky changes.
+Start with the job you want to do, then use setup and safety pages before touching a live account. This tool reads account and media state, prepares generation work, and—when your account supports it—works with ElevenAgents, telephony, workspace administration, dubbing, and music.
 
-If you are new, read the first few links before asking for account data or changes. They explain the useful jobs, the setup path, and the safety limits.
+## Choose your next step
 
-## Start with the work
-- [What you can do with ElevenLabs](use_cases.md) - real jobs to hand to an agent for ElevenLabs
-- [Quickstart](quickstart.md) - the shortest path to one useful first result
-- [Connect your ElevenLabs account](onboarding.md) - what must be connected or confirmed before the first run
-- [How this stays safe](safety_model.md) - what the tool can and cannot change, and where approval is needed
+- [Quickstart](quickstart.md): check the account and get one useful read safely.
+- [Use cases](use_cases.md): turn voice, audio, ElevenAgents, and calling work into a clear agent request.
+- [Onboarding](onboarding.md): configure the local key and account connection.
+- [Safety model](safety_model.md): understand `--live`, plan-first writes, spend approval, no-snapshot approval, and file-only results.
 
-## Commands, setup, and fixes
-- [Command reference](command_reference.md) - the exact commands and options
-- [Authentication details](authentication.md) - credential rules and safe auth checks
-- [Configuration](configuration.md) - local settings, environment values, and precedence rules
-- [Troubleshooting](troubleshooting.md) - what to check when a command fails or refuses to run
-- [Jobs and batch work](jobs_and_batches.md) - repeatable or larger jobs that need more care
+## When you need exact syntax
 
-## Proof and details
-- [Proof and verification](proof.md) - what has been checked and what still needs live verification
-- [API coverage](api_coverage.md) - the API surfaces this skill actually covers
-- [Source references](references.md) - source notes behind the implementation and docs
-- [Technical architecture](architecture.md) - how the command, config, client, and output layers fit together
-- [Examples](examples/) - sample inputs or outputs when the tool ships them
+- [Command reference](command_reference.md): required selectors, body/file inputs, and command families.
+- [Authentication](authentication.md), [configuration](configuration.md), and [troubleshooting](troubleshooting.md).
+- [Jobs and batches](jobs_and_batches.md): repeatable or larger work.
+
+## When you need proof or boundaries
+
+- [API coverage](api_coverage.md): implemented, gated, preview, and unavailable surfaces.
+- [Proof and verification](proof.md): what has been checked and what remains live-unverified.
+- [Skill wrapper](skills_wrappers.md): instructions for an agent choosing this CLI.
+- [References](references.md) and [architecture](architecture.md): source notes and implementation context.

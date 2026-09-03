@@ -212,10 +212,13 @@ class TestElevenLabsCommands(unittest.TestCase):
         payload = self._run(["usage", "get"])
         self.assertTrue(payload["ok"])
         self.assertTrue(payload["dry_run"])
-        self.assertEqual(payload["plan"]["endpoint"], "GET /v1/usage/character-stats")
+        self.assertEqual(
+            payload["plan"]["endpoint"],
+            "POST /v1/workspace/analytics/query/usage-by-product-over-time",
+        )
 
     @patch("elevenlabs_api_tool.http.HttpClient.request")
-    def test_usage_get_live_uses_default_window_params(self, mock_request) -> None:
+    def test_usage_get_live_uses_default_window_body(self, mock_request) -> None:
         mock_request.return_value = HttpResponse(
             status=200,
             headers={},
@@ -225,8 +228,10 @@ class TestElevenLabsCommands(unittest.TestCase):
         payload = self._run(["--live", "usage", "get"])
         self.assertTrue(payload["ok"])
         _, kwargs = mock_request.call_args
-        self.assertIn("start_unix", kwargs["params"])
-        self.assertIn("end_unix", kwargs["params"])
+        self.assertEqual("POST", mock_request.call_args.args[0])
+        self.assertIn("start_time", kwargs["json"])
+        self.assertIn("end_time", kwargs["json"])
+        self.assertIn("interval_seconds", kwargs["json"])
 
     def test_history_list_plan_endpoint(self) -> None:
         payload = self._run(["history", "list"])
@@ -615,6 +620,26 @@ class TestElevenLabsCommands(unittest.TestCase):
         )
         self.assertNotIn("secret-token", json.dumps(payload))
 
+    def test_current_multi_context_tts_websocket_plan(self) -> None:
+        payload = self._run(["tts", "multi-stream-input", "websocket", "--voice-id", "voice-123"])
+        self.assertTrue(payload["ok"])
+        self.assertTrue(payload["dry_run"])
+        self.assertEqual(
+            payload["plan"]["endpoint"],
+            "WEBSOCKET wss://api.elevenlabs.io/v1/text-to-speech/{voice_id}/multi-stream-input",
+        )
+        self.assertEqual(set(payload["plan"]["risk_reasons"]), {"write", "spend_money", "binary_output"})
+
+    def test_current_multi_context_dialogue_websocket_plan(self) -> None:
+        payload = self._run(["dialogue", "multi-stream-input", "websocket"])
+        self.assertTrue(payload["ok"])
+        self.assertTrue(payload["dry_run"])
+        self.assertEqual(
+            payload["plan"]["endpoint"],
+            "WEBSOCKET wss://api.elevenlabs.io/v1/text-to-dialogue/multi-stream-input",
+        )
+        self.assertEqual(set(payload["plan"]["risk_reasons"]), {"write", "spend_money", "binary_output"})
+
     @patch("elevenlabs_api_tool.http.HttpClient.request")
     def test_read_only_live_executes_without_apply(self, mock_request) -> None:
         mock_request.return_value = HttpResponse(
@@ -623,13 +648,16 @@ class TestElevenLabsCommands(unittest.TestCase):
             body=b'{"items": []}',
             url="http://example.invalid/service-accounts",
         )
-        payload = self._run(
-            [
-                "--live",
-                "service-accounts",
-                "list",
-            ]
-        )
+        with tempfile.TemporaryDirectory() as tmp:
+            payload = self._run(
+                [
+                    "--live",
+                    "service-accounts",
+                    "list",
+                    "--out",
+                    str(Path(tmp) / "service-accounts.json"),
+                ]
+            )
         self.assertTrue(payload["ok"])
         self.assertFalse(payload["dry_run"])
         self.assertFalse(payload.get("refused"))

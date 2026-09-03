@@ -27,7 +27,8 @@ def _parse_env_file(path: Path) -> dict[str, str]:
 
 def _get(env: dict[str, str], key: str) -> str:
     # OS env overrides env-file.
-    return (os.environ.get(key) if key in os.environ else env.get(key) or "").strip()
+    value = os.environ.get(key)
+    return (value if value is not None else env.get(key) or "").strip()
 
 
 @dataclasses.dataclass(frozen=True)

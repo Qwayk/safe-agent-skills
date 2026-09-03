@@ -1,30 +1,22 @@
 # Configuration
 
-ElevenLabs configuration is the local setup an agent needs before it can check voices, usage, models, and text-to-speech setup. Put private values in `.env` or the `--env-file` you choose, and keep them out of chat and Git.
+Configuration is loaded from the selected `--env-file` (normally `.env`); process environment variables override values from that file.
 
-Start with the required values below. Add optional settings only when you need to change the API root, timeout, token storage, or safety behavior.
+Required for live provider calls:
 
-A good first configuration check is: "Show me which ElevenLabs values are required, which ones are optional, and confirm the setup without showing secrets."
+- `ELEVENLABS_API_KEY`: the ElevenLabs `xi-api-key` value.
+- `ELEVENLABS_API_BASE_URL`: normally `https://api.elevenlabs.io`.
 
-## Setup note
+Optional:
 
-Use `.env` for local settings. Do not commit `.env`.
+- `ELEVENLABS_TIMEOUT_S`: request timeout in seconds; default `30`.
 
-## Files
+Copy `.env.example` to `.env` and keep `.env` local-only. `.state/runs/` stores local run indexes and audit artifacts beside the selected env file; it must not contain secrets.
 
-- `.env.example`: copy this to `.env` (local-only).
-- `.state/`: the local state directory that sits beside the chosen `--env-file` (gitignored).
-  - `runs/index.jsonl`: per-run index for tracking, appended on every dry-run/apply.
-  - `runs/<run_id>/audit.jsonl`: individual run audit entries that the CLI writes when it executes.
+The safest configuration check is plan-only:
 
-State files always live in the same folder as the selected `--env-file` so you can treat the directory as a single, portable workspace.
+```text
+elevenlabs-api-tool --output json --env-file .env.example auth check
+```
 
-## Environment variables
-
-Set these values for your ElevenLabs workspace:
-
-- `ELEVENLABS_API_BASE_URL` — usually `https://api.elevenlabs.io`.
-- `ELEVENLABS_API_KEY` — the `xi-api-key` value from https://elevenlabs.io/app/settings/api-keys.
-- `ELEVENLABS_TIMEOUT_S` — optional request timeout in seconds (default: 30).
-
-OS environment variables override the same keys from the env file (handy for CI or containers).
+Use `--live` only when current provider data is wanted. Binary and sensitive results require `--out <path>`.

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "elevenlabs-api-tool"
 version = "0.1.0"
-description = "Qwayk’s plan-first CLI for ElevenLabs’ non-legacy API surface."
+description = "Qwayk’s plan-first CLI for the current public ElevenLabs and ElevenAgents API."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

@@ -1,104 +1,59 @@
 # ElevenLabs
 
-**Capability:** Reads + careful changes
+The ElevenLabs tool helps an agent work with voice and audio: inspect voices and models, generate speech, transcribe recordings, create dubbing or music jobs, and review the account before credits or files are involved.
 
-ElevenLabs is where voice, speech, dubbing, transcription, audio isolation, music, history, and workspace settings can affect real credits, files, and customer-facing audio.
+You can ask your agent to find a suitable voice, check usage, turn a script into an audio file, transcribe a meeting, review a dubbing project, or inspect ElevenAgents conversations and analytics. It can also prepare agent tests, assign a Twilio number for inbound calls, and place an outbound call when those actions are enabled for your account.
 
-This skill helps an agent check voices and models, review generation history and usage, inspect workspace settings, and prepare audio or admin work before anything spends credits or writes to the account.
+For example: “List my voices and models,” “Check usage before we generate this narration,” “Transcribe this recording to a local file,” or “Review yesterday’s ElevenAgents conversations and audio.” For a live action, be specific about the agent, number, file, language, or destination.
 
-Use it for questions like: "Which voices and models can I use?", "What did we generate recently?", "How close are we to usage limits?", "Can you draft this text-to-speech job first?", or "Can you save the live output to a file instead of chat?"
-
-Live ElevenLabs work is careful by default. Reads need `--live`, spend-sensitive generation needs extra approval, and binary or sensitive results stay file-based instead of being dumped into the conversation.
-
-A good first ask is: "Check the ElevenLabs connection, list my voices and models, show current usage, and stop before any generation or downloads."
+The safest first ask is: “Check my ElevenLabs account, list the available voices and models, and stop before generating audio or changing anything.” The agent reads first, explains what it found, and prepares a plan before a live change. Reads need `--live`; writes need `--live --apply`; paid generation and real-world calls need extra approval. Binary or sensitive results stay in files.
 
 ## Start here first
 
-- Want ideas for real ElevenLabs work? [What you can do with ElevenLabs](docs/use_cases.md)
-- Need setup? [Connect your ElevenLabs account](docs/onboarding.md)
-- Want the safety story first? [How generation stays safer](docs/safety_model.md)
+- [Try one useful result](docs/quickstart.md)
+- [Choose a real ElevenLabs job](docs/use_cases.md)
+- [Connect an account](docs/onboarding.md)
+- [Understand approvals and limits](docs/safety_model.md)
 
-If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
+## What your agent can do
 
-## What this skill helps with
+- Voice, model, usage, and speech-history checks.
+- Text-to-speech, dialogue, voice changing/design, sound effects, audio isolation, transcription, forced alignment, dubbing, and music workflows.
+- ElevenAgents creation and configuration, test creation and runs, knowledge-base work, conversation text/audio/analytics review, and summaries.
+- Twilio phone-number assignment and supported inbound/outbound calling workflows.
+- Workspace, webhook, and other account administration where your plan and permissions allow it.
 
-- Review voices, models, usage, generation history, workspace/admin settings, ConvAI, webhooks, dubbing, and related API areas.
-- Prepare text-to-speech, transcription, music, voice design, audio isolation, forced alignment, and similar spend-sensitive work as plans first.
-- Save audio, transcripts, history downloads, phone numbers, ConvAI content, webhook secrets, and other sensitive results to local files.
-- Check paid-plan or fixture-limited flows without pretending every endpoint is available to every account.
-- Keep local proof for plans, refusals, receipts, and live smoke coverage.
+## What happens before live changes
 
-## What access this skill needs
+The CLI is dry-run by default. The agent should show the exact target, request, output path, spend risk, and recovery limit first. Review the saved plan and mark its `reviewed` field `true`, then use `--live --apply --plan-in <reviewed-plan.json> --receipt-out <receipt.json>`. Generation, transcription, music, voice design, and calls may spend credits; phone calls and other external actions can affect real people. If a before-state cannot be saved, the apply also needs explicit no-snapshot approval. The receipt is written before provider I/O so an uncertain attempt remains durable. Nothing promises automatic rollback.
 
-- An ElevenLabs API key in `ELEVENLABS_API_KEY`.
-- `ELEVENLABS_API_BASE_URL=https://api.elevenlabs.io` unless your environment needs a different official base URL.
-- A paid plan or account feature when the ElevenLabs endpoint requires it.
-- Local output paths for binary or sensitive live results.
+## What access this tool needs
+
+Set an ElevenLabs API key in `ELEVENLABS_API_KEY`. Some voice, dubbing, music, ElevenAgents, workspace, and telephony features require a paid plan, workspace role, configured integration, or provider-side entitlement. Keep local output paths ready for audio, transcripts, phone data, conversations, and other sensitive results.
 
 ## Install and first run
 
 Install slug: `elevenlabs`
 
-Ask your agent to install the `elevenlabs` skill from `Qwayk/safe-agent-skills`.
-
-If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
-
-If your host does not let the agent install skills directly, run:
-
 ```bash
 npx skills add Qwayk/safe-agent-skills@elevenlabs -g -y
+elevenlabs-api-tool onboarding
+elevenlabs-api-tool --output json auth check
 ```
 
-Then try a safe first ask like:
-
-```text
-Check the ElevenLabs connection, list my voices and models, show current usage, and stop before any generation or downloads.
-```
-
-## How this skill stays safe
-
-- No network calls happen without `--live`.
-- Writes need `--live --apply`.
-- Spend-sensitive generation, transcription, music, voice design, audio isolation, forced alignment, and similar work also need `--ack-spend-money`.
-- Spend-sensitive or irreversible operations may need `--ack-irreversible` where the API coverage file says so.
-- When a write cannot save real before-state, apply requires explicit no-snapshot approval before ElevenLabs API key use or provider HTTP.
-- Binary or sensitive live results must go to `--out`.
+Then ask the safe first question above. For exact flags and less common command families, use the [command guide](docs/command_reference.md).
 
 ## What it covers today
 
-This skill covers the non-legacy ElevenLabs API surface with explicit commands, including:
-
-- voices, models, usage, history, text-to-speech, speech-to-text, dubbing, audio isolation, music, and forced alignment
-- workspace/admin, ConvAI, webhooks, phone-number-adjacent content, and other non-legacy API areas
-- live smoke coverage for the starter paths documented in the proof pack
-
-## What happens before live changes
-
-- The agent should show the dry-run plan first.
-- You review the voice, model, file path, spend risk, and recovery limit.
-- Live reads need `--live`.
-- Live generation or write apply needs the required approval gates.
-- When no before-state can be saved, live apply also needs explicit no-snapshot approval.
-
-## What proof it leaves behind
-
-- Dry-run plans can be saved.
-- Supported approved applies can leave receipts that record recovery limits.
-- Local run history can include plans, refusals, receipts, and audit logs.
-- The proof pack names the live-checked starter commands and the endpoints that still need paid-plan or customer fixtures.
+The command inventory is generated from the shipped ElevenLabs API boundary and includes the speech, media, workspace, and ElevenAgents families documented in [API coverage](docs/api_coverage.md). Coverage can still be account-, plan-, fixture-, or live-verification-limited; the coverage and proof pages call those limits out.
 
 ## Limits
 
-- Some ElevenLabs endpoints require a paid plan, real account data, or customer-side fixtures.
-- Live output can include audio, transcripts, phone numbers, ConvAI content, or webhook secrets, so those results stay file-only.
-- The local test suite is offline-only; live coverage is documented separately in the proof pack.
-- The tool does not promise automatic rollback or snapshots for every write path.
+- No provider call happens without `--live`.
+- Live reads and writes can expose sensitive data or spend credits, so `--out` is required for binary and selected sensitive results.
+- Live provider behavior is not asserted for every account or endpoint. Local tests are offline; see [proof and verification](docs/proof.md).
+- Some telephony, workspace, music, dubbing, and ElevenAgents actions need paid features, roles, configured destinations, or real fixtures.
 
 ## Helpful docs
 
-- [Browse all ElevenLabs docs](docs/README.md)
-- [Quickstart](docs/quickstart.md)
-- [Command guide](docs/command_reference.md)
-- [Authentication details](docs/authentication.md)
-- [Proof and verification](docs/proof.md)
-- [API coverage](docs/api_coverage.md)
+[Docs lobby](docs/README.md) · [Quickstart](docs/quickstart.md) · [Command guide](docs/command_reference.md) · [Authentication](docs/authentication.md) · [API coverage](docs/api_coverage.md) · [Proof](docs/proof.md)

@@ -1,24 +1,19 @@
 # Troubleshooting
 
-When ElevenLabs stops or returns an error, start with the boring checks first: setup, account access, target IDs, API limits, and the tool's safety gates. That usually tells you whether the problem is local configuration, provider permissions, a bad request, or a write that correctly refused to run.
+Start by checking whether the failure is local validation, a missing safety approval, a provider response, or an account/plan limitation. Keep the single JSON error object; do not retry writes blindly.
 
-Keep the JSON error output. It is the best clue for an agent checking voices, usage, models, and text-to-speech setup, and it is safer than retrying commands blindly. For any write-related error, stop before retrying and confirm the needed approval or plan.
+## Local checks
 
-A good first troubleshooting ask is: "Read the ElevenLabs error, explain what failed in plain English, tell me the safest next check, and do not retry any write or destructive action."
+Use `--debug` for a Python traceback and `--verbose` for request lifecycle lines on stderr. Secrets and API headers are redacted. JSON mode emits one JSON object.
 
-## Debug HTTP
+## Authentication and permissions
 
-Use `--verbose` to see request start/end lines to stderr.
+Plan-only commands do not contact ElevenLabs. To test a key, run `auth check --live --out ./auth.json --overwrite`. For `401` or `403`, verify the key, workspace role, endpoint permissions, and selected base URL without printing the key.
 
-Secrets must never be printed (no Authorization headers, no tokens).
+## Safety refusals
 
-## Debug errors
+Reads need `--live`. Writes need `--live --apply`; spend-sensitive operations also need `--ack-spend-money`. When no real before-state can be captured, apply additionally needs `--ack-no-snapshot`. Deletes, calls, and other irreversible operations may require `--yes` or `--ack-irreversible`. These refusals happen before provider HTTP.
 
-By default the tool prints a single JSON error object.
-If you want a full Python stack trace (developer debugging), add `--debug`.
+## Provider limits and drift
 
-## API key problems
-
-- If `auth check` says `Missing ELEVENLABS_API_KEY`, open `.env` and paste a real ElevenLabs API key.
-- If ElevenLabs returns `401` or `403`, rerun `auth check` with `--live --out ./auth.json --overwrite` (plan-only never contacts ElevenLabs, so the live flag is required to hit the service). The tool stays file-only, fingerprinting stdout, and `auth.json` holds the exact ElevenLabs error.
-- Keep using `.env` only. Do not paste the key into command history or chat.
+Paid features, workspace allowlists, missing fixtures, rate limits, and endpoint-specific validation can block a correctly formed request. The local suite is offline, so live provider behavior is unverified for the current account. Check [API coverage](api_coverage.md), [proof](proof.md), and [references](references.md) before treating a failure as a CLI defect.

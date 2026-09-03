@@ -139,7 +139,7 @@ Start here if you want assets, folders, uploads, voice tools, or design-platform
 | --- | --- | --- | --- |
 | [**Figma**](figma/README.md)<br><sub>Install slug: <code>figma</code></sub> | Review and plan Figma files, comments, components, and team workflows | Figma account | Reads + careful changes |
 | [**Cloudinary**](cloudinary/README.md)<br><sub>Install slug: <code>cloudinary</code></sub> | Review Cloudinary assets, folders, uploads, and delivery settings | Cloudinary account | Reads + careful changes |
-| [**ElevenLabs**](elevenlabs/README.md)<br><sub>Install slug: <code>elevenlabs</code></sub> | Review and plan ElevenLabs voice, text-to-speech, history, and workspace work | ElevenLabs account | Reads + careful changes |
+| [**ElevenLabs**](elevenlabs/README.md)<br><sub>Install slug: <code>elevenlabs</code></sub> | Manage voice and audio, ElevenAgents, conversations, testing, and Twilio calling | ElevenLabs account | Reads + careful changes |
 | [**Freepik**](freepik/README.md)<br><sub>Install slug: <code>freepik</code></sub> | Search, review, and download Freepik assets through a safer local workflow | Freepik account | Reads + local changes only |
 | [**Unsplash**](unsplash/README.md)<br><sub>Install slug: <code>unsplash</code></sub> | Search, review, and download Unsplash assets through a safer local workflow | Unsplash account | Reads + local changes only |
 

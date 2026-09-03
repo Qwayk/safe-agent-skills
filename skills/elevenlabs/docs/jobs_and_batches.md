@@ -1,14 +1,7 @@
 # Jobs and batches
 
-`v0.1.0` does not expose a supported generic jobs runner.
+There is no supported generic CSV or template job runner in the customer-facing ElevenLabs command surface. The files under `examples/` are configuration/request examples, not executable batch inputs.
 
-Why this page still exists:
-- the template included batch-job notes before the ElevenLabs-specific cleanup pass
-- the real supported CLI surface is documented in `docs/command_reference.md`
-- future ElevenLabs batch features should come back only as explicit named commands, not as a generic CSV bridge
+For larger work, use an explicit provider command repeatedly and review each plan. If a future batch feature is added, it must be a named ElevenLabs operation with a documented request contract, safety gates, proof, and tests. Update the generated coverage and command reference in the same change.
 
-If you need bulk work later, add it as a provider-specific command family and update:
-- `docs/api_coverage.md`
-- `docs/command_reference.md`
-- the public skill prompt
-- tests for the new command family
+Do not use template ping actions; they are not ElevenLabs commands.

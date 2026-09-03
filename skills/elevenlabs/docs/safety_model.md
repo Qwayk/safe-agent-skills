@@ -1,109 +1,31 @@
 # Safety model
 
-ElevenLabs can touch voices, text-to-speech jobs, history downloads, and account resources, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+ElevenLabs combines creative generation with account data and, through ElevenAgents and telephony, actions that can affect real people. The CLI separates looking, planning, and applying.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## Defaults
 
-A good safety ask is: "Read the voice or account state first, then review the plan before generation, downloads, or any account write."
+- No provider call happens without `--live`.
+- Writes are plan-only unless `--live --apply` is present. Reads contact ElevenLabs only when `--live` is present.
+- Reads need `--live`; sensitive or binary reads use `--out <path>` and report a file fingerprint instead of emitting the payload.
+- The agent refuses an ambiguous voice, agent, file, destination, language, or workspace target rather than guessing.
 
-## Core safety rules
+## Before a live change
 
-- Dry-run by default; no writes unless `--apply`.
-- Record what verification to run after a write (read-back or idempotence hints) so reviewers know what to check.
-- Refuse when unsure; do not guess.
-- Spend-sensitive generation commands require `--ack-spend-money` in addition to the normal write gates.
-- Streaming/transcribing, voice design/changer, music upload/stem separation, audio isolation, and forced-alignment workstreams are all treated as spend-sensitive: they refuse `--live --apply` without `--ack-spend-money`.
-- Never log secrets.
-- The CLI now covers every non-legacy ElevenLabs endpoint (see `docs/api_coverage.md`). Treat each command as plan-first; the plan exposes the HTTP request. write applies require explicit no-snapshot approval before ElevenLabs API key use or provider HTTP when command-specific before-state capture is not available.
-- Binary or high-risk sensitive responses (media, transcripts, phone numbers, ConvAI content, webhook secrets) must go to `--out <path>`; those commands stay file-only even though safe read helpers can still emit JSON to stdout. This now includes the live payloads from `auth check` and `history list`, so adding `--live` forces you to also pass `--out <path>` (use `--overwrite` if you reuse the same file) so the CLI only emits the file fingerprint.
-- Spend-sensitive or irreversible operations also demand `--ack-spend-money` and (where noted) `--ack-irreversible` before applying; refer to `docs/api_coverage.md` for the exact gates per command.
+The agent shows the exact request, target, output path, spend or external-action risk, preconditions, and verification. You review and save that plan, mark `reviewed: true`, then apply only with matching `--plan-in` and mandatory `--receipt-out`; the plan binding covers resolved path inputs, request body, parameters, and file paths/content hashes when available. Writes currently require `--ack-no-snapshot` when provider state cannot be captured first; the plan must say `before_state.status: no_snapshot_available` and explain the recovery limit.
 
-## How to review risky work
+Spend-sensitive generation, transcription, music, voice design/changing, audio isolation, forced alignment, and similar media work also require `--ack-spend-money`. Deletes, calls, batch work, and other irreversible actions may require `--yes`, `--ack-irreversible`, or a saved `--plan-in`, as shown by the command and coverage docs.
 
-There are two kinds of safety:
+## Sensitive and real-world results
 
-1. What the tool checks
-- Write plans include the intended post-apply verification steps, but writes require explicit no-snapshot approval before provider apply because before-state capture is missing.
-- When verification is not possible, the tool should label it as best-effort and explain.
+Audio, transcripts, phone numbers, conversation content, webhook data, and similar sensitive responses stay file-only with `--out`. Do not print them, paste them into chat, or include secrets in plans, prompts, logs, or receipts. Calls and Twilio assignment need a clearly approved destination and agent because they can contact real people or incur charges.
 
-2. What a reviewer checks
-- A reviewer checks that the planned change matches the goal and context.
-- This is best done by a human or a smart agent (we recommend Codex).
+## Plan → review → apply → verify
 
-The tool can check gates and outputs, but a person or reviewing agent still needs to check whether the change is the right change.
+1. Run the explicit command without `--live` and inspect the plan.
+2. Confirm the target, content, cost risk, file path, and recovery limit.
+3. Apply only with required `--live --apply` and extra approval flags.
+4. A durable pending receipt is written before provider I/O. Apply verifies output files locally when written, and performs a status-only exact-path GET readback for declared PUT/PATCH counterparts, reported as `readback_completed`/reachable rather than value equality.
 
-## Plan → Review → Apply → Verify
+There is no automatic rollback promise. When no snapshot or inverse operation exists, the plan and receipt must say so plainly. Account roles, paid features, provider fixtures, and endpoint availability can still block a correctly gated request; a plan is not proof of live success.
 
-Recommended workflow for writes:
-
-1) Generate a plan (dry-run).
-2) Review the plan (human/Codex).
-3) Try apply only with the required gates (`--live --apply`, `--ack-spend-money`, `--ack-irreversible`, `--yes` where needed).
-4) Write applies require explicit no-snapshot approval when no saved before-state is available; approved applies must emit receipts that record the approval and recovery limit.
-
-## Plans and receipts (recommended)
-
-For write-capable commands, treat the dry-run output as a **plan**:
-- what will change
-- what must be true to apply safely (preconditions)
-- how verification will happen
-
-After a real apply is re-enabled, output a **receipt**:
-- what actually changed
-- what verification steps are expected (and any observed outcomes) so reviewers know what to check
-- pointers to backups/snapshots when available
-
-ElevenLabs writes require explicit no-snapshot approval when no saved before-state is available; approved applies must emit receipts that record the approval and recovery limit.
-
-Plans/receipts must never include secrets.
-
-### Plan/receipt files (recommended v2 flags)
-
-If a command supports writes, it should also support file outputs:
-- `--plan-out <path>`: write the dry-run plan JSON to a file (for review)
-- `--plan-in <path>`: apply from a saved plan file (for high-risk/batch)
-- `--receipt-out <path>`: write the post-apply receipt JSON to a file only after saved snapshot support is available and provider writes are re-enabled
-
-This makes the workflow repeatable in CI and easier to review.
-
-## Run history (recommended for customer-ready tools)
-
-For write-capable commands, this template automatically writes a local run folder (gitignored):
-- `.state/runs/<run_id>/`
-
-It also appends a simple history row to:
-- `.state/runs/index.jsonl`
-
-These live next to your `--env-file` (usually next to your `.env` file), so you can always find them.
-
-This makes later review easier:
-- You can ask your agent “what happened last time?” and it can use `runs list/show`.
-- You don’t need to manually browse folders.
-
-Keep these local files private:
-- These artifacts must never include secrets.
-- Plans, refusals, receipts, and audit logs are proof of what happened. Approved supported writes emit receipts that record no-snapshot approval and recovery limits when no before-state can be saved.
-
-## Risk levels (guideline)
-
-- Low: create new drafts; small safe edits.
-- Medium: edit an existing draft; single-resource updates.
-- High: edit published content; status changes; deletes; batch.
-- Irreversible: actions that cannot realistically be undone (example: analytics events, licensing downloads).
-
-High/irreversible actions should require an explicit plan + confirmation.
-
-Irreversible actions should require `--ack-irreversible`.
-
-## Drift detection (recommended for plan apply)
-
-If you support applying from a saved plan file, refuse if the target changed since the plan was created.
-Examples:
-- `updated_at` / `modified_gmt`
-- a content hash
-
-## Recovery contract (recommended default)
-
-- Include a structured `before_state` block and `recovery` contract in every write plan. write plans must show `before_state.status: no_snapshot_available`.
-- If recovery is possible, describe the inverse strategy and set `recovery.rollback_ready` to `true`.
-- If recovery is not possible, set `recovery.end_state` to `irreversible_and_clearly_labeled` and `recovery.strategy` to `no_inverse`; set `recovery.rollback_ready` to `false` and `recovery.restore_note` to the explicit no-recovery statement that manual cleanup is needed.
+See [API coverage](api_coverage.md) for command-specific gates and [proof](proof.md) for what has actually been exercised.

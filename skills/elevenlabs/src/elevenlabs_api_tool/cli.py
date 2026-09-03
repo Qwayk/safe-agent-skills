@@ -16,19 +16,19 @@ from .commands import usage as usage_cmd
 from .commands import voices as voices_cmd
 from .commands.operation_runner import register_operation_commands
 from .config import load_config
-from .project_config import load_project_config
 from .errors import SafetyError, ToolError, ValidationError
-from .output import Output
 from .http import HttpClient
+from .output import Output
+from .project_config import load_project_config
 from .runs import (
     RunContext,
+    append_index_row,
     build_deterministic_summary,
+    find_run,
     init_run_context,
     list_runs,
-    find_run,
-    write_summary_md,
-    append_index_row,
     runs_index_path_for_env_file,
+    write_summary_md,
 )
 
 
@@ -259,7 +259,7 @@ def build_parser() -> argparse.ArgumentParser:
     tts_synthesize.add_argument("--overwrite", action="store_true", help="Overwrite existing file")
     tts_synthesize.set_defaults(func=tts_cmd.cmd_tts_synthesize, write_capable=True)
 
-    existing_subparsers = {
+    existing_subparsers: dict[tuple[str, ...], object] = {
         ("auth",): auth_sub,
         ("voices",): voices_sub,
         ("models",): models_sub,

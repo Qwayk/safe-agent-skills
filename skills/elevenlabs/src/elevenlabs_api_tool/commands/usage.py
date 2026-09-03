@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from ..commands._helpers import find_operation, plan_for_operation
 from ..errors import ToolError, ValidationError
@@ -8,13 +8,13 @@ from ..plans import build_receipt, default_verification, summarize_request, writ
 
 
 def _default_usage_window_ms() -> tuple[int, int]:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     start = (now - timedelta(days=30)).replace(hour=0, minute=0, second=0, microsecond=0)
     return int(start.timestamp() * 1000), int(now.timestamp() * 1000)
 
 
 def cmd_usage_get(args, ctx) -> int:
-    op = find_operation("usage_metrics")
+    op = find_operation("usage_by_product_over_time")
     selector = {"kind": "usage.get", "value": "workspace usage"}
     start_unix = getattr(args, "start_unix", None)
     end_unix = getattr(args, "end_unix", None)
@@ -25,20 +25,23 @@ def cmd_usage_get(args, ctx) -> int:
         if end_unix is None:
             end_unix = default_end
 
-    params: dict[str, object] = {
-        "start_unix": start_unix,
-        "end_unix": end_unix,
-    }
-    if getattr(args, "include_workspace_metrics", False):
-        params["include_workspace_metrics"] = True
-    if getattr(args, "breakdown_type", None):
-        params["breakdown_type"] = args.breakdown_type
-    if getattr(args, "aggregation_interval", None):
-        params["aggregation_interval"] = args.aggregation_interval
-    if getattr(args, "aggregation_bucket_size", None) is not None:
-        params["aggregation_bucket_size"] = args.aggregation_bucket_size
-    if getattr(args, "metric", None):
-        params["metric"] = args.metric
+    interval = getattr(args, "aggregation_bucket_size", None)
+    if interval is None:
+        aggregation_interval = getattr(args, "aggregation_interval", None)
+        interval = (
+            {
+                "hour": 3600,
+                "day": 86400,
+                "week": 604800,
+                "month": 2592000,
+                "cumulative": 86400,
+            }.get(aggregation_interval, 86400)
+            if isinstance(aggregation_interval, str)
+            else 86400
+        )
+    params: dict[str, object] = {"start_time": start_unix, "end_time": end_unix, "interval_seconds": interval}
+    if getattr(args, "breakdown_type", None) and args.breakdown_type != "none":
+        params["group_by"] = [args.breakdown_type]
 
     request = summarize_request(op=op, params=params)
     plan, plan_path = plan_for_operation(ctx=ctx, op=op, selector=selector, request=request)
@@ -54,10 +57,10 @@ def cmd_usage_get(args, ctx) -> int:
     headers = {"xi-api-key": ctx["cfg"].token}
     try:
         resp = ctx["http_client"].request(
-            "GET",
+            "POST",
             f"{ctx['cfg'].base_url}{op.path}",
             headers=headers,
-            params=params,
+            json=params,
         )
     except RuntimeError as exc:
         raise ToolError(str(exc)) from exc

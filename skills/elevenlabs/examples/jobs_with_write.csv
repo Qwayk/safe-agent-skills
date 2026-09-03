@@ -1,4 +1,3 @@
-action
-read.ping
-write.ping
-
+command
+voices list
+tts synthesize --voice-id voice-123 --text hello --out ./out.mp3

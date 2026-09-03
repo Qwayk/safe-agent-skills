@@ -4,16 +4,17 @@ import argparse
 import json
 import re
 from pathlib import Path
-from typing import Any, BinaryIO
+from typing import Any, BinaryIO, Literal, cast, overload
 
 from ..errors import SafetyError, ToolError, ValidationError
-from ..operations import Operation, OPERATIONS
+from ..operations import OPERATIONS, Operation
 from ..plans import (
     BEFORE_STATE_REFUSAL_REASON,
-    build_receipt,
     build_before_state_refusal_verification_plan,
+    build_receipt,
     default_verification,
     summarize_request,
+    validate_request_contract,
     write_receipt_to_file,
 )
 from ._helpers import (
@@ -30,13 +31,13 @@ POST_READ_OVERRIDE = "post_read"
 
 
 def register_operation_commands(
-    subparsers: argparse._SubparsersAction,
+    subparsers: Any,
     parser_class: type[argparse.ArgumentParser],
     *,
     skip_commands: set[str] | None = None,
-    existing_subparsers: dict[tuple[str, ...], argparse._SubparsersAction] | None = None,
+    existing_subparsers: dict[tuple[str, ...], Any] | None = None,
 ) -> None:
-    nodes: dict[tuple[str, ...], argparse._SubparsersAction] = {(): subparsers}
+    nodes: dict[tuple[str, ...], Any] = {(): subparsers}
     skip = {cmd.lower() for cmd in (skip_commands or ())}
     if existing_subparsers:
         for path, action in existing_subparsers.items():
@@ -99,23 +100,39 @@ def cmd_operation(args: argparse.Namespace, ctx: dict[str, Any]) -> int:
     body = _load_json_body(
         getattr(args, "body", None),
         getattr(args, "body_file", None),
+        # Body files are local reviewed inputs: parse and bind them identically
+        # during plan and apply so a changed file cannot bypass the plan digest.
+        # Parse body files in both plan and apply so the reviewed request shape is identical.
         allow_file_read=will_execute,
     )
     files_for_plan = _parse_file_args(args.file or [], allow_exists=False)
     request = summarize_request(op=op, params=params, body=body, files=files_for_plan)
+    body_file = getattr(args, "body_file", None)
+    if body_file:
+        request["body_file"] = body_file
+        path = Path(body_file)
+        if path.exists() and path.is_file():
+            import hashlib
+            request["body_file_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+    selector = {
+        "kind": op.name,
+        "value": next((val for val in path_params.values() if val), "workspace"),
+        "path_params": path_params,
+    }
     plan, plan_path = plan_for_operation(
         ctx=ctx,
         op=op,
-        selector={
-            "kind": op.name,
-            "value": next((val for val in path_params.values() if val), "workspace"),
-        },
+        selector=selector,
         request=request,
     )
 
     ctx["audit"].write(f"{op.name}.plan", {"plan_out": plan_path})
 
-    applied_plan = plan_from_file_for_apply(ctx=ctx, op=op) if apply_flag else None
+    applied_plan = (
+        plan_from_file_for_apply(ctx=ctx, op=op, selector=selector, request=request)
+        if apply_flag and ctx.get("plan_in")
+        else None
+    )
     if applied_plan:
         plan = applied_plan
 
@@ -145,6 +162,10 @@ def cmd_operation(args: argparse.Namespace, ctx: dict[str, Any]) -> int:
             }
         )
         return 0
+    if apply_flag and not ctx.get("plan_in"):
+        raise SafetyError("Refused: --apply requires --plan-in from a saved reviewed plan")
+    if will_execute:
+        validate_request_contract(op=op, request=request)
     if not ctx["cfg"].token:
         raise ValidationError("Missing ELEVENLABS_API_KEY required for --live")
 
@@ -202,15 +223,20 @@ def _collect_path_params(path: str, args: argparse.Namespace) -> dict[str, str]:
     return values
 
 
-def _parse_key_value(items: list[str], flag: str) -> dict[str, str] | None:
+def _parse_key_value(items: list[str], flag: str) -> dict[str, Any] | None:
     if not items:
         return None
-    result: dict[str, str] = {}
+    result: dict[str, Any] = {}
     for item in items:
         if "=" not in item:
             raise ValidationError(f"Invalid {flag} value '{item}'; expected key=value")
         key, value = item.split("=", 1)
-        result[key.strip()] = value.strip()
+        clean_key, clean_value = key.strip(), value.strip()
+        if clean_key in result:
+            previous = result[clean_key]
+            result[clean_key] = [*previous, clean_value] if isinstance(previous, list) else [previous, clean_value]
+        else:
+            result[clean_key] = clean_value
     return result
 
 
@@ -219,37 +245,63 @@ def _load_json_body(body: str | None, body_file: str | None, *, allow_file_read:
         raise ValidationError("Cannot pass --body and --body-file together")
     if body_file:
         path = Path(body_file)
-        if allow_file_read:
+        if path.exists() and path.is_file():
             if not path.exists():
                 raise ValidationError(f"Body file not found: {body_file}")
             try:
-                return json.loads(path.read_text(encoding="utf-8"))
+                decoded = json.loads(path.read_text(encoding="utf-8"))
+                if not isinstance(decoded, dict):
+                    raise ValidationError("Request body must be a JSON object")
+                return decoded
             except json.JSONDecodeError as exc:
                 raise ValidationError(f"Invalid JSON in --body-file: {exc}") from exc
+        if allow_file_read:
+            raise ValidationError(f"Body file not found: {body_file}")
         return {"__body_file": body_file}
     if body:
         try:
-            return json.loads(body)
+            decoded = json.loads(body)
+            if not isinstance(decoded, dict):
+                raise ValidationError("Request body must be a JSON object")
+            return decoded
         except json.JSONDecodeError as exc:
             raise ValidationError(f"Invalid JSON in --body: {exc}") from exc
     return None
 
 
-def _parse_file_args(items: list[str], *, allow_exists: bool) -> dict[str, Path | str] | None:
+@overload
+def _parse_file_args(items: list[str], *, allow_exists: Literal[True]) -> dict[str, Path] | None: ...
+
+
+@overload
+def _parse_file_args(items: list[str], *, allow_exists: Literal[False]) -> dict[str, str] | None: ...
+
+
+def _parse_file_args(
+    items: list[str], *, allow_exists: bool
+) -> dict[str, Path] | dict[str, str] | None:
     if not items:
         return None
-    result: dict[str, Path | str] = {}
+    result: dict[str, Any] = {}
     for item in items:
         if "=" not in item:
             raise ValidationError(f"Invalid --file value '{item}'; expected key=@path")
         key, value = item.split("=", 1)
-        if not value.startswith("@"):
+        if not key.strip() or not value.startswith("@") or len(value) < 2 or value[1:].startswith("@"):
             raise ValidationError(f"--file values must start with '@<path>'; got '{value}'")
         target = Path(value[1:])
-        if allow_exists and not target.exists():
+        if allow_exists and (not target.exists() or not target.is_file()):
             raise ValidationError(f"File not found for --file: {target}")
-        result[key.strip()] = target if allow_exists else value[1:]
-    return result
+        clean_key = key.strip()
+        parsed = target if allow_exists else value[1:]
+        if clean_key in result:
+            previous = result[clean_key]
+            result[clean_key] = [*previous, parsed] if isinstance(previous, list) else [previous, parsed]
+        else:
+            result[clean_key] = parsed
+    if allow_exists:
+        return cast(dict[str, Path], result)
+    return cast(dict[str, str], result)
 
 
 def _enforce_apply_requirements(op: Operation, ctx: dict[str, Any]) -> None:
@@ -262,6 +314,8 @@ def _enforce_apply_requirements(op: Operation, ctx: dict[str, Any]) -> None:
             raise SafetyError("Refused: irreversible operations require --ack-irreversible")
         if not ctx.get("yes"):
             raise SafetyError("Refused: irreversible operations require --yes")
+    if ctx.get("receipt_out") is None:
+        raise SafetyError("Refused: --apply requires --receipt-out for durable pre-attempt evidence")
 
 
 def _apply_operation(
@@ -278,11 +332,25 @@ def _apply_operation(
     cfg = ctx["cfg"]
     url = _build_request_url(cfg.base_url, op.path, path_params)
     headers = {"xi-api-key": cfg.token}
+    # Persist evidence before opening files or contacting the provider.
+    pending_receipt = {
+        "status": "provider_attempt_pending",
+        "operation": op.name,
+        "endpoint": f"{op.method.upper()} {op.path}",
+        "request_binding": plan.get("request_binding"),
+        "env_fingerprint": cfg.base_url,
+        "note": "Provider outcome is uncertain until the final receipt is written.",
+    }
+    write_receipt_to_file(receipt=pending_receipt, path=ctx.get("receipt_out"))
+
     files_payload, handles = _prepare_files_payload(files)
     payload = body
     data_payload = None
-    if files_payload and body is not None:
+    multipart = "multipart/form-data" in set(op.request_body_content_types)
+    if multipart and body is not None:
         data_payload = _multipart_form_fields(body)
+        payload = None
+    elif multipart:
         payload = None
 
     try:
@@ -332,6 +400,42 @@ def _apply_operation(
         result["response"] = decoded
 
     verification = default_verification(op=op)
+    if outputs.get("file"):
+        verification = {
+            "type": "local_output",
+            "status": "verified",
+            "checks": ["output_exists", "output_sha256_recorded", "output_size_recorded"],
+        }
+    # Exact-path update operations have a declared safe GET counterpart.  Keep
+    # the readback status-only so provider response bodies are never duplicated
+    # into the receipt.
+    if op.method.upper() in {"PUT", "PATCH"} and "write" in op.safety:
+        paired = next(
+            (candidate for candidate in OPERATIONS if candidate.method.upper() == "GET" and candidate.path == op.path),
+            None,
+        )
+        if paired is not None:
+            paired_params = {
+                key: value
+                for key, value in (params or {}).items()
+                if key in set(paired.query_params or paired.required_query_params)
+            }
+            readback = ctx["http_client"].request(
+                "GET", url, headers=headers, params=paired_params, json=None, data=None, files=None
+            )
+            paired_verification = {
+                "type": "paired_readback",
+                "status": "readback_completed" if 200 <= int(readback.status) < 300 else "readback_failed",
+                "method": "GET",
+                "endpoint": paired.path,
+                "status_code": int(readback.status),
+                "reachable": 200 <= int(readback.status) < 500,
+                "response_body_stored": False,
+            }
+            if outputs.get("file"):
+                verification = {"type": "composite", "status": "completed", "local_output": verification, "paired_readback": paired_verification}
+            else:
+                verification = paired_verification
     receipt = build_receipt(
         ctx=ctx,
         op=op,
@@ -344,15 +448,16 @@ def _apply_operation(
     return result, outputs, receipt
 
 
-def _prepare_files_payload(files: dict[str, Path] | None) -> tuple[list[tuple[str, tuple[str, BinaryIO]]], list[BinaryIO]]:
+def _prepare_files_payload(files: dict[str, Any] | None) -> tuple[list[tuple[str, tuple[str, BinaryIO]]], list[BinaryIO]]:
     if not files:
         return [], []
     payload: list[tuple[str, tuple[str, BinaryIO]]] = []
     handles: list[BinaryIO] = []
-    for key, path in files.items():
-        handle = path.open("rb")
-        handles.append(handle)
-        payload.append((key, (path.name, handle)))
+    for key, paths in files.items():
+        for path in (paths if isinstance(paths, list) else [paths]):
+            handle = path.open("rb")
+            handles.append(handle)
+            payload.append((key, (path.name, handle)))
     return payload, handles
 
 

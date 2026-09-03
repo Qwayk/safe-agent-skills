@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from ..errors import SafetyError, ValidationError
-from ..operations import Operation, OPERATIONS
+from ..operations import OPERATIONS, Operation
 from ..plans import (
     build_plan,
     default_proposed_changes,
@@ -49,12 +49,14 @@ def plan_for_operation(
     return plan, plan_path
 
 
-def plan_from_file_for_apply(*, ctx: dict[str, Any], op: Operation) -> dict[str, Any] | None:
+def plan_from_file_for_apply(*, ctx: dict[str, Any], op: Operation, selector: dict[str, Any] | None = None, request: dict[str, Any] | None = None) -> dict[str, Any] | None:
     plan_path = ctx.get("plan_in")
     if not plan_path:
         return None
     plan = load_plan_from_file(plan_path)
-    validate_plan_for_apply(plan=plan, op=op, ctx=ctx)
+    if plan is None:
+        raise ValidationError("Plan file could not be loaded")
+    validate_plan_for_apply(plan=plan, op=op, ctx=ctx, selector=selector, request=request)
     return ensure_write_safety_contract(plan=plan, op=op)
 
 

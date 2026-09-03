@@ -44,4 +44,7 @@ class TestAdditionalReadCommands(unittest.TestCase):
             payload = self._run(self._env_file(Path(d)), ["usage", "get"])
             self.assertTrue(payload["ok"])
             self.assertTrue(payload["dry_run"])
-            self.assertEqual(payload["plan"]["endpoint"], "GET /v1/usage/character-stats")
+            self.assertEqual(
+                payload["plan"]["endpoint"],
+                "POST /v1/workspace/analytics/query/usage-by-product-over-time",
+            )
