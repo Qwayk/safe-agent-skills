@@ -8,7 +8,7 @@ The tool has three parts: a pinned operation catalog, a fixed request executor, 
 
 The catalog records method, server, literal path, declared parameters, request schemas, auth requirements, private-data annotations, version relationships, risk labels, snapshot strategy, and post-write check strategy. The loader refuses a catalog whose disposition totals differ from the pinned boundary.
 
-The pinned OpenAPI is still the operation boundary. For 81 writes whose pinned request typing was incomplete, the generator records a separate operation-specific decision supported by current official Twilio documentation and Twilio-owned product schemas. Sixty-seven rows receive fixed manual request supplements, two deprecated Preview routes map to stable Marketplace v1 commands, and 12 remain non-callable with exact evidence. A manual supplement can narrow an operation to documented fields; it cannot add a new route or widen the tool into a generic request path.
+The pinned OpenAPI is still the operation boundary. For 81 writes whose pinned request typing was incomplete, the generator records a separate operation-specific decision supported by current official Twilio documentation and Twilio-owned product schemas: 71 are fixed commands, 2 are canonical duplicates, 6 are private or unavailable, 1 is developer preview, and 1 is legacy EOL. A manual supplement can narrow an operation to documented fields; it cannot add a new route or widen the tool into a generic request path.
 
 ## Fixed request executor
 
