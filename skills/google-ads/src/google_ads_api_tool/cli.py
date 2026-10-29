@@ -20,7 +20,7 @@ from .config import load_config
 from .errors import SafetyError, ToolError, ValidationError
 from .output import Output
 from .project_config import load_project_config
-from .rpc_commands import register_v22_rpc_commands
+from .rpc_commands import register_v25_rpc_commands
 from .runs import (
     RunContext,
     append_index_row,
@@ -212,7 +212,7 @@ def build_parser() -> argparse.ArgumentParser:
     gaql.add_argument("--customer-id", required=True, help="Customer id (digits)")
     gaql.add_argument("--query", required=True, help="GAQL query string")
     gaql.add_argument("--limit", type=int, default=None, help="Max rows to return (client-side limit)")
-    gaql.add_argument("--page-size", type=int, default=1000, help="API page size (default: 1000)")
+    gaql.add_argument("--page-size", type=int, default=1000, help="Deprecated compatibility option; ignored (Google controls page size)")
     gaql.set_defaults(func=gaql_cmd.cmd_gaql, write_capable=False)
 
     fields = sub.add_parser("fields", help="Google Ads field discovery helpers")
@@ -247,7 +247,7 @@ def build_parser() -> argparse.ArgumentParser:
     snap_export.add_argument("--out-dir", required=True, help="Output folder for the pack")
     snap_export.add_argument("--overwrite", action="store_true", help="Allow overwriting an existing out-dir")
     snap_export.add_argument("--max-rows", type=int, default=None, help="Cap rows per query-group output")
-    snap_export.add_argument("--page-size", type=int, default=1000, help="API page size (default: 1000)")
+    snap_export.add_argument("--page-size", type=int, default=1000, help="Deprecated compatibility option; ignored (Google controls page size)")
     snap_export.add_argument("--segmentation", default="base", help="Preset template variant (bounded by preset)")
     snap_export.add_argument("--strict", action="store_true", help="Fail if any required group fails")
     snap_export.add_argument(
@@ -292,8 +292,8 @@ def build_parser() -> argparse.ArgumentParser:
     snap_diag.add_argument("--pack-dir", required=True, help="Pack folder (must contain manifest.json)")
     snap_diag.set_defaults(func=snapshot_cmd.cmd_snapshot_analyze_diagnose, write_capable=False)
 
-    # Explicit per-RPC-method commands (Google Ads API v22).
-    register_v22_rpc_commands(sub)
+    # Explicit per-RPC-method commands (Google Ads API v25).
+    register_v25_rpc_commands(sub)
 
     return p
 

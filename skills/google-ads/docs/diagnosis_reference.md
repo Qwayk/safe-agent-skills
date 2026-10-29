@@ -1,6 +1,8 @@
 # Diagnosis reference
 
-`snapshot analyze diagnose` is the default offline optimization workflow:
+Legacy diagnosis/optimization reports are retained for compatibility. They use fixed heuristics and are not verified advertising judgment or a required investigation workflow. Direct GAQL and generic exports/comparisons are available independently.
+
+For existing consumers of the legacy `snapshot analyze diagnose` command, the retained invocation is:
 
 - export `optimization_pack_v1`
 - run `google-ads-api-tool snapshot analyze diagnose --pack-dir ./out/google-ads-pack`

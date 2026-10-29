@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "google-ads-api-tool"
-version = "0.6.0"
+version = "0.7.3"
 description = "Google Ads API CLI (safe-by-default; explicit per-RPC-method commands; plan-first writes)."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-  "google-ads==29.2.0",
+  "google-ads==32.0.0",
 ]
 
 [project.optional-dependencies]

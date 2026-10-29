@@ -1,13 +1,12 @@
-# AccountLinkService (Google Ads API v22)
+# AccountLinkService (Google Ads API v25)
 
 Command shape:
 - `google-ads-api-tool account-link-service <method-kebab> --in request.json`
 
 Notes:
-- Requests are JSON objects that map to the RPC request message for the chosen method.
-- Unknown fields are rejected (strict JSON→protobuf parsing).
-- Write methods are plan-first by default; add `--apply` only after explicit approval (see `docs/safety_model.md`).
+- Requests are JSON objects matching the selected RPC request message. Unknown fields are rejected.
+- Write methods are plan-first. Live apply requires the allowlist and applicable risk approvals; unsupported snapshot shapes remain blocked unless explicitly supported.
 
 ## Methods
-- `create-account-link` — `AccountLinkService.CreateAccountLink` (write; unary) — request: `CreateAccountLinkRequest` → response: `CreateAccountLinkResponse` (plan-first; snapshot-backed live applies save before-state when possible; other write shapes need explicit no-snapshot approval support or a true blocker reason; allowlist required)
-- `mutate-account-link` — `AccountLinkService.MutateAccountLink` (write; unary) — request: `MutateAccountLinkRequest` → response: `MutateAccountLinkResponse` (plan-first; snapshot-backed live applies save before-state when possible; other write shapes need explicit no-snapshot approval support or a true blocker reason; allowlist required)
+- `create-account-link` — `AccountLinkService.CreateAccountLink` (write; plan-first; unary_unary) — request: `CreateAccountLinkRequest` → response: `CreateAccountLinkResponse`
+- `mutate-account-link` — `AccountLinkService.MutateAccountLink` (write; plan-first; unary_unary) — request: `MutateAccountLinkRequest` → response: `MutateAccountLinkResponse`

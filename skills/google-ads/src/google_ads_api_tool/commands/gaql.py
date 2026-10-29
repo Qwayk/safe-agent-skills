@@ -41,10 +41,10 @@ def cmd_gaql(args: Any, ctx: dict[str, Any]) -> int:
     rows: list[dict[str, Any]] = []
     limited = False
     for row in it:
-        rows.append(protobuf_to_dict(row))
         if limit is not None and len(rows) >= limit:
             limited = True
             break
+        rows.append(protobuf_to_dict(row))
 
     out = {
         "ok": True,
@@ -52,7 +52,8 @@ def cmd_gaql(args: Any, ctx: dict[str, Any]) -> int:
             "customer_id": customer_id,
             "row_count": len(rows),
             "limited": limited,
-            "page_size": page_size,
+            "page_size": page_size,  # Requested legacy value, not the server page size.
+            "page_size_ignored": True,
         },
         "rows": rows,
     }

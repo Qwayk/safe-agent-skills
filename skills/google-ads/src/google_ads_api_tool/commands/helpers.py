@@ -11,7 +11,7 @@ from ..google_ads_client import build_google_ads_client, protobuf_to_dict
 from ..json_files import read_json_file
 from ..protobuf_json import parse_request_json
 from ..rpc_commands import _call_with_retries, _cmd_write
-from ..rpc_v22_registry import RPC_METHODS_V22, RpcMethodSpec
+from ..rpc_v25_registry import RPC_METHODS_V25, RpcMethodSpec
 
 
 def register_helper_commands(sub: argparse._SubParsersAction) -> None:
@@ -156,7 +156,7 @@ def register_helper_commands(sub: argparse._SubParsersAction) -> None:
 
 
 def _rpc_spec(service: str, method: str) -> RpcMethodSpec:
-    for spec in RPC_METHODS_V22:
+    for spec in RPC_METHODS_V25:
         if spec.service == service and spec.method == method:
             return spec
     raise ValidationError(f"Unknown RPC spec: {service}.{method}")

@@ -1,6 +1,6 @@
-# Media buyer quickstart (no GAQL required)
+# Media buyer quickstart (optional export workflow)
 
-Goal: export a stable, joinable Google Ads optimization pack you (and an AI agent) can use to diagnose delivery, keyword quality, RSA strength, tracking setup, and recommendation pressure without GAQL.
+Direct GAQL is available without this export sequence. This optional workflow exports a stable, joinable Google Ads optimization pack you (and an AI agent) can use to diagnose delivery, keyword quality, RSA strength, tracking setup, and recommendation pressure without GAQL.
 
 Snapshot export is read-only to Google Ads. The tool also supports explicit RPC write methods (plan-first), but this quickstart focuses on safe exports:
 - consume quota, and
@@ -8,10 +8,10 @@ Snapshot export is read-only to Google Ads. The tool also supports explicit RPC 
 
 If you want exact command syntax and flags, also see `docs/command_reference.md`.
 
-## 1) Pick a preset (recommended starting point)
+## 1) Pick a preset for the export
 
 Start with:
-- `optimization_pack_v1` (recommended)
+- `optimization_pack_v1` (account-review tables)
 - `analysis_pack_max_v1` (maximal; use when you want “everything”)
 - `analysis_pack_v1` (older minimal starter)
 
@@ -65,37 +65,9 @@ If you’re using a spreadsheet or a notebook, start by loading:
 
 Then group by creative (resource name or ad id) and compute “winners” for your date range.
 
-## 5) Diagnose the pack (safe)
+## 5) Interpret the evidence
 
-Run:
-- `google-ads-api-tool snapshot analyze diagnose --pack-dir ./out/google-ads-pack`
-
-Expect findings such as:
-- `budget_pressure`
-- `rank_pressure`
-- `quality_score_issue`
-- `rsa_issue`
-- `tracking_risk`
-- `recommendation_review`
-- `keyword_pause_candidate`
-
-Useful interpretation:
-- `quality_score_issue` now favors rows with real traffic or spend instead of zero-signal rows.
-- `rsa_issue` now uses real ad performance totals from `ad_daily_metrics`.
-- `keyword_pause_candidate` is a books-or-human judgment step, not a Google Help lookup.
-
-## 6) Agent audit order (thorough and efficient)
-
-Use this order:
-- export `optimization_pack_v1` with `--include-optional`
-- run `snapshot analyze diagnose`
-- use the exact `recommended_doc_queries` from diagnose for mechanics questions
-- inspect only the tables tied to the active findings
-- switch to books only when `support_route = books_or_human`
-- widen to `analysis_pack_max_v1` only if the first pack is missing needed tables
-- use GAQL only if the field is still missing
-
-Do not start a normal optimization audit with `analysis_pack_max_v1`, GAQL, raw table slicing, or ad hoc `jq` summaries.
+Choose questions from the user's decision and the underlying data. Verify current mechanics with official sources and distinguish correlation from cause. Use direct GAQL for any useful field; it does not require exhausting presets first. Legacy `snapshot analyze diagnose` and `optimize` remain for compatibility, but their heuristics are not verified account conclusions or a required stage.
 
 ## 7) What to do next (safe)
 
@@ -106,4 +78,4 @@ If you want an AI agent to do the analysis without you learning the tables:
 - `docs/agent_recipes.md`
 
 If you need a very specific query that isn’t covered by presets:
-- use `google-ads-api-tool gaql --customer-id YOUR_CUSTOMER_ID --query "SELECT campaign.id, campaign.name FROM campaign LIMIT 5" --limit 5` as an edge-case tool.
+- use `google-ads-api-tool gaql --customer-id YOUR_CUSTOMER_ID --query "SELECT campaign.id, campaign.name FROM campaign LIMIT 5" --limit 5` for a small sample; omit both limits for complete query results.

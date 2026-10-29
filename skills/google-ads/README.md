@@ -1,16 +1,12 @@
 # Google Ads
 
-**Capability:** Reads + careful changes
+The Google Ads API tool helps your agent review campaign performance, investigate wasted spend, and prepare account changes.
 
-Google Ads is where small targeting, budget, keyword, and conversion-tracking choices can turn into real spend very quickly.
+Ask it to compare campaigns, examine search terms and conversion tracking, export reports, or prepare keyword, budget, and Search campaign changes.
 
-This skill helps an agent check account access, export performance packs, review campaigns and keywords, validate GAQL reports, and prepare budget, negative keyword, conversion upload, or campaign-build plans before anything changes in the account.
+For example: "Which campaigns need attention?", "Check whether these search terms deserve negative keywords", or "Prepare a paused campaign for this service."
 
-Use it for questions like: "Which accounts can I access?", "What changed in the last 30 days?", "Which campaigns or keywords need attention?", "Can you preview this budget or negative keyword change?", or "Can you build a campaign plan from this reviewed spec?"
-
-Google Ads reads and exports are meant to happen before account changes. Writes start as dry-run plans, spend-impacting actions need extra approval, remove actions need extra acknowledgement, and some write families still need explicit no-snapshot approval when the tool cannot save useful before-state first.
-
-A good first ask is: "Check which Google Ads accounts I can access, export the optimization pack for the last 30 days, and summarize the biggest issues before we change anything."
+The agent reads the account first and explains its findings. Before changing campaigns, budgets, targeting, or tracking, it shows you the proposed changes and waits for approval.
 
 ## Start here first
 
@@ -31,13 +27,15 @@ If you already want the faster operator path, jump to [Media buyer quickstart](d
 
 ## What access this skill needs
 
-- A Google Ads developer token.
+- Google Ads API access on the Google Cloud project that owns your OAuth client.
 - A Google OAuth client ID and client secret.
 - A Google Ads refresh token.
 - A customer ID for the account you want to inspect or change.
 - A manager login customer ID when you work through an MCC or manager account.
 
 Live writes also need the local write allowlist and tool flags to permit that customer ID.
+
+Current release: tool 0.7.3 uses Google Ads API v25, including v25.1 definitions, through Python client 32.0.0.
 
 ## Install and first run
 
@@ -70,11 +68,13 @@ Check which Google Ads accounts I can access, export the optimization pack for t
 
 ## What it covers today
 
+Commands are available for the following areas. Command availability is not proof that every workflow has been run against a live account; see [tested behavior and limits](docs/proof.md).
+
 This skill covers:
 
 - auth and account access checks
 - GAQL reads and field discovery
-- preset exports and offline diagnosis
+- preset exports, comparisons and legacy heuristic reports
 - explicit Google Ads RPC service methods across the supported surface
 - helper commands for repeated account work
 - strict Search campaign builders for reviewed spec files
@@ -103,8 +103,8 @@ This skill covers:
 
 - Snapshot export packs are analysis evidence, not a restore path.
 - Create, upload, unreadable remove, and builder create paths do not always have saved before-state yet.
-- The tool can describe performance and diagnose patterns, but it does not prove causality.
-- You still need valid Google Ads API access and an approved developer token for real account work.
+- Direct GAQL and exports provide evidence. Legacy diagnosis/optimization commands remain for compatibility; their heuristics do not establish account truth or causality and are not a required review step.
+- You still need valid Google Ads API access and an approved Google Cloud project for real account work.
 
 ## Helpful docs
 

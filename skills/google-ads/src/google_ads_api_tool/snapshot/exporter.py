@@ -95,6 +95,7 @@ def build_export_plan(*, a: ExportArgs, preset_obj: dict[str, Any]) -> dict[str,
         "overwrite": bool(a.overwrite),
         "strict": bool(a.strict),
         "page_size": a.page_size,
+        "page_size_ignored": True,
         "max_rows": a.max_rows,
         "pack_layout": {
             "manifest": "manifest.json",

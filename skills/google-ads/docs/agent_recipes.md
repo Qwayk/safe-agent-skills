@@ -7,198 +7,23 @@ Important safety rules:
 - Dry-run first, then apply only with explicit user approval.
 - Snapshot exports are read-only to Google Ads, but they can consume quota and write local files.
 
-## Recipe: “Diagnose a Search account for optimization work”
+## Investigate a specific account question
 
-Preset:
-- `optimization_pack_v1`
+Use direct GAQL to retrieve relevant evidence, or select a preset when a saved pack is useful. No export or diagnosis sequence is required. For example:
 
-Commands:
-1) Dry-run:
-   - `google-ads-api-tool snapshot export --preset optimization_pack_v1 --customer-id YOUR_CUSTOMER_ID --since 2026-01-01 --until 2026-01-31 --out-dir ./out/google-ads-pack --include-optional`
-2) Apply (after approval):
-   - `google-ads-api-tool snapshot export --preset optimization_pack_v1 --customer-id YOUR_CUSTOMER_ID --since 2026-01-01 --until 2026-01-31 --out-dir ./out/google-ads-pack --apply --yes --include-optional`
-3) Diagnose:
-   - `google-ads-api-tool snapshot analyze diagnose --pack-dir ./out/google-ads-pack`
-4) Temp implementation audit only:
-   - `google-ads-api-tool --no-artifacts snapshot export --preset optimization_pack_v1 --customer-id YOUR_CUSTOMER_ID --since 2026-01-01 --until 2026-01-31 --out-dir ./tmp/google-ads-pack --apply --yes --include-optional`
+```bash
+google-ads-api-tool --output json gaql --customer-id YOUR_CUSTOMER_ID --query "SELECT campaign.id, campaign.name, campaign.status FROM campaign"
+```
 
-Use this order after diagnose:
-1) Read `findings[]`, `actions`, and `findings[].recommended_doc_queries`.
-2) Run the exact docs queries from diagnose for the important mechanics questions.
-3) Read only the tables tied to the active findings.
-4) Check `findings[].support_route` before choosing docs versus books.
-5) Use `analysis_pack_max_v1` only if the pack is missing needed tables.
-6) Use GAQL only if the needed field is still missing.
+Omit `--limit` for complete query results. `meta.limited` means the client cap omitted rows; GAQL LIMIT still narrows the requested dataset. `--page-size` is ignored and retained for compatibility. Verify customer identity, account timezone, closed date windows, conversion delay and completeness before interpreting performance.
 
-Core tables to read first:
-- `manifest.json` (warnings, truncation, and which groups failed)
-- `tables/campaign_pressure_daily.jsonl`
-- `tables/keyword_quality_snapshot.jsonl`
-- `tables/conversion_actions.jsonl`
-- `tables/recommendations.jsonl`
-- `tables/ad_daily_metrics.jsonl`
+Choose the fields that answer the question. For delivery, examine configuration, daily performance and budget/rank constraints; for ad quality, inspect query/ad/page fit and actual outcomes; for conversions, examine actions and each campaign's standard and custom goals. Primary/Secondary labels alone do not establish effective campaign bidding goals. Recommendations and platform quality labels do not prove causality.
 
-## Recipe: “Low impressions: budget vs rank vs low volume”
+## Optional export packs
 
-Preset:
-- `optimization_pack_v1`
+Use `presets list` and `presets show` to choose useful datasets. `optimization_pack_v1`, `analysis_pack_v2` and `analysis_pack_max_v1` remain available. Preview the export, then use `--apply --yes` for the authorized local export. Inspect the manifest for missing, failed or truncated tables before using them. Read the underlying evidence and choose research questions yourself.
 
-Commands:
-1) Export the pack.
-2) Run:
-   - `google-ads-api-tool snapshot analyze diagnose --pack-dir ./out/google-ads-pack`
-
-Read:
-- `findings[]` where `category` is one of:
-  - `budget_pressure`
-  - `rank_pressure`
-  - `mixed_pressure`
-  - `low_volume_or_targeting_limited`
-
-Next:
-- run the exact `recommended_doc_queries` from those findings
-- then inspect `tables/campaign_pressure_daily.jsonl`
-- for rank issues, add `tables/keyword_quality_snapshot.jsonl` and `tables/ad_daily_metrics.jsonl`
-
-## Recipe: “Fix RSA strength”
-
-Preset:
-- `optimization_pack_v1`
-
-Commands:
-1) Export with `--include-optional` so RSA asset labels are present.
-2) Run:
-   - `google-ads-api-tool snapshot analyze diagnose --pack-dir ./out/google-ads-pack`
-
-Read:
-- `findings[]` with `category = rsa_issue`
-- `tables/ad_group_ads.jsonl`
-- `tables/ad_daily_metrics.jsonl`
-- `tables/rsa_asset_performance.jsonl`
-
-## Recipe: “Quality Score diagnosis”
-
-Preset:
-- `optimization_pack_v1`
-
-Commands:
-1) Export the pack.
-2) Run:
-   - `google-ads-api-tool snapshot analyze diagnose --pack-dir ./out/google-ads-pack`
-
-Read:
-- `findings[]` with `category = quality_score_issue`
-- `tables/keyword_quality_snapshot.jsonl`
-- `tables/search_terms_daily.jsonl`
-- `tables/landing_pages_daily.jsonl` when present
-
-## Recipe: “Recommendation review without auto-apply”
-
-Preset:
-- `optimization_pack_v1`
-
-Commands:
-1) Export the pack.
-2) Run:
-   - `google-ads-api-tool snapshot analyze diagnose --pack-dir ./out/google-ads-pack`
-
-Read:
-- `findings[]` with `category = recommendation_review`
-- `tables/recommendations.jsonl`
-- `tables/customer_overview.jsonl`
-- `tables/campaign_inventory.jsonl`
-
-Rule:
-- recommendations are review-only in this workflow
-- do not auto-apply anything from the diagnose output
-
-## Recipe: “Pause or keep this keyword?”
-
-Preset:
-- `optimization_pack_v1`
-
-Commands:
-1) Export the pack.
-2) Run:
-   - `google-ads-api-tool snapshot analyze diagnose --pack-dir ./out/google-ads-pack`
-
-Read:
-- `findings[]` with `category = keyword_pause_candidate`
-
-Rule:
-- if `support_route` is `books_or_human`, do not treat Google Help as the answer source
-- use books or human review for the final pause-or-keep judgment
-
-## Recipe: “Zero conversions: tracking risk first”
-
-Preset:
-- `optimization_pack_v1`
-
-Commands:
-1) Export the pack.
-2) Run:
-   - `google-ads-api-tool snapshot analyze diagnose --pack-dir ./out/google-ads-pack`
-
-Read:
-- `findings[]` with `category = tracking_risk`
-- `tables/conversion_actions.jsonl`
-- `tables/ad_daily_metrics.jsonl`
-- `tables/ad_daily_conversions_by_action.jsonl` when present
-
-## Recipe: “Deepen a finding after diagnose”
-
-Rule:
-- use diagnose output as the control plane
-- do not start with ad hoc table slicing
-- do not widen to `analysis_pack_max_v1` unless the first pack is missing needed data
-
-Finding to next tables:
-- `rank_pressure`
-  - `tables/campaign_pressure_daily.jsonl`
-  - `tables/keyword_quality_snapshot.jsonl`
-  - `tables/ad_daily_metrics.jsonl`
-- `quality_score_issue`
-  - `tables/keyword_quality_snapshot.jsonl`
-  - `tables/search_terms_daily.jsonl`
-  - `tables/landing_pages_daily.jsonl` when present
-- `rsa_issue`
-  - `tables/ad_group_ads.jsonl`
-  - `tables/ad_daily_metrics.jsonl`
-  - `tables/rsa_asset_performance.jsonl` when present
-- `search_term_cleanup`
-  - `tables/search_terms_daily.jsonl`
-  - `tables/keyword_daily_metrics.jsonl`
-- `tracking_risk`
-  - `tables/conversion_actions.jsonl`
-  - `tables/ad_daily_metrics.jsonl`
-  - `tables/ad_daily_conversions_by_action.jsonl` when present
-- `landing_page_review`
-  - `tables/landing_pages_daily.jsonl`
-  - `tables/search_terms_daily.jsonl`
-- `placement_review`
-  - `tables/placements_daily.jsonl`
-- `recommendation_review`
-  - `tables/recommendations.jsonl`
-  - `tables/customer_overview.jsonl`
-  - `tables/campaign_inventory.jsonl`
-
-## Recipe: “Deep diagnosis fallback: placements + landing pages + conversion actions”
-
-Preset:
-- `analysis_pack_max_v1`
-
-Commands:
-1) Dry-run:
-   - `google-ads-api-tool snapshot export --preset analysis_pack_max_v1 --customer-id YOUR_CUSTOMER_ID --since 2026-01-01 --until 2026-01-31 --out-dir ./out/google-ads-max-pack --include-optional`
-2) Apply (after approval):
-   - `google-ads-api-tool snapshot export --preset analysis_pack_max_v1 --customer-id YOUR_CUSTOMER_ID --since 2026-01-01 --until 2026-01-31 --out-dir ./out/google-ads-max-pack --apply --yes --include-optional`
-
-Use this only after `optimization_pack_v1` plus diagnose if the original pack is missing the needed deeper tables.
-
-Tables to read (examples; availability depends on the account):
-- `tables/placements_daily.jsonl`
-- `tables/landing_pages_daily.jsonl`
-- `tables/ad_daily_conversions_by_action.jsonl`
+The `snapshot analyze diagnose` and `optimize` commands are legacy heuristic reports retained for compatibility. Their fixed thresholds, goal interpretation and impression-share aggregation are not verified advertising judgment; they are not a prerequisite or the default investigation path. See [diagnosis reference](diagnosis_reference.md) for the retained command schema.
 
 ## Recipe: “Explain why these 3 ads are winning”
 
@@ -233,9 +58,9 @@ Read:
 
 ## Recipe: “I need one weird field that the preset doesn’t include”
 
-Use the preset export first (so you have a pack), then use GAQL for edge cases:
+Use GAQL directly:
 - discover fields: `google-ads-api-tool fields search --contains campaign`
-- run a narrow GAQL query with a small `--limit`:
+- use a small limit to explore the field shape; omit limits for complete evidence:
   - `google-ads-api-tool gaql --customer-id YOUR_CUSTOMER_ID --query "SELECT campaign.id, campaign.name FROM campaign LIMIT 5" --limit 5`
 
 ## Recipe: “Pause these reviewed keywords without hand-writing RPC JSON”

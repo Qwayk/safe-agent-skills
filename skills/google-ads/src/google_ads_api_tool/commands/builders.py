@@ -9,7 +9,7 @@ from ..errors import ValidationError
 from ..json_files import read_json_file, write_json_file
 from ..protobuf_json import parse_request_json
 from ..rpc_commands import _cmd_write, _payload_digest
-from ..rpc_v22_registry import RPC_METHODS_V22, RpcMethodSpec
+from ..rpc_v25_registry import RPC_METHODS_V25, RpcMethodSpec
 from .helpers import _amount_to_micros, _digits, _normalize_match_type, _normalize_status
 
 
@@ -66,7 +66,7 @@ class _TempIds:
 
 
 def _rpc_spec(service: str, method: str) -> RpcMethodSpec:
-    for spec in RPC_METHODS_V22:
+    for spec in RPC_METHODS_V25:
         if spec.service == service and spec.method == method:
             return spec
     raise ValidationError(f"Unknown RPC spec: {service}.{method}")
@@ -123,6 +123,49 @@ def _language_constant(value: Any) -> str:
     if s.startswith("languageConstants/"):
         return s
     return f"languageConstants/{_digits(s, label='language constant')}"
+
+
+def _coordinate_to_micro_degrees(value: Any, *, label: str) -> int:
+    if value is None:
+        raise ValidationError(f"{label} is required.")
+    if isinstance(value, int):
+        return value
+    raw = str(value).strip()
+    if not raw:
+        raise ValidationError(f"{label} is required.")
+    try:
+        number = float(raw)
+    except ValueError as exc:
+        raise ValidationError(f"{label} must be a number.") from exc
+    if abs(number) > 180:
+        return int(number)
+    return int(round(number * 1_000_000))
+
+
+def _normalize_proximity(item: Any) -> dict[str, Any]:
+    obj = _ensure_dict(item, label="proximity")
+    radius_raw = obj.get("radius")
+    if radius_raw is None:
+        raise ValidationError("proximity.radius is required.")
+    try:
+        radius = float(str(radius_raw).strip())
+    except ValueError as exc:
+        raise ValidationError("proximity.radius must be a number.") from exc
+    if radius <= 0:
+        raise ValidationError("proximity.radius must be positive.")
+    radius_units = str(obj.get("radius_units") or "MILES").strip().upper()
+    if radius_units not in {"MILES", "KILOMETERS"}:
+        raise ValidationError("proximity.radius_units must be MILES or KILOMETERS.")
+    latitude = obj.get("latitude_in_micro_degrees", obj.get("latitude"))
+    longitude = obj.get("longitude_in_micro_degrees", obj.get("longitude"))
+    return {
+        "geo_point": {
+            "latitude_in_micro_degrees": _coordinate_to_micro_degrees(latitude, label="proximity.latitude"),
+            "longitude_in_micro_degrees": _coordinate_to_micro_degrees(longitude, label="proximity.longitude"),
+        },
+        "radius": radius,
+        "radius_units": radius_units,
+    }
 
 
 def _normalize_day_of_week(value: Any) -> str:
@@ -274,6 +317,8 @@ def _normalize_campaign_settings(
     list[dict[str, Any]],
     list[dict[str, Any]],
     list[dict[str, Any]],
+    list[dict[str, Any]],
+    list[dict[str, Any]],
 ]:
     campaign = _ensure_dict(spec.get("campaign"), label="campaign")
     targeting = _ensure_dict(spec.get("targeting"), label="targeting")
@@ -297,6 +342,9 @@ def _normalize_campaign_settings(
             "negative_geo_target_type": str(campaign.get("negative_geo_target_type") or "PRESENCE").strip(),
         },
     }
+    final_url_suffix = str(campaign.get("final_url_suffix") or "").strip()
+    if final_url_suffix:
+        campaign_obj["final_url_suffix"] = final_url_suffix
     if not campaign_obj["name"]:
         raise ValidationError("campaign.name is required.")
 
@@ -317,7 +365,17 @@ def _normalize_campaign_settings(
             }
         ]
 
-    locations = [_geo_target_constant(v) for v in _ensure_list(targeting.get("locations"), label="targeting.locations", allow_empty=False)]
+    locations = [_geo_target_constant(v) for v in _optional_list(targeting.get("locations"), label="targeting.locations")]
+    proximities = [_normalize_proximity(v) for v in _optional_list(targeting.get("proximities"), label="targeting.proximities")]
+    if not locations and not proximities:
+        raise ValidationError("targeting.locations or targeting.proximities must not be empty.")
+    excluded_locations = [
+        _geo_target_constant(v)
+        for v in _optional_list(
+            targeting.get("excluded_locations", targeting.get("negative_locations")),
+            label="targeting.excluded_locations",
+        )
+    ]
     languages = [_language_constant(v) for v in _ensure_list(targeting.get("languages"), label="targeting.languages", allow_empty=False)]
     schedule = _normalize_schedule(_ensure_list(targeting.get("ad_schedule"), label="targeting.ad_schedule", allow_empty=False))
     campaign_negatives = [_normalize_negative_keyword(v, default_match_type="BROAD") for v in _optional_list(spec.get("campaign_negatives"), label="campaign_negatives")]
@@ -340,7 +398,17 @@ def _normalize_campaign_settings(
             "use_supplied_urls_only": True,
         }
 
-    return campaign, campaign_obj, [{"geo_target_constant": v} for v in locations], [{"language_constant": v} for v in languages], schedule, campaign_negatives, cross_campaign_negatives
+    return (
+        campaign,
+        campaign_obj,
+        [{"geo_target_constant": v} for v in locations],
+        [{"geo_target_constant": v} for v in excluded_locations],
+        [{"proximity": v} for v in proximities],
+        [{"language_constant": v} for v in languages],
+        schedule,
+        campaign_negatives,
+        cross_campaign_negatives,
+    )
 
 
 def _asset_field_type(asset_type: str) -> str:
@@ -456,7 +524,17 @@ def build_search_campaign_request(spec_obj: dict[str, Any]) -> _BuilderCompilati
     budget_spec = _ensure_dict(spec.get("budget"), label="budget")
     budget_rn = _resource_name(customer_id, "campaignBudgets", temp_ids.take())
     campaign_rn = _resource_name(customer_id, "campaigns", temp_ids.take())
-    campaign_settings, campaign_obj, locations, languages, schedule, campaign_negatives, cross_campaign_negatives = _normalize_campaign_settings(
+    (
+        campaign_settings,
+        campaign_obj,
+        locations,
+        excluded_locations,
+        proximities,
+        languages,
+        schedule,
+        campaign_negatives,
+        cross_campaign_negatives,
+    ) = _normalize_campaign_settings(
         spec,
         customer_id=customer_id,
         temp_campaign_budget=budget_rn,
@@ -487,6 +565,10 @@ def build_search_campaign_request(spec_obj: dict[str, Any]) -> _BuilderCompilati
 
     for location in locations:
         operations.append({"campaign_criterion_operation": {"create": {"campaign": campaign_rn, "location": location}}})
+    for location in excluded_locations:
+        operations.append({"campaign_criterion_operation": {"create": {"campaign": campaign_rn, "negative": True, "location": location}}})
+    for proximity in proximities:
+        operations.append({"campaign_criterion_operation": {"create": {"campaign": campaign_rn, "proximity": proximity["proximity"]}}})
     for language in languages:
         operations.append({"campaign_criterion_operation": {"create": {"campaign": campaign_rn, "language": language}}})
     for entry in schedule:
@@ -575,6 +657,16 @@ def build_search_campaign_request(spec_obj: dict[str, Any]) -> _BuilderCompilati
         for ad in _optional_list(item.get("ads"), label=f"ad_group.ads[{alias}]"):
             ad_obj = _ensure_dict(ad, label="ad")
             final_urls = _normalize_url_list(ad_obj.get("final_urls"), label="ad final_urls")
+            responsive_search_ad = {
+                "headlines": _normalize_headlines(ad_obj.get("headlines")),
+                "descriptions": _normalize_descriptions(ad_obj.get("descriptions")),
+            }
+            path1 = str(ad_obj.get("path1") or ad_obj.get("display_path_1") or "").strip()
+            path2 = str(ad_obj.get("path2") or ad_obj.get("display_path_2") or "").strip()
+            if path1:
+                responsive_search_ad["path1"] = path1
+            if path2:
+                responsive_search_ad["path2"] = path2
             operations.append(
                 {
                     "ad_group_ad_operation": {
@@ -583,10 +675,7 @@ def build_search_campaign_request(spec_obj: dict[str, Any]) -> _BuilderCompilati
                             "status": _normalize_status(ad_obj.get("status") or "PAUSED", label="ad status"),
                             "ad": {
                                 "final_urls": final_urls,
-                                "responsive_search_ad": {
-                                    "headlines": _normalize_headlines(ad_obj.get("headlines")),
-                                    "descriptions": _normalize_descriptions(ad_obj.get("descriptions")),
-                                },
+                                "responsive_search_ad": responsive_search_ad,
                             },
                         }
                     }
@@ -669,7 +758,17 @@ def build_dsa_feed_search_request(spec_obj: dict[str, Any]) -> _BuilderCompilati
     campaign_rn = _resource_name(customer_id, "campaigns", temp_ids.take())
     asset_set_rn = _resource_name(customer_id, "assetSets", temp_ids.take())
     ad_group_rn = _resource_name(customer_id, "adGroups", temp_ids.take())
-    _, campaign_obj, locations, languages, schedule, campaign_negatives, cross_campaign_negatives = _normalize_campaign_settings(
+    (
+        _,
+        campaign_obj,
+        locations,
+        excluded_locations,
+        proximities,
+        languages,
+        schedule,
+        campaign_negatives,
+        cross_campaign_negatives,
+    ) = _normalize_campaign_settings(
         spec,
         customer_id=customer_id,
         temp_campaign_budget=budget_rn,
@@ -696,6 +795,10 @@ def build_dsa_feed_search_request(spec_obj: dict[str, Any]) -> _BuilderCompilati
 
     for location in locations:
         operations.append({"campaign_criterion_operation": {"create": {"campaign": campaign_rn, "location": location}}})
+    for location in excluded_locations:
+        operations.append({"campaign_criterion_operation": {"create": {"campaign": campaign_rn, "negative": True, "location": location}}})
+    for proximity in proximities:
+        operations.append({"campaign_criterion_operation": {"create": {"campaign": campaign_rn, "proximity": proximity["proximity"]}}})
     for language in languages:
         operations.append({"campaign_criterion_operation": {"create": {"campaign": campaign_rn, "language": language}}})
     for entry in schedule:

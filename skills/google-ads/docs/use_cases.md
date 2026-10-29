@@ -24,6 +24,8 @@ This skill helps an agent export campaign evidence, explain performance patterns
 
 ### Reporting and field discovery
 
+- "Show any upcoming ACA or broad-match migration dates reported for my campaigns."
+
 - "Run a small GAQL read to answer this custom question and export the result to JSON."
 - "Help me discover which Google Ads fields exist for this report so I do not guess the schema."
 - "Export a deeper analysis pack for placements, landing pages, schedules, networks, and conversion breakdowns."
@@ -47,4 +49,4 @@ This skill helps an agent export campaign evidence, explain performance patterns
 
 ## Good first Google Ads path
 
-Start by checking account access, choosing the right customer ID, exporting `optimization_pack_v1` for the last 30 days, and asking the agent to summarize the biggest issues before planning any change.
+Check access and the exact customer ID, then query the evidence needed for the question. Use appropriate closed comparison windows and conversion delay. A preset export is optional when a saved dataset helps; inspect completeness before interpreting it. Plan any live change separately.

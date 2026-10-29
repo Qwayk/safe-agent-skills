@@ -7,7 +7,7 @@ from .config import Config
 from .errors import ToolError
 
 
-SUPPORTED_API_VERSION = "v22"
+SUPPORTED_API_VERSION = "v25"
 
 
 def _missing_dependency_error() -> ToolError:
@@ -54,7 +54,6 @@ def build_google_ads_client(cfg: Config) -> Any:
     """
     ensure_supported_api_version_available()
     d: dict[str, Any] = {
-        "developer_token": cfg.developer_token,
         "client_id": cfg.client_id,
         "client_secret": cfg.client_secret,
         "refresh_token": cfg.refresh_token,
@@ -62,7 +61,7 @@ def build_google_ads_client(cfg: Config) -> Any:
     }
     if cfg.login_customer_id:
         d["login_customer_id"] = cfg.login_customer_id
-    return GoogleAdsClient.load_from_dict(d)
+    return GoogleAdsClient.load_from_dict(d, version=SUPPORTED_API_VERSION)
 
 
 def _load_message_to_dict() -> Any:
@@ -77,6 +76,11 @@ def protobuf_to_dict(msg: Any) -> dict[str, Any]:
     pb = getattr(msg, "_pb", msg)
     if isinstance(pb, dict):
         return pb
+    from google.api_core.operation import Operation
+
+    if isinstance(pb, Operation):
+        # Read the returned handle without polling or repeating the upstream call.
+        pb = pb.operation
     MessageToDict = _load_message_to_dict()
     kwargs = {
         "preserving_proto_field_name": True,

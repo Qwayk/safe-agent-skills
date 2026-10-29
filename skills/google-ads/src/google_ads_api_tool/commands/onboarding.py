@@ -45,7 +45,6 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
     lines = _read_text_lines(env_path)
 
     required = [
-        "GOOGLE_ADS_DEVELOPER_TOKEN",
         "GOOGLE_ADS_CLIENT_ID",
         "GOOGLE_ADS_CLIENT_SECRET",
         "GOOGLE_ADS_REFRESH_TOKEN",
@@ -54,10 +53,9 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
 
     steps = [
         "Copy .env.example → .env (local-only; do not commit it).",
-        "Create a Google Ads developer token (Google Ads UI) and an OAuth2 client (Google Cloud Console).",
+        "Enable Google Ads API and obtain API access for your Google Cloud project; create an OAuth2 client in that project.",
         "Generate a refresh token for the Google Ads API scope (do not paste it into chat).",
         "Open .env and fill:",
-        "  - GOOGLE_ADS_DEVELOPER_TOKEN=YOUR_GOOGLE_ADS_DEVELOPER_TOKEN",
         "  - GOOGLE_ADS_CLIENT_ID=YOUR_GOOGLE_ADS_CLIENT_ID",
         "  - GOOGLE_ADS_CLIENT_SECRET=YOUR_GOOGLE_ADS_CLIENT_SECRET",
         "  - GOOGLE_ADS_REFRESH_TOKEN=YOUR_GOOGLE_ADS_REFRESH_TOKEN",

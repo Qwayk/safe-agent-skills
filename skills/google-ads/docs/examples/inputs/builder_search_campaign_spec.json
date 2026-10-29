@@ -7,10 +7,20 @@
   "campaign": {
     "name": "Search Campaign | Example",
     "status": "PAUSED",
-    "max_clicks_cpc_ceiling_amount": "12"
+    "max_clicks_cpc_ceiling_amount": "12",
+    "final_url_suffix": "utm_source=google_ads&utm_campaign=example_search"
   },
   "targeting": {
     "locations": ["9059448"],
+    "excluded_locations": ["1013383"],
+    "proximities": [
+      {
+        "latitude": 33.448295,
+        "longitude": -112.072549,
+        "radius": 40,
+        "radius_units": "MILES"
+      }
+    ],
     "languages": ["1000"],
     "ad_schedule": [
       {
@@ -55,6 +65,8 @@
           "final_urls": [
             "https://example.com/repair"
           ],
+          "path1": "door-repair",
+          "path2": "dfw",
           "headlines": [
             "Sliding Door Repair",
             "Repair First",

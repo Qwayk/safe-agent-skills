@@ -21,4 +21,4 @@ class TestOnboarding(unittest.TestCase):
             payload = json.loads(buf.getvalue())
             self.assertTrue(payload["ok"])
             self.assertTrue(payload["onboarding"]["env_created"])
-
+            self.assertNotIn("GOOGLE_ADS_DEVELOPER_TOKEN", payload["onboarding"]["missing"])

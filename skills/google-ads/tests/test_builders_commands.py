@@ -37,6 +37,7 @@ def _search_spec() -> dict:
             "name": "Search Campaign | Test",
             "status": "PAUSED",
             "max_clicks_cpc_ceiling_amount": "12",
+            "final_url_suffix": "utm_source=google_ads&utm_campaign=test_campaign",
         },
         "targeting": {
             "locations": ["9059448"],
@@ -75,6 +76,8 @@ def _search_spec() -> dict:
                 "ads": [
                     {
                         "final_urls": ["https://example.com/repair"],
+                        "path1": "door-repair",
+                        "path2": "dfw",
                         "headlines": ["Sliding Door Repair", "Repair First", "Call Today"],
                         "descriptions": [
                             "We fix sliding doors across DFW.",
@@ -154,6 +157,57 @@ class TestBuilderCommands(unittest.TestCase):
         self.assertEqual(compilation.manifest["builder_kind"], "search-campaign")
         self.assertGreater(compilation.manifest["operation_count"], 5)
         self.assertIn("campaign_operation", compilation.manifest["operation_action_counts"])
+        campaign_op = next(
+            op["campaign_operation"]
+            for op in compilation.request_obj["mutate_operations"]
+            if "campaign_operation" in op
+        )
+        self.assertEqual(
+            campaign_op["create"]["final_url_suffix"],
+            "utm_source=google_ads&utm_campaign=test_campaign",
+        )
+        ad_op = next(
+            op["ad_group_ad_operation"]
+            for op in compilation.request_obj["mutate_operations"]
+            if "ad_group_ad_operation" in op
+        )
+        rsa = ad_op["create"]["ad"]["responsive_search_ad"]
+        self.assertEqual(rsa["path1"], "door-repair")
+        self.assertEqual(rsa["path2"], "dfw")
+
+    def test_search_builder_supports_proximity_and_excluded_locations(self) -> None:
+        spec = _search_spec()
+        spec["targeting"]["locations"] = []
+        spec["targeting"]["proximities"] = [
+            {
+                "latitude": 33.448295,
+                "longitude": -112.072549,
+                "radius": 40,
+                "radius_units": "MILES",
+            }
+        ]
+        spec["targeting"]["excluded_locations"] = ["1013383", "geoTargetConstants/1013443"]
+        compilation = build_search_campaign_request(spec)
+        parse_request_json(
+            service="GoogleAdsService",
+            request_type="MutateGoogleAdsRequest",
+            obj=compilation.request_obj,
+        )
+        criteria = [
+            op["campaign_criterion_operation"]["create"]
+            for op in compilation.request_obj["mutate_operations"]
+            if "campaign_criterion_operation" in op
+        ]
+        proximity = next(item["proximity"] for item in criteria if "proximity" in item)
+        self.assertEqual(proximity["geo_point"]["latitude_in_micro_degrees"], 33448295)
+        self.assertEqual(proximity["geo_point"]["longitude_in_micro_degrees"], -112072549)
+        self.assertEqual(proximity["radius"], 40.0)
+        self.assertEqual(proximity["radius_units"], "MILES")
+        excluded = [item for item in criteria if item.get("negative") and "location" in item]
+        self.assertEqual(
+            [item["location"]["geo_target_constant"] for item in excluded],
+            ["geoTargetConstants/1013383", "geoTargetConstants/1013443"],
+        )
 
     def test_dsa_builder_compiles_valid_mutate_request(self) -> None:
         compilation = build_dsa_feed_search_request(_dsa_spec())

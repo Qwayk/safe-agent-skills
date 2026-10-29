@@ -41,6 +41,8 @@ class TestOptimizationPackV1GaqlFields(unittest.TestCase):
 
         self.assertIn("customer.optimization_score", all_gaql)
         self.assertIn("campaign.optimization_score", all_gaql)
+        self.assertIn("campaign.aca_migration_date_time", all_gaql)
+        self.assertIn("campaign.broad_match_migration_date_time", all_gaql)
         self.assertIn("metrics.search_impression_share", all_gaql)
         self.assertIn("metrics.search_budget_lost_impression_share", all_gaql)
         self.assertIn("metrics.search_rank_lost_impression_share", all_gaql)

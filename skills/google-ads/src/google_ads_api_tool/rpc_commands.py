@@ -15,7 +15,7 @@ from .errors import SafetyError, ValidationError
 from .google_ads_client import SUPPORTED_API_VERSION, build_google_ads_client, protobuf_to_dict
 from .json_files import read_json_file, write_json_file
 from .protobuf_json import parse_request_json
-from .rpc_v22_registry import RPC_METHODS_V22, RpcMethodSpec
+from .rpc_v25_registry import RPC_METHODS_V25, RpcMethodSpec
 
 
 _CAMEL_BOUNDARY_RE = re.compile(r"(?<=[a-z0-9])(?=[A-Z])")
@@ -49,6 +49,7 @@ def _method_is_mutate(spec: RpcMethodSpec) -> bool:
 
 _READ_VERBS: set[str] = {
     "Get",
+    "Fetch",
     "List",
     "Search",
     "Suggest",
@@ -59,6 +60,9 @@ _READ_VERBS: set[str] = {
 
 _WRITE_VERBS: set[str] = {
     "Add",
+    "Book",
+    "Quote",
+    "Resolve",
     "Append",
     "Apply",
     "Cancel",
@@ -92,20 +96,20 @@ def _method_is_write(spec: RpcMethodSpec) -> bool:
     return True
 
 
-def register_v22_rpc_commands(sub: argparse._SubParsersAction) -> None:
+def register_v25_rpc_commands(sub: argparse._SubParsersAction) -> None:
     """
-    Register explicit per-RPC-method commands for Google Ads API v22.
+    Register explicit per-RPC-method commands for Google Ads API v25.
 
     Command shape:
       google-ads-api-tool <service-kebab> <method-kebab> --in request.json
     """
     by_service: dict[str, list[RpcMethodSpec]] = {}
-    for spec in RPC_METHODS_V22:
+    for spec in RPC_METHODS_V25:
         by_service.setdefault(spec.service, []).append(spec)
 
     for service_name in sorted(by_service.keys()):
         service_cmd = _camel_to_kebab(service_name)
-        service_p = sub.add_parser(service_cmd, help=f"{service_name} RPC methods (v22)")
+        service_p = sub.add_parser(service_cmd, help=f"{service_name} RPC methods (v25)")
         service_sub = service_p.add_subparsers(
             dest=f"{service_cmd}_cmd", required=True, parser_class=type(service_p)
         )
@@ -113,7 +117,7 @@ def register_v22_rpc_commands(sub: argparse._SubParsersAction) -> None:
         for spec in sorted(by_service[service_name], key=lambda s: s.method):
             is_write = _method_is_write(spec)
             method_cmd = _camel_to_kebab(spec.method)
-            mp = service_sub.add_parser(method_cmd, help=f"{service_name}.{spec.method} (v22)")
+            mp = service_sub.add_parser(method_cmd, help=f"{service_name}.{spec.method} (v25)")
             mp.add_argument("--in", dest="in_path", required=True, help="JSON request file for this RPC method")
             if is_write:
                 mp.add_argument(
@@ -598,9 +602,11 @@ def _capture_before_state_before_write(
                 f"SELECT {', '.join(fields)} FROM {table} "
                 f"WHERE {table}.resource_name = '{escaped}' LIMIT 1"
             )
+            if table == "campaign":
+                query += " PARAMETERS include_drafts = true"
             try:
                 req_mod = __import__(
-                    "google.ads.googleads.v22.services.types.google_ads_service",
+                    "google.ads.googleads.v25.services.types.google_ads_service",
                     fromlist=["SearchGoogleAdsRequest"],
                 )
                 SearchReq = getattr(req_mod, "SearchGoogleAdsRequest")
@@ -787,27 +793,51 @@ def _cmd_write(
         raise ValidationError(f"Service method not found: {spec.service}.{spec.python_method}")
 
     timeout_s = float(ctx.get("timeout_s") or 30)
-    resp = _call_with_retries(lambda: fn(request=request_msg, timeout=timeout_s), ctx=ctx)
-    resp_dict = protobuf_to_dict(resp)
+    # A timeout can occur after Google accepted a write. Never replay it, including
+    # through the SDK's own retry policy; read-back cannot establish idempotency.
+    uncertain_error = None
+    try:
+        resp = fn(request=request_msg, timeout=timeout_s, retry=None)
+        resp_dict = _write_response_to_dict(resp)
+    except (gexc.ServiceUnavailable, gexc.DeadlineExceeded, gexc.InternalServerError) as exc:
+        uncertain_error = type(exc).__name__
+        resp_dict = {}
     response_digest = _payload_digest(resp_dict)
     resp_summary = {
         "resource_names": sorted(set(_extract_resource_names(resp_dict)))[:20],
     }
 
-    verification = _best_effort_verify_after_write(
-        client=client,
-        customer_id=customer_for_gating,
-        request_obj=request_obj,
-        response_obj=resp_dict,
-        spec=spec,
-        timeout_s=timeout_s,
-        ctx=ctx,
-    )
+    partial_failure = _partial_failure_summary(resp_dict)
+    validate_only = bool(request_obj.get("validate_only"))
+    if validate_only:
+        verification = {"attempted": False, "fully_verified": False,
+                        "reason": "Validation only; no changes were applied."}
+    else:
+        verification = _best_effort_verify_after_write(
+            client=client, customer_id=customer_for_gating, request_obj=request_obj,
+            response_obj=resp_dict, spec=spec, timeout_s=timeout_s, ctx=ctx,
+        )
+    if uncertain_error:
+        outcome = "outcome_unknown"
+    elif partial_failure:
+        outcome = "partial_failure"
+    elif validate_only:
+        outcome = "validated"
+    elif verification.get("fully_verified"):
+        outcome = "verified"
+    elif verification.get("attempted") and not verification.get("ok"):
+        outcome = "verification_failed"
+    else:
+        outcome = "accepted_unverified"
+    ok = outcome not in {"outcome_unknown", "partial_failure", "verification_failed"}
 
     receipt = {
         "tool": "google-ads-api-tool",
         "api_version": SUPPORTED_API_VERSION,
         "kind": "google_ads_rpc_receipt",
+        "outcome": outcome,
+        "partial_failure": partial_failure,
+        "uncertain_error": uncertain_error,
         "rpc": {"service": spec.service, "method": spec.method},
         "input_path": str(Path(in_path)),
         "plan_fingerprint": fingerprint,
@@ -830,6 +860,12 @@ def _cmd_write(
             verification=verification,
         ),
     }
+    if not ok:
+        receipt["plain_english_summary"]["headline"] = f"Write outcome: {outcome}"
+        receipt["plain_english_summary"]["details"].append(
+            "Do not replay the whole request. Inspect failed items and read-back results; "
+            "confirm the destination state before resubmitting."
+        )
     if isinstance(before_state, dict) and not bool(before_state.get("supported", True)):
         receipt["no_snapshot_approval"] = {
             "approved": bool(ctx.get("ack_no_snapshot")),
@@ -842,8 +878,53 @@ def _cmd_write(
     if receipt_out:
         write_json_file(Path(str(receipt_out)), receipt)
     _write_plan_and_receipt_artifacts(ctx=ctx, plan=plan, receipt=receipt)
-    out.emit({"ok": True, "dry_run": False, "rpc": asdict(spec), "before_state": before_state, "receipt": receipt})
-    return 0
+    out.emit({"ok": ok, "dry_run": False, "rpc": asdict(spec), "before_state": before_state, "receipt": receipt})
+    return 0 if ok else 1
+
+
+def _write_response_to_dict(response: Any) -> dict[str, Any]:
+    """Decode error details separately so an unknown Any cannot erase a receipt."""
+    from copy import deepcopy
+    from google.protobuf.message import DecodeError
+
+    pb = getattr(response, "_pb", response)
+    status = getattr(pb, "partial_failure_error", None)
+    if status is None or not status.details:
+        return protobuf_to_dict(response)
+    copied = deepcopy(pb)
+    copied.partial_failure_error.ClearField("details")
+    result = protobuf_to_dict(copied)
+    details = []
+    for detail in status.details:
+        try:
+            details.append(protobuf_to_dict(detail))
+        except (TypeError, ValueError, DecodeError):
+            # Neither raw bytes nor exception text belong in the receipt.
+            details.append({"decoded": False})
+    result.setdefault("partial_failure_error", {})["details"] = details
+    return result
+
+
+def _partial_failure_summary(response: dict[str, Any]) -> dict[str, Any] | None:
+    status = response.get("partial_failure_error")
+    if not isinstance(status, dict) or not status.get("code"):
+        return None
+    # Provider messages/triggers can echo PII. Keep only error enums and input
+    # locations; operators can match indexes to their private request file.
+    errors = []
+    undecoded_details = 0
+    for detail in status.get("details", []):
+        if not isinstance(detail, dict) or "errors" not in detail:
+            undecoded_details += 1
+            continue
+        for error in detail.get("errors", []):
+            if not isinstance(error, dict):
+                continue
+            errors.append({"error_code": error.get("error_code", {}),
+                           "location": error.get("location", {})})
+    return {"code": status["code"], "errors": errors,
+            "errors_decoded": bool(errors) and not undecoded_details,
+            "undecoded_details": undecoded_details}
 
 
 def _operation_is_remove(op: Any) -> bool:
@@ -909,6 +990,8 @@ def _classify_mutate_risk(
     # Spend-impacting heuristics.
     spend_keywords = (
         "budget",
+        "reservation",
+        "bookcampaigns",
         "billing",
         "invoice",
         "payments",
@@ -1153,6 +1236,60 @@ def _extract_request_update_expectations(
     return expectations, skipped
 
 
+def _extract_keyword_create_expectations(
+    *, request_obj: dict[str, Any] | None, response_obj: dict[str, Any],
+) -> tuple[dict[str, dict[str, Any]], list[dict[str, Any]]]:
+    """Pair keyword creates with their ordered mutation results, never sorted names."""
+    operations = _request_operation_dicts(request_obj)
+    results = response_obj.get("mutate_operation_responses", response_obj.get("results"))
+    expectations: dict[str, dict[str, Any]] = {}
+    skipped: list[dict[str, Any]] = []
+    for index, operation in enumerate(operations):
+        create = operation.get("create")
+        if not isinstance(create, dict):
+            continue
+        reason = None
+        names: list[str] = []
+        if not isinstance(results, list) or len(results) != len(operations):
+            reason = "Create cannot be paired with an ordered mutation result"
+        else:
+            names = _extract_resource_names(results[index])
+            if len(names) != 1:
+                reason = "Create result did not contain exactly one resource name"
+        resource_name = names[0] if len(names) == 1 else ""
+        if not reason and _resource_table_from_resource_name(resource_name) != "ad_group_criterion":
+            reason = "Create field verification is not supported for this resource type"
+        keyword = create.get("keyword")
+        if not reason and (
+            not isinstance(keyword, dict) or not keyword.get("text")
+            or not keyword.get("match_type") or not create.get("ad_group")
+        ):
+            reason = "Create is not a keyword with a readable text, match type and ad group"
+        if resource_name in expectations:
+            reason = "Duplicate create result cannot identify a unique operation"
+        if reason:
+            skipped.append({"resource_name": resource_name, "operation_index": index,
+                            "reason": reason})
+            continue
+        fields = {
+            "ad_group": create["ad_group"],
+            "keyword.text": keyword["text"],
+            "keyword.match_type": keyword["match_type"],
+            # Protobuf JSON omits false; a positive keyword still needs this check.
+            "negative": create.get("negative", False),
+        }
+        if "status" in create:
+            fields["status"] = create["status"]
+        expectations[resource_name] = fields
+        for field in sorted(set(create) - {"resource_name", "ad_group", "keyword", "negative", "status"}):
+            skipped.append({"resource_name": resource_name, "field_path": field,
+                            "reason": "Additional create field is not covered by keyword verification"})
+        for field in sorted(set(keyword) - {"text", "match_type"}):
+            skipped.append({"resource_name": resource_name, "field_path": f"keyword.{field}",
+                            "reason": "Additional keyword field is not covered by verification"})
+    return expectations, skipped
+
+
 def _verification_targets(
     *,
     request_obj: dict[str, Any] | None,
@@ -1203,6 +1340,12 @@ def _best_effort_verify_after_write(
     ctx: dict[str, Any],
 ) -> dict[str, Any]:
     update_expectations, skipped_fields = _extract_request_update_expectations(request_obj)
+    create_expectations, skipped_creates = _extract_keyword_create_expectations(
+        request_obj=request_obj, response_obj=response_obj,
+    )
+    skipped_fields.extend(skipped_creates)
+    for resource_name, fields in create_expectations.items():
+        update_expectations.setdefault(resource_name, {}).update(fields)
     targets = _verification_targets(
         request_obj=request_obj,
         response_obj=response_obj,
@@ -1210,10 +1353,11 @@ def _best_effort_verify_after_write(
     )
     if not targets:
         return {
-            "attempted": True,
+            "attempted": False,
             "type": "gaql_readback",
-            "ok": True,
-            "fully_verified": True,
+            "ok": False,
+            "fully_verified": False,
+            "reason": "No readable resource targets; destination verification is still required.",
             "resource_names": [],
             "verified_resources": 0,
             "verified_fields": 0,
@@ -1221,6 +1365,7 @@ def _best_effort_verify_after_write(
         }
 
     max_verify = 20
+    total_targets = len(targets)
     targets = targets[:max_verify]
 
     try:
@@ -1246,7 +1391,12 @@ def _best_effort_verify_after_write(
         field_expectations = target.get("field_expectations")
         if not isinstance(field_expectations, dict):
             field_expectations = {}
+        if should_exist and not field_expectations:
+            skipped_fields.append({"resource_name": rn,
+                                   "reason": "Only resource presence can be checked; no requested fields were mapped"})
         tables = _resource_tables_for_verification(spec=spec, resource_name=rn)
+        if rn in create_expectations:
+            tables = ["ad_group_criterion"]
         if not tables:
             failures.append(
                 {
@@ -1273,9 +1423,11 @@ def _best_effort_verify_after_write(
                 f"SELECT {', '.join(select_fields)} FROM {table} "
                 f"WHERE {table}.resource_name = '{escaped}' LIMIT 1"
             )
+            if table == "campaign":
+                query += " PARAMETERS include_drafts = true"
             try:
                 req_mod = __import__(
-                    "google.ads.googleads.v22.services.types.google_ads_service",
+                    "google.ads.googleads.v25.services.types.google_ads_service",
                     fromlist=["SearchGoogleAdsRequest"],
                 )
                 SearchReq = getattr(req_mod, "SearchGoogleAdsRequest")
@@ -1327,7 +1479,11 @@ def _best_effort_verify_after_write(
                                 }
                             )
                             continue
-                        if _normalize_compare_value(actual) != _normalize_compare_value(expected):
+                        matches = (
+                            actual == expected if field_path == "keyword.text"
+                            else _normalize_compare_value(actual) == _normalize_compare_value(expected)
+                        )
+                        if not matches:
                             field_failures.append(
                                 {
                                     "resource_name": rn,
@@ -1385,7 +1541,8 @@ def _best_effort_verify_after_write(
         "attempted": True,
         "type": "gaql_readback",
         "ok": ok,
-        "fully_verified": ok and not skipped_fields,
+        "fully_verified": ok and not skipped_fields and total_targets <= max_verify,
+        "unverified_resources": max(0, total_targets - max_verify),
         "resource_names": [target["resource_name"] for target in targets],
         "verified_resources": verified,
         "verified_fields": verified_fields,

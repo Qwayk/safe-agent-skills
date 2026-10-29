@@ -1,12 +1,5 @@
-# CustomerLifecycleGoalService (Google Ads API v22)
+# CustomerLifecycleGoalService — retired
 
-Command shape:
-- `google-ads-api-tool customer-lifecycle-goal-service <method-kebab> --in request.json`
+Google removed this service in API v25. Its former CLI command is no longer registered. Use the unified `Goal` and `CampaignGoalConfig` schema through the corresponding explicit service commands. Existing request payloads must be reviewed against the new schema before use.
 
-Notes:
-- Requests are JSON objects that map to the RPC request message for the chosen method.
-- Unknown fields are rejected (strict JSON→protobuf parsing).
-- Write methods are plan-first by default; add `--apply` only after explicit approval (see `docs/safety_model.md`).
-
-## Methods
-- `configure-customer-lifecycle-goals` — `CustomerLifecycleGoalService.ConfigureCustomerLifecycleGoals` (read; unary) — request: `ConfigureCustomerLifecycleGoalsRequest` → response: `ConfigureCustomerLifecycleGoalsResponse`
+[Google migration guidance](https://developers.google.com/google-ads/api/docs/upgrade)

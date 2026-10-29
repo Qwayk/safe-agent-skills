@@ -15,7 +15,7 @@ from google_ads_api_tool.rpc_commands import (
     _resource_tables_for_verification,
     _verification_targets,
 )
-from google_ads_api_tool.rpc_v22_registry import RPC_METHODS_V22
+from google_ads_api_tool.rpc_v25_registry import RPC_METHODS_V25
 
 
 class _FakeSearchGoogleAdsRequest:
@@ -62,7 +62,7 @@ class _FakeCfg:
 
 
 def _spec(service: str, method: str):
-    for s in RPC_METHODS_V22:
+    for s in RPC_METHODS_V25:
         if s.service == service and s.method == method:
             return s
     raise AssertionError(f"Missing rpc spec: {service}.{method}")
@@ -70,12 +70,12 @@ def _spec(service: str, method: str):
 
 @contextmanager
 def _fake_search_request_class() -> Generator[None, None, None]:
-    fake_module = ModuleType("google.ads.googleads.v22.services.types.google_ads_service")
+    fake_module = ModuleType("google.ads.googleads.v25.services.types.google_ads_service")
     fake_module.SearchGoogleAdsRequest = _FakeSearchGoogleAdsRequest
     original_import = builtins.__import__
 
     def fake_import(name, globals=None, locals=None, fromlist=(), level=0):  # noqa: A002
-        if name == "google.ads.googleads.v22.services.types.google_ads_service":
+        if name == "google.ads.googleads.v25.services.types.google_ads_service":
             return fake_module
         return original_import(name, globals, locals, fromlist, level)
 
@@ -84,6 +84,21 @@ def _fake_search_request_class() -> Generator[None, None, None]:
 
 
 class TestRpcWriteVerification(unittest.TestCase):
+    def test_long_running_operation_response_serializes_without_polling(self) -> None:
+        from google.api_core.operation import Operation
+        from google.longrunning.operations_pb2 import Operation as OperationMessage
+        from google.protobuf.empty_pb2 import Empty
+        from google_ads_api_tool.google_ads_client import protobuf_to_dict
+
+        def unexpected_call(*args, **kwargs):
+            self.fail("Serializing the response must not poll or cancel the operation")
+
+        operation = Operation(
+            OperationMessage(name="customers/123/operations/test"),
+            refresh=unexpected_call, cancel=unexpected_call, result_type=Empty,
+        )
+        self.assertEqual(protobuf_to_dict(operation), {"name": "customers/123/operations/test"})
+
     def test_verification_targets_marks_remove_as_absent(self) -> None:
         request_obj = {
             "operations": [
@@ -147,7 +162,7 @@ class TestRpcWriteVerification(unittest.TestCase):
         )
         self.assertEqual(tables, ["campaign"])
 
-    def test_best_effort_verify_create_or_update_target_is_present(self) -> None:
+    def test_unsupported_create_presence_is_only_partial_verification(self) -> None:
         spec = _spec("CampaignService", "MutateCampaigns")
         request_obj = {"operations": [{"create": {"campaign": {"name": "Campaign 1"}}}]}
         response_obj = {"results": [{"resource_name": "customers/123/campaigns/123"}]}
@@ -167,7 +182,8 @@ class TestRpcWriteVerification(unittest.TestCase):
             )
 
         self.assertTrue(result["ok"])
-        self.assertTrue(result["fully_verified"])
+        self.assertFalse(result["fully_verified"])
+        self.assertTrue(result["skipped_fields"])
         self.assertEqual(result["verified_resources"], 1)
         self.assertEqual(result["verified_fields"], 0)
         self.assertEqual(result["failed_resources"], [])

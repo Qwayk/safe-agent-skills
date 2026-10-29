@@ -1,14 +1,13 @@
-# CustomerService (Google Ads API v22)
+# CustomerService (Google Ads API v25)
 
 Command shape:
 - `google-ads-api-tool customer-service <method-kebab> --in request.json`
 
 Notes:
-- Requests are JSON objects that map to the RPC request message for the chosen method.
-- Unknown fields are rejected (strict JSON→protobuf parsing).
-- Write methods are plan-first by default; add `--apply` only after explicit approval (see `docs/safety_model.md`).
+- Requests are JSON objects matching the selected RPC request message. Unknown fields are rejected.
+- Write methods are plan-first. Live apply requires the allowlist and applicable risk approvals; unsupported snapshot shapes remain blocked unless explicitly supported.
 
 ## Methods
-- `create-customer-client` — `CustomerService.CreateCustomerClient` (write; unary) — request: `CreateCustomerClientRequest` → response: `CreateCustomerClientResponse` (plan-first; snapshot-backed live applies save before-state when possible; other write shapes need explicit no-snapshot approval support or a true blocker reason; allowlist required)
-- `list-accessible-customers` — `CustomerService.ListAccessibleCustomers` (read; unary) — request: `ListAccessibleCustomersRequest` → response: `ListAccessibleCustomersResponse`
-- `mutate-customer` — `CustomerService.MutateCustomer` (write; unary) — request: `MutateCustomerRequest` → response: `MutateCustomerResponse` (plan-first; snapshot-backed live applies save before-state when possible; other write shapes need explicit no-snapshot approval support or a true blocker reason; allowlist required)
+- `create-customer-client` — `CustomerService.CreateCustomerClient` (write; plan-first; unary_unary) — request: `CreateCustomerClientRequest` → response: `CreateCustomerClientResponse`
+- `list-accessible-customers` — `CustomerService.ListAccessibleCustomers` (read; unary_unary) — request: `ListAccessibleCustomersRequest` → response: `ListAccessibleCustomersResponse`
+- `mutate-customer` — `CustomerService.MutateCustomer` (write; plan-first; unary_unary) — request: `MutateCustomerRequest` → response: `MutateCustomerResponse`

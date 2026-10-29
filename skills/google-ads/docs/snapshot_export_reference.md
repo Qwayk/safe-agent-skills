@@ -87,7 +87,7 @@ Each line is a JSON object with:
 
 To keep exports bounded:
 - `--max-rows` caps rows per group output and records `truncated=true` plus a warning.
-- `--page-size` controls API page size.
+- `--page-size` is ignored and retained only for compatibility.
 - `--segmentation` is bounded by preset template variants (no arbitrary segments injection).
 
 ## snapshot compare
@@ -99,3 +99,5 @@ Apply:
 - requires `--apply`
 - writes `compare_summary.json` to `--out-dir`
 - output is descriptive only (no causal claims)
+
+`--page-size` is an ignored compatibility option; the export plan retains the requested value and sets `page_size_ignored: true`. SDK paging controls retrieval. Inspect manifest row caps, errors and completeness before claiming full coverage.

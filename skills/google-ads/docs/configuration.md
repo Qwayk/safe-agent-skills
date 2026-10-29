@@ -12,7 +12,7 @@ A good first configuration check is: "Show me which Google Ads values are requir
 
 ## Environment variables
 
-- `GOOGLE_ADS_DEVELOPER_TOKEN` (required)
+- `GOOGLE_ADS_DEVELOPER_TOKEN` (legacy; optional, retained for secret redaction but never sent)
 - `GOOGLE_ADS_CLIENT_ID` (required)
 - `GOOGLE_ADS_CLIENT_SECRET` (required)
 - `GOOGLE_ADS_REFRESH_TOKEN` (required)
@@ -22,7 +22,7 @@ A good first configuration check is: "Show me which Google Ads values are requir
 - `GOOGLE_ADS_WRITE_CUSTOMER_ID_ALLOWLIST` (optional; default: empty; comma-separated customer IDs allowed for writes)
 - `GOOGLE_ADS_MAX_MUTATE_OPERATIONS_PER_REQUEST` (optional; default: 100; hard cap for batch operations)
 - `GOOGLE_ADS_MAX_MUTATE_OPERATIONS_PER_RUN` (optional; default: 1000; hard cap per run)
-- `GOOGLE_ADS_RETRY_MAX_ATTEMPTS` (optional; default: 3; bounded retries for retryable RPC errors)
+- `GOOGLE_ADS_RETRY_MAX_ATTEMPTS` (optional; default: 3; bounded retries for retryable read RPC errors; writes are submitted once)
 - `GOOGLE_ADS_RETRY_BASE_DELAY_S` (optional; default: 1.0; deterministic exponential backoff base delay)
 
 ## OS environment override

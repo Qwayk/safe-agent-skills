@@ -5,10 +5,10 @@ import re
 import unittest
 from pathlib import Path
 
-import google.ads.googleads.v22.services.services as svc_pkg
+import google.ads.googleads.v25.services.services as svc_pkg
 
 from google_ads_api_tool.cli import build_parser
-from google_ads_api_tool.rpc_v22_registry import RPC_METHODS_V22
+from google_ads_api_tool.rpc_v25_registry import RPC_METHODS_V25
 
 
 _CAMEL_BOUNDARY_RE = re.compile(r"(?<=[a-z0-9])(?=[A-Z])")
@@ -41,7 +41,7 @@ class TestRpcSurfaceCoverage(unittest.TestCase):
                 continue
             for raw in grpc_py.read_text(encoding="utf-8").splitlines():
                 m = re.search(
-                    r"/google\.ads\.googleads\.v22\.services\.(?P<svc>[^/]+)/(?P<meth>[A-Za-z0-9_]+)",
+                    r"/google\.ads\.googleads\.v25\.services\.(?P<svc>[^/]+)/(?P<meth>[A-Za-z0-9_]+)",
                     raw,
                 )
                 if not m:
@@ -50,16 +50,16 @@ class TestRpcSurfaceCoverage(unittest.TestCase):
                 meth = m.group("meth")
                 found.add(f"{svc}.{meth}")
 
-        registry = sorted({f"{s.service}.{s.method}" for s in RPC_METHODS_V22})
+        registry = sorted({f"{s.service}.{s.method}" for s in RPC_METHODS_V25})
         self.assertEqual(sorted(found), registry)
 
     def test_snapshots_match_registry(self) -> None:
         base = Path(__file__).resolve().parent.parent / "docs"
-        official = _read_surface(base / "official_rpc_surface_v22_2026-03-01.txt")
-        client = _read_surface(base / "client_rpc_surface_v22_2026-03-01.txt")
-        cli = _read_surface(base / "cli_rpc_surface_v22_2026-03-01.txt")
+        official = _read_surface(base / "official_rpc_surface_v25_2026-09-22.txt")
+        client = _read_surface(base / "client_rpc_surface_v25_2026-09-22.txt")
+        cli = _read_surface(base / "cli_rpc_surface_v25_2026-09-22.txt")
 
-        registry = sorted({f"{s.service}.{s.method}" for s in RPC_METHODS_V22})
+        registry = sorted({f"{s.service}.{s.method}" for s in RPC_METHODS_V25})
 
         self.assertEqual(official, registry)
         self.assertEqual(client, registry)
@@ -67,7 +67,7 @@ class TestRpcSurfaceCoverage(unittest.TestCase):
 
     def test_every_rpc_method_is_argparse_registered(self) -> None:
         parser = build_parser()
-        for spec in RPC_METHODS_V22:
+        for spec in RPC_METHODS_V25:
             service_cmd = _camel_to_kebab(spec.service)
             method_cmd = _camel_to_kebab(spec.method)
             args = parser.parse_args([service_cmd, method_cmd, "--in", "request.json"])

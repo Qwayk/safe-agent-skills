@@ -4,7 +4,7 @@ import re
 import unittest
 
 from google_ads_api_tool.rpc_commands import _READ_VERBS, _WRITE_VERBS, _method_is_write
-from google_ads_api_tool.rpc_v22_registry import RPC_METHODS_V22
+from google_ads_api_tool.rpc_v25_registry import RPC_METHODS_V25
 
 
 _CAMEL_BOUNDARY_RE = re.compile(r"(?<=[a-z0-9])(?=[A-Z])")
@@ -15,7 +15,7 @@ def _verb(method_name: str) -> str:
 
 
 def _spec(service: str, method: str):
-    for s in RPC_METHODS_V22:
+    for s in RPC_METHODS_V25:
         if s.service == service and s.method == method:
             return s
     raise AssertionError(f"Missing spec: {service}.{method}")
@@ -24,12 +24,12 @@ def _spec(service: str, method: str):
 class TestRpcWriteClassifier(unittest.TestCase):
     def test_every_registry_method_has_a_known_verb(self) -> None:
         allowed = set(_READ_VERBS) | set(_WRITE_VERBS)
-        verbs = sorted({_verb(s.method) for s in RPC_METHODS_V22})
+        verbs = sorted({_verb(s.method) for s in RPC_METHODS_V25})
         unknown = [v for v in verbs if v not in allowed]
         self.assertEqual(unknown, [])
 
     def test_classifier_matches_known_verb_sets(self) -> None:
-        for spec in RPC_METHODS_V22:
+        for spec in RPC_METHODS_V25:
             verb = _verb(spec.method)
             if verb in _READ_VERBS:
                 self.assertFalse(_method_is_write(spec), f"Expected read method: {spec.service}.{spec.method}")

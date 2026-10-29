@@ -7,16 +7,18 @@ from typing import Any
 from google.protobuf.json_format import ParseDict
 
 from .errors import ValidationError
+from .google_ads_client import SUPPORTED_API_VERSION
 
 _CAMEL_BOUNDARY_RE = re.compile(r"(?<=[a-z0-9])(?=[A-Z])")
 
 
 def _service_to_types_module(service: str) -> str:
     # Match the naming used by the google-ads python package:
-    #   google.ads.googleads.v22.services.types.<service_snake>
-    parts = _CAMEL_BOUNDARY_RE.split(service.strip())
+    #   google.ads.googleads.v25.services.types.<service_snake>
+    # The SDK spells the YouTube service module `youtube`, not `you_tube`.
+    parts = _CAMEL_BOUNDARY_RE.split(service.strip().replace("YouTube", "Youtube"))
     snake = "_".join(p.lower() for p in parts if p)
-    return f"google.ads.googleads.v22.services.types.{snake}"
+    return f"google.ads.googleads.{SUPPORTED_API_VERSION}.services.types.{snake}"
 
 
 def _digits_only(s: str) -> str:

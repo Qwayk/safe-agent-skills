@@ -38,7 +38,13 @@ google-ads-api-tool auth check
 
 ## 3. Run one small first read
 
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
+Start by confirming the customer IDs available to your OAuth user:
+
+```bash
+google-ads-api-tool customers list-accessible
+```
+
+Then preview the report pack:
 
 ```bash
 google-ads-api-tool presets list
@@ -52,7 +58,7 @@ google-ads-api-tool presets validate
 google-ads-api-tool snapshot export --preset optimization_pack_v1 --customer-id YOUR_CUSTOMER_ID --since 2026-01-01 --until 2026-01-31 --out-dir ./out/google-ads-pack
 ```
 
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
+The export command above previews the plan. Add `--apply --yes` to fetch account data and write the local pack; this does not change Google Ads. Then ask the agent to summarize the report and name anything missing, empty, or blocked.
 
 ## 4. Stop before anything risky
 

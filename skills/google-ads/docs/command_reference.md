@@ -22,6 +22,8 @@ For the guided path, start with [What you can do with Google Ads](use_cases.md),
 - `google-ads-api-tool gaql --customer-id YOUR_CUSTOMER_ID --query "SELECT customer.id FROM customer LIMIT 10"`
 - `google-ads-api-tool gaql --customer-id YOUR_CUSTOMER_ID --query "SELECT campaign.id, campaign.name FROM campaign" --limit 5`
 
+GAQL follows SDK pages automatically. Omit `--limit` for complete query results. `meta.limited` is true only when an additional row proves the client cap omitted data; a LIMIT within GAQL still restricts the dataset. `meta.page_size` preserves the requested legacy value, while `meta.page_size_ignored: true` makes clear that Google controls paging. Errors must not be interpreted as empty successful reads.
+
 ## Presets (GAQL templates)
 
 - `google-ads-api-tool presets list`
@@ -46,7 +48,7 @@ Apply (read-only to Google Ads; writes local pack files):
 - Snapshot files are analysis artifacts for local evidence. They are not a restore or rollback mechanism.
 - Include optional preset groups: `--include-optional` (adds `required=false` groups; may increase time/quota)
 - Temp implementation audits: add `--no-artifacts` if you want the pack but do not want local run-history files written beside the env file
-- Optional explosion controls: `--max-rows 100000` and `--page-size 1000`
+- Optional row cap: `--max-rows 100000`. `--page-size` is ignored (compatibility only).
 - Strict mode: `--strict` (fails if any required query group fails; pack still written for auditability)
 
 Compare two packs (descriptive diffs only; no causal claims):
@@ -62,7 +64,7 @@ Apply (writes compare summary JSON):
 Primary workflow:
 - `google-ads-api-tool snapshot analyze diagnose --pack-dir ./out/google-ads-pack`
 
-`diagnose` is read-only and returns a stable JSON report with:
+`diagnose` is a legacy heuristic report retained for compatibility, not a required investigation step. It is read-only and returns a stable JSON report with:
 - `summary`
 - `data_quality`
 - `tables_used`
@@ -238,6 +240,10 @@ What they write when artifacts are enabled:
 Search / competitor spec shape:
 - required keys: `customer_id`, `budget`, `campaign`, `targeting`, `ad_groups`
 - optional keys: `campaign_negatives`, `asset_creates`, `campaign_asset_links`, `cross_campaign_negatives`
+- optional Search builder fields include `campaign.final_url_suffix` for campaign-level tracking suffixes and ad-level `path1` / `path2` or `display_path_1` / `display_path_2` for Responsive Search Ad display paths
+- `targeting.locations` and `targeting.proximities` are both supported for positive campaign geo targeting; at least one of them is required
+- `targeting.excluded_locations` or `targeting.negative_locations` adds negative location criteria, useful for excluding cities from a radius target
+- proximity entries accept `latitude`, `longitude`, `radius`, and optional `radius_units` of `MILES` or `KILOMETERS`
 - competitor builder rule: positive keywords must all be `EXACT`
 
 DSA feed spec shape:
@@ -260,7 +266,7 @@ This tool supports reads + writes to Google Ads, and it can also write local art
 
 ## RPC methods (explicit per-service, per-method)
 
-This tool exposes one explicit CLI command per official Google Ads API v22 RPC method.
+This tool exposes one explicit CLI command per official Google Ads API v25 RPC method.
 
 Command shape:
 - `google-ads-api-tool <service-kebab> <method-kebab> --in PATH.json`
@@ -276,6 +282,7 @@ Write behavior (safe-by-default):
 - Apply output and receipts include `before_state` for supported live writes.
 - Readable ad-schedule remove receipts also include `restore_recipes`.
 - If `verification.fully_verified=false`, inspect `verification.skipped_fields` before treating the change as fully proven.
+- Keyword-create verification compares text, match type, positive/negative state, ad group and any requested status. Presence-only or incompletely mapped results return partial verification (`accepted_unverified`); a mismatched field returns `verification_failed`. These results never cause automatic resubmission.
 
 Write-safety flags (global; can appear before or after subcommands):
 - `--apply` (opt-in to external mutation)
@@ -293,7 +300,7 @@ Per-service reference pages:
 
 ## RPC services index
 
-One page per Google Ads API v22 RPC service:
+One page per Google Ads API v25 RPC service:
 
 - `account-budget-proposal-service` → `docs/command_reference/account-budget-proposal-service.md`
 - `account-link-service` → `docs/command_reference/account-link-service.md`
@@ -322,6 +329,7 @@ One page per Google Ads API v22 RPC service:
 - `audience-service` → `docs/command_reference/audience-service.md`
 - `automatically-created-asset-removal-service` → `docs/command_reference/automatically-created-asset-removal-service.md`
 - `batch-job-service` → `docs/command_reference/batch-job-service.md`
+- `benchmarks-service` → `docs/command_reference/benchmarks-service.md`
 - `bidding-data-exclusion-service` → `docs/command_reference/bidding-data-exclusion-service.md`
 - `bidding-seasonality-adjustment-service` → `docs/command_reference/bidding-seasonality-adjustment-service.md`
 - `bidding-strategy-service` → `docs/command_reference/bidding-strategy-service.md`
@@ -338,7 +346,6 @@ One page per Google Ads API v22 RPC service:
 - `campaign-goal-config-service` → `docs/command_reference/campaign-goal-config-service.md`
 - `campaign-group-service` → `docs/command_reference/campaign-group-service.md`
 - `campaign-label-service` → `docs/command_reference/campaign-label-service.md`
-- `campaign-lifecycle-goal-service` → `docs/command_reference/campaign-lifecycle-goal-service.md`
 - `campaign-service` → `docs/command_reference/campaign-service.md`
 - `campaign-shared-set-service` → `docs/command_reference/campaign-shared-set-service.md`
 - `content-creator-insights-service` → `docs/command_reference/content-creator-insights-service.md`
@@ -358,7 +365,6 @@ One page per Google Ads API v22 RPC service:
 - `customer-conversion-goal-service` → `docs/command_reference/customer-conversion-goal-service.md`
 - `customer-customizer-service` → `docs/command_reference/customer-customizer-service.md`
 - `customer-label-service` → `docs/command_reference/customer-label-service.md`
-- `customer-lifecycle-goal-service` → `docs/command_reference/customer-lifecycle-goal-service.md`
 - `customer-manager-link-service` → `docs/command_reference/customer-manager-link-service.md`
 - `customer-negative-criterion-service` → `docs/command_reference/customer-negative-criterion-service.md`
 - `customer-service` → `docs/command_reference/customer-service.md`
@@ -374,6 +380,7 @@ One page per Google Ads API v22 RPC service:
 - `google-ads-field-service` → `docs/command_reference/google-ads-field-service.md`
 - `google-ads-service` → `docs/command_reference/google-ads-service.md`
 - `identity-verification-service` → `docs/command_reference/identity-verification-service.md`
+- `incentive-service` → `docs/command_reference/incentive-service.md`
 - `invoice-service` → `docs/command_reference/invoice-service.md`
 - `keyword-plan-ad-group-keyword-service` → `docs/command_reference/keyword-plan-ad-group-keyword-service.md`
 - `keyword-plan-ad-group-service` → `docs/command_reference/keyword-plan-ad-group-service.md`
@@ -384,6 +391,7 @@ One page per Google Ads API v22 RPC service:
 - `keyword-theme-constant-service` → `docs/command_reference/keyword-theme-constant-service.md`
 - `label-service` → `docs/command_reference/label-service.md`
 - `local-services-lead-service` → `docs/command_reference/local-services-lead-service.md`
+- `multi-party-auth-review-service` → `docs/command_reference/multi-party-auth-review-service.md`
 - `offline-user-data-job-service` → `docs/command_reference/offline-user-data-job-service.md`
 - `payments-account-service` → `docs/command_reference/payments-account-service.md`
 - `product-link-invitation-service` → `docs/command_reference/product-link-invitation-service.md`
@@ -392,6 +400,7 @@ One page per Google Ads API v22 RPC service:
 - `recommendation-service` → `docs/command_reference/recommendation-service.md`
 - `recommendation-subscription-service` → `docs/command_reference/recommendation-subscription-service.md`
 - `remarketing-action-service` → `docs/command_reference/remarketing-action-service.md`
+- `reservation-service` → `docs/command_reference/reservation-service.md`
 - `shareable-preview-service` → `docs/command_reference/shareable-preview-service.md`
 - `shared-criterion-service` → `docs/command_reference/shared-criterion-service.md`
 - `shared-set-service` → `docs/command_reference/shared-set-service.md`
@@ -402,5 +411,8 @@ One page per Google Ads API v22 RPC service:
 - `user-data-service` → `docs/command_reference/user-data-service.md`
 - `user-list-customer-type-service` → `docs/command_reference/user-list-customer-type-service.md`
 - `user-list-service` → `docs/command_reference/user-list-service.md`
+- `you-tube-video-upload-service` → `docs/command_reference/you-tube-video-upload-service.md`
 
-<!-- END RPC SERVICES INDEX -->
+## Write result status
+
+Write receipts expose `outcome`: `verified`, `accepted_unverified`, `validated`, `partial_failure`, `verification_failed`, or `outcome_unknown`. The last three return exit status 1 and `ok=false`. Reads can retry; writes are submitted once. Inspect partial-failure locations and destination state before retrying any item.

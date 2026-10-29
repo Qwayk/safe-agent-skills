@@ -1,5 +1,7 @@
 # Presets reference
 
+Legacy diagnosis/optimization reports are retained for compatibility. They use fixed heuristics and are not verified advertising judgment or a required investigation workflow. Direct GAQL and generic exports/comparisons are available independently.
+
 Presets are versioned JSON files that define:
 - query groups (what gets exported),
 - stable output filenames,
@@ -16,7 +18,7 @@ Commands:
 
 ## Built-in presets
 
-### optimization_pack_v1 (recommended)
+### optimization_pack_v1 (optional account-review export)
 
 Purpose:
 - Search-first optimization export for agents that need diagnosis-ready campaign pressure, keyword quality, RSA strength, conversion-action context, and recommendation inventory without ad-hoc GAQL.

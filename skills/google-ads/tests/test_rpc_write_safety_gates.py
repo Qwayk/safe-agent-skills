@@ -9,7 +9,7 @@ from google_ads_api_tool.config import Config
 from google_ads_api_tool.errors import SafetyError
 from google_ads_api_tool.protobuf_json import parse_request_json
 from google_ads_api_tool.rpc_commands import _cmd_write
-from google_ads_api_tool.rpc_v22_registry import RPC_METHODS_V22
+from google_ads_api_tool.rpc_v25_registry import RPC_METHODS_V25
 
 
 class _Out:
@@ -21,7 +21,7 @@ class _Out:
 
 
 def _spec(service: str, method: str):
-    for s in RPC_METHODS_V22:
+    for s in RPC_METHODS_V25:
         if s.service == service and s.method == method:
             return s
     raise AssertionError(f"Missing spec: {service}.{method}")

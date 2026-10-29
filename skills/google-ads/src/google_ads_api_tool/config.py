@@ -64,8 +64,6 @@ def load_config(env_file: str | None) -> Config:
     except Exception:
         raise RuntimeError("GOOGLE_ADS_TIMEOUT_S must be a number (seconds)") from None
 
-    if not developer_token:
-        raise RuntimeError("Missing GOOGLE_ADS_DEVELOPER_TOKEN")
     if not client_id:
         raise RuntimeError("Missing GOOGLE_ADS_CLIENT_ID")
     if not client_secret:

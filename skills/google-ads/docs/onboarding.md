@@ -21,10 +21,10 @@ Or run:
 
 You need all of the following:
 
-1. **Google Ads developer token**
-   - Request a developer token in Google Ads (approval may take time).
-   - Paste into `.env`:
-     - `GOOGLE_ADS_DEVELOPER_TOKEN=YOUR_GOOGLE_ADS_DEVELOPER_TOKEN`
+1. **Google Cloud project API access**
+   - Enable Google Ads API and manage its access level in Google Cloud Console for the project that owns your OAuth client.
+   - Existing access was migrated from developer tokens. Confirm the project has production access before querying real accounts.
+   - Developer tokens are no longer required or sent by this tool. Existing env entries can stay in place.
 
 2. **OAuth2 client id + client secret**
    - Create an OAuth client in Google Cloud Console (see `docs/references.md`).
@@ -70,3 +70,5 @@ Most common issues:
 - OAuth refresh token created for the wrong scope
 
 See `docs/troubleshooting.md` and `docs/references.md`.
+
+See Google’s [API access migration guide](https://developers.google.com/google-ads/api/docs/api-policy/developer-token). A `CLOUD_PROJECT_NOT_APPROVED_FOR_PRODUCTION` error means the OAuth project needs production API access; changing the customer allowlist will not resolve it.

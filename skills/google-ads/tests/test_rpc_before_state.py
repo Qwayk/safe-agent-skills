@@ -15,7 +15,7 @@ from google_ads_api_tool.config import Config
 from google_ads_api_tool.errors import SafetyError
 from google_ads_api_tool.protobuf_json import parse_request_json
 from google_ads_api_tool.rpc_commands import _cmd_write
-from google_ads_api_tool.rpc_v22_registry import RPC_METHODS_V22
+from google_ads_api_tool.rpc_v25_registry import RPC_METHODS_V25
 
 
 class _Out:
@@ -33,13 +33,16 @@ class _FakeSearchGoogleAdsRequest:
 
 
 class _FakeGoogleAdsService:
-    def __init__(self, resource_name: str) -> None:
+    def __init__(self, resource_name: str, *, draft: bool = False) -> None:
         self.resource_name = resource_name
+        self.draft = draft
         self.queries: list[str] = []
 
     def search(self, request: Any = None, **_: Any) -> list[dict[str, Any]]:
         query = str(getattr(request, "query", "") or "")
         self.queries.append(query)
+        if self.draft and "PARAMETERS include_drafts = true" not in query:
+            return []
         match = re.search(r"resource_name\s*=\s*'([^']*)'", query)
         if not match:
             return []
@@ -128,7 +131,7 @@ class _FakeCampaignCriterionClient:
 
 
 def _spec(service: str, method: str):
-    for s in RPC_METHODS_V22:
+    for s in RPC_METHODS_V25:
         if s.service == service and s.method == method:
             return s
     raise AssertionError(f"Missing spec: {service}.{method}")
@@ -171,12 +174,12 @@ def _base_ctx(artifacts_dir: Path | None) -> dict[str, Any]:
 
 @contextmanager
 def _fake_search_request_class() -> Generator[None, None, None]:
-    fake_module = ModuleType("google.ads.googleads.v22.services.types.google_ads_service")
+    fake_module = ModuleType("google.ads.googleads.v25.services.types.google_ads_service")
     fake_module.SearchGoogleAdsRequest = _FakeSearchGoogleAdsRequest
     original_import = builtins.__import__
 
     def fake_import(name, globals=None, locals=None, fromlist=(), level=0):  # noqa: A002
-        if name == "google.ads.googleads.v22.services.types.google_ads_service":
+        if name == "google.ads.googleads.v25.services.types.google_ads_service":
             return fake_module
         return original_import(name, globals, locals, fromlist, level)
 
@@ -185,6 +188,32 @@ def _fake_search_request_class() -> Generator[None, None, None]:
 
 
 class TestRpcBeforeState(unittest.TestCase):
+    def test_draft_update_saves_before_state_and_verifies_changed_field(self) -> None:
+        spec = _spec("CampaignService", "MutateCampaigns")
+        resource_name = "customers/123/campaigns/456"
+        request_msg = parse_request_json(
+            service=spec.service,
+            request_type=spec.request_type,
+            obj={"customer_id": "123", "operations": [{
+                "update": {"resource_name": resource_name, "status": "PAUSED"},
+                "update_mask": "status",
+            }]},
+        )
+        with tempfile.TemporaryDirectory() as td:
+            ctx = _base_ctx(Path(td) / "artifacts")
+            fake_client = _FakeClient(resource_name)
+            fake_client.google_ads_service = _FakeGoogleAdsService(resource_name, draft=True)
+            with mock.patch("google_ads_api_tool.rpc_commands.build_google_ads_client", return_value=fake_client):
+                with _fake_search_request_class():
+                    rc = _cmd_write(spec=spec, request_msg=request_msg, in_path="request.json",
+                                    ctx=ctx, customer_id_override="123")
+            self.assertEqual(rc, 0)
+            receipt = ctx["out"].last["receipt"]
+            saved = json.loads(Path(receipt["before_state"]["saved"][0]["path"]).read_text())
+            self.assertEqual(saved["rows"][0]["campaign"]["status"], "ENABLED")
+            self.assertTrue(receipt["verification"]["fully_verified"])
+            self.assertEqual(receipt["verification"]["verified_fields"], 1)
+
     def test_update_apply_saves_before_state_before_mutation(self) -> None:
         spec = _spec("CampaignService", "MutateCampaigns")
         resource_name = "customers/123/campaigns/456"

@@ -208,7 +208,7 @@
         "campaign_budget.resource_name"
       ],
       "gaql_templates": {
-        "base": "SELECT customer.id, campaign.id, campaign.resource_name, campaign.name, campaign.status, campaign.start_date_time, campaign.end_date_time, campaign.serving_status, campaign.bidding_strategy_type, campaign.campaign_budget, campaign.manual_cpc.enhanced_cpc_enabled, campaign.network_settings.target_google_search, campaign.network_settings.target_search_network, campaign.network_settings.target_content_network, campaign.network_settings.target_partner_search_network, campaign.geo_target_type_setting.positive_geo_target_type FROM campaign WHERE campaign.status != 'REMOVED'"
+        "base": "SELECT customer.id, campaign.id, campaign.resource_name, campaign.name, campaign.status, campaign.aca_migration_date_time, campaign.broad_match_migration_date_time, campaign.start_date_time, campaign.end_date_time, campaign.serving_status, campaign.bidding_strategy_type, campaign.campaign_budget, campaign.manual_cpc.enhanced_cpc_enabled, campaign.network_settings.target_google_search, campaign.network_settings.target_search_network, campaign.network_settings.target_content_network, campaign.network_settings.target_partner_search_network, campaign.geo_target_type_setting.positive_geo_target_type FROM campaign WHERE campaign.status != 'REMOVED'"
       }
     },
     {

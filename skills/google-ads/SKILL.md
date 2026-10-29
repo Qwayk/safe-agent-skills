@@ -9,6 +9,8 @@ If you just want to use the skill, start with the README plus the use-cases and 
 
 You are a safe wrapper for the Google Ads API Qwayk CLI (`google-ads-api-tool`).
 
+Runtime: tool 0.7.3, Google Ads API v25 with v25.1 definitions, Python client 32.0.0. Do not send v22 requests. The retired CampaignLifecycleGoalService and CustomerLifecycleGoalService commands are unavailable; review payloads against Goal and CampaignGoalConfig before replacing them.
+
 Core rules (do not break):
 - Always use `--output json` for tool calls.
 - Never print or request secrets (developer tokens, OAuth client secret, refresh token, `.env` contents, Authorization headers).
@@ -17,22 +19,16 @@ Core rules (do not break):
 - Never perform external writes unless the user explicitly approves after reviewing a plan.
 - For high-risk writes, require applying from a reviewed plan (`--plan-in`) and enforce `--yes` / `--ack-spend` / `--ack-irreversible` when needed.
 - Supported live update operations and readable `CampaignCriterion` ad-schedule removes save before-state under `.state/runs/<run_id>/before/` before mutating.
-- Create, upload, builder create, unreadable removes, and other unsupported write shapes need explicit no-snapshot approval support or a true blocker reason before live apply.
+- Create, upload, builder create, and unreadable remove requests require explicit `--ack-no-snapshot` approval plus the other write gates.
 
 Workflow (safe-by-default):
 1) Validate configuration: `google-ads-api-tool --output json auth check`
 2) Discover accessible customers: `google-ads-api-tool --output json customers list-accessible`
-3) Prefer presets for analysis (no GAQL knowledge required):
-   - List presets: `google-ads-api-tool --output json presets list`
-   - Export an optimization pack first (dry-run first; no API calls): `google-ads-api-tool --output json snapshot export --preset optimization_pack_v1 --customer-id YOUR_CUSTOMER_ID --since 2026-01-01 --until 2026-01-31 --out-dir ./out/google-ads-pack --include-optional`
-   - Only apply after explicit approval: add `--apply --yes` (and `--overwrite` if re-running to the same folder)
-   - For temp implementation audits that should not write local run-history files beside the env file, add `--no-artifacts`
-   - For deeper analysis, include optional groups: add `--include-optional`
-   - Generate the default offline diagnosis from the exported pack: `google-ads-api-tool --output json snapshot analyze diagnose --pack-dir ./out/google-ads-pack`
-   - Reuse the exact `recommended_doc_queries` from diagnose before paraphrasing mechanics questions
-   - Inspect only the tables tied to the active findings before widening the audit
-   - For maximal diagnosis (placements, landing pages, time/network, conversion actions), use `--preset analysis_pack_max_v1` with `--include-optional` only if `optimization_pack_v1` is missing needed tables
-   - Keep `snapshot analyze optimize` as the legacy best-effort report, not the default optimization workflow
+3) Read the data needed for the user's question directly:
+   - `google-ads-api-tool --output json gaql --customer-id YOUR_CUSTOMER_ID --query "SELECT campaign.id, campaign.name, campaign.status FROM campaign"`
+   - Omit `--limit` when complete query results are needed. If `meta.limited` is true, retrieve the missing evidence before making completeness claims. A GAQL LIMIT still restricts the requested dataset.
+   - Generic presets, exports and comparisons are optional. Snapshot export is read-only upstream but writes local files with `--apply --yes`; select needed groups and inspect completeness.
+   - Legacy `snapshot analyze diagnose` and `optimize` remain available for compatibility; they are heuristic reports, not a required investigation path or verified advertising judgment.
 4) Use explicit RPC method commands for advanced tasks:
    - Command shape: `google-ads-api-tool --output json <service-kebab> <method-kebab> --in request.json`
    - For write methods: run once without `--apply` to get a plan; ask the user to approve only if the request is supported and clear; then run with `--apply` and the required safety flags.
@@ -54,9 +50,7 @@ Workflow (safe-by-default):
    - `builders competitor-search from-spec`
    - `builders dsa-feed-search from-spec`
    - Use the example spec files in `docs/examples/inputs/` as the starting shape.
-5) Use GAQL only for edge cases:
-   - Start with `--limit 1` or `--limit 5`.
-   - Prefer narrow SELECT fields instead of `SELECT *`.
+5) Select relevant GAQL fields and dates. A small `--limit` is useful for exploring shape, not proving full coverage. `--page-size` is ignored (compatibility only).
 6) If the user asks for a large export:
    - Start with a short date range first.
    - Use `--max-rows N` to cap rows per group and avoid output explosions.
@@ -67,12 +61,19 @@ References:
 
 Notes:
 - Write RPCs are plan-first: without `--apply`, the tool emits a deterministic plan object and does not mutate Google Ads.
-- Builder commands are also plan-first. They compile one deterministic `GoogleAdsService.Mutate` request and still use the same spend, batch, and remove safety gates, but create-heavy builder applies are not the current live-change path.
+- Builder commands are also plan-first. They compile one deterministic `GoogleAdsService.Mutate` request and still use the same spend, batch, and remove safety gates, and create-heavy applies require explicit no-snapshot approval.
 - After supported apply, confirm `before_state.saved` exists before discussing verification.
 - For readable ad-schedule removes, read `restore_recipes` before discussing add-back steps.
 - After apply, check both `verification.ok` and `verification.fully_verified`. If `fully_verified=false`, read `verification.skipped_fields`.
 - For faster review, read `plain_english_summary` first, then inspect the structured plan or receipt.
 - Recommendations from `snapshot analyze diagnose` are review-only. The skill must never auto-apply them.
-- If `snapshot analyze diagnose` returns `support_route = books_or_human`, do not force the official docs lane to answer the judgment question.
-- Do not start a normal optimization audit with `analysis_pack_max_v1`, GAQL, raw table slicing, or ad hoc `jq` summaries.
-- Do not paraphrase a diagnose mechanics query before the first exact `recommended_doc_queries` attempt.
+
+## Write outcomes and current access
+
+Writes are submitted once, with SDK retries disabled. Reads retain bounded retries. A transport timeout or server error returns `outcome_unknown` and exit status 1, with read-back where possible. Do not replay the request automatically; inspect destination state first.
+
+Partial failures return `partial_failure` and exit status 1. Receipts expose error codes and failed input locations, omitting provider messages/triggers that may echo private data. Reconcile successful items before retrying only failed items. Unknown or malformed detail formats preserve the receipt and increment `partial_failure.undecoded_details`; `errors_decoded` is false if any detail was not understood. Known errors in the same response remain available.
+
+A read-back mismatch returns `verification_failed` and exit status 1. `accepted_unverified` means Google returned a response but completion was not fully proved; `validated` means validation only. Empty read-back targets never count as fully verified. Check the receipt outcome before claiming success.
+
+OAuth credentials and Google Cloud project API access are required; developer tokens are no longer sent. Campaign settings in optimization and maximal-analysis exports include ACA and broad-match AI Max migration dates when Google returns them.

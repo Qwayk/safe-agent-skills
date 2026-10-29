@@ -8,11 +8,11 @@ A good first auth check is: "Check which Google Ads credential path is configure
 
 ## Required values
 
-- Google Ads developer token (from Google Ads UI)
+- Google Ads API access on the Google Cloud project that owns the OAuth client
 - OAuth2 client id + client secret (from Google Cloud Console)
 - OAuth2 refresh token for the Google Ads API scope
 
-All values live in `.env` (gitignored). The tool does not store tokens under `.state/`.
+OAuth values live in `.env` (gitignored). The tool does not store tokens under `.state/`.
 
 ## Recommended onboarding flow
 
