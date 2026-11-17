@@ -1,3 +1,8 @@
+---
+name: shopify-admin
+description: "Read Shopify Admin GraphQL data and prepare reviewed mutations through shopify-admin-api-tool."
+---
+
 # Skill: Shopify Admin GraphQL (SafeCLI)
 
 This page is the agent-facing rule sheet for the public Shopify Admin skill.

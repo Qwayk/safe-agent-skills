@@ -1,3 +1,8 @@
+---
+name: qdrant-cloud
+description: "Inspect Qdrant Cloud resources and prepare reviewed management or recovery operations through qdrant-cloud-api-tool."
+---
+
 # Skill: Qdrant Cloud API (safe CLI)
 
 This page is the agent-facing rule sheet for the public Qdrant Cloud skill.

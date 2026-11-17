@@ -1,3 +1,8 @@
+---
+name: open-library
+description: "Find books, authors and editions through the read-only Open Library CLI. Use for public catalog lookups, not account or write operations."
+---
+
 # Open Library
 
 This page is the agent-facing rule sheet for the public Open Library skill.

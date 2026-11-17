@@ -1,3 +1,8 @@
+---
+name: google-search-console
+description: "Inspect Search Console sites and search performance, and prepare reviewed site or sitemap changes through gsc-api-tool."
+---
+
 # Skill: Google Search Console (GSC) SafeCLI
 
 This page is the agent-facing rule sheet for the public Google Search Console skill.

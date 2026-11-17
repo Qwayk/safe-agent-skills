@@ -1,3 +1,8 @@
+---
+name: paypal
+description: "Inspect PayPal REST resources and prepare reviewed changes through qwayk-paypal-safe-agent-cli."
+---
+
 # Skill: PayPal REST API
 
 This page is the agent-facing rule sheet for the public PayPal skill.

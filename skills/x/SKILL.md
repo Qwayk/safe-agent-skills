@@ -1,3 +1,8 @@
+---
+name: x
+description: "Inspect X accounts, posts, mentions, lists and messages, and prepare supported API actions through x-api-tool."
+---
+
 <INSTRUCTIONS>
 # Skill: x-api-safe-cli
 

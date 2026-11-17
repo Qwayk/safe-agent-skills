@@ -1,3 +1,8 @@
+---
+name: google-tag-manager
+description: "Inspect Google Tag Manager resources and prepare reviewed changes through gtm-api-tool."
+---
+
 # Skill: gtm-api-safe-cli
 
 This page is the agent-facing rule sheet for the public Google Tag Manager skill.

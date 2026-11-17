@@ -1,3 +1,8 @@
+---
+name: amazon-creators
+description: "Find Amazon catalog items, variations and browse nodes through amazon-creators-api-tool. Use for product research and the documented local setup helpers."
+---
+
 # Amazon Creators API CLI (codex skill)
 
 This page is the agent-facing rule sheet for the public Amazon Creators skill.

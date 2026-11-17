@@ -1,3 +1,8 @@
+---
+name: woocommerce
+description: "Read WooCommerce store data and prepare reviewed REST API changes through qwayk-woocommerce-safe-agent-cli."
+---
+
 # Skill: WooCommerce REST API
 
 This page is the agent-facing rule sheet for the public WooCommerce skill.

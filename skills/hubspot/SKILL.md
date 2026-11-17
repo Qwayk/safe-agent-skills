@@ -1,3 +1,8 @@
+---
+name: hubspot
+description: "Inspect HubSpot CRM data and prepare supported changes through qwayk-hubspot-safe-agent-cli."
+---
+
 # hubspot-safe-cli
 
 This page is the agent-facing rule sheet for the public HubSpot skill.

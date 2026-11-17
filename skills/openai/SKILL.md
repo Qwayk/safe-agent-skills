@@ -1,3 +1,8 @@
+---
+name: openai
+description: "Inspect OpenAI API resources, usage and organization settings, and prepare supported changes through openai-api-tool. Use for API operations, not ChatGPT browser control."
+---
+
 # Skill: OpenAI
 
 Use this skill when the user wants an agent to inspect or prepare work against the OpenAI API: models, files, vector stores, assistants, threads, usage, projects, organization access, batches, fine-tunes, responses, realtime calls, uploads, or other documented OpenAI operations.

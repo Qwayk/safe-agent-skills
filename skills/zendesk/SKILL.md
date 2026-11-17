@@ -1,3 +1,8 @@
+---
+name: zendesk
+description: "Read Zendesk Support tickets and related records, and prepare reviewed changes through zendesk-api-tool."
+---
+
 # Zendesk API tool (SafeCLI) — Skill wrapper
 
 This page is the agent-facing rule sheet for the public Zendesk skill.

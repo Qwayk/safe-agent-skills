@@ -1,6 +1,6 @@
 ---
 name: youtube-api-safe-cli
-description: Run the YouTube Data API v3 Qwayk CLI safely: plan first, use --live for real reads, and require explicit approval for writes.
+description: "Run the YouTube Data API v3 Qwayk CLI safely: plan first, use --live for real reads, and require explicit approval for writes."
 ---
 
 This page is the agent-facing rule sheet for the public YouTube skill.

@@ -1,3 +1,8 @@
+---
+name: reddit
+description: "Read Reddit Data API content and prepare supported changes through qwayk-reddit-safe-agent-cli."
+---
+
 # reddit-safe-cli
 
 This page is the agent-facing rule sheet for the public Reddit skill.

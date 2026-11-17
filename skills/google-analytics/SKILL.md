@@ -1,3 +1,8 @@
+---
+name: google-analytics
+description: "Read Google Analytics 4 data and prepare reviewed configuration changes through ga4-api-tool."
+---
+
 # Skill: GA4 (Google Analytics) — `ga4-api-tool`
 
 This page is the agent-facing rule sheet for the public Google Analytics skill.

@@ -1,3 +1,8 @@
+---
+name: stripe
+description: "Inspect Stripe API data and prepare reviewed changes through stripe-api-tool."
+---
+
 # Stripe API tool (SafeCLI) — Skill wrapper
 
 This page is the agent-facing rule sheet for the public Stripe skill.

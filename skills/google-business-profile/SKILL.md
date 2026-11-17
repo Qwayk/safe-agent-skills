@@ -1,3 +1,8 @@
+---
+name: google-business-profile
+description: "Read Google Business Profile accounts, locations, reviews and performance, and prepare supported changes through google-business-profile-safe-cli."
+---
+
 # google-business-profile-safe-cli
 
 This page is the agent-facing rule sheet for the public Google Business Profile skill.

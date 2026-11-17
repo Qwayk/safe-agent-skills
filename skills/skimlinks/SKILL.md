@@ -1,3 +1,8 @@
+---
+name: skimlinks
+description: "Research Skimlinks merchants and reports, check Product Key data and build Link Wrapper URLs locally through skimlinks-safe-cli."
+---
+
 # Skill: Skimlinks
 
 This page is the agent-facing rule sheet for the public Skimlinks skill.

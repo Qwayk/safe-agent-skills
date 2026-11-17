@@ -1,3 +1,8 @@
+---
+name: cloudinary
+description: "Inspect Cloudinary assets and administration, and prepare reviewed changes through cloudinary-safe-agent-cli."
+---
+
 # Skill: Cloudinary REST API
 
 This page is the agent-facing rule sheet for the public Cloudinary skill.

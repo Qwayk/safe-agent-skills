@@ -1,6 +1,6 @@
 ---
 name: n8n
-description: Use when an agent needs to inspect or carefully manage n8n through the official public REST API: workflows, executions, credentials, tags, variables, users, projects, folders, data tables, audit, insights, source control, community packages, and beta n8n package operations.
+description: "Use when an agent needs to inspect or carefully manage n8n through the official public REST API: workflows, executions, credentials, tags, variables, users, projects, folders, data tables, audit, insights, source control, community packages, and beta n8n package operations."
 ---
 
 # n8n

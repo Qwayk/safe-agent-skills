@@ -1,3 +1,8 @@
+---
+name: salesforce-platform
+description: "Inspect Salesforce Platform REST and Bulk API resources, and prepare reviewed changes through qwayk-salesforce-platform-safe-agent-cli."
+---
+
 # Skill: Salesforce Platform REST API
 
 This page is the agent-facing rule sheet for the public Salesforce skill.

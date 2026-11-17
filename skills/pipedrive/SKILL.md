@@ -1,3 +1,8 @@
+---
+name: pipedrive
+description: "Read Pipedrive CRM records through qwayk-pipedrive-safe-agent-cli. Use for lookups and reports, not writes or OAuth-only operations."
+---
+
 # Pipedrive
 
 This page is the agent-facing rule sheet for the public Pipedrive skill.

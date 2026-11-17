@@ -1,3 +1,8 @@
+---
+name: microsoft-ads
+description: "Read Microsoft Ads accounts and campaign reports, and prepare reviewed changes through msads-api-tool."
+---
+
 # Skill: Microsoft Ads SafeCLI (`msads-api-tool`)
 
 This page is the agent-facing rule sheet for the public Microsoft Ads skill.

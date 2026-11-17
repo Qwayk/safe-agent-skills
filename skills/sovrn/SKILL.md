@@ -1,3 +1,8 @@
+---
+name: sovrn
+description: "Read Sovrn Commerce and Advertising reports, merchant and product data through sovrn-safe-cli. Use only the documented read-only command families."
+---
+
 # Skill: Sovrn
 
 Sovrn work starts with publisher revenue questions across the official Commerce HTTP APIs or the official Advertising Reporting APIs.
