@@ -1,25 +1,8 @@
 # Statuspage docs
 
-Statuspage is easiest to use when you start with the real job, then check setup, safety, and proof before asking an agent to do more. These docs explain how to review pages, components, incidents, subscribers, and status updates, what access is needed, and where the tool stops before risky changes.
-
-If you are new, read the first few links before asking for account data or changes. They explain the useful jobs, the setup path, and the safety limits.
-
-## Start with the work
-- [What you can do with Statuspage](use_cases.md) - real jobs to hand to an agent for Statuspage
-- [Quickstart](quickstart.md) - the shortest path to one useful first result
-- [Connect your Statuspage account](onboarding.md) - what must be connected or confirmed before the first run
-- [How this stays safe](safety_model.md) - what the tool can and cannot change, and where approval is needed
-
-## Commands, setup, and fixes
-- [Command reference](command_reference.md) - the exact commands and options
-- [Authentication details](authentication.md) - credential rules and safe auth checks
-- [Configuration](configuration.md) - local settings, environment values, and precedence rules
-- [Troubleshooting](troubleshooting.md) - what to check when a command fails or refuses to run
-- [Jobs and batch work](jobs_and_batches.md) - repeatable or larger jobs that need more care
-
-## Proof and details
-- [Proof and verification](proof.md) - what has been checked and what still needs live verification
-- [API coverage](api_coverage.md) - the API surfaces this skill actually covers
-- [Source references](references.md) - source notes behind the implementation and docs
-- [Technical architecture](architecture.md) - how the command, config, client, and output layers fit together
-- [Examples](examples/) - sample inputs or outputs when the tool ships them
+- [Quickstart](quickstart.md) gets you from a clean install to one useful page check.
+- [Setup and common errors](onboarding.md) explains how to save the page you check often and what to do when a request fails.
+- [Command guide](command_reference.md) shows which command to use for a current check or recent history.
+- [Safety and output](safety_model.md) explains what the tool reads and how to tell a failed request from a reported outage.
+- [API coverage](api_coverage.md) lists the four routes and their tests. [Atlassian references](references.md) link to the official docs.
+- [Test results](proof.md) records what was checked. [Saved examples](examples/README.md) show the JSON the commands use and return.

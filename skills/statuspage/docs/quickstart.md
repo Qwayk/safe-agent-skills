@@ -1,73 +1,17 @@
-# Quickstart
+# Check your first public status page
 
-Start with a small Statuspage read: checking a vendor status page before you make an operational decision.
+If you already installed the agent skill, give it the public page URL and ask what is down, which incidents are open, and whether any maintenance is planned or active.
 
-Need more ideas? See [What you can do with Statuspage](use_cases.md). Need setup help? See [Use a public Statuspage URL](onboarding.md).
-
-A good first ask is:
-
-> Check this vendor's status page before we start the deploy.
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account, token, or public access the tool needs.
-3. Run one small read and make sure the result matches the real service.
-4. Review any local file path before saving exports or reports.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+To use the CLI yourself, open the tool folder and run:
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -e .
+.venv/bin/statuspage-api-tool --output json --base-url https://status.atlassian.com summary get
 ```
 
-## 2. Check setup
+Read the overall status first. Then check the open incidents, planned or active maintenance, and any affected components the page lists. Include the page URL and the time of your check when sharing the result. For an incident or maintenance window, include the title and relevant times if the page supplies them.
 
-Statuspage does not need a private account for the first public read. Still run the local check so you know the command works.
+For example, the [saved Atlassian result](examples/atlassian-summary.json) showed “All Systems Operational” and empty lists for incidents and maintenance. That file shows what a past check returned.
 
-```bash
-statuspage-api-tool --output json auth check
-```
-
-```bash
-statuspage-api-tool --output json --version
-```
-
-## 3. Run one small first read
-
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
-
-```bash
-statuspage-api-tool --output json --base-url https://status.atlassian.com status get
-```
-
-```bash
-statuspage-api-tool --output json status get
-```
-
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
-
-## 4. Stop before anything risky
-
-Statuspage is read-only here and can start from a public page URL. The first run should not change anything; just confirm the page and incidents match what you need.
-
-## What a useful first result includes
-
-A good first result should make these things clear:
-
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
-
-## Where to go next
-
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Use a public Statuspage URL](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+Use the [command guide](command_reference.md) to look up a recent resolved incident or completed maintenance. Use [setup and common errors](onboarding.md) to save your usual page or fix a failed request.

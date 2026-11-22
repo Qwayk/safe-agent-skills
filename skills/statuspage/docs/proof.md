@@ -1,46 +1,19 @@
-# Proof and verification
+# Statuspage test results
 
-Statuspage proof should answer a simple question: what has actually been checked for public incidents, components, maintenances, subscribers, and status summaries, and what can still fail because of public API limits, changed upstream data, or reviewer judgment?
+## November 22, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+I built a fresh source download from each local copy and checked that it included the skill, `.env.example`, the guides and the saved Atlassian reply. I built a wheel from each download, then installed it outside the checkout. Each copy passed 27 tests both before and after installation. The installed command showed its help and version.
 
-If you only check one thing, check incident, component, maintenance, and status examples before trusting a status report.
+The tests used simulated replies. They checked all four public reads, including a reported outage, empty incident and maintenance lists, and replies that left out required data. They also checked that the chosen page and timeout take effect even when saved settings are invalid. No network requests ran.
 
-## Current proof summary
+The type check passed. Ruff still reports three existing style issues in `audit_log.py` and `test_imports.py`.
 
-These checks show how to verify the skill and inspect what it does.
-Most users will not need to run these commands themselves, but the same path is here for a reviewer or agent to inspect.
+## Earlier evidence
 
-## Last verified
+The earlier verification record was dated June 11, 2026 (UTC) and named `https://status.atlassian.com` as the public page to check. The [saved examples](examples/README.md) show the replies and CLI output.
 
-- Date (UTC): 2026-06-11
-
-## Intended environment
-
-- Environment: public status site / base URL: `https://status.atlassian.com`
-
-## Local verification
-
-```bash
-python3 -m pip install -e .
-python3 -m unittest -q
-```
-
-## Optional live smoke (calls public endpoint)
+To check that public page live, run:
 
 ```bash
 statuspage-api-tool --output json --base-url https://status.atlassian.com status get
 ```
-
-The live smoke is read-only and checks the real public page path.
-
-## Examples (committed)
-
-See `docs/examples/` for:
-- fixed sample Status API responses, and
-- sample CLI outputs under `docs/examples/outputs/`.
-## What can go wrong
-
-- The public page can change between runs, so compare timestamps before treating a status summary as final.
-- A network or provider error can block the live smoke even though the tool remains read-only.
-- Fixed examples prove output shape, not the current live state of a status page.

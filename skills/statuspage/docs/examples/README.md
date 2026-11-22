@@ -1,22 +1,12 @@
-# Examples (fixed / repeatable)
+# Saved examples
 
-This folder contains fixed sample JSON responses (no network required) and sample CLI outputs derived from them.
+These files show the replies and output you can expect. Use the live page for its current status.
 
-It also contains a small set of static review artifacts used by our orchestrator proof gate. These are not CLI
-features or commands.
+| API reply | CLI output |
+| --- | --- |
+| [Overall status](status.json) | [`status get`](outputs/status_get.json) |
+| [Current summary](summary.json) | [`summary get`](outputs/summary_get.json) |
+| [Recent incidents](incidents.json) | [`incidents list`](outputs/incidents_list.json) |
+| [Recent maintenance](scheduled-maintenances.json) | [`maintenances list`](outputs/maintenances_list.json) |
 
-## Response fixtures
-
-- `status.json` → `GET /api/v2/status.json`
-- `summary.json` → `GET /api/v2/summary.json`
-- `incidents.json` → `GET /api/v2/incidents.json`
-- `scheduled-maintenances.json` → `GET /api/v2/scheduled-maintenances.json`
-
-## CLI outputs
-
-See `outputs/` for sample `--output json` results for each command.
-
-Additional files:
-- `outputs/auth_check.json`: informational output example (this tool does not require authentication).
-- `plan.example.json`: static plan example (the tool does not implement plan mode).
-- `receipt.example.json`: static receipt example (the tool does not implement receipt mode).
+The [saved Atlassian check](atlassian-summary.json) shows the page as updated on May 25, 2026. It came from an earlier version of the skill, so its outer fields differ from the current CLI. See also [`auth check`](outputs/auth_check.json) and [`--version`](outputs/version.json).

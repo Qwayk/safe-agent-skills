@@ -1,58 +1,46 @@
 from __future__ import annotations
 
+import contextlib
+import io
+import re
+import shlex
 import unittest
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
+
+from statuspage_api_tool.cli import build_parser
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
-class TestReadmePublicContract(unittest.TestCase):
-    def test_public_readme_opening_stays_user_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertTrue(text.startswith("# Statuspage\n"))
-        self.assertNotIn("## Simplicity lock", text)
-        self.assertNotIn("# Statuspage API tool", text)
-        self.assertIn("**Capability:** Read-only", text)
-
-        required_sections = [
-            "## Start here first",
-            "## What this skill helps with",
-            "## Install and first run",
-            "## How this skill stays safe",
-            "## What happens before a real change",
-            "## Helpful docs",
+class TestPublicInstallGuide(unittest.TestCase):
+    def test_install_command_selects_statuspage(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        commands = [
+            shlex.split(line)
+            for line in readme.splitlines()
+            if line.startswith("npx skills add ")
         ]
-        for section in required_sections:
-            self.assertIn(section, text)
+        self.assertEqual(len(commands), 1)
+        self.assertEqual(commands[0][3], "Qwayk/safe-agent-skills@statuspage")
 
-    def test_start_here_section_stays_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
+    def test_local_guide_links_resolve(self) -> None:
+        guides = [ROOT / "README.md", ROOT / "SKILL.md", *(ROOT / "docs").rglob("*.md")]
+        for guide in guides:
+            for target in re.findall(r"\[[^\]\n]+\]\(([^)\s]+)\)", guide.read_text(encoding="utf-8")):
+                link = urlsplit(target)
+                if link.scheme or not link.path:
+                    continue
+                with self.subTest(guide=guide.relative_to(ROOT), target=target):
+                    self.assertTrue((guide.parent / unquote(link.path)).is_file())
 
-        self.assertIn("[What you can do with Statuspage](docs/use_cases.md)", text)
-        self.assertIn("[Use a public Statuspage URL](docs/onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
-        self.assertIn("[Quickstart](docs/quickstart.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-
-    def test_helpful_docs_stay_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("[Browse all Statuspage docs](docs/README.md)", text)
-        self.assertIn("[First-run example](examples/first-run.md)", text)
-        self.assertIn("[Troubleshooting](docs/troubleshooting.md)", text)
-        self.assertIn("[Proof and verification](docs/proof.md)", text)
-        self.assertIn("[API coverage](docs/api_coverage.md)", text)
-        self.assertNotIn("- `docs/use_cases.md`", text)
-        self.assertNotIn("- `docs/onboarding.md`", text)
-
-    def test_quickstart_opens_with_human_links(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "quickstart.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do with Statuspage](use_cases.md)", text)
-        self.assertIn("[Use a public Statuspage URL](onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](safety_model.md)", text)
-        self.assertNotIn("`docs/use_cases.md`", text)
-        self.assertNotIn("`docs/onboarding.md`", text)
+    def test_quickstart_command_checks_current_status(self) -> None:
+        quickstart = (ROOT / "docs/quickstart.md").read_text(encoding="utf-8")
+        command = next(
+            line for line in quickstart.splitlines()
+            if line.startswith(".venv/bin/statuspage-api-tool ")
+        )
+        with contextlib.redirect_stdout(io.StringIO()):
+            args = build_parser().parse_args(shlex.split(command)[1:])
+        self.assertEqual((args.cmd, args.summary_cmd), ("summary", "get"))
+        self.assertEqual(args.base_url, "https://status.atlassian.com")

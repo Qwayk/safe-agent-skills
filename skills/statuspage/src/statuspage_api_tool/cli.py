@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 import sys
-from typing import Any, Callable
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
 
 from . import __version__
 from .audit_log import AuditLogger
-from .config import load_config, normalize_statuspage_base_url
+from .config import load_config
 from .errors import ToolError, ValidationError
 from .output import Output
 from .statuspage_client import StatuspageClient
@@ -41,7 +42,7 @@ def _client_from_ctx(ctx: dict[str, Any]) -> StatuspageClient:
     cfg = ctx["cfg"]
     return StatuspageClient(
         base_url=cfg.base_url,
-        timeout_s=float(ctx["timeout_s"]),
+        timeout_s=cfg.timeout_s,
         verbose=bool(ctx["verbose"]),
         user_agent=f"statuspage-api-tool/{__version__}",
     )
@@ -121,7 +122,7 @@ def _load_project_config(path: str | None) -> dict[str, str]:
     if raw.get("base_url") is not None:
         out["STATUSPAGE_BASE_URL"] = str(raw.get("base_url") or "").strip()
     if raw.get("timeout_s") is not None:
-        out["STATUSPAGE_TIMEOUT_S"] = str(raw.get("timeout_s") or "").strip()
+        out["STATUSPAGE_TIMEOUT_S"] = str(raw["timeout_s"]).strip()
     return out
 
 
@@ -149,20 +150,20 @@ def build_parser() -> argparse.ArgumentParser:
     status_get = status_sub.add_parser("get", help="Get current status (/api/v2/status.json)")
     status_get.set_defaults(func=_cmd_status_get)
 
-    summary = sub.add_parser("summary", help="Summary")
+    summary = sub.add_parser("summary", help="Current status, open incidents, and planned or active maintenance")
     summary_sub = summary.add_subparsers(dest="summary_cmd", required=True, parser_class=_ToolArgumentParser)
     summary_get = summary_sub.add_parser("get", help="Get summary (/api/v2/summary.json)")
     summary_get.set_defaults(func=_cmd_summary_get)
 
     incidents = sub.add_parser("incidents", help="Incidents")
     incidents_sub = incidents.add_subparsers(dest="incidents_cmd", required=True, parser_class=_ToolArgumentParser)
-    incidents_list = incidents_sub.add_parser("list", help="List incidents (/api/v2/incidents.json)")
+    incidents_list = incidents_sub.add_parser("list", help="List recent incidents (/api/v2/incidents.json)")
     incidents_list.set_defaults(func=_cmd_incidents_list)
 
     maint = sub.add_parser("maintenances", help="Scheduled maintenances")
     maint_sub = maint.add_subparsers(dest="maint_cmd", required=True, parser_class=_ToolArgumentParser)
     maint_list = maint_sub.add_parser(
-        "list", help="List scheduled maintenances (/api/v2/scheduled-maintenances.json)"
+        "list", help="List recent scheduled maintenance (/api/v2/scheduled-maintenances.json)"
     )
     maint_list.set_defaults(func=_cmd_maintenances_list)
 
@@ -183,6 +184,7 @@ def main(argv: list[str]) -> int:
         except Exception:
             return 0
 
+    audit: AuditLogger | None = None
     try:
         if bool(args.version):
             payload = {"ok": True, "tool": "statuspage-api-tool", "version": __version__}
@@ -197,34 +199,23 @@ def main(argv: list[str]) -> int:
 
         audit = AuditLogger(path=str(args.log_file) if args.log_file else None, enabled=bool(args.log_file))
 
-        # Auth command is informational; it must not require config or network.
-        if str(args.cmd) == "auth":
-            ctx: dict[str, Any] = {"out": out, "audit": audit}
-            func: Callable[[argparse.Namespace, dict[str, Any]], int] = getattr(args, "func")
+        func: Callable[[argparse.Namespace, dict[str, Any]], int] = args.func
+        ctx: dict[str, Any] = {"out": out, "audit": audit}
+
+        # Auth is local and needs no page URL.
+        if args.cmd == "auth":
             rc = int(func(args, ctx))
             audit.close()
             return rc
 
         config_defaults = _load_project_config(str(args.config) if args.config else None)
-        # `--base-url` is meant to allow running without a `.env` file.
-        # Set it as a default so `load_config()` doesn't fail on missing STATUSPAGE_BASE_URL.
-        if args.base_url is not None and str(args.base_url).strip():
-            config_defaults["STATUSPAGE_BASE_URL"] = str(args.base_url).strip()
-        cfg = load_config(str(args.env_file), config_defaults=config_defaults)
-        if args.base_url is not None and str(args.base_url).strip():
-            cfg = type(cfg)(
-                base_url=normalize_statuspage_base_url(str(args.base_url)),
-                timeout_s=cfg.timeout_s,
-            )
-        timeout_s = float(args.timeout_s) if args.timeout_s is not None else float(cfg.timeout_s)
-
-        ctx: dict[str, Any] = {
-            "cfg": cfg,
-            "out": out,
-            "timeout_s": timeout_s,
-            "verbose": bool(args.verbose),
-            "audit": audit,
-        }
+        cfg = load_config(
+            args.env_file,
+            config_defaults=config_defaults,
+            base_url=args.base_url,
+            timeout_s=args.timeout_s,
+        )
+        ctx.update(cfg=cfg, verbose=args.verbose)
         audit.bind_context(
             {
                 "tool": "statuspage-api-tool",
@@ -234,14 +225,12 @@ def main(argv: list[str]) -> int:
             }
         )
 
-        func: Callable[[argparse.Namespace, dict[str, Any]], int] = getattr(args, "func")
         rc = int(func(args, ctx))
         audit.close()
         return rc
     except ToolError as e:
         try:
-            audit = locals().get("audit")
-            if isinstance(audit, AuditLogger):
+            if audit is not None:
                 audit.write("command.error", {"error_type": type(e).__name__, "error": str(e)[:500]})
                 audit.close()
         except Exception:
@@ -252,8 +241,7 @@ def main(argv: list[str]) -> int:
         if bool(getattr(args, "debug", False)):
             raise
         try:
-            audit = locals().get("audit")
-            if isinstance(audit, AuditLogger):
+            if audit is not None:
                 audit.write("command.error", {"error_type": type(e).__name__, "error": str(e)[:500]})
                 audit.close()
         except Exception:

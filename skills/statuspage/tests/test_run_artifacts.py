@@ -24,6 +24,7 @@ class TestCommandWiring(unittest.TestCase):
         status_code: int,
         body: str,
         content_type: str = "application/json",
+        expected_timeout: float | None = None,
     ):
         _status_code = int(status_code)
         _body = str(body)
@@ -40,7 +41,9 @@ class TestCommandWiring(unittest.TestCase):
             data=None,
             timeout=None,
         ):
-            _ = (headers, params, json, data, timeout)
+            _ = (headers, params, json, data)
+            if expected_timeout is not None:
+                self.assertEqual(timeout, expected_timeout)
             self.assertEqual(method, "GET")
             self.assertEqual(url, expected_url)
 
@@ -76,10 +79,16 @@ class TestCommandWiring(unittest.TestCase):
     def test_summary_get(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             env_path = self._env_file(d)
+            summary = {
+                "status": {"indicator": "major", "description": "Major Outage"},
+                "incidents": [{"id": "incident-1", "status": "investigating"}],
+                "scheduled_maintenances": [{"id": "maintenance-1", "status": "scheduled"}],
+                "components": [{"id": "component-1", "status": "major_outage"}],
+            }
             fake = self._fake_request_for(
                 expected_url="https://status.example.com/api/v2/summary.json",
                 status_code=200,
-                body='{"status":{"indicator":"minor","description":"Minor Service Issues"}}',
+                body=json.dumps(summary),
             )
             buf = io.StringIO()
             with patch("requests.Session.request", new=fake):
@@ -89,6 +98,93 @@ class TestCommandWiring(unittest.TestCase):
             payload = json.loads(buf.getvalue())
             self.assertTrue(payload["ok"])
             self.assertEqual(payload["endpoint"], "/api/v2/summary.json")
+            self.assertEqual(payload["data"], summary)
+
+    def test_summary_accepts_empty_lists_without_components(self) -> None:
+        summary = {"status": {"indicator": "none"}, "incidents": [], "scheduled_maintenances": []}
+        fake = self._fake_request_for(
+            expected_url="https://status.example.com/api/v2/summary.json",
+            status_code=200,
+            body=json.dumps(summary),
+        )
+        buf = io.StringIO()
+        with tempfile.TemporaryDirectory() as d, patch.dict("os.environ", {}, clear=True):
+            with patch("requests.Session.request", new=fake), redirect_stdout(buf):
+                rc = main(["--env-file", str(self._env_file(d)), "summary", "get"])
+        self.assertEqual(rc, 0)
+        self.assertEqual(json.loads(buf.getvalue())["data"], summary)
+
+    def test_incomplete_replies_are_errors(self) -> None:
+        cases = [
+            ("status get", "status", "null", "JSON object"),
+            ("status get", "status", '{"status":{}}', "status indicator"),
+            ("status get", "status", '{"status":{"indicator":" "}}', "status indicator"),
+            ("summary get", "summary", '{"status":{"indicator":"none"}}', "incidents"),
+            (
+                "summary get",
+                "summary",
+                '{"status":{"indicator":"none"},"incidents":[]}',
+                "scheduled_maintenances",
+            ),
+            ("incidents list", "incidents", '{"incidents":null}', "incidents"),
+            ("maintenances list", "scheduled-maintenances", "{}", "scheduled_maintenances"),
+        ]
+        with tempfile.TemporaryDirectory() as d, patch.dict("os.environ", {}, clear=True):
+            env_path = self._env_file(d)
+            for command, route, body, detail in cases:
+                with self.subTest(command=command, body=body):
+                    fake = self._fake_request_for(
+                        expected_url=f"https://status.example.com/api/v2/{route}.json",
+                        status_code=200,
+                        body=body,
+                    )
+                    buf = io.StringIO()
+                    with patch("requests.Session.request", new=fake), redirect_stdout(buf):
+                        rc = main(["--env-file", str(env_path), *command.split()])
+                    self.assertEqual(rc, 1)
+                    payload = json.loads(buf.getvalue())
+                    self.assertFalse(payload["ok"])
+                    self.assertEqual(payload["error_type"], "ToolError")
+                    self.assertIn(detail, payload["error"])
+
+    def test_explicit_flags_override_invalid_settings(self) -> None:
+        fake = self._fake_request_for(
+            expected_url="https://status.example.com/api/v2/status.json",
+            status_code=200,
+            body='{"status":{"indicator":"none"}}',
+            expected_timeout=5,
+        )
+        with tempfile.TemporaryDirectory() as d:
+            env_path = Path(d) / ".env"
+            env_path.write_text(
+                "STATUSPAGE_BASE_URL=old-page\nSTATUSPAGE_TIMEOUT_S=slow\n", encoding="utf-8"
+            )
+            for variables in ({}, {"STATUSPAGE_BASE_URL": "stale", "STATUSPAGE_TIMEOUT_S": "invalid"}):
+                with self.subTest(variables=variables):
+                    buf = io.StringIO()
+                    with (
+                        patch.dict("os.environ", variables, clear=True),
+                        patch("requests.Session.request", new=fake),
+                        redirect_stdout(buf),
+                    ):
+                        rc = main([
+                            "--env-file", str(env_path), "--base-url", "https://status.example.com",
+                            "--timeout-s", "5", "status", "get",
+                        ])
+                    self.assertEqual(rc, 0)
+                    self.assertEqual(json.loads(buf.getvalue())["base_url"], "https://status.example.com")
+
+    def test_invalid_explicit_timeout_stops_before_the_request(self) -> None:
+        for timeout in ("0", "-1", "inf", "nan"):
+            with self.subTest(timeout=timeout):
+                buf = io.StringIO()
+                with patch("requests.Session.request") as request, redirect_stdout(buf):
+                    rc = main([
+                        "--base-url", "https://status.example.com", "--timeout-s", timeout, "status", "get",
+                    ])
+                self.assertEqual(rc, 1)
+                self.assertEqual(json.loads(buf.getvalue())["error_type"], "ValidationError")
+                request.assert_not_called()
 
     def test_incidents_list(self) -> None:
         with tempfile.TemporaryDirectory() as d:

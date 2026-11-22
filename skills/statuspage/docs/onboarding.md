@@ -1,34 +1,32 @@
-# Use Statuspage with no account
+# Set up a public Statuspage URL
 
-Statuspage can start from a public status page URL. You do not need an account or API key for normal incident and maintenance checks.
+Give your agent the root URL of the vendor’s public Statuspage, such as `https://status.atlassian.com`. The tool reads public data without an account or API key. For one check, pass the URL with `--base-url` and follow the [Quickstart](quickstart.md).
 
-No secrets are needed for the first run. If the tool creates a local `.env` file, treat it as local setup only; it should not contain a private service token.
+## Save a page you check often
 
-Start by giving the agent the exact public status page URL you want reviewed.
+From the folder that contains the tool, copy the example:
 
-## Fastest first run
+```bash
+cp .env.example .env
+```
 
-Give your agent a public Statuspage URL like:
+Set `STATUSPAGE_BASE_URL=https://status.atlassian.com` using the page you want. The optional `STATUSPAGE_TIMEOUT_S` sets how many seconds a request can wait. The default is 30 seconds.
 
-- `https://status.atlassian.com`
+The CLI reads `.env` in the folder you run it from. Use `--env-file` to pick another file. You can also use `--config` with a JSON file that holds defaults:
 
-Then ask for one of these:
+```json
+{
+  "base_url": "https://status.atlassian.com",
+  "timeout_s": 30
+}
+```
 
-- “Check this status page and tell me if anything is down.”
-- “Show me open incidents on this status page.”
-- “Tell me if there is planned maintenance.”
-- “Summarize the current component status for this page.”
+The command flag takes priority, followed by the shell variable, the env file, then the JSON file. Use `--base-url` or `--timeout-s` to override an older setting for one run.
 
-## Optional repeat setup for direct CLI use
+## If a request fails
 
-If you want to run the CLI yourself more than once, you can keep the base URL in a local `.env` file:
+- If the URL is missing, pass the public page root with `--base-url`. Leave out any path, query, or fragment.
+- If a request times out, check that the page opens, then try a longer `--timeout-s` if needed.
+- If the API returns an error or leaves out required data, keep the error message and open the public page to see what it shows. Add `--verbose` before the command for HTTP details on stderr. Use `--debug` if you need a traceback.
 
-1. Copy `.env.example` to `.env`.
-2. Set `STATUSPAGE_BASE_URL=https://status.somevendor.com`.
-
-Keep `.env` local on your machine.
-
-## What to avoid
-
-- Do not ask for private incident data from a public Statuspage URL. This tool reads what the page exposes publicly.
-- Do not rely on a summary alone during an outage. Ask the agent to show the incident title, status, affected components, and latest update time.
+`statuspage-api-tool auth check` explains the access the tool needs on your machine. To check that a page is reachable, run `summary get` with its URL.

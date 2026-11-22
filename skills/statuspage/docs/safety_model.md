@@ -1,23 +1,7 @@
-# Safety model
+# What Statuspage reads
 
-Statuspage is safest when you treat the agent as a focused reader for public incidents, components, maintenances, subscribers, and status summaries. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+The CLI sends `GET` requests to [four public Statuspage routes](api_coverage.md). It can check what a vendor posted on its public page.
 
-The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+In JSON mode, the CLI prints one object. `ok: true` means the read succeeded. The actual service status is in `data.status` when the command includes it. A successful read can report a major outage.
 
-A good safety ask is: "Read the page, incidents, and components first, then report the current status without trying to change the page."
-
-## Core safety rules
-
-It is built to check a public page and stay out of private account actions.
-
-This skill is read-only:
-
-- It only performs `GET` requests to public Statuspage API endpoints.
-- It does not sign in or call private admin actions.
-- It does not implement `--apply`, `--yes`, or plan/receipt flows because there are no writes here.
-- The main safety question is whether you pointed the agent at the right public page, not whether a risky change might run.
-
-## Output contract
-
-- `--output json` prints exactly one JSON object to stdout.
-- Errors are rendered as JSON with `ok=false` and an `error_type`.
+An empty list means the page returned no records for that list. A missing or invalid required field returns `ok: false` and an error. If the page leaves out component details, say those details are unavailable. Include the source page and check time so the reader can compare the result with the page.

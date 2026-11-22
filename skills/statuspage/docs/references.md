@@ -1,11 +1,8 @@
-# References
+# Atlassian references
 
-These are the sources relied upon to implement this tool.
+- [Public Status API](https://status.atlassian.com/api) explains what each response includes. I checked the four routes used by this tool on November 22, 2026.
+- [Statuspage APIs](https://support.atlassian.com/statuspage/docs/what-are-the-different-apis-under-statuspage/) explains the difference between the public Status API and the Manage API.
+- [Statuspage developer docs](https://developer.statuspage.io/) covers the Manage API.
+- [Status embeds](https://support.atlassian.com/statuspage/docs/build-your-own-status-embed/) shows another way to use the public API.
 
-Last verified (UTC): 2026-01-26
-
-## Statuspage
-
-- Docs home (Manage API + general): https://developer.statuspage.io/
-- Status API overview (page-level API): https://support.atlassian.com/statuspage/docs/what-are-the-different-apis-under-statuspage/
-- Status embed (“uses the Status API”): https://support.atlassian.com/statuspage/docs/build-your-own-status-embed/
+The original reference check was January 26, 2026 (UTC). See [API coverage](api_coverage.md) for the routes this tool supports.

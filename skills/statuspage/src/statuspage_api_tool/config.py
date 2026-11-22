@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import math
 import os
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
@@ -29,7 +30,7 @@ def _parse_env_file(path: Path) -> dict[str, str]:
 
 
 def _get(env: dict[str, str], key: str) -> str:
-    return (os.environ.get(key) if key in os.environ else env.get(key) or "").strip()
+    return os.environ.get(key, env.get(key, "")).strip()
 
 
 def normalize_statuspage_base_url(raw: str) -> str:
@@ -60,18 +61,26 @@ class Config:
     timeout_s: float
 
 
-def load_config(env_file: str | None, *, config_defaults: dict[str, str] | None = None) -> Config:
+def load_config(
+    env_file: str | None,
+    *,
+    config_defaults: dict[str, str] | None = None,
+    base_url: str | None = None,
+    timeout_s: float | None = None,
+) -> Config:
     env: dict[str, str] = dict(config_defaults or {})
     env.update(_parse_env_file(Path(env_file or ".env")))
 
-    base_url = normalize_statuspage_base_url(_get(env, "STATUSPAGE_BASE_URL"))
+    if base_url is None:
+        base_url = _get(env, "STATUSPAGE_BASE_URL")
+    base_url = normalize_statuspage_base_url(base_url)
 
-    timeout_s_raw = _get(env, "STATUSPAGE_TIMEOUT_S") or "30"
-    try:
-        timeout_s = float(timeout_s_raw)
-    except Exception:
-        raise ValidationError("STATUSPAGE_TIMEOUT_S must be a number (seconds)") from None
-    if timeout_s <= 0:
-        raise ValidationError("STATUSPAGE_TIMEOUT_S must be > 0")
+    if timeout_s is None:
+        try:
+            timeout_s = float(_get(env, "STATUSPAGE_TIMEOUT_S") or "30")
+        except ValueError:
+            raise ValidationError("STATUSPAGE_TIMEOUT_S must be a number (seconds)") from None
+    if not math.isfinite(timeout_s) or timeout_s <= 0:
+        raise ValidationError("The request timeout must be a finite number greater than 0")
 
     return Config(base_url=base_url, timeout_s=timeout_s)

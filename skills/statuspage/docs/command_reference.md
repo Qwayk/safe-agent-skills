@@ -1,43 +1,17 @@
-# Command reference
+# Statuspage commands
 
-These commands read public Statuspage status, incidents, maintenance, components, and summaries. Set or pass the public status page URL before running checks.
+Use the public page root with `--base-url`, or [save a default page](onboarding.md). Put shared flags before the command.
 
-For the guided path, start with [What you can do with Statuspage](use_cases.md), [Use a public Statuspage URL](onboarding.md), and [Quickstart](quickstart.md).
+| Command | What it shows |
+| --- | --- |
+| `statuspage-api-tool summary get` | Overall status, open incidents, planned or active maintenance, and components when the page lists them. Start here for a current check. |
+| `statuspage-api-tool status get` | Overall status only. |
+| `statuspage-api-tool incidents list` | Up to 50 recent incidents, including resolved incidents. |
+| `statuspage-api-tool maintenances list` | Up to 50 recent scheduled maintenance records, including completed maintenance. |
+| `statuspage-api-tool auth check` | Whether the tool needs credentials. This runs locally. |
+| `statuspage-api-tool --help` | Commands and flags. |
+| `statuspage-api-tool --output json --version` | Installed version. |
 
-## Setup
+For repeated checks, run the same command for each page URL. Keep the results separate by page.
 
-You need a target public status page. Use one of these:
-
-- pass `--base-url https://status.somevendor.com`
-- or keep `STATUSPAGE_BASE_URL=https://status.somevendor.com` in a local `.env`
-
-## Version / help
-
-- `statuspage-api-tool --output json --version`
-- `statuspage-api-tool --help`
-
-## Auth (informational)
-
-- `statuspage-api-tool auth check`
-
-This command does not call a remote auth endpoint. It explains that the normal public-page flow does not need credentials.
-
-## Status
-
-- `statuspage-api-tool status get`
-
-## Summary
-
-- `statuspage-api-tool summary get`
-
-## Incidents
-
-- `statuspage-api-tool incidents list`
-
-## Scheduled maintenances
-
-- `statuspage-api-tool maintenances list`
-
-## Example outputs (fixed)
-
-See `docs/examples/outputs/` for sample `--output json` outputs for each command.
+The default output is JSON. Use `--output text` for a readable printout or `--log-file` for local JSONL command events. See the [saved outputs](examples/README.md) and [output rules](safety_model.md).

@@ -1,27 +1,14 @@
-# API coverage
+# Public API routes
 
-Statuspage coverage shows exactly what this skill can do with public incidents, components, maintenances, subscribers, and status summaries. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+The tool reads these four routes from a public Atlassian Statuspage site. They work without credentials. The [command guide](command_reference.md) explains the difference between a current check and recent history.
 
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+Last API audit recorded before this cleanup (UTC): 2026-06-11. See the [test results](proof.md) for later checks.
 
-A good first coverage check is: "Check whether this skill can inspect incidents and components, then show which Statuspage changes are covered."
+| Public route | CLI command |
+| --- | --- |
+| `GET /api/v2/summary.json` | `statuspage-api-tool summary get` |
+| `GET /api/v2/status.json` | `statuspage-api-tool status get` |
+| `GET /api/v2/incidents.json` | `statuspage-api-tool incidents list` |
+| `GET /api/v2/scheduled-maintenances.json` | `statuspage-api-tool maintenances list` |
 
-## Coverage notes
-
-This page shows exactly what this tool can check today.
-If you want to know whether a specific page check is supported, this is the exact list.
-It is intentionally small and easy to review.
-
-## Provider
-
-- Provider: Statuspage (Atlassian)
-- API base URL: `<STATUSPAGE_BASE_URL>/api/v2/`
-- Auth: none (public endpoints)
-- Last audited (UTC): 2026-06-11
-
-## Coverage
-
-- [x] `GET /api/v2/status.json` → `statuspage-api-tool status get` — tests: `tests/test_run_artifacts.py`
-- [x] `GET /api/v2/summary.json` → `statuspage-api-tool summary get` — tests: `tests/test_run_artifacts.py`
-- [x] `GET /api/v2/incidents.json` → `statuspage-api-tool incidents list` — tests: `tests/test_run_artifacts.py`
-- [x] `GET /api/v2/scheduled-maintenances.json` → `statuspage-api-tool maintenances list` — tests: `tests/test_run_artifacts.py`
+[The command tests](../tests/test_run_artifacts.py) check the request and reply for each route. Use the [public Status API docs](https://status.atlassian.com/api) for the provider’s field and route descriptions.
