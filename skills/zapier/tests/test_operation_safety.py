@@ -2,17 +2,18 @@ from __future__ import annotations
 
 import io
 import json
+import shlex
 import tempfile
-from copy import deepcopy
+import unittest
 from contextlib import redirect_stdout
-from unittest import mock
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
-
-import unittest
+from unittest import mock
 
 from zapier_safe_agent_cli.cli import _build_plan, main
 from zapier_safe_agent_cli.config import load_config
+from zapier_safe_agent_cli.http import HttpResponse
 from zapier_safe_agent_cli.operations import load_operations
 
 
@@ -60,8 +61,8 @@ class TestOperationSafety(unittest.TestCase):
                 "json",
                 "--plan-out",
                 str(plan_out),
-                "ai-actions",
-                "ai-actions-create-ai-action",
+                "partner",
+                "post-zaps",
                 "--body-json",
                 '{"name":"test"}',
             ]
@@ -85,8 +86,8 @@ class TestOperationSafety(unittest.TestCase):
                 "--output",
                 "json",
                 "--apply",
-                "ai-actions",
-                "ai-actions-create-ai-action",
+                "partner",
+                "post-zaps",
                 "--body-json",
                 '{"name":"test"}',
             ]
@@ -102,10 +103,10 @@ class TestOperationSafety(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             env = self._base_env(td)
             cfg = load_config(str(env))
-            op = next(op for op in load_operations() if op.group == "ai-actions" and op.command == "ai-actions-create-ai-action")
+            op = next(op for op in load_operations() if op.group == "partner" and op.command == "post-zaps")
             plan = _build_plan(
                 cfg=cfg,
-                command="qwayk-zapier-safe-agent-cli ai-actions ai-actions-create-ai-action --body-json <redacted-body-json>",
+                command="qwayk-zapier-safe-agent-cli partner post-zaps --body-json <redacted-body-json>",
                 op=op,
                 path_params={},
                 query={},
@@ -123,8 +124,8 @@ class TestOperationSafety(unittest.TestCase):
                 "--apply",
                 "--plan-in",
                 str(plan_path),
-                "ai-actions",
-                "ai-actions-create-ai-action",
+                "partner",
+                "post-zaps",
                 "--body-json",
                 '{"name":"test"}',
             ]
@@ -167,11 +168,11 @@ class TestOperationSafety(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             env = self._base_env(td)
             cfg = load_config(str(env))
-            op = next(op for op in load_operations() if op.group == "ai-actions" and op.command == "ai-actions-create-ai-action")
+            op = next(op for op in load_operations() if op.group == "partner" and op.command == "post-zaps")
             body = {"name": "reviewed"}
             plan = _build_plan(
                 cfg=cfg,
-                command="qwayk-zapier-safe-agent-cli ai-actions ai-actions-create-ai-action --body-json <redacted-body-json>",
+                command="qwayk-zapier-safe-agent-cli partner post-zaps --body-json <redacted-body-json>",
                 op=op,
                 path_params={},
                 query={},
@@ -193,10 +194,10 @@ class TestOperationSafety(unittest.TestCase):
                     "--plan-in",
                     str(plan_path),
                     "--yes",
-                    "ai-actions",
-                    "ai-actions-create-ai-action",
+                    "partner",
+                    "post-zaps",
                     "--body-json",
-                    '{"name":"attack"}',
+                    '{"name":"different"}',
                 ]
                 buf = io.StringIO()
                 with redirect_stdout(buf):
@@ -212,12 +213,12 @@ class TestOperationSafety(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             env = self._base_env(td)
             cfg = load_config(str(env))
-            op = next(op for op in load_operations() if op.group == "ai-actions" and op.command == "ai-actions-delete-ai-action")
+            op = next(op for op in load_operations() if op.group == "promotions" and op.command == "destroy")
             plan = _build_plan(
                 cfg=cfg,
-                command="qwayk-zapier-safe-agent-cli ai-actions ai-actions-delete-ai-action --ai-action-id id-match-000",
+                command="qwayk-zapier-safe-agent-cli promotions destroy --enrollment-id id-match-000",
                 op=op,
-                path_params={"ai_action_id": "id-match-000"},
+                path_params={"enrollment_id": "id-match-000"},
                 query={},
                 body=None,
                 risk="high",
@@ -236,9 +237,9 @@ class TestOperationSafety(unittest.TestCase):
                     "--plan-in",
                     str(plan_path),
                     "--yes",
-                    "ai-actions",
-                    "ai-actions-delete-ai-action",
-                    "--ai-action-id",
+                    "promotions",
+                    "destroy",
+                    "--enrollment-id",
                     "id-mismatch-999",
                 ]
                 buf = io.StringIO()
@@ -322,11 +323,11 @@ class TestOperationSafety(unittest.TestCase):
             self._write_env_with_token(env_b, "second-token-SECRET")
 
             cfg = load_config(str(env_a))
-            op = next(op for op in load_operations() if op.group == "ai-actions" and op.command == "ai-actions-create-ai-action")
+            op = next(op for op in load_operations() if op.group == "partner" and op.command == "post-zaps")
             body = {"name": "reviewed"}
             plan = _build_plan(
                 cfg=cfg,
-                command="qwayk-zapier-safe-agent-cli ai-actions ai-actions-create-ai-action --body-json <redacted-body-json>",
+                command="qwayk-zapier-safe-agent-cli partner post-zaps --body-json <redacted-body-json>",
                 op=op,
                 path_params={},
                 query={},
@@ -351,8 +352,8 @@ class TestOperationSafety(unittest.TestCase):
                             "--plan-in",
                             str(plan_path),
                             "--yes",
-                            "ai-actions",
-                            "ai-actions-create-ai-action",
+                            "partner",
+                            "post-zaps",
                             "--body-json",
                             json.dumps(body),
                         ]
@@ -366,6 +367,65 @@ class TestOperationSafety(unittest.TestCase):
             self.assertIn("env_fingerprint", " ".join(payload.get("reasons", [])))
             self.assertNotIn("first-token-SECRET", payload_text)
             self.assertNotIn("second-token-SECRET", payload_text)
+
+    def test_unavailable_commands_stop_before_contacting_zapier(self) -> None:
+        cases = [
+            ("ai-actions", "ai-actions-delete-ai-action", "Zapier MCP"),
+            ("partner", "authorize-list", "browser consent"),
+            ("trigger-inbox", "getTriggerInboxEvents", "listTriggerInboxMessages"),
+        ]
+        for group, command, guidance in cases:
+            with self.subTest(command=command):
+                buf = io.StringIO()
+                with mock.patch("zapier_safe_agent_cli.cli.HttpClient.request") as request, redirect_stdout(buf):
+                    self.assertEqual(main([group, command]), 1)
+                request.assert_not_called()
+                result = json.loads(buf.getvalue())
+                self.assertEqual(result["error_type"], "NotSupportedError")
+                self.assertIn(guidance, result["error"])
+
+    def test_action_run_receipt_records_acceptance_and_how_to_check(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            env = self._base_env(td).rename(Path(td) / "test settings.env")
+            plan = Path(td) / "plan.json"
+            receipt = Path(td) / "receipt.json"
+            shared = ["--env-file", str(env), "--no-artifacts"]
+            command = ["partner", "create-action-run", "--body-json", '{"data":{"action":"example","authentication":null}}']
+            with mock.patch("zapier_safe_agent_cli.cli.HttpClient.request") as request:
+                with redirect_stdout(io.StringIO()):
+                    self.assertEqual(main(shared + ["--plan-out", str(plan)] + command), 0)
+                request.assert_not_called()
+
+                request.return_value = HttpResponse(
+                    200, {}, b'{"data":{"type":"run","id":"arun_123"}}', "https://api.zapier.com/v2/action-runs",
+                )
+                buf = io.StringIO()
+                with redirect_stdout(buf):
+                    self.assertEqual(main(shared + [
+                        "--apply", "--plan-in", str(plan), "--ack-no-snapshot", "--receipt-out", str(receipt),
+                    ] + command), 0)
+                request.assert_called_once()
+
+            saved = json.loads(receipt.read_text())
+            self.assertEqual(saved, json.loads(buf.getvalue())["receipt"])
+            result = saved["verification"]
+            self.assertEqual(result["state"], "accepted")
+            self.assertNotIn("verified_at", result)
+            self.assertEqual(result["run_id"], "arun_123")
+            follow_up = shlex.split(result["next_command"])
+            self.assertEqual(follow_up[1:3], ["--env-file", str(env)])
+            self.assertEqual(follow_up[-4:], ["partner", "retrieve-action-run", "--id", "arun_123"])
+
+            request_options = shared + ["--apply", "--plan-in", str(plan), "--ack-no-snapshot"]
+            with mock.patch("zapier_safe_agent_cli.cli.HttpClient.request") as request:
+                request.return_value = HttpResponse(200, {}, b'{"data":{}}', "https://api.zapier.com/v2/action-runs")
+                buf = io.StringIO()
+                with redirect_stdout(buf):
+                    self.assertEqual(main(request_options + command), 0)
+                request.assert_called_once()
+            result = json.loads(buf.getvalue())["receipt"]["verification"]
+            self.assertEqual(result["state"], "unconfirmed")
+            self.assertNotIn("next_command", result)
 
     def test_example_plan_and_receipt_parse(self) -> None:
         root = Path(__file__).resolve().parents[1]

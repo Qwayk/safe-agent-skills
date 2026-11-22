@@ -16,7 +16,7 @@ If you already know the product, click it below. If not, start with the section 
 - [Project and team work](#project-and-team-work) for issues, projects, boards, backlogs, sprints, or team planning
 - [Ads, acquisition, and local presence](#ads-acquisition-and-local-presence) for ad accounts or local business surfaces
 - [CRM, outreach, support, and email](#crm-outreach-support-and-email) for leads, pipelines, support, or lifecycle messaging
-- [Automation and integration](#automation-and-integration) for app connections, Zaps, inboxes, or AI Actions
+- [Automation and integration](#automation-and-integration) for app connections, Zaps, workflows, and inboxes
 - [Commerce, stores, and payments](#commerce-stores-and-payments) for stores, products, orders, merchant feeds, or payment systems
 - [Affiliate, partnerships, and publisher revenue](#affiliate-partnerships-and-publisher-revenue) for affiliate product research or creator catalog work
 - [Publishing and social channels](#publishing-and-social-channels) for websites, posts, or social accounts
@@ -84,7 +84,7 @@ Start here if you want app-to-app workflows, automation review, or careful autom
 | --- | --- | --- | --- |
 | [**Make.com**](make-com/README.md)<br><sub>Install slug: <code>make-com</code></sub> | Review scenarios, teams, hooks, connections, data stores, keys, users, audit logs, and other Make API resources, then prepare reviewed changes | Make.com account | Reads + careful changes |
 | [**n8n**](n8n/README.md)<br><sub>Install slug: <code>n8n</code></sub> | Review workflows, executions, credentials, users, projects, folders, tags, variables, data tables, and packages, then prepare reviewed changes | n8n account | Reads + careful changes |
-| [**Zapier**](zapier/README.md)<br><sub>Install slug: <code>zapier</code></sub> | Review apps, actions, Zaps, authentications, trigger inboxes, promotions, and AI Actions, then prepare careful automation changes | Zapier account | Reads + careful changes |
+| [**Zapier**](zapier/README.md)<br><sub>Install slug: <code>zapier</code></sub> | Review apps, actions, Zaps, runs, trigger inboxes, and promotions. Prepare changes for approval. | Zapier integration and API access | Reads + careful changes |
 
 ## Commerce, stores, and payments
 

@@ -1,6 +1,12 @@
 # Changelog
 
-All notable changes are tracked here.
+## November 22, 2026 local update
+
+- Fresh installs include the command list. The source archive includes the skill and guides.
+- Setup keeps the chosen settings file and creates it with owner-only access. A blank token shows up as missing.
+- The retired AI Actions, browser consent, and inbox event commands give a clear local message.
+- Receipts for new action runs show that Zapier accepted the run and give a command to check the result when Zapier returns a run ID.
+- The setup, approval, and engineering guides now include the useful steps from ten smaller pages.
 
 ## [0.1.0]
 

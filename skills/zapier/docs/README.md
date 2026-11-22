@@ -1,27 +1,9 @@
-# Docs
+# Zapier guides
 
-Start with the first-run pages if you are new to this tool.
-
-## Start here
-
-- [Set up account and keys](onboarding.md)
-- [Authentication](authentication.md)
-- [Safety model](safety_model.md)
-
-## Commands
-
-- [Quickstart](quickstart.md)
-- [Command reference](command_reference.md)
-
-## Coverage and proof
-
-- [Coverage map](api_coverage.md)
-- [Proof checks](proof.md)
-- [References](references.md)
-
-## Build and extension notes
-
-- [Use cases](use_cases.md)
-- [Skills wrapper notes](skills_wrappers.md)
-- [Agent extension guide](agent_extension.md)
-- [Plan / receipt helpers](plan_review_prompt.md), [receipt review prompt](receipt_review_prompt.md)
+- [Quickstart](quickstart.md) takes you from checking your profile to listing apps.
+- [Onboarding](onboarding.md) explains where to save credentials and what to check if the connection fails.
+- [Command reference](command_reference.md) lists every command and gives the steps for making one approved change.
+- [Plans and receipts](safety_model.md) explains what to check before and after a change.
+- [API coverage](api_coverage.md) shows which requests the tool can send and which commands stop locally.
+- [Engineering notes](engineering_notes.md) and [provider references](references.md) explain where the code and API definitions live.
+- [Test results](proof.md) show what was checked and what still needs a real account.

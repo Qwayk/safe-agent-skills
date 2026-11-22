@@ -3,10 +3,10 @@ from __future__ import annotations
 import io
 import json
 import tempfile
+import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
 from unittest import mock
-import unittest
 
 from zapier_safe_agent_cli.cli import _build_plan, main
 from zapier_safe_agent_cli.config import load_config

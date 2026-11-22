@@ -1,22 +1,19 @@
-# Safety model
+# Plans, approvals, and receipts
 
-Zapier can reach connected apps, send messages, create records, and modify workflows. This tool treats discovery and review as normal reads, and treats every state-changing or side-effect operation as plan-first.
+Start with a read to check the account and the item you want to change. Commands that send changes produce a plan by default. A stored plan is a record of what you reviewed.
 
-## Rules
+## Before making a change
 
-1. Reads return direct responses when credentials are valid.
-2. POST, PUT, PATCH, and DELETE operations output a plan first.
-3. High-risk operations require:
-   - `--apply`
-   - `--plan-in`
-   - and one of `--yes`, `--ack-irreversible`, or `--ack-no-snapshot`.
-4. Secrets are redacted from JSON output and local artifacts.
-5. Plans and receipts include environment fingerprint, operation identity, and verification state.
+1. Check the account, command, target, and request body together. The plan stores a hash of the body, so read the original body you want to send.
+2. Check what happens if the change runs and whether Zapier provides a way to undo it. Acknowledging an inbox message can remove it permanently. Save a separate copy of the previous state when you can.
+3. After the person approves the change, run the same request with `--apply`, `--plan-in`, and the acknowledgement that fits. The CLI accepts `--yes`, `--ack-irreversible`, or `--ack-no-snapshot`. Use the last one when the approval is to proceed without a saved copy of the previous state.
 
-## High-risk operations
+The CLI compares the saved API address, operation, path, inputs, risk, and credentials with the current request. If something changed, review a fresh plan. If the result contains `refused=true`, it stopped before sending the change. Read `reasons` even if `ok=true`.
 
-The strictest gate covers action execution, Zap creation, authentications, inbox deletion, inbox message lease/ack/release, promotions deletion, and AI Action execution or deletion. Those actions can affect connected products or remove queue state, so an agent must show the plan first and wait for approval.
+## After Zapier replies
 
-## Why this is safer than raw API access
+Open the receipt to see what the request sent and what Zapier returned. A successful response code records Zapier’s reply. When the task depends on the changed state, use the matching read command to check the actual result.
 
-All operations are explicit. The CLI only allows the 62 pinned API operations from official Zapier specs. There is no generic request passthrough, no arbitrary method/path input, and no natural-language "run anything" shortcut.
+For `partner create-action-run`, an accepted receipt means Zapier has taken the request. Open the result with the `verification.next_command` and the saved run ID. If Zapier supplied no ID or the reply was lost, check Zapier before running the action again. [How Zapier reports action results](https://docs.zapier.com/powered-by-zapier/running-actions/retrieve-action-run)
+
+Use `runs list` and `runs show --run-id <id>` to find local records. Keep private input values and credentials in your local files.

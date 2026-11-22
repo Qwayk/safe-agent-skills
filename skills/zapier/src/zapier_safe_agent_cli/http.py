@@ -46,7 +46,7 @@ class HttpClient:
         *,
         headers: dict[str, str] | None = None,
         params: dict[str, Any] | None = None,
-        json_body: dict[str, Any] | None = None,
+        json_body: dict[str, Any] | list[object] | None = None,
         data: dict[str, Any] | None = None,
         retries: int = 0,
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),

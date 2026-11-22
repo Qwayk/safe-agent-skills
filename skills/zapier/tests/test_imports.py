@@ -3,13 +3,13 @@ from __future__ import annotations
 import importlib
 import pkgutil
 import tomllib
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 
 def _project_module_name(root: Path) -> str:
     data = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
-    return str(((data.get("project") or {}).get("name") or "")).strip()
+    return str((data.get("project") or {}).get("name") or "").strip()
 
 
 class TestImports(unittest.TestCase):

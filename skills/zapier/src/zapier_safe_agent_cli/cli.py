@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import re
+import shlex
 import sys
 import time
 import urllib.parse
@@ -15,8 +16,8 @@ from . import __version__
 from .audit_log import AuditLogger, CompositeAuditLogger
 from .config import Config, load_config
 from .errors import NotSupportedError, SafetyError, ToolError, ValidationError
-from .json_files import read_json_file, write_json_file
 from .http import HttpClient
+from .json_files import read_json_file, write_json_file
 from .operations import ApiOperation, by_group, load_operations
 from .output import Output
 from .project_config import load_project_config
@@ -31,7 +32,6 @@ from .runs import (
     write_summary_md,
 )
 
-
 _TOOL_NAME = "qwayk-zapier-safe-agent-cli"
 
 _REDACTED_BODY_JSON = "<redacted-body-json>"
@@ -45,7 +45,7 @@ class _ApiBaseUrls:
     trigger_inbox: str
 
     @classmethod
-    def from_config(cls, cfg: Config) -> "_ApiBaseUrls":
+    def from_config(cls, cfg: Config) -> _ApiBaseUrls:
         return cls(partner=cfg.base_url, ai_actions=cfg.ai_actions_base_url, trigger_inbox=cfg.trigger_inbox_base_url)
 
 
@@ -258,8 +258,8 @@ def _coerce_str_dict(value: object | None) -> dict[str, str]:
     if not isinstance(value, dict):
         return {}
     out: dict[str, str] = {}
-    for key, value in value.items():
-        out[str(key)] = str(value)
+    for key, item in value.items():
+        out[str(key)] = str(item)
     return out
 
 
@@ -352,6 +352,16 @@ def _validate_env_auth(cfg: Config) -> None:
     # Require any supported auth shape.
     if not (cfg.access_token or cfg.jwt or (cfg.client_id and cfg.client_secret)):
         raise ValidationError("Missing auth credentials: provide ZAPIER_ACCESS_TOKEN, or ZAPIER_JWT, or both ZAPIER_CLIENT_ID and ZAPIER_CLIENT_SECRET")
+
+
+def _operation_limit(op: ApiOperation) -> str | None:
+    if op.group == "ai-actions":
+        return "Zapier retired AI Actions on May 29, 2026. Set up Zapier MCP at https://docs.zapier.com/mcp/quickstart."
+    if (op.group, op.command) == ("partner", "authorize-list"):
+        return "Create or connect the account in Zapier's browser consent flow. See https://docs.zapier.com/powered-by-zapier/zap-creation/quick-account-creation."
+    if (op.group, op.command) == ("trigger-inbox", "getTriggerInboxEvents"):
+        return "This tool cannot listen for inbox events. Run trigger-inbox listTriggerInboxMessages --inbox-id <value> to read the inbox."
+    return None
 
 
 def _build_plan(*, cfg: Config, command: str, op: ApiOperation, path_params: dict[str, str], query: dict[str, str], body: object | None, risk: str) -> dict[str, object]:
@@ -517,6 +527,29 @@ def _run_operation(args: argparse.Namespace, ctx: dict) -> int:
     except Exception:
         response_payload = response.text()
 
+    verification: dict[str, object] = {
+        "type": "response_code",
+        "status": response.status,
+        "verified_at": _now_iso(),
+    }
+    if (op.group, op.command) == ("partner", "create-action-run"):
+        data = response_payload.get("data") if isinstance(response_payload, dict) else None
+        action_run_id = data.get("id") if isinstance(data, dict) else None
+        verification = {
+            "type": "action_run",
+            "status": response.status,
+            "state": "unconfirmed",
+            "message": "Zapier did not confirm an action run. Check Zapier before trying again.",
+        }
+        if 200 <= response.status < 300 and isinstance(action_run_id, str) and action_run_id.strip():
+            verification["state"] = "accepted"
+            verification["message"] = "Zapier accepted the action run. Check its result before trying again."
+            verification["run_id"] = action_run_id
+            verification["next_command"] = shlex.join([
+                _TOOL_NAME, "--env-file", args.env_file, "--output", "json",
+                "partner", "retrieve-action-run", "--id", action_run_id,
+            ])
+
     receipt = {
         "tool": _TOOL_NAME,
         "version": __version__,
@@ -533,11 +566,7 @@ def _run_operation(args: argparse.Namespace, ctx: dict) -> int:
         "response": _safe_redact(response_payload),
         "query": query,
         "path_params": path_params,
-        "verification": {
-            "type": "response_code",
-            "status": response.status,
-            "verified_at": _now_iso(),
-        },
+        "verification": verification,
     }
 
     receipt_out = ctx.get("receipt_out")
@@ -594,7 +623,6 @@ def _cmd_auth_check(args: argparse.Namespace, ctx: dict) -> int:
         raise NotSupportedError("Auth check operation not found in operation table")
 
     query: dict[str, str] = {}
-    body = None
     url = _build_url(matching, args, cfg)
     headers = _auth_headers(cfg)[1]
     http = HttpClient(timeout_s=ctx["timeout_s"], verbose=ctx["verbose"], user_agent=ctx["user_agent"])
@@ -625,16 +653,23 @@ def _cmd_onboarding(args: argparse.Namespace, ctx: dict) -> int:
     wrote = False
     if not getattr(args, "no_write_env", False) and not env_path.exists():
         example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
+        contents = (
+            example_path.read_text(encoding="utf-8") if example_path.is_file()
+            else "ZAPIER_ACCESS_TOKEN=\n"
+        )
+        try:
+            with open(env_path, "x", encoding="utf-8", opener=lambda path, flags: os.open(path, flags, 0o600)) as file:
+                file.write(contents)
             wrote = True
+        except FileExistsError:
+            pass
 
-    env_lines = env_path.read_text(encoding="utf-8").splitlines() if env_path.exists() else []
-    env_map = {line.split("=", 1)[0].strip(): line for line in env_lines if "=" in line}
     missing = []
-    for key in ("ZAPIER_ACCESS_TOKEN", "ZAPIER_TIMEOUT_S"):
-        if not env_map.get(key):
-            missing.append(key)
+    try:
+        _validate_env_auth(load_config(env_file))
+    except ValidationError:
+        missing.append("ZAPIER_ACCESS_TOKEN")
+    next_command = shlex.join([_TOOL_NAME, "--env-file", env_file, "--output", "json", "auth", "check"])
 
     out.emit(
         {
@@ -643,11 +678,10 @@ def _cmd_onboarding(args: argparse.Namespace, ctx: dict) -> int:
                 "env_file": env_file,
                 "env_created": wrote,
                 "missing": missing,
-                "next_command": f"{_TOOL_NAME} --output json auth check",
+                "next_command": next_command,
                 "steps": [
-                    "Copy .env.example to .env",
-                    "Fill required keys (or leave ACCESS_TOKEN empty if using OAuth token flow)",
-                    "Run `qwayk-zapier-safe-agent-cli --output json auth check`",
+                    "Save your Zapier user access token in ZAPIER_ACCESS_TOKEN, or use the credentials for your integration.",
+                    "Run the connection check to see which Zapier profile the token can read.",
                 ],
             },
         }
@@ -712,19 +746,22 @@ def _register_operation_subcommands(subparsers: argparse._SubParsersAction, *, w
         group_sub = group_parser.add_subparsers(dest="operation_name", required=True, parser_class=_ToolArgumentParser)
         for op in ops[group]:
             action = op.command
-            op_parser = group_sub.add_parser(action, help=(op.summary[:90] if op.summary else op.command))
+            limit = _operation_limit(op)
+            help_text = limit or (op.summary[:90] if op.summary else op.command)
+            op_parser = group_sub.add_parser(action, help=help_text, description=limit)
             for p in sorted(op.path_params):
                 arg = _normalize_param_name(p)
-                op_parser.add_argument(f"--{arg}", required=True, help=f"Path parameter: {p}")
+                op_parser.add_argument(f"--{arg}", required=limit is None, help=f"Path parameter: {p}")
             for q in sorted(op.required_query_params):
                 arg = _normalize_param_name(q)
-                op_parser.add_argument(f"--{arg}", required=True, help=f"Required query parameter: {q}")
+                op_parser.add_argument(f"--{arg}", required=limit is None, help=f"Query parameter: {q}")
             if op.request_body:
                 op_parser.add_argument("--body-json", default=None, help="Request body as JSON")
                 op_parser.add_argument("--body-file", default=None, help="Path to JSON request body")
             op_parser.set_defaults(
                 func=_run_operation,
                 operation=op,
+                operation_limit=limit,
                 write_capable=bool(op.is_write or defaults.get("write_capable", False)),
             )
 
@@ -759,7 +796,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     auth = sub.add_parser("auth", help="Auth checks")
     auth_sub = auth.add_subparsers(dest="auth_cmd", required=True, parser_class=_ToolArgumentParser)
-    auth_check = auth_sub.add_parser("check", help="Check auth and token validity")
+    auth_check = auth_sub.add_parser("check", help="Read the Zapier profile for your connection")
     auth_check.set_defaults(func=_cmd_auth_check, write_capable=False)
 
     runs = sub.add_parser("runs", help="Read local run index and summaries")
@@ -840,7 +877,6 @@ def main(argv: list[str] | None = None) -> int:
 
     parser = build_parser()
     out = Output(mode=_output_mode_from_argv(argv))
-    audit = CompositeAuditLogger([])  # temp; replaced after parse
     try:
         args = parser.parse_args(argv)
     except ValidationError as e:
@@ -859,8 +895,12 @@ def main(argv: list[str] | None = None) -> int:
         out.emit({"ok": False, "error": "Missing command. Use --help to see available commands.", "error_type": "ValidationError"})
         return 1
 
+    if limit := getattr(args, "operation_limit", None):
+        operation_name = f"{args.root_cmd} {args.operation_name}"
+        out.emit(_error_payload(message=limit, error_type="NotSupportedError", command=operation_name))
+        return 1
+
     cfg: Config | None = None
-    apply = bool(args.apply)
     write_capable = bool(getattr(args, "write_capable", False))
 
     run_ctx: RunContext = init_run_context(
@@ -879,6 +919,7 @@ def main(argv: list[str] | None = None) -> int:
         loggers.append(AuditLogger(path=run_audit_log, enabled=True))
     if global_audit_log:
         loggers.append(AuditLogger(path=global_audit_log, enabled=True))
+    audit: AuditLogger | CompositeAuditLogger
     audit = CompositeAuditLogger(loggers) if len(loggers) > 1 else (loggers[0] if loggers else AuditLogger(path=None, enabled=False))
 
     runs_index_path = runs_index_path_for_env_file(str(args.env_file))

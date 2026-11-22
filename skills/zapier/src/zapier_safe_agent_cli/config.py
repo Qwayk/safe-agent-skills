@@ -24,7 +24,7 @@ def _parse_env_file(path: Path) -> dict[str, str]:
 
 
 def _get(env: dict[str, str], key: str) -> str:
-    return (os.environ.get(key) if key in os.environ else env.get(key) or "").strip()
+    return os.environ.get(key, env.get(key, "")).strip()
 
 
 def _fingerprint_secret(kind: str, value: str) -> str:

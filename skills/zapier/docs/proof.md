@@ -1,8 +1,18 @@
 # Proof and verification
 
-This document is the source of truth for test and claim status.
+## November 22, 2026 checks
 
-## Last verified
+Both local copies passed 31 tests and ran from a fresh install outside the checkout. The install includes the operation list, and the source archive includes the skill and guides. All 62 command names are still available in help.
+
+Tests used simulated Zapier replies. They covered a blank token and settings paths with spaces, the profile and app reads, the 27 commands that stop locally, and an action receipt that shows how to check the run. The approval tests check that a missing plan, missing acknowledgement, or changed request stops the write before it reaches Zapier.
+
+To run the source tests:
+
+```bash
+PYTHONPATH=src python3 -m unittest discover -s tests -q
+```
+
+## June 29, 2026 checks
 
 - Date (UTC): 2026-06-29
 - Tool version: 0.1.0
@@ -14,7 +24,7 @@ This document is the source of truth for test and claim status.
   - `docs/specs/zapier_ai_actions_api.json`
   - `docs/specs/zapier_docs_llms.txt`
 
-## Claims proven in tests
+### What the June tests checked
 
 - Explicit command surface: 62
 - Reads can run directly.
@@ -36,7 +46,7 @@ See:
 - `tests/test_auth_and_secrets.py` (auth checks, redacted provider/config errors, and leakage)
 - `tests/test_cli_json_parse_errors.py` (parse errors and `--config` project file error shape)
 
-## Commands run
+### June test commands
 
 ```bash
 python3 -m venv .venv
@@ -57,6 +67,6 @@ Latest results on 2026-06-29:
 - Diff whitespace check: passed.
 - Direct trailing-whitespace and conflict-marker scans over the source folder and source docs: passed after one trailing-space cleanup.
 
-## Not live-tested
+## Live account checks
 
-No live Zapier account calls were made. Live reads and applies remain unverified until a real Zapier token, required OAuth scopes, and any partner or White Label access are available.
+Live account behavior still needs testing with a real Zapier token and the access each command requires.

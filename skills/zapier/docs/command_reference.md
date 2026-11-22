@@ -1,6 +1,6 @@
 # Command reference
 
-This tool exposes explicit Zapier commands only. It does not accept raw method/path input.
+Use the named command for the job you want. Put shared flags before the command group. Run a named command with `--help` to see its options.
 
 ## Global flags
 
@@ -17,7 +17,7 @@ This tool exposes explicit Zapier commands only. It does not accept raw method/p
 - `--ack-irreversible`
 - `--ack-no-snapshot`
 
-## Safety and help commands
+## Setup and local history
 
 - `qwayk-zapier-safe-agent-cli onboarding [--no-write-env]`
 - `qwayk-zapier-safe-agent-cli auth check`
@@ -41,7 +41,7 @@ This tool exposes explicit Zapier commands only. It does not accept raw method/p
 - `qwayk-zapier-safe-agent-cli partner get-v2-apps`
 - `qwayk-zapier-safe-agent-cli partner get-authentications --app <value>`
 - `qwayk-zapier-safe-agent-cli partner create-authentication --body-json '<json>'`
-- `qwayk-zapier-safe-agent-cli partner authorize-list --client-id <value> --redirect-uri <value> --response-type <value> --scope <value>`
+- `qwayk-zapier-safe-agent-cli partner authorize-list --client-id <value> --redirect-uri <value> --response-type <value> --scope <value>` — use [Zapier’s browser consent flow](https://docs.zapier.com/powered-by-zapier/zap-creation/quick-account-creation).
 - `qwayk-zapier-safe-agent-cli partner create-zap-guess --client-id <value> --body-json '<json>'`
 - `qwayk-zapier-safe-agent-cli partner v2-whitelabel-apps-list`
 - `qwayk-zapier-safe-agent-cli partner get-zap-runs`
@@ -58,7 +58,7 @@ This tool exposes explicit Zapier commands only. It does not accept raw method/p
 - `qwayk-zapier-safe-agent-cli trigger-inbox patchTriggerInbox --id <value> --body-json '<json>'`
 - `qwayk-zapier-safe-agent-cli trigger-inbox pauseTriggerInbox --id <value>`
 - `qwayk-zapier-safe-agent-cli trigger-inbox resumeTriggerInbox --id <value>`
-- `qwayk-zapier-safe-agent-cli trigger-inbox getTriggerInboxEvents --inbox-id <value>`
+- `qwayk-zapier-safe-agent-cli trigger-inbox getTriggerInboxEvents --inbox-id <value>` — for a one-time check, use the message list below. The CLI stops before opening an event stream.
 - `qwayk-zapier-safe-agent-cli trigger-inbox listTriggerInboxMessages --inbox-id <value>`
 - `qwayk-zapier-safe-agent-cli trigger-inbox acknowledgeTriggerInboxMessages --inbox-id <value> --body-json '<json>'`
 - `qwayk-zapier-safe-agent-cli trigger-inbox leaseTriggerInboxMessages --inbox-id <value> --body-json '<json>'`
@@ -70,7 +70,9 @@ This tool exposes explicit Zapier commands only. It does not accept raw method/p
 - `qwayk-zapier-safe-agent-cli promotions destroy --enrollment-id <value>`
 - `qwayk-zapier-safe-agent-cli promotions retrieve --enrollment-id <value>`
 
-## AI Actions API
+## Retired AI Actions commands
+
+These 25 names stay in help for older workflows. Each stops before contacting Zapier and points to [Zapier MCP](https://docs.zapier.com/mcp/quickstart).
 
 - `qwayk-zapier-safe-agent-cli ai-actions ai-actions-list-ai-actions`
 - `qwayk-zapier-safe-agent-cli ai-actions ai-actions-create-ai-action --body-json '<json>'`
@@ -98,11 +100,18 @@ This tool exposes explicit Zapier commands only. It does not accept raw method/p
 - `qwayk-zapier-safe-agent-cli ai-actions unfurl-get-unfurl-apps`
 - `qwayk-zapier-safe-agent-cli ai-actions unfurl-check-user-auth-for-app --app <value>`
 
-## Write pattern
+## Prepare one change at a time
 
-Run the write command without `--apply` first. Review the JSON plan. Then apply from that plan only when the target, request body, and risk are correct.
+Start with the exact request you want to send. For example, save the Zap you want to create in `zap.json` and prepare a plan.
 
 ```bash
-qwayk-zapier-safe-agent-cli --output json --plan-out plan.json partner post-zaps --body-json '<json>'
-qwayk-zapier-safe-agent-cli --output json --apply --plan-in plan.json --ack-no-snapshot --receipt-out receipt.json partner post-zaps --body-json '<json>'
+qwayk-zapier-safe-agent-cli --output json --plan-out plan.json partner post-zaps --body-file zap.json
 ```
+
+Review the plan and the original file. After approval to proceed without a backup, run the same request with the saved plan.
+
+```bash
+qwayk-zapier-safe-agent-cli --output json --apply --plan-in plan.json --ack-no-snapshot --receipt-out receipt.json partner post-zaps --body-file zap.json
+```
+
+For several changes, repeat the review for each request. Leasing an inbox message changes who can read it until the lease ends. Acknowledging it removes it from the inbox. See [what to check before you approve](safety_model.md).

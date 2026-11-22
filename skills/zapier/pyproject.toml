@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "qwayk-zapier-safe-agent-cli"
 version = "0.1.0"
-description = "Safe Zapier API CLI with explicit commands for partner, trigger inbox, promotions, and AI Actions operations."
+description = "Review Zapier apps, Zaps, trigger inboxes, and promotions. Preview changes before applying them."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -27,6 +27,9 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+zapier_safe_agent_cli = ["operations_data.json"]
 
 [tool.ruff]
 target-version = "py312"

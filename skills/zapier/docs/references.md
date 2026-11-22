@@ -8,6 +8,6 @@
 - AI Actions API: `docs/specs/zapier_ai_actions_api.json` (`https://docs.zapier.com/ai-actions/openapi.json`)
 - Docs index: `docs/specs/zapier_docs_llms.txt` (`https://docs.zapier.com/llms.txt`)
 
-## Notes
+## Current guides
 
-`docs/api_coverage.md` is derived from these pinned sources.
+Use [the coverage table](api_coverage.md) to see how each saved operation is handled today. The saved files preserve what Zapier documented at the time. For AI Actions, see [Zapier’s retirement notice](https://nla.shared.zapier.com/updates) and [Zapier MCP setup](https://docs.zapier.com/mcp/quickstart).

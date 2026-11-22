@@ -1,47 +1,14 @@
-# Quickstart
+# Check Zapier and list apps
 
-Get a first safe Zapier result by checking credentials and listing apps before asking for any live change.
+Set up the CLI and save the token with the [connection guide](onboarding.md). The commands below use `.env`. If you picked another file, pass `--env-file` before the command group.
 
 ```bash
-cp .env.example .env
-qwayk-zapier-safe-agent-cli --output json onboarding
 qwayk-zapier-safe-agent-cli --output json auth check
+qwayk-zapier-safe-agent-cli --output json partner get-v2-apps
 ```
 
-Then run one safe read:
+The first command checks which profile the tool can read. The second shows the apps available to your integration. To review an existing Zap or action run, start with the matching read in the [command reference](command_reference.md).
 
-```bash
-qwayk-zapier-safe-agent-cli --output json partner apps-list
-```
+If you already have White Label access and know the inbox ID, you can inspect its messages with `trigger-inbox listTriggerInboxMessages --inbox-id <value>`. Follow the [approval guide](safety_model.md) before leasing or acknowledging messages.
 
-If you are deciding what an agent can do next, ask it to inspect:
-
-- `qwayk-zapier-safe-agent-cli partner apps-list`
-- `qwayk-zapier-safe-agent-cli partner zaps-list`
-- `qwayk-zapier-safe-agent-cli trigger-inbox listTriggerInboxes`
-- `qwayk-zapier-safe-agent-cli ai-actions ai-actions-list-ai-actions`
-
-## Prepare a Zap change without applying it
-
-```bash
-qwayk-zapier-safe-agent-cli \
-  --output json \
-  --plan-out zap-plan.json \
-  partner post-zaps \
-  --body-json '{"title":"Review-only Zap plan","steps":[]}'
-```
-
-That command writes a plan and does not create the Zap. After a person reviews the plan, live apply must include the same operation, `--apply`, `--plan-in zap-plan.json`, and the required approval flag.
-
-```bash
-qwayk-zapier-safe-agent-cli \
-  --output json \
-  --apply \
-  --plan-in zap-plan.json \
-  --ack-no-snapshot \
-  --receipt-out zap-receipt.json \
-  partner post-zaps \
-  --body-json '{"title":"Review-only Zap plan","steps":[]}'
-```
-
-Use live apply only with real Zapier credentials, the right scopes, and a body you have reviewed.
+To prepare a change, start with the [saved-plan example](command_reference.md#prepare-one-change-at-a-time).
