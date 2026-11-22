@@ -1,58 +1,31 @@
 # Connect your Instantly account
 
-Instantly needs a local API key before an agent can inspect campaigns, leads, sending health, and weak spots.
+Run onboarding with the file where you want to keep your settings. The default file is `.env`. A new file is readable and writable only by your local user. An existing file stays as it is.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+```bash
+instantly-api-tool --env-file 'work settings.env' onboarding
+```
 
-After setup, start with a small campaign or account read before asking for lead, campaign, or sending changes.
+Open [Instantly settings](https://app.instantly.ai/app/settings/integrations), choose **API Keys**, and create a key with the permissions for the job. Copy it into your chosen file as `INSTANTLY_API_KEY`. Instantly shows the key once. Keep it out of chat and Git.
 
-## Step 1. Create your local `.env` file
+Onboarding prints the next command with the same settings file:
 
-In the tool folder:
+```bash
+instantly-api-tool --output json --env-file 'work settings.env' auth check
+```
 
-1. Copy `.env.example` to `.env`.
-2. Open `.env` in a text editor.
-3. Fill the required fields:
-   - `INSTANTLY_API_BASE_URL=https://api.instantly.ai/api/v2`
-   - `INSTANTLY_API_KEY=...`
-   - `INSTANTLY_TIMEOUT_S=30` (optional)
+This reads workspace details. It needs workspace read access. If your key is limited to campaigns, use `instantly-api-tool --env-file 'work settings.env' campaigns list --limit 10` to check that access directly. [Workspace API](https://developer.instantly.ai/api-reference/workspace/get-workspace)
 
-## Step 2. Create the Instantly API key
+## Settings
 
-Create an API key in Instantly:
+- `INSTANTLY_API_KEY` is the only value you need for the default connection. The CLI sends it as a bearer key.
+- `INSTANTLY_API_BASE_URL` defaults to `https://api.instantly.ai/api/v2`.
+- `INSTANTLY_TIMEOUT_S` defaults to 30 seconds.
+- Values set in your shell take priority over values in the file. If the CLI uses a different key than you expected, check your shell settings.
+- Write records normally go in `.state/runs/` next to the settings file. Keep the settings and run files private.
 
-1. Open Instantly settings → Integrations: `https://app.instantly.ai/app/settings/integrations`
-2. Click **API Keys** in the left sidebar.
-3. Click **Create API Key**.
-4. Give it a name and select only the scopes you really need.
-5. Click **Create**, then copy the API key. Instantly only shows it once.
-6. Paste it into your local `.env` file as `INSTANTLY_API_KEY=<your key>`.
+## If the check fails
 
-Never paste the API key into chat.
-
-## Step 3. Ask for a safe connection check first
-
-Before any real work, ask your agent to confirm the connection first.
-
-Example:
-
-- "Check that my Instantly skill is connected, then show me my active campaigns and the safest review-first jobs to start with."
-
-## Step 4. Ask for the real job
-
-Good next requests:
-
-- "Pull my campaign analytics for the last 7 days and flag what changed."
-- "Review my sending accounts and tell me which warmup or vitals issues need attention."
-- "Preview moving these leads into another campaign, but stop before apply."
-- "Review my webhooks and show me what looks stale or risky."
-- "Do a dry-run reviewed plan first. Only apply after I approve."
-
-## If something fails
-
-The most common issues are:
-- Missing or incorrect values in `.env`
-- Wrong API key or missing scopes
-- Network or permission restrictions in the connected account
-
-See [Troubleshooting](troubleshooting.md) for common fixes.
+- **401 or 403:** Check that you selected the right settings file and key. Check the permission for the command you ran.
+- **429:** Instantly is asking you to slow down. Avoid tight loops and make fewer requests. Instantly documents workspace limits of 100 requests per 10 seconds and 600 per minute, with a separate limit of 20 per minute for listing emails. `emails list` returns up to 20 items by default. [Provider references](references.md)
+- **Other errors:** Read the JSON error first. `--verbose` shows when a request starts and ends on stderr. `--debug` adds a Python traceback for local debugging. Before repeating a write after a lost reply, check the result and follow the [receipt instructions](safety_model.md#read-the-receipt).

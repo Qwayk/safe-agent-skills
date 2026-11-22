@@ -60,14 +60,14 @@ def cmd_dnc_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "do-not-contact.create", "value": email},
         risk_level="high",
         risk_reasons=["dnc-create"],
         request={"method": "POST", "path": "/block-lists-entries", "body": {"email": email}},
         verification_plan={"type": "read-back", "notes": "Best-effort list after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "email": email},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "email": email},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -89,7 +89,7 @@ def cmd_dnc_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -121,14 +121,14 @@ def cmd_dnc_patch(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "do-not-contact.patch", "value": entry_id},
         risk_level="high",
         risk_reasons=["dnc-patch"],
         request={"method": "PATCH", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort: list after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "entry_id": entry_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "entry_id": entry_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -149,7 +149,7 @@ def cmd_dnc_patch(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -184,14 +184,14 @@ def cmd_dnc_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "do-not-contact.delete", "value": entry_id or "<from-plan>"},
         risk_level="high",
         risk_reasons=["dnc-delete"],
         request={"method": "DELETE", "path": path or "/block-lists-entries/<id>", "body": {}},
         verification_plan={"type": "read-back", "notes": "Best-effort list after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "entry_id": entry_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "entry_id": entry_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not apply) else None
@@ -203,7 +203,7 @@ def cmd_dnc_delete(args: Any, ctx: dict) -> int:
         return 0
 
     assert plan_in is not None
-    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="do-not-contact.delete")
+    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="do-not-contact.delete")
     _, plan_path_val, body = request_from_plan(plan_obj, expected_method="DELETE")
     if entry_id and plan_path_val != f"/block-lists-entries/{entry_id}":
         raise SafetyError("Refused: plan path mismatch for do-not-contact delete")
@@ -220,7 +220,7 @@ def cmd_dnc_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan_obj.get("selector"),
         "changed": True,

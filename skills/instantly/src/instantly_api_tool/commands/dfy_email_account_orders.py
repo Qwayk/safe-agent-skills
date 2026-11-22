@@ -109,14 +109,14 @@ def cmd_dfy_create_order(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "dfy-email-account-orders.create-order", "value": file_path},
         risk_level="high",
         risk_reasons=["creates-dfy-order"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "best-effort", "notes": "Best-effort: list orders after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path_out = write_json_file(plan_out, plan) if (plan_out and not apply) else None
@@ -137,7 +137,7 @@ def cmd_dfy_create_order(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -173,14 +173,14 @@ def cmd_dfy_cancel_accounts(args: Any, ctx: dict) -> int:
         plan = build_plan(
             tool=str(ctx.get("tool") or "instantly-api-tool"),
             version=str(ctx.get("tool_version") or ""),
-            env_fingerprint=str(ctx["cfg"].base_url),
+            env_fingerprint=str(ctx["cfg"].env_fingerprint),
             command=str(ctx.get("command_str") or ""),
             selector={"kind": "dfy-email-account-orders.cancel-accounts", "value": file_path},
             risk_level="high",
             risk_reasons=["cancels-dfy-accounts"],
             request={"method": "POST", "path": path, "body": body},
             verification_plan={"type": "best-effort", "notes": "Best-effort: list accounts after apply."},
-            baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+            baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
         )
         plan_out = ctx.get("plan_out")
         plan_path_out = write_json_file(plan_out, plan) if plan_out else None
@@ -191,7 +191,7 @@ def cmd_dfy_cancel_accounts(args: Any, ctx: dict) -> int:
     assert plan_in is not None
     plan_obj = load_apply_plan(
         plan_in=plan_in,
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         kind="dfy-email-account-orders.cancel-accounts",
     )
     _, plan_path_val, body = request_from_plan(plan_obj, expected_method="POST")
@@ -210,7 +210,7 @@ def cmd_dfy_cancel_accounts(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan_obj.get("selector"),
         "changed": True,
@@ -237,14 +237,14 @@ def cmd_dfy_check_domains(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "dfy-email-account-orders.check-domains", "value": file_path},
         risk_level="low",
         risk_reasons=["domain-availability-check"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "none", "notes": "Read-only validation request."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path_out = write_json_file(plan_out, plan) if (plan_out and not apply) else None
@@ -259,7 +259,7 @@ def cmd_dfy_check_domains(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": False,
@@ -286,14 +286,14 @@ def cmd_dfy_similar_domains(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "dfy-email-account-orders.similar-domains", "value": file_path},
         risk_level="low",
         risk_reasons=["domain-similarity-check"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "none", "notes": "Read-only validation request."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path_out = write_json_file(plan_out, plan) if (plan_out and not apply) else None
@@ -308,7 +308,7 @@ def cmd_dfy_similar_domains(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": False,

@@ -3,41 +3,16 @@ name: instantly-api-safe-cli
 description: Run the Instantly Qwayk CLI safely (dry-run first; before-state for supported live writes; receipts + verification; refusal for unsupported writes).
 ---
 
-This page is the agent-facing rule sheet for the public Instantly skill.
-If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+Start by showing which campaigns are running and which ones need attention. Use this skill for Instantly campaigns, leads, sending accounts, replies, analytics and workspace settings. Use a different tool for data outside Instantly.
 
-You are a safe CLI wrapper for the `instantly-api-tool` command.
+## Work in this order
 
-## Core rules (do not break)
+1. Use the chosen settings file. Run onboarding if the user needs a local file, then run its connection check. A key scoped only to campaigns can start with `campaigns list --limit 10`.
+2. Find the workspace and exact target before previewing a change. Keep ordinary reads read-only. For sensitive reads such as `accounts list|get|ctd-status`, preview first, get approval and run with `--apply --yes`. Read the local result at `receipt_out`.
+3. Preview every write and get approval before applying. Use a matching saved plan and `--yes` to start or resume a campaign. Use the extra flags the command requires for destructive, irreversible or bulk work. When the tool cannot save the old state, ask before proceeding with `--ack-no-snapshot`.
+4. Read the receipt and report what Instantly confirmed. Use saved copies for review or manual repair. If the status or a batch result is unclear, check before retrying. For bulk leads, keep the original plan and input so a retry can use the same request keys.
 
-- Default to **read-only**.
-- Some reads are treated as **sensitive** (credential-bearing responses). For `accounts list|get|ctd-status`: dry-run prints a plan only; execution requires `--apply --yes`, and the (redacted) response is written to a receipt file (stdout is metadata only, including `receipt_out`).
-- Never ask the user to paste secrets into chat.
-- Never print secrets (especially API keys / Authorization headers).
-- Never echo or store raw API keys in chat. For `api-keys create`, use the CLI’s local secret store output (file path + sha256) and never paste the raw key.
-- For any write: run a dry-run plan first (no `--apply`), then apply only after explicit user approval.
-- For high-risk/batch writes: require `--apply --yes`.
-- For destructive apply (deletes and other high-risk operations where supported): require a reviewed plan file via `--plan-in`.
-- Supported live writes save before-state under `.state/runs/<run_id>/before/` before applying.
-- Unsupported live writes need explicit no-snapshot approval before HTTP when a safe pre-read is not available.
-- This tool has no built-in restore path; before-state is evidence for review/manual repair, not automatic rollback.
-- For irreversible writes (`threads reply`): dry-run and plan-out are allowed; live apply needs `--ack-no-snapshot` when no before-state can be saved.
-- For irreversible inbox placement tests (`inbox-placement tests create`): dry-run is allowed; live apply needs `--ack-no-snapshot` when no before-state can be saved.
-- If something is ambiguous (wrong campaign id, unclear input file, uncertain target thread), stop and ask one short clarifying question.
-
-## Safety workflow (always)
-
-1) Connection check (read-only): `instantly-api-tool --output json auth check`.
-2) Discover IDs (read-only + sensitive-read, as needed):
-   - campaigns: `instantly-api-tool --output json campaigns list`
-   - accounts (sensitive): generate a plan with `instantly-api-tool --output json accounts list`, then get explicit approval and run `instantly-api-tool --output json --apply --yes accounts list`, then open the `receipt_out` file to extract IDs/details (stdout stays body-free).
-   - webhooks: `instantly-api-tool --output json webhooks list`
-   - emails/threads: `instantly-api-tool --output json emails list`
-3) For a change request:
-   - Generate a plan (dry-run, no `--apply`) and summarize what will happen.
-   - If the write family is supported, ask for explicit approval to re-run with the required apply flags.
-   - If the write family has no executor, say that clearly; otherwise use explicit no-snapshot approval when no before-state can be saved.
-- After supported apply, confirm before-state was saved, verification ran (best-effort), rollback is unavailable, and provide the receipt summary.
+Keep keys out of chat and output. For `api-keys create`, use the local secret file and fingerprint the tool returns. For irreversible sends and tests, follow the command's confirmation flags and ask before running. If the target is unclear, ask which item the user means.
 
 ## Command examples (placeholders only)
 
@@ -54,8 +29,8 @@ Campaigns (read):
 Campaigns (write):
 - `instantly-api-tool --output json campaigns create --file "examples/campaign_create.json"`
 - Live apply for `campaigns create` needs `--ack-no-snapshot` when no before-state can be saved.
-- `instantly-api-tool --output json campaigns activate --campaign-id "<CAMPAIGN_ID>"`
-- `instantly-api-tool --output json --apply campaigns activate --campaign-id "<CAMPAIGN_ID>"`
+- `instantly-api-tool --output json --plan-out activation.json campaigns activate --campaign-id "<CAMPAIGN_ID>"`
+- `instantly-api-tool --output json --apply --yes --plan-in activation.json campaigns activate --campaign-id "<CAMPAIGN_ID>"`
 - `instantly-api-tool --output json campaigns patch --campaign-id "<CAMPAIGN_ID>" --file "campaign_patch.json"`
 - `instantly-api-tool --output json --apply campaigns patch --campaign-id "<CAMPAIGN_ID>" --file "campaign_patch.json"`
 - `instantly-api-tool --output json campaigns delete --campaign-id "<CAMPAIGN_ID>"`  # dry-run plan
@@ -119,7 +94,7 @@ Account↔campaign mappings (read):
 - `instantly-api-tool --output json account-campaign-mappings get --email "user@example.com"`
 
 Leads (bulk add; high-risk):
-- `instantly-api-tool --output json leads add-bulk --campaign-id "<CAMPAIGN_ID>" --csv "examples/leads.csv"`
+- `instantly-api-tool --output json --plan-out lead-import.json leads add-bulk --campaign-id "<CAMPAIGN_ID>" --csv "examples/leads.csv"`
 - Live apply for `leads add-bulk` needs `--ack-no-snapshot` when no before-state can be saved.
 
 Leads (single lead writes):

@@ -73,14 +73,14 @@ def cmd_workspace_group_members_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "workspace-group-members.create", "value": file_path},
         risk_level="high",
         risk_reasons=["creates-workspace-group-member"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort: GET /workspace-group-members/{id} using returned id."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not apply) else None
@@ -102,7 +102,7 @@ def cmd_workspace_group_members_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -137,14 +137,14 @@ def cmd_workspace_group_members_delete(args: Any, ctx: dict) -> int:
         plan = build_plan(
             tool=str(ctx.get("tool") or "instantly-api-tool"),
             version=str(ctx.get("tool_version") or ""),
-            env_fingerprint=str(ctx["cfg"].base_url),
+            env_fingerprint=str(ctx["cfg"].env_fingerprint),
             command=str(ctx.get("command_str") or ""),
             selector={"kind": "workspace-group-members.delete", "value": member_id},
             risk_level="high",
             risk_reasons=["deletes-workspace-group-member"],
             request={"method": "DELETE", "path": path, "body": {}},
             verification_plan={"type": "best-effort", "notes": "Best-effort: GET /workspace-group-members/{id} after delete."},
-            baseline={"env_fingerprint": str(ctx["cfg"].base_url), "id": member_id},
+            baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "id": member_id},
         )
         plan_out = ctx.get("plan_out")
         plan_path_out = write_json_file(plan_out, plan) if plan_out else None
@@ -153,7 +153,7 @@ def cmd_workspace_group_members_delete(args: Any, ctx: dict) -> int:
         return 0
 
     assert plan_in is not None
-    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="workspace-group-members.delete")
+    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="workspace-group-members.delete")
     _, plan_path_val, body = request_from_plan(plan_obj, expected_method="DELETE")
     if member_id and plan_path_val != f"/workspace-group-members/{member_id}":
         raise SafetyError("Refused: plan path mismatch for workspace-group-members delete")
@@ -171,7 +171,7 @@ def cmd_workspace_group_members_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan_obj.get("selector"),
         "changed": True,

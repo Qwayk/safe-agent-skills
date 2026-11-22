@@ -71,14 +71,14 @@ def cmd_webhooks_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "webhooks.create", "value": file_path},
         risk_level="medium",
         risk_reasons=["creates-webhook"],
         request={"method": "POST", "path": "/webhooks", "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort: list webhooks after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url)},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -101,7 +101,7 @@ def cmd_webhooks_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -131,14 +131,14 @@ def cmd_webhooks_patch(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "webhooks.patch", "value": webhook_id},
         risk_level="medium",
         risk_reasons=["updates-webhook"],
         request={"method": "PATCH", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort: list webhooks after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "webhook_id": webhook_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "webhook_id": webhook_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -161,7 +161,7 @@ def cmd_webhooks_patch(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -197,14 +197,14 @@ def cmd_webhooks_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "webhooks.delete", "value": webhook_id or "<from-plan>"},
         risk_level="high",
         risk_reasons=["deletes-webhook"],
         request={"method": "DELETE", "path": path or "/webhooks/<id>", "body": {}},
         verification_plan={"type": "read-back", "notes": "Best-effort: list webhooks after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "webhook_id": webhook_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "webhook_id": webhook_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not apply) else None
@@ -216,7 +216,7 @@ def cmd_webhooks_delete(args: Any, ctx: dict) -> int:
         return 0
 
     assert plan_in is not None
-    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="webhooks.delete")
+    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="webhooks.delete")
     _, plan_path_val, body = request_from_plan(plan_obj, expected_method="DELETE")
     if webhook_id and plan_path_val != f"/webhooks/{webhook_id}":
         raise SafetyError("Refused: plan path mismatch for webhooks delete")
@@ -234,7 +234,7 @@ def cmd_webhooks_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan_obj.get("selector"),
         "changed": True,
@@ -261,14 +261,14 @@ def cmd_webhooks_test(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "webhooks.test", "value": webhook_id},
         risk_level="medium",
         risk_reasons=["webhook-test-delivery"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort: list webhooks after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "webhook_id": webhook_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "webhook_id": webhook_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -291,7 +291,7 @@ def cmd_webhooks_test(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -318,14 +318,14 @@ def cmd_webhooks_resume(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "webhooks.resume", "value": webhook_id},
         risk_level="medium",
         risk_reasons=["webhook-resume"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort: list webhooks after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "webhook_id": webhook_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "webhook_id": webhook_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -347,7 +347,7 @@ def cmd_webhooks_resume(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,

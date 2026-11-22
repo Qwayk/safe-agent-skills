@@ -1,71 +1,45 @@
 from __future__ import annotations
 
+import re
+import shlex
 import unittest
 from pathlib import Path
 
+from instantly_api_tool.cli import build_parser
+
+ROOT = Path(__file__).resolve().parents[1]
+
 
 class TestReadmePublicContract(unittest.TestCase):
-    def test_public_readme_opening_stays_user_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
+    def test_install_command_uses_public_slug(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        install_commands = re.findall(r"^npx skills add (\S+)", readme, re.MULTILINE)
+        self.assertEqual(install_commands, ["Qwayk/safe-agent-skills@instantly"])
 
-        self.assertTrue(text.startswith("# Instantly\n"))
-        self.assertNotIn("## Simplicity lock", text)
-        self.assertNotIn("# instantly-api-tool", text)
+    def test_readme_guide_links_open(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        links = re.findall(r"\]\((docs/[^)]+)\)", readme)
+        self.assertTrue(links)
+        for link in links:
+            with self.subTest(link=link):
+                file, _, anchor = link.partition("#")
+                guide = ROOT / file
+                self.assertTrue(guide.is_file())
+                if anchor:
+                    headings = re.findall(r"^#{1,6} (.+)$", guide.read_text(encoding="utf-8"), re.MULTILINE)
+                    anchors = {re.sub(r"[^\w -]", "", heading.lower()).replace(" ", "-") for heading in headings}
+                    self.assertIn(anchor, anchors)
 
-        required_sections = [
-            "## Start here first",
-            "## What this skill helps with",
-            "## Install and first run",
-            "## How this skill stays safe",
-            "## What happens before live changes",
-        ]
-        for section in required_sections:
-            self.assertIn(section, text)
-
-    def test_helpful_docs_stay_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("## Helpful docs", text)
-        self.assertIn("[Browse all Instantly docs](docs/README.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-        self.assertIn("[Proof pack](docs/proof.md)", text)
-        self.assertIn("[Jobs and batch work](docs/jobs_and_batches.md)", text)
-        self.assertNotIn("- `docs/use_cases.md`", text)
-        self.assertNotIn("- `docs/onboarding.md`", text)
-
-    def test_start_here_section_stays_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("## Start here first", text)
-        self.assertIn("[What you can do with Instantly](docs/use_cases.md)", text)
-        self.assertIn("[Connect your Instantly account](docs/onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
-        self.assertIn("[Quickstart](docs/quickstart.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-
-    def test_opening_rejects_template_voice(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-        opening = text.split("## Start here first", 1)[0]
-
-        banned = [
-            "Use this skill when",
-            "You can hand it jobs like",
-            "without guessing from raw docs",
-            "Read work stays simple",
-            "Riskier Instantly changes slow down on purpose",
-        ]
-        for phrase in banned:
-            self.assertNotIn(phrase, opening)
-
-    def test_quickstart_opens_with_human_links(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "quickstart.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do](use_cases.md)", text)
-        self.assertIn("[Connect your Instantly account](onboarding.md)", text)
-        self.assertNotIn("`use_cases.md`", text)
-        self.assertNotIn("`onboarding.md`", text)
+    def test_quickstart_examples_are_read_only_and_parse(self) -> None:
+        quickstart = (ROOT / "docs" / "quickstart.md").read_text(encoding="utf-8")
+        examples = re.findall(r"^instantly-api-tool (.+)$", quickstart, re.MULTILINE)
+        self.assertTrue(examples)
+        parser = build_parser()
+        for example in examples:
+            arguments = shlex.split(example)
+            if arguments == ["--version"]:
+                continue
+            with self.subTest(command=example):
+                options = parser.parse_args(arguments)
+                self.assertFalse(options.apply)
+                self.assertFalse(options.write_capable)

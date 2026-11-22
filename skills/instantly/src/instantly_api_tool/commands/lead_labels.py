@@ -75,14 +75,14 @@ def cmd_lead_labels_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "lead-labels.create", "value": file_path},
         risk_level="medium",
         risk_reasons=["creates-lead-label"],
         request={"method": "POST", "path": "/lead-labels", "body": sanitize(body)},
         verification_plan={"type": "read-back", "notes": "Best-effort: GET lead label by returned id."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -107,7 +107,7 @@ def cmd_lead_labels_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -137,14 +137,14 @@ def cmd_lead_labels_patch(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "lead-labels.patch", "value": lead_label_id},
         risk_level="medium",
         risk_reasons=["updates-lead-label"],
         request={"method": "PATCH", "path": path, "body": sanitize(body)},
         verification_plan={"type": "read-back", "notes": "GET lead label after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "lead_label_id": lead_label_id},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "lead_label_id": lead_label_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -167,7 +167,7 @@ def cmd_lead_labels_patch(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -202,7 +202,7 @@ def cmd_lead_labels_delete(args: Any, ctx: dict) -> int:
         if not isinstance(plan_obj_any, dict):
             raise ValidationError("Plan file must be a JSON object")
         plan_obj: dict[str, Any] = dict(plan_obj_any)
-        validate_plan_env(plan_obj, env_fingerprint=str(ctx["cfg"].base_url))
+        validate_plan_env(plan_obj, env_fingerprint=str(ctx["cfg"].env_fingerprint))
         validate_plan_kind(plan_obj, kind="lead-labels.delete")
         baseline = plan_obj.get("baseline") or {}
         if not isinstance(baseline, dict):
@@ -219,14 +219,14 @@ def cmd_lead_labels_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "lead-labels.delete", "value": lead_label_id},
         risk_level="high",
         risk_reasons=["deletes-lead-label"],
         request={"method": "DELETE", "path": path, "body": {}},
         verification_plan={"type": "best-effort", "notes": "Best-effort: try GET lead label after delete (should fail/404)."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "lead_label_id": lead_label_id},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "lead_label_id": lead_label_id},
     )
 
     plan_out = ctx.get("plan_out")
@@ -250,7 +250,7 @@ def cmd_lead_labels_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,

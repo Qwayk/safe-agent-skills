@@ -1,78 +1,28 @@
-# Quickstart
+# List your Instantly campaigns
 
-Start with a small Instantly read: checking campaigns, leads, sending health, and weak spots before you change outreach.
+Start by checking the account and reading a few campaigns. This shows which campaigns the key can see without changing their settings.
 
-Need more ideas? See [What you can do with Instantly](use_cases.md). Need setup help? See [Connect your Instantly account](onboarding.md).
+## Install the CLI
 
-A good first ask is:
-
-> Which active campaigns look weak or risky this week?
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account or connection before asking for real work.
-3. Run one small read and make sure the result matches the real service.
-4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+From the tool folder, run:
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -e .
+source .venv/bin/activate
+instantly-api-tool --version
 ```
 
-```bash
-.venv/bin/python -m pip install -e '.[dev]'
-```
+For local development, use `.venv/bin/python -m pip install -e '.[dev]'` from the tool folder.
 
-## 2. Check setup
+## Connect and list campaigns
 
-If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
+Run onboarding and use the local file it creates for your API key. Follow the connection command it prints. See [Onboarding](onboarding.md) if you use a different file or your key only has campaign access.
 
 ```bash
 instantly-api-tool onboarding
+instantly-api-tool auth check
+instantly-api-tool campaigns list --limit 10
 ```
 
-```bash
-instantly-api-tool --output json auth check
-```
-
-## 3. Run one small first read
-
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
-
-```bash
-instantly-api-tool --output json whoami
-instantly-api-tool --output json campaigns list --limit 10
-```
-
-```bash
-instantly-api-tool --output json analytics campaigns --start-date 2026-06-01 --end-date 2026-06-07
-```
-
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
-
-## 4. Stop before anything risky
-
-Ask for a reviewed plan before campaign, lead, sending, duplicate, bulk, or message changes.
-
-## What a useful first result includes
-
-A good first result should make these things clear:
-
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
-
-## Where to go next
-
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your Instantly account](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+Read the campaign names and statuses, then ask the agent which campaign is worth checking first. If you want to change a campaign or its leads, ask for a preview first. [What you can ask for](use_cases.md) · [Approval rules](safety_model.md)

@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import csv
+import json
 from pathlib import Path
 from typing import Any
+from uuid import UUID, uuid4
 
 from ..errors import SafetyError, ValidationError
 from ..http import HttpClient
 from ..instantly_client import InstantlyClient
 from ..json_files import read_json_file, write_json_file
 from ..plan_apply import load_apply_plan, request_from_plan, require_plan_in_on_apply
-from ..plans import build_plan, utc_now
+from ..plans import build_plan, sha256_text, utc_now
 
 
 def _client(ctx: dict) -> InstantlyClient:
@@ -104,7 +106,7 @@ def cmd_leads_add_bulk(args: Any, ctx: dict) -> int:
     if bool(csv_path) == bool(json_path):
         raise ValidationError("Provide exactly one of --csv or --json")
 
-    chunk_size = int(getattr(args, "chunk_size", 1000) or 1000)
+    chunk_size = int(getattr(args, "chunk_size", 1000))
     if chunk_size > 1000:
         raise ValidationError("Chunk size must be <= 1000")
 
@@ -118,33 +120,38 @@ def cmd_leads_add_bulk(args: Any, ctx: dict) -> int:
     if not leads:
         raise ValidationError("No leads found in input")
 
-    if bool(ctx.get("apply")) and not bool(ctx.get("yes")):
-        raise SafetyError("Refused: leads add-bulk requires --apply --yes (bulk lead injection)")
+    if ctx.get("apply"):
+        if not ctx.get("yes"):
+            raise SafetyError("Refused: leads add-bulk requires --apply --yes.")
+        if not ctx.get("ack_no_snapshot"):
+            raise SafetyError("Refused: approve --ack-no-snapshot to import leads without a saved copy of the old state.")
 
     leads_chunks = _chunks(leads, chunk_size)
+    fingerprint = ctx["cfg"].env_fingerprint
+    input_digest = sha256_text(json.dumps(leads, sort_keys=True, ensure_ascii=False))
+    request_body = {"campaign_id": campaign_id, "leads_count": len(leads), "chunk_size": chunk_size}
+    baseline = {
+        "env_fingerprint": fingerprint,
+        "campaign_id": campaign_id,
+        "leads_count": len(leads),
+        "input_digest": input_digest,
+        "import_id": uuid4().hex,
+    }
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=fingerprint,
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "leads.add-bulk", "value": selector_val},
         risk_level="high",
-        risk_reasons=["bulk-lead-injection"],
-        request={
-            "method": "POST",
-            "path": "/leads/add",
-            "body": {"campaign_id": campaign_id, "leads_count": len(leads), "chunk_size": chunk_size},
-        },
-        verification_plan={
-            "type": "best-effort",
-            "notes": "After apply, performs a lightweight leads list call to confirm API connectivity.",
-        },
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "campaign_id": campaign_id, "leads_count": len(leads)},
+        risk_reasons=["adds-leads-in-bulk"],
+        request={"method": "POST", "path": "/leads/add", "body": request_body},
+        verification_plan={"type": "provider-counts", "notes": "Save the counts Instantly returns for each batch."},
+        baseline=baseline,
     )
-    plan_out = ctx.get("plan_out")
-    plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
-
-    if not bool(ctx.get("apply")):
+    if not ctx.get("apply"):
+        plan_out = ctx.get("plan_out")
+        plan_path = write_json_file(plan_out, plan) if plan_out else None
         out = {
             "ok": True,
             "dry_run": True,
@@ -157,38 +164,96 @@ def cmd_leads_add_bulk(args: Any, ctx: dict) -> int:
         ctx["out"].emit(out)
         return 0
 
+    plan_in = ctx.get("plan_in")
+    if plan_in:
+        plan = load_apply_plan(plan_in=plan_in, env_fingerprint=fingerprint, kind="leads.add-bulk")
+        _, reviewed_path, reviewed_body = request_from_plan(plan, expected_method="POST")
+        if (
+            reviewed_path != "/leads/add"
+            or reviewed_body != request_body
+            or plan["baseline"].get("input_digest") != input_digest
+        ):
+            raise SafetyError("Refused: the campaign, batch size or leads changed. Save a fresh preview.")
+    try:
+        import_id = UUID(hex=plan["baseline"]["import_id"]).hex
+    except (KeyError, TypeError, ValueError):
+        raise SafetyError("Refused: this plan has no valid import ID. Save a fresh preview.") from None
+
+    # Keep the exact plan available for retry, including when the caller applied without --plan-in.
+    saved_plan = Path(ctx["artifacts_dir"]) / "plan.json" if not plan_in and ctx.get("artifacts_dir") else None
+    receipt_out = ctx.get("receipt_out")
+    protected_paths = [Path(selector_val)]
+    if saved_plan or plan_in:
+        protected_paths.append(Path(saved_plan or plan_in))
+    if receipt_out and Path(receipt_out).resolve() in {path.resolve() for path in protected_paths}:
+        raise ValidationError("Choose a receipt path different from the lead file and saved plan.")
+    if saved_plan:
+        plan_in = write_json_file(saved_plan, plan)
+
     client = _client(ctx)
     results: list[dict[str, Any]] = []
-    for idx, chunk in enumerate(leads_chunks, start=1):
-        body = {"campaign_id": campaign_id, "leads": chunk}
-        res = client.post("/leads/add", json_body=body).data
-        results.append({"chunk": idx, "sent": len(chunk), "result": res})
-
-    verify = None
-    try:
-        verify = client.post("/leads/list", json_body={"campaign_id": campaign_id, "limit": 1}).data
-    except Exception:  # noqa: BLE001
-        verify = None
-
     receipt = {
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": fingerprint,
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
-        "changed": True,
-        "verification": {"ok": verify is not None, "details": {"type": "leads.list", "campaign_id": campaign_id}},
-        "result": {"chunks": results, "verify": verify},
+        "changed": None,
+        "verification": {"ok": False, "details": {"type": "provider-counts", "campaign_id": campaign_id}},
+        "result": {
+            "chunks": results,
+            "plan_for_retry": plan_in,
+            "import_id": import_id,
+            "leads_uploaded": 0,
+            "all_added": False,
+        },
         "backups": [],
         "rollback_plan": None,
     }
-    receipt_out = ctx.get("receipt_out")
-    receipt_path = write_json_file(receipt_out, receipt) if receipt_out else None
-    out = {"ok": True, "dry_run": False, "receipt": receipt, "receipt_out": receipt_path}
-    ctx["audit"].write("leads.add_bulk.apply", {"ok": True, "receipt_out": receipt_path})
-    ctx["out"].emit(out)
-    return 0
+    receipt_path = None
+    for index, chunk in enumerate(leads_chunks, start=1):
+        batch = {"chunk": index, "sent": len(chunk), "status": "waiting_for_reply"}
+        results.append(batch)
+        if receipt_out:
+            receipt_path = write_json_file(receipt_out, receipt)
+        body = {"campaign_id": campaign_id, "leads": chunk, "idempotency_key": f"{import_id}-{index}"}
+        try:
+            response = client.post("/leads/add", json_body=body).data
+        except (RuntimeError, ValueError):
+            response = None
+
+        uploaded = response.get("leads_uploaded") if isinstance(response, dict) else None
+        if type(uploaded) is not int or not 0 <= uploaded <= len(chunk):
+            batch["status"] = "unconfirmed"
+            receipt["result"]["next_step"] = (
+                "Check the import before retrying. To retry, use the same saved plan and unchanged input."
+                if plan_in else "Check the import in Instantly before trying again."
+            )
+            break
+        count_fields = (
+            "leads_uploaded", "in_blocklist", "duplicated_leads", "skipped_count",
+            "invalid_email_count", "incomplete_count", "duplicate_email_count",
+        )
+        batch["counts"] = {
+            field: response[field] for field in count_fields if type(response.get(field)) is int
+        }
+        batch["status"] = "reported"
+        receipt["result"]["leads_uploaded"] += uploaded
+        if receipt_out:
+            receipt_path = write_json_file(receipt_out, receipt)
+
+    confirmed = len(results) == len(leads_chunks) and results[-1]["status"] == "reported"
+    uploaded_total = receipt["result"]["leads_uploaded"]
+    receipt["verification"]["ok"] = confirmed
+    receipt["changed"] = True if uploaded_total else (False if confirmed else None)
+    receipt["result"]["all_added"] = confirmed and uploaded_total == len(leads)
+    receipt["result"]["batches_not_sent"] = len(leads_chunks) - len(results)
+    if receipt_out:
+        receipt_path = write_json_file(receipt_out, receipt)
+    ctx["audit"].write("leads.add_bulk.apply", {"ok": confirmed, "receipt_out": receipt_path})
+    ctx["out"].emit({"ok": confirmed, "dry_run": False, "receipt": receipt, "receipt_out": receipt_path})
+    return 0 if confirmed else 1
 
 
 def cmd_leads_create(args: Any, ctx: dict) -> int:
@@ -200,14 +265,14 @@ def cmd_leads_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "leads.create", "value": file_path},
         risk_level="medium",
         risk_reasons=["creates-lead"],
         request={"method": "POST", "path": "/leads", "body": body},
         verification_plan={"type": "best-effort", "notes": "Best-effort: no automatic read-back (lead ids may be generated)."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url)},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -223,7 +288,7 @@ def cmd_leads_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -252,14 +317,14 @@ def cmd_leads_patch(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "leads.patch", "value": lead_id},
         risk_level="medium",
         risk_reasons=["patches-lead"],
         request={"method": "PATCH", "path": path, "body": body},
         verification_plan={"type": "best-effort", "notes": "Best-effort: GET lead by id after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "lead_id": lead_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "lead_id": lead_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -281,7 +346,7 @@ def cmd_leads_patch(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -318,14 +383,14 @@ def cmd_leads_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "leads.delete", "value": lead_id or "<from-plan>"},
         risk_level="high",
         risk_reasons=["deletes-lead"],
         request={"method": "DELETE", "path": path or "/leads/<id>", "body": body},
         verification_plan={"type": "best-effort", "notes": "Best-effort: try GET lead after delete (should fail/404)."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "lead_id": lead_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "lead_id": lead_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not apply) else None
@@ -335,7 +400,7 @@ def cmd_leads_delete(args: Any, ctx: dict) -> int:
         return 0
 
     assert plan_in is not None
-    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="leads.delete")
+    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="leads.delete")
     _, plan_path_val, body_from_plan = request_from_plan(plan_obj, expected_method="DELETE")
     if lead_id and plan_path_val != f"/leads/{lead_id}":
         raise SafetyError("Refused: plan path mismatch for leads delete")
@@ -353,7 +418,7 @@ def cmd_leads_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan_obj.get("selector"),
         "changed": True,
@@ -389,14 +454,14 @@ def cmd_leads_bulk_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "leads.bulk-delete", "value": file_path or "<from-plan>"},
         risk_level="high",
         risk_reasons=["bulk-deletes-leads"],
         request={"method": "DELETE", "path": path, "body": body},
         verification_plan={"type": "best-effort", "notes": "Best-effort: response-only."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url)},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not apply) else None
@@ -407,7 +472,7 @@ def cmd_leads_bulk_delete(args: Any, ctx: dict) -> int:
         return 0
 
     assert plan_in is not None
-    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="leads.bulk-delete")
+    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="leads.bulk-delete")
     _, plan_path_val, body_from_plan = request_from_plan(plan_obj, expected_method="DELETE")
     if plan_path_val != "/leads":
         raise SafetyError("Refused: plan path mismatch for leads bulk-delete")
@@ -418,7 +483,7 @@ def cmd_leads_bulk_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan_obj.get("selector"),
         "changed": True,
@@ -454,14 +519,14 @@ def cmd_leads_merge(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "leads.merge", "value": file_path or "<from-plan>"},
         risk_level="high",
         risk_reasons=["merges-leads"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "response-only", "notes": "Response-only."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url)},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not apply) else None
@@ -472,7 +537,7 @@ def cmd_leads_merge(args: Any, ctx: dict) -> int:
         return 0
 
     assert plan_in is not None
-    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="leads.merge")
+    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="leads.merge")
     _, plan_path_val, body_from_plan = request_from_plan(plan_obj, expected_method="POST")
     if plan_path_val != "/leads/merge":
         raise SafetyError("Refused: plan path mismatch for leads merge")
@@ -483,7 +548,7 @@ def cmd_leads_merge(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan_obj.get("selector"),
         "changed": True,
@@ -511,14 +576,14 @@ def _high_risk_post_with_yes(args: Any, ctx: dict, *, kind: str, path: str, labe
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": kind, "value": file_path},
         risk_level="high",
         risk_reasons=[kind],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "response-only", "notes": "Response-only."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url)},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -534,7 +599,7 @@ def _high_risk_post_with_yes(args: Any, ctx: dict, *, kind: str, path: str, labe
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,

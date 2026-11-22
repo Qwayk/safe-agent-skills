@@ -40,14 +40,14 @@ def cmd_email_verification_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "email_verification.create", "value": email},
         risk_level="medium",
         risk_reasons=["email-verification-trigger"],
         request={"method": "POST", "path": "/email-verification", "body": body},
         verification_plan={"type": "best-effort", "notes": "Best-effort: fetch status for the same email after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "email": email},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "email": email},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -70,7 +70,7 @@ def cmd_email_verification_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,

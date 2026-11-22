@@ -43,7 +43,7 @@ def cmd_workspace_patch_current(args: Any, ctx: dict) -> int:
         raise ValidationError("--plan-in can only be used with --apply")
 
     if plan_in:
-        plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="workspace.patch-current")
+        plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="workspace.patch-current")
         _, path, body = request_from_plan(plan_obj, expected_method="PATCH")
         if path != "/workspaces/current":
             raise SafetyError("Refused: plan path mismatch for workspace patch-current")
@@ -57,14 +57,14 @@ def cmd_workspace_patch_current(args: Any, ctx: dict) -> int:
         plan = build_plan(
             tool=str(ctx.get("tool") or "instantly-api-tool"),
             version=str(ctx.get("tool_version") or ""),
-            env_fingerprint=str(ctx["cfg"].base_url),
+            env_fingerprint=str(ctx["cfg"].env_fingerprint),
             command=str(ctx.get("command_str") or ""),
             selector={"kind": "workspace.patch-current", "value": "workspaces/current"},
             risk_level="high",
             risk_reasons=["updates-workspace"],
             request={"method": "PATCH", "path": path, "body": body},
             verification_plan={"type": "read-back", "notes": "Read-back GET /workspaces/current after apply."},
-            baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+            baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
         )
 
     plan_out = ctx.get("plan_out")
@@ -86,7 +86,7 @@ def cmd_workspace_patch_current(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -113,14 +113,14 @@ def cmd_workspace_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "workspace.create", "value": file_path},
         risk_level="high",
         risk_reasons=["creates-workspace"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "Read-back GET /workspaces/current after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
 
     plan_out = ctx.get("plan_out")
@@ -142,7 +142,7 @@ def cmd_workspace_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -167,7 +167,7 @@ def cmd_workspace_change_owner(args: Any, ctx: dict) -> int:
         raise ValidationError("--plan-in can only be used with --apply")
 
     if plan_in:
-        plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="workspace.change-owner")
+        plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="workspace.change-owner")
         _, path, body = request_from_plan(plan_obj, expected_method="POST")
         if path != "/workspaces/current/change-owner":
             raise SafetyError("Refused: plan path mismatch for workspace change-owner")
@@ -181,14 +181,14 @@ def cmd_workspace_change_owner(args: Any, ctx: dict) -> int:
         plan = build_plan(
             tool=str(ctx.get("tool") or "instantly-api-tool"),
             version=str(ctx.get("tool_version") or ""),
-            env_fingerprint=str(ctx["cfg"].base_url),
+            env_fingerprint=str(ctx["cfg"].env_fingerprint),
             command=str(ctx.get("command_str") or ""),
             selector={"kind": "workspace.change-owner", "value": "workspaces/current/change-owner"},
             risk_level="high",
             risk_reasons=["changes-workspace-owner"],
             request={"method": "POST", "path": path, "body": body},
             verification_plan={"type": "read-back", "notes": "Read-back GET /workspaces/current after apply."},
-            baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+            baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
         )
 
     plan_out = ctx.get("plan_out")
@@ -210,7 +210,7 @@ def cmd_workspace_change_owner(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -246,14 +246,14 @@ def cmd_workspace_whitelabel_set(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "workspace.whitelabel-domain.set", "value": file_path},
         risk_level="medium",
         risk_reasons=["updates-whitelabel-domain"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "Read-back GET /workspaces/current/whitelabel-domain after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
 
     plan_out = ctx.get("plan_out")
@@ -275,7 +275,7 @@ def cmd_workspace_whitelabel_set(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -306,14 +306,14 @@ def cmd_workspace_whitelabel_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "workspace.whitelabel-domain.delete", "value": "workspaces/current/whitelabel-domain"},
         risk_level="high",
         risk_reasons=["deletes-whitelabel-domain"],
         request={"method": "DELETE", "path": path, "body": {}},
         verification_plan={"type": "read-back", "notes": "Read-back GET /workspaces/current/whitelabel-domain after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
 
     plan_out = ctx.get("plan_out")
@@ -324,7 +324,7 @@ def cmd_workspace_whitelabel_delete(args: Any, ctx: dict) -> int:
         return 0
 
     assert plan_in is not None
-    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="workspace.whitelabel-domain.delete")
+    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="workspace.whitelabel-domain.delete")
     _, plan_path_val, body = request_from_plan(plan_obj, expected_method="DELETE")
     if plan_path_val != path:
         raise SafetyError("Refused: plan path mismatch for whitelabel-domain delete")
@@ -341,7 +341,7 @@ def cmd_workspace_whitelabel_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan_obj.get("selector"),
         "changed": True,

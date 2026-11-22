@@ -25,14 +25,14 @@ def cmd_threads_mark_as_read(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "threads.mark-as-read", "value": thread_id},
         risk_level="medium",
         risk_reasons=["marks-thread-read"],
         request={"method": "POST", "path": path, "body": {}},
         verification_plan={"type": "best-effort", "notes": "Best-effort thread read-back after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "thread_id": thread_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "thread_id": thread_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -54,7 +54,7 @@ def cmd_threads_mark_as_read(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -86,7 +86,7 @@ def cmd_threads_reply(args: Any, ctx: dict) -> int:
 
     if apply:
         assert plan_in is not None
-        plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="threads.reply")
+        plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="threads.reply")
         _, path, body = request_from_plan(plan_obj, expected_method="POST")
         if path != "/emails/reply":
             raise SafetyError("Refused: plan path mismatch for threads reply")
@@ -124,7 +124,7 @@ def cmd_threads_reply(args: Any, ctx: dict) -> int:
         plan = build_plan(
             tool=str(ctx.get("tool") or "instantly-api-tool"),
             version=str(ctx.get("tool_version") or ""),
-            env_fingerprint=str(ctx["cfg"].base_url),
+            env_fingerprint=str(ctx["cfg"].env_fingerprint),
             command=str(ctx.get("command_str") or ""),
             selector={"kind": "threads.reply", "value": thread_id},
             risk_level="irreversible",
@@ -132,7 +132,7 @@ def cmd_threads_reply(args: Any, ctx: dict) -> int:
             request={"method": "POST", "path": "/emails/reply", "body": body},
             verification_plan={"type": "best-effort", "notes": "Best-effort thread read-back after apply."},
             baseline={
-                "env_fingerprint": str(ctx["cfg"].base_url),
+                "env_fingerprint": str(ctx["cfg"].env_fingerprint),
                 "thread_id": thread_id,
                 "reply_to_uuid": reply_to_uuid,
                 "message_sha256": sha256_text(str(body.get("message") or "")),
@@ -160,7 +160,7 @@ def cmd_threads_reply(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,

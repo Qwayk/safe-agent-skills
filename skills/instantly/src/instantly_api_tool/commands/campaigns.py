@@ -79,14 +79,14 @@ def cmd_campaigns_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "campaigns.create", "value": str(p)},
         risk_level="medium",
         risk_reasons=["creates-campaign"],
         request={"method": "POST", "path": "/campaigns", "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort GET by returned campaign id."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url)},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -110,7 +110,7 @@ def cmd_campaigns_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -134,18 +134,26 @@ def _status_change_common(args: Any, ctx: dict, *, op: str) -> int:
     if op not in {"activate", "pause"}:
         raise ValidationError("Invalid operation")
     path = f"/campaigns/{campaign_id}/{op}"
+    expected_status = 1 if op == "activate" else 2
+    apply = bool(ctx.get("apply"))
+    plan_in = ctx.get("plan_in")
+    kind = f"campaigns.{op}"
+    if op == "activate":
+        require_plan_in_on_apply(apply=apply, plan_in=plan_in, reason="campaigns activate")
+        if apply and not ctx.get("yes"):
+            raise SafetyError("Refused: campaigns activate requires --yes to start or resume sending.")
 
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
-        selector={"kind": f"campaigns.{op}", "value": campaign_id},
-        risk_level="medium",
+        selector={"kind": kind, "value": campaign_id},
+        risk_level="high" if op == "activate" else "medium",
         risk_reasons=[f"campaign-{op}"],
         request={"method": "POST", "path": path, "body": {}},
-        verification_plan={"type": "read-back", "notes": "GET campaign by id after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "campaign_id": campaign_id},
+        verification_plan={"type": "campaign-status", "expected_status": expected_status},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "campaign_id": campaign_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -156,29 +164,58 @@ def _status_change_common(args: Any, ctx: dict, *, op: str) -> int:
         ctx["out"].emit(out)
         return 0
 
+    if plan_in:
+        reviewed = load_apply_plan(plan_in=plan_in, env_fingerprint=ctx["cfg"].env_fingerprint, kind=kind)
+        _, reviewed_path, reviewed_body = request_from_plan(reviewed, expected_method="POST")
+        if reviewed_path != path or reviewed_body:
+            raise SafetyError("Refused: the campaign or requested change differs from the saved preview.")
+
     client = _client(ctx)
-    changed = client.post(path, json_body={}).data
-    verified = client.get(f"/campaigns/{campaign_id}").data
+    result = client.post(path, json_body={}).data
+    observed = None
+    try:
+        observed = client.get(f"/campaigns/{campaign_id}").data
+    except (RuntimeError, ValueError):
+        pass
+    observed_status = observed.get("status") if isinstance(observed, dict) else None
+    verified = _extract_id(observed) == campaign_id and observed_status == expected_status
 
     receipt = {
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
-        "changed": True,
-        "verification": {"ok": True, "details": {"type": "campaign-get", "campaign_id": campaign_id}},
-        "result": {"operation_result": changed, "verified_campaign": verified},
+        "changed": True if verified else None,
+        "verification": {
+            "ok": verified,
+            "details": {
+                "type": "campaign-status",
+                "campaign_id": campaign_id,
+                "expected_status": expected_status,
+                "observed_status": observed_status,
+                "message": (
+                    "Instantly confirmed the requested status."
+                    if verified
+                    else "Check the campaign in Instantly before trying the change again."
+                ),
+            },
+        },
+        "result": {
+            "operation_result": result,
+            "verified_campaign": observed if verified else None,
+            "observed_campaign": observed,
+        },
         "backups": [],
         "rollback_plan": None,
     }
     receipt_out = ctx.get("receipt_out")
     receipt_path = write_json_file(receipt_out, receipt) if receipt_out else None
-    out = {"ok": True, "dry_run": False, "receipt": receipt, "receipt_out": receipt_path}
-    ctx["audit"].write(f"campaigns.{op}.apply", {"ok": True, "receipt_out": receipt_path})
+    out = {"ok": verified, "dry_run": False, "receipt": receipt, "receipt_out": receipt_path}
+    ctx["audit"].write(f"campaigns.{op}.apply", {"ok": verified, "receipt_out": receipt_path})
     ctx["out"].emit(out)
-    return 0
+    return 0 if verified else 1
 
 
 def cmd_campaigns_activate(args: Any, ctx: dict) -> int:
@@ -202,14 +239,14 @@ def cmd_campaigns_patch(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "campaigns.patch", "value": campaign_id},
         risk_level="medium",
         risk_reasons=["patches-campaign"],
         request={"method": "PATCH", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort GET campaign by id after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "campaign_id": campaign_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "campaign_id": campaign_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -231,7 +268,7 @@ def cmd_campaigns_patch(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -265,14 +302,14 @@ def cmd_campaigns_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "campaigns.delete", "value": campaign_id or "<from-plan>"},
         risk_level="high",
         risk_reasons=["deletes-campaign"],
         request={"method": "DELETE", "path": path or "/campaigns/<id>", "body": {}},
         verification_plan={"type": "read-back", "notes": "Best-effort: list campaigns after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "campaign_id": campaign_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "campaign_id": campaign_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not apply) else None
@@ -283,7 +320,7 @@ def cmd_campaigns_delete(args: Any, ctx: dict) -> int:
         return 0
 
     assert plan_in is not None
-    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="campaigns.delete")
+    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="campaigns.delete")
     _, plan_path_val, body = request_from_plan(plan_obj, expected_method="DELETE")
     if campaign_id and plan_path_val != f"/campaigns/{campaign_id}":
         raise SafetyError("Refused: plan path mismatch for campaigns delete")
@@ -301,7 +338,7 @@ def cmd_campaigns_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan_obj.get("selector"),
         "changed": True,
@@ -360,14 +397,14 @@ def cmd_campaigns_share(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx['cfg'].base_url),
+        env_fingerprint=str(ctx['cfg'].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "campaigns.share", "value": campaign_id},
         risk_level="high",
         risk_reasons=["shares-campaign"],
         request={"method": "POST", "path": path, "body": {}},
         verification_plan={"type": "read-back", "notes": "Best-effort GET campaign by id after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "campaign_id": campaign_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "campaign_id": campaign_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -389,7 +426,7 @@ def cmd_campaigns_share(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -416,14 +453,14 @@ def cmd_campaigns_create_from_export(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx['cfg'].base_url),
+        env_fingerprint=str(ctx['cfg'].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "campaigns.create-from-export", "value": campaign_id},
         risk_level="high",
         risk_reasons=["creates-campaign-from-export"],
         request={"method": "POST", "path": path, "body": {}},
         verification_plan={"type": "read-back", "notes": "Best-effort GET by returned campaign id."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "campaign_id": campaign_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "campaign_id": campaign_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -446,7 +483,7 @@ def cmd_campaigns_create_from_export(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -470,14 +507,14 @@ def cmd_campaigns_export(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx['cfg'].base_url),
+        env_fingerprint=str(ctx['cfg'].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "campaigns.export", "value": campaign_id},
         risk_level="medium",
         risk_reasons=["exports-campaign"],
         request={"method": "POST", "path": path, "body": {}},
         verification_plan={"type": "response-only", "notes": "Response-only; export payload returned by API."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "campaign_id": campaign_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "campaign_id": campaign_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -492,7 +529,7 @@ def cmd_campaigns_export(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -523,14 +560,14 @@ def cmd_campaigns_duplicate(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx['cfg'].base_url),
+        env_fingerprint=str(ctx['cfg'].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "campaigns.duplicate", "value": campaign_id},
         risk_level="high",
         risk_reasons=["duplicates-campaign"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort GET by returned campaign id."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "campaign_id": campaign_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "campaign_id": campaign_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -553,7 +590,7 @@ def cmd_campaigns_duplicate(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -590,14 +627,14 @@ def cmd_campaigns_add_variables(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx['cfg'].base_url),
+        env_fingerprint=str(ctx['cfg'].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "campaigns.add-variables", "value": campaign_id},
         risk_level="medium",
         risk_reasons=["adds-campaign-variables"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort GET campaign by id after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "campaign_id": campaign_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "campaign_id": campaign_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -619,7 +656,7 @@ def cmd_campaigns_add_variables(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,

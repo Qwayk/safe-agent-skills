@@ -1,6 +1,6 @@
 # Command reference
 
-These commands cover campaigns, leads, sending accounts, analytics, webhooks, and outreach write gates. Check campaign and sending health before lead moves or campaign changes.
+Find the command you need, then check its apply flags before changing a campaign, a lead or account settings.
 
 For the guided path, start with [What you can do with Instantly](use_cases.md), [Connect your Instantly account](onboarding.md), and [Quickstart](quickstart.md).
 
@@ -17,7 +17,7 @@ For the guided path, start with [What you can do with Instantly](use_cases.md), 
 
 Plan-first workflow:
 - Dry-run writes a plan (and also writes `.state/runs/<run_id>/plan.json` for write-capable commands).
-- Delete and irreversible apply require `--plan-in`.
+- Use a saved plan for starting or resuming a campaign and for the delete or irreversible commands that require one. See the [approval and result checks](safety_model.md).
 - Supported live writes save before-state under `.state/runs/<run_id>/before/` before applying.
 - When a write family cannot save a useful before-state, live apply requires explicit no-snapshot approval before HTTP.
 - This tool has no machine rollback or restore path, so the plan/receipt stays honest: `rollback.supported` is `false`, and `rollback_plan` stays `null`.
@@ -127,8 +127,9 @@ Delete:
 - `instantly-api-tool campaigns get --campaign-id CAMPAIGN_ID`
 - `instantly-api-tool campaigns create --file examples/campaign_create.json`
 - Live apply for `campaigns create` requires explicit no-snapshot approval when no useful before-state can be saved.
-- `instantly-api-tool campaigns activate --campaign-id CAMPAIGN_ID`
-- `instantly-api-tool --apply campaigns activate --campaign-id CAMPAIGN_ID`
+- Save a preview before starting or resuming a campaign.
+- `instantly-api-tool --plan-out activation.json campaigns activate --campaign-id CAMPAIGN_ID`
+- `instantly-api-tool --apply --yes --plan-in activation.json campaigns activate --campaign-id CAMPAIGN_ID`
 - `instantly-api-tool campaigns pause --campaign-id CAMPAIGN_ID`
 - `instantly-api-tool --apply campaigns pause --campaign-id CAMPAIGN_ID`
 - `instantly-api-tool campaigns patch --campaign-id CAMPAIGN_ID --file campaign_patch.json`
@@ -201,9 +202,23 @@ Vitals/status:
 - Live apply for `leads create` requires explicit no-snapshot approval when no useful before-state can be saved.
 - `instantly-api-tool leads patch --lead-id LEAD_ID --file lead_patch.json`
 - `instantly-api-tool --apply leads patch --lead-id LEAD_ID --file lead_patch.json`
-- `instantly-api-tool leads add-bulk --campaign-id CAMPAIGN_ID --csv examples/leads.csv`
-- `instantly-api-tool leads add-bulk --campaign-id CAMPAIGN_ID --json examples/leads.json`
-- Live apply for `leads add-bulk` requires explicit no-snapshot approval when no useful before-state can be saved.
+### Add leads in bulk
+
+The CLI splits CSV or JSON input into batches of up to 1,000. Choose a smaller batch with `--chunk-size`. Preview the campaign, file and count without sending anything.
+
+```bash
+instantly-api-tool --plan-out lead-import.json leads add-bulk --campaign-id CAMPAIGN_ID --csv examples/leads.csv
+instantly-api-tool leads add-bulk --campaign-id CAMPAIGN_ID --json examples/leads.json
+```
+
+After approval, apply with `--yes` and the explicit approval to proceed without a copy of the old state.
+
+```bash
+instantly-api-tool --apply --yes --ack-no-snapshot --plan-in lead-import.json leads add-bulk --campaign-id CAMPAIGN_ID --csv examples/leads.csv
+```
+
+Read the receipt for the counts Instantly returned. If a reply is missing, check before retrying. To retry safely, use `--plan-in` with the same plan, campaign, batch size and unchanged input. If you applied without a named plan, the receipt points to the plan saved in the usual run folder. See [how to check the result](safety_model.md#read-the-receipt).
+
 
 High-risk lead operations:
 - `instantly-api-tool leads update-interest-status --file update_interest_status.json`
@@ -436,3 +451,9 @@ Optional flags:
 
 - `instantly-api-tool runs list [--limit 20]`
 - `instantly-api-tool runs show --run-id 2026-01-19T104512Z_a3f91c`
+
+## Where the CLI handles each step
+
+The Python package is in `src/instantly_api_tool/`. `cli.py` defines the commands and flags. The handlers in `commands/` call the API through `instantly_client.py` and `http.py`. `config.py` loads the settings. `before_state.py` saves the previous result where supported. `output.py` prints one JSON result, `audit_log.py` saves audit events, and `runs.py` records runs.
+
+Register writes with `write_capable=True` and keep preview, apply, verification and receipt handling together. Keep test requests offline and check what the CLI sends and records.

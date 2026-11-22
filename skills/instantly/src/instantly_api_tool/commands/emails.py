@@ -85,7 +85,7 @@ def cmd_emails_forward(args: Any, ctx: dict) -> int:
 
     if apply:
         assert plan_in is not None
-        plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="emails.forward")
+        plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="emails.forward")
         _, path, body = request_from_plan(plan_obj, expected_method="POST")
         if path != "/emails/forward":
             raise SafetyError("Refused: plan path mismatch for emails forward")
@@ -100,7 +100,7 @@ def cmd_emails_forward(args: Any, ctx: dict) -> int:
         plan = build_plan(
             tool=str(ctx.get("tool") or "instantly-api-tool"),
             version=str(ctx.get("tool_version") or ""),
-            env_fingerprint=str(ctx["cfg"].base_url),
+            env_fingerprint=str(ctx["cfg"].env_fingerprint),
             command=str(ctx.get("command_str") or ""),
             selector={"kind": "emails.forward", "value": sha256_text(json.dumps(body, sort_keys=True, ensure_ascii=False))},
             risk_level="irreversible",
@@ -110,7 +110,7 @@ def cmd_emails_forward(args: Any, ctx: dict) -> int:
                 "type": "best-effort",
                 "notes": "Best-effort: attempt GET /emails/{id} if the request body contains an email id.",
             },
-            baseline={"env_fingerprint": str(ctx["cfg"].base_url), "body_sha256": sha256_text(str(body))},
+            baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "body_sha256": sha256_text(str(body))},
         )
 
     plan_out = ctx.get("plan_out")
@@ -139,7 +139,7 @@ def cmd_emails_forward(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -171,7 +171,7 @@ def cmd_emails_patch(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "emails.patch", "value": email_id},
         risk_level="medium",
@@ -179,7 +179,7 @@ def cmd_emails_patch(args: Any, ctx: dict) -> int:
         request={"method": "PATCH", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "GET /emails/{id} after apply."},
         baseline={
-            "env_fingerprint": str(ctx["cfg"].base_url),
+            "env_fingerprint": str(ctx["cfg"].env_fingerprint),
             "email_id": email_id,
             "body_sha256": sha256_text(json.dumps(body, sort_keys=True, ensure_ascii=False)),
         },
@@ -204,7 +204,7 @@ def cmd_emails_patch(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -238,14 +238,14 @@ def cmd_emails_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "emails.delete", "value": email_id or "<from-plan>"},
         risk_level="high",
         risk_reasons=["delete-email"],
         request={"method": "DELETE", "path": path or "/emails/<id>", "body": {}},
         verification_plan={"type": "read-back", "notes": "Best-effort GET /emails/{id} expecting 404 after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "email_id": email_id},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "email_id": email_id},
     )
 
     plan_out = ctx.get("plan_out")
@@ -256,7 +256,7 @@ def cmd_emails_delete(args: Any, ctx: dict) -> int:
         return 0
 
     assert plan_in is not None
-    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].base_url), kind="emails.delete")
+    plan_obj = load_apply_plan(plan_in=plan_in, env_fingerprint=str(ctx["cfg"].env_fingerprint), kind="emails.delete")
     _, plan_path_val, body = request_from_plan(plan_obj, expected_method="DELETE")
     if email_id and plan_path_val != f"/emails/{email_id}":
         raise SafetyError("Refused: plan path mismatch for emails delete")
@@ -280,7 +280,7 @@ def cmd_emails_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan_obj.get("selector"),
         "changed": True,

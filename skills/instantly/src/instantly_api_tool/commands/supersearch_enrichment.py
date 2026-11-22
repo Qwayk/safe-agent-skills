@@ -40,14 +40,14 @@ def cmd_supersearch_enrichment_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "supersearch-enrichment.create", "value": file_path},
         risk_level="high",
         risk_reasons=["supersearch-enrichment-create", "advanced-feature"],
         request={"method": "POST", "path": "/supersearch-enrichment", "body": body},
         verification_plan={"type": "response-only", "notes": "Response-only."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url)},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -63,7 +63,7 @@ def cmd_supersearch_enrichment_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -104,7 +104,7 @@ def cmd_supersearch_enrichment_patch_settings(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "supersearch-enrichment.patch-settings", "value": resource_id},
         risk_level="high",
@@ -114,7 +114,7 @@ def cmd_supersearch_enrichment_patch_settings(args: Any, ctx: dict) -> int:
             "type": "best-effort",
             "notes": "Best-effort: GET /supersearch-enrichment/{resource_id} after apply.",
         },
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "resource_id": resource_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "resource_id": resource_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -134,7 +134,7 @@ def cmd_supersearch_enrichment_patch_settings(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -171,14 +171,14 @@ def _apply_gated_post_with_yes(args: Any, ctx: dict, *, kind: str, path: str, la
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": kind, "value": file_path},
         risk_level="high",
         risk_reasons=["supersearch-enrichment-advanced"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "response-only", "notes": "Response-only."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url)},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -193,7 +193,7 @@ def _apply_gated_post_with_yes(args: Any, ctx: dict, *, kind: str, path: str, la
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,

@@ -87,14 +87,14 @@ def cmd_lead_lists_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "lead-lists.create", "value": file_path},
         risk_level="medium",
         risk_reasons=["creates-lead-list"],
         request={"method": "POST", "path": "/lead-lists", "body": sanitize(body)},
         verification_plan={"type": "read-back", "notes": "Best-effort: GET lead list by returned id."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -119,7 +119,7 @@ def cmd_lead_lists_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -149,14 +149,14 @@ def cmd_lead_lists_patch(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "lead-lists.patch", "value": lead_list_id},
         risk_level="medium",
         risk_reasons=["updates-lead-list"],
         request={"method": "PATCH", "path": path, "body": sanitize(body)},
         verification_plan={"type": "read-back", "notes": "GET lead list after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "lead_list_id": lead_list_id},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "lead_list_id": lead_list_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -179,7 +179,7 @@ def cmd_lead_lists_patch(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -214,7 +214,7 @@ def cmd_lead_lists_delete(args: Any, ctx: dict) -> int:
         if not isinstance(plan_obj_any, dict):
             raise ValidationError("Plan file must be a JSON object")
         plan_obj: dict[str, Any] = dict(plan_obj_any)
-        validate_plan_env(plan_obj, env_fingerprint=str(ctx["cfg"].base_url))
+        validate_plan_env(plan_obj, env_fingerprint=str(ctx["cfg"].env_fingerprint))
         validate_plan_kind(plan_obj, kind="lead-lists.delete")
         baseline = plan_obj.get("baseline") or {}
         if not isinstance(baseline, dict):
@@ -231,14 +231,14 @@ def cmd_lead_lists_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "lead-lists.delete", "value": lead_list_id},
         risk_level="high",
         risk_reasons=["deletes-lead-list"],
         request={"method": "DELETE", "path": path, "body": {}},
         verification_plan={"type": "best-effort", "notes": "Best-effort: try GET lead list after delete (should fail/404)."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "lead_list_id": lead_list_id},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "lead_list_id": lead_list_id},
     )
 
     plan_out = ctx.get("plan_out")
@@ -262,7 +262,7 @@ def cmd_lead_lists_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,

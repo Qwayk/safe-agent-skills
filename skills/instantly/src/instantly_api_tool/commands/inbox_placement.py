@@ -104,14 +104,14 @@ def cmd_inbox_placement_tests_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "inbox_placement.tests.create", "value": file_path},
         risk_level="irreversible",
         risk_reasons=["inbox-placement-test-sends-emails"],
         request={"method": "POST", "path": "/inbox-placement-tests", "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort GET by returned test id."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -136,7 +136,7 @@ def cmd_inbox_placement_tests_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -169,14 +169,14 @@ def cmd_inbox_placement_tests_patch(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "inbox_placement.tests.patch", "value": test_id},
         risk_level="medium",
         risk_reasons=["updates-inbox-placement-test"],
         request={"method": "PATCH", "path": path, "body": body},
         verification_plan={"type": "read-back", "notes": "Best-effort GET by test id after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "test_id": test_id},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "test_id": test_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -199,7 +199,7 @@ def cmd_inbox_placement_tests_patch(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -227,14 +227,14 @@ def cmd_inbox_placement_tests_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "inbox_placement.tests.delete", "value": test_id},
         risk_level="high",
         risk_reasons=["deletes-inbox-placement-test"],
         request={"method": "DELETE", "path": path, "body": {}},
         verification_plan={"type": "best-effort", "notes": "Best-effort: list tests after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "test_id": test_id},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "test_id": test_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -257,7 +257,7 @@ def cmd_inbox_placement_tests_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,

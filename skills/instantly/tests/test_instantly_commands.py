@@ -7,12 +7,14 @@ import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
 import requests
 
 from instantly_api_tool.cli import main
+from instantly_api_tool.config import load_config
 
 
 @dataclass
@@ -1864,7 +1866,7 @@ class TestInstantlyCommands(unittest.TestCase):
                 "plan.json",
                 {
                     "selector": {"kind": "threads.reply", "value": "T1"},
-                    "baseline": {"env_fingerprint": "https://api.instantly.ai/api/v2"},
+                    "baseline": {"env_fingerprint": load_config(env).env_fingerprint},
                     "request": {
                         "method": "POST",
                         "path": "/emails/reply",
@@ -1932,7 +1934,7 @@ class TestInstantlyCommands(unittest.TestCase):
                 "plan.json",
                 {
                     "selector": {"kind": "emails.forward", "value": "h1"},
-                    "baseline": {"env_fingerprint": "https://api.instantly.ai/api/v2"},
+                    "baseline": {"env_fingerprint": load_config(env).env_fingerprint},
                     "request": {"method": "POST", "path": "/emails/forward", "body": {"email_id": "E1"}},
                 },
             )
@@ -1996,7 +1998,7 @@ class TestInstantlyCommands(unittest.TestCase):
                 "plan.json",
                 {
                     "selector": {"kind": "emails.forward", "value": "h1"},
-                    "baseline": {"env_fingerprint": "https://api.instantly.ai/api/v2"},
+                    "baseline": {"env_fingerprint": load_config(env).env_fingerprint},
                     "request": {"method": "POST", "path": "/emails/forward", "body": {"email_id": "E1"}},
                 },
             )
@@ -2102,7 +2104,7 @@ class TestInstantlyCommands(unittest.TestCase):
                 "plan.json",
                 {
                     "selector": {"kind": "emails.delete", "value": "E1"},
-                    "baseline": {"env_fingerprint": "https://api.instantly.ai/api/v2"},
+                    "baseline": {"env_fingerprint": load_config(env).env_fingerprint},
                     "request": {"method": "DELETE", "path": "/emails/E1", "body": {}},
                 },
             )
@@ -2615,7 +2617,7 @@ class TestInstantlyCommands(unittest.TestCase):
                 "plan.json",
                 {
                     "selector": {"kind": "api-keys.create", "value": "file.json"},
-                    "baseline": {"env_fingerprint": "https://api.instantly.ai/api/v2"},
+                    "baseline": {"env_fingerprint": load_config(env).env_fingerprint},
                     "request": {"method": "POST", "path": "/api-keys", "body": {"name": "Key 1"}},
                 },
             )
@@ -2682,7 +2684,7 @@ class TestInstantlyCommands(unittest.TestCase):
                 "plan.json",
                 {
                     "selector": {"kind": "api-keys.create", "value": "file.json"},
-                    "baseline": {"env_fingerprint": "https://api.instantly.ai/api/v2"},
+                    "baseline": {"env_fingerprint": load_config(env).env_fingerprint},
                     "request": {"method": "POST", "path": "/api-keys", "body": {"name": "Key 1"}},
                 },
             )
@@ -3026,24 +3028,16 @@ class TestInstantlyCommands(unittest.TestCase):
             if method == "POST":
                 return _json_response(url=url, status=200, obj={"ok": True})
             if method == "GET":
-                return _json_response(url=url, status=200, obj={"id": "C1", "status": "active"})
+                return _json_response(url=url, status=200, obj={"id": "C1", "status": 1})
             return _json_response(url=url, status=200, obj={})
 
         with tempfile.TemporaryDirectory() as td, patch("requests.Session.request", new=_req):
             env = _write_env(td)
-            rc, payload = _run_json(
-                [
-                    "--output",
-                    "json",
-                    "--env-file",
-                    env,
-                    "--apply",
-                    "campaigns",
-                    "activate",
-                    "--campaign-id",
-                    "C1",
-                ]
-            )
+            plan = os.path.join(td, "activate.json")
+            command = ["campaigns", "activate", "--campaign-id", "C1"]
+            common = ["--output", "json", "--env-file", env]
+            _run_json([*common, "--plan-out", plan, *command])
+            rc, payload = _run_json([*common, "--apply", "--yes", "--plan-in", plan, *command])
             self.assertEqual(rc, 0)
             self.assertTrue(payload["ok"])
             self.assertFalse(payload.get("dry_run", True))
@@ -3059,3 +3053,115 @@ class TestInstantlyCommands(unittest.TestCase):
             self.assertEqual(receipt.get("backups"), [])
             self.assertIsNone(receipt.get("rollback_plan"))
             self.assertGreaterEqual(len(calls), 1)
+
+
+    def test_activation_checks_reviewed_campaign_and_key_before_request(self) -> None:
+        with tempfile.TemporaryDirectory() as td, patch("requests.Session.request") as request:
+            env = _write_env(td)
+            common = ["--output", "json", "--env-file", env]
+            plan_path = os.path.join(td, "plan.json")
+            campaign = ["campaigns", "activate", "--campaign-id", "C1"]
+            _, preview = _run_json([*common, "--plan-out", plan_path, *campaign])
+            self.assertNotIn("test_api_key", json.dumps(preview))
+            for flags, command in (
+                (["--yes"], campaign),
+                (["--plan-in", plan_path], campaign),
+                (["--yes", "--plan-in", plan_path], [*campaign[:-1], "C2"]),
+            ):
+                _, payload = _run_json([*common, "--apply", *flags, *command])
+                self.assertTrue(payload["refused"])
+            Path(env).write_text("INSTANTLY_API_KEY=another_test_key\n", encoding="utf-8")
+            _, different = _run_json([*common, "--plan-out", os.path.join(td, "other.json"), *campaign])
+            self.assertNotEqual(preview["plan"]["env_fingerprint"], different["plan"]["env_fingerprint"])
+            _, payload = _run_json([*common, "--apply", "--yes", "--plan-in", plan_path, *campaign])
+            self.assertTrue(payload["refused"])
+            request.assert_not_called()
+
+    def test_campaign_status_receipt_checks_the_requested_status(self) -> None:
+        for operation, observed_status, verified in (("activate", 2, False), ("pause", 2, True), ("pause", 1, False)):
+            with self.subTest(operation=operation, observed_status=observed_status):
+                with tempfile.TemporaryDirectory() as td, patch("requests.Session.request") as request:
+                    env = _write_env(td)
+                    common = ["--output", "json", "--env-file", env]
+                    command = ["campaigns", operation, "--campaign-id", "C1"]
+                    flags = []
+                    if operation == "activate":
+                        plan = os.path.join(td, "plan.json")
+                        _run_json([*common, "--plan-out", plan, *command])
+                        flags = ["--yes", "--plan-in", plan]
+
+                    def reply(*, method: str, url: str, status: int = observed_status, **kwargs: Any) -> _FakeResponse:
+                        result = {"id": "C1", "status": status} if method == "GET" else {"success": True}
+                        return _json_response(url=url, status=200, obj=result)
+
+                    request.side_effect = reply
+                    code, output = _run_json([*common, "--apply", *flags, *command])
+                    self.assertEqual(code, 0 if verified else 1)
+                    self.assertEqual(output["receipt"]["verification"]["ok"], verified)
+                    self.assertTrue(Path(output["receipt_out"]).is_file())
+
+    def test_bulk_import_keeps_counts_and_reuses_keys_after_a_lost_reply(self) -> None:
+        with tempfile.TemporaryDirectory() as td, patch("requests.Session.request") as request:
+            env = _write_env(td)
+            leads = Path(td) / "leads.json"
+            leads.write_text(json.dumps([{"email": "first@example.invalid"}, {"email": "second@example.invalid"}]))
+            command = ["leads", "add-bulk", "--campaign-id", "C1", "--json", str(leads), "--chunk-size", "1"]
+            common = ["--output", "json", "--env-file", env]
+            apply = ["--apply", "--yes", "--ack-no-snapshot"]
+            first_run_bodies = []
+
+            def interrupted(*, method: str, url: str, **kwargs: Any) -> _FakeResponse:
+                self.assertEqual(method, "POST")
+                self.assertTrue(url.endswith("/leads/add"))
+                first_run_bodies.append(kwargs["json"])
+                if len(first_run_bodies) == 2:
+                    raise requests.Timeout("lost reply")
+                return _json_response(url=url, status=200, obj={"leads_uploaded": 1})
+
+            request.side_effect = interrupted
+            code, output = _run_json([*common, *apply, *command])
+            self.assertEqual(code, 1)
+            result = output["receipt"]["result"]
+            self.assertEqual(result["leads_uploaded"], 1)
+            self.assertEqual([batch["status"] for batch in result["chunks"]], ["reported", "unconfirmed"])
+            self.assertEqual(json.loads(Path(output["receipt_out"]).read_text())["result"], result)
+            self.assertNotEqual(first_run_bodies[0]["idempotency_key"], first_run_bodies[1]["idempotency_key"])
+
+            retry_plan = result["plan_for_retry"]
+            retry_bodies = []
+
+            def retry(*, url: str, **kwargs: Any) -> _FakeResponse:
+                retry_bodies.append(kwargs["json"])
+                return _json_response(url=url, status=200, obj={"leads_uploaded": 1})
+
+            request.side_effect = retry
+            code, output = _run_json([*common, *apply, "--plan-in", retry_plan, *command])
+            self.assertEqual(code, 0)
+            self.assertTrue(output["receipt"]["result"]["all_added"])
+            self.assertEqual(retry_bodies, first_run_bodies)
+            self.assertEqual(request.call_count, 4)
+
+            leads.write_text(json.dumps([{"email": "first@example.invalid"}, {"email": "changed@example.invalid"}]))
+            _, output = _run_json([*common, *apply, "--plan-in", retry_plan, *command])
+            self.assertTrue(output["refused"])
+            self.assertEqual(request.call_count, 4)
+
+    def test_bulk_import_reports_when_no_leads_were_added(self) -> None:
+        with tempfile.TemporaryDirectory() as td, patch("requests.Session.request") as request:
+            env = _write_env(td)
+            leads = Path(td) / "leads.json"
+            leads.write_text(json.dumps([{"email": "fake@example.invalid"}]))
+            request.return_value = _json_response(
+                url="https://api.instantly.ai/api/v2/leads/add",
+                status=200,
+                obj={"leads_uploaded": 0, "invalid_email_count": 1},
+            )
+            code, output = _run_json([
+                "--output", "json", "--env-file", env, "--apply", "--yes", "--ack-no-snapshot",
+                "leads", "add-bulk", "--campaign-id", "C1", "--json", str(leads),
+            ])
+            self.assertEqual(code, 0)
+            self.assertFalse(output["receipt"]["changed"])
+            self.assertFalse(output["receipt"]["result"]["all_added"])
+            self.assertEqual(output["receipt"]["result"]["chunks"][0]["counts"]["invalid_email_count"], 1)
+            request.assert_called_once()

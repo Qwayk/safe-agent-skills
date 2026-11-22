@@ -39,7 +39,7 @@ def build_plan(
         "selector": selector,
         "risk_level": risk_level,
         "risk_reasons": risk_reasons,
-        "preconditions": ["plan env_fingerprint must match current environment"],
+        "preconditions": ["Use the same Instantly API address and key when applying this saved plan."],
         "baseline": baseline,
         "request": request,
         "verification_plan": verification_plan,
@@ -55,7 +55,7 @@ def validate_plan_env(plan: dict[str, Any], *, env_fingerprint: str) -> None:
     if not isinstance(baseline, dict):
         raise ValidationError("Plan missing baseline dict")
     if str(baseline.get("env_fingerprint") or "") != str(env_fingerprint):
-        raise SafetyError("Refused: plan env_fingerprint does not match current environment")
+        raise SafetyError("Refused: this saved plan came from a different API address or key, or an older version. Save a fresh preview.")
 
 
 def validate_plan_kind(plan: dict[str, Any], *, kind: str) -> None:

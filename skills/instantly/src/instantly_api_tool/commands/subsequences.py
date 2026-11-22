@@ -75,14 +75,14 @@ def cmd_subsequences_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "subsequences.create", "value": file_path},
         risk_level="medium",
         risk_reasons=["creates-subsequence"],
         request={"method": "POST", "path": "/subsequences", "body": sanitize(body)},
         verification_plan={"type": "read-back", "notes": "Best-effort: GET subsequence by returned id."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -107,7 +107,7 @@ def cmd_subsequences_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -137,14 +137,14 @@ def cmd_subsequences_patch(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "subsequences.patch", "value": subsequence_id},
         risk_level="medium",
         risk_reasons=["updates-subsequence"],
         request={"method": "PATCH", "path": path, "body": sanitize(body)},
         verification_plan={"type": "read-back", "notes": "GET subsequence after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "subsequence_id": subsequence_id},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "subsequence_id": subsequence_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -167,7 +167,7 @@ def cmd_subsequences_patch(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -202,7 +202,7 @@ def cmd_subsequences_delete(args: Any, ctx: dict) -> int:
         if not isinstance(plan_obj_any, dict):
             raise ValidationError("Plan file must be a JSON object")
         plan_obj: dict[str, Any] = dict(plan_obj_any)
-        validate_plan_env(plan_obj, env_fingerprint=str(ctx["cfg"].base_url))
+        validate_plan_env(plan_obj, env_fingerprint=str(ctx["cfg"].env_fingerprint))
         validate_plan_kind(plan_obj, kind="subsequences.delete")
         baseline = plan_obj.get("baseline") or {}
         if not isinstance(baseline, dict):
@@ -219,14 +219,14 @@ def cmd_subsequences_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "subsequences.delete", "value": subsequence_id},
         risk_level="high",
         risk_reasons=["deletes-subsequence"],
         request={"method": "DELETE", "path": path, "body": {}},
         verification_plan={"type": "best-effort", "notes": "Best-effort: try GET subsequence after delete (should fail/404)."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "subsequence_id": subsequence_id},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "subsequence_id": subsequence_id},
     )
 
     plan_out = ctx.get("plan_out")
@@ -250,7 +250,7 @@ def cmd_subsequences_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -292,14 +292,14 @@ def cmd_subsequences_duplicate(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "subsequences.duplicate", "value": subsequence_id},
         risk_level="high",
         risk_reasons=["duplicates-subsequence"],
         request={"method": "POST", "path": path, "body": {}},
         verification_plan={"type": "read-back", "notes": "Best-effort GET by returned subsequence id."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "subsequence_id": subsequence_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "subsequence_id": subsequence_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -323,7 +323,7 @@ def cmd_subsequences_duplicate(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -350,14 +350,14 @@ def _pause_resume_common(args: Any, ctx: dict, *, op: str) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": f"subsequences.{op}", "value": subsequence_id},
         risk_level="medium",
         risk_reasons=[f"subsequence-{op}"],
         request={"method": "POST", "path": path, "body": {}},
         verification_plan={"type": "read-back", "notes": "Best-effort GET subsequence after apply."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url), "subsequence_id": subsequence_id},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint), "subsequence_id": subsequence_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -379,7 +379,7 @@ def _pause_resume_common(args: Any, ctx: dict, *, op: str) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,

@@ -14,7 +14,13 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Unsupported live write families now require explicit no-snapshot approval before HTTP when a safe pre-read is not available. This is intentional for create/send/bulk operations where the tool cannot capture a meaningful target state yet.
 - Public-facing README, onboarding, quickstart, use cases, and safety copy were rebuilt into the newer user-first Instantly skill pattern.
 
+- Starting or resuming a campaign now needs a saved plan and explicit confirmation. Older saved plans need a fresh preview because plans now check the API key as well as the address.
+
 ### Fixed
+
+- Setup keeps the selected settings file and creates it with owner-only access.
+- Campaign receipts check the actual status. Bulk imports save Instantly’s counts as each batch completes and keep the same request keys on retry.
+- The source archive now includes the skill, guides and working examples.
 
 ### Removed
 

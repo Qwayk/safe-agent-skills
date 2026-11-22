@@ -75,14 +75,14 @@ def cmd_custom_tags_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "custom-tags.create", "value": file_path},
         risk_level="medium",
         risk_reasons=["creates-custom-tag"],
         request={"method": "POST", "path": "/custom-tags", "body": sanitize(body)},
         verification_plan={"type": "read-back", "notes": "Best-effort: GET custom tag by returned id."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -107,7 +107,7 @@ def cmd_custom_tags_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -137,14 +137,14 @@ def cmd_custom_tags_patch(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "custom-tags.patch", "value": tag_id},
         risk_level="medium",
         risk_reasons=["updates-custom-tag"],
         request={"method": "PATCH", "path": path, "body": sanitize(body)},
         verification_plan={"type": "read-back", "notes": "GET custom tag after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "tag_id": tag_id},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "tag_id": tag_id},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -167,7 +167,7 @@ def cmd_custom_tags_patch(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -202,7 +202,7 @@ def cmd_custom_tags_delete(args: Any, ctx: dict) -> int:
         if not isinstance(plan_obj_any, dict):
             raise ValidationError("Plan file must be a JSON object")
         plan_obj: dict[str, Any] = dict(plan_obj_any)
-        validate_plan_env(plan_obj, env_fingerprint=str(ctx["cfg"].base_url))
+        validate_plan_env(plan_obj, env_fingerprint=str(ctx["cfg"].env_fingerprint))
         validate_plan_kind(plan_obj, kind="custom-tags.delete")
         baseline = plan_obj.get("baseline") or {}
         if not isinstance(baseline, dict):
@@ -219,14 +219,14 @@ def cmd_custom_tags_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "custom-tags.delete", "value": tag_id},
         risk_level="high",
         risk_reasons=["deletes-custom-tag"],
         request={"method": "DELETE", "path": path, "body": {}},
         verification_plan={"type": "best-effort", "notes": "Best-effort: try GET custom tag after delete (should fail/404)."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "tag_id": tag_id},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "tag_id": tag_id},
     )
 
     plan_out = ctx.get("plan_out")
@@ -250,7 +250,7 @@ def cmd_custom_tags_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -280,14 +280,14 @@ def cmd_custom_tags_toggle_resource(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "custom-tags.toggle-resource", "value": file_path},
         risk_level="high",
         risk_reasons=["tag-mapping-change"],
         request={"method": "POST", "path": "/custom-tags/toggle-resource", "body": sanitize(body)},
         verification_plan={"type": "read-back", "notes": "Best-effort: list custom tag mappings after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not apply) else None
@@ -310,7 +310,7 @@ def cmd_custom_tags_toggle_resource(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,

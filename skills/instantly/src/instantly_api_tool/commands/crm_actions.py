@@ -44,14 +44,14 @@ def cmd_crm_actions_delete_phone_number(args: Any, ctx: dict) -> int:
         plan = build_plan(
             tool=str(ctx.get("tool") or "instantly-api-tool"),
             version=str(ctx.get("tool_version") or ""),
-            env_fingerprint=str(ctx["cfg"].base_url),
+            env_fingerprint=str(ctx["cfg"].env_fingerprint),
             command=str(ctx.get("command_str") or ""),
             selector={"kind": "crm-actions.delete-phone-number", "value": phone_id},
             risk_level="high",
             risk_reasons=["deletes-crm-phone-number"],
             request={"method": "DELETE", "path": path, "body": {}},
             verification_plan={"type": "best-effort", "notes": "Best-effort: list phone numbers after apply."},
-            baseline={"env_fingerprint": str(ctx["cfg"].base_url), "id": phone_id},
+            baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "id": phone_id},
         )
         plan_out = ctx.get("plan_out")
         plan_path_out = write_json_file(plan_out, plan) if plan_out else None
@@ -62,7 +62,7 @@ def cmd_crm_actions_delete_phone_number(args: Any, ctx: dict) -> int:
     assert plan_in is not None
     plan_obj = load_apply_plan(
         plan_in=plan_in,
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         kind="crm-actions.delete-phone-number",
     )
     _, plan_path_val, body = request_from_plan(plan_obj, expected_method="DELETE")
@@ -82,7 +82,7 @@ def cmd_crm_actions_delete_phone_number(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan_obj.get("selector"),
         "changed": True,

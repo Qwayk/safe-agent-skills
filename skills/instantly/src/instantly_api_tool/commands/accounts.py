@@ -78,14 +78,14 @@ def cmd_accounts_list(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "accounts.list", "value": params or {}},
         risk_level="high",
         risk_reasons=["sensitive-read", "credential-bearing"],
         request={"method": "GET", "path": "/accounts", "params": params},
         verification_plan={"type": "response-only", "notes": "Response is saved to receipt file only."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -101,7 +101,7 @@ def cmd_accounts_list(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": False,
@@ -125,14 +125,14 @@ def cmd_accounts_get(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "accounts.get", "value": email},
         risk_level="high",
         risk_reasons=["sensitive-read", "credential-bearing"],
         request={"method": "GET", "path": f"/accounts/{email}"},
         verification_plan={"type": "response-only", "notes": "Response is saved to receipt file only."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "email": email},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "email": email},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -148,7 +148,7 @@ def cmd_accounts_get(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": False,
@@ -172,14 +172,14 @@ def cmd_accounts_create(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "accounts.create", "value": file_path},
         risk_level="medium",
         risk_reasons=["creates-account", "credential-bearing"],
         request={"method": "POST", "path": "/accounts", "body": sanitize(body)},
         verification_plan={"type": "best-effort", "notes": "Best-effort: re-fetch the created account by email."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -204,7 +204,7 @@ def cmd_accounts_create(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -234,14 +234,14 @@ def cmd_accounts_patch(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "accounts.patch", "value": email},
         risk_level="medium",
         risk_reasons=["updates-account", "credential-bearing"],
         request={"method": "PATCH", "path": path, "body": sanitize(body)},
         verification_plan={"type": "best-effort", "notes": "Best-effort: re-fetch the account after patch."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "email": email},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "email": email},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -264,7 +264,7 @@ def cmd_accounts_patch(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -299,7 +299,7 @@ def cmd_accounts_delete(args: Any, ctx: dict) -> int:
         if not isinstance(plan_obj_any, dict):
             raise ValidationError("Plan file must be a JSON object")
         plan_obj: dict[str, Any] = dict(plan_obj_any)
-        validate_plan_env(plan_obj, env_fingerprint=str(ctx["cfg"].base_url))
+        validate_plan_env(plan_obj, env_fingerprint=str(ctx["cfg"].env_fingerprint))
         validate_plan_kind(plan_obj, kind="accounts.delete")
 
         baseline = plan_obj.get("baseline") or {}
@@ -318,14 +318,14 @@ def cmd_accounts_delete(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "accounts.delete", "value": email},
         risk_level="high",
         risk_reasons=["deletes-account"],
         request={"method": "DELETE", "path": path, "body": {}},
         verification_plan={"type": "best-effort", "notes": "Best-effort: try GET account after delete (should fail/404)."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "email": email},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "email": email},
     )
 
     plan_out = ctx.get("plan_out")
@@ -348,7 +348,7 @@ def cmd_accounts_delete(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -381,14 +381,14 @@ def _warmup_common(args: Any, ctx: dict, *, op: str) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": f"accounts.warmup.{op}", "value": file_path},
         risk_level="high",
         risk_reasons=["batch-account-warmup-toggle"],
         request={"method": "POST", "path": path, "body": sanitize(body)},
         verification_plan={"type": "best-effort", "notes": "Best-effort: list accounts after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not apply) else None
@@ -410,7 +410,7 @@ def _warmup_common(args: Any, ctx: dict, *, op: str) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -446,14 +446,14 @@ def _pause_resume_common(args: Any, ctx: dict, *, op: str) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": f"accounts.{op}", "value": email},
         risk_level="medium",
         risk_reasons=[f"account-{op}"],
         request={"method": "POST", "path": path, "body": {}},
         verification_plan={"type": "best-effort", "notes": "Best-effort: re-fetch the account after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "email": email},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "email": email},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -475,7 +475,7 @@ def _pause_resume_common(args: Any, ctx: dict, *, op: str) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -508,14 +508,14 @@ def cmd_accounts_mark_fixed(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "accounts.mark-fixed", "value": email},
         risk_level="medium",
         risk_reasons=["account-mark-fixed"],
         request={"method": "POST", "path": path, "body": {}},
         verification_plan={"type": "best-effort", "notes": "Best-effort: re-fetch the account after apply."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url), "email": email},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint), "email": email},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -538,7 +538,7 @@ def cmd_accounts_mark_fixed(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -568,14 +568,14 @@ def cmd_accounts_move(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "accounts.move", "value": file_path},
         risk_level="high",
         risk_reasons=["batch-move-accounts"],
         request={"method": "POST", "path": path, "body": sanitize(body)},
         verification_plan={"type": "response-only", "notes": "Response-only (moving accounts is a sensitive operation)."},
-        baseline={"env_fingerprint": str(ctx['cfg'].base_url)},
+        baseline={"env_fingerprint": str(ctx['cfg'].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not apply) else None
@@ -592,7 +592,7 @@ def cmd_accounts_move(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -618,14 +618,14 @@ def cmd_accounts_test_vitals(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "accounts.test-vitals", "value": file_path},
         risk_level="medium",
         risk_reasons=["account-vitals-check", "sensitive-read"],
         request={"method": "POST", "path": "/accounts/test/vitals", "body": sanitize(body)},
         verification_plan={"type": "best-effort", "notes": "No separate verification; response is the result."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -642,7 +642,7 @@ def cmd_accounts_test_vitals(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
@@ -665,14 +665,14 @@ def cmd_accounts_ctd_status(args: Any, ctx: dict) -> int:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": "accounts.ctd_status", "value": "accounts/ctd/status"},
         risk_level="high",
         risk_reasons=["sensitive-read", "credential-bearing"],
         request={"method": "GET", "path": "/accounts/ctd/status"},
         verification_plan={"type": "response-only", "notes": "Response is saved to receipt file only."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitize(plan)) if (plan_out and not bool(ctx.get("apply"))) else None
@@ -688,7 +688,7 @@ def cmd_accounts_ctd_status(args: Any, ctx: dict) -> int:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": False,

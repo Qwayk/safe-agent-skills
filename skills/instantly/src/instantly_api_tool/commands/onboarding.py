@@ -1,63 +1,37 @@
 from __future__ import annotations
 
+import os
+import shlex
 from pathlib import Path
 
-
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
-
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+from ..config import _get, _parse_env_file
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
-    out = ctx["out"]
     env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
-
     env_path = Path(env_file)
+    write_env = not bool(getattr(args, "no_write_env", False))
     env_created = False
 
     if write_env and not env_path.exists():
         example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
+        contents = example_path.read_text(encoding="utf-8") if example_path.is_file() else "INSTANTLY_API_KEY=\n"
+        try:
+            fd = os.open(env_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        except FileExistsError:
+            pass
         else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
+            with os.fdopen(fd, "w", encoding="utf-8") as file:
+                file.write(contents)
+            env_created = True
 
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "INSTANTLY_API_BASE_URL"):
-        missing.append("INSTANTLY_API_BASE_URL")
-    if not _has_nonempty_env_value(lines, "INSTANTLY_API_KEY"):
-        missing.append("INSTANTLY_API_KEY")
-
+    key = _get(_parse_env_file(env_path), "INSTANTLY_API_KEY")
+    missing = [] if key else ["INSTANTLY_API_KEY"]
+    next_command = shlex.join(["instantly-api-tool", "--output", "json", "--env-file", env_file, "auth", "check"])
     steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Open .env and fill the required values:",
-        "  - INSTANTLY_API_BASE_URL=https://api.instantly.ai/api/v2",
-        "  - INSTANTLY_API_KEY=<your Instantly API key>",
-        "In Instantly: Settings → Integrations/API (or API Keys) → create/copy an API key.",
-        "Never paste your API key into chat.",
-        "Run: instantly-api-tool --output json auth check",
+        "In Instantly, open Settings, then API Keys. Use a key with access to the work you want to do.",
+        f"Set INSTANTLY_API_KEY in {env_file}. Keep the key out of chat and Git.",
+        "Run the connection check below.",
     ]
 
     payload = {
@@ -66,20 +40,16 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             "env_file": env_file,
             "env_created": env_created,
             "missing": missing,
-            "next_command": "instantly-api-tool --output json auth check",
+            "next_command": next_command,
             "steps": steps,
         },
     }
-
     if str(getattr(args, "output", "json")) == "json":
-        out.emit(payload)
+        ctx["out"].emit(payload)
     else:
-        print("To connect this tool to your API, do this once:")
-        for i, s in enumerate(steps, start=1):
-            print(f"{i}. {s}")
+        for i, step in enumerate(steps, start=1):
+            print(f"{i}. {step}")
         if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        print("")
-        print("Next: instantly-api-tool --output json auth check")
+            print(f"Missing settings: {', '.join(missing)}")
+        print(next_command)
     return 0

@@ -398,7 +398,7 @@ def build_parser() -> argparse.ArgumentParser:
     campaigns_create = campaigns_sub.add_parser("create", help="Create campaign from JSON file")
     campaigns_create.add_argument("--file", required=True, help="Campaign create JSON file")
     campaigns_create.set_defaults(func=campaigns_cmd.cmd_campaigns_create, write_capable=True)
-    campaigns_activate = campaigns_sub.add_parser("activate", help="Activate a campaign")
+    campaigns_activate = campaigns_sub.add_parser("activate", help="Start or resume a campaign (apply requires --yes and --plan-in)")
     campaigns_activate.add_argument("--campaign-id", required=True, help="Campaign id")
     campaigns_activate.set_defaults(func=campaigns_cmd.cmd_campaigns_activate, write_capable=True)
     campaigns_pause = campaigns_sub.add_parser("pause", help="Pause a campaign")
@@ -1151,7 +1151,7 @@ def main(argv: list[str]) -> int:
             return rc
 
         cfg = load_config(args.env_file)
-        env_fingerprint = cfg.base_url
+        env_fingerprint = cfg.env_fingerprint
         timeout_s = float(args.timeout_s) if args.timeout_s is not None else cfg.timeout_s
         ctx = {
             "cfg": cfg,
@@ -1195,7 +1195,7 @@ def main(argv: list[str]) -> int:
                 "apply": bool(args.apply),
                 "yes": bool(args.yes),
                 "ack_no_snapshot": bool(args.ack_no_snapshot),
-                "env_fingerprint": cfg.base_url,
+                "env_fingerprint": env_fingerprint,
                 "run_id": run_ctx.run_id,
             }
         )

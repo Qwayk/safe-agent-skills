@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import dataclasses
+import hashlib
+import json
 import os
 from pathlib import Path
 
@@ -35,6 +37,11 @@ class Config:
     base_url: str
     api_key: str
     timeout_s: float
+
+    @property
+    def env_fingerprint(self) -> str:
+        identity = json.dumps([self.base_url, self.api_key], ensure_ascii=False)
+        return "instantly-v2:" + hashlib.sha256(identity.encode("utf-8")).hexdigest()
 
 
 def load_config(env_file: str | None) -> Config:

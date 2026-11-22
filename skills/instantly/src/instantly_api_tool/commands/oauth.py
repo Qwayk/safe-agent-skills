@@ -34,14 +34,14 @@ def _cmd_oauth_init(*, args: Any, ctx: dict, kind: str, path: str, audit_prefix:
     plan = build_plan(
         tool=str(ctx.get("tool") or "instantly-api-tool"),
         version=str(ctx.get("tool_version") or ""),
-        env_fingerprint=str(ctx["cfg"].base_url),
+        env_fingerprint=str(ctx["cfg"].env_fingerprint),
         command=str(ctx.get("command_str") or ""),
         selector={"kind": kind, "value": file_path},
         risk_level="medium",
         risk_reasons=["starts-oauth-session"],
         request={"method": "POST", "path": path, "body": body},
         verification_plan={"type": "best-effort", "notes": "If response includes a session id, check status via oauth session-status."},
-        baseline={"env_fingerprint": str(ctx["cfg"].base_url)},
+        baseline={"env_fingerprint": str(ctx["cfg"].env_fingerprint)},
     )
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if (plan_out and not apply) else None
@@ -56,7 +56,7 @@ def _cmd_oauth_init(*, args: Any, ctx: dict, kind: str, path: str, audit_prefix:
         "tool": str(ctx.get("tool") or "instantly-api-tool"),
         "version": str(ctx.get("tool_version") or ""),
         "applied_at_utc": utc_now(),
-        "env_fingerprint": str(ctx["cfg"].base_url),
+        "env_fingerprint": str(ctx["cfg"].env_fingerprint),
         "command": str(ctx.get("command_str") or ""),
         "selector": plan.get("selector"),
         "changed": True,
