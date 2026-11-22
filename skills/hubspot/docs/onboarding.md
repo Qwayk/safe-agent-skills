@@ -1,50 +1,39 @@
 # Connect your HubSpot account
 
-HubSpot needs a local private app token before an agent can inspect contacts, companies, deals, owners, tickets, and CRM gaps.
+You can connect with a HubSpot private app token or an OAuth token file you already have. Keep the token on your computer and out of chat and Git.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## Use a private app token
 
-After setup, start with a small owner, contact, or deal read before asking for CRM changes.
+1. Run `qwayk-hubspot-safe-agent-cli onboarding`. It creates a local `.env` if one is missing. From a source checkout it can copy `.env.example`.
+2. In HubSpot, open **Settings → Integrations → Private apps**. Open or create a private app with the CRM permissions your work needs.
+3. Set `HUBSPOT_ACCESS_TOKEN` in `.env` or in your shell. The older name `HUBSPOT_API_TOKEN` also works as a fallback.
 
-## Step 1: Create `.env`
-
-1. Copy `.env.example` to `.env`.
-2. Keep `HUBSPOT_API_BASE_URL` as `https://api.hubapi.com` unless you use a custom base URL.
-3. Paste your HubSpot token into `HUBSPOT_ACCESS_TOKEN`.
-
-## Step 2: Get a HubSpot private app token (recommended default)
-
-1. In HubSpot, open **Settings → Integrations → Private apps**.
-2. Create or open a private app and enable the CRM scopes you need.
-3. Copy the generated token.
-4. Paste only the token into `.env` under `HUBSPOT_ACCESS_TOKEN`.
-
-## Optional: use an existing OAuth JSON token
-
-If you already have an OAuth token JSON file, you can use it with:
+## Use an existing OAuth token file
 
 ```bash
 qwayk-hubspot-safe-agent-cli auth token set --file path/to/token.json
+qwayk-hubspot-safe-agent-cli auth token status
 ```
 
-## Step 3: Run setup checks
+The tool saves this file under `.state/token.json` next to your settings file. It uses the stored token when no configured token is present. If the token expires, renew it through your OAuth process and save the new token file with the same command.
+
+## Check the connection
 
 ```bash
-qwayk-hubspot-safe-agent-cli onboarding
 qwayk-hubspot-safe-agent-cli --output json auth check
 ```
 
-## If the check fails
+This reads one owner from HubSpot. It checks that the token works for that read. Check permissions for the specific records or changes you need. Then run a small read and confirm the records are from the account you meant to use.
 
-Most failures are:
-- Missing values in `.env`
-- Wrong HubSpot scopes
-- Account tier or object visibility limits
+## Settings you can change
 
-If errors repeat, use the local troubleshooting section and ask for a clear read of what was missing.
+- Use `--env-file` before the command to select another settings file. Use the same flag for setup, auth checks, previews, and follow-up commands. Onboarding includes it in the next command it prints.
+- Set `HUBSPOT_API_BASE_URL` only when you need a different API address. It defaults to `https://api.hubapi.com`. The older name `HUBSPOT_BASE_URL` also works.
+- Requests wait up to 30 seconds by default. Set `HUBSPOT_TIMEOUT_S` or pass `--timeout-s` for one command.
+- For the same setting name, a value in your shell takes precedence over the settings file.
 
-## What to ask your AI agent
+## If a command fails
 
-- “Run setup first, then check what is available in my HubSpot account.”
-- “Find the right records with read-only commands before I approve any write.”
-- “Show me a dry-run plan. Do not apply HubSpot writes when no saved snapshot is available.”
+Check the settings file, account, token permissions, and record IDs. A missing owner permission can stop the connection check even if the token can read other records. Check the JSON result for the reason a command stopped. For a write whose result is unclear, check HubSpot before sending it again.
+
+Use `--verbose` to see HTTP request details. Use `--debug` for a Python stack trace while working on the tool. Keep both kinds of output private if they contain account details. For a refused write, see [approval rules](safety_model.md).

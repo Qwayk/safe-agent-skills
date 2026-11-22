@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import hmac
 import json
 import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from shlex import join
 from typing import Any
 
 import requests
@@ -13,12 +16,13 @@ import requests
 from ..errors import SafetyError, ValidationError
 from ..http import HttpClient
 from ..json_files import read_json_file, write_json_file
-from ..oauth_tokens import read_token_json, token_path_for_env_file
+from ..oauth_tokens import resolve_access_token
 
 
 _TOOL_NAME = "qwayk-hubspot-safe-agent-cli"
 _USER_AGENT = f"{_TOOL_NAME}/safe-apis"
 _PATH_RE = re.compile(r"\{([A-Za-z0-9_]+)\}")
+_REVIEW_FIELDS = ("tool", "family", "action", "method", "path", "query", "payload", "upload_details")
 
 
 @dataclass(frozen=True)
@@ -637,21 +641,6 @@ def _path_names(path: str) -> list[str]:
     return _PATH_RE.findall(path)
 
 
-def _resolve_token(cfg: Any, env_file: str) -> str | None:
-    token = str(getattr(cfg, "token") or "").strip()
-    if token:
-        return token
-
-    token_path = token_path_for_env_file(env_file)
-    data = read_token_json(token_path)
-    if not data:
-        return None
-    raw = data.get("access_token")
-    if isinstance(raw, str) and raw.strip():
-        return raw.strip()
-    return None
-
-
 def _collect_query(spec: ActionSpec, args: Any) -> dict[str, Any]:
     out: dict[str, Any] = {}
     if spec.fixed_query:
@@ -693,16 +682,24 @@ def _read_body(payload_path: str | None) -> Any:
     return body
 
 
-def _build_headers(cfg: Any, ctx: dict[str, Any]) -> dict[str, str]:
-    headers = {
-        "User-Agent": _USER_AGENT,
-        "Accept": "application/json",
-    }
-    token = _resolve_token(cfg, str(ctx["env_file"]))
+def _build_headers(token: str | None) -> dict[str, str]:
     if not token:
         raise ValidationError("Missing token. Set HUBSPOT_ACCESS_TOKEN or run auth token set --file token.json")
-    headers["Authorization"] = f"Bearer {token}"
-    return headers
+    return {
+        "User-Agent": _USER_AGENT,
+        "Accept": "application/json",
+        "Authorization": f"Bearer {token}",
+    }
+
+
+def _needs_saved_plan(spec: ActionSpec, action: str) -> bool:
+    return spec.require_plan_in or spec.requires_files or action.startswith("batch-")
+
+
+def _reviewed_request(plan: dict[str, Any]) -> bytes:
+    fields = {key: plan.get(key) for key in _REVIEW_FIELDS}
+    fields["base_url"] = plan["baseline"].get("env_fingerprint")
+    return json.dumps(fields, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
 def _build_plan(
@@ -711,22 +708,25 @@ def _build_plan(
     action: str,
     spec: ActionSpec,
     cfg: Any,
+    path: str,
     command_str: str,
     payload: Any,
     query: dict[str, Any],
     upload_files: list[str],
+    upload_details: list[dict[str, str]],
+    token: str | None,
 ) -> dict[str, Any]:
     risk_reasons: list[str] = []
     if spec.require_yes:
         risk_reasons.append("require_yes")
     if spec.require_ack:
         risk_reasons.append("require_ack")
-    if spec.require_plan_in:
+    if _needs_saved_plan(spec, action):
         risk_reasons.append("require_plan_in")
     if spec.requires_files:
         risk_reasons.append("requires_files")
 
-    return {
+    plan = {
         "tool": _TOOL_NAME,
         "version": "0.1.0",
         "generated_at_utc": _safe_now_utc(),
@@ -735,12 +735,13 @@ def _build_plan(
         "family": family,
         "action": action,
         "method": spec.method,
-        "path": spec.path,
+        "path": path,
         "risk_level": "high" if risk_reasons else "low",
         "risk_reasons": risk_reasons,
         "query": query,
         "payload": payload,
         "upload_files": upload_files,
+        "upload_details": upload_details,
         "baseline": {"env_fingerprint": cfg.base_url},
         "before_state": {
             "required": True,
@@ -761,26 +762,37 @@ def _build_plan(
             ),
         },
     }
+    if token:
+        plan["connection_proof"] = hmac.digest(token.encode(), _reviewed_request(plan), "sha256").hex()
+    return plan
 
 
-def _assert_write_gates(spec: ActionSpec, cfg: Any, ctx: dict[str, Any], args: Any) -> None:
-    _ = args
+def _assert_write_gates(spec: ActionSpec, action: str, ctx: dict[str, Any]) -> None:
     if spec.require_yes and not bool(ctx.get("yes")):
         raise SafetyError(f"Refused: {spec.method} {spec.path} requires --yes")
     if spec.require_ack and not bool(ctx.get("ack_irreversible")):
         raise SafetyError(f"Refused: {spec.method} {spec.path} requires --ack-irreversible")
-    if spec.require_plan_in and not bool(ctx.get("plan_in")):
-        raise SafetyError("Refused: this command requires --plan-in")
+    if _needs_saved_plan(spec, action) and not ctx.get("plan_in"):
+        raise SafetyError("Refused: this command requires --plan-in. Save and review a preview first.")
+    if not ctx.get("ack_no_snapshot"):
+        raise SafetyError(
+            "Refused: this HubSpot write has no saved before-state snapshot. "
+            "Review the plan, confirm the recovery limit, then re-run with --ack-no-snapshot."
+        )
 
-    if ctx.get("plan_in"):
-        plan_obj = read_json_file(ctx["plan_in"])
-        if not isinstance(plan_obj, dict):
-            raise ValidationError("Plan file must be a JSON object")
-        baseline = plan_obj.get("baseline")
-        if not isinstance(baseline, dict):
-            raise SafetyError("Refused: plan missing baseline")
-        if str(baseline.get("env_fingerprint") or "") != str(cfg.base_url):
-            raise SafetyError("Refused: plan env fingerprint mismatch")
+
+def _check_saved_plan(plan_path: str, current: dict[str, Any]) -> None:
+    saved = read_json_file(plan_path)
+    if not isinstance(saved, dict):
+        raise ValidationError("Plan file must be a JSON object")
+    saved_proof = saved.get("connection_proof")
+    current_proof = current.get("connection_proof")
+    if not isinstance(saved.get("baseline"), dict) or not saved_proof or not current_proof:
+        raise SafetyError("Refused: save a fresh preview with the HubSpot connection you will use.")
+    if _reviewed_request(saved) != _reviewed_request(current):
+        raise SafetyError("Refused: the request changed. Save and review a fresh preview.")
+    if not isinstance(saved_proof, str) or not hmac.compare_digest(saved_proof.encode(), current_proof.encode()):
+        raise SafetyError("Refused: the HubSpot connection changed. Save and review a fresh preview.")
 
 
 def _validate_request_payload(spec: ActionSpec, args: Any) -> Any:
@@ -802,55 +814,52 @@ def _validate_file_uploads(spec: ActionSpec, args: Any) -> list[str]:
     paths: list[str] = []
     for item in files:
         path = Path(item)
-        if not path.exists():
+        if not path.is_file():
             raise ValidationError(f"Upload file missing: {item}")
         paths.append(str(path))
     return paths
 
 
+def _upload_details(paths: list[str], uploads: list[tuple[str, bytes]]) -> list[dict[str, str]]:
+    if uploads:
+        return [{"name": name, "sha256": hashlib.sha256(contents).hexdigest()} for name, contents in uploads]
+    details = []
+    for item in paths:
+        path = Path(item)
+        with path.open("rb") as source:
+            sha256 = hashlib.file_digest(source, "sha256").hexdigest()
+        details.append({"name": path.name, "sha256": sha256})
+    return details
+
+
 def _http_request(
     *,
     spec: ActionSpec,
-    cfg: Any,
+    url: str,
+    token: str | None,
     ctx: dict[str, Any],
     query: dict[str, Any],
     payload: Any,
-    path_values: dict[str, str],
-    upload_paths: list[str],
-) -> Any:
-    url = cfg.base_url.rstrip("/") + spec.path.format(**path_values)
-    headers = _build_headers(cfg, ctx)
+    uploads: list[tuple[str, bytes]],
+) -> tuple[int, Any]:
+    headers = _build_headers(token)
 
     if spec.requires_request_file and spec.requires_files:
-        opened_files: list[tuple[Any, Any]] = []
-        try:
-            files = []
-            for item in upload_paths:
-                f = open(item, "rb")
-                opened_files.append((f, item))
-                files.append(("files", (Path(item).name, f, "application/octet-stream")))
-            data = {"importRequest": json.dumps(payload)}
-            resp = requests.post(
-                url=url,
-                headers=headers,
-                params=query or None,
-                data=data,
-                files=files,
-                timeout=ctx["timeout_s"],
-            )
-        finally:
-            for f, _ in opened_files:
-                try:
-                    f.close()
-                except Exception:
-                    pass
+        resp = requests.post(
+            url=url,
+            headers=headers,
+            params=query or None,
+            data={"importRequest": json.dumps(payload)},
+            files=[("files", (name, contents, "application/octet-stream")) for name, contents in uploads],
+            timeout=ctx["timeout_s"],
+        )
 
         if resp.status_code >= 400:
             raise RuntimeError(f"HTTP {resp.status_code} for HubSpot API request")
         try:
-            return resp.json()
-        except Exception:
-            return {"status": resp.status_code, "text": resp.text}
+            return resp.status_code, resp.json()
+        except ValueError:
+            return resp.status_code, {"status": resp.status_code, "text": resp.text}
 
     transport = HttpClient(timeout_s=ctx["timeout_s"], verbose=bool(ctx.get("verbose")), user_agent=_USER_AGENT)
     response = transport.request(
@@ -861,14 +870,57 @@ def _http_request(
         json_body=(payload if isinstance(payload, (dict, list)) else None),
     )
 
-    if response.status in (204, 205):
-        return {}
-    if not response.body:
-        return {}
+    if response.status in (204, 205) or not response.body:
+        return response.status, {}
     try:
-        return response.json()
-    except Exception:
-        return {"status": response.status, "text": response.text()}
+        return response.status, response.json()
+    except ValueError:
+        return response.status, {"status": response.status, "text": response.text()}
+
+
+def _import_result(response: dict[str, Any], env_file: str) -> dict[str, Any]:
+    state = response.get("state")
+    import_id = response.get("importId")
+    if state in ("FAILED", "CANCELED"):
+        result = "failed"
+    elif state == "DONE":
+        result = "completed"
+    elif import_id and state in (None, "STARTED", "PROCESSING", "DEFERRED"):
+        result = "submitted"
+    else:
+        result = "unconfirmed"
+    details: dict[str, Any] = {"status": result, "ok": result == "completed", "state": state}
+    if import_id:
+        check = [_TOOL_NAME, "--env-file", env_file, "hubspot", "imports"]
+        details.update(
+            import_id=import_id,
+            check_status=join([*check, "get", "--import-id", str(import_id)]),
+            check_errors=join([*check, "errors", "--import-id", str(import_id)]),
+        )
+    return details
+
+
+def _write_result(
+    family: str, action: str, http_status: int, response: Any, env_file: str
+) -> dict[str, Any]:
+    payload = response if isinstance(response, dict) else {}
+    if (family, action) == ("imports", "create"):
+        return {"type": "provider_response", **_import_result(payload, env_file)}
+    if action.startswith("batch-"):
+        status = payload.get("status")
+        count = payload.get("numErrors")
+        if status in ("FAILED", "CANCELED", "CANCELLED"):
+            result = "failed"
+        elif http_status == 207 or payload.get("errors") or (isinstance(count, int) and count > 0):
+            result = "partial" if payload.get("results") else "failed"
+        elif status in ("PENDING", "PROCESSING") or http_status == 202:
+            result = "submitted"
+        elif status == "COMPLETE" or http_status in (204, 205):
+            result = "completed"
+        else:
+            result = "unconfirmed"
+        return {"type": "provider_response", "status": result, "ok": result == "completed"}
+    return {"type": "provider_response", "ok": True}
 
 
 def _register_action_parser(
@@ -926,21 +978,34 @@ def cmd_hubspot_api(args: Any, ctx: dict[str, Any]) -> int:
     action = str(getattr(args, "hubspot_action", "")).strip()
 
     query = _collect_query(spec, args)
-    path_values = _collect_path_values(spec, args)
+    path = spec.path.format(**_collect_path_values(spec, args))
     payload = _validate_request_payload(spec, args)
     upload_paths = _validate_file_uploads(spec, args)
 
-    if spec.write and not bool(ctx.get("apply")):
+    applying = bool(ctx.get("apply"))
+    env_file = str(ctx["env_file"])
+    uploads = []
+    if spec.write and applying:
+        _assert_write_gates(spec, action, ctx)
+        uploads = [(Path(item).name, Path(item).read_bytes()) for item in upload_paths]
+
+    token = resolve_access_token(cfg.token, env_file)
+    if spec.write:
         plan = _build_plan(
             family=family,
             action=action,
             spec=spec,
             cfg=cfg,
+            path=path,
             command_str=ctx["command_str"],
             payload=payload,
             query=query,
             upload_files=upload_paths,
+            upload_details=_upload_details(upload_paths, uploads),
+            token=token,
         )
+
+    if spec.write and not applying:
         plan_out = ctx.get("plan_out")
         plan_path = write_json_file(plan_out, plan) if isinstance(plan_out, str) else None
         ctx["out"].emit(
@@ -957,35 +1022,22 @@ def cmd_hubspot_api(args: Any, ctx: dict[str, Any]) -> int:
         )
         return 0
 
-    if spec.write:
-        _assert_write_gates(spec=spec, cfg=cfg, ctx=ctx, args=args)
-        if not bool(ctx.get("ack_no_snapshot")):
-            raise SafetyError(
-                "Refused: this HubSpot write has no saved before-state snapshot. "
-                "Review the plan, confirm the recovery limit, then re-run with --ack-no-snapshot."
-            )
+    if spec.write and ctx.get("plan_in"):
+        _check_saved_plan(ctx["plan_in"], plan)
 
-    response = _http_request(
+    http_status, response = _http_request(
         spec=spec,
-        cfg=cfg,
+        url=cfg.base_url.rstrip("/") + path,
+        token=token,
         ctx=ctx,
         query=query,
         payload=payload,
-        path_values=path_values,
-        upload_paths=upload_paths,
+        uploads=uploads,
     )
 
     if spec.write:
-        plan = _build_plan(
-            family=family,
-            action=action,
-            spec=spec,
-            cfg=cfg,
-            command_str=ctx["command_str"],
-            payload=payload,
-            query=query,
-            upload_files=upload_paths,
-        )
+        verification = _write_result(family, action, http_status, response, env_file)
+        ok = verification.get("status") not in ("partial", "failed", "unconfirmed")
         receipt = {
             "tool": _TOOL_NAME,
             "version": "0.1.0",
@@ -993,18 +1045,18 @@ def cmd_hubspot_api(args: Any, ctx: dict[str, Any]) -> int:
             "family": family,
             "action": action,
             "method": spec.method,
-            "path": spec.path,
+            "path": path,
             "before_state": plan.get("before_state"),
             "no_snapshot_approval": {"approved": True, "flag": "--ack-no-snapshot"},
             "rollback_plan": plan.get("rollback_plan"),
             "response": response,
-            "verification": {"type": "provider_response", "ok": True},
+            "verification": verification,
         }
         receipt_out = ctx.get("receipt_out")
         receipt_path = write_json_file(receipt_out, receipt) if isinstance(receipt_out, str) else None
         ctx["out"].emit(
             {
-                "ok": True,
+                "ok": ok,
                 "dry_run": False,
                 "receipt": receipt,
                 "receipt_out": receipt_path,
@@ -1013,7 +1065,7 @@ def cmd_hubspot_api(args: Any, ctx: dict[str, Any]) -> int:
                 "query": query,
             }
         )
-        return 0
+        return 0 if ok else 1
 
     if not spec.write:
         ctx["out"].emit(

@@ -1,72 +1,48 @@
-# Proof and verification
+# HubSpot verification
 
-HubSpot proof should answer a simple question: what has actually been checked for CRM records, owners, pipelines, marketing data, and account resources, and what still needs live credentials, permissions, or reviewer judgment?
+## November 22, 2026
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+All 32 tests passed in the source and local catalog copies under Python 3.12. Each built package installed in a fresh environment. Both skills passed the skill validator. All 61 examples in the command guide parsed with the expected approval flags, and local links resolved.
 
-If you only check one thing, check record/pipeline proof and write-plan evidence before trusting CRM changes.
+The installed CLI kept the chosen settings file, refused a changed CSV before sending a request, and reported a queued import and a partly successful bulk change correctly. These checks used fake HubSpot replies on this computer and made zero live HubSpot calls.
 
-## Last verified
+Run the tests from the tool folder with Python 3.12 or newer:
 
-Date (UTC): `2026-06-04`
-Verified by: `qwayk-hubspot-safe-agent-cli maintainers`
-Tool version: `0.1.0`
-Environment: `local portfolio-build` / base URL: `https://api.hubapi.com`
+```bash
+PYTHONPATH=src python3 -m unittest discover -s tests
+```
 
-## Smoke checks
+The tests cover the shipped commands, setup, saved plans, approvals, multipart uploads, import receipts, and partial bulk failures. They also check local run history and JSON output.
 
-Run inside the tool folder:
+For a quick check after installing the package:
 
-1. Create venv + install:
-   - `python3 -m venv .venv`
-   - `.venv/bin/python -m pip install -e .`
-2. Version (no `.env` required):
-   - `.venv/bin/qwayk-hubspot-safe-agent-cli --output json --version`
-3. Guided setup without live creds:
-   - `.venv/bin/qwayk-hubspot-safe-agent-cli --output json onboarding`
-4. Auth check with live creds only:
-   - `.venv/bin/qwayk-hubspot-safe-agent-cli --output json auth check`
-5. One safe write preview:
-   - `.venv/bin/qwayk-hubspot-safe-agent-cli --plan-out plan.json hubspot objects create --object-type contacts --body-file body.json`
-6. One missing-approval write refusal:
-   - `.venv/bin/qwayk-hubspot-safe-agent-cli --apply --yes --ack-irreversible hubspot objects archive --object-type contacts --object-id 123`
+```bash
+qwayk-hubspot-safe-agent-cli --output json --version
+qwayk-hubspot-safe-agent-cli --env-file 'my settings.env' onboarding --no-write-env
+```
 
-## Commands run in this portfolio build
+For a first account read, use [the quickstart](quickstart.md). For a change, use [the approval steps](safety_model.md).
 
-- `PYTHONPATH=src python3 -m unittest tests.test_command_families tests.test_hubspot_safety tests.test_hubspot_import_validation tests.test_run_artifacts tests.test_onboarding_command tests.test_auth_redaction tests.test_imports`
-- `PYTHONPATH=src python3 -m unittest discover -s tests`
-- `PYTHONPATH=src python3 -m hubspot_safe_agent_cli --output json --version`
-- `PYTHONPATH=src python3 -m hubspot_safe_agent_cli --output json --env-file "$tmpdir/.env" onboarding`
-- `PYTHONPATH=src python3 -m hubspot_safe_agent_cli --env-file "$tmpdir/.env" hubspot objects create --object-type contacts --body-file "$tmpdir/body.json"`
+## June 4, 2026 UTC verification
 
-Latest full local test result:
-- `27` tests passed with `.venv/bin/python -m unittest -q`
+The maintainers recorded 27 tests passing in the local build of version `0.1.0`, configured for `https://api.hubapi.com`. The record includes version, onboarding, a contact creation preview, and a refusal when approval to proceed without a saved copy was missing.
 
-## Example outputs (redacted)
+Commands from that record:
 
-These files are committed:
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check.json`
-- `docs/examples/plan.example.json`
-- `docs/examples/receipt.example.json` (missing-approval refusal example; approved supported writes emit receipts)
+```bash
+PYTHONPATH=src python3 -m unittest tests.test_command_families tests.test_hubspot_safety tests.test_hubspot_import_validation tests.test_run_artifacts tests.test_onboarding_command tests.test_auth_redaction tests.test_imports
+PYTHONPATH=src python3 -m unittest discover -s tests
+PYTHONPATH=src python3 -m hubspot_safe_agent_cli --output json --version
+PYTHONPATH=src python3 -m hubspot_safe_agent_cli --output json --env-file "$tmpdir/.env" onboarding
+PYTHONPATH=src python3 -m hubspot_safe_agent_cli --env-file "$tmpdir/.env" hubspot objects create --object-type contacts --body-file "$tmpdir/body.json"
+.venv/bin/python -m unittest -q
+```
 
-## What can go wrong
+## Saved examples
 
-- Missing token or wrong scopes: `auth check` should refuse cleanly or fail with a non-secret message, and no write should happen.
-- Rate limiting: verify the CLI returns the provider error clearly and does not hide it behind generic output.
-- Pagination surprises: verify read results keep HubSpot paging data intact.
-- Write safety drift: verify risky writes still require `--apply`, `--yes`, `--ack-irreversible`, and `--plan-in` where documented, then require explicit no-snapshot approval before HubSpot HTTP when no useful before-state can be saved.
+- [Version](examples/outputs/version.json)
+- [Connection check](examples/outputs/auth_check.json)
+- [Original preview](examples/plan.example.json)
+- [Original approval refusal](examples/receipt.example.json)
 
-## Portfolio-build status
-
-This tool is ready for local read use, local dry-run proof, missing-approval refusal proof, and approved supported write receipts when live access is available.
-Live HubSpot proof still depends on:
-- local auth available in `HUBSPOT_ACCESS_TOKEN` or stored OAuth JSON
-- account-level scopes for the endpoints you call
-- active object types and account tier in your HubSpot portal
-
-## Links
-
-- Sources used: `docs/references.md`
-- Coverage source of truth: `docs/api_coverage.md`
-- Debug history: `docs/engineering_notes.md`
+The preview and refusal files show the older output for reference. Use a new preview from the current tool before approving a real write.

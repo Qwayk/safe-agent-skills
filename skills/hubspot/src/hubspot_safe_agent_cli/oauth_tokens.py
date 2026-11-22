@@ -38,6 +38,16 @@ def read_token_json(path: Path) -> dict[str, Any] | None:
     return data
 
 
+def resolve_access_token(configured_token: str | None, env_file: str) -> str | None:
+    if configured_token:
+        return configured_token
+    data = read_token_json(token_path_for_env_file(env_file)) or {}
+    token = data.get("access_token")
+    if isinstance(token, str):
+        return token.strip() or None
+    return None
+
+
 def write_token_from_file(*, src_file: Path, dest_file: Path) -> TokenStatus:
     if not src_file.exists():
         raise RuntimeError(f"Token file not found: {src_file}")

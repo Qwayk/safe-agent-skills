@@ -1,29 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+from shlex import join
 
-
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
-
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+from ..config import load_configured_access_token
+from ..oauth_tokens import resolve_access_token
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
@@ -42,19 +23,15 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             env_path.write_text("", encoding="utf-8")
         env_created = True
 
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "HUBSPOT_ACCESS_TOKEN"):
-        missing.append("HUBSPOT_ACCESS_TOKEN")
-
-    steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Open .env and fill the required values:",
-        "  - HUBSPOT_ACCESS_TOKEN=<your token>",
-        "Optional: keep HUBSPOT_API_BASE_URL=https://api.hubapi.com unless you need a different base URL.",
-        "Run: qwayk-hubspot-safe-agent-cli --output json auth check",
-    ]
+    token = resolve_access_token(load_configured_access_token(env_file), env_file)
+    missing = [] if token else ["HUBSPOT_ACCESS_TOKEN"]
+    next_command = join(
+        ["qwayk-hubspot-safe-agent-cli", "--output", "json", "--env-file", env_file, "auth", "check"]
+    )
+    steps = []
+    if not token:
+        steps.append(f"Set HUBSPOT_ACCESS_TOKEN in {env_file} or in your shell. Keep the token private.")
+    steps.append(f"Check the connection with {next_command}")
 
     payload = {
         "ok": True,
@@ -62,7 +39,7 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             "env_file": env_file,
             "env_created": env_created,
             "missing": missing,
-            "next_command": "qwayk-hubspot-safe-agent-cli --output json auth check",
+            "next_command": next_command,
             "steps": steps,
         },
     }
@@ -77,5 +54,4 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             print("")
             print(f"Missing in {env_file}: " + ", ".join(missing))
         print("")
-        print("Next: qwayk-hubspot-safe-agent-cli --output json auth check")
     return 0

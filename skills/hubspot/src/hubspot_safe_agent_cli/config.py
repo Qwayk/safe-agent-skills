@@ -37,12 +37,20 @@ class Config:
     timeout_s: float
 
 
+def configured_access_token(env: dict[str, str]) -> str | None:
+    return _get(env, "HUBSPOT_ACCESS_TOKEN") or _get(env, "HUBSPOT_API_TOKEN") or None
+
+
+def load_configured_access_token(env_file: str) -> str | None:
+    return configured_access_token(_parse_env_file(Path(env_file)))
+
+
 def load_config(env_file: str | None) -> Config:
     env = _parse_env_file(Path(env_file or ".env"))
 
     base_url = _get(env, "HUBSPOT_API_BASE_URL") or _get(env, "HUBSPOT_BASE_URL") or "https://api.hubapi.com"
     base_url = base_url.rstrip("/")
-    token = _get(env, "HUBSPOT_ACCESS_TOKEN") or _get(env, "HUBSPOT_API_TOKEN") or None
+    token = configured_access_token(env)
 
     timeout_s_raw = _get(env, "HUBSPOT_TIMEOUT_S") or "30"
     try:

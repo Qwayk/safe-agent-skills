@@ -1,41 +1,20 @@
-# Safety model
+# Review a HubSpot change
 
-HubSpot can touch CRM records, owners, pipelines, marketing data, and account resources, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Start with a read so you can confirm the account and records. A write command previews the request unless you pass `--apply`.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## Before you send a change
 
-A good safety ask is: "Read the record or pipeline first, then review the plan before contact, deal, ticket, pipeline, or account writes."
+1. Run the command without `--apply`. Use `--plan-out plan.json` to save the preview at a known path.
+2. Review the records, fields, filters, and files. Check that the connection is for the intended account. Ask what you can recover in HubSpot if something goes wrong.
+3. After the user approves, add `--apply` and `--ack-no-snapshot`. The tool has no saved copy of the old data, provider backup, or automatic undo. Add `--yes` and `--ack-irreversible` where the [command list](api_coverage.md) calls for them.
+4. Pass the saved plan with `--plan-in plan.json` for imports, bulk changes, GDPR deletion, and custom schema hard deletion. If you pass a saved plan for another write, the same checks apply. The URL, command, request, upload names and contents must match, and the same token must be in use.
 
-## Core rules
+You can preview offline without a token. To use that preview for a live change, first make a fresh one with the right connection. Also make a new preview if you have an old plan or changed the token or request. The tool compares the connection locally without adding a HubSpot permission or storing the token in the plan.
 
-- Read commands run normally.
-- Write commands run as dry-run plans by default.
-- Live write apply currently requires explicit no-snapshot approval before any HubSpot HTTP request when command-specific before-state capture is not available.
-- Add `--yes` for batch or risky write actions.
-- Add `--ack-irreversible` for actions marked as irreversible.
-- This tool does not use snapshots, provider backups, or automatic rollback.
-- Never print secrets.
+## After you send a change
 
-## Safe workflow for writes
+Read the receipt to see what HubSpot reported. For an import, use the printed commands to check its progress and errors. A job that HubSpot accepted can still be running. For a bulk change with errors, check which records succeeded before deciding what to do with the failed records. Check the affected records in HubSpot if you need to verify the outcome. If the tool refused, its message says what you need to fix before trying again.
 
-1. Run a plan without `--apply`.
-2. Review `plan` output.
-3. Check `before_state.required: true` and `before_state.supported: false`.
-4. Treat the plan as review-first. Current `--apply` attempts require explicit no-snapshot approval before HubSpot HTTP when no saved snapshot is available; approved supported writes produce receipts with recovery limits.
-5. Keep the run summary and audit log as proof of the plan or refusal.
+## Where the records go
 
-## Run proof storage
-
-- `.state/runs/<run_id>/plan.json` (optional)
-- `.state/runs/<run_id>/receipt.json` is not written for current HubSpot write refusals.
-- `.state/runs/<run_id>/summary.md`
-- `.state/runs/<run_id>/audit.jsonl`
-- `.state/runs/index.jsonl` (history index)
-
-## Risk level guidance
-
-- Read only: low risk
-- One-off writes: medium risk
-- Batch/replace/archive/delete: high risk
-
-The tool flags high-risk paths with stronger requirements in `docs/api_coverage.md`.
+By default, the tool keeps previews, receipts, summaries, and audit logs under `.state/runs/<run-id>/` next to your settings file. Use `runs list` or `runs show --run-id <id>` to find them. A refused write has a summary and reason. Receipts record replies to requests that were sent. Keep these files private because they can contain customer data.

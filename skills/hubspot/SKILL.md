@@ -1,57 +1,14 @@
 ---
 name: hubspot
-description: "Inspect HubSpot CRM data and prepare supported changes through qwayk-hubspot-safe-agent-cli."
+description: Search HubSpot CRM records, check pipelines and fields, prepare imports and exports, and review supported changes before sending them.
 ---
 
-# hubspot-safe-cli
+# HubSpot
 
-This page is the agent-facing rule sheet for the public HubSpot skill.
-If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+Use `qwayk-hubspot-safe-agent-cli` to work with HubSpot CRM records and their settings. See the command reference and API coverage in the skill’s `docs/` folder for the exact commands and what they support.
 
-Use this skill to run `qwayk-hubspot-safe-agent-cli` safely.
-
-## Safe first use
-
-- If setup may be missing, run:
-  - `qwayk-hubspot-safe-agent-cli onboarding`
-  - `qwayk-hubspot-safe-agent-cli auth check`
-- If auth check fails, stop and ask for corrected HubSpot setup.
-
-## Reads
-
-- Read commands can run directly under:
-  - `hubspot object-library`
-  - `hubspot objects`
-  - `hubspot associations`
-  - `hubspot association-labels`
-  - `hubspot association-limits`
-  - `hubspot properties`
-  - `hubspot property-groups`
-  - `hubspot owners`
-  - `hubspot pipelines`
-  - `hubspot pipeline-stages`
-  - `hubspot schemas`
-  - `hubspot imports`
-  - `hubspot exports`
-- Return results and do not infer secrets from outputs.
-
-## Writes
-
-- Always run write commands first without `--apply` and review the `plan`.
-- Do not run live HubSpot writes without a reviewed plan and the required no-snapshot approval. Without that approval, the tool stops before HubSpot HTTP.
-- If you test the gate path, include the required flags and expect a receipt or exact refusal reason:
-  - `--apply`
-  - `--yes` when required by command family (batch or high risk)
-  - `--ack-irreversible` for irreversible actions
-  - `--plan-in` when the command requires a saved reviewed plan
-- Capture the refusal output and call out that no HubSpot write was sent.
-- This tool does not support provider snapshots, provider backups, or automatic rollback.
-- Never ask the user to paste token values or OAuth JSON in chat.
-
-## Proof locations
-
-- Proof files are local only:
-  - `.state/runs/index.jsonl`
-  - `.state/runs/<run-id>/plan.json`
-  - `.state/runs/<run-id>/summary.md`
-  - `.state/runs/<run-id>/audit.jsonl`
+1. If setup is missing, run `qwayk-hubspot-safe-agent-cli onboarding` and follow the printed `auth check` command. Keep tokens and token files out of chat.
+2. Start with a small read. Show the records or settings you found. If HubSpot denies a read, explain which permission or account feature is missing when the reply tells you.
+3. For a change, run the command without `--apply`. Save the plan with `--plan-out` for imports, bulk changes, GDPR deletion, and custom schema hard deletion. Show the exact request and recovery limit and get approval before sending it.
+4. Use `--apply --ack-no-snapshot` only after approval. Add `--yes`, `--ack-irreversible`, and `--plan-in` as required. If the connection or request changes, show a fresh plan and ask again. The tool cannot undo changes automatically.
+5. Read the receipt or refusal. For an import that is still running, use the printed status and error commands. For a bulk change with errors, check what succeeded before you consider a retry. See `.state/runs/` for the saved records.

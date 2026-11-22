@@ -3,20 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 
 from ..errors import SafetyError, ToolError
-from ..oauth_tokens import get_token_status, read_token_json, token_path_for_env_file, write_token_from_file
 from ..http import HttpClient
-
-
-def _resolve_access_token(cfg, env_file: str) -> str | None:
-    if getattr(cfg, "token", None):
-        return str(cfg.token).strip() or None
-
-    token_path = token_path_for_env_file(env_file)
-    data = read_token_json(token_path)
-    if not data:
-        return None
-    token = data.get("access_token")
-    return str(token).strip() if isinstance(token, str) and token.strip() else None
+from ..oauth_tokens import (
+    get_token_status,
+    resolve_access_token,
+    token_path_for_env_file,
+    write_token_from_file,
+)
 
 
 def _redact_auth_request_error(exc: Exception) -> str:
@@ -31,7 +24,7 @@ def _redact_auth_request_error(exc: Exception) -> str:
 def cmd_auth_check(args, ctx) -> int:
     _ = args
     cfg = ctx["cfg"]
-    token = _resolve_access_token(cfg, ctx["env_file"])
+    token = resolve_access_token(cfg.token, ctx["env_file"])
     if not token:
         raise SafetyError("Missing token. Set HUBSPOT_ACCESS_TOKEN or run auth token set --file token.json")
 
