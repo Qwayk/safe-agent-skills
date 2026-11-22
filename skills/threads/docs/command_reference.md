@@ -1,8 +1,6 @@
 # Command reference
 
-These commands cover Threads auth, profiles, posts, replies, insights, moderation, and token gates. Confirm owned profile access before publishing or moderation work.
-
-For the guided path, start with [What you can do with Threads](use_cases.md), [Connect your Threads account](onboarding.md), and [Quickstart](quickstart.md).
+Use `threads-api-tool`. Put shared flags such as `--env-file`, `--apply`, `--plan-in`, `--plan-out` and `--receipt-out` before the command. The tool returns JSON by default. Use `--output text` for text. [Quickstart](quickstart.md)
 
 ## Onboarding and runs
 
@@ -21,9 +19,7 @@ For the guided path, start with [What you can do with Threads](use_cases.md), [C
 - `threads-api-tool auth app-token generate`
 - `threads-api-tool auth debug-token [--input-token <token>]`
 
-Auth write safety:
-- `auth code exchange`, `auth token exchange-long`, and `auth token refresh` are dry-run by default.
-- Add `--apply` only to collect the current safety refusal. The tool requires explicit no-snapshot approval before Threads token HTTP calls or `.state/token.json` writes.
+Code exchange, longer-lived token exchange and token refresh preview first. Use `--apply --ack-no-snapshot` to exchange or save the token after approval. [Account setup](onboarding.md)
 
 ## Profiles
 
@@ -53,10 +49,9 @@ Write flags:
 - Spoilers: `--spoiler-media`, `--text-spoiler-range <offset:length>` (repeatable)
 - Carousel helpers: `--children`, `--is-carousel-item`
 
-Write safety:
-- All write commands are dry-run by default.
-- Add `--apply` only to collect the current safety refusal. The tool requires explicit no-snapshot approval before Threads provider writes or receipt output.
-- Add `--yes --ack-irreversible` for `posts delete` before the refusal point.
+`posts list-owned` uses your signed-in account unless you pass or configure an ID. `posts status` returns the draft status and any processing error.
+
+Use a reviewed plan with `--plan-in` when creating a draft or publishing. Threads changes require `--apply --ack-no-snapshot`. Deletes also need `--yes --ack-irreversible`. [Review and check changes](safety_model.md)
 
 ## Replies
 

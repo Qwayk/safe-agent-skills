@@ -99,7 +99,10 @@ class ThreadsAPIClient:
         except RuntimeError as e:
             raise ToolError(HttpClient.redact_text(str(e))) from e
         payload = self._parse_json_response(resp)
-        self._raise_payload_error(method=method, url=url, payload=payload)
+        self._raise_payload_error(
+            method=method, url=url, payload=payload,
+            secrets=HttpClient.secret_values(final_params, json_body, data),
+        )
         return payload
 
     def _parse_json_response(self, resp) -> Any:
@@ -116,15 +119,18 @@ class ThreadsAPIClient:
             return None
         if isinstance(payload.get("error"), dict):
             return payload["error"]
-        if "error" in payload or "error_type" in payload or "error_message" in payload:
+        if "error" in payload or "error_type" in payload:
+            return payload
+        if "error_message" in payload and not (payload.get("status") == "ERROR" and payload.get("id")):
             return payload
         return None
 
-    def _raise_payload_error(self, *, method: str, url: str, payload: Any) -> None:
+    def _raise_payload_error(self, *, method: str, url: str, payload: Any, secrets: set[str]) -> None:
         api_error = self._payload_error(payload)
         if api_error is None:
             return
-        raise ToolError(f"Threads API error for {method} {HttpClient.redact_url(url)}: {HttpClient.redact_text(str(api_error))}")
+        safe_error = HttpClient.redact_text(str(api_error), secrets=secrets)
+        raise ToolError(f"Threads API error for {method} {HttpClient.redact_url(url)}: {safe_error}")
 
     def _resolve_access_token(self) -> str:
         if self._token_override:
@@ -288,12 +294,9 @@ class ThreadsAPIClient:
         return self._request("POST", f"/{threads_user_id}/threads_publish", data={"creation_id": creation_id})
 
     def post_status(self, *, threads_container_id: str, fields: str | None = None) -> Any:
-        params: dict[str, Any] = {"fields": fields} if fields else None
-        if params is None:
-            params = {}
-        if "status" not in params:
-            params["fields"] = "id,status"
-        return self._request("GET", f"/{threads_container_id}", params=params)
+        return self._request(
+            "GET", f"/{threads_container_id}", params={"fields": fields or "id,status,error_message"}
+        )
 
     def repost_media(self, *, threads_media_id: str) -> Any:
         return self._request("POST", f"/{threads_media_id}/repost")

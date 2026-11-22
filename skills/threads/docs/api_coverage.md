@@ -1,15 +1,6 @@
 # API coverage
 
-Threads coverage shows exactly what this skill can do with profiles, posts, replies, insights, moderation, and token-related work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
-
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can inspect profiles, posts, and insights, then show which Threads actions are covered."
-
-## Coverage notes
-
-- Make endpoint coverage explicit.
-- Keep the shipped CLI tied to the current official Threads documentation.
+Use this list to check which commands are available and which permissions they need. [Command reference](command_reference.md)
 
 ## Summary
 
@@ -22,28 +13,28 @@ A good first coverage check is: "Check whether this skill can inspect profiles, 
 
 | Endpoint | Capability | Commands | Status | Notes |
 |---|---|---|---|---|
-| `POST /oauth/access_token` | Authorization-code exchange | `auth code exchange` | blocked-before-write | Dry-run plan only; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available or token-file writes. |
+| `POST /oauth/access_token` | Authorization-code exchange | `auth code exchange` | approval-required | Preview first. Requires approval to call the token endpoint and save a local token. |
 | `GET /oauth/access_token` | App access token | `auth app-token generate` | live-unverified | Used directly and by `oembed get`. |
-| `GET /access_token` | Short-lived to long-lived token exchange | `auth token exchange-long` | blocked-before-write | Dry-run plan only; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available or token-file writes. |
-| `GET /refresh_access_token` | Long-lived token refresh | `auth token refresh` | blocked-before-write | Dry-run plan only; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available or token-file writes. |
+| `GET /access_token` | Short-lived to long-lived token exchange | `auth token exchange-long` | approval-required | Preview first. Requires approval to call the token endpoint and save a local token. |
+| `GET /refresh_access_token` | Long-lived token refresh | `auth token refresh` | approval-required | Preview first. Requires approval to call the token endpoint and save a local token. |
 | `GET /debug_token` | Token inspection | `auth debug-token` | live-unverified | Provider response is passed through with redaction. |
 | `GET /me` | Current user profile | `auth check`, `profiles me` | live-unverified | `auth check` is the onboarding smoke test. |
-| `GET /me?fields=recently_searched_keywords` | Recent search history | `search recent-keywords` | live-unverified | Implemented as a field-specific `GET /me` read. |
+| `GET /me?fields=recently_searched_keywords` | Recent search history | `search recent-keywords` | live-unverified | Returns recent search terms from the signed-in account. |
 | `GET /{threads-user-id}` | Profile by user ID | `profiles get` | live-unverified | Reads documented profile fields. |
 | `GET /profile_lookup` | Public profile discovery | `profiles lookup` | live-unverified | Permission-gated by `threads_profile_discovery`. |
-| `GET /{threads-user-id}/threads` | Owned posts list | `posts list-owned` | live-unverified | Supports fields and pagination args. |
+| `GET /{threads-user-id}/threads` | Owned posts list | `posts list-owned` | live-unverified | Uses the signed-in account unless an account ID was given. Supports fields and paging. |
 | `GET /profile_posts` | Public posts list | `posts list-public` | live-unverified | Uses documented `username` query parameter. |
 | `GET /{threads-media-id}` | Media retrieval and container status | `posts get`, `posts status` | live-unverified | Also covers quote, repost, poll, GIF, spoiler, and location retrieval fields. |
 | `GET /{threads-user-id}/threads_publishing_limit` | Publishing limits | `posts limits` | live-unverified | Read-only rate-limit metadata. |
-| `POST /{threads-user-id}/threads` | Create Threads media container | `posts create-text`, `posts create-image`, `posts create-video`, `posts create-carousel-item`, `posts create-carousel` | blocked-before-write | Local tests cover official request-shape mapping; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available. |
-| `POST /{threads-user-id}/threads_publish` | Publish media container | `posts publish` | blocked-before-write | Dry-run plan only; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available. |
-| `POST /{threads-media-id}/repost` | Repost a post | `posts repost` | blocked-before-write | Dry-run plan only; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available. |
-| `DELETE /{threads-media-id}` | Delete a post | `posts delete` | blocked-before-write | Requires `--apply --yes --ack-irreversible`, then requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available. |
+| `POST /{threads-user-id}/threads` | Create Threads media container | `posts create-text`, `posts create-image`, `posts create-video`, `posts create-carousel-item`, `posts create-carousel` | approval-required | Requires the matching saved plan and approval before creating a draft. |
+| `POST /{threads-user-id}/threads_publish` | Publish media container | `posts publish` | approval-required | Requires the matching saved plan. Reads the post back if Threads returns an ID. |
+| `POST /{threads-media-id}/repost` | Repost a post | `posts repost` | approval-required | Requires approval to write without a saved copy. |
+| `DELETE /{threads-media-id}` | Delete a post | `posts delete` | approval-required | Requires `--apply --yes --ack-irreversible --ack-no-snapshot`. |
 | `GET /{threads-media-id}/replies` | Replies list | `replies list` | live-unverified | Supports documented paging fields. |
 | `GET /{threads-media-id}/conversation` | Reply conversation view | `replies conversation` | live-unverified | Read-only conversation thread retrieval. |
-| `POST /{threads-reply-id}/manage_reply` | Hide or unhide a reply | `replies hide` | blocked-before-write | Dry-run plan only; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available. |
+| `POST /{threads-reply-id}/manage_reply` | Hide or unhide a reply | `replies hide` | approval-required | Requires approval to write without a saved copy. |
 | `GET /{threads-media-id}/pending_replies` | Pending replies list | `replies pending list` | live-unverified | Requires reply approvals on the post. |
-| `POST /{threads-reply-id}/manage_pending_reply` | Approve or ignore a pending reply | `replies pending decide` | blocked-before-write | Dry-run plan only; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available. |
+| `POST /{threads-reply-id}/manage_pending_reply` | Approve or ignore a pending reply | `replies pending decide` | approval-required | Requires approval to write without a saved copy. |
 | `GET /{threads-user-id}/mentions` | Mentions list | `mentions list` | live-unverified | Permission-gated by `threads_manage_mentions`. |
 | `GET /{threads-media-id}/insights` | Media insights | `insights media` | live-unverified | Permission-gated by `threads_manage_insights`. |
 | `GET /{threads-user-id}/threads_insights` | User insights | `insights user` | live-unverified | Permission-gated by `threads_manage_insights`. |
@@ -62,6 +53,6 @@ A good first coverage check is: "Check whether this skill can inspect profiles, 
 
 ## Status policy
 
-- `live-unverified`: implemented, request shape locally tested where possible, but not exercised here against live Threads accounts.
-- `blocked-before-write`: write plan shape is implemented, but current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available or local token/write output when no saved snapshot is available.
+- `live-unverified`: implemented and checked locally where possible. Live account behavior still needs verification.
+- `approval-required`: preview first and get approval before applying without a saved copy of the previous state.
 - `non-API/dash-gated`: documented Threads surface that is not a Graph API endpoint command.

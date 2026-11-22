@@ -17,7 +17,7 @@ class TestAuditLog(unittest.TestCase):
                 {
                     "tool": "threads-api-tool",
                     "version": "0.0.0",
-                    "command": "threads-api-tool demo read",
+                    "command": "threads-api-tool profiles me",
                     "apply": False,
                     "yes": False,
                     "env_fingerprint": "http://example.invalid",

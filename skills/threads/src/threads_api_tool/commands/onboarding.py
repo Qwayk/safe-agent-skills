@@ -1,82 +1,58 @@
 from __future__ import annotations
 
 from pathlib import Path
+from shlex import quote
 
+from ..config import load_config
 
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
-
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+_ENV_TEMPLATE = """# Keep your Threads settings on this computer.
+THREADS_API_TOKEN=
+THREADS_APP_ID=
+THREADS_APP_SECRET=
+THREADS_REDIRECT_URI=
+THREADS_DEFAULT_USER_ID=
+"""
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
-    out = ctx["out"]
-    env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
-
+    env_file = ctx["env_file"]
     env_path = Path(env_file)
     env_created = False
 
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
-        else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
+    if not getattr(args, "no_write_env", False) and not env_path.exists():
+        example = env_path.parent / ".env.example"
+        contents = example.read_text(encoding="utf-8") if example.is_file() else _ENV_TEMPLATE
+        env_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with env_path.open("x", encoding="utf-8") as file:
+                file.write(contents)
+            env_created = True
+        except FileExistsError:
+            pass
 
-    lines = _read_text_lines(env_path)
-
-    required_keys = [
-        "THREADS_API_BASE_URL",
-        "THREADS_API_VERSION",
-        "THREADS_REDIRECT_URI",
-        "THREADS_APP_ID",
-        "THREADS_APP_SECRET",
-    ]
-
-    missing: list[str] = []
-    for key in required_keys:
-        if not _has_nonempty_env_value(lines, key):
-            missing.append(key)
-
-    steps = [
-        "Copy .env.example -> .env (local-only; do not commit it).",
-        "Open .env and fill the required values:",
-        "  - THREADS_API_BASE_URL=https://graph.threads.net",
-        "  - THREADS_API_VERSION=v1.0",
-        "  - THREADS_APP_ID, THREADS_APP_SECRET",
-        "  - THREADS_REDIRECT_URI, THREADS_DEFAULT_USER_ID (optional)",
-        "Run: threads-api-tool --output json auth check",
-    ]
-
-    payload = {
-        "ok": True,
-        "onboarding": {
-            "env_file": env_file,
-            "env_created": env_created,
-            "missing": missing,
-            "next_command": "threads-api-tool --output json auth check",
-            "steps": steps,
-        },
+    cfg = load_config(env_file)
+    app_settings = {
+        "THREADS_APP_ID": cfg.app_id,
+        "THREADS_APP_SECRET": cfg.app_secret,
+        "THREADS_REDIRECT_URI": cfg.redirect_uri,
     }
-
-    out.emit(payload)
+    missing = [] if cfg.token else [key for key, value in app_settings.items() if not value]
+    env_option = f" --env-file {quote(env_file)}" if env_file != ".env" else ""
+    next_action = "check" if cfg.token or missing else "authorize-url --scope threads_basic"
+    ctx["out"].emit(
+        {
+            "ok": True,
+            "onboarding": {
+                "env_file": env_file,
+                "env_created": env_created,
+                "missing": missing,
+                "next_command": f"threads-api-tool --output json{env_option} auth {next_action}",
+                "steps": [
+                    "If you have a Threads user token, put it in THREADS_API_TOKEN and run auth check.",
+                    "To connect through a Meta app, fill in its ID, secret and redirect URL before running auth authorize-url.",
+                    "Keep the settings and saved token files private.",
+                ],
+            },
+        }
+    )
     return 0

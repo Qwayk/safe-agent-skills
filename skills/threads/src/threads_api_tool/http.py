@@ -6,9 +6,11 @@ import re
 import sys
 import time
 from typing import Any
+from urllib.parse import quote, quote_plus
 
 import requests
 
+_SECRET_FIELDS = {"access_token", "refresh_token", "input_token", "client_secret", "token", "code", "app_secret"}
 
 @dataclasses.dataclass(frozen=True)
 class HttpResponse:
@@ -32,24 +34,36 @@ class HttpClient:
         self._session.headers["User-Agent"] = user_agent
 
     @staticmethod
-    def redact_text(text: str) -> str:
+    def secret_values(*sources: dict[str, Any] | None) -> set[str]:
+        return {
+            value
+            for source in sources if source
+            for key, value in source.items()
+            if key in _SECRET_FIELDS and isinstance(value, str) and len(value) >= 4
+        }
+
+    @staticmethod
+    def redact_text(text: str, *, secrets: set[str] | None = None) -> str:
         try:
             safe = str(text)
         except Exception:
             return text
 
         safe = re.sub(
-            r"(?i)((?:access_token|refresh_token|client_secret|token|code|secret|app_secret)=)[^&\s]+",
+            r"(?i)((?:access_token|refresh_token|input_token|client_secret|token|code|secret|app_secret)=)[^&\s]+",
             lambda match: f"{match.group(1)}***REDACTED***",
             safe,
         )
 
-        for key in ("access_token", "refresh_token", "client_secret", "token", "code"):
+        for key in _SECRET_FIELDS:
             safe = re.sub(
                 rf"(?i)([\"']?{key}[\"']?\s*[:=]\s*[\"'])([^\"']+)([\"'])",
                 lambda match: f"{match.group(1)}***REDACTED***{match.group(3)}",
                 safe,
             )
+        for value in sorted(secrets or (), key=len, reverse=True):
+            for form in {value, quote(value, safe=""), quote_plus(value, safe="")}:
+                safe = safe.replace(form, "***REDACTED***")
         return safe
 
     @classmethod
@@ -78,6 +92,7 @@ class HttpClient:
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),
     ) -> HttpResponse:
         attempt = 0
+        secrets = self.secret_values(params, data, json_body)
         display_url = self._format_url(url, params)
         redacted_display_url = self.redact_url(display_url)
         while True:
@@ -97,7 +112,7 @@ class HttpClient:
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
-                safe_err = self.redact_text(str(e))
+                safe_err = self.redact_text(str(e), secrets=secrets)
                 if self._verbose:
                     print(
                         f"[http] {method} {redacted_display_url} -> EXCEPTION ({ms}ms): {type(e).__name__}: {safe_err}",
@@ -127,5 +142,5 @@ class HttpClient:
 
             raise RuntimeError(
                 f"HTTP {resp.status_code} for {method} {self.redact_url(resp.url)}\n"
-                f"{self.redact_text(resp.text)}"
+                f"{self.redact_text(resp.text, secrets=secrets)}"
             )

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from ..commands.common import build_read_params, run_write_command, split_csv_arg
-from ..errors import ValidationError
+from ..errors import SafetyError, ToolError, ValidationError
 from ..threads_client import ThreadsAPIClient
 
 _REPLY_CONTROL_VALUES = {
@@ -24,14 +24,28 @@ def _client(ctx: dict[str, Any]) -> ThreadsAPIClient:
     )
 
 
-def _resolve_threads_user_id(args: object, ctx: dict[str, Any]) -> str:
+def _resolve_threads_user_id(args: object, ctx: dict[str, Any], *, default: str | None = None) -> str:
     provided = str(getattr(args, "threads_user_id", "") or "").strip()
     if provided:
         return provided
     fallback = str(getattr(ctx["cfg"], "default_user_id", "") or "").strip()
     if fallback:
         return fallback
+    if default:
+        return default
     raise ValidationError("Missing --threads-user-id and THREADS_DEFAULT_USER_ID is not set")
+
+
+def _signed_in_account(client: ThreadsAPIClient) -> str:
+    profile = client.get_me(fields="id")
+    if isinstance(profile, dict) and profile.get("id"):
+        return str(profile["id"])
+    raise SafetyError("Threads did not confirm the signed-in account.")
+
+
+def _confirm_post_account(client: ThreadsAPIClient, account_id: str) -> None:
+    if _signed_in_account(client) != account_id:
+        raise SafetyError("The signed-in account differs from the account in the reviewed plan.")
 
 
 def _resolve_username(args: object) -> str:
@@ -49,7 +63,7 @@ def _resolve_threads_media_id(args: object, *, field: str) -> str:
 
 
 def cmd_posts_list_owned(args, ctx: dict[str, Any]) -> int:
-    threads_user_id = _resolve_threads_user_id(args, ctx)
+    threads_user_id = _resolve_threads_user_id(args, ctx, default="me")
     params = build_read_params(args=args)
     result = _client(ctx).list_owned_posts(threads_user_id=threads_user_id, params=params)
     out = {"ok": True, "command": "posts.list-owned", "result": result}
@@ -259,17 +273,20 @@ def _run_create(
     required_text: bool = False,
     force_carousel_item: bool = False,
 ) -> int:
-    threads_user_id = _resolve_threads_user_id(args, ctx)
     payload = _build_create_payload(args, media_type=media_type, force_carousel_item=force_carousel_item)
 
     if required_text and "text" not in payload:
         raise ValidationError("Missing required --text")
 
     client = _client(ctx)
+    threads_user_id = _resolve_threads_user_id(args, ctx)
+    if threads_user_id == "me":
+        threads_user_id = _signed_in_account(client)
 
     selector = {"kind": cmd, "threads_user_id": threads_user_id, "threads_media_id": payload.get("threads_media_id", "<auto>")}
 
     def execute() -> dict[str, Any]:
+        _confirm_post_account(client, threads_user_id)
         return client.create_post(threads_user_id=threads_user_id, payload=payload)
 
     out = run_write_command(
@@ -278,6 +295,7 @@ def _run_create(
         selector=selector,
         proposed_changes=[{"action": "create_post", "user": threads_user_id, "payload": payload}],
         execute=execute,
+        requires_reviewed_plan=True,
     )
     out["command"] = cmd
     ctx["audit"].write(f"posts.{cmd.replace('-', '_')}.write", out)
@@ -321,19 +339,45 @@ def cmd_posts_create_carousel(args, ctx: dict[str, Any]) -> int:
 def cmd_posts_publish(args, ctx: dict[str, Any]) -> int:
     creation_id = _resolve_threads_media_id(args, field="threads_container_id")
     client = _client(ctx)
+    user_id = _resolve_threads_user_id(args, ctx)
+    if user_id == "me":
+        user_id = _signed_in_account(client)
 
-    selector = {"kind": "posts.publish", "threads_container_id": creation_id}
+    selector = {"kind": "posts.publish", "threads_user_id": user_id, "threads_container_id": creation_id}
 
     def execute() -> dict[str, Any]:
-        user_id = _resolve_threads_user_id(args, ctx)
-        return client.publish_post(threads_user_id=user_id, creation_id=creation_id)
+        _confirm_post_account(client, user_id)
+        try:
+            return client.publish_post(threads_user_id=user_id, creation_id=creation_id)
+        except ToolError as e:
+            raise ToolError(f"{e}\nCheck posts status with the draft ID before trying again.") from None
+
+    def verify(result: Any) -> dict[str, Any]:
+        post_id = str(result.get("id") or "") if isinstance(result, dict) else ""
+        if not post_id:
+            return {"ok": None, "mode": "response-only", "message": "Check posts status with the draft ID."}
+        try:
+            post = client.get_post(threads_media_id=post_id, params={"fields": "id,text,permalink"})
+        except ToolError:
+            return {
+                "ok": None,
+                "mode": "read-back",
+                "message": "Threads returned a post ID. Read that post or check the draft status before trying again.",
+            }
+        return {
+            "ok": isinstance(post, dict) and str(post.get("id") or "") == post_id,
+            "mode": "read-back",
+            "result": post,
+        }
 
     out = run_write_command(
         ctx=ctx,
         command="posts.publish",
         selector=selector,
-        proposed_changes=[{"action": "publish_post", "threads_container_id": creation_id}],
+        proposed_changes=[{"action": "publish_post", "user": user_id, "threads_container_id": creation_id}],
         execute=execute,
+        requires_reviewed_plan=True,
+        verify_result=verify,
     )
     out["command"] = "posts.publish"
     ctx["audit"].write("posts.publish", out)

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from ..errors import SafetyError, ValidationError
 from ..json_files import read_json_file, write_json_file
@@ -157,6 +158,7 @@ def build_write_plan(
         "preconditions": preconditions,
         "baseline": {
             "env_fingerprint": getattr(ctx["cfg"], "base_url", None),
+            "api_version": getattr(ctx["cfg"], "api_version", None),
         },
         "proposed_changes": proposed_changes,
         "before_state": blocked_before_state(
@@ -174,6 +176,7 @@ def _load_plan_for_apply(
     *,
     expected_command: str,
     expected_selector: dict[str, Any],
+    expected_changes: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     plan_path = str(ctx.get("plan_in") or "").strip()
     if not plan_path:
@@ -193,6 +196,12 @@ def _load_plan_for_apply(
         raise SafetyError("Refused: plan command does not match current write action")
     if plan.get("selector") != expected_selector:
         raise SafetyError("Refused: plan selector does not match the current target")
+    if expected_changes is not None and (
+        baseline.get("env_fingerprint") != env_fingerprint
+        or baseline.get("api_version") != ctx["cfg"].api_version
+        or plan.get("proposed_changes") != expected_changes
+    ):
+        raise SafetyError("The request or API settings changed. Save a new plan and get it reviewed.")
 
     return plan
 
@@ -207,18 +216,25 @@ def run_write_command(
     requires_yes: bool = False,
     requires_ack: bool = False,
     risk_level: str = "medium",
+    requires_reviewed_plan: bool = False,
+    verify_result: Callable[[Any], dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    if str(ctx.get("plan_in") or "").strip():
-        _load_plan_for_apply(ctx, expected_command=command, expected_selector=selector)
+    has_saved_plan = bool(str(ctx.get("plan_in") or "").strip())
+    plan = build_write_plan(
+        ctx=ctx,
+        command=command,
+        selector=selector,
+        risk_level=risk_level,
+        proposed_changes=proposed_changes or [],
+    )
+    if requires_reviewed_plan:
+        plan["preconditions"].append("Use the matching reviewed plan with --plan-in.")
+    if verify_result:
+        plan["verification_plan"]["steps"].append("Read the published post using the ID Threads returns.")
 
     if bool(ctx.get("apply")) is False:
-        plan = build_write_plan(
-            ctx=ctx,
-            command=command,
-            selector=selector,
-            risk_level=risk_level,
-            proposed_changes=proposed_changes or [],
-        )
+        if has_saved_plan:
+            _load_plan_for_apply(ctx, expected_command=command, expected_selector=selector)
         plan_out = str(ctx.get("plan_out")) if ctx.get("plan_out") else None
         if plan_out:
             plan_out = write_json_file(plan_out, plan)
@@ -235,19 +251,31 @@ def run_write_command(
     if requires_ack and not bool(ctx.get("ack_irreversible")):
         raise SafetyError(f"{command} requires --ack-irreversible")
 
-    plan = build_write_plan(
-        ctx=ctx,
-        command=command,
-        selector=selector,
-        risk_level=risk_level,
-        proposed_changes=proposed_changes or [],
-    )
     if not bool(ctx.get("ack_no_snapshot")):
         out = refusal_output(plan=plan)
         out["command"] = command
         return out
 
+    if requires_reviewed_plan and not has_saved_plan:
+        raise SafetyError("Use --plan-in with the reviewed plan for this post.")
+    if has_saved_plan:
+        _load_plan_for_apply(
+            ctx,
+            expected_command=command,
+            expected_selector=selector,
+            expected_changes=plan["proposed_changes"] if requires_reviewed_plan else None,
+        )
+
     result = execute()
+    if verify_result:
+        verification = verify_result(result)
+    elif requires_reviewed_plan:
+        verification = {"ok": None, "mode": "response-only"}
+    else:
+        verification = {"ok": True, "mode": "provider-response-or-local-result"}
+    changed: bool | None = True
+    if requires_reviewed_plan and not (isinstance(result, dict) and result.get("id")):
+        changed = None
     receipt = {
         "tool": ctx.get("tool") or "threads-api-tool",
         "version": ctx.get("tool_version") or None,
@@ -263,9 +291,9 @@ def run_write_command(
             "flag": "--ack-no-snapshot",
             "reason": "No reliable before-state snapshot is available for this Threads write.",
         },
-        "changed": True,
+        "changed": changed,
         "result": result,
-        "verification": {"ok": True, "mode": "provider-response-or-local-result"},
+        "verification": verification,
         "rollback": plan.get("rollback"),
     }
     receipt_out = str(ctx.get("receipt_out") or "").strip() or None

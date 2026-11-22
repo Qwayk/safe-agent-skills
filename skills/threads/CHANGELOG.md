@@ -1,28 +1,15 @@
 # Changelog
 
-All notable changes to this project are documented in this file.
+## Unreleased
 
-This format is based on Keep a Changelog, and this project follows Semantic Versioning.
-Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking changes.
+- Save and check matching plans for creating a draft and publishing it. Check the account before sending and read the published post back when Threads returns an ID.
+- Return the processing error in `posts status` and keep sign-in codes and token arguments out of command records.
+- Create a usable settings file and make the first post list work with the signed-in account.
+- Combine repeated guides and remove the leftover demo and CSV job examples. Keep run history.
 
-## [Unreleased]
+## Earlier work in 0.1.0
 
-### Added
-- Wave 4 before-state reset for write safety:
-  - Write dry-run plans now include blocked `before_state`.
-  - Confirmed apply attempts refuse before Threads provider writes, local token writes, demo/job writes, or receipt output.
-  - Example plan/receipt files now show the current no-snapshot approval shape.
-- Official Threads command surface for auth, profiles, posts, replies, mentions, insights, keyword search, locations, and oEmbed.
-- Threads-safe skill wrapper and endpoint coverage ledger.
-- Local unit coverage for request paths, parser shape, and write-plan safety.
-
-### Changed
-- Post creation now sends official Threads payload shapes, including `media_type`, poll objects, GIF objects, text spoiler entities, reply approvals, and carousel rules.
-- Docs, proof, examples, and wrapper guidance now match the shipped CLI surface.
-
-### Fixed
-- `posts create-*` commands now map to the documented Threads publishing surface instead of partial scaffold payloads.
-- `posts list-public`, token refresh, keyword search, location search, reply moderation, and oEmbed request shapes follow the official Threads docs.
-
-### Removed
-- Undocumented public CLI commands for ghost posts and user-replies listing.
+- Added explicit commands for the documented Threads API, local plans, receipts and the skill.
+- Aligned post requests with documented media types, polls, GIFs, spoilers, reply controls and carousel fields. Checked request shapes for public reads, token refresh, search, replies and oEmbed.
+- Removed the undocumented ghost-post and user-reply list commands.
+- Added the no-snapshot approval check and saved sample refusal output.

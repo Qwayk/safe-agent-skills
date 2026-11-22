@@ -8,29 +8,29 @@ from pathlib import Path
 from . import __version__
 from .audit_log import AuditLogger, CompositeAuditLogger
 from .commands import auth as auth_cmd
-from .commands import onboarding as onboarding_cmd
 from .commands import insights as insights_cmd
 from .commands import locations as locations_cmd
 from .commands import mentions as mentions_cmd
 from .commands import oembed as oembed_cmd
+from .commands import onboarding as onboarding_cmd
 from .commands import posts as posts_cmd
 from .commands import profiles as profiles_cmd
 from .commands import replies as replies_cmd
 from .commands import search as search_cmd
 from .config import load_config
-from .project_config import load_project_config
 from .errors import SafetyError, ToolError, ValidationError
 from .output import Output
+from .project_config import load_project_config
 from .runs import (
     RunContext,
+    append_index_row,
     build_deterministic_summary,
+    find_run,
     init_run_context,
     list_runs,
-    find_run,
-    write_summary_md,
-    append_index_row,
     runs_index_path_for_env_file,
- )
+    write_summary_md,
+)
 
 
 class _ToolArgumentParser(argparse.ArgumentParser):
@@ -162,7 +162,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Acknowledge that this approved write may run without a saved before-state snapshot",
     )
     p.add_argument("--plan-out", default=None, help="Write a dry-run plan JSON to a file")
-    p.add_argument("--plan-in", default=None, help="Apply from an existing plan JSON file (high-risk writes)")
+    p.add_argument("--plan-in", default=None, help="Use a reviewed plan file when applying a change")
     p.add_argument("--receipt-out", default=None, help="Write an apply receipt JSON to a file")
     p.add_argument(
         "--ack-irreversible",
@@ -515,6 +515,7 @@ def main(argv: list[str]) -> int:
         }
     )
 
+    command_str = "threads-api-tool"
     try:
         if bool(args.version):
             payload = {"ok": True, "tool": "threads-api-tool", "version": __version__}
@@ -527,7 +528,14 @@ def main(argv: list[str]) -> int:
         if not getattr(args, "cmd", None):
             parser.error("Missing command. Use --help to see available commands.")
 
-        command_str = "threads-api-tool " + " ".join(argv)
+        if args.cmd == "auth":
+            auth_command = [args.auth_cmd]
+            subcommand = getattr(args, f"{args.auth_cmd.replace('-', '_')}_cmd", None)
+            if subcommand:
+                auth_command.append(subcommand)
+            command_str = "threads-api-tool auth " + " ".join(auth_command)
+        else:
+            command_str = "threads-api-tool " + " ".join(argv)
         audit.bind_context(
             {
                 "tool": "threads-api-tool",
@@ -644,7 +652,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="threads-api-tool",
             version=__version__,
-            command="threads-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -660,7 +668,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="threads-api-tool",
             version=__version__,
-            command="threads-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -678,7 +686,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="threads-api-tool",
             version=__version__,
-            command="threads-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,

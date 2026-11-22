@@ -3,12 +3,13 @@ from __future__ import annotations
 import io
 import json
 import tempfile
+import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
 from types import SimpleNamespace
-import unittest
 from unittest.mock import Mock, patch
 
+from threads_api_tool.cli import main
 from threads_api_tool.commands import auth as auth_cmd
 from threads_api_tool.oauth_tokens import TokenStatus
 from threads_api_tool.output import Output
@@ -20,6 +21,22 @@ class _NoopAudit:
 
 
 class TestAuthCommandRedaction(unittest.TestCase):
+    def test_cli_keeps_auth_arguments_out_of_saved_output(self) -> None:
+        secret = "fixture-authorization-code"
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            log = root / "audit.jsonl"
+            plan = root / "exchange.json"
+            out = io.StringIO()
+            with redirect_stdout(out):
+                status = main([
+                    "--env-file", str(root / ".env"), "--log-file", str(log), "--plan-out", str(plan),
+                    "auth", "code", "exchange", f"--code={secret}",
+                ])
+            self.assertEqual(status, 0)
+            for content in (out.getvalue(), log.read_text(), plan.read_text()):
+                self.assertNotIn(secret, content)
+
     def _ctx(self, env_file: Path, **overrides) -> dict:
         cfg = SimpleNamespace(
             base_url="http://example.invalid",

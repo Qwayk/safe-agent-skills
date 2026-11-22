@@ -1,70 +1,29 @@
 # Connect your Threads account
 
-Threads needs local app settings and tokens before an agent can inspect profile and post data or prepare publishing work.
+Run `threads-api-tool onboarding` to create a local `.env` file. Add `--no-write-env` after `onboarding` to see the setup instructions without creating the file. Keep tokens, app secrets and sign-in codes off chat and out of Git.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## If you already have a user token
 
-After setup, start with a profile or owned-post read before asking for posts, replies, moderation, or token changes.
+Put it in `THREADS_API_TOKEN` and run `threads-api-tool auth check`. The command returns the account ID and username. The default server and API version work without any app settings. An explicit token in the settings takes priority over a saved token file.
 
-## Step 1: Create `.env`
+## If you need a token
 
-Copy `.env.example` to `.env`, then fill:
-- `THREADS_API_BASE_URL=https://graph.threads.net`
-- `THREADS_API_VERSION=v1.0`
-- `THREADS_APP_ID=<your app id>`
-- `THREADS_APP_SECRET=<your app secret>`
-- `THREADS_REDIRECT_URI=<your redirect uri>`
-- `THREADS_DEFAULT_USER_ID=<optional default account id>`
+1. Create or open a Meta app with the Threads use case. Set `THREADS_APP_ID`, `THREADS_APP_SECRET` and `THREADS_REDIRECT_URI` in your local settings. Use the exact redirect URL registered with Meta.
+2. Run `threads-api-tool auth authorize-url --scope threads_basic` and open the returned URL yourself. For publishing, use `threads_basic,threads_content_publish`. Add other permissions only for the commands you need. [Access by command](api_coverage.md)
+3. After approving access in the browser, use the returned code locally. Preview `threads-api-tool auth code exchange --code AUTHORIZATION_CODE` and review it. To exchange the code and save the token, rerun with `--apply --ack-no-snapshot` before `auth`.
+4. Run `threads-api-tool auth check` to confirm the account and `threads-api-tool auth token status` to check the saved file.
 
-## Step 2: Build the authorize URL
+Use `auth token exchange-long` for a longer-lived token and `auth token refresh` to renew it. These commands preview by default and save a token only after approval. If you keep an old `THREADS_API_TOKEN` value, it still takes priority over a newly saved token. [Meta’s token guide](https://www.postman.com/meta/threads/documentation/dht3nzz/threads-api)
 
-For a read-first setup:
+## Settings and separate accounts
 
-```bash
-threads-api-tool --output json auth authorize-url --scope threads_basic
-```
+Use `--env-file /path/to/account/.env` before the command to choose a settings file. The tool stores tokens in `.state/token.json` beside that file. Settings files in the same directory share the saved token. Use a separate directory for each account. Shell environment values take priority over values in the settings file.
 
-For a broader setup that includes publishing:
+| Setting | Default |
+| --- | --- |
+| `THREADS_API_BASE_URL` | `https://graph.threads.net` |
+| `THREADS_API_VERSION` | `v1.0` |
+| `THREADS_DEFAULT_USER_ID` | Optional account ID for commands that accept it |
+| `THREADS_TIMEOUT_S` | 30 seconds |
 
-```bash
-threads-api-tool --output json auth authorize-url --scope threads_basic,threads_content_publish
-```
-
-Add extra Threads permissions only when you need them:
-- `threads_profile_discovery`
-- `threads_manage_mentions`
-- `threads_manage_insights`
-- `threads_read_replies`
-- `threads_manage_replies`
-- `threads_keyword_search`
-- `threads_location_tagging`
-- `threads_delete`
-
-## Step 3: Exchange the code
-
-```bash
-threads-api-tool --output json --plan-out /tmp/threads-auth.plan.json auth code exchange --code <authorization_code>
-```
-
-If you want the tool to exchange and save the token for you, review the plan first. Token exchange and `.state/token.json` writes need explicit no-snapshot approval when no saved snapshot exists.
-
-If you only want read access first, you can also place a valid `THREADS_API_TOKEN` in your local config and skip token-writing flows for now.
-
-## Step 4: Confirm setup
-
-```bash
-threads-api-tool --output json auth check
-threads-api-tool --output json auth token status
-```
-
-## Step 5: What to ask your AI agent first
-
-- “Check the Threads skill is connected and show my profile.”
-- “List my recent owned posts and tell me how much posting room is left.”
-- “Look up this public Threads account and list recent posts.”
-- “Prepare a post or reply action, but stop before any live write.”
-
-## What this CLI does not do
-
-- It does not expose Web Intents as CLI commands.
-- It does not manage webhook dashboard setup or topic subscriptions for you.
+The permission to read a profile is separate from permission to publish, view insights, manage replies or use discovery. The [command list](api_coverage.md) shows the permissions for those jobs.

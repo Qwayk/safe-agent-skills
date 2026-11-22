@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 BEFORE_STATE_REFUSAL_REASON = (
     "Refused: this Threads write has no reliable before-state snapshot. "
     "Review the dry-run plan, then rerun with --ack-no-snapshot if you approve applying without a snapshot."
@@ -36,7 +35,7 @@ def before_state_refusal_verification_plan() -> dict[str, Any]:
         "status": "best_effort_after_apply",
         "steps": [
             "Record the Threads provider or token response in the receipt.",
-            "Record any local token file, demo/job receipt, or write output created by the flow.",
+            "Record any local token file or write output created by the command.",
             "Record explicit no-snapshot approval for write operations.",
         ],
         "approval_required": "--ack-no-snapshot",

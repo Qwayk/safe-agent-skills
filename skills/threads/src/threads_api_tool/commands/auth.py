@@ -154,7 +154,7 @@ def cmd_auth_token_refresh(args, ctx) -> int:
     return 0
 
 
-def cmd_auth_app_token_generate(args, ctx: object) -> int:
+def cmd_auth_app_token_generate(args, ctx: dict[str, Any]) -> int:
     _ = args
     client = _client(ctx)
     payload = client.generate_app_access_token()

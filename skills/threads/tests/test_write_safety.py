@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import csv
 import io
 import json
 import tempfile
@@ -10,13 +9,10 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
-from threads_api_tool.commands import demo as demo_cmd
-from threads_api_tool.commands import jobs as jobs_cmd
 from threads_api_tool.commands import posts as posts_cmd
 from threads_api_tool.commands import replies as replies_cmd
-from threads_api_tool.errors import ValidationError
+from threads_api_tool.errors import SafetyError, ValidationError
 from threads_api_tool.output import Output
-from threads_api_tool.errors import SafetyError
 
 
 class _NoopAudit:
@@ -140,6 +136,13 @@ class TestWriteSafetyAndPlanApply(unittest.TestCase):
                         self.assertFalse(receipt_path.exists())
                         self.assertEqual(fake.create_post.call_count, 0)
 
+                args.text = "An edit after review"
+                ctx_apply["ack_no_snapshot"] = True
+                with self.assertRaisesRegex(SafetyError, "request or API settings changed"):
+                    posts_cmd.cmd_posts_create_text(args, ctx_apply)
+                fake.get_me.assert_not_called()
+                fake.create_post.assert_not_called()
+
     def test_posts_create_text_dry_run_includes_no_recovery_contract(self) -> None:
         fake = Mock()
         fake.create_post.return_value = {"id": "media-123"}
@@ -162,6 +165,7 @@ class TestWriteSafetyAndPlanApply(unittest.TestCase):
     def test_posts_create_text_apply_receipt_includes_no_recovery_contract(self) -> None:
         fake = Mock()
         fake.create_post.return_value = {"id": "media-123"}
+        fake.get_me.return_value = {"id": "threads-user-1"}
         with tempfile.TemporaryDirectory() as d:
             env = Path(d) / ".env"
             env.write_text("", encoding="utf-8")
@@ -174,7 +178,7 @@ class TestWriteSafetyAndPlanApply(unittest.TestCase):
                         0,
                         posts_cmd.cmd_posts_create_text(args, self._ctx(env, plan_out=str(plan_path), apply=False)),
                     )
-                with open(plan_path, "r", encoding="utf-8") as fp:
+                with open(plan_path, encoding="utf-8") as fp:
                     plan_payload = json.load(fp)
                 self.assertEqual(plan_payload["command_id"], "posts.create-text")
 
@@ -185,79 +189,22 @@ class TestWriteSafetyAndPlanApply(unittest.TestCase):
                         0,
                         posts_cmd.cmd_posts_create_text(
                             args,
-                            self._ctx(env, apply=True, plan_in=str(plan_path), receipt_out=str(receipt_path)),
+                            self._ctx(
+                                env, apply=True, plan_in=str(plan_path),
+                                receipt_out=str(receipt_path), ack_no_snapshot=True,
+                            ),
                         ),
                     )
                     payload = json.loads(apply_buf.getvalue())
-                    self.assertTrue(payload["refused"])
-                    self.assertNotIn("receipt", payload)
-                    self.assertFalse(receipt_path.exists())
-                    self.assertEqual(fake.create_post.call_count, 0)
-                    rollback = payload["plan"]["rollback"]
+                    receipt = payload["receipt"]
+                    self.assertTrue(receipt_path.exists())
+                    fake.create_post.assert_called_once()
+                    self.assertTrue(receipt["no_snapshot_approval"]["acknowledged"])
+                    self.assertIsNone(receipt["verification"]["ok"])
+                    rollback = receipt["rollback"]
                     self.assertEqual(rollback["supported"], False)
                     self.assertEqual(rollback["mode"], "irreversible_and_clearly_labeled")
                     self.assertIn("No built-in rollback", rollback["notes"])
-
-    def test_demo_write_apply_receipt_includes_no_recovery_contract(self) -> None:
-        with tempfile.TemporaryDirectory() as d:
-            env = Path(d) / ".env"
-            env.write_text("", encoding="utf-8")
-            args = SimpleNamespace(selector="demo-target")
-
-            plan_buf = io.StringIO()
-            with redirect_stdout(plan_buf):
-                self.assertEqual(0, demo_cmd.cmd_demo_write(args, self._ctx(env)))
-            plan_payload = json.loads(plan_buf.getvalue())
-            rollback = plan_payload["plan"]["rollback"]
-            self.assertEqual(rollback["supported"], False)
-            self.assertEqual(rollback["mode"], "irreversible_and_clearly_labeled")
-            self.assertIn("no built-in rollback", rollback["notes"].lower())
-
-            receipt_path = Path(d) / "demo-receipt.json"
-            apply_buf = io.StringIO()
-            with redirect_stdout(apply_buf):
-                self.assertEqual(0, demo_cmd.cmd_demo_write(args, self._ctx(env, apply=True, receipt_out=str(receipt_path))))
-            apply_payload = json.loads(apply_buf.getvalue())
-            self.assertTrue(apply_payload["refused"])
-            self.assertNotIn("receipt", apply_payload)
-            self.assertFalse(receipt_path.exists())
-            rollback = apply_payload["plan"]["rollback"]
-            self.assertEqual(rollback["supported"], False)
-            self.assertEqual(rollback["mode"], "irreversible_and_clearly_labeled")
-            self.assertIn("no built-in rollback", rollback["notes"].lower())
-
-    def test_jobs_apply_receipt_includes_no_recovery_contract(self) -> None:
-        with tempfile.TemporaryDirectory() as d:
-            env = Path(d) / ".env"
-            env.write_text("", encoding="utf-8")
-            job_path = Path(d) / "jobs.csv"
-            with job_path.open("w", encoding="utf-8", newline="") as f:
-                writer = csv.writer(f)
-                writer.writerow(["action"])
-                writer.writerow(["write.ping"])
-
-            args = SimpleNamespace(file=str(job_path), limit=None)
-            plan_buf = io.StringIO()
-            with redirect_stdout(plan_buf):
-                self.assertEqual(0, jobs_cmd.cmd_jobs_run(args, self._ctx(env)))
-            plan_payload = json.loads(plan_buf.getvalue())
-            rollback = plan_payload["plan"]["rollback"]
-            self.assertEqual(rollback["supported"], False)
-            self.assertEqual(rollback["mode"], "irreversible_and_clearly_labeled")
-            self.assertIn("no built-in rollback", rollback["notes"].lower())
-
-            receipt_path = Path(d) / "jobs-receipt.json"
-            apply_buf = io.StringIO()
-            with redirect_stdout(apply_buf):
-                self.assertEqual(0, jobs_cmd.cmd_jobs_run(args, self._ctx(env, apply=True, yes=True, receipt_out=str(receipt_path))))
-            apply_payload = json.loads(apply_buf.getvalue())
-            self.assertTrue(apply_payload["refused"])
-            self.assertNotIn("receipt", apply_payload)
-            self.assertFalse(receipt_path.exists())
-            rollback = apply_payload["plan"]["rollback"]
-            self.assertEqual(rollback["supported"], False)
-            self.assertEqual(rollback["mode"], "irreversible_and_clearly_labeled")
-            self.assertIn("no built-in rollback", rollback["notes"].lower())
 
     def test_posts_create_payload_uses_official_field_names(self) -> None:
         args = SimpleNamespace(
