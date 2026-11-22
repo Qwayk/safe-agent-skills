@@ -1,40 +1,12 @@
 ---
 name: openai-ads
-description: Use when the user asks an agent to check, report on, prepare, or carefully change ChatGPT Ads / OpenAI Ads campaigns, ad groups, ads, insights, targeting, product-feed setup, custom audiences, files, conversions, pixels, image tags, or server-side conversion events.
+description: Check ChatGPT Ads campaigns and results, review conversion settings, and prepare Ads Manager changes for the user's approval.
 ---
 
 # OpenAI Ads
 
-Use this skill for ChatGPT Ads / OpenAI Ads account work.
+Start with the account the user chose. Run `openai-ads-safe-agent-cli --output json auth check` to confirm it. A useful first read is `openai-ads-safe-agent-cli --output json api campaigns list-campaigns --query limit=10`. Use the Quickstart in the tool folder when the CLI needs to be installed.
 
-A user may ask for things like campaign stats, ads that are not running, a new paused campaign, audience review, tracking checks, product-feed guidance, or a server-side conversion event plan.
+For a change, prepare a plan first. Show the user the account, target, requested change, what you checked, and any effect on spend, delivery, audiences, or tracking. Wait for approval of that plan. Use the saved plan and the acknowledgements required for the specific change. Treat starting delivery as its own decision after a paused build.
 
-Start by reading. Good first actions are:
-
-```bash
-openai-ads-safe-agent-cli --output json api list
-openai-ads-safe-agent-cli onboarding
-openai-ads-safe-agent-cli auth check
-openai-ads-safe-agent-cli api campaigns list-campaigns --query limit=10
-openai-ads-safe-agent-cli measurement events-list
-```
-
-If the user asks for a live change, show the planned change first. Do not continue until the user approves it.
-
-Plan example:
-
-```bash
-openai-ads-safe-agent-cli --plan-out plan.json api campaigns create-campaign --body-json '{"name":"West Coast test","status":"paused"}'
-```
-
-Apply only after the user reviews the saved plan:
-
-```bash
-openai-ads-safe-agent-cli --apply --yes --plan-in plan.json --ack-no-snapshot --ack-irreversible api campaigns create-campaign --body-json '{"name":"West Coast test","status":"paused"}'
-```
-
-Ask before creating, updating, pausing, activating, archiving, uploading, changing budgets or bids, changing targeting, changing audiences, changing account settings, or sending real conversion events.
-
-Do not print API keys, conversion API keys, private Pixel IDs, audience rows, customer IDs, raw emails, external IDs, or tracking URLs with private parameters.
-
-Do not use this skill for normal OpenAI Platform API work, Ads Manager browser automation, or product-feed catalog upload over SFTP.
+If a reply leaves the result unknown, use the receipt to check what happened before trying again. Keep keys, customer data, audience rows, and private tracking values out of the reply. Use the separate OpenAI Platform tool for general API work.

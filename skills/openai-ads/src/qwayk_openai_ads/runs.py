@@ -7,9 +7,40 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .errors import OutcomeUnknownError
+from .json_files import write_json_file
+
 
 def _utc_now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+def record_unknown_change(
+    ctx: dict[str, Any], plan: dict[str, Any], error: OutcomeUnknownError, *, next_check: str
+) -> int:
+    receipt = {
+        "ok": False,
+        "applied": None,
+        "generated_at_utc": _utc_now(),
+        "operation": plan["operation"],
+        "target": plan["target"],
+        "request_body_sha256": plan["request_body_sha256"],
+        "verification": {"status": "outcome-unknown", "notes": next_check},
+    }
+    path = ctx.get("receipt_out")
+    if path:
+        write_json_file(path, receipt)
+    payload = {
+        "ok": False,
+        "applied": None,
+        "error": str(error),
+        "error_type": type(error).__name__,
+        "receipt": receipt,
+        "receipt_path": path,
+    }
+    ctx["audit"].write("apply.unknown", payload)
+    ctx["out"].emit(payload)
+    return 1
 
 
 def _default_run_id() -> str:

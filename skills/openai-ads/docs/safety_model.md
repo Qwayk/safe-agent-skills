@@ -1,55 +1,15 @@
-# Safety Model
+# Approvals and receipts
 
-ChatGPT Ads changes can affect money, delivery, audiences, creative review, account state, and conversion reporting. The tool is built so the agent looks first and changes later.
+Start with reads, such as listing campaigns or checking conversion settings. Before applying any change, save a plan and show the user the account, target, proposed change, and the risks. The user’s approval is for that plan. A changed account or request needs a new plan.
 
-## What the agent can do by itself
+Use `--apply --yes --plan-in` after approval. When the plan has no verified before-state, also ask for `--ack-no-snapshot`. Changes that can affect spend, serving, targeting, uploads, audiences, account settings, credentials, or measurement also need `--ack-irreversible` where the CLI requires it. A paused build and starting delivery are separate decisions.
 
-The agent can run reads. It can check the account, list campaigns, inspect ads and ad groups, look up targeting, pull insights, list supported conversion events, and explain product-feed or tracking setup.
+## Read the result before trying again
 
-Those reads still hide secrets and private customer or measurement values from normal output.
+The plan records whether the tool can reverse the change. A normal receipt shows the provider’s response. Follow it with the closest read command to check the affected item when the API allows it. For example, after creating a paused campaign, get the returned campaign ID and check its status and budget.
 
-## What waits for your approval
+The tool sends an approved write once. If a timeout or server error leaves the result unknown, the receipt says so. Check the account before sending the request again. For a real conversion, look for the same event ID in Ads Manager. If you retry after checking, keep the original event ID so OpenAI can recognize a duplicate.
 
-Anything that changes the account starts as a plan. This includes creating or updating campaigns, ads, ad groups, custom audiences, conversion settings, uploads, status changes, and server-side conversion event sends.
+The Conversions API command starts in validation mode. Validation checks the event without saving it. Sending a real event needs a reviewed real-event plan and the required acknowledgements. Keep credentials, customer data, audience member rows, and private tracking values out of shared output. The conversion settings read shows the event type and tracking window.
 
-The plan shows:
-
-- what the agent wants to do
-- which account object or measurement event is involved
-- the private values hidden from normal output
-- why the change is risky
-- whether the tool could check current state first
-- what the tool can check after the change
-- whether rollback is supported
-
-The agent should show you the plan before continuing.
-
-## Changes that need extra care
-
-Some changes need stronger approval because they can affect spend, delivery, data, or reporting:
-
-- activating, pausing, or archiving ad accounts, campaigns, ad groups, or ads
-- budget, bid, targeting, and serving changes
-- custom audience creation, upload, and archive
-- file upload
-- conversion API keys, event settings, pixels, and server-side conversion events
-- account brand and account serving-state changes
-
-The tool checks both the command and the request body. For example, if a campaign body includes a budget, active status, or targeting, the change is treated as high risk even if the command name sounds simple.
-
-## Server-side conversion events
-
-Conversion events can affect reporting and optimization, so the tool prepares them first. A real send needs your approval, the saved plan, and acknowledgement that the event cannot be unsent by this tool.
-
-Event source URLs, identifiers, customer fields, and conversion API keys are hidden from normal output.
-
-## No rollback promise
-
-The tool does not promise rollback for Ads changes. When it cannot save a useful before-state, the plan says so and the agent must ask for no-snapshot approval before continuing.
-
-That means your safest workflow is:
-
-1. Ask the agent to read first.
-2. Review what it found.
-3. Ask for a plan.
-4. Approve only after the target, risk, and limit are clear.
+Local write runs save plans and receipts next to the selected settings file under `.state/runs/`. Use `--plan-out` or `--receipt-out` to choose a path. If you turn off run artifacts, pass `--receipt-out` when you want a file. Use the [command guide](command_reference.md) to find a past run.

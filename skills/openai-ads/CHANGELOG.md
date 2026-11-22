@@ -1,5 +1,13 @@
 # Changelog
 
+## November 22, 2026
+
+- Send each approved write once. Save a receipt if the result is unknown.
+- Keep the chosen settings file in the next command, and include the skill and guides in the source download.
+- Show event names and tracking windows in conversion settings while keeping private data hidden.
+- Retire the old audience upload command and make two list filters optional to match the current API.
+- Put setup, examples, and approvals in the existing guides.
+
 ## 0.1.0 - 2026-07-06
 
 - Created the OpenAI Ads safe API CLI from the Python API tool template.

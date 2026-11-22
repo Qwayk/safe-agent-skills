@@ -1,14 +1,10 @@
-# Engineering Notes
+# Engineering notes
 
-The CLI uses a pinned generated inventory from the official OpenAI Ads OpenAPI spec. The parser creates explicit `api <family> <command>` subcommands from that inventory at startup.
+The CLI creates its named Advertiser API commands from the [packaged inventory](../src/qwayk_openai_ads/data/official_inventory.json). The [saved API spec](specs/openai-ads-openapi.json) is the July 6 reference. [API coverage](api_coverage.md) explains the difference between that snapshot and the current command list.
 
-Manual command families cover official measurement docs that sit outside the Advertiser API spec:
+- [`cli.py`](../src/qwayk_openai_ads/cli.py) reads flags and builds commands. [`config.py`](../src/qwayk_openai_ads/config.py) chooses settings.
+- [`api.py`](../src/qwayk_openai_ads/commands/api.py) handles Advertiser API requests and approvals. [`measurement.py`](../src/qwayk_openai_ads/commands/measurement.py) handles conversion sends and local measurement guidance.
+- [`http.py`](../src/qwayk_openai_ads/http.py) sends requests. [`runs.py`](../src/qwayk_openai_ads/runs.py) saves run history and receipts.
+- [`sanitize.py`](../src/qwayk_openai_ads/sanitize.py) protects private values in output. Keep private data out of tests and examples.
 
-- `measurement events-list`
-- `measurement pixel-guide`
-- `measurement image-tag-build`
-- `measurement conversions-send`
-- `product-feeds guide`
-- `targeting guide`
-
-There is no raw request bridge.
+Test changes with simulated responses. Check the account read, approval checks, one send after an approved plan, and a receipt when the outcome is unknown. Use the [test results](proof.md) to see what was verified from a fresh install.

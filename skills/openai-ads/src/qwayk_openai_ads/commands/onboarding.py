@@ -1,83 +1,49 @@
 from __future__ import annotations
 
+import os
+import shlex
 from pathlib import Path
 
-
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
-
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+from ..config import _get, _parse_env_file
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
     out = ctx["out"]
-    env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
-
-    env_path = Path(env_file)
+    env_path = Path(getattr(args, "env_file", ".env"))
     env_created = False
 
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
+    if not getattr(args, "no_write_env", False) and not env_path.exists():
+        example = env_path.parent / ".env.example"
+        template = example.read_text(encoding="utf-8") if example.is_file() else "OPENAI_ADS_API_KEY=\n"
+        try:
+            fd = os.open(env_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        except FileExistsError:
+            pass
         else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
+            with os.fdopen(fd, "w", encoding="utf-8") as env:
+                env.write(template)
+            env_created = True
 
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "OPENAI_ADS_BASE_URL"):
-        missing.append("OPENAI_ADS_BASE_URL")
-    if not _has_nonempty_env_value(lines, "OPENAI_ADS_API_KEY"):
-        missing.append("OPENAI_ADS_API_KEY")
-
+    key_present = bool(_get(_parse_env_file(env_path), "OPENAI_ADS_API_KEY"))
+    missing = [] if key_present else ["OPENAI_ADS_API_KEY"]
+    next_command = "openai-ads-safe-agent-cli --output json"
+    if str(env_path) != ".env":
+        next_command += " --env-file " + shlex.quote(str(env_path))
+    next_command += " auth check"
     steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Open .env and fill the required values:",
-        "  - OPENAI_ADS_BASE_URL=https://api.ads.openai.com/v1",
-        "  - OPENAI_ADS_API_KEY=<your Ads API key>",
-        "Run: openai-ads-safe-agent-cli --output json auth check",
+        f"Add the Ads Manager key to {env_path} as OPENAI_ADS_API_KEY, or set it in your shell.",
+        "Run the account check to see which Ads account the key can read.",
     ]
 
     payload = {
-        "ok": True,
-        "onboarding": {
-            "env_file": env_file,
-            "env_created": env_created,
-            "missing": missing,
-            "next_command": "openai-ads-safe-agent-cli --output json auth check",
-            "steps": steps,
-        },
+        "env_file": str(env_path),
+        "env_created": env_created,
+        "missing": missing,
+        "next_command": next_command,
+        "steps": steps,
     }
-
-    if str(getattr(args, "output", "json")) == "json":
-        out.emit(payload)
+    if getattr(args, "output", "json") == "json":
+        out.emit({"ok": True, "onboarding": payload})
     else:
-        print("To connect this tool to your API, do this once:")
-        for i, s in enumerate(steps, start=1):
-            print(f"{i}. {s}")
-        if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        print("")
-        print("Next: openai-ads-safe-agent-cli --output json auth check")
+        out.emit("\n".join([*steps, next_command]))
     return 0

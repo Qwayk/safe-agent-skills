@@ -1,19 +1,10 @@
 # OpenAI Ads API coverage
 
-Last updated: **2026-07-06**
+The CLI ships 40 Advertiser API commands across 32 paths, plus the helper commands below. The [July 6 snapshot](specs/openai-ads-openapi.json) had 41 operations across 33 paths. Its SHA-256 was a45e81ff54294cc570543d48ce71330cae2304e9cb9eda85d894e177df8b9d3b.
 
-This file is the source coverage ledger for the OpenAI Ads safe API tool. The generated inventory comes from the official OpenAI Ads OpenAPI spec pinned at `docs/specs/openai-ads-openapi.json`. Manual rows cover official measurement and setup docs outside the spec.
+On November 22, 2026, I checked the remaining 40 commands against the [official spec](https://developers.openai.com/ads/openapi.json). Their methods, paths, and operation IDs match. The current spec lists 88 operations, though both specs show version 2.3.0. The old audience upload route was removed. The CLI treats the campaign filter on the ad-group list and the ad-group filter on the ad list as optional, as the current spec does.
 
-## Boundary
-
-- Official OpenAPI source: `https://developers.openai.com/ads/openapi.json`
-- Server: `https://api.ads.openai.com/v1`
-- OpenAPI: `3.1.0`
-- Spec version: `2.3.0`
-- Spec SHA-256: `a45e81ff54294cc570543d48ce71330cae2304e9cb9eda85d894e177df8b9d3b`
-- Paths: **33**
-- Operations: **41**
-- Build strategy: **generated-inventory possible**, with manual rows for official measurement docs outside the OpenAPI spec.
+The [packaged inventory](../src/qwayk_openai_ads/data/official_inventory.json) is the list the CLI uses. The API server is https://api.ads.openai.com/v1. See [test results](proof.md) for which behavior was checked with simulated replies.
 
 ## Safety labels
 
@@ -22,7 +13,7 @@ This file is the source coverage ledger for the OpenAI Ads safe API tool. The ge
 - `High-risk write`: also needs `--ack-irreversible` when the operation can affect spend, serving, uploads, audiences, account state, auth, or measurement.
 - `No snapshot`: live apply also needs `--ack-no-snapshot` when the API cannot reliably save before-state.
 
-## Official OpenAPI operations
+## Advertiser API commands
 
 | Family | Operation | Method | Path | CLI command | Safety | Status |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -58,7 +49,6 @@ This file is the source coverage ledger for the OpenAI Ads safe API tool. The ge
 | `conversions` | `PostConversionInsightsMethod` | `POST` | `/conversions/insights` | `openai-ads-safe-agent-cli api conversions post-conversion-insights` | Review-first write: high-risk acknowledgement, no-snapshot acknowledgement | Implemented |
 | `custom-audiences` | `ArchiveCustomAudienceMethod` | `POST` | `/custom_audiences/{custom_audience_id}/archive` | `openai-ads-safe-agent-cli api custom-audiences archive-custom-audience` | Review-first write: high-risk acknowledgement | Implemented |
 | `custom-audiences` | `CreateCustomAudienceMethod` | `POST` | `/custom_audiences` | `openai-ads-safe-agent-cli api custom-audiences create-custom-audience` | Review-first write: high-risk acknowledgement, no-snapshot acknowledgement | Implemented |
-| `custom-audiences` | `CreateCustomAudienceUploadMethod` | `POST` | `/custom_audiences/upload` | `openai-ads-safe-agent-cli api custom-audiences create-custom-audience-upload` | Review-first write: high-risk acknowledgement, no-snapshot acknowledgement | Implemented |
 | `custom-audiences` | `GetCustomAudienceMethod` | `GET` | `/custom_audiences/{custom_audience_id}` | `openai-ads-safe-agent-cli api custom-audiences get-custom-audience` | Direct read | Implemented |
 | `custom-audiences` | `ListCustomAudiencesMethod` | `GET` | `/custom_audiences` | `openai-ads-safe-agent-cli api custom-audiences list-custom-audiences` | Direct read | Implemented |
 | `files` | `UploadImageMethod` | `POST` | `/upload` | `openai-ads-safe-agent-cli api files upload-image` | Review-first write: high-risk acknowledgement, no-snapshot acknowledgement | Implemented |
@@ -68,7 +58,7 @@ This file is the source coverage ledger for the OpenAI Ads safe API tool. The ge
 | `insights` | `GetCampaignInsightsMethod` | `GET` | `/campaigns/{campaign_id}/insights` | `openai-ads-safe-agent-cli api insights get-campaign-insights` | Direct read | Implemented |
 | `targeting` | `GetGeoLookupMethod` | `GET` | `/geo_lookup/search` | `openai-ads-safe-agent-cli api targeting get-geo-lookup` | Direct read | Implemented |
 
-## Manual official-doc surfaces
+## Helper commands
 
 | Surface | CLI command | Source | Safety | Status |
 | --- | --- | --- | --- | --- |
@@ -76,11 +66,11 @@ This file is the source coverage ledger for the OpenAI Ads safe API tool. The ge
 | `Image tag or noscript fallback builder with redacted Pixel ID` | `openai-ads-safe-agent-cli measurement image-tag-build` | https://developers.openai.com/ads/image-tag | Local guidance/read | implemented-local-guidance |
 | `Supported conversion event names and data types` | `openai-ads-safe-agent-cli measurement events-list` | https://developers.openai.com/ads/supported-events | Local guidance/read | implemented-local-guidance |
 | `Server-side Conversions API event send to https://bzr.openai.com/v1/events` | `openai-ads-safe-agent-cli measurement conversions-send` | https://developers.openai.com/ads/conversions-api | Review-first measurement write; defaults to validate-only and requires apply approval for sends | implemented-review-first-write |
-| `Product-feed workflow guidance; public API uses campaigns/ad groups/ads/insights, feed connection and catalog upload stay in Ads Manager/SFTP` | `openai-ads-safe-agent-cli product-feeds guide` | https://developers.openai.com/ads/product-feeds | Local guidance/read | implemented-local-guidance |
+| `Product-feed setup guidance` | `openai-ads-safe-agent-cli product-feeds guide` | https://developers.openai.com/ads/product-feeds | Local guidance/read | implemented-local-guidance |
 | `Campaign targeting guidance; live location lookup is covered by geo_lookup/search` | `openai-ads-safe-agent-cli targeting guide` | https://developers.openai.com/ads/campaign-targeting | Local guidance/read | implemented-local-guidance |
 
-## Exclusions and access gates
+## Access and coverage limits
 
-- Ads Manager Beta access, account verification, billing, and API-key issuance are outside this CLI and must be handled in OpenAI Ads Manager.
-- Product-feed connection and catalog upload are handled in Ads Manager/SFTP. The public Advertiser API commands cover product-feed campaigns, product sets, product-ad templates, and product-segmented insights.
-- No generic raw-request command is included. Every covered operation has an explicit command generated from the official boundary or a named local measurement guide command.
+Get the Ads Manager account, billing, verification, and key through Ads Manager. The [setup guide](onboarding.md) explains how the CLI uses the key.
+
+The product-feed command gives setup guidance. Use the [current product-feed docs](https://developers.openai.com/ads/product-feeds) for feed connections and catalog uploads. The image upload command accepts the documented JSON image URL flow. Use the [file API docs](https://developers.openai.com/ads/api-reference/files) for local binary upload.

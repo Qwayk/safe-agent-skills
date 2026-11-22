@@ -7,12 +7,18 @@ from pathlib import Path
 from typing import Any
 
 from ..config import credential_fingerprint
-from ..errors import SafetyError, ValidationError
+from ..errors import OutcomeUnknownError, SafetyError, ValidationError
 from ..http import HttpClient
-from ..inventory import find_operation, find_operation_by_id, load_inventory, operation_is_write, operations_by_family
+from ..inventory import (
+    find_operation,
+    find_operation_by_id,
+    load_inventory,
+    operation_is_write,
+    operations_by_family,
+)
 from ..json_files import read_json_file, write_json_file
-from ..sanitize import redact_pair_map, redact_url, redact_value
-
+from ..runs import record_unknown_change
+from ..sanitize import REDACTED, redact_pair_map, redact_url, redact_value
 
 NO_SNAPSHOT_NOTE = (
     "OpenAI Ads does not guarantee a safe before-state read for this operation from the pinned "
@@ -128,6 +134,7 @@ def _request(
     header_params: dict[str, str],
     body: Any,
 ) -> dict[str, Any]:
+    change = operation_is_write(op)
     response = _client(ctx).request(
         str(op["method"]).upper(),
         _build_url(ctx["cfg"].base_url, str(op["path"]), path_params),
@@ -135,7 +142,8 @@ def _request(
         params=query or None,
         json_body=body if isinstance(body, dict) else None,
         data=body if body is not None and not isinstance(body, dict) else None,
-        retries=1,
+        retries=0 if change else 1,
+        change=change,
         url_sanitizer=redact_url,
     )
     try:
@@ -147,6 +155,19 @@ def _request(
 
 def _redact_response(op: dict[str, Any], parsed: Any) -> Any:
     safe = redact_value(parsed)
+    if op.get("operation_id") == "ListConversionEventSettingsMethod" and isinstance(safe, dict):
+        rows = safe.get("data")
+        if isinstance(rows, list):
+            fields = {
+                "id": str, "name": str, "event_type": str, "custom_event_name": str,
+                "attribution_window_days": int, "archived": bool,
+            }
+            safe["data"] = [
+                {key: row[key] for key, kind in fields.items() if type(row.get(key)) is kind}
+                if isinstance(row, dict) else REDACTED
+                for row in rows
+            ]
+            return safe
     family = str(op.get("family_slug") or "")
     if family not in {"custom-audiences", "conversions"}:
         return safe
@@ -277,6 +298,18 @@ def _risk_reasons(op: dict[str, Any], *, body: Any = None) -> list[str]:
     return sorted(set(reasons))
 
 
+def _plan_operation(op: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "family": op.get("family_slug"),
+        "command": op.get("command"),
+        "operation_id": op.get("operation_id"),
+        "summary": op.get("summary"),
+        "method": op.get("method"),
+        "path": op.get("path"),
+        "scopes": op.get("scopes") or [],
+    }
+
+
 def _build_plan(
     ctx: dict[str, Any],
     op: dict[str, Any],
@@ -297,15 +330,7 @@ def _build_plan(
         "env_fingerprint": ctx["cfg"].base_url,
         "credential_fingerprint": credential_fingerprint(ctx["cfg"].api_key),
         "command": ctx.get("command_str"),
-        "operation": {
-            "family": op.get("family_slug"),
-            "command": op.get("command"),
-            "operation_id": op.get("operation_id"),
-            "summary": op.get("summary"),
-            "method": op.get("method"),
-            "path": op.get("path"),
-            "scopes": op.get("scopes") or [],
-        },
+        "operation": _plan_operation(op),
         "target": {
             "path_params": redact_pair_map(path_params),
             "query": redact_pair_map(query),
@@ -388,8 +413,8 @@ def cmd_api_list(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_api_operation(args: Any, ctx: dict[str, Any]) -> int:
-    family = str(getattr(args, "api_family"))
-    command = str(getattr(args, "api_command"))
+    family = str(args.api_family)
+    command = str(args.api_command)
     op = find_operation(family, command)
     path_params = _parse_pairs(getattr(args, "path_param", None), label="--path-param")
     query = _parse_pairs(getattr(args, "query", None), label="--query")
@@ -417,11 +442,10 @@ def cmd_api_operation(args: Any, ctx: dict[str, Any]) -> int:
         ctx["out"].emit(payload)
         return 0
 
-    plan = _build_plan(
-        ctx, op, path_params=path_params, query=query, header_params=header_params, body=body
-    )
-
     if not bool(ctx.get("apply")):
+        plan = _build_plan(
+            ctx, op, path_params=path_params, query=query, header_params=header_params, body=body
+        )
         _write_if_requested(ctx.get("plan_out"), plan)
         payload = {"ok": True, "dry_run": True, "operation": op, "plan": plan, "plan_path": ctx.get("plan_out")}
         ctx["audit"].write("api.plan", payload)
@@ -444,8 +468,9 @@ def cmd_api_operation(args: Any, ctx: dict[str, Any]) -> int:
     )
     if not bool((reviewed_plan.get("snapshot") or {}).get("available")) and not bool(ctx.get("ack_no_snapshot")):
         raise SafetyError("Refused: this OpenAI Ads write has no verified before-state snapshot; add --ack-no-snapshot only after reviewing that risk")
+    risk_reasons = _risk_reasons(op, body=body)
     if any(
-        r in set(reviewed_plan.get("risk_reasons") or [])
+        r in risk_reasons
         for r in {
             "serving-status-change",
             "spend-risk",
@@ -458,17 +483,32 @@ def cmd_api_operation(args: Any, ctx: dict[str, Any]) -> int:
     ) and not bool(ctx.get("ack_irreversible")):
         raise SafetyError("Refused: this high-risk OpenAI Ads write requires --ack-irreversible")
 
-    response = _request(
-        ctx, op, path_params=path_params, query=query, header_params=header_params, body=body
-    )
+    receipt_plan = {
+        "operation": _plan_operation(op),
+        "target": {
+            "path_params": redact_pair_map(path_params),
+            "query": redact_pair_map(query),
+            "headers": redact_pair_map(header_params),
+        },
+        "request_body_sha256": _stable_sha256(body),
+    }
+    try:
+        response = _request(
+            ctx, op, path_params=path_params, query=query, header_params=header_params, body=body
+        )
+    except OutcomeUnknownError as error:
+        return record_unknown_change(
+            ctx, receipt_plan, error,
+            next_check="Check the affected item in Ads Manager or with the matching read command before retrying.",
+        )
+    if not (reviewed_plan.get("snapshot") or {}).get("available"):
+        risk_reasons.append("no-snapshot")
     receipt = {
+        **receipt_plan,
         "ok": True,
         "applied": True,
         "generated_at_utc": _utc_now(),
-        "operation": plan["operation"],
-        "target": plan["target"],
-        "request_body_sha256": plan.get("request_body_sha256"),
-        "risk_reasons": plan.get("risk_reasons"),
+        "risk_reasons": sorted(risk_reasons),
         "response": response,
         "verification": {"status": "response-captured", "notes": "Follow with the closest read command when the target still exists."},
     }

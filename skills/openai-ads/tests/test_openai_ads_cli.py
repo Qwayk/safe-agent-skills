@@ -4,11 +4,14 @@ import importlib
 import io
 import json
 import pkgutil
+import shlex
 import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
+
+import requests
 
 from qwayk_openai_ads.audit_log import AuditLogger
 from qwayk_openai_ads.cli import main
@@ -22,6 +25,14 @@ def _payload(argv: list[str]) -> tuple[int, dict]:
     with redirect_stdout(buf):
         rc = main(argv)
     return rc, json.loads(buf.getvalue())
+
+
+def _response(status: int, body: dict) -> requests.Response:
+    response = requests.Response()
+    response.status_code = status
+    response.url = "https://api.ads.openai.com/v1/example"
+    response._content = json.dumps(body).encode("utf-8")
+    return response
 
 
 def _assert_no_leaks(testcase: unittest.TestCase, text: str) -> None:
@@ -67,17 +78,20 @@ class TestOpenAIAdsCli(unittest.TestCase):
 
     def test_inventory_covers_pinned_spec_and_manual_surfaces(self) -> None:
         inventory = load_inventory()
-        self.assertEqual(inventory["operation_count"], 41)
-        self.assertEqual(inventory["path_count"], 33)
+        self.assertEqual(inventory["operation_count"], 40)
+        self.assertEqual(inventory["path_count"], 32)
         self.assertEqual(inventory["server_url"], "https://api.ads.openai.com/v1")
         self.assertIn("campaigns", inventory["families"])
+        self.assertNotIn(
+            "create-custom-audience-upload", {item["command"] for item in inventory["operations"]}
+        )
         self.assertIn("measurement", {row["family_slug"] for row in inventory["manual_surfaces"]})
 
     def test_api_list_needs_no_env(self) -> None:
         rc, payload = _payload(["--output", "json", "api", "list"])
         self.assertEqual(rc, 0)
         self.assertTrue(payload["ok"])
-        self.assertEqual(payload["operation_count"], 41)
+        self.assertEqual(payload["operation_count"], 40)
 
     def test_write_dry_run_creates_reviewed_plan(self) -> None:
         with tempfile.TemporaryDirectory() as d:
@@ -386,6 +400,124 @@ class TestOpenAIAdsCli(unittest.TestCase):
             self.assertTrue((artifacts_dir / "plan.json").exists())
             self.assertTrue((artifacts_dir / "summary.md").exists())
             self.assertIn(run_id, Path(payload["runs_index"]).read_text(encoding="utf-8"))
+
+    def test_onboarding_keeps_the_selected_file(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            env_path = Path(d) / "ads settings.env"
+            with patch.dict("os.environ", {}, clear=True):
+                rc, payload = _payload(["--env-file", str(env_path), "onboarding"])
+                setup = payload["onboarding"]
+                self.assertEqual(rc, 0)
+                self.assertEqual(env_path.read_text(encoding="utf-8"), "OPENAI_ADS_API_KEY=\n")
+                self.assertEqual(env_path.stat().st_mode & 0o777, 0o600)
+                self.assertEqual(setup["missing"], ["OPENAI_ADS_API_KEY"])
+                self.assertEqual(
+                    shlex.split(setup["next_command"])[1:],
+                    ["--output", "json", "--env-file", str(env_path), "auth", "check"],
+                )
+                env_path.write_text("OPENAI_ADS_API_KEY=fake-test-key\n", encoding="utf-8")
+                _, repeated = _payload(["--env-file", str(env_path), "onboarding"])
+                self.assertFalse(repeated["onboarding"]["env_created"])
+                self.assertEqual(repeated["onboarding"]["missing"], [])
+                self.assertIn("fake-test-key", env_path.read_text(encoding="utf-8"))
+                self.assertNotIn("fake-test-key", json.dumps(repeated))
+
+    def test_write_with_a_server_error_records_unknown_after_one_request(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            common = ["--env-file", str(self._env(root))]
+            plan = root / "plan.json"
+            command = [
+                "api", "campaigns", "create-campaign", "--body-json",
+                '{"name":"First campaign","status":"paused","budget":{"lifetime_spend_limit_micros":1000000}}',
+            ]
+            rc, _ = _payload([*common, "--plan-out", str(plan), *command])
+            self.assertEqual(rc, 0)
+            with patch("qwayk_openai_ads.http.requests.Session.request") as request:
+                request.return_value = _response(503, {})
+                rc, payload = _payload([
+                    *common, "--apply", "--yes", "--plan-in", str(plan),
+                    "--ack-no-snapshot", "--ack-irreversible", *command,
+                ])
+            request.assert_called_once()
+            self.assertFalse(request.call_args.kwargs["allow_redirects"])
+            self.assertEqual(rc, 1)
+            self.assertIsNone(payload["applied"])
+            receipt = json.loads(Path(payload["receipt_path"]).read_text(encoding="utf-8"))
+            self.assertEqual(receipt["verification"]["status"], "outcome-unknown")
+            self.assertEqual(receipt["request_body_sha256"], payload["receipt"]["request_body_sha256"])
+
+    def test_conversion_timeout_keeps_a_private_receipt_without_retrying(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            common = ["--env-file", str(self._env(root))]
+            plan = root / "events.json"
+            receipt = root / "receipt.json"
+            command = [
+                "measurement", "conversions-send", "--real-events",
+                "--events-json", '[{"id":"event-1","type":"lead_created","email":"person@example.com"}]',
+            ]
+            rc, _ = _payload([*common, "--plan-out", str(plan), *command])
+            self.assertEqual(rc, 0)
+            with (
+                patch("qwayk_openai_ads.http.requests.Session.request", side_effect=requests.Timeout) as request,
+                patch("qwayk_openai_ads.http.time.sleep") as sleep,
+            ):
+                rc, payload = _payload([
+                    *common, "--apply", "--yes", "--plan-in", str(plan), "--receipt-out",
+                    str(receipt), "--ack-no-snapshot", "--ack-irreversible", *command,
+                ])
+            request.assert_called_once()
+            sleep.assert_not_called()
+            self.assertEqual(rc, 1)
+            data = receipt.read_text(encoding="utf-8")
+            self.assertEqual(payload["receipt"]["verification"]["status"], "outcome-unknown")
+            self.assertIn("same event ID", data)
+            self.assertNotIn("px_test_secret", json.dumps(payload) + data)
+            self.assertNotIn("person@example.com", json.dumps(payload) + data)
+
+    def test_reads_still_retry_and_optional_filters_stay_optional(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            common = ["--env-file", str(self._env(Path(d)))]
+            for family, command in (("ads", "list-ads"), ("ad-groups", "list-ad-groups")):
+                with self.subTest(command=command):
+                    with (
+                        patch("qwayk_openai_ads.http.requests.Session.request") as request,
+                        patch("qwayk_openai_ads.http.time.sleep"),
+                    ):
+                        request.side_effect = [_response(503, {}), _response(200, {"data": []})]
+                        rc, payload = _payload([*common, "api", family, command])
+                    self.assertEqual(rc, 0)
+                    self.assertTrue(payload["ok"])
+                    self.assertEqual([call.kwargs["method"] for call in request.call_args_list], ["GET", "GET"])
+
+    def test_conversion_settings_show_event_type_and_window_without_private_data(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            env_path = self._env(Path(d))
+            body = {
+                "data": [{
+                    "id": "ces_example", "name": "Qualified lead", "event_type": "lead_created",
+                    "attribution_window_days": 7, "source_ids": ["px_test_secret"],
+                    "email": "person@example.com", "customer_id": "cust_private_123",
+                    "rows": [{"email":"raw@example.com"}],
+                }],
+                "has_more": True,
+                "last_id": "ces_example",
+            }
+            with patch("qwayk_openai_ads.http.requests.Session.request", return_value=_response(200, body)):
+                rc, payload = _payload([
+                    "--env-file", str(env_path), "api", "conversions", "list-conversion-event-settings",
+                ])
+            self.assertEqual(rc, 0)
+            result = payload["response"]["body"]
+            self.assertEqual(result["data"], [{
+                "id": "ces_example", "name": "Qualified lead", "event_type": "lead_created",
+                "attribution_window_days": 7,
+            }])
+            self.assertTrue(result["has_more"])
+            self.assertEqual(result["last_id"], "ces_example")
+            _assert_no_leaks(self, json.dumps(payload))
+            self.assertNotIn("px_test_secret", json.dumps(payload))
 
     def test_audit_log_redacts(self) -> None:
         with tempfile.TemporaryDirectory() as d:

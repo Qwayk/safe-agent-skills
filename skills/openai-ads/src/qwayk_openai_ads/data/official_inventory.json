@@ -5,7 +5,7 @@
     "ads": 7,
     "campaigns": 7,
     "conversions": 5,
-    "custom-audiences": 5,
+    "custom-audiences": 4,
     "files": 1,
     "insights": 4,
     "targeting": 1
@@ -55,7 +55,7 @@
     }
   ],
   "openapi": "3.1.0",
-  "operation_count": 41,
+  "operation_count": 40,
   "operations": [
     {
       "command": "activate-ad-account",
@@ -250,7 +250,7 @@
           "description": "",
           "in": "query",
           "name": "campaign_id",
-          "required": true,
+          "required": false,
           "schema": {
             "type": "string"
           }
@@ -479,7 +479,7 @@
           "description": "",
           "in": "query",
           "name": "ad_group_id",
-          "required": true,
+          "required": false,
           "schema": {
             "type": "string"
           }
@@ -979,24 +979,6 @@
       "snapshot_operation_id": null,
       "source": "official-openapi",
       "summary": "Create a custom audience for the authenticated ad account.",
-      "write": true
-    },
-    {
-      "command": "create-custom-audience-upload",
-      "description": "",
-      "family_slug": "custom-audiences",
-      "method": "POST",
-      "operation_id": "CreateCustomAudienceUploadMethod",
-      "parameters": [],
-      "path": "/custom_audiences/upload",
-      "request_body_required": false,
-      "risk_reasons": [
-        "openai-ads-write",
-        "upload-or-audience-data"
-      ],
-      "snapshot_operation_id": null,
-      "source": "official-openapi",
-      "summary": "Create a custom audience from an uploaded file and start processing.",
       "write": true
     },
     {
@@ -1905,7 +1887,7 @@
       "write": false
     }
   ],
-  "path_count": 33,
+  "path_count": 32,
   "server_url": "https://api.ads.openai.com/v1",
   "source_file": "docs/specs/openai-ads-openapi.json",
   "source_url": "https://developers.openai.com/ads/openapi.json",

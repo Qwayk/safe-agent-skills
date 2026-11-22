@@ -24,3 +24,5 @@ class NotSupportedError(ToolError):
     The tool/API does not support the requested operation (or it's intentionally not implemented yet).
     """
 
+class OutcomeUnknownError(ToolError):
+    """The provider may have received a change but did not confirm the result."""

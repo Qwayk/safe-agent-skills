@@ -8,11 +8,11 @@ from typing import Any
 from urllib.parse import urlencode
 
 from ..config import credential_fingerprint
-from ..errors import SafetyError, ValidationError
+from ..errors import OutcomeUnknownError, SafetyError, ValidationError
 from ..http import HttpClient
 from ..json_files import read_json_file, write_json_file
+from ..runs import record_unknown_change
 from ..sanitize import REDACTED, redact_url, redact_value
-
 
 SUPPORTED_EVENTS = [
     {"event": "app_installed", "data_type": "customer_action", "use": "A user installs an app."},
@@ -258,23 +258,31 @@ def cmd_conversions_send(args: Any, ctx: dict[str, Any]) -> int:
         raise SafetyError("Refused: Conversions API send has no before-state snapshot; add --ack-no-snapshot only after reviewing that risk")
 
     url = ctx["cfg"].conversions_base_url.rstrip("/") + "/events"
-    response = HttpClient(
-        timeout_s=float(ctx["timeout_s"]),
-        verbose=bool(ctx.get("verbose")),
-        user_agent=f"openai-ads-safe-agent-cli/{ctx.get('tool_version')}",
-    ).request(
-        "POST",
-        url,
-        headers={
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {ctx['cfg'].conversions_api_key}",
-        },
-        params={"pid": pixel_id},
-        json_body={"validate_only": validate_only, "events": events},
-        retries=1,
-        url_sanitizer=redact_url,
-    )
+    try:
+        response = HttpClient(
+            timeout_s=float(ctx["timeout_s"]),
+            verbose=bool(ctx.get("verbose")),
+            user_agent=f"openai-ads-safe-agent-cli/{ctx.get('tool_version')}",
+        ).request(
+            "POST",
+            url,
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {ctx['cfg'].conversions_api_key}",
+            },
+            params={"pid": pixel_id},
+            json_body={"validate_only": validate_only, "events": events},
+            change=True,
+            url_sanitizer=redact_url,
+        )
+    except OutcomeUnknownError as error:
+        check = (
+            "Run validation again from the reviewed plan if needed. Validation does not save events."
+            if validate_only else
+            "Check the same event ID in Ads Manager before retrying. If you retry, keep the original event ID."
+        )
+        return record_unknown_change(ctx, plan, error, next_check=check)
     try:
         body = response.json()
     except Exception:
@@ -303,7 +311,7 @@ def cmd_product_feeds_guide(args: Any, ctx: dict[str, Any]) -> int:
         {
             "ok": True,
             "source": "https://developers.openai.com/ads/product-feeds",
-            "summary": "Product-feed campaigns use the normal campaigns, ad groups, ads, and insights API commands. Feed connection and catalog upload happen in Ads Manager/SFTP, not this API.",
+            "summary": "Use the official product-feed guide to set up the feed. This CLI offers campaign, ad group, ad, and insights commands for work with an existing feed.",
             "api_commands": [
                 "api campaigns create-campaign",
                 "api ad-groups create-ad-group",

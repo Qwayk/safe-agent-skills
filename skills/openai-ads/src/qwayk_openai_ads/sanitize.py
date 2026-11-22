@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 from typing import Any
 
-
 REDACTED = "[REDACTED]"
 
 SECRET_WORDS = (
@@ -227,7 +226,7 @@ def redact_command(argv: list[str]) -> str:
 
 def redact_url(url: str) -> str:
     out = redact_text(url)
-    for marker in ("apiKey=", "api_key=", "api-key=", "token=", "key=", "password=", "secret="):
+    for marker in ("apiKey=", "api_key=", "api-key=", "token=", "key=", "password=", "secret=", "pid="):
         if marker in out:
             prefix, rest = out.split(marker, 1)
             tail = rest.split("&", 1)

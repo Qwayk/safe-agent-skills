@@ -8,6 +8,7 @@ from typing import Any
 
 import requests
 
+from .errors import OutcomeUnknownError
 from .sanitize import redact_text
 
 
@@ -51,6 +52,7 @@ class HttpClient:
         json_body: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
         retries: int = 0,
+        change: bool = False,
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),
         url_sanitizer: Any | None = None,
     ) -> HttpResponse:
@@ -73,6 +75,7 @@ class HttpClient:
                     json=json_body,
                     data=data,
                     timeout=self._timeout_s,
+                    allow_redirects=not change,
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
@@ -82,16 +85,23 @@ class HttpClient:
                         f"[http] {method} {display_url} -> EXCEPTION ({ms}ms): {type(e).__name__}: {safe_error}",
                         file=sys.stderr,
                     )
-                raise RuntimeError(
-                    f"Request failed for {method} {display_url}: {type(e).__name__}: {safe_error}"
-                ) from e
+                message = f"Request failed for {method} {display_url}: {type(e).__name__}"
+                if change and isinstance(
+                    e, (requests.ConnectionError, requests.Timeout,
+                        requests.exceptions.ChunkedEncodingError, requests.exceptions.ContentDecodingError)
+                ):
+                    raise OutcomeUnknownError(f"{method} failed before confirmation: {type(e).__name__}") from e
+                raise RuntimeError(f"{message}: {safe_error}") from e
             ms = int((time.time() - start) * 1000)
             if self._verbose:
                 shown_url = url_sanitizer(resp.url) if url_sanitizer else resp.url
                 shown_url = redact_text(shown_url)
                 print(f"[http] {method} {shown_url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
-            if resp.status_code < 400:
+            if change and resp.status_code >= 500:
+                raise OutcomeUnknownError(f"HTTP {resp.status_code} before confirmation of {method}")
+
+            if resp.status_code < 300 or (not change and resp.status_code < 400):
                 return HttpResponse(
                     status=resp.status_code,
                     headers={k.lower(): v for k, v in resp.headers.items()},
@@ -99,7 +109,7 @@ class HttpClient:
                     url=resp.url,
                 )
 
-            if attempt <= retries and resp.status_code in retry_on:
+            if not change and attempt <= retries and resp.status_code in retry_on:
                 time.sleep(min(2**attempt, 10))
                 continue
 

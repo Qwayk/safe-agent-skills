@@ -1,8 +1,18 @@
-# Proof
+# OpenAI Ads test results
 
-Last updated: **2026-07-06**
+## November 22, 2026 local checks
 
-## What was checked
+The source and local catalog each passed 19 tests from the checkout and a fresh wheel install. Both installs loaded all 40 Advertiser API commands. The source downloads include the skill, setup example, guides, and saved API spec. A fresh install created an editable settings file and reused it in the account-check command.
+
+With simulated Ads replies, a campaign send got one request on a server error. A conversion send got one request on a timeout. Both cases produced a receipt that said the result was unknown. A read still retried after a temporary error. The tests also checked that the event type and tracking window remain visible while private values stay hidden.
+
+I checked the 40 remaining routes against the current official spec. The old audience upload route is gone. Ad groups and ads can now be listed without filtering by their parent. The scope still follows the saved tool inventory. See [API coverage](api_coverage.md).
+
+The CLI type check passed with Python 3.10 analysis settings. The installed mypy version cannot check the repository’s Python 3.9 setting. Ruff reported two existing style issues in `cli.py` and `inventory.py`. These checks used simulated replies and made zero Ads account requests.
+
+## July 6, 2026 record
+
+### What was checked
 
 - The official OpenAI Ads OpenAPI spec was fetched from `https://developers.openai.com/ads/openapi.json` and pinned at `docs/specs/openai-ads-openapi.json`.
 - The pinned spec reports OpenAPI `3.1.0`, spec version `2.3.0`, server `https://api.ads.openai.com/v1`, 33 paths, and 41 operations.
@@ -13,7 +23,7 @@ Last updated: **2026-07-06**
 - `.venv/bin/openai-ads-safe-agent-cli --output json api list` returned valid JSON.
 - `git diff --check` passed for the OpenAI Ads source and touched workspace/control-room docs.
 
-## Command proof
+### Behaviors tested
 
 Behavior tests cover:
 
@@ -31,13 +41,13 @@ Behavior tests cover:
 - run artifacts for write plans
 - audit-log redaction
 
-## Live behavior
+### Live behavior in the July 6 build
 
 Live OpenAI Ads behavior is not verified in this source run because no real eligible Ads Manager Beta account, billing, account verification, and Ads API credentials were available. Missing live credentials are not treated as a source-ready blocker; live status is marked honestly.
 
-## Example outputs
+### Saved July output examples
 
-Saved redacted examples live under `docs/examples/`.
+These saved July examples show the earlier output, including the old command count and preview.
 
 - `docs/examples/plan.example.json`
 - `docs/examples/receipt.example.json`
