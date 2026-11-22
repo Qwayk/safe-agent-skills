@@ -1,42 +1,37 @@
-# Connect your Salesforce Platform account
+# Connect your Salesforce org
 
-Salesforce Platform needs local org access before an agent can inspect objects, records, limits, metadata, and org resources.
+You need a Salesforce org address and a REST API access token. Get the token from your approved Salesforce app. Salesforce recommends an External Client App for new setups. An existing Connected App can also issue a token. [Salesforce app setup](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_oauth_and_connected_apps.htm)
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## Set your local settings
 
-After setup, start with an org or limits read before asking for record or metadata changes.
+```bash
+qwayk-salesforce-platform-safe-agent-cli onboarding
+```
 
-## Step 1: Create `.env`
+Set `SALESFORCE_INSTANCE_URL` to your org address, such as `https://your-domain.my.salesforce.com`. Onboarding creates a local settings file if needed. Use `--env-file` before the command to choose another file.
 
-1. Copy `.env.example` to `.env`.
-2. Set `SALESFORCE_INSTANCE_URL` to your org URL.
-3. Leave `SALESFORCE_API_VERSION=67.0` unless you have a specific reason to change it.
-
-## Step 2: Get an access token
-
-Use one of these paths:
-
-1. Put `SALESFORCE_ACCESS_TOKEN` in `.env`.
-2. Or keep the token outside `.env` and store it with:
+Set `SALESFORCE_ACCESS_TOKEN` in the settings file or shell, or save a token file you already have:
 
 ```bash
 qwayk-salesforce-platform-safe-agent-cli auth token set --file token.json
+qwayk-salesforce-platform-safe-agent-cli auth token status
 ```
 
-Use an External Client App or an existing Connected App that can issue a Salesforce access token for REST API use. Some orgs restrict new Connected App creation, so an admin may need to provide the approved app or token flow.
+Keep the access token and token file out of chat and Git. The tool stores the token under `.state/token.json` next to the selected settings file. It can also read the org address from that token file. Shell values take precedence over values in the settings file. The default API version is `67.0` and the timeout is 60 seconds. Set `SALESFORCE_API_VERSION` or `SALESFORCE_TIMEOUT_S` if you need a different value.
 
-## Step 3: Check the connection
+## Check the connection
+
+Run the command printed by onboarding. It carries the settings file you chose. The default check is:
 
 ```bash
 qwayk-salesforce-platform-safe-agent-cli --output json auth check
 ```
 
-If this works, the tool is ready for real read commands and dry-run write plans. Write apply currently requires explicit no-snapshot approval before Salesforce HTTP when before-state capture support is not available.
+The check reads the limits for your org. Confirm the org address before you move on to [your first read](quickstart.md).
 
-## Step 4: First safe requests
+## If a command fails
 
-- Read:
-  - `qwayk-salesforce-platform-safe-agent-cli --output json resources list`
-  - `qwayk-salesforce-platform-safe-agent-cli --output json query run --soql "SELECT Id, Name FROM Account LIMIT 5"`
-- Dry-run write:
-  - `qwayk-salesforce-platform-safe-agent-cli --output json composite execute --body-file composite.json`
+- Check the selected settings file, org address, access token, and Salesforce permissions.
+- For Knowledge articles, check that Salesforce Knowledge is enabled. Supply a language with `--header Accept-Language=en-US` and any required filters.
+- Save large CSV or binary responses with `--download-to`. For supported blob uploads, pass a manifest with `--multipart-file`.
+- Read the error before retrying a change. Use `--verbose` for HTTP messages or `--debug` for a stack trace. Keep private details in those logs on your computer.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from shlex import join
 
 
 def _read_text_lines(path: Path) -> list[str]:
@@ -35,24 +36,29 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
     env_created = False
     if write_env and not env_path.exists():
         example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
-        else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
+        contents = example_path.read_text(encoding="utf-8") if example_path.is_file() else ""
+        env_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with env_path.open("x", encoding="utf-8") as settings:
+                settings.write(contents)
+            env_created = True
+        except FileExistsError:
+            pass
 
     lines = _read_text_lines(env_path)
     missing: list[str] = []
-    for key in ["SALESFORCE_INSTANCE_URL", "SALESFORCE_API_VERSION"]:
-        if not _has_nonempty_env_value(lines, key):
-            missing.append(key)
+    if not _has_nonempty_env_value(lines, "SALESFORCE_INSTANCE_URL"):
+        missing.append("SALESFORCE_INSTANCE_URL")
     has_token = _has_nonempty_env_value(lines, "SALESFORCE_ACCESS_TOKEN")
 
+    command = ["qwayk-salesforce-platform-safe-agent-cli", "--output", "json", "--env-file", env_file, "auth"]
+    next_command = join([*command, "check"])
+    token_command = join([*command, "token", "set", "--file", "token.json"])
     steps = [
-        "Create a Salesforce External Client App or Connected App that can issue a REST API access token.",
-        "Fill .env with your org URL and version, for example SALESFORCE_INSTANCE_URL=https://your-domain.my.salesforce.com and SALESFORCE_API_VERSION=67.0.",
-        "Choose one token path: set SALESFORCE_ACCESS_TOKEN in .env, or store a token JSON file with qwayk-salesforce-platform-safe-agent-cli auth token set --file token.json.",
-        "Run qwayk-salesforce-platform-safe-agent-cli --output json auth check.",
+        "Get a REST API access token from your approved Salesforce app.",
+        f"Set SALESFORCE_INSTANCE_URL in {env_file} to your Salesforce org address.",
+        f"Set SALESFORCE_ACCESS_TOKEN there or save your token file with {token_command}.",
+        f"Check the connection with {next_command}.",
     ]
 
     payload = {
@@ -62,7 +68,7 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             "env_created": env_created,
             "missing": missing,
             "token_configured_in_env": has_token,
-            "next_command": "qwayk-salesforce-platform-safe-agent-cli --output json auth check",
+            "next_command": next_command,
             "steps": steps,
         },
     }
@@ -79,5 +85,5 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
         if not has_token:
             print("No SALESFORCE_ACCESS_TOKEN found in the env file. A stored token JSON is also supported.")
         print("")
-        print("Next: qwayk-salesforce-platform-safe-agent-cli --output json auth check")
+        print(f"Next: {next_command}")
     return 0

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+import shlex
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -12,6 +13,10 @@ from tests import bootstrap  # noqa: F401
 
 from salesforce_platform_safe_agent_cli.cli import main
 from salesforce_platform_safe_agent_cli.http import HttpResponse
+
+
+def _reply(body: dict, status: int = 200) -> HttpResponse:
+    return HttpResponse(status, {"content-type": "application/json"}, json.dumps(body).encode(), "https://example.my.salesforce.com")
 
 
 class TestSalesforceSafety(unittest.TestCase):
@@ -33,6 +38,108 @@ class TestSalesforceSafety(unittest.TestCase):
         with redirect_stdout(buf):
             rc = main(argv)
         return rc, json.loads(buf.getvalue())
+
+    def test_grouped_write_needs_reviewed_plan_and_same_connection(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            env = self._write_env(root)
+            body = root / "request.json"
+            body.write_text('{"compositeRequest":[]}')
+            plan = root / "plan.json"
+            options = ["--no-artifacts", "--env-file", str(env)]
+            approval = ["--apply", "--yes", "--ack-no-snapshot"]
+            command = ["composite", "execute", "--body-file", str(body)]
+            header = ["--header", "Sforce-Auto-Assign=TRUE"]
+            with patch("salesforce_platform_safe_agent_cli.commands.salesforce.HttpClient.request") as call:
+                _, reply = self._run_main([*options, *approval, *command])
+                self.assertIn("requires --plan-in", reply["reasons"][0])
+                self.assertEqual(self._run_main([*options, "--plan-out", str(plan), *command, *header])[0], 0)
+                self.assertNotIn("test-token", plan.read_text())
+                apply = [*options, *approval, "--plan-in", str(plan), *command]
+                _, reply = self._run_main([*apply, "--header", "Sforce-Auto-Assign=FALSE"])
+                self.assertIn("request drift", reply["reasons"][0])
+                original = env.read_text()
+                env.write_text(original.replace("test-token", "other-fixture-token"))
+                _, reply = self._run_main([*apply, *header])
+                self.assertIn("request drift", reply["reasons"][0])
+                env.write_text(original)
+                call.assert_not_called()
+
+                call.return_value = _reply({"compositeResponse": [{"httpStatusCode": 201}, {"httpStatusCode": 400}]})
+                code, reply = self._run_main([*apply, *header])
+                self.assertEqual(code, 1)
+                self.assertFalse(reply["ok"])
+                self.assertEqual(reply["receipt"]["verification"]["outcome"], "partial")
+                call.assert_called_once()
+
+    def test_starting_permanent_bulk_delete_needs_explicit_approval(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            env = self._write_env(root).rename(root / "test settings.env")
+            plan = root / "plan.json"
+            options = ["--no-artifacts", "--env-file", str(env)]
+            approval = ["--apply", "--yes", "--ack-no-snapshot"]
+            command = ["jobs-ingest", "upload-complete", "--job-id", "job-fixture"]
+            apply = [*options, *approval, "--plan-in", str(plan)]
+            with patch("salesforce_platform_safe_agent_cli.commands.salesforce.HttpClient.request") as call:
+                _, reply = self._run_main([*options, *approval, *command])
+                self.assertIn("requires --plan-in", reply["reasons"][0])
+                call.assert_not_called()
+
+                call.return_value = _reply({"operation": "hardDelete"})
+                _, reply = self._run_main([*options, "--plan-out", str(plan), *command])
+                self.assertEqual(reply["plan"]["job_operation"], "harddelete")
+                self.assertEqual(call.call_args.args[0], "GET")
+                _, reply = self._run_main([*apply, *command])
+                self.assertIn("requires --ack-irreversible", reply["reasons"][0])
+                self.assertEqual([args.args[0] for args in call.call_args_list], ["GET", "GET"])
+
+                call.side_effect = [_reply({"operation": "upsert"})]
+                _, reply = self._run_main([*apply, "--ack-irreversible", *command])
+                self.assertIn("job type differs", reply["reasons"][0])
+                self.assertEqual(call.call_args.args[0], "GET")
+
+                call.side_effect = [
+                    _reply({"operation": "hardDelete"}),
+                    _reply({"id": "job-fixture", "state": "UploadComplete"}),
+                ]
+                code, reply = self._run_main([*apply, "--ack-irreversible", *command])
+                self.assertEqual(code, 0)
+                self.assertEqual(call.call_args.args[0], "PATCH")
+                verification = reply["receipt"]["verification"]
+                self.assertFalse(verification["ok"])
+                self.assertEqual(verification["outcome"], "submitted")
+                self.assertIn(str(env), shlex.split(verification["details"]["check_status"]))
+                self.assertEqual(
+                    shlex.split(verification["details"]["check_failed_rows"])[-3:],
+                    ["failed-results", "--job-id", "job-fixture"],
+                )
+
+    def test_bulk_result_uses_provider_state_and_failed_row_count(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            env = self._write_env(root)
+            body = root / "job.json"
+            body.write_text('{"operation":"insert","object":"Account","contentType":"CSV"}')
+            plan = root / "plan.json"
+            options = ["--no-artifacts", "--env-file", str(env)]
+            command = ["jobs-ingest", "create", "--body-file", str(body)]
+            self.assertEqual(self._run_main([*options, "--plan-out", str(plan), *command])[0], 0)
+            for state, failed, outcome, expected_code in (
+                ("Open", 0, "submitted", 0),
+                ("JobComplete", 0, "completed", 0),
+                ("JobComplete", 3, "partial", 1),
+                ("Failed", 1, "failed", 1),
+            ):
+                with self.subTest(state=state, failed=failed), patch(
+                    "salesforce_platform_safe_agent_cli.commands.salesforce.HttpClient.request",
+                    return_value=_reply({"id": "job-fixture", "state": state, "numberRecordsFailed": failed}),
+                ):
+                    code, reply = self._run_main(
+                        [*options, "--apply", "--yes", "--ack-no-snapshot", "--plan-in", str(plan), *command]
+                    )
+                    self.assertEqual(code, expected_code)
+                    self.assertEqual(reply["receipt"]["verification"]["outcome"], outcome)
 
     def test_write_command_defaults_to_dry_run_plan(self) -> None:
         with tempfile.TemporaryDirectory() as d:

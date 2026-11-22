@@ -1,11 +1,15 @@
-# Changelog - qwayk-salesforce-platform-safe-agent-cli
+# Changelog
 
-All notable changes to this project are documented in this file.
+This tool uses Semantic Versioning. Before version 1.0, a minor release can change how commands work.
 
-This format is based on Keep a Changelog, and this project follows Semantic Versioning.
-Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking changes.
+## Unreleased
 
-## [Unreleased]
+- Saved plans now check the Salesforce connection and the full request. Composite writes and bulk ingest changes require a saved plan.
+- The tool checks the bulk job type before starting it. Permanent bulk deletes need explicit approval.
+- Receipts show when a job is still running or a grouped request had errors.
+- Onboarding keeps the selected settings file in the next command. The setup and approval guides now contain the useful details from the overlapping pages.
+
+## Earlier work
 
 ### Added
 - Initial Salesforce Platform REST API and Bulk API 2.0 command surface.

@@ -1,72 +1,51 @@
-# Bulk Jobs and Async Work
+# Import and export jobs
 
-This tool ships only these Salesforce Bulk API 2.0 job families:
+Salesforce processes Bulk API 2.0 jobs in the background. A job ID lets you check what has run and which rows need attention.
 
-- `jobs-ingest`
-- `jobs-query`
+## Import a CSV
 
-Full shipped actions:
+Use these commands in order. Finish and check each step before previewing the next one.
 
-- `jobs-ingest`: `list`, `create`, `get`, `upload`, `upload-complete`, `successful-results`, `failed-results`, `unprocessed`, `abort`, `delete`
-- `jobs-query`: `list`, `create`, `get`, `results`, `result-pages`, `abort`, `delete`
+1. Preview the job and review the object and operation.
 
-## Ingest flow
+   ```bash
+   qwayk-salesforce-platform-safe-agent-cli --plan-out create.json jobs-ingest create --body-file ingest-job.json
+   ```
 
-1. Create the ingest job:
+2. After creating the approved job, use the job ID from its receipt to preview the upload.
 
-```bash
-qwayk-salesforce-platform-safe-agent-cli jobs-ingest create --body-file ingest-job.json
-```
+   ```bash
+   qwayk-salesforce-platform-safe-agent-cli --plan-out upload.json jobs-ingest upload --job-id 750... --data-file rows.csv
+   ```
 
-2. Upload CSV rows:
+3. After uploading, preview the step that tells Salesforce to start processing. The tool reads the job to confirm its operation before showing you the plan.
 
-```bash
-qwayk-salesforce-platform-safe-agent-cli jobs-ingest upload --job-id 750... --data-file rows.csv
-```
+   ```bash
+   qwayk-salesforce-platform-safe-agent-cli --plan-out start.json jobs-ingest upload-complete --job-id 750...
+   ```
 
-3. Mark upload complete:
+For each approved step, use the same command with `--apply --yes --ack-no-snapshot --plan-in <file>` before `jobs-ingest`, and omit `--plan-out`. Get explicit approval before creating or starting a permanent delete and include `--ack-irreversible`. The tool checks the job type again before it starts processing, including jobs created elsewhere.
 
-```bash
-qwayk-salesforce-platform-safe-agent-cli jobs-ingest upload-complete --job-id 750...
-```
+## Check what happened
 
-4. Read state or download results:
+Run the status command before reporting an import as done. Salesforce can finish a job with some rows failed. Get the failed and unprocessed rows before deciding what to retry.
 
 ```bash
-qwayk-salesforce-platform-safe-agent-cli jobs-ingest list
 qwayk-salesforce-platform-safe-agent-cli jobs-ingest get --job-id 750...
 qwayk-salesforce-platform-safe-agent-cli jobs-ingest successful-results --job-id 750... --download-to successful.csv
 qwayk-salesforce-platform-safe-agent-cli jobs-ingest failed-results --job-id 750... --download-to failed.csv
 qwayk-salesforce-platform-safe-agent-cli jobs-ingest unprocessed --job-id 750... --download-to unprocessed.csv
 ```
 
-## Query flow
+## Export with a query job
 
-1. Create the query job:
+Preview the query first. Start the approved job using the [approval steps](safety_model.md), then check its status and download the finished results.
 
 ```bash
 qwayk-salesforce-platform-safe-agent-cli jobs-query create --body-file query-job.json
-```
-
-2. Poll state:
-
-```bash
-qwayk-salesforce-platform-safe-agent-cli jobs-query list
 qwayk-salesforce-platform-safe-agent-cli jobs-query get --job-id 750...
-```
-
-3. Download CSV result pages:
-
-```bash
 qwayk-salesforce-platform-safe-agent-cli jobs-query results --job-id 750... --download-to results.csv
 qwayk-salesforce-platform-safe-agent-cli jobs-query result-pages --job-id 750...
 ```
 
-## Safety flow for shipped jobs commands
-
-- Write actions are dry-run by default and return a plan.
-- `jobs-ingest create`, `upload`, `upload-complete`, `abort`, `delete`, and `jobs-query create`, `abort`, `delete`
-  require `--apply --yes` before an apply request and may require `--ack-irreversible` when configured as irreversible.
-- Current job write apply requests require explicit no-snapshot approval before Salesforce HTTP until the command can save real before-state when possible.
-- Reads use `--job-id` and `--query-param` where needed with no extra write flags.
-- Use `--download-to` for all CSV result outputs before post-processing.
+Both job types have `list`, `abort`, and `delete` actions. Abort and delete are changes. Follow the approval flags for those commands. [Salesforce job states](https://developer.salesforce.com/docs/platform/api-asynch/guide/bulk-api-2-job-states.html)

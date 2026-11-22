@@ -13,9 +13,9 @@
 
 Last verified (UTC): `2026-05-26`
 
-## Implementation note
+## Version used by this tool
 
-The runtime scope was mapped against official Salesforce PDF snapshots downloaded on `2026-05-26` and locally verified as API version `67.0` for both the REST guide and the Bulk API 2.0 guide.
+The May 26, 2026 review used the downloaded official REST and Bulk API 2.0 guides for version `67.0`. The tool still defaults to that version.
 
 The public search index for the canonical REST PDF still showed a `66.0` snippet on `2026-05-26`. The downloaded official PDFs were treated as the fresher source. That is an inference from the official documents available on the same day.
 
@@ -35,3 +35,10 @@ The public search index for the canonical REST PDF still showed a `66.0` snippet
 - Bulk guide sections for:
   - ingest job create, upload, close, list, abort, delete, and result downloads
   - query job create, list, abort, delete, result downloads, and result pages
+
+## November 22, 2026 checks
+
+- [Grouped request behavior](https://developer.salesforce.com/docs/platform/api-rest/guide/requests-composite.html)
+- [Assignment options](https://developer.salesforce.com/docs/platform/api-rest/guide/headers-autoassign.html)
+- [Bulk job types and required permissions](https://developer.salesforce.com/docs/platform/api-asynch/guide/create-job.html)
+- [Bulk job states](https://developer.salesforce.com/docs/platform/api-asynch/guide/bulk-api-2-job-states.html)

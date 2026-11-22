@@ -30,3 +30,12 @@ class TestDocsFormatting(unittest.TestCase):
         if bad_lines:
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
+
+    def test_local_doc_links_have_destinations(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        for page in (root / "README.md", *(root / "docs").glob("*.md")):
+            for link in re.findall(r"\]\(([^)]+)\)", page.read_text(encoding="utf-8")):
+                target = link.split("#", 1)[0]
+                if target and "://" not in target:
+                    with self.subTest(page=page.name, target=target):
+                        self.assertTrue((page.parent / target).exists())

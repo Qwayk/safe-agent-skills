@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import json
 import os
+import shlex
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -15,7 +16,7 @@ from salesforce_platform_safe_agent_cli.cli import main
 class TestOnboardingCommand(unittest.TestCase):
     def test_onboarding_creates_env_from_example(self) -> None:
         with tempfile.TemporaryDirectory() as td:
-            env_path = os.path.join(td, ".env")
+            env_path = os.path.join(td, "salesforce settings.env")
             example_path = os.path.join(td, ".env.example")
             with open(example_path, "w", encoding="utf-8") as f:
                 f.write("SALESFORCE_INSTANCE_URL=https://example.my.salesforce.com\n")
@@ -30,3 +31,4 @@ class TestOnboardingCommand(unittest.TestCase):
             self.assertTrue(payload["onboarding"]["env_created"])
             self.assertTrue(os.path.exists(env_path))
             self.assertEqual(payload["onboarding"]["missing"], [])
+            self.assertEqual(shlex.split(payload["onboarding"]["next_command"])[-4:], ["--env-file", env_path, "auth", "check"])

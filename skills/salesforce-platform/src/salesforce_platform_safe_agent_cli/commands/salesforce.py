@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import hmac
 import json
 import mimetypes
 import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from shlex import join
 from typing import Any
 
 from ..errors import SafetyError, ValidationError
@@ -23,6 +25,7 @@ _BEFORE_STATE_REFUSAL_REASON = (
     "Refused: this Salesforce write has no reliable generic before-state snapshot in this runtime. "
     "Review the dry-run plan, then rerun with --ack-no-snapshot if you approve applying without a snapshot."
 )
+_INGEST_OPERATIONS = {"insert", "update", "upsert", "delete", "harddelete", "refresh", "consentimport"}
 _MULTIPART_ALLOWED = {
     ("sobjects-object", "create"),
     ("sobjects-row", "update"),
@@ -1314,6 +1317,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             write=True,
             requires_body_file=True,
             require_yes=True,
+            require_plan_in=True,
         ),
     },
     "composite-graph": {
@@ -1324,6 +1328,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             write=True,
             requires_body_file=True,
             require_yes=True,
+            require_plan_in=True,
         ),
     },
     "composite-batch": {
@@ -1334,6 +1339,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             write=True,
             requires_body_file=True,
             require_yes=True,
+            require_plan_in=True,
         ),
     },
     "composite-tree": {
@@ -1344,6 +1350,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             write=True,
             requires_body_file=True,
             require_yes=True,
+            require_plan_in=True,
         ),
     },
     "composite-collections": {
@@ -1354,6 +1361,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             write=True,
             requires_body_file=True,
             require_yes=True,
+            require_plan_in=True,
         ),
         "get": _spec(
             "GET",
@@ -1378,6 +1386,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             write=True,
             requires_body_file=True,
             require_yes=True,
+            require_plan_in=True,
         ),
         "upsert": _spec(
             "PATCH",
@@ -1386,6 +1395,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             write=True,
             requires_body_file=True,
             require_yes=True,
+            require_plan_in=True,
         ),
         "delete": _spec(
             "DELETE",
@@ -1393,6 +1403,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             "Delete records with sObject Collections",
             write=True,
             require_yes=True,
+            require_plan_in=True,
             require_ack=True,
             query_args=(
                 _arg("ids", help="Comma-separated record IDs", required=True),
@@ -1407,6 +1418,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             write=True,
             requires_body_file=True,
             require_yes=True,
+            require_plan_in=True,
         ),
         "upload": _spec(
             "PUT",
@@ -1417,6 +1429,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             content_type="text/csv",
             response_kind="none",
             require_yes=True,
+            require_plan_in=True,
         ),
         "upload-complete": _spec(
             "PATCH",
@@ -1424,6 +1437,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             "Mark an ingest job UploadComplete",
             write=True,
             require_yes=True,
+            require_plan_in=True,
             fixed_json_body={"state": "UploadComplete"},
         ),
         "get": _spec(
@@ -1462,6 +1476,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             "Delete an ingest job",
             write=True,
             require_yes=True,
+            require_plan_in=True,
             require_ack=True,
         ),
         "abort": _spec(
@@ -1470,6 +1485,7 @@ _ACTIONS: dict[str, dict[str, ActionSpec]] = {
             "Abort an ingest job",
             write=True,
             require_yes=True,
+            require_plan_in=True,
             fixed_json_body={"state": "Aborted"},
         ),
         "list": _spec(
@@ -1819,21 +1835,26 @@ def _response_summary(resp: HttpResponse, *, response_kind: str, download_to: st
 
 def _canonical_request_fingerprint(
     *,
+    instance_url: str,
+    token: str,
     method: str,
     path: str,
     params: dict[str, Any],
+    headers: dict[str, str],
     body_sha256: str | None,
     data_sha256: str | None,
 ) -> str:
     payload = {
+        "instance_url": instance_url,
         "method": method,
         "path": path,
         "params": params,
+        "headers": {name.lower(): value for name, value in headers.items() if name.lower() != "authorization"},
         "body_sha256": body_sha256,
         "data_sha256": data_sha256,
     }
     raw = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
-    return hashlib.sha256(raw).hexdigest()
+    return hmac.digest(token.encode("utf-8"), raw, "sha256").hex()
 
 
 def _no_recovery_contract() -> dict[str, Any]:
@@ -1871,7 +1892,7 @@ def _verification_plan(spec: ActionSpec) -> dict[str, Any]:
         return {
             "type": "best_effort_after_apply",
             "expected_outcome": "provider-response-recorded",
-            "notes": "Record the Salesforce API response and explicit no-snapshot approval in the receipt.",
+            "notes": "Record what Salesforce reports and the approval to proceed without a saved copy.",
         }
     return {
         "type": "response-check",
@@ -1893,23 +1914,22 @@ def _build_plan(
     path: str,
     params: dict[str, Any],
     body_obj: Any,
-    body_sha256: str | None,
     data_file: Path | None,
     data_sha256: str | None,
     headers: dict[str, str],
+    fingerprint: str,
+    job_operation: str | None,
 ) -> dict[str, Any]:
     reasons: list[str] = []
     if spec.method in {"DELETE"}:
         reasons.append("delete")
     if spec.require_yes:
         reasons.append("bulk-or-operational-write")
-    if spec.require_ack:
+    if spec.require_ack or job_operation == "harddelete":
         reasons.append("irreversible")
     if spec.method in {"POST", "PATCH", "PUT"}:
         reasons.append("write")
-    risk_level = "high" if spec.require_ack or spec.require_yes else "medium"
-    if spec.method == "POST" and not spec.require_yes and not spec.require_ack:
-        risk_level = "medium"
+    risk_level = "high" if spec.require_yes or "irreversible" in reasons else "medium"
     selector = {"family": args.salesforce_family, "action": args.salesforce_action, "path": path}
     return {
         "tool": ctx["tool"],
@@ -1931,14 +1951,10 @@ def _build_plan(
         },
         "baseline": {
             "env_fingerprint": ctx["cfg"].instance_url,
-            "request_fingerprint": _canonical_request_fingerprint(
-                method=spec.method,
-                path=path,
-                params=params,
-                body_sha256=body_sha256,
-                data_sha256=data_sha256,
-            ),
+            "request_fingerprint_version": 2,
+            "request_fingerprint": fingerprint,
         },
+        **({"job_operation": job_operation} if job_operation else {}),
         "before_state": _before_state_contract(spec),
         "verification_plan": _verification_plan(spec),
         "rollback": {
@@ -1953,10 +1969,12 @@ def _validate_plan_for_apply(plan_obj: dict[str, Any], *, ctx: dict[str, Any], f
     baseline = plan_obj.get("baseline")
     if not isinstance(baseline, dict):
         raise ValidationError("Plan file missing baseline object")
+    if baseline.get("request_fingerprint_version") != 2:
+        raise SafetyError("Refused: save and review a fresh plan made with this version of the tool.")
     if str(baseline.get("env_fingerprint") or "") != str(ctx["cfg"].instance_url):
         raise SafetyError("Refused: plan env_fingerprint does not match the current Salesforce instance")
-    if str(baseline.get("request_fingerprint") or "") != fingerprint:
-        raise SafetyError("Refused: request drift detected between plan and apply inputs")
+    if not hmac.compare_digest(str(baseline.get("request_fingerprint") or "").encode(), fingerprint.encode()):
+        raise SafetyError("Refused: request drift detected. The Salesforce connection or request changed. Review a fresh plan.")
 
 
 def _build_path(spec: ActionSpec, *, args: Any, api_version: str) -> str:
@@ -2030,6 +2048,107 @@ def _build_client(ctx: dict[str, Any]) -> HttpClient:
     )
 
 
+def _ingest_job_operation(
+    client: HttpClient, url: str, headers: dict[str, str]
+) -> str:
+    reply = client.request(
+        "GET", url, headers={"Authorization": headers["Authorization"], "Accept": "application/json"}
+    )
+    payload = reply.json() if 200 <= reply.status < 300 else None
+    operation = str(payload.get("operation") or "").lower() if isinstance(payload, dict) else ""
+    if operation not in _INGEST_OPERATIONS:
+        raise SafetyError("Refused: Salesforce did not confirm the bulk job type. Check the job before starting it.")
+    return operation
+
+
+def _grouped_result(family: str, body: Any, all_or_none: bool) -> str:
+    if family == "composite-tree":
+        has_errors = body.get("hasErrors") if isinstance(body, dict) else None
+        if isinstance(has_errors, bool):
+            return "failed" if has_errors else "completed"
+        return "unconfirmed"
+
+    if family == "composite-collections":
+        items = body
+    elif isinstance(body, dict):
+        key = {"composite": "compositeResponse", "composite-batch": "results", "composite-graph": "graphs"}[family]
+        items = body.get(key)
+    else:
+        items = None
+    outcomes: list[bool | None] = []
+    nested_outcomes: list[bool] = []
+    if isinstance(items, list):
+        for item in items:
+            if not isinstance(item, dict):
+                outcomes.append(None)
+                continue
+            if family in {"composite-collections", "composite-graph"}:
+                success = item.get("success" if family == "composite-collections" else "isSuccessful")
+                outcomes.append(success if isinstance(success, bool) else None)
+                continue
+            code = item.get("httpStatusCode" if family == "composite" else "statusCode")
+            outcomes.append(200 <= code < 300 if isinstance(code, int) else None)
+            nested = item.get("body" if family == "composite" else "result")
+            if isinstance(nested, list):
+                nested_outcomes.extend(
+                    row["success"] for row in nested if isinstance(row, dict) and isinstance(row.get("success"), bool)
+                )
+
+    if all_or_none and False in outcomes:
+        return "failed"
+    outcomes.extend(nested_outcomes)
+    if False in outcomes or (isinstance(body, dict) and body.get("hasErrors") is True):
+        return "partial" if True in outcomes else "failed"
+    return "completed" if outcomes and all(value is True for value in outcomes) else "unconfirmed"
+
+
+def _write_verification(
+    *,
+    family: str,
+    action: str,
+    response: dict[str, Any],
+    request_body: Any,
+    params: dict[str, Any],
+    env_file: str,
+    job_id: str | None,
+) -> dict[str, Any]:
+    http_status = response["status"]
+    body = response.get("body")
+    details: dict[str, Any] = {"status": http_status}
+    result = "completed" if 200 <= http_status < 300 else "failed"
+    if result == "completed" and family.startswith("composite"):
+        all_or_none = request_body.get("allOrNone") if isinstance(request_body, dict) else params.get("allOrNone")
+        result = _grouped_result(family, body, str(all_or_none).lower() == "true")
+    elif result == "completed" and family in {"jobs-ingest", "jobs-query"} and action != "delete":
+        payload = body if isinstance(body, dict) else {}
+        state = payload.get("state")
+        failed_rows = payload.get("numberRecordsFailed")
+        details.update(job_state=state, failed_rows=failed_rows)
+        if state == "JobComplete":
+            if isinstance(failed_rows, int) and failed_rows > 0:
+                result = "partial"
+            else:
+                result = "completed" if family == "jobs-query" or failed_rows == 0 else "unconfirmed"
+        elif state == "Aborted" and action == "abort":
+            result = "completed"
+        elif state in ("Failed", "Aborted"):
+            result = "failed"
+        elif action == "upload" or state in ("Open", "UploadComplete", "InProgress"):
+            result = "submitted"
+        else:
+            result = "unconfirmed"
+        job_id = payload.get("id") or job_id
+        if job_id:
+            command = [_TOOL_NAME, "--env-file", env_file, family]
+            details["job_id"] = job_id
+            details["check_status"] = join([*command, "get", "--job-id", str(job_id)])
+            if family == "jobs-ingest":
+                details["check_failed_rows"] = join([*command, "failed-results", "--job-id", str(job_id)])
+    elif http_status == 202:
+        result = "submitted"
+    return {"ok": result == "completed", "mode": "provider-response", "outcome": result, "details": details}
+
+
 def cmd_salesforce_api(args: Any, ctx: dict[str, Any]) -> int:
     family = str(getattr(args, "salesforce_family", "") or "")
     action = str(getattr(args, "salesforce_action", "") or "")
@@ -2074,15 +2193,50 @@ def cmd_salesforce_api(args: Any, ctx: dict[str, Any]) -> int:
     if cfg.token:
         headers["Authorization"] = f"Bearer {cfg.token}"
 
-    fingerprint = _canonical_request_fingerprint(
-        method=spec.method,
-        path=path,
-        params=params,
-        body_sha256=body_sha256,
-        data_sha256=data_sha256,
-    )
+    applying = bool(ctx.get("apply"))
+    url = cfg.instance_url.rstrip("/") + path
+    fingerprint = ""
+    job_operation = None
+    saved_plan = None
+    if spec.write:
+        fingerprint = _canonical_request_fingerprint(
+            instance_url=cfg.instance_url,
+            token=cfg.token or "",
+            method=spec.method,
+            path=path,
+            params=params,
+            headers=headers,
+            body_sha256=body_sha256,
+            data_sha256=data_sha256,
+        )
+        if family == "jobs-ingest" and action == "create" and isinstance(body_obj, dict):
+            job_operation = str(body_obj.get("operation") or "").lower()
 
-    if spec.write and not bool(ctx.get("apply")):
+    if spec.write and applying:
+        if spec.require_yes and not bool(ctx.get("yes")):
+            raise SafetyError(f"Refused: {family} {action} requires --apply --yes")
+        if (spec.require_ack or job_operation == "harddelete") and not bool(ctx.get("ack_irreversible")):
+            raise SafetyError(f"Refused: {family} {action} requires --ack-irreversible")
+        if spec.require_plan_in and not ctx.get("plan_in"):
+            raise SafetyError(f"Refused: {family} {action} requires --plan-in for apply")
+        if ctx.get("plan_in"):
+            saved_plan = read_json_file(ctx["plan_in"])
+            if not isinstance(saved_plan, dict):
+                raise ValidationError("Plan file must be a JSON object")
+            _validate_plan_for_apply(saved_plan, ctx=ctx, fingerprint=fingerprint)
+        _require_no_snapshot_approval(ctx)
+
+    client = None
+    if (family, action) == ("jobs-ingest", "upload-complete"):
+        client = _build_client(ctx)
+        job_operation = _ingest_job_operation(client, url, headers)
+        if applying and saved_plan is not None:
+            if saved_plan.get("job_operation") != job_operation:
+                raise SafetyError("Refused: the bulk job type differs from the saved plan. Review a fresh plan.")
+            if job_operation == "harddelete" and not ctx.get("ack_irreversible"):
+                raise SafetyError("Refused: starting a permanent bulk delete requires --ack-irreversible.")
+
+    if spec.write and not applying:
         plan = _build_plan(
             spec=spec,
             args=args,
@@ -2090,10 +2244,11 @@ def cmd_salesforce_api(args: Any, ctx: dict[str, Any]) -> int:
             path=path,
             params=params,
             body_obj=body_obj,
-            body_sha256=body_sha256,
             data_file=data_file,
             data_sha256=data_sha256,
             headers=headers,
+            fingerprint=fingerprint,
+            job_operation=job_operation,
         )
         plan_out = ctx.get("plan_out")
         plan_path = write_json_file(plan_out, plan) if plan_out else None
@@ -2102,24 +2257,10 @@ def cmd_salesforce_api(args: Any, ctx: dict[str, Any]) -> int:
         ctx["out"].emit(payload)
         return 0
 
-    if spec.write:
-        if spec.require_yes and not bool(ctx.get("yes")):
-            raise SafetyError(f"Refused: {family} {action} requires --apply --yes")
-        if spec.require_ack and not bool(ctx.get("ack_irreversible")):
-            raise SafetyError(f"Refused: {family} {action} requires --ack-irreversible")
-        if spec.require_plan_in and not ctx.get("plan_in"):
-            raise SafetyError(f"Refused: {family} {action} requires --plan-in for apply")
-        if ctx.get("plan_in"):
-            plan_obj = read_json_file(ctx["plan_in"])
-            if not isinstance(plan_obj, dict):
-                raise ValidationError("Plan file must be a JSON object")
-            _validate_plan_for_apply(plan_obj, ctx=ctx, fingerprint=fingerprint)
-        _require_no_snapshot_approval(ctx)
-
-    client = _build_client(ctx)
+    client = client or _build_client(ctx)
     response = client.request(
         spec.method,
-        cfg.instance_url.rstrip("/") + path,
+        url,
         headers=headers,
         params=params or None,
         json_body=request_json_body,
@@ -2137,6 +2278,17 @@ def cmd_salesforce_api(args: Any, ctx: dict[str, Any]) -> int:
         ctx["out"].emit(payload)
         return 0
 
+    verification = _write_verification(
+        family=family,
+        action=action,
+        response=response_summary,
+        request_body=body_obj,
+        params=params,
+        env_file=ctx["env_file"],
+        job_id=getattr(args, "job_id", None),
+    )
+    outcome = verification["outcome"]
+    ok = outcome in {"completed", "submitted"}
     receipt = {
         "tool": ctx["tool"],
         "version": ctx["tool_version"],
@@ -2160,18 +2312,14 @@ def cmd_salesforce_api(args: Any, ctx: dict[str, Any]) -> int:
             "flag": "--ack-no-snapshot",
             "reason": "No reliable generic before-state snapshot is available for this Salesforce command.",
         },
-        "changed": 200 <= int(response.status) < 300,
+        "changed": True if outcome == "completed" else None,
         "response": response_summary,
-        "verification": {
-            "ok": 200 <= int(response.status) < 300,
-            "mode": "provider-response",
-            "details": {"status": response.status},
-        },
+        "verification": verification,
         "recovery": _no_recovery_contract(),
     }
     receipt_out = ctx.get("receipt_out")
     receipt_path = write_json_file(receipt_out, receipt) if receipt_out else None
-    payload = {"ok": True, "dry_run": False, "receipt": receipt, "receipt_out": receipt_path}
+    payload = {"ok": ok, "dry_run": False, "receipt": receipt, "receipt_out": receipt_path}
     ctx["audit"].write(f"{family}.{action}.apply", {"path": path, "status": response.status, "receipt_out": receipt_path})
     ctx["out"].emit(payload)
-    return 0
+    return 0 if ok else 1

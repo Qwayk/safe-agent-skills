@@ -1,54 +1,22 @@
-# Safety model
+# Review a Salesforce change
 
-Salesforce can touch objects, records, metadata, jobs, and platform API operations, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Start with a read to confirm the org, object, and records. Write commands run as previews by default. A few requests use POST to produce a read result, such as parameterized search, scheduling lookups, or generating an OpenAPI description.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## Before sending a change
 
-A good safety ask is: "Read the object or record first, then review the plan before record, metadata, job, or bulk changes."
+1. Preview the change without `--apply`. Use `--plan-out plan.json` to save the preview. Review the records, fields, request options, and files. For blob uploads, the preview lists the parts and a check for their contents.
+2. Review the recovery limit. This tool does not save a copy of the old data or undo changes. Get approval for the change and for proceeding without a saved copy.
+3. Send an approved change with `--apply --ack-no-snapshot` and any flags the command needs. Bulk and other higher-risk actions also need `--yes`. Some deletes and resets need `--ack-irreversible`.
+4. Pass `--plan-in plan.json` for Composite writes, Bulk API ingest changes, and password changes. Whenever a saved plan is used, the tool checks the connection, request path, options, and inputs before sending the change. Make a fresh plan if a token or request changed, or if the plan came from an older version of the tool.
 
-## Core rules
+## Starting a bulk import
 
-- Read commands run directly.
-- A small number of non-mutating `POST` endpoints also run directly because they generate derived results rather than change org data. Current examples are parameterized search, scheduler lookup calls, and `openapi-sobjects create`.
-- Write-capable commands default to dry-run plans.
-- Apply requests need `--apply`.
-- Higher-risk apply requests also require `--yes`.
-- Irreversible deletes and resets also require `--ack-irreversible`.
-- User password set/reset commands require `--plan-in` on apply.
-- After those gates and any plan drift check pass, Salesforce write apply saves before-state when practical. When no useful before-state can be saved, apply requires explicit no-snapshot approval before provider HTTP and records that limit in the receipt.
-- The tool never prints raw access tokens.
+When you preview or apply `jobs-ingest upload-complete`, the tool reads the job to confirm what it will do. It stops if Salesforce reports a different job type from the one in the plan. Permanent bulk deletes require `--ack-irreversible` when creating the job and when starting it. This also applies when the job was created elsewhere. [Full bulk workflow](jobs_and_batches.md)
 
-## Plans, refusals, and drift checks
+## Check the receipt
 
-- Dry-run writes emit a plan.
-- Write plans include `before_state.required: true`, `before_state.supported: false`, and a `no-snapshot-approval` verification plan.
-- Approved supported apply requests emit write receipts. Missing approval, plan drift, missing credentials, unclear targets, or failed safety checks emit safe refusals instead.
-- When you apply from `--plan-in`, the tool checks that the current request still matches the saved plan fingerprint.
-- If the request drifts, the tool refuses the apply.
+Read `verification.outcome` in the receipt. A submitted job has been accepted and may still be waiting or running. Use the job ID to check its current state and read its failed or unprocessed rows. A grouped request can report failures even when its HTTP response indicates success. Check the individual results before considering a retry.
 
-## Recovery contract for planned writes
+If the tool refuses, read the reason and review a fresh plan or get the missing approval. Check the live records if you need to confirm an outcome that the provider reply did not establish.
 
-- Plans include `recovery` with explicit no-recovery fields:
-  - `automatic_rollback: false`
-  - `backups: []`
-  - `snapshots: []`
-  - `rollback_plan: null`
-  - `restore_note: "No automatic rollback, snapshots, or backups are created. If a restore action is available, run a separate explicit restore command as its own command."`
-- Plan `rollback` and plan `recovery` include explicit no-recovery notes.
-
-## Multipart blob uploads
-
-Blob uploads are supported through `--multipart-file` on the documented sObject create, update, external-ID upsert, and collections write flows.
-
-The manifest is reviewed in dry-run like any other write input. The plan records part names, content types, file sizes, and content hashes without printing binary data.
-
-## Local proof artifacts
-
-Write-capable commands create local proof artifacts next to the selected `--env-file`:
-
-- `.state/runs/<run_id>/plan.json`
-- `.state/runs/<run_id>/receipt.json` when an approved supported write proceeds
-- `.state/runs/<run_id>/summary.md`
-- `.state/runs/<run_id>/audit.jsonl`
-
-Use `runs list` and `runs show` to inspect this history.
+By default, previews, receipts, summaries, and audit logs are saved under `.state/runs/<run-id>/` next to the settings file. Use `runs list` and `runs show` to find them. Keep those files private if they contain record data.
