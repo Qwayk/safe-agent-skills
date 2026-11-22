@@ -303,6 +303,68 @@ class TestSnapshotExportManifest(unittest.TestCase):
             finally:
                 os.chdir(cwd)
 
+    def test_export_keeps_each_placement_across_field_requests_and_marks_limits(self) -> None:
+        class SplitGraph(_StubGraph):
+            def list_edge(self, *, object_id, edge, params=None, max_pages=None, max_items=None):
+                if edge != "insights" or not (params or {}).get("breakdowns"):
+                    return super().list_edge(
+                        object_id=object_id, edge=edge, params=params,
+                        max_pages=max_pages, max_items=max_items,
+                    )
+                fields = set(params["fields"].split(","))
+                required = {"ad_id", "date_start", "date_stop"}
+                if not required <= fields:
+                    raise AssertionError("Every request must carry the same row keys")
+                base = {"ad_id": "ad_1", "date_start": "2026-01-01", "date_stop": "2026-01-01"}
+                rows = []
+                for platform, position, spend, clicks in (
+                    ("facebook", "feed", "12", "3"), ("instagram", "story", "15", "5"),
+                ):
+                    row = {**base, "publisher_platform": platform, "platform_position": position}
+                    if "spend" in fields:
+                        row["spend"] = spend
+                    if "clicks" in fields:
+                        row["clicks"] = clicks
+                    rows.append(row)
+                return PageResult(rows, None, 1, "max_pages" if "spend" in fields else None)
+
+        with tempfile.TemporaryDirectory() as d:
+            cwd = os.getcwd()
+            os.chdir(d)
+            try:
+                args = SimpleNamespace(
+                    ad_account_id="act_1", preset="ecom_core", out_dir=str(Path(d) / "out"),
+                    run_id="example", fields_insights="spend,clicks", fields_chunk_size=4,
+                    extra_insights_breakdown_table=["placement:publisher_platform,platform_position"],
+                    strict=False, max_pages=1, max_items=0, limit=10,
+                )
+                ctx = {
+                    "cfg": Config("https://graph.facebook.com", "v25.0", "fixture", "act_1", 1.0, 0),
+                    "graph": SplitGraph(), "out": Output(mode="json"),
+                    "audit": AuditLogger(path=None, enabled=False), "version": "0.1.0",
+                }
+                with redirect_stdout(io.StringIO()):
+                    rc = cmd_snapshot_export(args, ctx)
+                self.assertEqual(rc, 0)
+                export = ctx["out"].last["snapshot_export"]
+                self.assertTrue(export["partial_success"])
+                files = Path(export["out_dir"])
+                placement = files / "tables/insights_placement.jsonl"
+                rows = [json.loads(line) for line in placement.read_text().splitlines()]
+                self.assertEqual(
+                    [(row["platform_position"], row["spend"], row["clicks"]) for row in rows],
+                    [("feed", "12", "3"), ("story", "15", "5")],
+                )
+                manifest = json.loads((files / "manifest.json").read_text())
+                self.assertTrue(manifest["partial_success"])
+                self.assertIn("platform_position", manifest["join_keys"]["insights_placement"])
+                self.assertTrue(any(
+                    request.get("incomplete_reason") == "max_pages"
+                    for request in manifest["requests"]
+                ))
+            finally:
+                os.chdir(cwd)
+
     def test_snapshot_export_rejects_since_until_with_date_preset(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             cwd = os.getcwd()

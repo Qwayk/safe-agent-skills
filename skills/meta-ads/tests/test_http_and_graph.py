@@ -121,7 +121,9 @@ class TestHttpAndGraph(unittest.TestCase):
         self.assertIsInstance(res.paging, dict)
         assert res.paging is not None
         self.assertNotIn("SECRET", json.dumps(res.paging))
-        self.assertIn("***REDACTED***", json.dumps(res.paging))
+        self.assertIn("access_token=***REDACTED***", json.dumps(res.paging))
+        self.assertEqual(res.incomplete_reason, "max_pages")
+        self.assertFalse(http._session.request.call_args.kwargs["allow_redirects"])
 
     def test_pagination_falls_back_to_after_cursor(self) -> None:
         cfg = Config(
@@ -159,6 +161,34 @@ class TestHttpAndGraph(unittest.TestCase):
         self.assertEqual(params.get("after"), "abc")
         self.assertEqual(params.get("limit"), "2")
         self.assertEqual(params.get("access_token"), "SECRET")
+
+    def test_row_limit_is_applied_even_on_the_last_allowed_page(self) -> None:
+        cfg = Config("https://graph.facebook.com", "v25.0", "fixture", None, 1.0, 0)
+        http = mock.Mock()
+        http.request.return_value = _resp(
+            url="https://graph.facebook.com/v25.0/act_1/campaigns",
+            status=200,
+            obj={"data": [{"id": "1"}, {"id": "2"}]},
+        )
+        result = GraphClient(cfg=cfg, http=http).list_edge(
+            object_id="act_1", edge="campaigns", max_pages=1, max_items=1
+        )
+        self.assertEqual(result.data, [{"id": "1"}])
+        self.assertEqual(result.incomplete_reason, "max_items")
+        http.request.assert_called_once()
+
+    def test_missing_data_is_an_error_and_empty_data_is_a_result(self) -> None:
+        cfg = Config("https://graph.facebook.com", "v25.0", "fixture", None, 1.0, 0)
+        http = mock.Mock()
+        graph = GraphClient(cfg=cfg, http=http)
+        url = "https://graph.facebook.com/v25.0/act_1/insights"
+        http.request.return_value = _resp(url=url, status=200, obj={"notice": "no list"})
+        with self.assertRaisesRegex(Exception, "missing a valid data list"):
+            graph.list_edge(object_id="act_1", edge="insights")
+        http.request.return_value = _resp(url=url, status=200, obj={"data": []})
+        result = graph.list_edge(object_id="act_1", edge="insights")
+        self.assertEqual(result.data, [])
+        self.assertIsNone(result.incomplete_reason)
 
     def test_remote_api_error_is_clean_json(self) -> None:
         with tempfile.TemporaryDirectory() as d:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..errors import ValidationError
 from ..creative_anatomy import extract_asset_urls, extract_creative_anatomy
+from ..errors import ValidationError
 from ..graph import _parse_kv_pairs
 from ._ad_account_edge_helpers import _edge_list_common, _required_ad_account_id
 
@@ -29,6 +29,7 @@ def cmd_creatives_list(args, ctx) -> int:
         "count": len(res.data),
         "paging": res.paging,
         "pages_fetched": res.raw_pages,
+        "incomplete_reason": res.incomplete_reason,
     }
     audit.write(
         "creatives.list",

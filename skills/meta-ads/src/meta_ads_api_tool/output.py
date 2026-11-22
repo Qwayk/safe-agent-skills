@@ -4,6 +4,8 @@ import json
 import sys
 from typing import Any
 
+from .audit_log import _sanitize
+
 
 class Output:
     def __init__(self, *, mode: str):
@@ -28,7 +30,7 @@ class Output:
         return merged
 
     def emit(self, obj: Any) -> None:
-        obj = self._with_provenance(obj)
+        obj = _sanitize(self._with_provenance(obj))
         self.last = obj
         if self._mode == "json":
             json.dump(obj, sys.stdout, ensure_ascii=False, indent=2, sort_keys=True)

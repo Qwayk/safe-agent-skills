@@ -2,7 +2,7 @@
 
 These commands cover read-only Meta Ads account, campaign, creative, and reporting data. Confirm which ad accounts the token can read before analysis.
 
-For the guided path, start with [What you can do with Meta Ads](use_cases.md), [Connect your Meta Ads account](onboarding.md), and [Quickstart](quickstart.md).
+For a first report, use [Setup](onboarding.md) and the [Quickstart](quickstart.md).
 
 ## Onboarding
 
@@ -104,6 +104,8 @@ For the guided path, start with [What you can do with Meta Ads](use_cases.md), [
   - `meta-ads-api-tool videos get --video-id <id> [--fields ...] [--param k=v ...]`
 
 ## Insights
+
+A comparison uses the two date ranges you give it. A report with an "incomplete_reason" stopped at a limit or a repeated page. Compare the same report level and filters, and check incomplete results before totaling spend.
 
 - Get:
   - `meta-ads-api-tool insights get --ad-account-id <id|act_id> --level {account,campaign,adset,ad} [--fields ...] [--since YYYY-MM-DD --until YYYY-MM-DD] [--breakdown <name> ...] [--time-increment <val>] [--action-breakdown <val> ...] [--action-attribution-window <val> ...] [--param k=v ...] [--max-pages N] [--max-items N]`

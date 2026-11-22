@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 
 from ..errors import ValidationError
 from ..graph import _parse_kv_pairs
@@ -45,9 +46,19 @@ def _common_params_from_args(args) -> dict[str, str]:
 def _time_range_param(*, since: str, until: str) -> str:
     s = str(since or "").strip()
     u = str(until or "").strip()
-    if not s or not u:
-        raise ValidationError("Use both since and until (YYYY-MM-DD)")
-    return json.dumps({"since": s, "until": u}, separators=(",", ":"))
+    try:
+        start, end = date.fromisoformat(s), date.fromisoformat(u)
+    except ValueError:
+        raise ValidationError("Use dates in YYYY-MM-DD format") from None
+    if start > end:
+        raise ValidationError("The start date must be on or before the end date")
+    return json.dumps({"since": start.isoformat(), "until": end.isoformat()}, separators=(",", ":"))
+
+
+def _set_date_selector(params: dict[str, str], *, name: str, value: str) -> None:
+    for key in ("date_preset", "time_range", "time_ranges"):
+        params.pop(key, None)
+    params[name] = value
 
 
 def cmd_insights_get(args, ctx) -> int:
@@ -59,14 +70,14 @@ def cmd_insights_get(args, ctx) -> int:
     level = _require_level(args)
 
     params = _common_params_from_args(args)
-    params.setdefault("level", level)
+    params["level"] = level
 
     since = str(getattr(args, "since", "") or "").strip()
     until = str(getattr(args, "until", "") or "").strip()
     if (since and not until) or (until and not since):
         raise ValidationError("Use --since and --until together (or omit both)")
     if since and until:
-        params.setdefault("time_range", _time_range_param(since=since, until=until))
+        _set_date_selector(params, name="time_range", value=_time_range_param(since=since, until=until))
 
     res = graph.list_edge(
         object_id=ad_account_id,
@@ -87,6 +98,7 @@ def cmd_insights_get(args, ctx) -> int:
         "count": len(res.data),
         "paging": res.paging,
         "pages_fetched": res.raw_pages,
+        "incomplete_reason": res.incomplete_reason,
     }
     audit.write(
         "insights.get",
@@ -109,7 +121,7 @@ def cmd_insights_compare(args, ctx) -> int:
     ad_account_id = _required_ad_account_id(args, ctx)
     level = _require_level(args)
     params_common = _common_params_from_args(args)
-    params_common.setdefault("level", level)
+    params_common["level"] = level
 
     since_a = str(getattr(args, "since_a", "") or "").strip()
     until_a = str(getattr(args, "until_a", "") or "").strip()
@@ -117,9 +129,9 @@ def cmd_insights_compare(args, ctx) -> int:
     until_b = str(getattr(args, "until_b", "") or "").strip()
 
     params_a = dict(params_common)
-    params_a.setdefault("time_range", _time_range_param(since=since_a, until=until_a))
+    _set_date_selector(params_a, name="time_range", value=_time_range_param(since=since_a, until=until_a))
     params_b = dict(params_common)
-    params_b.setdefault("time_range", _time_range_param(since=since_b, until=until_b))
+    _set_date_selector(params_b, name="time_range", value=_time_range_param(since=since_b, until=until_b))
 
     res_a = graph.list_edge(
         object_id=ad_account_id,
@@ -141,7 +153,10 @@ def cmd_insights_compare(args, ctx) -> int:
         "insights_compare": {
             "ad_account_id": ad_account_id,
             "level": level,
-            "params_common": {k: v for k, v in params_common.items() if k != "access_token"},
+            "params_common": {
+                k: v for k, v in params_common.items()
+                if k not in {"access_token", "date_preset", "time_range", "time_ranges"}
+            },
             "range_a": {"since": since_a, "until": until_a},
             "range_b": {"since": since_b, "until": until_b},
         },
@@ -149,6 +164,7 @@ def cmd_insights_compare(args, ctx) -> int:
         "count": {"a": len(res_a.data), "b": len(res_b.data)},
         "paging": {"a": res_a.paging, "b": res_b.paging},
         "pages_fetched": {"a": res_a.raw_pages, "b": res_b.raw_pages},
+        "incomplete_reason": {"a": res_a.incomplete_reason, "b": res_b.incomplete_reason},
     }
     audit.write(
         "insights.compare",

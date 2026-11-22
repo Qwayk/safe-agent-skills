@@ -15,8 +15,8 @@ from .commands import creatives as creatives_cmd
 from .commands import images as images_cmd
 from .commands import insights as insights_cmd
 from .commands import onboarding as onboarding_cmd
-from .commands import previews as previews_cmd
 from .commands import presets as presets_cmd
+from .commands import previews as previews_cmd
 from .commands import snapshot as snapshot_cmd
 from .commands import videos as videos_cmd
 from .config import load_config
@@ -60,7 +60,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--output", choices=("json", "text"), default="json", help="Output format (default: json)")
     p.add_argument("--log-file", default=None, help="Optional audit log path (JSONL)")
     p.add_argument("--ad-account-id", default=None, help="Optional ad account id (numeric or act_<id>)")
-    p.add_argument("--api-version", default=None, help="Override Graph API version (default: from .env or v24.0)")
+    p.add_argument("--api-version", default=None, help="Override Graph API version (default: from .env or v25.0)")
 
     sub = p.add_subparsers(dest="cmd", required=False)
 
@@ -394,7 +394,7 @@ def main(argv: list[str]) -> int:
             api_version_override=getattr(args, "api_version", None),
         )
         if getattr(args, "timeout_s", None) is not None:
-            cfg = cfg.__class__(**{**cfg.__dict__, "timeout_s": float(getattr(args, "timeout_s"))})  # type: ignore[attr-defined]
+            cfg = cfg.__class__(**{**cfg.__dict__, "timeout_s": float(args.timeout_s)})  # type: ignore[attr-defined]
 
         http = HttpClient(timeout_s=cfg.timeout_s, verbose=bool(getattr(args, "verbose", False)), user_agent=f"{tool}/{__version__}")
         graph = GraphClient(cfg=cfg, http=http)

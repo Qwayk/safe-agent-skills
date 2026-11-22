@@ -40,6 +40,7 @@ def cmd_previews_get(args, ctx) -> int:
         "count": len(safe_data) if isinstance(safe_data, list) else 0,
         "paging": res.paging,
         "pages_fetched": res.raw_pages,
+        "incomplete_reason": res.incomplete_reason,
     }
     audit.write("previews.get", {"creative_id": cid, "count": out_obj["count"], "params": list(params.keys())})
     out.emit(out_obj)

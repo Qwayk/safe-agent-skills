@@ -7,6 +7,15 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ## [Unreleased]
 
+### November 22, 2026
+
+- Use the selected dates for each comparison and label reports that stop early.
+- Preserve placement and other breakdowns as separate rows in exports.
+- Start on Marketing API v25.0 by default. Use the same settings file in onboarding and the account check.
+- Include the skill, setup example, and docs in the source download.
+
+### Earlier work
+
 ### Added
 - Initial read-only Meta Ads (Marketing API) tool scaffold.
 - GET-only Graph client with pagination and token-safe verbose logging (redacts `access_token` in URLs).
@@ -23,9 +32,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
   - `creatives anatomy`
   - `previews get`
 - Added customer-ready agent skill packaging and install guidance.
-- Media-buyer and agent docs packs:
-  - `docs/media_buyer_quickstart.md`, `docs/winning_ads_workbook.md`, `docs/agent_recipes.md`
-  - new redacted example outputs under `docs/examples/outputs/`
+- Added reporting and creative review guides and saved redacted examples under `docs/examples/outputs/`
 
 ### Fixed
 - Keep `--output json` contract for argument/usage errors and remote Graph API errors.

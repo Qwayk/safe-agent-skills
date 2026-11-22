@@ -28,6 +28,7 @@ def cmd_videos_list(args, ctx) -> int:
         "count": len(res.data),
         "paging": res.paging,
         "pages_fetched": res.raw_pages,
+        "incomplete_reason": res.incomplete_reason,
     }
     audit.write("videos.list", {"ad_account_id": ad_account_id, "count": len(res.data), "params": list(params.keys())})
     out.emit(out_obj)

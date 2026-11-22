@@ -42,10 +42,10 @@ class HttpClient:
         Graph API pagination can include tokens in next URLs depending on how requests are made.
         Never print raw tokens to stderr.
         """
-        try:
-            return re.sub(r"(?i)(access_token=)[^&]+", r"\\1***REDACTED***", url)
-        except Exception:
-            return url
+        redacted = re.sub(r"""(?i)(\baccess_token=)[^&\s"'<>]+""", r"\1***REDACTED***", url)
+        return re.sub(
+            r"""(?i)(["']access_token["']\s*:\s*["'])[^"']+""", r"\1***REDACTED***", redacted
+        )
 
     @staticmethod
     def _format_url(url: str, params: dict[str, Any] | None) -> str:
@@ -67,6 +67,7 @@ class HttpClient:
         data: dict[str, Any] | None = None,
         retries: int = 0,
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),
+        allow_redirects: bool = True,
     ) -> HttpResponse:
         if str(method).upper() != "GET":
             raise NotSupportedError(f"Refusing non-GET HTTP method: {method}")
@@ -74,6 +75,7 @@ class HttpClient:
         attempt = 0
         display_url = self._format_url(url, params)
         redacted_display_url = self.redact_url(display_url)
+        bearer = (headers or {}).get("Authorization", "").removeprefix("Bearer ")
         while True:
             attempt += 1
             start = time.time()
@@ -91,10 +93,13 @@ class HttpClient:
                     json=json_body,
                     data=data,
                     timeout=self._timeout_s,
+                    allow_redirects=allow_redirects,
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
                 safe_err = self.redact_url(str(e))
+                if bearer:
+                    safe_err = safe_err.replace(bearer, "***REDACTED***")
                 if self._verbose:
                     print(
                         f"[http] {method} {redacted_display_url} -> EXCEPTION ({ms}ms): {type(e).__name__}: {safe_err}",
@@ -110,7 +115,7 @@ class HttpClient:
                     file=sys.stderr,
                 )
 
-            if resp.status_code < 400:
+            if resp.status_code < (400 if allow_redirects else 300):
                 return HttpResponse(
                     status=resp.status_code,
                     headers={k.lower(): v for k, v in resp.headers.items()},
@@ -131,7 +136,7 @@ class HttpClient:
                 time.sleep(max(0.0, min(sleep_s, 30.0)))
                 continue
 
-            # Never include headers; and redact any token-looking query params.
-            raise RuntimeError(
-                f"HTTP {resp.status_code} for {method} {self.redact_url(resp.url)}\n{resp.text}"
-            )
+            safe_body = self.redact_url(resp.text)
+            if bearer:
+                safe_body = safe_body.replace(bearer, "***REDACTED***")
+            raise RuntimeError(f"HTTP {resp.status_code} for {method} {self.redact_url(resp.url)}\n{safe_body}")

@@ -25,18 +25,14 @@ def _parse_env_file(path: Path) -> dict[str, str]:
 
 
 class TestEnvSamplesPublishable(unittest.TestCase):
-    def test_public_copy_does_not_ship_example_env(self) -> None:
-        tool_root = Path(__file__).resolve().parents[1]
-        example_env = tool_root / "examples" / "example.env"
-        self.assertFalse(example_env.exists(), "public copy must not ship a sample env file")
-
     def test_dotenv_example_has_empty_secret_values(self) -> None:
         tool_root = Path(__file__).resolve().parents[1]
         env_example = tool_root / ".env.example"
+        self.assertTrue(env_example.is_file())
         env = _parse_env_file(env_example)
 
-        access_token = (env.get("META_ADS_ACCESS_TOKEN") or "").strip()
-        ad_account_id = (env.get("META_ADS_AD_ACCOUNT_ID") or "").strip()
+        access_token = env["META_ADS_ACCESS_TOKEN"].strip()
+        ad_account_id = env["META_ADS_AD_ACCOUNT_ID"].strip()
 
         self.assertTrue(access_token == "", "META_ADS_ACCESS_TOKEN must be empty in .env.example")
         self.assertTrue(ad_account_id == "", "META_ADS_AD_ACCOUNT_ID must be empty in .env.example")

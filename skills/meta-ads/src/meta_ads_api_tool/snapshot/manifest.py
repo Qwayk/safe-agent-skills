@@ -13,6 +13,7 @@ class TableInventoryItem:
     table: str
     relpath: str
     rows: int
+    join_keys: tuple[str, ...] | None = None
 
     def to_public_dict(self) -> dict[str, Any]:
         return {"table": self.table, "relpath": self.relpath, "rows": self.rows}
@@ -38,10 +39,13 @@ def build_manifest(
     request_summaries: list[dict[str, Any]],
     errors: list[dict[str, Any]],
     assets: dict[str, Any] | None = None,
+    partial_success: bool = False,
 ) -> dict[str, Any]:
     rid = str(run_id or "").strip()
     if not rid:
         raise ValidationError("Missing run_id for manifest")
+    join_keys = join_keys_by_table([t.table for t in tables])
+    join_keys.update({t.table: list(t.join_keys) for t in tables if t.join_keys is not None})
     return {
         "schema_version": SCHEMA_VERSION,
         "tool": {"name": tool, "version": version},
@@ -59,7 +63,8 @@ def build_manifest(
             "preset_id": str(preset_id or ""),
             "preset_schema_version": str(preset_schema_version or ""),
         },
-        "join_keys": join_keys_by_table([t.table for t in tables]),
+        "join_keys": join_keys,
+        "partial_success": partial_success,
         "tables": [t.to_public_dict() for t in tables],
         "assets": assets if isinstance(assets, dict) else {"enabled": False},
         "requests": _sanitize_request_summaries(request_summaries),
@@ -73,7 +78,8 @@ def _sanitize_request_summaries(items: list[dict[str, Any]]) -> list[dict[str, A
         if not isinstance(it, dict):
             continue
         cleaned: dict[str, Any] = {}
-        for k in ("surface", "path", "edge", "object_id", "level", "fields_count", "chunk_index", "chunks_total"):
+        for k in ("surface", "path", "edge", "object_id", "level", "fields_count", "chunk_index",
+                  "chunks_total", "pages_fetched", "incomplete_reason"):
             if k in it:
                 cleaned[k] = it.get(k)
         params_keys = it.get("params_keys")

@@ -5,6 +5,7 @@ import time
 from pathlib import Path
 from typing import Any, TextIO
 
+from .http import HttpClient
 
 _REDACT_KEYS = {
     "authorization",
@@ -27,6 +28,8 @@ def _sanitize(obj: Any) -> Any:
         return out
     if isinstance(obj, list):
         return [_sanitize(x) for x in obj]
+    if isinstance(obj, str):
+        return HttpClient.redact_url(obj)
     return obj
 
 

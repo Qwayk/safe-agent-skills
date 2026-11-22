@@ -1,29 +1,9 @@
 # Meta Ads docs
 
-Meta Ads is easiest to use when you start with the real job, then check setup, safety, and proof before asking an agent to do more. These docs explain how to review ad accounts, campaigns, ad sets, ads, insights, and creative data, what access is needed, and where the tool stops before risky changes.
-
-If you are new, read the first few links before asking for account data or changes. They explain the useful jobs, the setup path, and the safety limits.
-
-## Start with the work
-- [What you can do with Meta Ads](use_cases.md) - real jobs to hand to an agent for Meta Ads
-- [Quickstart](quickstart.md) - the shortest path to one useful first result
-- [Connect your Meta Ads account](onboarding.md) - what must be connected or confirmed before the first run
-- [How this stays safe](safety_model.md) - what the tool can and cannot change, and where approval is needed
-
-## Commands, setup, and fixes
-- [Command reference](command_reference.md) - the exact commands and options
-- [Authentication details](authentication.md) - credential rules and safe auth checks
-- [Configuration](configuration.md) - local settings, environment values, and precedence rules
-- [Troubleshooting](troubleshooting.md) - what to check when a command fails or refuses to run
-
-## Extra guides
-- [Media buyer quickstart](media_buyer_quickstart.md) - a Google Ads path for campaign review work
-- [Winning ads workbook](winning_ads_workbook.md) - ad review prompts and worksheet-style guidance
-- [Agent recipes](agent_recipes.md) - ready workflows an agent can follow
-
-## Proof and details
-- [Proof and verification](proof.md) - what has been checked and what still needs live verification
-- [API coverage](api_coverage.md) - the API surfaces this skill actually covers
-- [Source references](references.md) - source notes behind the implementation and docs
-- [Technical architecture](architecture.md) - how the command, config, client, and output layers fit together
-- [Examples](examples/) - sample inputs or outputs when the tool ships them
+- [Quickstart](quickstart.md) takes you from an install to one campaign report and creative review.
+- [Setup and common errors](onboarding.md) explains the token, account settings, and how to fix common connection problems.
+- [Command guide](command_reference.md) lists the CLI options.
+- [Compare and read results](safety_model.md) explains where numbers come from and how to spot an incomplete report.
+- [Snapshot export](snapshot_export.md) shows how to save tables, check missing data, and choose whether to download assets.
+- [Report presets](presets_reference.md) explains the built-in starting points.
+- [API coverage](api_coverage.md), [official references](references.md), and [test results](proof.md) show what the tool reads and what was verified.

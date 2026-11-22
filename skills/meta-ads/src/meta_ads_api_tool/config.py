@@ -29,7 +29,7 @@ def _parse_env_file(path: Path) -> dict[str, str]:
 
 def _get(env: dict[str, str], key: str) -> str:
     # OS env overrides env-file.
-    return (os.environ.get(key) if key in os.environ else env.get(key) or "").strip()
+    return os.environ.get(key, env.get(key, "")).strip()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -64,7 +64,7 @@ def load_config(
     base_url = (_get(env, "META_ADS_BASE_URL") or "https://graph.facebook.com").rstrip("/")
     access_token = _get(env, "META_ADS_ACCESS_TOKEN") or None
 
-    api_version = _get(env, "META_ADS_API_VERSION") or "v24.0"
+    api_version = _get(env, "META_ADS_API_VERSION") or "v25.0"
     if api_version_override:
         api_version = str(api_version_override).strip()
 
@@ -92,7 +92,7 @@ def load_config(
         raise ValidationError("META_ADS_MAX_RETRIES must be >= 0")
 
     if not api_version.startswith("v"):
-        raise ValidationError("META_ADS_API_VERSION must look like v24.0")
+        raise ValidationError("META_ADS_API_VERSION must look like v25.0")
 
     return Config(
         base_url=base_url,

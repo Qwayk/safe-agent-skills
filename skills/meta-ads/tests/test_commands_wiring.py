@@ -9,6 +9,7 @@ from unittest import mock
 
 from meta_ads_api_tool.cli import build_parser, main
 from meta_ads_api_tool.commands import snapshot as snapshot_cmd
+from meta_ads_api_tool.graph import PageResult
 from meta_ads_api_tool.output import Output
 
 
@@ -26,7 +27,7 @@ class TestCommandsWiring(unittest.TestCase):
         args = p.parse_args(["ad-accounts", "list", "--fields", "id,name", "--max-pages", "2"])
 
         ctx = self._ctx()
-        ctx["graph"].list_me_adaccounts.return_value = SimpleNamespace(data=[{"id": "1"}], paging=None, raw_pages=1)
+        ctx["graph"].list_me_adaccounts.return_value = PageResult(data=[{"id": "1"}], paging=None, raw_pages=1)
 
         buf = io.StringIO()
         with redirect_stdout(buf):
@@ -42,7 +43,7 @@ class TestCommandsWiring(unittest.TestCase):
         args = p.parse_args(["campaigns", "list", "--ad-account-id", "123", "--fields", "id,name", "--max-items", "10"])
 
         ctx = self._ctx()
-        ctx["graph"].list_edge.return_value = SimpleNamespace(data=[], paging=None, raw_pages=1)
+        ctx["graph"].list_edge.return_value = PageResult(data=[], paging=None, raw_pages=1)
 
         buf = io.StringIO()
         with redirect_stdout(buf):
@@ -88,7 +89,7 @@ class TestCommandsWiring(unittest.TestCase):
         )
 
         ctx = self._ctx()
-        ctx["graph"].list_edge.return_value = SimpleNamespace(data=[], paging=None, raw_pages=1)
+        ctx["graph"].list_edge.return_value = PageResult(data=[], paging=None, raw_pages=1)
         buf = io.StringIO()
         with redirect_stdout(buf):
             rc = args.func(args, ctx)
@@ -136,8 +137,8 @@ class TestCommandsWiring(unittest.TestCase):
 
         ctx = self._ctx()
         ctx["graph"].list_edge.side_effect = [
-            SimpleNamespace(data=[{"id": "a"}], paging=None, raw_pages=1),
-            SimpleNamespace(data=[{"id": "b"}], paging=None, raw_pages=1),
+            PageResult(data=[{"id": "a"}], paging=None, raw_pages=1),
+            PageResult(data=[{"id": "b"}], paging=None, raw_pages=1),
         ]
         buf = io.StringIO()
         with redirect_stdout(buf):
@@ -192,6 +193,32 @@ class TestCommandsWiring(unittest.TestCase):
         self.assertEqual(payload["anatomy"]["creative_id"], "cr_1")
         self.assertIn("***REDACTED***", payload["anatomy"]["urls"][0])
 
+    def test_compare_uses_each_requested_period_even_with_extra_date_params(self) -> None:
+        args = build_parser().parse_args([
+            "insights", "compare", "--ad-account-id", "act_123", "--level", "campaign",
+            "--since-a", "2026-01-01", "--until-a", "2026-01-07",
+            "--since-b", "2026-01-08", "--until-b", "2026-01-14",
+            "--param", 'time_range={"since":"2026-01-01","until":"2026-01-07"}',
+            "--param", "date_preset=last_7d", "--param", "time_ranges=[]",
+        ])
+        ctx = self._ctx()
+        ctx["graph"].list_edge.side_effect = [
+            PageResult([], None, 1),
+            PageResult([{"spend": "12"}], None, 1, "max_pages"),
+        ]
+        with redirect_stdout(io.StringIO()):
+            args.func(args, ctx)
+        calls = ctx["graph"].list_edge.call_args_list
+        ranges = [json.loads(call.kwargs["params"]["time_range"]) for call in calls]
+        self.assertEqual(ranges, [
+            {"since": "2026-01-01", "until": "2026-01-07"},
+            {"since": "2026-01-08", "until": "2026-01-14"},
+        ])
+        for call in calls:
+            self.assertNotIn("date_preset", call.kwargs["params"])
+            self.assertNotIn("time_ranges", call.kwargs["params"])
+        self.assertEqual(ctx["out"].last["incomplete_reason"], {"a": None, "b": "max_pages"})
+
     def test_previews_get_calls_list_edge_and_redacts_urls(self) -> None:
         p = build_parser()
         args = p.parse_args(
@@ -205,7 +232,7 @@ class TestCommandsWiring(unittest.TestCase):
             ]
         )
         ctx = self._ctx()
-        ctx["graph"].list_edge.return_value = SimpleNamespace(
+        ctx["graph"].list_edge.return_value = PageResult(
             data=[{"body": "https://example.com/?access_token=SECRET"}],
             paging={"next": "https://graph.example.com/?access_token=SECRET"},
             raw_pages=1,

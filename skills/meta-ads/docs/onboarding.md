@@ -1,74 +1,25 @@
 # Connect your Meta Ads account
 
-Meta Ads needs a local access token before an agent can read ad accounts, campaigns, creatives, and reporting data.
-
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
-
-After setup, start by confirming which ad accounts the token can read.
-
-## Step 1: Create the local `.env` file
-
-In the tool folder:
-
-1. Copy `.env.example` to `.env`.
-2. Open `.env` in a text editor.
-3. Fill in `META_ADS_ACCESS_TOKEN`.
-4. (Recommended) Fill in `META_ADS_AD_ACCOUNT_ID` (numeric id or `act_<id>`).
-
-If you want the tool to guide you:
+Use a Meta access token that can read the ad account. Meta’s `ads_read` permission covers typical reporting reads. Keep the token in your local settings file or shell.
 
 ```bash
 meta-ads-api-tool onboarding
 ```
 
-## Step 2: Get a Meta access token (safe guidance)
-
-Meta supports multiple token flows (short-lived user token, long-lived token, system user token).
-This tool is compatible with any token that can make Graph API GET requests to the endpoints you use.
-
-Minimum permissions/scopes (typical):
-- `ads_read` (for most Marketing API reads and insights)
-
-How to get a token (high level):
-1. Use Meta for Developers to create/select an app.
-2. Use a Meta-provided token tool (such as Graph API Explorer or Business Manager system user token generation) to generate an access token with `ads_read`.
-3. Paste the token into `.env` as `META_ADS_ACCESS_TOKEN=...`.
-
-Notes:
-- Tokens can expire. If `auth check` starts failing later, regenerate a token and replace it in `.env`.
-- Never paste the token into chat.
-
-## Step 3: Find your Ad Account ID
-
-You can usually find the numeric Ad Account ID in one of these places:
-- Ads Manager UI: “Ad account settings” / account overview
-- The Ads Manager URL often includes an `act=` parameter containing the numeric id
-
-Paste into `.env` as either:
-- `META_ADS_AD_ACCOUNT_ID=1234567890` (numeric), or
-- `META_ADS_AD_ACCOUNT_ID=act_1234567890`
-
-The tool normalizes numeric ids to `act_<id>` automatically.
-
-## Step 4: Smoke test
-
-Run:
+Add the token under `META_ADS_ACCESS_TOKEN`. The default file is `.env`. To use a different file, pass `--env-file` before the command. Onboarding shows the account-check command with that same file. To see the instructions before creating anything, use `onboarding --no-write-env`.
 
 ```bash
-meta-ads-api-tool --output json auth check
+meta-ads-api-tool --env-file meta.env auth check
+meta-ads-api-tool --env-file meta.env ad-accounts list --fields id,name
 ```
 
-If you did not set `META_ADS_AD_ACCOUNT_ID`, you can also do:
+After choosing an account, you can save it as `META_ADS_AD_ACCOUNT_ID`. A numeric ID or the same ID starting with `act_` works. If you pass an account for one command, it takes priority. Shell settings take priority over the settings file.
 
-```bash
-meta-ads-api-tool --output json ad-accounts list --fields id,name
-```
+The default Marketing API version is `v25.0`, and the default host is `https://graph.facebook.com`. The default timeout is 30 seconds, with up to five retries for rate limits and temporary server errors. See [the settings example](../.env.example) for the setting names.
 
-## What to ask your AI agent (examples)
+## Common errors
 
-- “List my ad accounts and show id + name.”
-- “For ad account act_123…, list campaigns with id, name, status.”
-- “Pull campaign insights for January 2026: impressions, clicks, spend.”
-- “Export a snapshot pack for this ad account and show me where the files were written.”
-
-If the request is a write/mutation (pause ads, set budget), the agent should refuse and explain this tool is read-only.
+- If the token is missing, check the file you selected and your shell settings.
+- If Meta returns OAuth error 190, check whether the token expired and replace it through Meta’s supported token setup.
+- If the account is missing, list the accounts this token can read. Check the token’s permissions and account access in Meta before deciding which account to use.
+- If a report hits a rate limit, start with a shorter period or fewer fields. Check [report limits](safety_model.md) before using a smaller result to make a decision.

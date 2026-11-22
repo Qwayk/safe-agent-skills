@@ -3,9 +3,11 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
+from ..audit_log import _sanitize
 from ..errors import ToolError
 
 
@@ -38,7 +40,7 @@ def _atomic_write_bytes(path: Path, data: bytes) -> None:
 
 
 def write_json(path: Path, obj: dict[str, Any]) -> None:
-    payload = json.dumps(obj, ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8") + b"\n"
+    payload = json.dumps(_sanitize(obj), ensure_ascii=False, indent=2, sort_keys=True).encode("utf-8") + b"\n"
     _atomic_write_bytes(path, payload)
 
 
@@ -48,7 +50,7 @@ def write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> int:
     for row in rows:
         if not isinstance(row, dict):
             continue
-        buf.append(json.dumps(row, ensure_ascii=False, sort_keys=True))
+        buf.append(json.dumps(_sanitize(row), ensure_ascii=False, sort_keys=True))
         n += 1
     payload = ("\n".join(buf) + ("\n" if buf else "")).encode("utf-8")
     _atomic_write_bytes(path, payload)

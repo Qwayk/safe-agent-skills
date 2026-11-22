@@ -37,6 +37,7 @@ def cmd_graph_get(args, ctx) -> int:
             "count": len(res.data),
             "paging": res.paging,
             "pages_fetched": res.raw_pages,
+            "incomplete_reason": res.incomplete_reason,
         }
         audit.write(
             "graph.get_edge",

@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from typing import Any
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 from .config import Config, normalize_ad_account_id
 from .errors import RemoteApiError, ValidationError
@@ -43,6 +43,7 @@ class PageResult:
     data: list[Any]
     paging: dict[str, Any] | None
     raw_pages: int
+    incomplete_reason: str | None = None
 
 
 class GraphClient:
@@ -69,13 +70,30 @@ class GraphClient:
         return params
 
     def get(self, path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
-        url = _build_versioned_url(self._cfg, path)
+        return self._get(_build_versioned_url(self._cfg, path), params=params)
+
+    def get_url(self, url: str) -> dict[str, Any]:
+        return self._get(urljoin(self._cfg.base_url.rstrip("/") + "/", url))
+
+    def _get(self, url: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
+        requested = urlsplit(url)
+        configured = urlsplit(self._cfg.base_url)
+        if (
+            requested.scheme != configured.scheme
+            or requested.hostname != configured.hostname
+            or (requested.port or (443 if requested.scheme == "https" else 80))
+            != (configured.port or (443 if configured.scheme == "https" else 80))
+            or requested.username is not None
+            or requested.password is not None
+        ):
+            raise RemoteApiError("Meta Ads request would leave the configured API host")
         resp = self._http.request(
             "GET",
             url,
             headers=self._headers(),
             params=self._with_access_token_param(url, params),
             retries=self._cfg.max_retries,
+            allow_redirects=False,
         )
         payload = resp.json()
         self._raise_graph_error(payload)
@@ -83,22 +101,7 @@ class GraphClient:
             raise RemoteApiError("Unexpected response shape (expected JSON object)")
         return payload
 
-    def get_url(self, url: str) -> dict[str, Any]:
-        resp = self._http.request(
-            "GET",
-            url,
-            headers=self._headers(),
-            params=self._with_access_token_param(url, None),
-            retries=self._cfg.max_retries,
-        )
-        payload = resp.json()
-        self._raise_graph_error(payload)
-        if not isinstance(payload, dict):
-            raise RemoteApiError("Unexpected response shape (expected JSON object)")
-        return payload
-
-    @staticmethod
-    def _raise_graph_error(payload: Any) -> None:
+    def _raise_graph_error(self, payload: Any) -> None:
         if not isinstance(payload, dict):
             return
         err = payload.get("error")
@@ -122,7 +125,10 @@ class GraphClient:
             meta.append(f"fbtrace_id={fbtrace}")
         if meta:
             parts.append("(" + ", ".join(meta) + ")")
-        raise RemoteApiError(" ".join(parts))
+        message = HttpClient.redact_url(" ".join(parts))
+        if self._cfg.access_token:
+            message = message.replace(self._cfg.access_token, "***REDACTED***")
+        raise RemoteApiError(message)
 
     def list_edge(
         self,
@@ -173,57 +179,49 @@ class GraphClient:
         if max_items_i < 0:
             raise ValidationError("--max-items must be >= 0")
 
-        data = first_payload.get("data")
-        if not isinstance(data, list):
-            # Not a list response; treat as a single-page empty data set.
-            return PageResult(data=[], paging=None, raw_pages=1)
-
-        out: list[Any] = list(data)
-        pages = 1
-        paging = first_payload.get("paging")
-        base_params: dict[str, Any] = dict(params or {})
-        seen_next: set[str] = set()
-        seen_after: set[str] = set()
+        payload = first_payload
+        out: list[Any] = []
+        pages = 0
+        seen: set[tuple[str, str]] = set()
+        reason = None
         while True:
-            if pages >= max_pages_i:
-                break
-            if max_items_i and len(out) >= max_items_i:
-                out = out[:max_items_i]
-                break
-            if not isinstance(paging, dict):
-                break
-            nxt = paging.get("next")
-            cursor_after: str | None = None
-            if isinstance(nxt, str) and nxt.strip():
-                nxt_s = nxt.strip()
-                if nxt_s in seen_next:
-                    break
-                seen_next.add(nxt_s)
-                payload = self.get_url(nxt_s)
-            else:
-                cursors = paging.get("cursors")
-                if isinstance(cursors, dict):
-                    after = cursors.get("after")
-                    if isinstance(after, str) and after.strip():
-                        cursor_after = after.strip()
-                if not cursor_after:
-                    break
-                if cursor_after in seen_after:
-                    break
-                seen_after.add(cursor_after)
-                next_params = dict(base_params)
-                next_params["after"] = cursor_after
-                payload = self.get(path, params=next_params)
+            data = payload.get("data")
+            if not isinstance(data, list):
+                raise RemoteApiError("Meta Ads response is missing a valid data list")
+            out.extend(data)
             pages += 1
-            data2 = payload.get("data")
-            if isinstance(data2, list):
-                out.extend(data2)
-                if max_items_i and len(out) >= max_items_i:
-                    out = out[:max_items_i]
-                    paging = payload.get("paging") if isinstance(payload.get("paging"), dict) else paging
-                    break
-            paging = payload.get("paging") if isinstance(payload.get("paging"), dict) else paging
-        return PageResult(data=out, paging=_redact_paging_urls(paging), raw_pages=pages)
+            paging = payload.get("paging")
+            next_url = paging.get("next") if isinstance(paging, dict) else None
+            cursors = paging.get("cursors") if isinstance(paging, dict) else None
+            after = cursors.get("after") if isinstance(cursors, dict) else None
+            if isinstance(next_url, str) and next_url.strip():
+                next_page = ("url", next_url.strip())
+            elif isinstance(after, str) and after.strip():
+                next_page = ("after", after.strip())
+            else:
+                next_page = None
+
+            if max_items_i and (len(out) > max_items_i or (len(out) == max_items_i and next_page)):
+                out = out[:max_items_i]
+                reason = "max_items"
+                break
+            if next_page is None:
+                break
+            if pages >= max_pages_i:
+                reason = "max_pages"
+                break
+            if next_page in seen:
+                reason = "repeated_page"
+                break
+            seen.add(next_page)
+            kind, value = next_page
+            if kind == "url":
+                payload = self.get_url(value)
+            else:
+                payload = self.get(path, params={**(params or {}), "after": value})
+        return PageResult(
+            data=out, paging=_redact_paging_urls(paging), raw_pages=pages, incomplete_reason=reason
+        )
 
 
 __all__ = ["GraphClient", "PageResult", "_parse_kv_pairs"]

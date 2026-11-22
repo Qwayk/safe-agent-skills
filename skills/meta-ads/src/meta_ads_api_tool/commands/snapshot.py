@@ -3,21 +3,20 @@ from __future__ import annotations
 import json
 import time
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from ..assets import AssetResult, download_assets
 from ..audit_log import AuditLogger, CompositeAuditLogger
-from ..chunking import ChunkFailure, chunk_list, ensure_field, merge_rows_by_id, parse_fields_csv
+from ..chunking import ChunkFailure, chunk_list, parse_fields_csv
 from ..creative_anatomy import extract_asset_urls, extract_creative_anatomy
 from ..errors import ToolError, ValidationError
-from ..graph import GraphClient
-from ..graph import _parse_kv_pairs
+from ..graph import GraphClient, _parse_kv_pairs
 from ..http import HttpClient
 from ..presets import get_preset
 from ..snapshot.manifest import TableInventoryItem, build_manifest, utc_now_iso
 from ..snapshot.writer import write_json, write_jsonl
 from ._ad_account_edge_helpers import _required_ad_account_id
-
+from .insights import _set_date_selector, _time_range_param
 
 _EDGE_BY_SURFACE = {
     "campaigns": "campaigns",
@@ -26,14 +25,6 @@ _EDGE_BY_SURFACE = {
     "creatives": "adcreatives",
     "insights": "insights",
 }
-
-
-def _time_range_json(*, since: str, until: str) -> str:
-    s = str(since or "").strip()
-    u = str(until or "").strip()
-    if not s or not u:
-        raise ValidationError("Use both --since and --until (YYYY-MM-DD) or omit both")
-    return json.dumps({"since": s, "until": u}, separators=(",", ":"))
 
 
 def _sanitize_table_suffix(name: str) -> str:
@@ -59,31 +50,21 @@ def _append_jsonl(path: Path, obj: dict[str, Any]) -> None:
         f.write(json.dumps(obj, ensure_ascii=False, sort_keys=True) + "\n")
 
 
-def _merge_rows_by_key(
-    passes: list[list[dict[str, Any]]],
-    *,
-    key_fn: Callable[[dict[str, Any]], str] | None,
-) -> list[dict[str, Any]]:
-    if key_fn is None:
-        return merge_rows_by_id(passes, id_key="id")
-    out: list[dict[str, Any]] = []
-    by_key: dict[str, dict[str, Any]] = {}
-    order: list[str] = []
-    for rows in passes:
-        for row in rows:
-            if not isinstance(row, dict):
-                continue
-            k = key_fn(row)
-            if not k:
-                continue
-            if k not in by_key:
-                by_key[k] = dict(row)
-                order.append(k)
-            else:
-                by_key[k].update(row)
-    for k in order:
-        out.append(by_key[k])
-    return out
+def _insights_identity(params: dict[str, Any]) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    id_field = {"account": "account_id", "campaign": "campaign_id", "adset": "adset_id", "ad": "ad_id"}.get(
+        str(params.get("level") or "")
+    )
+    if id_field is None:
+        raise ValidationError("Use insight level account, campaign, adset, or ad")
+    breakdowns = params.get("breakdowns") or ""
+    if isinstance(breakdowns, list):
+        breakdowns = ",".join(str(value) for value in breakdowns)
+    return (id_field, "date_start", "date_stop"), tuple(parse_fields_csv(str(breakdowns)))
+
+
+def _insights_join_keys(params: dict[str, Any]) -> tuple[str, ...]:
+    identity, dimensions = _insights_identity(params)
+    return ("ad_account_id", *identity, *dimensions)
 
 
 def _chunked_list_edge(
@@ -98,19 +79,16 @@ def _chunked_list_edge(
     max_pages: int | None,
     max_items: int | None,
     strict: bool,
-    merge_key_fn: Callable[[dict[str, Any]], str] | None,
     request_summaries: list[dict[str, Any]],
     errors: list[dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], bool]:
-    fields = parse_fields_csv(fields_csv)
-    if surface != "insights":
-        fields = ensure_field(fields, "id")
-    else:
-        fields = ensure_field(fields, "ad_id")
-        fields = ensure_field(fields, "date_start")
-        fields = ensure_field(fields, "date_stop")
-    chunks = chunk_list(fields, max_chunk_size=fields_chunk_size) if fields else [[]]
-    passes: list[list[dict[str, Any]]] = []
+    identity, dimensions = _insights_identity(params) if edge == "insights" else (("id",), ())
+    fields = [field for field in parse_fields_csv(fields_csv) if field not in identity]
+    if fields_chunk_size <= 0:
+        raise ValidationError("--fields-chunk-size must be > 0")
+    chunk_width = max(1, fields_chunk_size - len(identity))
+    chunks = [[*identity, *chunk] for chunk in (chunk_list(fields, max_chunk_size=chunk_width) or [[]])]
+    merged: dict[str, dict[str, Any]] = {}
     had_error = False
 
     for idx, chunk in enumerate(chunks):
@@ -125,8 +103,18 @@ def _chunked_list_edge(
                 max_pages=max_pages,
                 max_items=max_items,
             )
-            rows = [x for x in res.data if isinstance(x, dict)]
-            passes.append(rows)
+            for row in res.data:
+                if not isinstance(row, dict) or any(row.get(key) in (None, "") for key in identity):
+                    had_error = True
+                    errors.append({
+                        "type": "missing_row_keys", "surface": surface, "chunk_index": idx,
+                        "fields": list(identity),
+                    })
+                    if strict:
+                        return [], True
+                    continue
+                key = json.dumps([row.get(k) for k in (*identity, *dimensions)], sort_keys=True)
+                merged.setdefault(key, {}).update(row)
             request_summaries.append(
                 {
                     "surface": surface,
@@ -136,6 +124,8 @@ def _chunked_list_edge(
                     "fields_count": len(chunk),
                     "chunk_index": idx,
                     "chunks_total": len(chunks),
+                    "pages_fetched": res.raw_pages,
+                    "incomplete_reason": res.incomplete_reason,
                     "params_keys": sorted([k for k in params2.keys() if k != "access_token"]),
                 }
             )
@@ -152,17 +142,7 @@ def _chunked_list_edge(
             if strict:
                 return ([], True)
 
-    merged = _merge_rows_by_key(passes, key_fn=merge_key_fn)
-    return (merged, had_error)
-
-
-def _insights_key(row: dict[str, Any]) -> str:
-    aid = str(row.get("ad_id") or "").strip()
-    ds = str(row.get("date_start") or "").strip()
-    de = str(row.get("date_stop") or "").strip()
-    if not aid or not ds or not de:
-        return ""
-    return f"{aid}:{ds}:{de}"
+    return list(merged.values()), had_error
 
 
 def _normalize_rows(*, table: str, ad_account_id: str, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -170,7 +150,7 @@ def _normalize_rows(*, table: str, ad_account_id: str, rows: list[dict[str, Any]
     for row in rows:
         if not isinstance(row, dict):
             continue
-        base = {"ad_account_id": ad_account_id}
+        base: dict[str, Any] = {"ad_account_id": ad_account_id}
         if table == "campaigns":
             base["campaign_id"] = row.get("id")
         elif table == "ad_sets":
@@ -352,11 +332,9 @@ def cmd_snapshot_export(args, ctx) -> int:
             if surface_name == "insights":
                 # Typed, structured overrides (highest precedence).
                 if date_preset:
-                    params["date_preset"] = date_preset
-                    params.pop("time_range", None)
+                    _set_date_selector(params, name="date_preset", value=date_preset)
                 if since and until:
-                    params["time_range"] = _time_range_json(since=since, until=until)
-                    params.pop("date_preset", None)
+                    _set_date_selector(params, name="time_range", value=_time_range_param(since=since, until=until))
                 if insights_time_increment:
                     params["time_increment"] = insights_time_increment
                 if insights_breakdowns:
@@ -375,7 +353,6 @@ def cmd_snapshot_export(args, ctx) -> int:
             # Always enforce the explicit --limit flag as the request page size.
             params["limit"] = str(limit)
 
-            merge_key_fn = _insights_key if surface_name == "insights" else None
             rows, had_error = _chunked_list_edge(
                 surface=surface_name,
                 graph=graph,
@@ -387,7 +364,6 @@ def cmd_snapshot_export(args, ctx) -> int:
                 max_pages=max_pages,
                 max_items=max_items,
                 strict=strict,
-                merge_key_fn=merge_key_fn,
                 request_summaries=request_summaries,
                 errors=errors,
             )
@@ -401,7 +377,11 @@ def cmd_snapshot_export(args, ctx) -> int:
             norm = _normalize_rows(table=table_name, ad_account_id=ad_account_id, rows=rows)
             table_path = pack_dir / "tables" / f"{table_name}.jsonl"
             rows_written = write_jsonl(table_path, norm)
-            tables_written.append(TableInventoryItem(table=table_name, relpath=str(Path("tables") / f"{table_name}.jsonl"), rows=rows_written))
+            table_keys = _insights_join_keys(params) if edge == "insights" else None
+            tables_written.append(
+                TableInventoryItem(table=table_name, relpath=str(Path("tables") / f"{table_name}.jsonl"),
+                                   rows=rows_written, join_keys=table_keys)
+            )
             audit.write(
                 "snapshot.table_written",
                 {"table": table_name, "rows": rows_written, "path": str(table_path)},
@@ -466,7 +446,6 @@ def cmd_snapshot_export(args, ctx) -> int:
                         max_pages=max_pages,
                         max_items=max_items,
                         strict=strict,
-                        merge_key_fn=_insights_key,
                         request_summaries=request_summaries,
                         errors=errors,
                     )
@@ -484,6 +463,7 @@ def cmd_snapshot_export(args, ctx) -> int:
                             table=table2,
                             relpath=str(Path("tables") / f"{table2}.jsonl"),
                             rows=rows2_written,
+                            join_keys=_insights_join_keys(params2),
                         )
                     )
                     audit.write(
@@ -543,16 +523,17 @@ def cmd_snapshot_export(args, ctx) -> int:
             )
 
         finished_at = utc_now_iso()
-        assets_rows = next((t.rows for t in tables_written if t.table == "assets"), 0)
+        asset_row_count = next((t.rows for t in tables_written if t.table == "assets"), 0)
         assets_manifest: dict[str, Any] = {"enabled": bool(download_assets_enabled), "overwrite": assets_overwrite}
         if download_assets_enabled:
             assets_manifest = {
                 **assets_manifest,
-                "table": {"relpath": str(Path("tables") / "assets.jsonl"), "rows": int(assets_rows)},
+                "table": {"relpath": str(Path("tables") / "assets.jsonl"), "rows": asset_row_count},
                 "downloaded": sum(1 for r in asset_results if r.status == "downloaded"),
                 "failed": sum(1 for r in asset_results if r.status == "failed"),
                 "skipped_exists": sum(1 for r in asset_results if r.status == "skipped_exists"),
             }
+        partial_success = partial_success or any(item.get("incomplete_reason") for item in request_summaries)
         manifest = build_manifest(
             tool="meta-ads-api-tool",
             version=str(ctx.get("version", "") or ""),
@@ -568,6 +549,7 @@ def cmd_snapshot_export(args, ctx) -> int:
             assets=assets_manifest,
             request_summaries=request_summaries,
             errors=errors,
+            partial_success=partial_success,
         )
         manifest_path = pack_dir / "manifest.json"
         write_json(manifest_path, manifest)

@@ -1,95 +1,51 @@
 from __future__ import annotations
 
+import os
+import shlex
 from pathlib import Path
 
-from ..config import normalize_ad_account_id
-
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
-
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+from ..config import _get, _parse_env_file
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
     out = ctx["out"]
-    env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
-
-    env_path = Path(env_file)
+    env_path = Path(getattr(args, "env_file", ".env"))
     env_created = False
-
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
+    if not getattr(args, "no_write_env", False) and not env_path.exists():
+        example = env_path.parent / ".env.example"
+        template = (
+            example.read_text(encoding="utf-8") if example.is_file()
+            else "META_ADS_ACCESS_TOKEN=\nMETA_ADS_AD_ACCOUNT_ID=\n"
+        )
+        try:
+            fd = os.open(env_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        except FileExistsError:
+            pass
         else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
+            with os.fdopen(fd, "w", encoding="utf-8") as env:
+                env.write(template)
+            env_created = True
 
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "META_ADS_ACCESS_TOKEN"):
-        missing.append("META_ADS_ACCESS_TOKEN")
-
+    token_present = bool(_get(_parse_env_file(env_path), "META_ADS_ACCESS_TOKEN"))
+    missing = [] if token_present else ["META_ADS_ACCESS_TOKEN"]
+    next_command = "meta-ads-api-tool --output json"
+    if str(env_path) != ".env":
+        next_command += " --env-file " + shlex.quote(str(env_path))
+    next_command += " auth check"
     steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Create a Meta access token with the minimum required permissions (typically ads_read).",
-        "Find your Ad Account ID (a numeric id; the tool will normalize to act_<id>).",
-        "Open .env and fill the required values:",
-        "  - META_ADS_ACCESS_TOKEN=<your token>",
-        "Optional (recommended):",
-        "  - META_ADS_AD_ACCOUNT_ID=<numeric id or act_<id>>",
-        "Run: meta-ads-api-tool --output json auth check",
+        f"Add your Meta access token to {env_path} as META_ADS_ACCESS_TOKEN, or set it in your shell.",
+        "Set META_ADS_AD_ACCOUNT_ID if you want to save a default account.",
+        "Run the account check, then list the accounts you can read.",
     ]
-
     payload = {
-        "ok": True,
-        "onboarding": {
-            "env_file": env_file,
-            "env_created": env_created,
-            "missing": missing,
-            "next_command": "meta-ads-api-tool --output json auth check",
-            "steps": steps,
-        },
+        "env_file": str(env_path),
+        "env_created": env_created,
+        "missing": missing,
+        "next_command": next_command,
+        "steps": steps,
     }
-
-    if str(getattr(args, "output", "json")) == "json":
-        out.emit(payload)
+    if getattr(args, "output", "json") == "json":
+        out.emit({"ok": True, "onboarding": payload})
     else:
-        print("To connect this tool to your API, do this once:")
-        for i, s in enumerate(steps, start=1):
-            print(f"{i}. {s}")
-        if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        existing_id = None
-        for line in lines:
-            if line.strip().startswith("META_ADS_AD_ACCOUNT_ID="):
-                existing_id = line.strip().split("=", 1)[1].strip()
-                break
-        if existing_id:
-            norm = normalize_ad_account_id(existing_id)
-            if norm and norm != existing_id:
-                print("")
-                print(f"Note: META_ADS_AD_ACCOUNT_ID will be normalized to {norm}.")
-        print("")
-        print("Next: meta-ads-api-tool --output json auth check")
+        out.emit("\n".join([*steps, next_command]))
     return 0

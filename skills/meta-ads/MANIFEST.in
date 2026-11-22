@@ -1,0 +1,4 @@
+include .env.example
+include CHANGELOG.md
+include SKILL.md
+graft docs

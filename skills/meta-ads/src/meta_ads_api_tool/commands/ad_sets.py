@@ -28,6 +28,7 @@ def cmd_ad_sets_list(args, ctx) -> int:
         "count": len(res.data),
         "paging": res.paging,
         "pages_fetched": res.raw_pages,
+        "incomplete_reason": res.incomplete_reason,
     }
     audit.write("ad_sets.list", {"ad_account_id": ad_account_id, "count": len(res.data), "params": list(params.keys())})
     out.emit(out_obj)

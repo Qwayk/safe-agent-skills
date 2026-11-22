@@ -1,20 +1,11 @@
-# API coverage
+# Meta Ads API coverage
 
-Meta Ads coverage shows exactly what this skill can do with ad accounts, campaigns, ad sets, ads, insights, and Graph API inventory. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+This CLI reads the Meta Marketing API using GET. The default host is https://graph.facebook.com and the Marketing API version defaults to v25.0.
 
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+The original audit was March 1, 2026 (UTC). See the [test results](proof.md) for later simulated checks and the [Meta version schedule](https://developers.facebook.com/docs/graph-api/changelog/versions/#marketing-api) for support dates.
 
-A good first coverage check is: "Check whether this skill can inspect campaigns, ad sets, and insights, then show which Meta Ads changes are covered."
+## Routes and commands
 
-## Coverage notes
-
-Last audited (UTC): 2026-03-01
-Provider: Meta (Marketing API / Graph API)
-Default base URL: `https://graph.facebook.com`
-Default API version: `v24.0` (see `src/meta_ads_api_tool/config.py`)
-This is a **read-only** tool: GET-only.
-
-## Coverage ledger (Graph paths/edges → CLI)
 
 ### Auth
 

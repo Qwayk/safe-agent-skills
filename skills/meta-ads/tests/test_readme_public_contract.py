@@ -1,74 +1,37 @@
 from __future__ import annotations
 
+import re
+import shlex
 import unittest
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
+
+from meta_ads_api_tool.cli import build_parser
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
-class TestReadmePublicContract(unittest.TestCase):
-    def test_public_readme_opening_stays_user_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
+class TestPublicInstallGuide(unittest.TestCase):
+    def test_install_uses_the_meta_ads_catalog_id(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        commands = [shlex.split(line) for line in readme.splitlines() if line.startswith("npx skills add ")]
+        self.assertEqual(len(commands), 1)
+        self.assertEqual(commands[0][3], "Qwayk/safe-agent-skills@meta-ads")
 
-        self.assertTrue(text.startswith("# Meta Ads\n"))
-        self.assertNotIn("## Simplicity lock", text)
-        self.assertNotIn("# Meta Ads API tool (read-only)", text)
-        self.assertIn("**Capability:** Read-only", text)
+    def test_local_guide_links_resolve(self) -> None:
+        guides = [ROOT / "README.md", ROOT / "SKILL.md", *(ROOT / "docs").rglob("*.md")]
+        for guide in guides:
+            for target in re.findall(r"\[[^\]\n]+\]\(([^)\s]+)\)", guide.read_text(encoding="utf-8")):
+                link = urlsplit(target)
+                if link.scheme or not link.path:
+                    continue
+                with self.subTest(guide=guide.relative_to(ROOT), target=target):
+                    self.assertTrue((guide.parent / unquote(link.path)).is_file())
 
-        required_sections = [
-            "## Start here first",
-            "## What this skill helps with",
-            "## Install and first run",
-            "## How this skill stays safe",
-            "## What happens before a real change",
-            "## Helpful docs",
-        ]
-        for section in required_sections:
-            self.assertIn(section, text)
-
-    def test_start_here_section_stays_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do with Meta Ads](docs/use_cases.md)", text)
-        self.assertIn("[Connect your Meta Ads account](docs/onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
-        self.assertIn("[Quickstart](docs/quickstart.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-
-    def test_opening_rejects_template_voice(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-        opening = text.split("## Start here first", 1)[0]
-
-        banned = [
-            "Use this skill when",
-            "You can hand your agent jobs like",
-            "without guessing from raw docs",
-            "stays simple on purpose",
-            "read public data safely",
-        ]
-        for phrase in banned:
-            self.assertNotIn(phrase, opening)
-
-    def test_helpful_docs_stay_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("[Browse all Meta Ads docs](docs/README.md)", text)
-        self.assertIn("[Media buyer quickstart](docs/media_buyer_quickstart.md)", text)
-        self.assertIn("[Winning ads workbook](docs/winning_ads_workbook.md)", text)
-        self.assertIn("[Snapshot export guide](docs/snapshot_export.md)", text)
-        self.assertIn("[Proof and verification](docs/proof.md)", text)
-        self.assertIn("[API coverage](docs/api_coverage.md)", text)
-        self.assertNotIn("- `docs/use_cases.md`", text)
-        self.assertNotIn("- `docs/onboarding.md`", text)
-
-    def test_quickstart_opens_with_human_links(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "quickstart.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do with Meta Ads](use_cases.md)", text)
-        self.assertIn("[Connect your Meta Ads account](onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](safety_model.md)", text)
-        self.assertNotIn("- `docs/use_cases.md`", text)
-        self.assertNotIn("- `docs/onboarding.md`", text)
+    def test_quickstart_first_report_has_an_account_and_dates(self) -> None:
+        guide = (ROOT / "docs" / "quickstart.md").read_text(encoding="utf-8")
+        report = next(line for line in guide.splitlines() if "insights get --ad-account-id" in line)
+        args = build_parser().parse_args(shlex.split(report)[1:])
+        self.assertEqual((args.cmd, args.insights_cmd, args.level), ("insights", "get", "campaign"))
+        self.assertTrue(args.ad_account_id.startswith("act_"))
+        self.assertLessEqual(args.since, args.until)
