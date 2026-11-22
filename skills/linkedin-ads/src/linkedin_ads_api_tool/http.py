@@ -41,7 +41,7 @@ class HttpClient:
         self._session.headers["User-Agent"] = user_agent
 
     @staticmethod
-    def _format_url(url: str, params: dict[str, Any] | None) -> str:
+    def _format_url(url: str, params: dict[str, Any] | str | None) -> str:
         if not params:
             return url
         try:
@@ -55,7 +55,7 @@ class HttpClient:
         url: str,
         *,
         headers: dict[str, str] | None = None,
-        params: dict[str, Any] | None = None,
+        params: dict[str, Any] | str | None = None,
         json_body: Any | None = None,
         data: dict[str, Any] | None = None,
         retries: int = 0,

@@ -1,74 +1,24 @@
-# Proof and verification
+# What has been checked
 
-LinkedIn Ads proof should answer a simple question: what has actually been checked for ad accounts, campaigns, creatives, audiences, lead forms, and reports, and what still needs live credentials, permissions, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+The source and local catalog copies each passed all 24 tests with `python -m unittest -q`. I built a Python source archive and wheel from each copy, installed each wheel in a fresh virtual environment with local dependencies available, and reran the 24 tests against each install. All 177 API commands in 42 families loaded in both installs.
 
-If you only check one thing, check account/campaign proof and creative, audience, or budget plan evidence before trusting ad changes.
+The installed tools ran the [quickstart](quickstart.md) with simulated LinkedIn replies. Setup accepted an alternate token setting, the account check returned a role, and the campaign report used the account and both dates shown in the guide. The tool saved a campaign pause plan and refused to send it before explicit approval to proceed without a saved copy. With the required flags, it sent the partial-update header and saved LinkedIn's simulated reply. A separate read returned the new campaign status.
 
-## What is verified in this repository now
+I validated both skill files. The type check passed. Ruff still reports 10 existing import and formatting findings. These checks used simulated replies, with zero attempts to contact LinkedIn.
 
-### 1) Locally tested now
-- Full local suite: `.venv/bin/python -m unittest -q` -> `Ran 22 tests in 2.696s OK`
-- CLI version command:
-  - `linkedin-ads-api-tool --output json --version`
-- Onboarding and token helper commands:
-  - `linkedin-ads-api-tool onboarding`
-  - `linkedin-ads-api-tool auth token set --file token.json`
-  - `linkedin-ads-api-tool auth token status`
-- Operation plumbing from `operation_catalog.py`:
-  - Family/operation parser wiring
-  - Non-read dry-run plan generation (`--plan-out`)
-  - Write plans include `before_state.required: true` and `before_state.supported: false`
-  - Live write acknowledgement gate (`--ack-irreversible`)
-  - High-risk apply gate checks (`--apply`, `--yes`, `--plan-in`)
-  - Write apply attempts require explicit no-snapshot approval before LinkedIn HTTP when no saved snapshot is available
-- JSON error contract:
-  - JSON parse failures return `ok: false` with `error_type`
-- Run artifacts:
-  - `runs list`
-  - `runs show`
+## LinkedIn access still to check
 
-Local checks are done in CI through unit tests in this repo.  
-All tests write artifacts and run without real network in tests.
+The [coverage table](api_coverage.md) records which operations need app approval or account permissions (`access-gated`), a restricted LinkedIn product (`private-api-gated`), or a LinkedIn tier or role (`tier-gated`). `live-unverified` means the known command still needs a check against LinkedIn with approved access. A token and a successful account check alone do not establish access for reports, lead forms, conversions, or restricted products.
 
-## 2) Implemented but live-unverified because access is gated
-The CLI command surface is generated from `docs/api_coverage.md` and `operation_catalog.py`, so families exist in runtime and can produce dry-run plans.
-Every live write now also requires `--ack-irreversible` and then requires explicit no-snapshot approval before LinkedIn HTTP because this runtime does not provide snapshot restore or provider backup/restore.
+The restricted product checks include Company Intelligence, Ad Page Sets, ad segment sources and segments, Audience Insights, DMP engagement source types and segments, and Media Planning. Access depends on the specific app and account.
 
-Live calls may still fail today if your LinkedIn app is not approved for the required product and permissions.
-This is expected for:
-- account and creative write endpoints
-- campaign and reporting write endpoints
-- conversions, lead, targeting and tracking write flows
-- most `access-gated` + `tier-gated` operations in covered families
+## Earlier checks and sample files
 
-## 3) Documented but private/restricted by LinkedIn
-These areas are in scope in the catalog, but LinkedIn marks them private/restricted:
-- `account-intelligence`
-- `ad-page-sets`
-- `ad-segment-sources`
-- `ad-segments`
-- `audience-insights`
-- `dmp-engagement-source-types`
-- `dmp-segments`
-- `media-planning`
-- `media-plans`
+The earlier local check recorded 22 passing tests. It covered version output, onboarding and token commands, write plans and approval refusals, JSON errors, and local run history. The saved examples below show earlier output with sample values. Their timestamps and commands are kept as recorded. To run the current commands, use the [quickstart](quickstart.md).
 
-For these, a valid token and approved app path are usually required before live calls can succeed.
-
-## Run evidence files in docs/examples
-
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check.json`
-- `docs/examples/plan.example.json`
-- `docs/examples/receipt.example.json` (missing-approval refusal example; kept under the old filename for compatibility)
-
-These files are redacted and aligned to the JSON shapes this tool emits.
-
-## What can still block proof
-
-- `403` from LinkedIn approval gates.
-- `401` from expired or wrong token.
-- `404` / `410` from private API rollout differences.
-- Missing `--output json` when automation expects machine output.
+- [Version response](examples/outputs/version.json)
+- [Account check response](examples/outputs/auth_check.json)
+- [Saved plan](examples/plan.example.json)
+- [Write refusal](examples/receipt.example.json)

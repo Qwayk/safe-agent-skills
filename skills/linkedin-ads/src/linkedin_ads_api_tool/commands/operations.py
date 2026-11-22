@@ -6,6 +6,7 @@ import json
 import re
 import time
 from typing import Any
+from urllib.parse import quote
 
 from ..errors import SafetyError, ValidationError
 from ..http import HttpClient, build_linkedin_headers
@@ -72,6 +73,21 @@ def _parse_params(raw: list[str] | None) -> dict[str, str]:
             raise ValidationError(f"Invalid --param value: {item}. Empty key")
         params[key] = value
     return params
+
+
+def _encode_reporting_query(query: dict[str, str]) -> str:
+    # Rest.li keeps list and record punctuation visible in the query string.
+    encoded = []
+    for key, value in query.items():
+        safe = ""
+        if key == "dateRange":
+            safe = "(),:"
+        elif value.startswith("List(") and value.endswith(")"):
+            safe = "(),%"
+        elif key == "fields":
+            safe = ","
+        encoded.append(f"{quote(key, safe='')}={quote(value, safe=safe)}")
+    return "&".join(encoded)
 
 
 def _parse_body(*, body_json: str | None, body_file: str | None) -> Any:
@@ -155,8 +171,8 @@ def _verification_plan(spec: OperationSpec) -> dict[str, Any]:
     return {
         "type": "best_effort_after_apply",
         "checks": [
-            "Apply gates pass only with the required flags and matching plan.",
-            "HTTP status code is recorded in the receipt.",
+            "Apply checks the required flags and checks the saved plan for higher-risk commands.",
+            "The receipt records LinkedIn's HTTP response. Check the affected item separately to confirm its new state.",
             "Receipt records explicit no-snapshot approval.",
         ],
     }
@@ -200,6 +216,8 @@ def _build_plan(
         "query": query,
         "body": body,
     }
+    if spec.restli_method:
+        request["restli_method"] = spec.restli_method
     preconditions = [
         "env_fingerprint must match plan",
         "resolved request must match signature",
@@ -336,11 +354,12 @@ def _build_receipt(
             "status": status,
             "body": response_body,
         },
-        "changed": status < 300,
+        "changed": None,
         "verification": {
-            "ok": status < 300,
+            "ok": None,
             "details": {
                 "status": status,
+                "check": "http_response_only",
             },
         },
         "rollback_plan": _rollback_contract(spec),
@@ -467,6 +486,8 @@ def _run_operation(*, family: str, spec: OperationSpec, args: argparse.Namespace
         linkedin_version=cfg.linkedin_version,
         restli_protocol_version=cfg.restli_protocol_version,
     )
+    if spec.restli_method:
+        headers["X-RestLi-Method"] = spec.restli_method
     client = HttpClient(
         timeout_s=float(ctx["timeout_s"]),
         verbose=bool(ctx.get("verbose")),
@@ -477,7 +498,7 @@ def _run_operation(*, family: str, spec: OperationSpec, args: argparse.Namespace
         spec.method,
         resolved_url,
         headers=headers,
-        params=query,
+        params=_encode_reporting_query(query) if family == "ad-analytics" else query,
         json_body=body,
     )
     response_body = _read_response(response)

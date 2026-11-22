@@ -1,15 +1,22 @@
 # Changelog
 
-This file documents all notable changes for the LinkedIn Ads safe CLI.
+Changes to the LinkedIn Ads CLI and skill.
 
 ## [Unreleased]
 
+### Fixed
+
+- Setup accepts the documented token settings even when another token field is blank.
+- Reports send account lists and date ranges in LinkedIn's format. Campaign updates send the required partial-update header.
+- Receipts show when the tool only checked LinkedIn's HTTP reply.
+
 ### Added
 
-- Added the Wave 3 before-state reset: LinkedIn write plans now mark before-state as required but unsupported, and live write applies require explicit no-snapshot approval before LinkedIn HTTP when safe before-state capture is not available.
+- Write plans tell you when the tool cannot save the old settings. Sending the change then requires explicit approval to proceed without a saved copy.
 - Require `--ack-irreversible` for every live LinkedIn write and record the irreversible contract in plans and receipts.
 
 ### Removed
+- Combined the setup, report, and change guides and removed repeated instructions.
 - Removed final scaffold leftovers from shipped docs and tests while keeping LinkedIn command coverage unchanged.
 - Removed scaffold jobs CSV examples (`examples/jobs.csv`, `examples/jobs_with_write.csv`) from the example set.
 

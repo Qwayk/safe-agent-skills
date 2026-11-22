@@ -2,37 +2,22 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from ..config import (
+    DEFAULT_BASE_URL,
+    DEFAULT_LINKEDIN_VERSION,
+    DEFAULT_RESTLI_PROTOCOL_VERSION,
+    read_env_file,
+    resolve_token,
+)
 
-_PLACEHOLDER_ENV = """# LinkedIn Ads tool values
-LINKEDIN_ADS_BASE_URL=https://api.linkedin.com/rest
+
+_PLACEHOLDER_ENV = f"""# LinkedIn Ads settings
+LINKEDIN_ADS_BASE_URL={DEFAULT_BASE_URL}
 LINKEDIN_ADS_TOKEN=
-LINKEDIN_ADS_LINKEDIN_VERSION=202605
-LINKEDIN_ADS_RESTLI_PROTOCOL_VERSION=2.0.0
+LINKEDIN_ADS_LINKEDIN_VERSION={DEFAULT_LINKEDIN_VERSION}
+LINKEDIN_ADS_RESTLI_PROTOCOL_VERSION={DEFAULT_RESTLI_PROTOCOL_VERSION}
 LINKEDIN_ADS_TIMEOUT_S=30
 """
-
-
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
-
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
@@ -47,24 +32,12 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
         env_path.write_text(_PLACEHOLDER_ENV, encoding="utf-8")
         env_created = True
 
-    lines = _read_text_lines(env_path)
-    missing: list[str] = []
-    for key in (
-        "LINKEDIN_ADS_BASE_URL",
-        "LINKEDIN_ADS_TOKEN",
-        "LINKEDIN_ADS_LINKEDIN_VERSION",
-        "LINKEDIN_ADS_RESTLI_PROTOCOL_VERSION",
-    ):
-        if not _has_nonempty_env_value(lines, key):
-            missing.append(key)
+    token = resolve_token(env_file, read_env_file(env_path))
 
     steps = [
-        "Run onboarding on a local machine, not in CI.",
-        "Put a real LinkedIn Ads access token in LINKEDIN_ADS_TOKEN.",
-        "LinkedIn may hide some endpoints unless your app and account are approval-gated correctly.",
-        "If auth is denied, ask your app owner to confirm the LinkedIn access request in developer settings.",
-        "Run: linkedin-ads-api-tool --output json auth check",
-        "Then run one read family command to confirm your account scope.",
+        "If you need to add a LinkedIn access token, save it in your local settings or use auth token set.",
+        "Run linkedin-ads-api-tool --output json auth check to see which ad accounts you can access.",
+        "If LinkedIn denies access, check the app's approved products, the token permissions, and your account role.",
     ]
 
     payload = {
@@ -72,7 +45,7 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
         "onboarding": {
             "env_file": env_file,
             "env_created": env_created,
-            "missing": missing,
+            "missing": [] if token else ["LINKEDIN_ADS_TOKEN"],
             "next_command": "linkedin-ads-api-tool --output json auth check",
             "steps": steps,
         },

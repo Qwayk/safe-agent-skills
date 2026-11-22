@@ -1,74 +1,38 @@
 # Connect your LinkedIn Ads account
 
-LinkedIn Ads needs local app credentials and token data before an agent can inspect ad accounts, campaigns, creatives, and approvals.
+Use an access token issued through an approved LinkedIn app. The app needs access to the LinkedIn product you want to use. The token needs the right permissions, and the signed-in member needs access to the ad account.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
-
-After setup, start by confirming accessible ad accounts before asking for campaign or spend work.
-
-## Step 1: create `.env` with safe defaults
-
-Run:
+From the folder where you want to keep your local settings, run:
 
 ```bash
-linkedin-ads-api-tool onboarding
+linkedin-ads-api-tool --output json onboarding
 ```
 
-If no `.env` exists, this writes a new file with:
+This creates a `.env` file if one is missing. To use another file, put `--env-file path/to/settings.env` before the command. Keep the settings file and any saved tokens on your computer. Leave their contents out of chat and Git.
 
-- `LINKEDIN_ADS_BASE_URL`
-- `LINKEDIN_ADS_TOKEN` (main field written by onboarding)
-- `LINKEDIN_ADS_LINKEDIN_VERSION`
-- `LINKEDIN_ADS_RESTLI_PROTOCOL_VERSION`
-- `LINKEDIN_ADS_TIMEOUT_S`
+## Add your token
 
-This creates a local `.env` with placeholders only when one is missing.
+Put your token in `LINKEDIN_ADS_TOKEN` in the settings file. The tool checks that key first, then `LINKEDIN_ADS_ACCESS_TOKEN`, then `LINKEDIN_ADS_API_TOKEN`. It skips empty values and uses the shell value first when the same key appears in both places.
 
-## Step 2: add a token
-
-If you already have a LinkedIn token from your approved app flow, you can store it in any of these keys:
-
-- `LINKEDIN_ADS_ACCESS_TOKEN`
-- `LINKEDIN_ADS_TOKEN`
-- `LINKEDIN_ADS_API_TOKEN`
-
-You can also store token JSON with:
+If you already have a token JSON file from your app, you can save it with:
 
 ```bash
-linkedin-ads-api-tool auth token set --file token.json
+linkedin-ads-api-tool --output json auth token set --file token.json
+linkedin-ads-api-tool --output json auth token status
 ```
 
-The token file is saved at `.state/token.json` beside your `--env-file`.
+The tool looks in `.state/token.json` beside your settings file when the other token settings are empty. It accepts `access_token`, `accessToken`, or `token` in that file. The status command shows information about the saved file without revealing its token.
 
-## Step 3: check your approval and account access
-
-Run:
+## Check your access
 
 ```bash
 linkedin-ads-api-tool --output json auth check
 ```
 
-This reads `GET /adAccountUsers?q=authenticatedUser` to verify the token works.
+The tool asks LinkedIn which ad accounts the signed-in member can access. Check the account ID and role before choosing an account. An empty list gives you no account to use. A successful check here still leaves reporting permissions and access to other products to check separately.
 
-If LinkedIn blocks you, it means your app may still be in approval or product-gate mode.
-LinkedIn can reject all reads and writes until the app owner flow is approved.
+## Optional settings
 
-## Step 4: what to ask your AI agent first
+The default API address is `https://api.linkedin.com/rest`. The tool uses LinkedIn Marketing version `202605`, Rest.li protocol version `2.0.0`, and a 30-second request timeout. You can set `LINKEDIN_ADS_BASE_URL`, `LINKEDIN_ADS_LINKEDIN_VERSION`, `LINKEDIN_ADS_RESTLI_PROTOCOL_VERSION`, or `LINKEDIN_ADS_TIMEOUT_S` to change those values. A shell setting for the same key takes priority over the file.
 
-These are safe plain-English starting requests:
-
-- “Check whether this LinkedIn Ads token works and list the ad accounts I can access.”
-- “Show me one campaign search and one analytics pull for this ad account.”
-- “Tell me which LinkedIn Ads product areas are still access-gated before we plan anything.”
-- “Prepare a change plan for this campaign, but stop before any live apply.”
-
-## Step 5: first safe commands
-
-Start with read commands.
-
-```bash
-linkedin-ads-api-tool ad-account-users list-authenticated-user
-linkedin-ads-api-tool ad-campaigns search --ad-account-id 123456
-```
-
-Both commands run live and do not need `--apply`.
+Continue with [your first campaign report](quickstart.md) or [check a connection error](troubleshooting.md).

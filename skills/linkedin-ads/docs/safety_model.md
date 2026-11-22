@@ -1,34 +1,19 @@
-# Safety model
+# Approve and check a LinkedIn Ads change
 
-LinkedIn Ads can touch ad accounts, campaigns, creatives, audiences, lead forms, and reports, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Read the current account and affected item first when that helps you choose the change. Reads can contact LinkedIn directly. Some previews use an HTTP `POST` even though they leave the ad account unchanged.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## Review the plan
 
-A good safety ask is: "Read the account and campaign first, then review the plan before creative, audience, budget, or campaign changes."
+Run the change command with `--plan-out plan.json` and without `--apply`. Check the account, IDs, request details, and approval requirements in the saved plan. Confirm that the plan has the whole change you intended and that it contains no credentials.
 
-## Core safety rules
+Before any live change, get the user's approval for the exact change and for proceeding without a saved copy of the old settings. Every write needs `--apply --ack-irreversible --ack-no-snapshot`. Delete, batch, and permission-changing commands also need `--yes --plan-in plan.json`. The tool checks that the saved plan matches the request for those higher-risk commands.
 
-This tool runs by reading `spec.safety` from `operation_catalog.py`.
+The plan records `before_state.required: true` and `before_state.supported: false` for writes. There is no automatic restore for those changes.
 
-The three safety levels are:
+## Read the result
 
-- `read`: live by default.
-  - No `--apply` needed.
-  - POST can still be here if the endpoint is read-like.
-- `write-apply`: plan first, refusal on apply while before-state support is missing.
-  - `--plan-out` is needed to review the plan.
-  - `--apply --ack-irreversible` reaches the explicit no-snapshot approval.
-- `write-apply-yes`: write with extra risk checks.
-  - `--apply` and `--plan-out` are needed to make a plan.
-  - `--yes` and `--ack-irreversible` are needed on apply.
-  - `--plan-in` is needed before the explicit no-snapshot approval.
+Read the JSON result before reporting what happened. If it says `refused: true`, use the stated reason to explain what stopped. These refusals can exit with code zero because the tool stopped safely before sending the change.
 
-If required flags are missing, apply stops with `SafetyError`.
+A receipt from `--receipt-out` records LinkedIn's response. Its `changed` and `verification.ok` fields are `null` when the tool only checked the HTTP reply. To confirm a campaign change, read it again with `ad-campaigns get` using the same account and campaign IDs, then compare the field you changed. If the reply is lost or the new state is unclear, check LinkedIn before deciding whether to send another write.
 
-All write-capable LinkedIn operation plans now include `before_state.required: true` and `before_state.supported: false`.
-This runtime does not capture before-state snapshots or provider backups, so Write applies require explicit no-snapshot approval when no saved snapshot or provider backup is available; missing approval refuses before LinkedIn HTTP.
-
-For all levels, token, token scope, and account permissions still matter at runtime:
-- token must exist and be valid,
-- product access must match the command,
-- LinkedIn may still deny private or tier-gated calls.
+LinkedIn still checks the app's access, token permissions, and member role. See the [coverage table](api_coverage.md) for the meaning of each access label.

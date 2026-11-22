@@ -14,7 +14,7 @@ DEFAULT_LINKEDIN_VERSION = "202605"
 DEFAULT_RESTLI_PROTOCOL_VERSION = "2.0.0"
 
 
-def _parse_env_file(path: Path) -> dict[str, str]:
+def read_env_file(path: Path) -> dict[str, str]:
     if not path.exists():
         return {}
     out: dict[str, str] = {}
@@ -65,6 +65,15 @@ def _read_token_from_state_file(env_file: str) -> str | None:
     return None
 
 
+def resolve_token(env_file: str, env: dict[str, str]) -> str | None:
+    keys = ("LINKEDIN_ADS_TOKEN", "LINKEDIN_ADS_ACCESS_TOKEN", "LINKEDIN_ADS_API_TOKEN")
+    for key in keys:
+        token = os.environ.get(key, "").strip() or env.get(key, "").strip()
+        if token:
+            return token
+    return _read_token_from_state_file(env_file)
+
+
 def _token_fingerprint(token: str | None) -> str:
     if not token or not str(token).strip():
         return "none"
@@ -89,7 +98,7 @@ def _build_env_fingerprint(
 
 
 def load_config(env_file: str | None) -> Config:
-    env = _parse_env_file(Path(env_file or ".env"))
+    env = read_env_file(Path(env_file or ".env"))
 
     base_url = _first_present(env, "LINKEDIN_ADS_BASE_URL", "LINKEDIN_ADS_API_BASE_URL")
     if not base_url:
@@ -113,9 +122,7 @@ def load_config(env_file: str | None) -> Config:
     if not restli_protocol_version:
         restli_protocol_version = DEFAULT_RESTLI_PROTOCOL_VERSION
 
-    token = _first_present(env, "LINKEDIN_ADS_TOKEN", "LINKEDIN_ADS_ACCESS_TOKEN", "LINKEDIN_ADS_API_TOKEN")
-    if not token:
-        token = _read_token_from_state_file(env_file or ".env")
+    token = resolve_token(env_file or ".env", env)
 
     env_fingerprint = _build_env_fingerprint(
         base_url=base_url,

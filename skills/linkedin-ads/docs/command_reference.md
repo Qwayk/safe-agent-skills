@@ -1,73 +1,31 @@
-# Command reference
+# LinkedIn Ads commands
 
-These commands cover LinkedIn Ads accounts, campaigns, creatives, approvals, reports, and write gates. Confirm ad account access before campaign or spend work.
+Use the [quickstart](quickstart.md) for a complete setup, report, and campaign plan. The [coverage table](api_coverage.md) lists every command family and its access requirements.
 
-For the guided path, start with [What you can do with LinkedIn Ads](use_cases.md), [Connect your LinkedIn Ads account](onboarding.md), and [Quickstart](quickstart.md).
+## Setup and account access
 
-## Onboarding
+- `linkedin-ads-api-tool --output json --version` shows the installed CLI version.
+- `linkedin-ads-api-tool --output json onboarding` creates the local settings file if it is missing.
+- `linkedin-ads-api-tool --output json auth token set --file token.json` saves a token from a local JSON file.
+- `linkedin-ads-api-tool --output json auth token status` shows the saved file's status.
+- `linkedin-ads-api-tool --output json auth check` asks LinkedIn which account roles the signed-in member has.
+- `linkedin-ads-api-tool --output json ad-account-users list-authenticated-user` lists the account roles again.
 
-- `linkedin-ads-api-tool onboarding`  
-  - Creates `.env` with placeholders when missing.
-  - Writes comments and keys for local setup.
+## Read or plan a change
 
-## Authentication
+The command shape is `linkedin-ads-api-tool [global options] <family> <operation> [operation options]`. Put global options such as `--output json`, `--env-file`, `--plan-out`, `--plan-in`, and `--receipt-out` before the family name.
 
-- `linkedin-ads-api-tool auth check`
-  - Safe live check with `GET /adAccountUsers?q=authenticatedUser`.
-- `linkedin-ads-api-tool auth token set --file token.json`
-  - Save token from OAuth JSON.
-- `linkedin-ads-api-tool auth token status`
-  - Show token file status only (no token value).
+- Use `--param key=value` for each query parameter. Quote list and date values as shown in the [report example](quickstart.md#read-campaign-results).
+- Use `--body-json '<json>'` or `--body-file path` for requests that take a JSON body.
+- Path fields become command options. For example, `{ad_account_id}` becomes `--ad-account-id`.
+- Use `--plan-out path` to save a write plan. Follow the [approval guide](safety_model.md) before applying it.
+- Use `--receipt-out path` to save the response receipt after the tool sends a change. Check the affected item separately to confirm its state.
+- Use `--verbose` to see the request line and timing on stderr.
 
-- `linkedin-ads-api-tool --output json --version`
-  - Show tool version in JSON output mode.
+## Local run history
 
-## Operations by family
+- `linkedin-ads-api-tool runs list [--limit N]` shows recent runs.
+- `linkedin-ads-api-tool runs show --run-id <id>` shows the saved run.
+- `--run-id` sets a run ID. `--artifacts-dir` sets its location.
 
-Command shape:
-`linkedin-ads-api-tool [global flags] <family> <operation> [options]`
-
-Global flags such as `--output json`, `--plan-out`, `--plan-in`, and `--receipt-out`
-must come before the family name.
-
-Examples:
-- `linkedin-ads-api-tool ad-account-users list-authenticated-user`
-- `linkedin-ads-api-tool ad-campaigns search --ad-account-id 123456`
-  - `linkedin-ads-api-tool ad-campaigns create --ad-account-id 123 --body-json '{"name":"Sample campaign"}'`
-
-### Shared operation flags
-
-- `--param key=value` (repeatable)
-  - Adds extra query parameters.
-- `--body-json '<json>'` and `--body-file path`
-  - Attach request body for non-GET methods.
-- `--apply`
-  - Confirm the current safety gates for commands marked `write-apply` and `write-apply-yes`; current writes then require explicit no-snapshot approval before LinkedIn HTTP.
-- `--ack-irreversible`
-  - Required for every live LinkedIn write because this runtime does not provide snapshot restore.
-- `--yes`
-  - Required for `write-apply-yes` operations (delete, batch-write, permission changes).
-- `--plan-out path` and `--plan-in path`
-  - Save and validate saved plans before the current refusal.
-- `--receipt-out path`
-  - Reserved for future live receipts after saved snapshot support is available.
-- `--output json`
-  - Machine-readable output.
-- `--verbose`
-  - Show request line and timing details on stderr.
-
-Path placeholders from the API path are required CLI flags automatically:
-- `/adAccounts/{ad_account_id}/...` becomes `--ad-account-id`.
-
-## Run history
-
-- `linkedin-ads-api-tool runs list [--limit N]`
-- `linkedin-ads-api-tool runs show --run-id <id>`
-
-- `--run-id`
-  - Set a custom run ID.
-- `--artifacts-dir`
-  - Override artifact directory for one run.
-
-Write-capable commands that support it store run artifacts in `.state/runs/<run_id>/` and
-append records to `.state/runs/index.jsonl`.
+Write commands normally save run files under `.state/runs/<run_id>/` and add a line to `.state/runs/index.jsonl`. Keep run files private if they contain account or campaign data.

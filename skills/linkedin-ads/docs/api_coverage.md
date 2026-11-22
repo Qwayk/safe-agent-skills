@@ -1,18 +1,6 @@
 # API coverage
 
-LinkedIn Ads coverage shows exactly what this skill can do with ad accounts, campaigns, creatives, audiences, lead forms, and reports. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
-
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can inspect campaigns, creatives, and lead forms, then show which ad changes require a reviewed plan."
-
-## Coverage notes
-
-- Make the LinkedIn Ads scope measurable.
-- Show what this tool ships now, and what would still be docs-only if LinkedIn's docs were too incomplete for safe wiring.
-- Every unique documented operation in the chosen ad scope must be accounted for here.
-- Shared helper resources such as `posts`, `creatives`, `events`, and `inMailContents` are included only where LinkedIn's ad docs directly depend on them.
-- If the docs are incomplete, say that clearly instead of guessing.
+Use this table to find a command and check what access it needs. It includes shared resources such as `posts`, `creatives`, `events`, and `inMailContents` where the LinkedIn Ads API uses them.
 
 ## Summary
 
@@ -34,12 +22,9 @@ A good first coverage check is: "Check whether this skill can inspect campaigns,
 - `implemented`: operation exists in the shipped CLI and has matching command runtime + docs
 - `documented-only`: LinkedIn documents it, but the docs are too incomplete or the operation is intentionally not wired yet
 
-## Write rollback contract
+## Before sending a change
 
-All write-capable LinkedIn operations in this tool currently end at `irreversible_and_clearly_labeled`.
-The CLI can dry-run and save plans, but it does not capture before-state snapshots or provider backups.
-That is why every live write apply now requires `--ack-irreversible`, even when LinkedIn exposes another write endpoint for the same resource family.
-In the table below, `--apply` and `--apply --yes` show the base safety tier only. Add `--ack-irreversible` to every live write apply.
+The table shows the base apply flags. Every live write also needs `--ack-irreversible --ack-no-snapshot`. Commands marked `--apply --yes` also need a matching `--plan-in`. See [how to approve and check a change](safety_model.md).
 
 ## Coverage ledger
 
@@ -73,7 +58,7 @@ In the table below, `--apply` and `--apply --yes` show the base safety tier only
 | ad-campaigns | batch-get | `GET /adAccounts/{ad_account_id}/adCampaigns?ids=List(...)` | `ad-campaigns batch-get` | read | `access-gated, live-unverified` | implemented | Batch get campaigns. |
 | ad-campaigns | update | `POST /adAccounts/{ad_account_id}/adCampaigns/{campaign_id}` | `ad-campaigns update` | `--apply` | `access-gated, tier-gated, live-unverified` | implemented | Shared by LAN and audience restriction docs too. |
 | ad-campaigns | delete | `DELETE /adAccounts/{ad_account_id}/adCampaigns/{campaign_id}` | `ad-campaigns delete` | `--apply --yes` | `access-gated, tier-gated, live-unverified` | implemented | Destructive delete. |
-| ad-analytics | analytics | `GET /adAnalytics?q=analytics` | `ad-analytics analytics` | read | `access-gated, live-unverified` | implemented | One-pivot analytics. |
+| ad-analytics | analytics | `GET /adAnalytics?q=analytics` | `ad-analytics analytics` | read | `access-gated, live-unverified` | implemented | Report grouped by one field. Requires `r_ads_reporting`. |
 | ad-analytics | statistics | `GET /adAnalytics?q=statistics` | `ad-analytics statistics` | read | `access-gated, live-unverified` | implemented | Multi-pivot stats query. |
 | ad-analytics | attributed-revenue-metrics | `GET /adAnalytics?q=attributedRevenueMetrics` | `ad-analytics attributed-revenue-metrics` | read | `access-gated, live-unverified` | implemented | Revenue attribution metrics. |
 | ad-budget-pricing | forecast-price | `GET /adBudgetPricing?q=criteriaV2` | `ad-budget-pricing forecast-price` | read | `access-gated, live-unverified` | implemented | Price guidance endpoint. |

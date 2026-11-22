@@ -9,6 +9,8 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
+import requests
+
 from linkedin_ads_api_tool.cli import main
 from linkedin_ads_api_tool.operation_catalog import OPERATIONS_BY_FAMILY, RISKY
 
@@ -17,6 +19,55 @@ _PATH_PLACEHOLDER_RE = re.compile(r"{([^{}]+)}")
 
 
 class TestOperationRuntimeSafety(unittest.TestCase):
+    def test_campaign_update_sends_partial_update_after_approval_and_records_only_reply(self) -> None:
+        with tempfile.TemporaryDirectory() as td, patch.dict("os.environ", {}, clear=True):
+            env_file = Path(td) / ".env"
+            env_file.write_text("LINKEDIN_ADS_TOKEN=fixture-token\n", encoding="utf-8")
+            receipt_file = Path(td) / "receipt.json"
+            plan_file = Path(td) / "plan.json"
+            response = requests.Response()
+            response.status_code = 204
+            response._content = b""
+            base = ["--env-file", str(env_file), "--output", "json"]
+            command = [
+                "ad-campaigns", "update", "--ad-account-id", "123456", "--campaign-id", "789",
+                "--body-json", '{"patch":{"$set":{"status":"PAUSED"}}}',
+            ]
+
+            with patch.object(requests.Session, "send", return_value=response) as send:
+                buf = io.StringIO()
+                with redirect_stdout(buf):
+                    self.assertEqual(main(base + ["--plan-out", str(plan_file)] + command), 0)
+                self.assertTrue(json.loads(buf.getvalue())["dry_run"])
+                self.assertEqual(json.loads(plan_file.read_text())["request"]["restli_method"], "PARTIAL_UPDATE")
+
+                buf = io.StringIO()
+                with redirect_stdout(buf):
+                    self.assertEqual(main(base + ["--apply", "--ack-irreversible"] + command), 0)
+                self.assertTrue(json.loads(buf.getvalue())["refused"])
+                send.assert_not_called()
+
+                buf = io.StringIO()
+                args = base + [
+                    "--apply", "--ack-irreversible", "--ack-no-snapshot", "--receipt-out", str(receipt_file),
+                ]
+                with redirect_stdout(buf):
+                    self.assertEqual(main(args + command), 0)
+                send.assert_called_once()
+
+            request = send.call_args.args[0]
+            self.assertEqual(request.method, "POST")
+            self.assertEqual(request.url, "https://api.linkedin.com/rest/adAccounts/123456/adCampaigns/789")
+            self.assertEqual(request.headers["X-RestLi-Method"], "PARTIAL_UPDATE")
+            self.assertEqual(json.loads(request.body), {"patch": {"$set": {"status": "PAUSED"}}})
+            receipt = json.loads(receipt_file.read_text(encoding="utf-8"))
+            self.assertEqual(json.loads(buf.getvalue())["receipt"], receipt)
+            self.assertEqual(receipt["response"]["status"], 204)
+            self.assertTrue(receipt["no_snapshot_approval"]["acknowledged"])
+            self.assertIsNone(receipt["changed"])
+            self.assertIsNone(receipt["verification"]["ok"])
+            self.assertEqual(receipt["verification"]["details"]["check"], "http_response_only")
+
     def _build_argv_for_spec(self, family: str, spec) -> list[str]:
         argv = [family, spec.command]
         placeholders = sorted(set(_PATH_PLACEHOLDER_RE.findall(spec.path)))

@@ -23,6 +23,7 @@ class OperationSpec:
     status: str
     safety: str
     note: str
+    restli_method: str | None = None
 
 
 ADS_ACCOUNTS = "https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads/account-structure/create-and-manage-accounts?view=li-lms-2026-05"
@@ -121,7 +122,7 @@ OPERATIONS_BY_FAMILY: Final[dict[str, tuple[OperationSpec, ...]]] = {
         OperationSpec("get", "GET", "/adAccounts/{ad_account_id}/adCampaigns/{campaign_id}", CAMPAIGNS, BASE_READ, "implemented", READ, "Get one campaign."),
         OperationSpec("search", "GET", "/adAccounts/{ad_account_id}/adCampaigns?q=search", CAMPAIGNS, BASE_READ, "implemented", READ, "Search campaigns with rest.li search criteria."),
         OperationSpec("batch-get", "GET", "/adAccounts/{ad_account_id}/adCampaigns?ids=List(...)", CAMPAIGNS, BASE_READ, "implemented", READ, "Batch get campaigns by ids."),
-        OperationSpec("update", "POST", "/adAccounts/{ad_account_id}/adCampaigns/{campaign_id}", CAMPAIGNS, BASE_WRITE, "implemented", WRITE, "Update one campaign."),
+        OperationSpec("update", "POST", "/adAccounts/{ad_account_id}/adCampaigns/{campaign_id}", CAMPAIGNS, BASE_WRITE, "implemented", WRITE, "Update one campaign.", restli_method="PARTIAL_UPDATE"),
         OperationSpec("delete", "DELETE", "/adAccounts/{ad_account_id}/adCampaigns/{campaign_id}", CAMPAIGNS, BASE_WRITE, "implemented", RISKY, "Delete one campaign."),
     ),
     "ad-analytics": (

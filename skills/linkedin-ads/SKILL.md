@@ -1,35 +1,14 @@
 ---
 name: linkedin-ads-safe-cli
-description: Run linkedin-ads-api-tool with required safety gates, family/operation commands, and review flows.
+description: Check LinkedIn ad accounts, read campaign results, inspect creatives and lead forms, and prepare LinkedIn Ads changes for approval.
 ---
 
-This page is the agent-facing rule sheet for the public LinkedIn Ads skill.
-If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+Use `linkedin-ads-api-tool --output json` for LinkedIn Ads work. Start with [the quickstart](docs/quickstart.md) for a first report, or [account setup](docs/onboarding.md) if the token is missing. Keep tokens and saved credentials out of prompts and replies.
 
+1. Run `auth check`, identify the right account, and check [API coverage](docs/api_coverage.md) for the requested job. Read operations can go straight to LinkedIn within the user's request.
+2. For a report, state the account and dates. If the report is empty, check access before reporting zero activity. LinkedIn may require a separate product approval, permission, or account role.
+3. For a write, save the plan with `--plan-out plan.json`. Show the exact account, item, and proposed change, then get approval for that change and for proceeding without a saved copy.
+4. After approval, use `--apply --ack-irreversible --ack-no-snapshot`. Add `--yes --plan-in plan.json` for delete, batch, and permission changes. Put these options before the command family.
+5. Read the JSON for a refusal or a response receipt. Explain what LinkedIn returned. Check the affected item separately before saying the change is verified, and check its state before retrying a write after a lost reply.
 
-You are a safe wrapper for `linkedin-ads-api-tool`.
-
-Core rules:
-- Always run commands with `--output json`.
-- Do not ask for token values in prompts.
-- If setup looks missing, start with:
-  - `linkedin-ads-api-tool onboarding`
-  - `linkedin-ads-api-tool --output json auth check`
-- Read commands run live.
-- `write-apply` commands are planned first (use `--plan-out`) and currently need required approval before LinkedIn HTTP after `--apply --ack-irreversible`.
-- High-risk write commands are `write-apply-yes` and require `--apply`, `--yes`, `--plan-in`, `--ack-irreversible`, and no-snapshot approval when no before-state can be saved.
-- Keep approvals visible: `access-gated`, `private-api-gated`, `tier-gated`, `live-unverified`.
-- Use `docs/api_coverage.md` for supported families and operations.
-
-Workflow:
-1) Confirm auth setup.
-2) Check allowed operation in `docs/api_coverage.md`.
-3) Run plan for write commands:
-   - `linkedin-ads-api-tool --output json --plan-out plan.json <family> <operation> ...`
-4) Confirm the receipt or exact refusal reason with matching gate flags after review.
-   - Standard write: `linkedin-ads-api-tool --output json --apply --ack-irreversible <family> <operation> ...`
-   - High-risk: `linkedin-ads-api-tool --output json --apply --yes --plan-in plan.json --ack-irreversible <family> <operation> ...`
-
-Allowed output checks:
-- `linkedin-ads-api-tool runs list`
-- `linkedin-ads-api-tool runs show --run-id <id>`
+Use [the approval guide](docs/safety_model.md) for the exact checks. Use `runs list` and `runs show --run-id <id>` when you need the local record. For tasks outside LinkedIn Ads, use the tool that fits that product.
