@@ -90,7 +90,7 @@ class TestPagination(unittest.TestCase):
 
             client = _HttpClient(
                 [
-                    _Response(200, {"data": [{"id": 1}], "additional_data": {"pagination": {"more_items_in_collection": True, "next_start": 5}, "more_items_in_collection": True}}),
+                    _Response(200, {"data": [{"id": 1}], "additional_data": {"pagination": {"more_items_in_collection": True, "next_start": 3}, "more_items_in_collection": True}}),
                     _Response(200, {"data": [{"id": 2}], "additional_data": {"pagination": {"more_items_in_collection": False, "next_start": 10}, "more_items_in_collection": False}}),
                 ]
             )
@@ -119,4 +119,4 @@ class TestPagination(unittest.TestCase):
             self.assertEqual(payload["pagination"]["requested_pages"], 2)
             self.assertEqual(payload["pagination"]["fetched_pages"], 2)
             self.assertEqual(payload["pagination"]["has_more"], False)
-            self.assertEqual(client.requests[1][3].get("start"), 5)
+            self.assertEqual(client.requests[1][3].get("start"), 3)

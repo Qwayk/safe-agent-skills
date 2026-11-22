@@ -1,23 +1,8 @@
-# API coverage
+# Pipedrive API coverage
 
-Pipedrive coverage shows exactly what this skill can do with CRM deals, leads, activities, people, organizations, products, and pipelines. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Find the named CLI command for each supported read. See the [command guide](command_reference.md) for examples and use the command’s `--help` for flags.
 
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can list open deals, inspect one person or organization, and show which Pipedrive writes are intentionally excluded."
-
-## Coverage notes
-
-This table is built from the official Pipedrive OpenAPI specs and is used as source of truth for shipped command coverage and exclusions.
-Scope note: this tool is intentionally read-only by product choice, not by omission.
-
-## Source summary
-- Deduped public surface: **336** method+path pairs.
-- GET rows mapped to shipped read commands: **161**.
-- GET rows excluded from the shipped command surface: **1** (`/oauth/authorize`, OAuth-only auth flow).
-- Non-GET rows marked excluded: **174** (`excluded by choice: read-only tool`).
-- Both v1/v2 versions published: **35** rows, preferring v2 for command selection.
-- Last verified sources: 2026-05-21.
+The May 21, 2026 source review recorded 336 method and path pairs. The bundled catalog contains 161 read entries, which resolve to 153 named commands. The CLI uses version 2 when both versions map to the same name. The table also records one OAuth-only GET route and 174 operations that are outside this read-only tool. [Pipedrive source docs](references.md)
 
 | Method | Path | Preferred version | Available versions | Shipped CLI command or exclusion | Auth | Token cost | Notes |
 |---|---|---|---|---|---|---|---|
@@ -94,7 +79,7 @@ Scope note: this tool is intentionally read-only by product choice, not by omiss
 | GET | /currencies | v1 | v1 | qwayk-pipedrive-safe-agent-cli currencies list | x-api-token | 20 | shipped read command |
 | GET | /dealFields | v2 | v1, v2 | qwayk-pipedrive-safe-agent-cli deal-fields list | x-api-token | v1: 20 / v2: 10 | Both v1 and v2 publish this method+path. Tool uses v2 by choice. |
 | GET | /dealFields/{field_code} | v2 | v2 | qwayk-pipedrive-safe-agent-cli deal-fields get | x-api-token | 1 | shipped read command |
-| GET | /dealFields/{id} | v1 | v1 | qwayk-pipedrive-safe-agent-cli deal-fields get | x-api-token | 2 | shipped read command |
+| GET | /dealFields/{id} | v1 | v1 | Older route. Use qwayk-pipedrive-safe-agent-cli deal-fields get on v2. | x-api-token | 2 | The CLI uses /dealFields/{field_code}. |
 | GET | /deals | v2 | v2 | qwayk-pipedrive-safe-agent-cli deals list | x-api-token | 10 | shipped read command |
 | GET | /deals/archived | v2 | v1, v2 | qwayk-pipedrive-safe-agent-cli deals list-archived | x-api-token | v1: 40 / v2: 20 | Both v1 and v2 publish this method+path. Tool uses v2 by choice. |
 | GET | /deals/installments | v2 | v2 | qwayk-pipedrive-safe-agent-cli deal-installments list | x-api-token | 10 | shipped read command |
@@ -152,7 +137,7 @@ Scope note: this tool is intentionally read-only by product choice, not by omiss
 | GET | /oauth/authorize | v1 | v1 | excluded by choice: OAuth-only endpoint | OAuth only | 0 | OAuth-only auth flow; outside API-token read tool scope. |
 | GET | /organizationFields | v2 | v1, v2 | qwayk-pipedrive-safe-agent-cli organization-fields list | x-api-token | v1: 20 / v2: 10 | Both v1 and v2 publish this method+path. Tool uses v2 by choice. |
 | GET | /organizationFields/{field_code} | v2 | v2 | qwayk-pipedrive-safe-agent-cli organization-fields get | x-api-token | 1 | shipped read command |
-| GET | /organizationFields/{id} | v1 | v1 | qwayk-pipedrive-safe-agent-cli organization-fields get | x-api-token | 2 | shipped read command |
+| GET | /organizationFields/{id} | v1 | v1 | Older route. Use qwayk-pipedrive-safe-agent-cli organization-fields get on v2. | x-api-token | 2 | The CLI uses /organizationFields/{field_code}. |
 | GET | /organizationRelationships | v1 | v1 | qwayk-pipedrive-safe-agent-cli organization-relationships list | x-api-token | 20 | shipped read command |
 | GET | /organizationRelationships/{id} | v1 | v1 | qwayk-pipedrive-safe-agent-cli organization-relationships get | x-api-token | 2 | shipped read command |
 | GET | /organizations | v2 | v2 | qwayk-pipedrive-safe-agent-cli organizations list | x-api-token | 10 | shipped read command |
@@ -170,7 +155,7 @@ Scope note: this tool is intentionally read-only by product choice, not by omiss
 | GET | /permissionSets/{id}/assignments | v1 | v1 | qwayk-pipedrive-safe-agent-cli permission-sets list-assignments | x-api-token | 20 | shipped read command |
 | GET | /personFields | v2 | v1, v2 | qwayk-pipedrive-safe-agent-cli person-fields list | x-api-token | v1: 20 / v2: 10 | Both v1 and v2 publish this method+path. Tool uses v2 by choice. |
 | GET | /personFields/{field_code} | v2 | v2 | qwayk-pipedrive-safe-agent-cli person-fields get | x-api-token | 1 | shipped read command |
-| GET | /personFields/{id} | v1 | v1 | qwayk-pipedrive-safe-agent-cli person-fields get | x-api-token | 2 | shipped read command |
+| GET | /personFields/{id} | v1 | v1 | Older route. Use qwayk-pipedrive-safe-agent-cli person-fields get on v2. | x-api-token | 2 | The CLI uses /personFields/{field_code}. |
 | GET | /persons | v2 | v2 | qwayk-pipedrive-safe-agent-cli persons list | x-api-token | 10 | shipped read command |
 | GET | /persons/search | v2 | v2 | qwayk-pipedrive-safe-agent-cli persons search | x-api-token | 20 | shipped read command |
 | GET | /persons/{id} | v2 | v2 | qwayk-pipedrive-safe-agent-cli persons get | x-api-token | 1 | shipped read command |
@@ -192,7 +177,7 @@ Scope note: this tool is intentionally read-only by product choice, not by omiss
 | GET | /pipelines/{id}/movement_statistics | v1 | v1 | qwayk-pipedrive-safe-agent-cli pipelines movement-statistics | x-api-token | 40 | shipped read command |
 | GET | /productFields | v2 | v1, v2 | qwayk-pipedrive-safe-agent-cli product-fields list | x-api-token | v1: 20 / v2: 10 | Both v1 and v2 publish this method+path. Tool uses v2 by choice. |
 | GET | /productFields/{field_code} | v2 | v2 | qwayk-pipedrive-safe-agent-cli product-fields get | x-api-token | 1 | shipped read command |
-| GET | /productFields/{id} | v1 | v1 | qwayk-pipedrive-safe-agent-cli product-fields get | x-api-token | 2 | shipped read command |
+| GET | /productFields/{id} | v1 | v1 | Older route. Use qwayk-pipedrive-safe-agent-cli product-fields get on v2. | x-api-token | 2 | The CLI uses /productFields/{field_code}. |
 | GET | /products | v2 | v2 | qwayk-pipedrive-safe-agent-cli products list | x-api-token | 10 | shipped read command |
 | GET | /products/search | v2 | v2 | qwayk-pipedrive-safe-agent-cli products search | x-api-token | 20 | shipped read command |
 | GET | /products/{id} | v2 | v2 | qwayk-pipedrive-safe-agent-cli products get | x-api-token | 1 | shipped read command |
@@ -209,10 +194,10 @@ Scope note: this tool is intentionally read-only by product choice, not by omiss
 | GET | /projectTemplates/{id} | v2 | v1, v2 | qwayk-pipedrive-safe-agent-cli project-templates get | x-api-token | v1: 2 / v2: 1 | Both v1 and v2 publish this method+path. Tool uses v2 by choice. |
 | GET | /projects | v2 | v1, v2 | qwayk-pipedrive-safe-agent-cli projects list | x-api-token | v1: 20 / v2: 10 | Both v1 and v2 publish this method+path. Tool uses v2 by choice. |
 | GET | /projects/archived | v2 | v2 | qwayk-pipedrive-safe-agent-cli projects list-archived | x-api-token | 10 | shipped read command |
-| GET | /projects/boards | v1 | v1 | qwayk-pipedrive-safe-agent-cli project-boards list | x-api-token | 20 | shipped read command |
-| GET | /projects/boards/{id} | v1 | v1 | qwayk-pipedrive-safe-agent-cli project-boards get | x-api-token | 2 | shipped read command |
-| GET | /projects/phases | v1 | v1 | qwayk-pipedrive-safe-agent-cli project-phases list | x-api-token | 20 | shipped read command |
-| GET | /projects/phases/{id} | v1 | v1 | qwayk-pipedrive-safe-agent-cli project-phases get | x-api-token | 2 | shipped read command |
+| GET | /projects/boards | v1 | v1 | Older route. Use qwayk-pipedrive-safe-agent-cli project-boards list on v2. | x-api-token | 20 | The CLI uses /boards. |
+| GET | /projects/boards/{id} | v1 | v1 | Older route. Use qwayk-pipedrive-safe-agent-cli project-boards get on v2. | x-api-token | 2 | The CLI uses /boards/{id}. |
+| GET | /projects/phases | v1 | v1 | Older route. Use qwayk-pipedrive-safe-agent-cli project-phases list on v2. | x-api-token | 20 | The CLI uses /phases. |
+| GET | /projects/phases/{id} | v1 | v1 | Older route. Use qwayk-pipedrive-safe-agent-cli project-phases get on v2. | x-api-token | 2 | The CLI uses /phases/{id}. |
 | GET | /projects/search | v2 | v2 | qwayk-pipedrive-safe-agent-cli projects search | x-api-token | 20 | shipped read command |
 | GET | /projects/{id} | v2 | v1, v2 | qwayk-pipedrive-safe-agent-cli projects get | x-api-token | v1: 2 / v2: 1 | Both v1 and v2 publish this method+path. Tool uses v2 by choice. |
 | GET | /projects/{id}/activities | v1 | v1 | qwayk-pipedrive-safe-agent-cli projects list-activities | x-api-token | 20 | shipped read command |

@@ -8,7 +8,25 @@ import unittest
 from contextlib import redirect_stdout
 from unittest.mock import patch
 
+from requests import Request, Response
+
+from qwayk_pipedrive_safe_agent_cli.http import _PipedriveSession
+
 from qwayk_pipedrive_safe_agent_cli.cli import main
+
+
+class TestRedirectAuthentication(unittest.TestCase):
+    def test_token_stays_on_the_configured_host(self) -> None:
+        original = Response()
+        original.request = Request("GET", "https://crm.example.invalid/api/v2/deals").prepare()
+        with _PipedriveSession() as session:
+            for host, expected in (("crm.example.invalid", "fixture-token"), ("other.example.invalid", None)):
+                with self.subTest(host=host):
+                    next_request = Request(
+                        "GET", f"https://{host}/api/v2/deals", headers={"x-api-token": "fixture-token"}
+                    ).prepare()
+                    session.rebuild_auth(next_request, original)
+                    self.assertEqual(next_request.headers.get("x-api-token"), expected)
 
 
 class _Response:

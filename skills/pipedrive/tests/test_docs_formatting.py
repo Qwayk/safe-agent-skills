@@ -31,27 +31,12 @@ class TestDocsFormatting(unittest.TestCase):
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
 
-    def test_use_cases_stays_human_and_specific(self) -> None:
+    def test_local_doc_links_have_destinations(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
-
-        required = [
-            "# What you can do with Pipedrive",
-            "Deal and pipeline review",
-            "Contact and company research",
-            "Follow-up and handoff work",
-            "Account setup and reporting checks",
-            "What the agent should show you",
-        ]
-        for phrase in required:
-            self.assertIn(phrase, text)
-
-        rejected = [
-            "Use this page when you want ideas",
-            "Why this is useful",
-            "deterministic JSON output",
-            "raw request bridge",
-            "This is for review and read work only",
-        ]
-        for phrase in rejected:
-            self.assertNotIn(phrase, text)
+        for page in (root / "README.md", *(root / "docs").glob("*.md")):
+            links = re.findall(r"\]\(([^)]+)\)", page.read_text(encoding="utf-8"))
+            for link in links:
+                target = link.split("#", 1)[0]
+                if target and "://" not in target:
+                    with self.subTest(page=page.name, target=target):
+                        self.assertTrue((page.parent / target).exists())

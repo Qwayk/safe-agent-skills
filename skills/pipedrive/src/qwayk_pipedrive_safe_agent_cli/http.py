@@ -5,6 +5,7 @@ import json
 import sys
 import time
 from typing import Any
+from urllib.parse import urlsplit
 
 import requests
 
@@ -23,11 +24,20 @@ class HttpResponse:
         return self.body.decode("utf-8", errors="replace")
 
 
+class _PipedriveSession(requests.Session):
+    def rebuild_auth(self, prepared_request: requests.PreparedRequest, response: requests.Response) -> None:
+        super().rebuild_auth(prepared_request, response)
+        if urlsplit(prepared_request.url).netloc != urlsplit(response.request.url).netloc or self.should_strip_auth(
+            response.request.url, prepared_request.url
+        ):
+            prepared_request.headers.pop("x-api-token", None)
+
+
 class HttpClient:
     def __init__(self, *, timeout_s: float, verbose: bool, user_agent: str):
         self._timeout_s = timeout_s
         self._verbose = verbose
-        self._session = requests.Session()
+        self._session = _PipedriveSession()
         self._session.headers["User-Agent"] = user_agent
 
     @staticmethod
@@ -86,16 +96,17 @@ class HttpClient:
             if self._verbose:
                 print(f"[http] {method} {resp.url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
-            if resp.status_code < 400 or (not allow_redirects and 300 <= resp.status_code < 400):
-                return HttpResponse(
-                    status=resp.status_code,
-                    headers={k.lower(): v for k, v in resp.headers.items()},
-                    body=resp.content if not stream else b"",
-                    url=resp.url,
-                )
+            with resp:
+                if resp.status_code < 400:
+                    return HttpResponse(
+                        status=resp.status_code,
+                        headers={k.lower(): v for k, v in resp.headers.items()},
+                        body=resp.content if not stream else b"",
+                        url=resp.url,
+                    )
 
-            if attempt <= retries and resp.status_code in retry_on:
-                time.sleep(min(2**attempt, 10))
-                continue
+                if attempt > retries or resp.status_code not in retry_on:
+                    detail = "" if stream else f"\n{resp.text}"
+                    raise RuntimeError(f"HTTP {resp.status_code} for {method} {resp.url}{detail}")
 
-            raise RuntimeError(f"HTTP {resp.status_code} for {method} {resp.url}\n{resp.text}")
+            time.sleep(min(2**attempt, 10))

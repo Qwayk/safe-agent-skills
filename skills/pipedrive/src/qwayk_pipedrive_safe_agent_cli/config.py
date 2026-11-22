@@ -73,6 +73,13 @@ def _strip_api_prefix(url: str) -> str:
     return root
 
 
+def _configured_base_url(value: str) -> str:
+    # The old example used this placeholder as a value in the sample file.
+    if value.rstrip("/") == "https://your-company.pipedrive.com":
+        return ""
+    return value
+
+
 @dataclasses.dataclass(frozen=True)
 class Config:
     base_url: str
@@ -102,7 +109,9 @@ def load_config(env_file: str | None, *, config_file: str | None = None) -> Conf
     env = _parse_env_file(Path(env_file or ".env"))
     cfg = _parse_config_file(Path(config_file) if config_file else None)
 
-    base_url = _get(env, "PIPEDRIVE_BASE_URL") or str(cfg.get("base_url") or "").strip()
+    base_url = _configured_base_url(_get(env, "PIPEDRIVE_BASE_URL")) or _configured_base_url(
+        str(cfg.get("base_url") or "").strip()
+    )
     api_domain = _get(env, "PIPEDRIVE_API_DOMAIN") or str(cfg.get("api_domain") or "").strip()
     token = _get(env, "PIPEDRIVE_API_TOKEN") or None
     if not base_url and not api_domain:

@@ -1,25 +1,7 @@
-# Safety model
+# How Pipedrive reads work
 
-Pipedrive is safest when you treat the agent as a focused reader for CRM deals, leads, activities, people, organizations, products, and pipelines. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+The tool reads records and account settings. Use the [coverage table](api_coverage.md) to see which requests it supports. Keep saved results and logs private when they include CRM data.
 
-The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+The token is sent to your configured Pipedrive host. If a request is redirected to another host, the token is removed. Confirm the account with a small read before using the results in a report.
 
-A good safety ask is: "Read the pipeline, deal, or lead first, then keep the work to reporting because this public tool is read-only."
-
-## Core safety rules
-
-This tool is read-only by design.
-
-- Only shipped `GET` commands are enabled.
-- No write, plan, apply, or receipt flow exists.
-- Unsupported parser/input forms return standard validation errors.
-- Requests for rows marked excluded in `docs/api_coverage.md` should be reported as `excluded by choice: read-only tool`.
-- Output is always one JSON object per command.
-- Secrets (for example `PIPEDRIVE_API_TOKEN`) are never printed.
-
-## File download safety
-
-- `files download` runs with metadata-only behavior.
-- It makes a `HEAD` request to get size and type.
-- It does not follow redirects by default.
-- It does not download binary body content.
+`files download` returns file details such as type, size, or a link when the server supplies them. It checks the headers with `HEAD`. If the server declines that method, it opens a `GET` response and reads only its headers. File checks stop at redirects and never save the file body.

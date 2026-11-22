@@ -9,7 +9,8 @@ from contextlib import redirect_stdout
 from typing import Any
 from unittest.mock import patch
 
-from qwayk_pipedrive_safe_agent_cli.cli import main
+from qwayk_pipedrive_safe_agent_cli.cli import _group_catalog_entries, _resolve_command_entry, main
+from qwayk_pipedrive_safe_agent_cli.registry import load_endpoint_catalog
 
 
 class _Response:
@@ -39,10 +40,6 @@ class _HttpClient:
     ) -> _Response:
         self.requests.append((method, url, dict(headers or {}), params))
         return self._response
-
-
-def _load_catalog(root: Path) -> list[dict[str, Any]]:
-    return json.loads((root / "src" / ".openapi" / "pipedrive_endpoint_catalog.json").read_text(encoding="utf-8"))
 
 
 def _sample_value(param: dict[str, Any]) -> str:
@@ -103,8 +100,8 @@ class TestGeneratedFamilySmoke(unittest.TestCase):
         return str(env_path)
 
     def test_each_family_has_one_runtime_smoke(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        entries = _load_catalog(root)
+        commands = _group_catalog_entries(load_endpoint_catalog())
+        entries = [_resolve_command_entry(routes) for routes in commands.values()]
         families = _pick_family_representatives(entries)
         self.assertGreater(len(families), 0)
 

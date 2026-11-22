@@ -1,25 +1,12 @@
 ---
 name: pipedrive
-description: "Read Pipedrive CRM records through qwayk-pipedrive-safe-agent-cli. Use for lookups and reports, not writes or OAuth-only operations."
+description: Read Pipedrive deals, contacts, activities, pipelines, and other CRM records for lookups and reports.
 ---
 
 # Pipedrive
 
-This page is the agent-facing rule sheet for the public Pipedrive skill.
-If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+Use `qwayk-pipedrive-safe-agent-cli` to read Pipedrive. Check setup with `onboarding` and `auth check`. Use the printed command if the user picked a different settings file. Keep the token out of chat.
 
-Use this tool to run read-only Pipedrive lookups.
+Use `--output json` and a named command from the API coverage table. Read a small sample first, then confirm the account and records. Tell the user if more pages are available or a read failed.
 
-## Use command names
-- `qwayk-pipedrive-safe-agent-cli onboarding`
-- `qwayk-pipedrive-safe-agent-cli auth check`
-- `qwayk-pipedrive-safe-agent-cli <group> <action>`
-- Example: `qwayk-pipedrive-safe-agent-cli users get-current`
-
-## Rules
-- Keep `--output json`.
-- No write, apply, plan, or job commands.
-- No token values in shared output.
-- If no shipped read command matches the request, say that there is no matching shipped read command in `docs/api_coverage.md`.
-- If a request is documented as excluded by read-only policy, return:
-  - `excluded by choice: read-only tool`
+Changes, OAuth-only operations, and downloading file content belong in another workflow. For a request outside this tool, say what it can do. Use `excluded by choice: read-only tool` for documented read-only exclusions. See the local docs for the exact commands and access requirements.

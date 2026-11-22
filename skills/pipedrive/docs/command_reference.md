@@ -1,44 +1,36 @@
-# Command reference
+# Pipedrive commands
 
-These commands cover read-only Pipedrive users, deals, leads, activities, people, organizations, and pipelines. Start with current user or pipeline reads before reports.
+Use [account setup](onboarding.md) to connect and [the quickstart](quickstart.md) for your first read.
 
-For the guided path, start with [What you can do with Pipedrive](use_cases.md), [Connect your Pipedrive account](onboarding.md), and [Quickstart](quickstart.md).
+## Common commands
 
-## Global command
+```bash
+qwayk-pipedrive-safe-agent-cli onboarding
+qwayk-pipedrive-safe-agent-cli auth check
+qwayk-pipedrive-safe-agent-cli users get-current
+qwayk-pipedrive-safe-agent-cli deals list --limit 5
+qwayk-pipedrive-safe-agent-cli goals search --type-name deals_won
+qwayk-pipedrive-safe-agent-cli files download --id 12345
+```
 
-- `--env-file <path>`
-- `--output <json|text>`
-- `--version`
-- `--timeout-s <seconds>`
-- `--verbose`
-- `--debug` (prints stack traces to stderr on errors)
-- `--log-file <path>` (writes redacted JSONL audit rows)
-- `--config <path>` (JSON defaults for `base_url`, `api_domain`, `timeout_s`)
+Run `qwayk-pipedrive-safe-agent-cli <group> <action> --help` for the exact flags. Find all shipped reads and exclusions in [API coverage](api_coverage.md). The file command returns [file details](safety_model.md#how-pipedrive-reads-work).
 
-## Tool setup
+## Global flags
 
-- `qwayk-pipedrive-safe-agent-cli onboarding`
-- `qwayk-pipedrive-safe-agent-cli auth check`
+Use these before the command:
 
-## Read commands
+- `--env-file <path>` selects a settings file.
+- `--config <path>` supplies JSON defaults for `base_url`, `api_domain`, and `timeout_s`.
+- `--timeout-s <seconds>` changes how long each request waits.
+- `--output json|text` selects the output format. JSON mode returns one object.
+- `--log-file <path>` saves a local JSON audit log, one entry per line.
+- `--verbose` shows HTTP request details. `--debug` shows Python errors.
+- `--version` prints the installed version.
 
-Commands follow the pattern:
+## Read more than one page
 
-- `qwayk-pipedrive-safe-agent-cli <group> <action> [flags...]`
+Lists default to one page. Use `--max-pages` on commands that support it. The maximum is 25 per command. Check `pagination.has_more` before treating a list as complete. When it is true, use the returned `pagination.next_cursor` as `--cursor` for cursor pages or `--start` for offset pages.
 
-All read commands in this tool come from `docs/api_coverage.md` and are shipped as `GET` methods.
+## Where the code lives
 
-Examples:
-
-- `qwayk-pipedrive-safe-agent-cli users get-current`
-- `qwayk-pipedrive-safe-agent-cli deals list --limit 5`
-- `qwayk-pipedrive-safe-agent-cli goals search --type-name deals_won`
-- `qwayk-pipedrive-safe-agent-cli files download --id 12345`
-
-Notes:
-- `files download` returns metadata only and does not download binary content.
-- Unsupported actions are not shown as commands.
-- Direct CLI parser errors return validation errors.
-- If no shipped read command matches a request, a wrapper should say that clearly instead of inventing a command.
-- `excluded by choice: read-only tool` applies only to documented excluded endpoints in `docs/api_coverage.md` or wrapper-level policy handling.
-- For the full shipped surface, use `docs/api_coverage.md`.
+The Python package is in `src/qwayk_pipedrive_safe_agent_cli/`. Its `data/pipedrive_endpoint_catalog.json` lists the routes, `registry.py` loads it, and `cli.py` runs commands. `config.py` reads settings, `http.py` makes requests, and `output.py` and `errors.py` define replies.

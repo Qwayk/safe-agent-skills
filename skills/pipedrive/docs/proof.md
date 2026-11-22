@@ -1,46 +1,41 @@
-# Proof and verification
+# Pipedrive verification
 
-Pipedrive proof should answer a simple question: what has actually been checked for CRM deals, leads, activities, people, organizations, products, and pipelines, and what still depends on account access, provider permissions, public API limits, or reviewer judgment?
+## November 22, 2026
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+All 31 tests passed in both local copies with Python 3.12. Each built package contained all 161 route entries and opened help after a fresh install outside the checkout. Both skill files passed validation.
 
-If you only check one thing, check the read-only smoke tests, saved outputs, and coverage-test notes before trusting CRM reports.
+Using fake Pipedrive replies on this computer, the installed tool created the selected settings file, read the current user, returned an empty list, reported a failed read, used the supplied offset for the second page, and returned file headers. These checks made zero live Pipedrive calls.
 
-## Last verified
-- 2026-05-22
+Run the checkout tests with:
 
-## Scope
-- This tool is read-only only.
-- Runtime is aligned to shipped commands in `docs/api_coverage.md`.
+```bash
+PYTHONPATH=src python3 -m unittest discover -s tests
+```
 
-## Blessed local validation
-- `python3 -m venv .venv`
-- `.venv/bin/python -m ensurepip --upgrade`
-- `.venv/bin/python -m pip install -e .`
-- `.venv/bin/python -m unittest -q`
+They cover account setup, read-only command coverage, pagination, failed and empty reads, the file header check, and token handling. Check the installed tool from outside the source directory as well. It needs the bundled command list even when you only ask for help:
 
-## Extra spot checks
-- `PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --output json --version`
-- `PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env onboarding`
-- `PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env auth check`
-- `PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env --debug --log-file proof_runs.jsonl auth check`
+```bash
+qwayk-pipedrive-safe-agent-cli --version
+qwayk-pipedrive-safe-agent-cli --help
+```
 
-## Example outputs
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check.json`
-- `docs/examples/outputs/files_download_metadata.json`
+## May 22, 2026 verification
 
-## What can go wrong
-- Wrong token or domain blocks the connection check, but no CRM data is changed.
-- Some read endpoints may still be limited by Pipedrive plan, admin role, or account permissions.
-- `files download` stays metadata-only and does not fetch binary bodies.
+The earlier checks covered imports, the command list, redaction, read-only behavior, and one sample read for each command group. They also checked that the file command reported the HTTP method it actually used. The saved commands were:
 
-## Verification notes
-- `docs/api_coverage.md` is checked against the shipped command map in tests.
-- `tests/test_coverage_smoke.py` runs one safe smoke per command family.
-- Example outputs are redacted and checked for the expected runtime shape.
+```bash
+python3 -m venv .venv
+.venv/bin/python -m ensurepip --upgrade
+.venv/bin/python -m pip install -e .
+.venv/bin/python -m unittest -q
+PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --output json --version
+PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env onboarding
+PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env auth check
+PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env --debug --log-file proof_runs.jsonl auth check
+```
 
-## What is not in scope
-- No plan/apply flow.
-- No jobs runner.
-- No write commands.
+## Saved output
+
+- [Version](examples/outputs/version.json)
+- [Connection check](examples/outputs/auth_check.json)
+- [File details](examples/outputs/files_download_metadata.json)

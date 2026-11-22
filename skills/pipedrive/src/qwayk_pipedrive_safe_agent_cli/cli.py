@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import argparse
-import traceback
+import shlex
 import sys
+import traceback
 from pathlib import Path
 from typing import Any
 
@@ -262,6 +263,15 @@ def _extract_page_signal(payload: Any, mode: str | None) -> tuple[bool, Any | No
     return bool(more), additional.get("next_start")
 
 
+def _read_records(payload: Any) -> list[Any]:
+    if isinstance(payload, dict) and payload.get("success") is False:
+        raise ToolError(str(payload.get("error") or "Pipedrive reported an unsuccessful read"))
+    data = payload.get("data", payload) if isinstance(payload, dict) else payload
+    if isinstance(data, list):
+        return data
+    return [] if data is None else [data]
+
+
 def _build_payload(
     *,
     operation: str,
@@ -333,7 +343,7 @@ def _run_read_request(
         )
         if response.status == 405 and is_download:
             # Some hosts do not allow HEAD on download endpoints.
-            # Fall back to GET but still prevent redirects and streaming.
+            # Fall back to GET and report the headers without reading the body.
             method_used = "GET"
             response = http.request(
                 method_used,
@@ -368,16 +378,6 @@ def _run_read_request(
 
     if mode not in {"offset", "cursor"}:
         response = http.request("GET", base_url, headers=headers, params=request_query)
-        parsed = response.json()
-        data = parsed.get("data") if isinstance(parsed, dict) else parsed
-        if data is None:
-            data = parsed
-        if isinstance(data, list):
-            payload_data = data
-        elif data is None:
-            payload_data = []
-        else:
-            payload_data = [data]
         return _build_payload(
             operation=str(entry.get("operation") or ""),
             api_version=api_version,
@@ -389,7 +389,7 @@ def _run_read_request(
             url=response.url,
             is_binary=False,
             pagination={"mode": "none", "requested_pages": 1, "fetched_pages": 1, "has_more": False, "next_cursor": None},
-            data=payload_data,
+            data=_read_records(response.json()),
         )
 
     requested_pages = _bounded_max_pages(max_pages)
@@ -403,18 +403,10 @@ def _run_read_request(
         parsed = response.json()
         fetched_pages += 1
 
-        page_data = parsed.get("data") if isinstance(parsed, dict) else None
-        if page_data is None:
-            page_data = parsed
-        if isinstance(page_data, list):
-            all_data.extend(page_data)
-        elif page_data is None:
-            pass
-        else:
-            all_data.append(page_data)
+        all_data.extend(_read_records(parsed))
 
         has_more, next_cursor = _extract_page_signal(parsed, mode)
-        if not has_more:
+        if not has_more or fetched_pages == requested_pages:
             break
 
         if mode == "cursor":
@@ -425,6 +417,9 @@ def _run_read_request(
             continue
 
         if page_param:
+            if next_cursor is not None:
+                request_query[page_param] = _coerce_int(next_cursor, "next_start")
+                continue
             current = int(request_query.get(page_param, 0) or 0)
             step_raw = request_query.get(limit_param) if limit_param else 100
             step = int(step_raw) if step_raw is not None else 100
@@ -530,13 +525,16 @@ def _cmd_onboarding(args: Any, ctx: dict[str, Any]) -> int:
     env_path = Path(str(env_file))
     env_created = False
     if not env_path.exists():
-        candidates = [env_path.parent / ".env.example", Path(".env.example")]
-        for source in candidates:
-            if source.exists():
-                env_path.parent.mkdir(parents=True, exist_ok=True)
-                env_path.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
-                env_created = True
-                break
+        candidates = (env_path.parent / ".env.example", Path(".env.example"))
+        example = next((path for path in candidates if path.is_file()), None)
+        contents = example.read_text(encoding="utf-8") if example else ""
+        env_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with env_path.open("x", encoding="utf-8") as settings:
+                settings.write(contents)
+            env_created = True
+        except FileExistsError:
+            pass
     out = ctx["out"]
     out.emit(
         {
@@ -544,7 +542,7 @@ def _cmd_onboarding(args: Any, ctx: dict[str, Any]) -> int:
             "onboarding": {
                 "env_file": env_file,
                 "env_created": env_created,
-                "next_command": f"{TOOL_NAME} --env-file {env_file} auth check",
+                "next_command": shlex.join([TOOL_NAME, "--env-file", env_file, "auth", "check"]),
                 "required_env_vars": {
                     "required": ["PIPEDRIVE_API_TOKEN"],
                     "required_one_of": ["PIPEDRIVE_API_DOMAIN", "PIPEDRIVE_BASE_URL"],
@@ -628,7 +626,7 @@ def _build_parser() -> argparse.ArgumentParser:
             command_entries=entries,
             command_tokens=command_key,
         )
-        _add_command_parser(action_parser, entries)
+        _add_command_parser(action_parser, [_resolve_command_entry(entries)])
 
     return parser
 

@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 import unittest
 
+from qwayk_pipedrive_safe_agent_cli.registry import load_endpoint_catalog
 
-def _catalog_commands(root: Path) -> set[str]:
-    catalog_path = root / "src" / ".openapi" / "pipedrive_endpoint_catalog.json"
-    raw = json.loads(catalog_path.read_text(encoding="utf-8"))
+
+def _catalog_commands() -> set[str]:
     commands = set()
-    for entry in raw:
+    for entry in load_endpoint_catalog():
         operation = str(entry.get("operation") or "").strip()
         if not operation.startswith("GET "):
             continue
@@ -43,4 +42,4 @@ def _docs_commands(root: Path) -> set[str]:
 class TestCoverageAlignment(unittest.TestCase):
     def test_shipped_get_commands_match_docs_catalog(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        self.assertEqual(_catalog_commands(root), _docs_commands(root))
+        self.assertEqual(_catalog_commands(), _docs_commands(root))

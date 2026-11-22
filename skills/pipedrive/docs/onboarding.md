@@ -1,48 +1,34 @@
 # Connect your Pipedrive account
 
-Pipedrive needs a local API token before an agent can inspect deals, people, organizations, pipelines, and activities.
+Set your Pipedrive API token and either your company name or the full Pipedrive address. Keep the token out of chat, Git, and any files you share.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
-
-After setup, start by checking the current user or one pipeline before building a sales report.
-
-## Step 1: Create the local `.env` file
-
-Run onboarding once:
+## Set up the connection
 
 ```bash
-PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli onboarding
+qwayk-pipedrive-safe-agent-cli onboarding
 ```
 
-Then open `.env` and fill one of these connection paths:
+The command creates a settings file if one is missing. It copies a local `.env.example` when one is available. Otherwise it creates an empty file. Existing settings stay in place.
 
-```dotenv
-PIPEDRIVE_API_DOMAIN=your-company
-PIPEDRIVE_BASE_URL=https://your-company.pipedrive.com
-PIPEDRIVE_API_TOKEN=
-```
+Put `PIPEDRIVE_API_TOKEN` in the settings file or your shell. Set `PIPEDRIVE_API_DOMAIN` to the company name from your Pipedrive address. The tool turns `my-company` into `https://my-company.pipedrive.com`. Use `PIPEDRIVE_BASE_URL` if you have a full address.
 
-Use `PIPEDRIVE_API_DOMAIN` for the normal company slug. Use `PIPEDRIVE_BASE_URL` only when you need to provide the full URL.
+## Check the connection
 
-## Step 2: Check the token
-
-Run:
+Run the command onboarding prints, or run the default check:
 
 ```bash
-PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env auth check
+qwayk-pipedrive-safe-agent-cli auth check
 ```
 
-Then run a small read:
+This calls `GET /api/v1/users/me`. Check that it returns the expected user before reading CRM data. Follow with a small read from the [quickstart](quickstart.md).
 
-```bash
-PYTHONPATH=src python3 -m qwayk_pipedrive_safe_agent_cli --env-file .env --output json users get-current
-```
+## Change local settings
 
-If that works, the agent can safely inspect deals, leads, activities, people, and organizations.
+- Use `--env-file` before the command to choose a different file. The default is `.env`.
+- A value in your shell takes precedence over the same setting in the file. Use `--config` with a JSON file for defaults for `base_url`, `api_domain`, and `timeout_s`. Set the token in the shell or settings file.
+- When both address settings have values, the full address takes precedence over the company name.
+- Requests wait up to 30 seconds by default. Set `PIPEDRIVE_TIMEOUT_S` or pass `--timeout-s` for one command.
 
-## What to ask your AI agent
+## If a command fails
 
-- Connect this Pipedrive read-only tool and check the token.
-- Show me my current user profile from Pipedrive.
-- List recent deals, leads, or activities for review.
-- Search people or organizations by name.
+Start with the chosen settings file, account address, and token. If the connection works but a read fails, check the record ID and the token’s permissions. In JSON output, `error` and `error_type` explain what stopped. Use `--verbose` for HTTP request details and `--debug` for a Python stack trace. Keep these logs private if they contain account details.

@@ -105,3 +105,36 @@ class TestGeneratedCommandDispatch(unittest.TestCase):
             payload = json.loads(buf.getvalue())
             self.assertEqual(payload["request"]["path"], "/activities/77")
             self.assertFalse(payload["pagination"]["has_more"])
+
+    def test_help_only_lists_options_for_the_route_used(self) -> None:
+        with io.StringIO() as output, redirect_stdout(output):
+            code = main(["deal-fields", "get", "--help"])
+            help_text = output.getvalue()
+        self.assertEqual(code, 0)
+        self.assertIn("--field-code", help_text)
+        self.assertNotIn("--id", help_text)
+
+    def test_empty_results_and_provider_errors(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            env_path = os.path.join(td, ".env")
+            _write_env(env_path)
+            for command in (["deals", "list"], ["users", "get-current"]):
+                for success in (True, False):
+                    with self.subTest(command=command, success=success):
+                        body = {"success": success, "data": None}
+                        if not success:
+                            body["error"] = "Sample read error"
+                        client = _HttpClient([_Response(200, body)])
+                        with (
+                            patch("qwayk_pipedrive_safe_agent_cli.cli.HttpClient", return_value=client),
+                            io.StringIO() as output,
+                            redirect_stdout(output),
+                        ):
+                            code = main(["--env-file", env_path, *command])
+                            result = json.loads(output.getvalue())
+                        if success:
+                            self.assertEqual(code, 0)
+                            self.assertEqual(result["data"], [])
+                        else:
+                            self.assertEqual(code, 1)
+                            self.assertEqual(result["error"], "Sample read error")
