@@ -4,6 +4,9 @@ import dataclasses
 import os
 from pathlib import Path
 
+DEFAULT_BASE_URL = "https://business-api.tiktok.com"
+DEFAULT_TIMEOUT_S = 30
+
 
 def _parse_env_file(path: Path) -> dict[str, str]:
     if not path.exists():
@@ -27,7 +30,7 @@ def _parse_env_file(path: Path) -> dict[str, str]:
 
 def _get(env: dict[str, str], key: str) -> str:
     # OS env overrides env-file.
-    return (os.environ.get(key) if key in os.environ else env.get(key) or "").strip()
+    return os.environ.get(key, env.get(key, "")).strip()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -42,12 +45,12 @@ class Config:
 def load_config(env_file: str | None) -> Config:
     env = _parse_env_file(Path(env_file or ".env"))
 
-    base_url = (_get(env, "TIKTOK_MARKETING_API_BASE_URL").rstrip("/") or "https://business-api.tiktok.com")
+    base_url = _get(env, "TIKTOK_MARKETING_API_BASE_URL").rstrip("/") or DEFAULT_BASE_URL
     app_id = _get(env, "TIKTOK_MARKETING_APP_ID") or None
     app_secret = _get(env, "TIKTOK_MARKETING_APP_SECRET") or None
     token = _get(env, "TIKTOK_MARKETING_ACCESS_TOKEN") or None
 
-    timeout_s_raw = _get(env, "TIKTOK_MARKETING_TIMEOUT_S") or "30"
+    timeout_s_raw = _get(env, "TIKTOK_MARKETING_TIMEOUT_S") or str(DEFAULT_TIMEOUT_S)
     try:
         timeout_s = float(timeout_s_raw)
     except Exception:

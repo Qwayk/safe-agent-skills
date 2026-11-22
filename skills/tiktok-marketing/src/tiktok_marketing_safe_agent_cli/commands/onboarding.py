@@ -1,29 +1,18 @@
 from __future__ import annotations
 
 from pathlib import Path
+from shlex import quote
 
+from ..config import DEFAULT_BASE_URL, DEFAULT_TIMEOUT_S, load_config
+from .auth import _resolve_access_token
 
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
-
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+_ENV_TEMPLATE = f"""# Keep these TikTok Marketing settings private.
+TIKTOK_MARKETING_API_BASE_URL={DEFAULT_BASE_URL}
+TIKTOK_MARKETING_APP_ID=
+TIKTOK_MARKETING_APP_SECRET=
+TIKTOK_MARKETING_ACCESS_TOKEN=
+TIKTOK_MARKETING_TIMEOUT_S={DEFAULT_TIMEOUT_S}
+"""
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
@@ -39,29 +28,27 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
         if example_path.exists():
             env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
         else:
-            env_path.write_text("", encoding="utf-8")
+            env_path.write_text(_ENV_TEMPLATE, encoding="utf-8")
         env_created = True
 
-    lines = _read_text_lines(env_path)
+    cfg = load_config(env_file)
+    token, _ = _resolve_access_token(cfg, env_file)
 
     missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "TIKTOK_MARKETING_APP_ID"):
+    if not cfg.app_id:
         missing.append("TIKTOK_MARKETING_APP_ID")
-    if not _has_nonempty_env_value(lines, "TIKTOK_MARKETING_APP_SECRET"):
+    if not cfg.app_secret:
         missing.append("TIKTOK_MARKETING_APP_SECRET")
-    if not _has_nonempty_env_value(lines, "TIKTOK_MARKETING_ACCESS_TOKEN"):
+    if not token:
         missing.append("TIKTOK_MARKETING_ACCESS_TOKEN")
 
     steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Fill these environment values:",
-        "  - TIKTOK_MARKETING_API_BASE_URL=https://business-api.tiktok.com",
-        "  - TIKTOK_MARKETING_APP_ID=<your TikTok app id>",
-        "  - TIKTOK_MARKETING_APP_SECRET=<your TikTok app secret>",
-        "  - TIKTOK_MARKETING_ACCESS_TOKEN=<your TikTok Marketing access token>",
-        "Use: tiktok-marketing-api-tool --output json auth check",
-        "The auth check runs oauth2-advertiser-get using env token if set, or .state/token.json.",
+        "Fill any missing fields in your local settings. Keep the app secret and access token private.",
+        "You can also save the access token from a local JSON file with auth token set.",
+        "Run auth check with the same settings file to see the ad accounts this token can access.",
     ]
+    env_option = f" --env-file {quote(env_file)}" if env_file != ".env" else ""
+    next_command = f"tiktok-marketing-api-tool --output json{env_option} auth check"
 
     payload = {
         "ok": True,
@@ -69,7 +56,7 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             "env_file": env_file,
             "env_created": env_created,
             "missing": missing,
-            "next_command": "tiktok-marketing-api-tool --output json auth check",
+            "next_command": next_command,
             "steps": steps,
         },
     }
@@ -84,5 +71,5 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             print("")
             print(f"Missing in {env_file}: " + ", ".join(missing))
         print("")
-        print("Next: tiktok-marketing-api-tool --output json auth check")
+        print(f"Next: {next_command}")
     return 0

@@ -1,72 +1,26 @@
-# Proof and verification
+# What has been checked
 
-TikTok Marketing proof should answer a simple question: what has actually been checked for advertiser accounts, campaigns, ad groups, ads, reports, and generated API operations, and what still needs live credentials, permissions, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Both local copies passed 29 tests from source and 29 tests after a fresh install. I built a Python source archive and wheel for each copy and checked that both packages included the [list of 240 commands](../src/tiktok_marketing_safe_agent_cli/data/official_operations_v1_2026-05-24.json). The installed CLI loaded all 240 commands from outside the checkout.
 
-If you only check one thing, check advertiser/campaign proof and generated write-plan evidence before trusting TikTok ad changes.
+I ran the [quickstart](quickstart.md) with simulated TikTok replies. Onboarding created the chosen settings file. The account check returned a name and ID. The report returned two pages for the same account and dates, and the tool reported a TikTok error when the provider returned an error code with an HTTP success status.
 
-## Current proof summary
+A campaign pause made no request before approval. The tool stopped when the approval to proceed without a saved copy was missing. It also stopped when the submitted campaign ID differed from the saved plan. With the matching plan and all approvals, it sent one request and recorded the simulated provider reply. A separate read showed the new campaign status. Unchanged plans made by the earlier GitHub version also passed simulated checks for a campaign pause, an upload, and a token exchange.
 
-This repo does not rely on live TikTok ad accounts for normal proof. The evidence here comes from the local suite, the pinned official manifest, the committed redacted examples, and the explicit live-gating and no-snapshot behavior.
+Both skill files and the Python type check passed. Seven existing code style warnings remain. These checks used simulated replies and made no attempts to contact TikTok.
 
-## What is already proved
+## Earlier checks and examples
 
-- The pinned TikTok Marketing operation surface loads and registers correctly.
-- The tool exposes `240` named operations from the pinned official manifest.
-- `auth check` works as the dedicated live credential helper.
-- Dry-run plans, multipart planning, refusal behavior, and run history are covered locally.
-- Current write-like operations still require explicit no-snapshot approval when real saved before-state is missing.
+The June 4, 2026 local baseline checked command registration, authentication, write refusals, multipart plans, and run history. The June 11, 2026 check reviewed the docs against the local tool. The tool version was `0.1.0` and it used the same TikTok operation list dated May 24, 2026.
 
-## Last checked
+These files preserve earlier sample output:
 
-- Local docs and contract alignment rechecked: **2026-06-11 UTC**
-- Local suite and proof baseline: **2026-06-04 UTC**
-- Tool version: `0.1.0`
-- Provider surface: pinned manifest `official_operations_v1_2026-05-24.json`
+- [Version response](examples/outputs/version.json)
+- [Account check response](examples/outputs/auth_check.json)
+- [Saved plan](examples/plan.example.json)
+- [Write refusal](examples/receipt.example.json)
 
-No live TikTok credentials are stored here, so this proof pack stays local-first and redacted on purpose.
+## Live checks
 
-## Core validation
-
-From the tool folder:
-
-```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install -e '.[dev]'
-.venv/bin/python -m unittest -q
-.venv/bin/tiktok-marketing-api-tool --output json --version
-.venv/bin/tiktok-marketing-api-tool --output json api ops list
-```
-
-## Committed examples
-
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check.json`
-- `docs/examples/plan.example.json`
-- `docs/examples/receipt.example.json`
-
-The current `receipt.example.json` is still a missing-approval refusal example, not a claim that the current write-like operations already have rollback support.
-
-## What can still go wrong
-
-- wrong app credentials
-- expired or missing token
-- missing advertiser permissions
-- wrong request JSON shape for a specific operation
-- write-like operations that still have no real saved before-state
-
-## How to verify the risky parts
-
-- If auth fails, check app credentials, token source, and advertiser access first.
-- If a read plan looks wrong, inspect the pinned operation and the query or body JSON before using `--live`.
-- If a write-like operation refuses, confirm it stopped before provider HTTP.
-- If a future approved write path succeeds, confirm the proof output records the no-snapshot approval and recovery limit.
-
-## Intentional limits
-
-Not covered on purpose:
-
-- generic rollback claims for current write-like operations
-- hidden live reads through the broad `api` surface
-- fake proof of live advertiser access when real credentials are missing
+Live account access depends on the app, token, ad account, and requested feature. See [API coverage](api_coverage.md) for the available commands and which calls still need live checks. The [approval guide](safety_model.md) explains what the tool can confirm after a write.

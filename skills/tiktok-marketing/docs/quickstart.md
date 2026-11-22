@@ -1,79 +1,45 @@
-# Quickstart
+# Choose an ad account and run a report
 
-Start with a small TikTok Marketing read: checking advertiser accounts, campaigns, creatives, and credential health before you touch spend.
+Use this guide to get spend, impressions, and clicks by campaign for one TikTok ad account. It also shows how to save a campaign pause for review.
 
-Need more ideas? See [What you can do with TikTok Marketing](use_cases.md). Need setup help? See [Connect your TikTok Marketing account](onboarding.md).
+## Set up the tool
 
-A good first ask is:
-
-> Check whether my TikTok Marketing app credentials and access token work.
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account or connection before asking for real work.
-3. Run one small read and make sure the result matches the real service.
-4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+If the `tiktok-marketing-api-tool` command is already available, go straight to [account setup](onboarding.md). To install the CLI yourself, run this from the downloaded skill folder with Python 3.12 or newer:
 
 ```bash
-python3 --version
 python3 -m venv .venv
-.venv/bin/python -m pip install -e .
-```
-
-```bash
-.venv/bin/python -m pip install -e '.[dev]'
-```
-
-## 2. Check setup
-
-If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
-
-```bash
+. .venv/bin/activate
+python -m pip install .
+tiktok-marketing-api-tool --output json --version
 tiktok-marketing-api-tool --output json onboarding
 ```
 
+After [adding your credentials](onboarding.md#add-your-app-and-token), run:
+
 ```bash
-tiktok-marketing-api-tool --output json --version
 tiktok-marketing-api-tool --output json auth check
-tiktok-marketing-api-tool --output json api ops list
-tiktok-marketing-api-tool --output json api ops show --op oauth2-advertiser-get
 ```
 
-## 3. Run one small first read
+Choose the ad account by its name and ID. TikTok calls that ID `advertiser_id`.
 
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
+## Run a seven-day report
+
+Replace `123456` and the dates with the account and week you want. The command reads TikTok when you include `--live`. Without it, the tool shows the request it would send.
 
 ```bash
-tiktok-marketing-api-tool --output json api ops list --method GET --family campaign
-tiktok-marketing-api-tool --output json api ops show --op oauth2-advertiser-get
-tiktok-marketing-api-tool --output json --live api ad-get --query-json path/to/query.json
+tiktok-marketing-api-tool --output json --live api report-integrated-get \
+  --query-json '{"advertiser_id":"123456","report_type":"BASIC","data_level":"AUCTION_CAMPAIGN","dimensions":["campaign_id"],"metrics":["spend","impressions","clicks"],"start_date":"2026-11-01","end_date":"2026-11-07","page":1}'
 ```
 
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
+Look for rows in `receipt.response.body.body.data.list` and check `page_info` in the same `data` object. If `total_page` is greater than one, rerun the same request with the next `page` number until you reach the last page. Keep the same account, dates, and metrics for each page. Tell the reader if any page is missing before reporting a total.
 
-## 4. Stop before anything risky
+## Preview a campaign pause
 
-Ask for a reviewed plan before campaign, ad group, creative, audience, budget, bid, account, or report-job changes.
+Replace the example ad account and campaign IDs. This saves `plan.json` for review and makes no request to change the account.
 
-## What a useful first result includes
+```bash
+tiktok-marketing-api-tool --output json --plan-out plan.json api campaign-status-update \
+  --body-json '{"advertiser_id":"123456","campaign_ids":["321"],"operation_status":"DISABLE"}'
+```
 
-A good first result should make these things clear:
-
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
-
-## Where to go next
-
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your TikTok Marketing account](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+Check the account, campaign, and requested status in the plan. See [how to approve and check the result](safety_model.md) before sending the change.

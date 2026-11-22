@@ -307,7 +307,45 @@ class TestApiRuntime(unittest.TestCase):
             self.assertEqual(payload_apply["rollback"]["mode"], "irreversible_and_clearly_labeled")
             self.assertFalse(_CaptureHttpClient.calls)
 
-    def test_auth_check_uses_token_file_fallback(self) -> None:
+    def test_campaign_apply_checks_the_reviewed_change(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            env = self._write_env(root)
+            plan = root / "campaign-plan.json"
+            receipt = root / "campaign-receipt.json"
+            base = ["--env-file", str(env), "--output", "json"]
+            cmd = ["api", "campaign-status-update"]
+            change = {"advertiser_id": "123", "campaign_ids": ["321"], "operation_status": "DISABLE"}
+            flags = [
+                "--live", "--apply", "--yes", "--plan-in", str(plan),
+                "--ack-irreversible", "--ack-no-snapshot", "--receipt-out", str(receipt),
+            ]
+
+            _CaptureHttpClient.calls = []
+            with patch("tiktok_marketing_safe_agent_cli.commands.api.HttpClient", _CaptureHttpClient):
+                rc, draft = self._run_main(base + ["--plan-out", str(plan)] + cmd + [
+                    "--body-json", json.dumps(change),
+                ])
+                self.assertEqual(rc, 0)
+                self.assertTrue(draft["dry_run"])
+                rc, refusal = self._run_main(base + flags + cmd + [
+                    "--body-json", json.dumps({**change, "campaign_ids": ["456"]}),
+                ])
+                self.assertEqual(rc, 0)
+                self.assertTrue(refusal["refused"])
+                self.assertFalse(_CaptureHttpClient.calls)
+                self.assertFalse(receipt.exists())
+
+                rc, result = self._run_main(base + flags + cmd)
+                self.assertEqual(rc, 0)
+                self.assertTrue(result["ok"])
+
+            self.assertEqual(len(_CaptureHttpClient.calls), 1)
+            self.assertEqual(_CaptureHttpClient.calls[0]["json_body"], change)
+            self.assertEqual(json.loads(receipt.read_text(encoding="utf-8"))["verification"]["status"],
+                             "provider-response-only")
+
+    def test_auth_check_uses_token_file_fallback_and_lists_accounts(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             env = self._write_env(root, include_token=False)
@@ -315,18 +353,26 @@ class TestApiRuntime(unittest.TestCase):
             token_dir.mkdir(parents=True, exist_ok=True)
             (token_dir / "token.json").write_text('{"access_token": "stored-token"}\n', encoding="utf-8")
 
-            _CaptureHttpClient.calls = []
-            with patch("tiktok_marketing_safe_agent_cli.commands.auth.HttpClient", _CaptureHttpClient):
+            accounts = [
+                {"advertiser_id": "123", "advertiser_name": "Sample North"},
+                {"advertiser_id": "456", "advertiser_name": "Sample South"},
+            ]
+            with patch("tiktok_marketing_safe_agent_cli.commands.auth.HttpClient") as client:
+                reply = client.return_value.request.return_value
+                reply.status = 200
+                reply.json.return_value = {"code": 0, "data": {"list": accounts}}
                 rc, payload = self._run_main(["--env-file", str(env), "--output", "json", "auth", "check"])
+                request = client.return_value.request.call_args.kwargs
 
             self.assertEqual(rc, 0)
             self.assertTrue(payload["ok"])
             self.assertTrue(payload["live_checked"])
             self.assertEqual(payload["token_source"], "token_file")
-            self.assertTrue(_CaptureHttpClient.calls)
-            self.assertEqual(_CaptureHttpClient.calls[0]["headers"]["Access-Token"], "stored-token")
-            self.assertEqual(_CaptureHttpClient.calls[0]["params"]["app_id"], "app-123")
-            self.assertEqual(_CaptureHttpClient.calls[0]["params"]["secret"], "secret-123")
+            self.assertEqual(payload["advertiser_count"], 2)
+            self.assertEqual(payload["advertisers"], accounts)
+            self.assertEqual(request["headers"]["Access-Token"], "stored-token")
+            self.assertEqual(request["params"]["app_id"], "app-123")
+            self.assertEqual(request["params"]["secret"], "secret-123")
 
     def test_auth_check_failure_does_not_leak_secret(self) -> None:
         with tempfile.TemporaryDirectory() as d:

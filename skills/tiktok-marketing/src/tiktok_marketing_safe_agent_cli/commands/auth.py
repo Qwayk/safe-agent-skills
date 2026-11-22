@@ -9,7 +9,12 @@ from ..api_dispatch import (
 )
 from ..errors import ToolError, ValidationError
 from ..http import HttpClient
-from ..oauth_tokens import get_token_status, token_path_for_env_file, read_token_json, write_token_from_file
+from ..oauth_tokens import (
+    get_token_status,
+    read_token_json,
+    token_path_for_env_file,
+    write_token_from_file,
+)
 
 
 def _resolve_access_token(cfg, env_file: str) -> tuple[str | None, str | None]:
@@ -92,13 +97,19 @@ def cmd_auth_check(args, ctx) -> int:
             message = payload.get("message") or payload.get("msg") or "TikTok API returned an error"
             raise ToolError(f"TikTok API returned code {code}: {message}")
 
+    advertisers: list[dict[str, object]] = []
     advertiser_count = None
     if isinstance(payload, dict):
         data = payload.get("data")
         if isinstance(data, dict):
-            advertisers = data.get("list")
-            if isinstance(advertisers, list):
-                advertiser_count = len(advertisers)
+            accounts = data.get("list")
+            if isinstance(accounts, list):
+                advertiser_count = len(accounts)
+                advertisers = [
+                    {"advertiser_id": account["advertiser_id"], "advertiser_name": account.get("advertiser_name")}
+                    for account in accounts
+                    if isinstance(account, dict) and account.get("advertiser_id") is not None
+                ]
 
     out["live_checked"] = True
     out["live_status_code"] = response.status
@@ -106,6 +117,7 @@ def cmd_auth_check(args, ctx) -> int:
     out["auth_endpoint"] = "oauth2-advertiser-get"
     out["advertiser_count"] = advertiser_count
     ctx["audit"].write("auth.check", out)
+    out["advertisers"] = advertisers
     ctx["out"].emit(out)
     return 0
 

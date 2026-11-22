@@ -1,16 +1,12 @@
 # API coverage
 
-TikTok Marketing coverage shows exactly what this skill can do with advertiser accounts, campaigns, ad groups, ads, reports, and generated API operations. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
-
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can inspect campaigns, ad groups, and reports, then show which TikTok Marketing operations are shipped."
+Use this table to find the TikTok command for your job and check its access and approval requirements.
 
 ## Summary
 
 - Provider: TikTok for Business Marketing API
 - API base URL: `https://business-api.tiktok.com`
-- Manifest: `docs/official_operations_v1_2026-05-24.json`
+- [Command list included in the Python package](../src/tiktok_marketing_safe_agent_cli/data/official_operations_v1_2026-05-24.json)
 - Manifest generated at UTC: `2026-05-24T07:01:08Z`
 - Total operations in pinned manifest: `240`
 - Auth style: `Access-Token` header + app credentials
@@ -22,7 +18,7 @@ A good first coverage check is: "Check whether this skill can inspect campaigns,
   - `Status = implemented`
   - `Safety status = live-unverified / access-gated`
 
-Writes in this tool are blocked unless `--live`, `--apply`, `--yes`, `--plan-in`, and `--ack-irreversible` are present. After those gates pass, current writes still require explicit no-snapshot approval before provider HTTP when no saved snapshot is available.
+Writes need `--live --apply --yes --plan-in plan.json --ack-irreversible`. They also need `--ack-no-snapshot` when the tool cannot save the old settings. The [approval guide](safety_model.md) shows the full command.
 
 ## Family counts from pinned manifest
 

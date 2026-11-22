@@ -9,17 +9,8 @@ from .errors import ValidationError
 from .official_inventory import OperationSpec, load_official_operations_file
 
 
-def tool_root_path() -> Path:
-    # .../src/tiktok_marketing_safe_agent_cli/api_dispatch.py -> tool root is 3 levels up
-    return Path(__file__).resolve().parents[2]
-
-
 def pinned_official_operations_path() -> Path:
-    docs_dir = tool_root_path() / "docs"
-    candidates = sorted(docs_dir.glob("official_operations_v1_*.json"))
-    if not candidates:
-        raise RuntimeError(f"Missing pinned official operations list under {docs_dir}")
-    return candidates[-1]
+    return Path(__file__).with_name("data") / "official_operations_v1_2026-05-24.json"
 
 
 def load_operations_from_pinned_snapshot() -> list[OperationSpec]:
@@ -47,7 +38,7 @@ def join_base_url_and_path(base_url: str, path_with_leading_slash: str) -> str:
 _PATH_PARAM_RE = re.compile(r"{([a-zA-Z0-9_\-]+)}")
 
 
-def _substitute_path_params(path_template: str, values: dict[str, str]) -> tuple[str, list[str]]:
+def substitute_path_params(path_template: str, values: dict[str, str]) -> tuple[str, list[str]]:
     missing: list[str] = []
 
     def repl(match: re.Match[str]) -> str:
@@ -165,7 +156,7 @@ def build_api_call_plan(
             if value:
                 headers[header_name] = value
 
-    path_filled, missing_path = _substitute_path_params(op.path, path_dict)
+    path_filled, missing_path = substitute_path_params(op.path, path_dict)
 
     if body_pairs_dict and isinstance(body_inputs, dict):
         body_inputs = dict(body_inputs)

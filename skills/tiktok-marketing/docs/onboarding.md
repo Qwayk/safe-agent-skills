@@ -1,69 +1,38 @@
-# Connect your TikTok Marketing account
+# Connect your TikTok ad account
 
-TikTok Marketing needs local app credentials and advertiser access before an agent can inspect accounts, campaigns, creatives, and credential health.
+Use an app ID, app secret, and access token from your TikTok for Business app. The token needs access to the ad account you want to use.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+From the folder where you want to keep your settings, run:
 
-After setup, start by confirming advertiser access before asking for campaign or spend work.
+```bash
+tiktok-marketing-api-tool --output json onboarding
+```
 
-## What you need
+This creates `.env` if it is missing and tells you which settings still need a value. To use a different file, put `--env-file path/to/settings.env` before the command and pass it again on later commands.
 
-- `TIKTOK_MARKETING_APP_ID`
-- `TIKTOK_MARKETING_APP_SECRET`
-- `TIKTOK_MARKETING_ACCESS_TOKEN`, or a local `.state/token.json` token file
-- The right advertiser permissions for the live operations you want to use
+## Add your app and token
 
-## Step 1. Create the local `.env` file
+In `.env`, fill in `TIKTOK_MARKETING_APP_ID` and `TIKTOK_MARKETING_APP_SECRET`. Put the token in `TIKTOK_MARKETING_ACCESS_TOKEN`. Keep these values on your computer and out of chat and Git.
 
-The easiest path is one of these:
-
-1. run `tiktok-marketing-api-tool --output json onboarding`
-2. or copy `.env.example` to `.env`
-
-Then fill:
-
-- `TIKTOK_MARKETING_API_BASE_URL=https://business-api.tiktok.com`
-- `TIKTOK_MARKETING_APP_ID`
-- `TIKTOK_MARKETING_APP_SECRET`
-- `TIKTOK_MARKETING_ACCESS_TOKEN`
-
-## Step 2. Use the token-file path only if you need it
-
-If you want token-file auth instead of an env token:
+You can also save a token from an existing local JSON file:
 
 ```bash
 tiktok-marketing-api-tool --output json auth token set --file token.json
 tiktok-marketing-api-tool --output json auth token status
 ```
 
-`auth check` uses `.state/token.json` only when `TIKTOK_MARKETING_ACCESS_TOKEN` is missing.
+The tool uses the token in `.state/token.json` next to your settings file when the environment and settings file provide no token. The status command reports the presence of the saved file without showing the token. If you need to exchange an approval code for a token, see `api ops show --op oauth2-access-token`. Sending that request uses the [same approval steps](safety_model.md) as other writes.
 
-## Step 3. Run the first safe checks
-
-These are the best first commands:
+## Choose an ad account
 
 ```bash
-tiktok-marketing-api-tool --output json --version
 tiktok-marketing-api-tool --output json auth check
-tiktok-marketing-api-tool --output json api ops list
-tiktok-marketing-api-tool --output json api ops show --op oauth2-advertiser-get
 ```
 
-The important truth here is that `auth check` is already a live helper. It does not need `--live`. The broader `api` surface still uses `--live` for real provider reads.
+This read contacts TikTok directly. Look for the ad account's name and ID in `advertisers`. If the list is empty, check which accounts authorized the app. When several accounts appear, choose the one you want before requesting a report or change.
 
-## What to ask your agent next
+## Optional settings
 
-- "Can you check if my TikTok Marketing access settings are valid before I run anything else?"
-- "Can you draft one safe campaign or advertiser read for me to review first?"
-- "Can you show me the exact pinned operation before we try a live TikTok read?"
+The default API address is `https://business-api.tiktok.com` and the request timeout is 30 seconds. Set `TIKTOK_MARKETING_API_BASE_URL` or `TIKTOK_MARKETING_TIMEOUT_S` to change either setting. A shell environment value for a key takes priority over its value in the settings file.
 
-## If something fails
-
-The most common causes are:
-
-- wrong or missing app credentials
-- expired or missing token
-- missing advertiser permissions
-- missing required request JSON for the operation you picked
-
-Use [Troubleshooting](troubleshooting.md) if the auth check or the first planned read fails.
+Continue with [your first report](quickstart.md#run-a-seven-day-report) or [check a setup error](troubleshooting.md).

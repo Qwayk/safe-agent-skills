@@ -1,61 +1,30 @@
-# Command reference
+# TikTok Marketing commands
 
-These commands cover TikTok Marketing auth, advertisers, campaigns, creatives, reports, and write gates. Confirm advertiser access before campaign or spend work.
+Use the [quickstart](quickstart.md) for full examples of setup, reporting, and a campaign pause. The [coverage table](api_coverage.md) lists all 240 named API commands.
 
-For the guided path, start with [What you can do with TikTok Marketing](use_cases.md), [Connect your TikTok Marketing account](onboarding.md), and [Quickstart](quickstart.md).
+## Setup and accounts
 
-## Global flags
+- `tiktok-marketing-api-tool --output json onboarding` creates your settings file if it is missing. Add `--no-write-env` after `onboarding` to check setup without creating the file.
+- `tiktok-marketing-api-tool --output json auth check` asks TikTok which ad accounts are available.
+- `tiktok-marketing-api-tool --output json auth token set --file token.json` saves an access token from a local file.
+- `tiktok-marketing-api-tool --output json auth token status` checks whether the saved file is present.
 
-```bash
-tiktok-marketing-api-tool --help
-```
+## Find and use an API command
 
-Global flags include:
+- `api ops list` lists available operations. Add `--method GET` or `--family campaign` to narrow the list.
+- `api ops show --op report-integrated-get` shows what one operation accepts.
+- `api <operation>` prepares a plan. `--live api <operation>` sends a read. Follow the [approval guide](safety_model.md) for writes.
+- Use `--query-json` or `--body-json` for inline JSON or the path to a JSON file. Use `--query key=value` for one query field and `--file field=path` for a supported upload field.
 
-- `--version`
-- `--config`
-- `--project-dir`
-- `--env-file`
-- `--timeout-s`
-- `--live`
-- `--verbose`
-- `--debug`
-- `--output {json,text}`
-- `--log-file`
-- `--apply`
-- `--yes`
-- `--plan-out`
-- `--plan-in`
-- `--receipt-out`
-- `--ack-irreversible`
-- `--run-id`
-- `--artifacts-dir`
-- `--no-artifacts`
+## Options that go before the command
 
-## Onboarding
+- `--output json` gives one JSON result. `--version` shows the installed version.
+- `--env-file`, `--config`, `--project-dir`, and `--timeout-s` choose local settings and the request timeout.
+- `--live` enables provider calls. Writes also need `--apply --yes --plan-in plan.json --ack-irreversible --ack-no-snapshot` when the old settings cannot be saved.
+- `--plan-out` saves a plan. `--receipt-out` saves the provider response record.
+- `--verbose` shows request timing. `--debug` shows error details for local debugging. `--log-file` adds a local log.
+- `--run-id`, `--artifacts-dir`, and `--no-artifacts` control local run files.
 
-- `tiktok-marketing-api-tool --output json onboarding [--no-write-env]`
+## Local run history
 
-## Auth
-
-- `tiktok-marketing-api-tool --output json auth check`
-- `tiktok-marketing-api-tool --output json auth token set --file token.json`
-- `tiktok-marketing-api-tool --output json auth token status`
-
-## API operations
-
-- `tiktok-marketing-api-tool --output json api ops list [--method GET] [--family campaign]`
-- `tiktok-marketing-api-tool --output json api ops show --op oauth2-advertiser-get`
-- `tiktok-marketing-api-tool --output json api ad-get --query-json path/to/query.json`
-- `tiktok-marketing-api-tool --output json --live api ad-get --query-json path/to/query.json`
-- `tiktok-marketing-api-tool --output json --live --apply --yes --plan-in plan.json --ack-irreversible api ad-create --query-json path/to/query.json --body-json path/to/body.json`
-
-When a write command cannot save before-state, it must disclose the no-snapshot limit and require explicit no-snapshot approval before applying. Successful receipts must record the approval and recovery limit.
-
-All operation commands from the pinned manifest are registered under `api`.
-See `docs/api_coverage.md` for the full 240-command ledger.
-
-## Runs (local history)
-
-- `tiktok-marketing-api-tool --output json runs list [--limit 20]`
-- `tiktok-marketing-api-tool --output json runs show --run-id 2026-01-19T104512Z_a3f91c`
+Use `runs list --limit 20` to find a recent run and `runs show --run-id <id>` to read it. Local run files usually live in `.state/runs/` next to the settings file.

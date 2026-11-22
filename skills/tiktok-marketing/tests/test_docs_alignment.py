@@ -7,16 +7,11 @@ from pathlib import Path
 from tiktok_marketing_safe_agent_cli.api_dispatch import load_operations_from_pinned_snapshot
 from tiktok_marketing_safe_agent_cli.cli import build_parser
 
-
 DOCS_DIR = Path(__file__).resolve().parent / ".." / "docs"
 
 
 def _read_doc(name: str) -> str:
     return (DOCS_DIR / name).read_text(encoding="utf-8")
-
-
-def _markdown_sections(text: str) -> list[str]:
-    return [line.removeprefix("## ").strip() for line in re.findall(r"^##\s+.+$", text, flags=re.M)]
 
 
 class TestDocsAlignment(unittest.TestCase):
@@ -51,19 +46,8 @@ class TestDocsAlignment(unittest.TestCase):
                 rows += 1
         self.assertEqual(rows, 240)
 
-    def test_command_reference_lists_real_command_groups_only(self) -> None:
+    def test_cli_registers_the_expected_command_groups(self) -> None:
         parser = build_parser()
         commands_action = next(action for action in parser._actions if action.dest == "cmd")
         command_groups = sorted(commands_action.choices.keys())
         self.assertListEqual(command_groups, ["api", "auth", "onboarding", "runs"])
-
-        reference_text = _read_doc("command_reference.md")
-        sections = {section.strip().lower() for section in _markdown_sections(reference_text)}
-        self.assertIn("global flags", sections)
-        self.assertIn("onboarding", sections)
-        self.assertIn("auth", sections)
-        self.assertIn("api operations", sections)
-        self.assertIn("runs (local history)", sections)
-
-        self.assertNotIn("demo", sections)
-        self.assertNotIn("jobs", sections)

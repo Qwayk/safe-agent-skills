@@ -10,7 +10,7 @@
 
 ## Runtime manifest source
 
-- Pinned manifest file: `docs/official_operations_v1_2026-05-24.json`
+- [Pinned command list](../src/tiktok_marketing_safe_agent_cli/data/official_operations_v1_2026-05-24.json)
 - Manifest generated at (UTC): `2026-05-24T07:01:08Z`
 - Union operation count: `240`
 - Source commit used for generation: `f809c396520df2d7b201a9ccc5378d822b728ed3`

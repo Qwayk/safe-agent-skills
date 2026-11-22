@@ -9,12 +9,15 @@ from typing import Any
 
 from ..api_dispatch import (
     build_api_call_plan,
+    join_base_url_and_path,
     load_operations_from_pinned_snapshot,
     operations_by_command,
+    substitute_path_params,
 )
 from ..errors import SafetyError, ToolError, ValidationError
 from ..http import HttpClient
 from ..json_files import read_json_file, write_json_file
+from ..official_inventory import OperationSpec
 from .auth import _resolve_access_token
 from .write_safety import (
     before_state_contract,
@@ -236,21 +239,35 @@ def _emit_refusal(
 
 def _validate_plan_for_apply(
     *,
-    op_cmd: str,
-    op_method: str,
-    op_path_template: str,
+    op: OperationSpec,
     plan_in: dict[str, Any],
-    base_fingerprint: str,
+    current_plan: dict[str, Any],
+    supplied_inputs: tuple[str, ...],
+    secret_settings: dict[str, str],
 ) -> None:
-    in_op = plan_in.get("operation") or {}
-    if str(plan_in.get("env_fingerprint") or "") != str(base_fingerprint):
+    in_op = plan_in.get("operation")
+    saved_inputs = plan_in.get("inputs")
+    if not isinstance(in_op, dict) or not isinstance(saved_inputs, dict):
+        raise SafetyError("Refused: saved plan is incomplete. Save and review a new plan.")
+    if any(not isinstance(saved_inputs.get(key), dict) for key in ("path", "query", "files")):
+        raise SafetyError("Refused: saved plan inputs are incomplete. Save and review a new plan.")
+    if plan_in.get("env_fingerprint") != current_plan["env_fingerprint"]:
         raise SafetyError("Refused: plan env_fingerprint does not match current environment")
-    if str(in_op.get("operation_command") or "") != str(op_cmd):
+    if in_op.get("operation_command") != op.operation_command:
         raise SafetyError("Refused: plan command mismatch")
-    if str(in_op.get("method") or "") != str(op_method):
+    if in_op.get("method") != op.method:
         raise SafetyError("Refused: plan method mismatch")
-    if str(in_op.get("path_template") or "") != str(op_path_template):
+    path, _ = substitute_path_params(op.path, saved_inputs["path"])
+    url = join_base_url_and_path(current_plan["env_fingerprint"], path)
+    if in_op.get("path_template") != op.path or in_op.get("url") != url:
         raise SafetyError("Refused: plan path mismatch")
+    restored_inputs = _restore_redacted_tree(saved_inputs, secret_settings)
+    review = {**plan_in, "inputs": restored_inputs, "headers": current_plan["headers"]}
+    if plan_in.get("plan_hash") != _compute_plan_hash(review):
+        raise SafetyError("Refused: the saved plan or its credentials changed. Save and review a new plan.")
+    for key in supplied_inputs:
+        if current_plan["inputs"].get(key) != restored_inputs.get(key):
+            raise SafetyError(f"Refused: {key} differs from the reviewed plan. Save and review a new plan.")
 
 
 def _serialize_multipart_value(value: Any) -> str:
@@ -400,13 +417,20 @@ def cmd_api_call(args, ctx) -> int:
 
     cfg = ctx["cfg"]
     access_token, token_source = _resolve_access_token(cfg, str(ctx["env_file"]))
+    secret_value = str(cfg.app_secret or "").strip()
     query_defaults = {
         "app_id": str(cfg.app_id or "").strip(),
-        "secret": str(cfg.app_secret or "").strip(),
+        "secret": secret_value,
         "advertiser_id": "",
         "access_token": str(access_token or "").strip(),
     }
     header_defaults = {"access_token": str(access_token or "").strip()}
+    secret_settings = {
+        **query_defaults,
+        "access-token": header_defaults["access_token"],
+        "app_secret": secret_value,
+        "client_secret": secret_value,
+    }
 
     plan = build_api_call_plan(
         tool=ctx.get("tool") or "tiktok-marketing-api-tool",
@@ -440,7 +464,6 @@ def cmd_api_call(args, ctx) -> int:
     sanitized_plan = _sanitize_plan_for_output(plan)
 
     plan_out = ctx.get("plan_out")
-    plan_path = write_json_file(plan_out, sanitized_plan) if plan_out else None
 
     apply = bool(ctx.get("apply"))
     live = bool(ctx.get("live"))
@@ -450,18 +473,25 @@ def cmd_api_call(args, ctx) -> int:
         plan_in_loaded = read_json_file(ctx["plan_in"])
         if not isinstance(plan_in_loaded, dict):
             raise ValidationError("Plan file must be a JSON object")
+        supplied_inputs = tuple(
+            key
+            for key in ("path", "query", "body", "files")
+            if getattr(args, "file" if key == "files" else key, None)
+            or getattr(args, f"{key}_json", None) is not None
+        )
         _validate_plan_for_apply(
-            op_cmd=op.operation_command,
-            op_method=op.method,
-            op_path_template=op.path,
+            op=op,
             plan_in=plan_in_loaded,
-            base_fingerprint=str(cfg.base_url),
+            current_plan=plan,
+            supplied_inputs=supplied_inputs,
+            secret_settings=secret_settings,
         )
         plan_in_obj = plan_in_loaded
 
     execution_plan = plan_in_obj or plan
     execution_plan = _ensure_write_safety_contract(execution_plan, op, classification)
     sanitized_execution_plan = _sanitize_plan_for_output(execution_plan)
+    plan_path = write_json_file(plan_out, sanitized_execution_plan) if plan_out else None
     execution_missing_required = execution_plan.get("requirements", {}).get("missing_required") or []
     current_missing_required = plan.get("requirements", {}).get("missing_required") or []
 
@@ -517,30 +547,23 @@ def cmd_api_call(args, ctx) -> int:
     if _needs_access_token(op) and not access_token:
         raise SafetyError("Missing access token (TIKTOK_MARKETING_ACCESS_TOKEN or .state/token.json)")
 
-    secret_value = str(cfg.app_secret or "").strip()
-    defaults_map = {
-        "access-token": str(access_token or "").strip(),
-        "access_token": str(access_token or "").strip(),
-        "app_id": str(cfg.app_id or "").strip(),
-        "app_secret": secret_value,
-        "client_secret": secret_value,
-        "secret": secret_value,
-    }
-    query_values = _restore_redacted_mapping(dict(execution_plan.get("inputs", {}).get("query") or {}), defaults_map)
-    body_inputs = _restore_redacted_tree(execution_plan.get("inputs", {}).get("body"), defaults_map)
+    query_values = _restore_redacted_mapping(
+        dict(execution_plan.get("inputs", {}).get("query") or {}), secret_settings
+    )
+    body_inputs = _restore_redacted_tree(execution_plan.get("inputs", {}).get("body"), secret_settings)
     files = dict(execution_plan.get("inputs", {}).get("files") or {})
-    body_mode = str(execution_plan.get("operation", {}).get("body_mode") or "").strip().lower() or "none"
+    body_mode = op.body_mode
     if _contains_redacted_value(query_values) or _contains_redacted_value(body_inputs):
         raise SafetyError("Refused: plan still contains redacted secret values that are missing in the current environment")
 
     request_headers: dict[str, str] = {"Accept": "application/json"}
     for header_name, source in op.header_param_sources.items():
-        replacement = defaults_map.get(str(source).lower())
+        replacement = secret_settings.get(str(source).lower())
         if replacement:
             request_headers[header_name] = replacement
 
     request_kwargs: dict[str, Any] = {
-        "method": execution_plan["operation"]["method"],
+        "method": op.method,
         "url": execution_plan["operation"]["url"],
         "headers": request_headers,
         "params": query_values,
@@ -570,13 +593,14 @@ def cmd_api_call(args, ctx) -> int:
         )
         response = client.request(**request_kwargs)
 
+    body_preview = _read_body_preview(response)
     response_summary = {
         "status": response.status,
         "url": response.url,
         "headers": _sanitize_headers(response.headers),
-        "body": _read_body_preview(response),
+        "body": body_preview,
     }
-    provider_error = _provider_error_message(response_summary["body"])
+    provider_error = _provider_error_message(body_preview)
     if provider_error:
         raise ToolError(provider_error)
 
