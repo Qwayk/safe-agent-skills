@@ -1,45 +1,31 @@
 # Quickstart
 
-Start by checking which Wix account or site your local setup can see, then list a few sites before any live work is planned.
+From the Wix tool folder, install the command and create a private settings file.
 
-```bash
+~~~bash
 python3 -m venv .venv
-. .venv/bin/activate
-pip install -e '.[dev]'
-cp .env.example .env
-wix-safe-agent-cli --output json auth check
-wix-safe-agent-cli --output json sites query --limit 5
-```
+source .venv/bin/activate
+python -m pip install .
+wix-safe-agent-cli --version
+wix-safe-agent-cli --env-file .env onboarding
+~~~
 
-If the site list returns the account you expected, use one focused read next:
+Follow [Connect Wix](onboarding.md) to fill in the settings your task needs. Then check the connection.
 
-```bash
-wix-safe-agent-cli --output json catalog-versioning get
-wix-safe-agent-cli --output json bookings-time-slots-v2 list-event --list-event-json @list-event.json
-wix-safe-agent-cli --output json bookings-reader-v2 count-extended-bookings
-wix-safe-agent-cli --output json bookings-services-v2 count
-wix-safe-agent-cli --output json bookings-resources-v2 count
-wix-safe-agent-cli --output json bookings-resource-types-v2 count
-wix-safe-agent-cli --output json bookings-staff-members count
-wix-safe-agent-cli --output json calendar-schedules-v3 query --query-json '{"query":{"filter":{"appId":{"$eq":"13d21c63-b5ec-5912-8397-c3a5ddb27a97"}}}}'
-wix-safe-agent-cli --output json bookings-external-calendars-v2 list-providers
-wix-safe-agent-cli --output json bookings-service-options-v1 query --query-json '{"filter":{"serviceId":{"$eq":"service-id"}}}'
-```
+~~~bash
+wix-safe-agent-cli --env-file .env auth check
+~~~
 
-Stop there before any live change. Wix writes should move through a saved plan, review, explicit apply, and receipt.
+With an account key and account ID, the check lists up to five sites. Use the next command to list sites separately, including when you have both an account key and an app token.
 
-Use these pages if you want help choosing the right first read:
+~~~bash
+wix-safe-agent-cli --env-file .env sites query --limit 5
+~~~
 
-- [What this skill can help you do](use_cases.md)
-- [Set up your account step by step](onboarding.md)
-- [See how this skill keeps changes safe](safety_model.md)
+For work on a single site, the app check shows its name and ID when Wix returns them. Use the same settings file to check which catalog that site uses.
 
-For token checks and legacy token upkeep, use:
+~~~bash
+wix-safe-agent-cli --env-file .env catalog-versioning get
+~~~
 
-```bash
-wix-safe-agent-cli auth token create
-wix-safe-agent-cli auth token refresh
-wix-safe-agent-cli auth token inspect --token DUMMY-TOKEN
-```
-
-If you want exact command syntax, use [Browse the shipped command guide](command_reference.md).
+If the site uses Catalog V3, run `stores-products-v3 query` with the same settings file to see products. For booking and contact examples, see [Commands](command_reference.md). If a change is needed, follow [Approvals and receipts](safety_model.md).

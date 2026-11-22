@@ -174,6 +174,19 @@ def _request_json(
     return payload
 
 
+def query_sites(ctx: dict[str, Any], headers: dict[str, str], body: dict[str, Any]) -> dict[str, Any]:
+    return _request_json(
+        method="POST",
+        base_url=ctx["cfg"].base_url,
+        path="/site-list/v2/sites/query",
+        headers=headers,
+        params=None,
+        json_body=body,
+        timeout_s=float(ctx["cfg"].timeout_s),
+        verbose=bool(ctx.get("verbose")),
+    )
+
+
 def cmd_sites_query(args, ctx) -> int:
     try:
         query_json = _read_json_arg(getattr(args, "query_json", None), field="query-json")
@@ -201,16 +214,7 @@ def cmd_sites_query(args, ctx) -> int:
             command_family="sites",
         )
 
-        payload = _request_json(
-            method="POST",
-            base_url=ctx["cfg"].base_url,
-            path="/site-list/v2/sites/query",
-            headers=auth["headers"],
-            params=None,
-            json_body=body,
-            timeout_s=float(ctx["cfg"].timeout_s),
-            verbose=bool(ctx.get("verbose")),
-        )
+        payload = query_sites(ctx, auth["headers"], body)
         out = {
             "ok": True,
             "method": "sites.query",

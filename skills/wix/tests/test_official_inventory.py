@@ -14,7 +14,7 @@ class TestOfficialInventory(unittest.TestCase):
         return Path(__file__).resolve().parents[1]
 
     def _load_inventory(self) -> dict:
-        path = self._root() / "docs" / "official_inventory.json"
+        path = self._root() / "src" / "wix_safe_agent_cli" / "official_inventory.json"
         return json.loads(path.read_text(encoding="utf-8"))
 
     @staticmethod

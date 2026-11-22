@@ -34,6 +34,17 @@ def _request_json(
     return payload
 
 
+def get_app_instance(ctx: dict[str, Any], headers: dict[str, str]) -> dict[str, Any]:
+    return _request_json(
+        method="GET",
+        base_url=ctx["cfg"].base_url,
+        path="/apps/v1/instance",
+        headers=headers,
+        timeout_s=float(ctx["cfg"].timeout_s),
+        verbose=bool(ctx.get("verbose")),
+    )
+
+
 def cmd_app_instance_get(args, ctx) -> int:
     try:
         _ = args
@@ -43,14 +54,7 @@ def cmd_app_instance_get(args, ctx) -> int:
             verbose=bool(ctx.get("verbose")),
             command_family="app-instance",
         )
-        payload = _request_json(
-            method="GET",
-            base_url=ctx["cfg"].base_url,
-            path="/apps/v1/instance",
-            headers=auth["headers"],
-            timeout_s=float(ctx["cfg"].timeout_s),
-            verbose=bool(ctx.get("verbose")),
-        )
+        payload = get_app_instance(ctx, auth["headers"])
 
         out = {
             "ok": True,

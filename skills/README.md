@@ -122,7 +122,7 @@ Start here if you want website publishing, content updates, or social account wo
 | --- | --- | --- | --- |
 | [**WordPress**](wordpress/README.md)<br><sub>Install slug: <code>wordpress</code></sub> | Review WordPress content and make careful content changes | WordPress site | Reads + careful changes |
 | [**Ghost**](ghost/README.md)<br><sub>Install slug: <code>ghost</code></sub> | Review Ghost content and make careful publishing changes | Ghost site | Reads + careful changes |
-| [**Wix**](wix/README.md)<br><sub>Install slug: <code>wix</code></sub> | Review Wix sites, apps, CRM, stores, bookings, events, marketing, restaurant, and business APIs, then prepare careful changes | Wix account and site | Reads + careful changes |
+| [**Wix**](wix/README.md)<br><sub>Install slug: <code>wix</code></sub> | Find Wix sites and check products, bookings, and contacts. Review product edits and site publishes before applying. | Wix account or site app | Reads + careful changes |
 | [**Pinterest**](pinterest/README.md)<br><sub>Install slug: <code>pinterest</code></sub> | Read boards, pins, analytics, and catalogs. Review board and pin changes before applying. | Pinterest account | Reads + careful changes |
 | [**Bluesky**](bluesky/README.md)<br><sub>Install slug: <code>bluesky</code></sub> | Read public profiles and feeds. Review posts before publishing. | Sign in for private data or changes | Reads + careful changes |
 | [**Instagram**](instagram/README.md)<br><sub>Install slug: <code>instagram</code></sub> | Read recent posts, comments, and insights. Review media before publishing. | Instagram professional account | Reads + careful changes |

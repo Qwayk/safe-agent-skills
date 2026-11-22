@@ -5,11 +5,11 @@ import time
 from pathlib import Path
 from typing import Any
 
-from ..authz import resolve_auth_mode
+from ..authz import resolve_authorization_headers
 from ..errors import SafetyError, ValidationError
 from ..http import HttpClient
 from ..json_files import read_json_file, write_json_file
-from ..write_safety import reviewed_plan_apply_requested
+from ..write_safety import check_reviewed_change, review_connection, reviewed_plan_apply_requested
 
 
 def _read_json_arg(raw: Any, field: str) -> Any:
@@ -70,13 +70,14 @@ def _coerce_non_empty_text(raw: Any, *, field: str) -> str:
 
 
 def _resolve_site_actions_auth(*, ctx: dict[str, Any]) -> tuple[dict[str, str], str]:
-    auth = resolve_auth_mode(
+    auth = resolve_authorization_headers(
         cfg=ctx["cfg"],
         env_file=str(ctx["env_file"]),
         verbose=bool(ctx.get("verbose")),
         command_family="site-actions",
     )
-    return auth["headers"], auth["mode"]
+    ctx["review_connection"] = review_connection(ctx["cfg"], auth)
+    return auth.headers, auth.mode
 
 
 def _request_json(
@@ -196,6 +197,7 @@ def _build_plan(*, request: dict[str, Any], selector: dict[str, Any], ctx: dict[
         ],
         "selector": selector,
         "request": request,
+        "connection": ctx["review_connection"],
         "baseline": {
             "env_fingerprint": ctx["cfg"].base_url,
             "selector": selector,
@@ -235,6 +237,7 @@ def _build_duplicate_plan(
         ],
         "selector": selector,
         "request": request,
+        "connection": ctx["review_connection"],
         "baseline": {
             "env_fingerprint": ctx["cfg"].base_url,
             "selector": selector,
@@ -281,6 +284,7 @@ def _build_publish_plan(
         ],
         "selector": selector,
         "request": request,
+        "connection": ctx["review_connection"],
         "baseline": {
             "env_fingerprint": ctx["cfg"].base_url,
             "selector": selector,
@@ -510,7 +514,7 @@ def _verify_publish_response(
         after_sites = _query_sites_preflight(ids=[site_id], ctx=ctx, headers=headers)
         after_state = _snapshot_for_state(sites=after_sites, site_ids=[site_id])
         after_site = after_state.get(site_id, {})
-        if not bool(after_site.get("published")):
+        if after_site.get("published") is not True:
             return {
                 "ok": False,
                 "type": "read-after-write",
@@ -520,25 +524,24 @@ def _verify_publish_response(
                 "after": after_site,
             }
 
-        notes = "Verified site reports published=true after publish action."
-        if before_site.get("published") is True:
-            notes = (
-                "Verified site reports published=true after publish action. "
-                "The site was already published before, so draft-delta changes were not validated."
-            )
+        already_live = before_site.get("published") is True
+        notes = "Wix accepted the publish and reports that the site is live."
+        if already_live:
+            notes += " The site was already live. Check the public page to confirm the latest edits."
         return {
             "ok": True,
             "type": "read-after-write",
             "notes": notes,
+            "content_verified": None,
             "site_id": site_id,
             "before": before_site,
             "after": after_site,
         }
-    except (SafetyError, ValidationError) as exc:
+    except (SafetyError, ValidationError, RuntimeError, ValueError) as exc:
         return {
             "ok": False,
             "type": "provider-response",
-            "notes": "Failed to verify published flag after publish action",
+            "notes": "Wix accepted the publish, but the follow-up check failed. Check the public page before trying again.",
             "site_id": site_id,
             "error": str(exc),
             "response": response,
@@ -680,17 +683,12 @@ def cmd_site_actions_bulk_delete(args, ctx) -> int:
             ctx["out"].emit(out)
             return 0
 
-        loaded_plan = _load_plan(
-            plan_in=str(plan_in),
-            expected_method="site-actions.bulk-delete",
-            expected_selector=selector,
-            ctx=ctx,
-        ) if plan_in else plan
+        check_reviewed_change(plan, request, ctx["review_connection"])
 
         live_sites = _query_sites_preflight(ids=site_ids, ctx=ctx, headers=auth_headers)
         live_state = _snapshot_for_state(sites=live_sites, site_ids=site_ids)
         if plan_in:
-            _assert_no_site_drift(plan=loaded_plan, current_state=live_state)
+            _assert_no_site_drift(plan=plan, current_state=live_state)
 
         response = _request_json(
             method="POST",
@@ -804,17 +802,12 @@ def cmd_site_actions_duplicate(args, ctx) -> int:
             ctx["out"].emit(out)
             return 0
 
-        loaded_plan = _load_plan(
-            plan_in=str(plan_in),
-            expected_method="site-actions.duplicate",
-            expected_selector=selector,
-            ctx=ctx,
-        ) if plan_in else plan
+        check_reviewed_change(plan, request, ctx["review_connection"])
 
         live_sites = _query_sites_preflight(ids=[source_site_id], ctx=ctx, headers=auth_headers)
         live_state = _snapshot_for_state(sites=live_sites, site_ids=[source_site_id])
         if plan_in:
-            _assert_no_site_drift(plan=loaded_plan, current_state=live_state)
+            _assert_no_site_drift(plan=plan, current_state=live_state)
 
         response = _request_json(
             method="POST",
@@ -924,17 +917,12 @@ def cmd_site_actions_publish(args, ctx) -> int:
             ctx["out"].emit(out)
             return 0
 
-        loaded_plan = _load_plan(
-            plan_in=str(plan_in),
-            expected_method="site-actions.publish",
-            expected_selector=selector,
-            ctx=ctx,
-        ) if plan_in else plan
+        check_reviewed_change(plan, request, ctx["review_connection"])
 
         live_sites = _query_sites_preflight(ids=[site_id], ctx=ctx, headers=auth_headers)
         live_state = _snapshot_for_state(sites=live_sites, site_ids=[site_id])
         if plan_in:
-            _assert_no_site_drift(plan=loaded_plan, current_state=live_state)
+            _assert_no_site_drift(plan=plan, current_state=live_state)
 
         publish_headers = dict(auth_headers)
         if auth_mode == "account_api_key":

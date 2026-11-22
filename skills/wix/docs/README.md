@@ -1,35 +1,8 @@
-# Docs
+# Wix guides
 
-If you are new to this skill, start with the plain-English pages first. Save the command and builder pages for later.
-
-## Start here
-
-- [What this skill can help you do](use_cases.md)
-- [Set up your account step by step](onboarding.md)
-- [See how this skill keeps changes safe](safety_model.md)
-
-## If you want commands
-
-- [Run your first checks](quickstart.md)
-- [Browse the shipped command guide](command_reference.md)
-
-## If you want proof and deeper detail
-
-- [See proof and verification](proof.md)
-- [Review API coverage](api_coverage.md)
-- [See sources and references](references.md)
-
-## If you are extending the tool from source
-
-- [Agent extension guide](agent_extension.md)
-- [Read the skill wrapper notes](skills_wrappers.md)
-
-## Review helpers
-
-- [Plan review prompt](plan_review_prompt.md)
-- [Receipt review prompt](receipt_review_prompt.md)
-
-## Builder and maintenance notes
-
-- [Engineering notes](engineering_notes.md)
-- [Examples folder](examples/)
+- [Quickstart](quickstart.md) for the first account or site read.
+- [Connect Wix](onboarding.md) for keys, app tokens and connection errors.
+- [Commands](command_reference.md) for exact options, permission notes and examples.
+- [Approvals and receipts](safety_model.md) for site and product changes.
+- [API coverage](api_coverage.md) and [Wix references](references.md) for the saved API details.
+- [What we tested](proof.md) and [Engineering notes](engineering_notes.md) for verification and earlier decisions.

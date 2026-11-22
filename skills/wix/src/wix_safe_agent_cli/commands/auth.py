@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from pathlib import Path
 
+from ..authz import resolve_authorization_headers
 from ..errors import ValidationError
 from ..oauth_tokens import (
     create_access_token,
@@ -18,6 +19,9 @@ from ..oauth_tokens import (
     write_token_from_dict,
     write_token_from_file,
 )
+
+from .app_instance import get_app_instance
+from .sites import query_sites
 
 
 def _safe_token_metadata(data: dict, *, source: str) -> dict:
@@ -83,28 +87,47 @@ def _pick_refresh_token(token_path: Path, provided_refresh_token: str | None) ->
     return None, None
 
 
+def _site_details(ctx: dict, token: str) -> dict:
+    try:
+        result = get_app_instance(ctx, {"Authorization": token})
+    except (ValidationError, RuntimeError, ValueError):
+        return {"confirmed": False, "reason": "Wix did not return the site. Check app access before a site change."}
+    site = result.get("site")
+    if not isinstance(site, dict) or not isinstance(site.get("siteId"), str) or not site["siteId"]:
+        return {"confirmed": False, "reason": "Wix did not return a site ID."}
+    return {"confirmed": True, "id": site["siteId"], "name": site.get("siteDisplayName"), "url": site.get("url")}
+
+
 def cmd_auth_check(args, ctx) -> int:
     cfg = ctx["cfg"]
     token_path = token_path_for_env_file(ctx["env_file"])
     token_status = get_token_status(token_path)
-
+    token, source = _pick_token_for_inspect(cfg, token_path, None)
     readiness = {
         "base_url": bool(cfg.base_url),
         "app_auth_inputs": bool(cfg.has_official_app_auth),
-        "manual_access_token": bool(getattr(cfg, "access_token", None)),
+        "manual_access_token": bool(cfg.access_token),
         "stored_access_token": bool(token_status.exists and token_status.has_access_token),
+        "account_api_key": cfg.has_account_api_auth,
     }
-
     out = {
         "ok": True,
         "base_url": cfg.base_url,
         "readiness": readiness,
-        "missing": _missing_app_inputs(cfg) if not readiness["app_auth_inputs"] else [],
+        "missing": [],
         "token_status": asdict(token_status),
     }
 
-    if readiness["app_auth_inputs"]:
-        try:
+    try:
+        if token:
+            info = inspect_access_token(
+                base_url=cfg.base_url, token=token, timeout_s=float(cfg.timeout_s),
+                verbose=bool(ctx.get("verbose")),
+            )
+            out["token_info"] = _safe_token_metadata(info, source=source or "stored")
+            out["checked_with"] = "token_info"
+            out["site"] = _site_details(ctx, token)
+        elif readiness["app_auth_inputs"]:
             token_response = create_access_token(
                 base_url=cfg.base_url,
                 app_id=str(cfg.app_id),
@@ -113,73 +136,35 @@ def cmd_auth_check(args, ctx) -> int:
                 timeout_s=float(cfg.timeout_s),
                 verbose=bool(ctx.get("verbose")),
             )
-            safe_token = _safe_token_metadata(token_response, source="app_credentials")
-            out["token_endpoint"] = {"path": cfg.base_url.rstrip("/") + "/oauth2/token", "result": safe_token}
+            token = token_response.get("access_token")
+            if not isinstance(token, str) or not token.strip():
+                raise ValidationError("Wix did not return an app access token.")
+            out["token_endpoint"] = {
+                "path": cfg.base_url.rstrip("/") + "/oauth2/token",
+                "result": _safe_token_metadata(token_response, source="app_credentials"),
+            }
             out["checked_with"] = "app_credentials"
-        except Exception as exc:
-            ctx["audit"].write("auth.check", {"error": str(exc), "error_type": type(exc).__name__})
-            out = {
-                "ok": False,
-                "error": str(exc),
-                "error_type": type(exc).__name__,
-                "base_url": cfg.base_url,
-                "readiness": readiness,
-                "token_status": asdict(token_status),
-            }
-            ctx["out"].emit(out)
-            return 1
-    elif cfg.access_token or token_status.exists:
-        token, source = _pick_token_for_inspect(cfg, token_path, None)
-        if not token:
-            ctx["out"].emit(
-                {
-                    "ok": False,
-                    "error": "Missing token value",
-                    "error_type": "ValidationError",
-                    "base_url": cfg.base_url,
-                    "readiness": readiness,
-                    "token_status": asdict(token_status),
-                }
+            out["site"] = _site_details(ctx, token)
+        elif readiness["account_api_key"]:
+            auth = resolve_authorization_headers(
+                cfg=cfg, env_file=str(ctx["env_file"]), verbose=bool(ctx.get("verbose")),
+                command_family="sites",
             )
-            return 1
-
-        try:
-            info = inspect_access_token(
-                base_url=cfg.base_url,
-                token=token,
-                timeout_s=float(cfg.timeout_s),
-                verbose=bool(ctx.get("verbose")),
-            )
-            out["token_info"] = _safe_token_metadata(info, source=source or "stored")
-            out["checked_with"] = "token_info"
-        except Exception as exc:
-            ctx["audit"].write("auth.check", {"error": str(exc), "error_type": type(exc).__name__})
-            out = {
-                "ok": False,
-                "error": str(exc),
-                "error_type": type(exc).__name__,
-                "base_url": cfg.base_url,
-                "readiness": readiness,
-                "token_status": asdict(token_status),
-            }
-            ctx["out"].emit(out)
-            return 1
-    else:
-        out = {
-            "ok": False,
-            "error": "Missing official Wix credentials and no local token source",
-            "error_type": "ValidationError",
-            "base_url": cfg.base_url,
-            "readiness": readiness,
-            "missing": _missing_app_inputs(cfg),
-            "token_status": asdict(token_status),
-        }
-        ctx["out"].emit(out)
-        return 1
+            sites = query_sites(ctx, auth.headers, {"query": {"cursorPaging": {"limit": 5}}})
+            if not isinstance(sites.get("sites"), list):
+                raise ValidationError("Wix did not return a site list for this account.")
+            out["checked_with"] = "account_api_key"
+            out["account_id"] = cfg.account_id
+            out["sites"] = sites["sites"]
+        else:
+            out["missing"] = _missing_app_inputs(cfg)
+            raise ValidationError("Missing official Wix credentials. Set an account API key and account ID, or connect a site app.")
+    except (ValidationError, RuntimeError, ValueError) as exc:
+        out.update(ok=False, error=str(exc), error_type=type(exc).__name__)
 
     ctx["audit"].write("auth.check", out)
     ctx["out"].emit(out)
-    return 0
+    return 0 if out["ok"] else 1
 
 
 def cmd_auth_token_create(args, ctx) -> int:

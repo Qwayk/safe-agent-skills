@@ -1,10 +1,16 @@
-# Proof and verification
+# What we tested
 
-This page records what was checked before the Wix skill was published.
+## November 23, 2026 local checks
 
-Most users do not need to run these commands. They are here so an agent, reviewer, or maintainer can see the coverage boundary, the safety proof, and the limits without reading the build chat.
+Both local copies passed 1,811 tests from fresh installs. Each install loaded the same 1,516 command paths as the source. The saved Wix API file moved into the Python package with the same contents. The build and tests sent no Wix requests.
 
-## Last verified
+The checks used simulated Wix replies to confirm that an account key can list sites, app setup can show the site name and ID, and the selected settings file is kept. The sign-in test checked that the temporary code stays out of saved run records.
+
+Products V3 and Site Actions now compare the reviewed request and connection before applying. The tests checked that a changed site connection, account, or product name stops the write. A product receipt only marks the requested values verified when Wix returns them. A publish receipt records whether Wix says the site is live. Inspect the public page to confirm the intended content.
+
+Older plans for Products V3 and Site Actions need a new preview. If a manual or saved token changes, create a new plan. App credentials stay tied to their installation across newly issued tokens.
+
+## June 30, 2026 release checks
 
 - Date (UTC): `2026-06-30`
 - Verified by: `Codex governor source-readiness and public-publish review`

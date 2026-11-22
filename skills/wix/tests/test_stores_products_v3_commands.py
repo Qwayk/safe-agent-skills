@@ -400,8 +400,8 @@ class TestStoresProductsV3Commands(unittest.TestCase):
         mock_client.return_value.request.side_effect = [
             _DummyResponse({"product": self._current_product()}),
             _DummyResponse({"product": self._current_product()}),
-            _DummyResponse({"product": self._current_product(revision=4)}),
-            _DummyResponse({"product": self._current_product(revision=4)}),
+            _DummyResponse({"product": {**self._current_product(revision=4), "name": "Updated Product"}}),
+            _DummyResponse({"product": {**self._current_product(revision=4), "name": "Updated Product"}}),
         ]
         args = SimpleNamespace(product_id="product-1", product_json='{"revision":3,"name":"Updated Product"}')
         dry_buf = io.StringIO()
@@ -421,3 +421,36 @@ class TestStoresProductsV3Commands(unittest.TestCase):
             self.assertEqual(payload["receipt"]["verification"]["after"]["revision"], 4)
         finally:
             Path(plan_path).unlink()
+
+    @patch("wix_safe_agent_cli.commands.stores_products_v3.HttpClient")
+    def test_saved_product_plan_checks_request_connection_and_requested_values(self, client) -> None:
+        args = SimpleNamespace(product_id="product-1", product_json='{"revision":3,"name":"Updated Product"}')
+        client.return_value.request.return_value = _DummyResponse({"product": self._current_product()})
+        preview = io.StringIO()
+        with redirect_stdout(preview):
+            stores_products_v3.cmd_stores_products_v3_update(args, self._ctx())
+        plan = self._write_plan(json.loads(preview.getvalue())["plan"])
+        self.addCleanup(Path(plan).unlink)
+
+        for kind in ("request", "connection"):
+            with self.subTest(kind=kind):
+                ctx = self._ctx(apply=True, yes=True, plan_in=plan)
+                changed = args
+                if kind == "connection":
+                    ctx["cfg"].access_token = "other-site-token"
+                else:
+                    changed = SimpleNamespace(product_id=args.product_id, product_json='{"revision":3,"name":"Other"}')
+                client.return_value.request.reset_mock()
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    stores_products_v3.cmd_stores_products_v3_update(changed, ctx)
+                self.assertTrue(json.loads(output.getvalue())["refused"])
+                client.return_value.request.assert_not_called()
+
+        output = io.StringIO()
+        with redirect_stdout(output):
+            code = stores_products_v3.cmd_stores_products_v3_update(args, self._ctx(apply=True, yes=True, plan_in=plan))
+        self.assertEqual(code, 1)
+        result = json.loads(output.getvalue())
+        self.assertFalse(result["receipt"]["verification"]["ok"])
+        self.assertEqual(result["receipt"]["verification"]["after"]["name"], "Sample Product")

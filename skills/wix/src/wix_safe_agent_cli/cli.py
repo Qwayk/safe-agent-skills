@@ -224,7 +224,7 @@ def _add_backfill_args(parser: argparse.ArgumentParser, module_name: str) -> Non
 
 
 def _inventory_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "docs" / "official_inventory.json"
+    return Path(__file__).with_name("official_inventory.json")
 
 
 @lru_cache(maxsize=1)
@@ -7555,6 +7555,28 @@ def _output_mode_from_argv(argv: list[str]) -> str:
     return v if v in {"json", "text"} else "json"
 
 
+def _saved_command(argv: list[str], args: argparse.Namespace) -> str:
+    secret_flags = {"--code", "--refresh-token", "--token"}
+    secrets = {value for flag in secret_flags if (value := getattr(args, flag[2:].replace("-", "_"), None)) and isinstance(value, str)}
+    safe_args = []
+    hide_next = False
+    for argument in argv:
+        flag, separator, value = argument.partition("=")
+        if hide_next:
+            safe_args.append("<redacted>")
+            hide_next = False
+        elif flag in secret_flags:
+            safe_args.append(f"{flag}=<redacted>" if separator else flag)
+            hide_next = not separator
+        elif argument in secrets:
+            safe_args.append("<redacted>")
+        elif separator and value in secrets:
+            safe_args.append(f"{flag}=<redacted>")
+        else:
+            safe_args.append(argument)
+    return "wix-safe-agent-cli " + " ".join(safe_args)
+
+
 def main(argv: list[str]) -> int:
     parser = build_parser()
     out = Output(mode=_output_mode_from_argv(argv))
@@ -7612,6 +7634,7 @@ def main(argv: list[str]) -> int:
         }
     )
 
+    command_str = _saved_command(argv, args)
     try:
         if bool(args.version):
             payload = {"ok": True, "tool": "wix-safe-agent-cli", "version": __version__}
@@ -7624,7 +7647,6 @@ def main(argv: list[str]) -> int:
         if not getattr(args, "cmd", None):
             parser.error("Missing command. Use --help to see available commands.")
 
-        command_str = "wix-safe-agent-cli " + " ".join(argv)
         audit.bind_context(
             {
                 "tool": "wix-safe-agent-cli",
@@ -7739,7 +7761,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="wix-safe-agent-cli",
             version=__version__,
-            command="wix-safe-agent-cli " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -7755,7 +7777,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="wix-safe-agent-cli",
             version=__version__,
-            command="wix-safe-agent-cli " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -7773,7 +7795,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="wix-safe-agent-cli",
             version=__version__,
-            command="wix-safe-agent-cli " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,

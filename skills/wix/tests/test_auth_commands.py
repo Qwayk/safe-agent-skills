@@ -37,7 +37,7 @@ class TestAuthCommands(unittest.TestCase):
             payload = json.loads(buf.getvalue())
             self.assertEqual(rc, 0)
             self.assertTrue(payload["ok"])
-            self.assertEqual(payload["stored_to"], state_path)
+            self.assertEqual(Path(payload["stored_to"]).resolve(), Path(state_path).resolve())
             self.assertIn("legacy custom-auth", " ".join(payload.get("notes", [])))
             self.assertEqual(payload["oauth_token"]["access_token"], "***REDACTED***")
             self.assertEqual(payload["oauth_token"]["refresh_token"], "***REDACTED***")
@@ -51,6 +51,24 @@ class TestAuthCommands(unittest.TestCase):
             output_text = buf.getvalue()
             self.assertNotIn("new-access-token", output_text)
             self.assertNotIn("new-refresh-token", output_text)
+            for record in (Path(td) / ".state" / "runs").rglob("*"):
+                if record.is_file():
+                    self.assertNotIn("auth-code-123", record.read_text(), record.name)
+
+    def test_auth_check_accepts_account_key_without_app_credentials(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            env = Path(td) / "stores.env"
+            env.write_text("WIX_API_KEY=example-account-key\nWIX_ACCOUNT_ID=account-1\n")
+            output = io.StringIO()
+            with patch(
+                "wix_safe_agent_cli.commands.auth.query_sites",
+                return_value={"sites": [{"id": "site-1", "displayName": "Example shop"}]},
+            ) as query, redirect_stdout(output):
+                code = main(["--env-file", str(env), "auth", "check"])
+            self.assertEqual(code, 0)
+            self.assertEqual(json.loads(output.getvalue())["sites"][0]["id"], "site-1")
+            self.assertEqual(query.call_args.args[1]["wix-account-id"], "account-1")
+            self.assertNotIn("example-account-key", output.getvalue())
 
     def test_auth_check_errors_when_auth_inputs_are_missing(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -76,7 +94,10 @@ class TestAuthCommands(unittest.TestCase):
             with patch(
                 "wix_safe_agent_cli.commands.auth.create_access_token",
                 return_value={"access_token": "secret-token", "token_type": "Bearer", "expires_in": 3600},
-            ) as create_mock:
+            ) as create_mock, patch(
+                "wix_safe_agent_cli.commands.auth.get_app_instance",
+                return_value={"site": {"siteId": "site-1", "siteDisplayName": "Example shop"}},
+            ):
                 buf = io.StringIO()
                 with redirect_stdout(buf):
                     rc = main(["--env-file", env_path, "auth", "check"])
@@ -85,6 +106,8 @@ class TestAuthCommands(unittest.TestCase):
             self.assertTrue(payload["ok"])
             self.assertEqual(payload["checked_with"], "app_credentials")
             self.assertIn("token_endpoint", payload)
+            self.assertEqual(payload["site"]["id"], "site-1")
+            self.assertEqual(payload["site"]["name"], "Example shop")
             self.assertEqual(create_mock.call_count, 1)
             output_text = buf.getvalue()
             self.assertNotIn("secret-token", output_text)
@@ -141,7 +164,7 @@ class TestAuthCommands(unittest.TestCase):
             payload = json.loads(buf.getvalue())
             self.assertEqual(rc, 0)
             self.assertTrue(payload["ok"])
-            self.assertEqual(payload["stored_to"], state_path)
+            self.assertEqual(Path(payload["stored_to"]).resolve(), Path(state_path).resolve())
             self.assertIn("oauth_token", payload)
             self.assertEqual(payload["oauth_token"]["access_token"], "***REDACTED***")
             self.assertEqual(payload["oauth_token"]["refresh_token"], "***REDACTED***")

@@ -11,17 +11,18 @@ from .oauth_tokens import create_access_token, read_access_token_from_file, toke
 class ResolvedAuth:
     headers: dict[str, str]
     mode: str
+    from_app_credentials: bool = False
 
 
-def _resolve_api_token(*, cfg, env_file: str, verbose: bool) -> str:
+def _resolve_api_token(*, cfg, env_file: str, verbose: bool) -> tuple[str, bool]:
     token = getattr(cfg, "access_token", None)
     if token:
-        return str(token).strip()
+        return str(token).strip(), False
 
     token_file = token_path_for_env_file(env_file)
     token = read_access_token_from_file(token_file)
     if token:
-        return token
+        return token, False
 
     if not bool(getattr(cfg, "has_official_app_auth", False)):
         raise ValidationError(
@@ -39,7 +40,7 @@ def _resolve_api_token(*, cfg, env_file: str, verbose: bool) -> str:
     access_token = token_response.get("access_token") if isinstance(token_response, dict) else None
     if not isinstance(access_token, str) or not access_token.strip():
         raise ValidationError("OAuth token response did not include access_token")
-    return access_token.strip()
+    return access_token.strip(), True
 
 
 def _resolve_account_api_headers(*, cfg) -> dict[str, str]:
@@ -93,8 +94,8 @@ def resolve_authorization_headers(*, cfg, env_file: str, verbose: bool, command_
         headers = _resolve_account_api_headers(cfg=cfg)
         return ResolvedAuth(headers=headers, mode="account_api_key")
 
-    token = _resolve_api_token(cfg=cfg, env_file=env_file, verbose=verbose)
-    return ResolvedAuth(headers={"Authorization": token}, mode="app_token")
+    token, from_app_credentials = _resolve_api_token(cfg=cfg, env_file=env_file, verbose=verbose)
+    return ResolvedAuth(headers={"Authorization": token}, mode="app_token", from_app_credentials=from_app_credentials)
 
 
 def resolve_auth_mode(*, cfg, env_file: str, verbose: bool, command_family: str) -> dict[str, Any]:

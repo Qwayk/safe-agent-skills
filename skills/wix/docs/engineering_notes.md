@@ -1,13 +1,8 @@
-# Engineering notes
+# Wix engineering notes
 
-This page keeps the short history of real problems we hit and how we solved them.
+The parser is in `src/wix_safe_agent_cli/cli.py`. Command handlers are in `commands/`. Settings and connection code live in `config.py` and `authz.py`. `write_safety.py` holds shared plan checks. The saved API file ships inside the Python package next to `cli.py`. Keep the installed command list in step with [API coverage](api_coverage.md).
 
-It is here to reduce repeated debugging, not to tell the whole build story.
-
-Guidelines:
-- Keep entries short and factual.
-- Link to the provider doc and the PR or issue when that helps.
-- Never include secrets.
+When adding or changing a command, test its parser, the request sent to Wix and the result it shows. Use simulated replies for local tests. Follow [Approvals and receipts](safety_model.md) for changes and preserve the account and site checks.
 
 ## 2026-06-29 - Headless Recovery sends an out-of-band reset email
 

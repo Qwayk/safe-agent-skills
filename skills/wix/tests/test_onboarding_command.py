@@ -3,9 +3,11 @@ from __future__ import annotations
 import io
 import json
 import os
+import shlex
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from pathlib import Path
 
 from wix_safe_agent_cli.cli import main
 
@@ -29,3 +31,15 @@ class TestOnboardingCommand(unittest.TestCase):
             self.assertTrue(payload["ok"])
             self.assertTrue(payload["onboarding"]["env_created"])
             self.assertTrue(os.path.exists(env_path))
+
+    def test_onboarding_works_without_example_and_preserves_selected_file(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            settings = Path(td) / "new folder" / "account settings.env"
+            output = io.StringIO()
+            with redirect_stdout(output):
+                code = main(["--env-file", str(settings), "onboarding"])
+            self.assertEqual(code, 0)
+            self.assertIn("WIX_API_KEY=", settings.read_text())
+            self.assertEqual(settings.stat().st_mode & 0o777, 0o600)
+            command = shlex.split(json.loads(output.getvalue())["onboarding"]["next_command"])
+            self.assertEqual(command[command.index("--env-file") + 1], str(settings))

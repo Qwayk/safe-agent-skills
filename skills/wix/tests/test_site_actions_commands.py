@@ -217,6 +217,29 @@ class TestSiteActionsCommands(unittest.TestCase):
             Path(plan_path).unlink()
 
     @patch("wix_safe_agent_cli.commands.site_actions.HttpClient")
+    def test_publish_refuses_a_different_account_with_the_same_site(self, client) -> None:
+        client.return_value.request.return_value = _DummyResponse({"sites": [{"id": "site-a", "published": True}]})
+        args = SimpleNamespace(site_id="site-a")
+        output = io.StringIO()
+        with redirect_stdout(output):
+            site_actions.cmd_site_actions_publish(args, self._ctx())
+        plan = json.loads(output.getvalue())["plan"]
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "plan.json"
+            path.write_text(json.dumps(plan))
+            context = self._ctx(
+                cfg_override={"account_id": "acct-other"}, apply=True, yes=True, plan_in=str(path),
+                enforce_reviewed_plan=True,
+            )
+            output = io.StringIO()
+            with redirect_stdout(output):
+                site_actions.cmd_site_actions_publish(args, context)
+        self.assertTrue(json.loads(output.getvalue())["refused"])
+        urls = [call.kwargs["url"] for call in client.return_value.request.call_args_list]
+        self.assertFalse(any(url.endswith("/site-publisher/v1/site/publish") for url in urls))
+
+    @patch("wix_safe_agent_cli.commands.site_actions.HttpClient")
     def test_site_actions_publish_apply_request_headers(self, mock_client: unittest.mock.MagicMock) -> None:
         mock_client.return_value.request.side_effect = [
             _DummyResponse({"sites": [{"id": "site-a", "published": False}]}),
@@ -279,7 +302,7 @@ class TestSiteActionsCommands(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertFalse(payload["receipt"]["changed"])
         verification = payload["receipt"]["verification"]
-        self.assertIn("already published", verification["notes"])
+        self.assertIsNone(verification["content_verified"])
 
     @patch("wix_safe_agent_cli.commands.site_actions.HttpClient")
     def test_site_actions_publish_apply_writes_receipt_out(self, mock_client: unittest.mock.MagicMock) -> None:

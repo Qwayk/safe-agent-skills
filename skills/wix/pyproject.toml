@@ -28,6 +28,9 @@ package-dir = {"" = "src"}
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+wix_safe_agent_cli = ["official_inventory.json"]
+
 [tool.ruff]
 target-version = "py312"
 line-length = 100

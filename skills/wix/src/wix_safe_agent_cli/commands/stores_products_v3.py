@@ -5,11 +5,11 @@ import time
 from pathlib import Path
 from typing import Any
 
-from ..authz import resolve_auth_mode
+from ..authz import resolve_authorization_headers
 from ..errors import SafetyError, ValidationError
 from ..http import HttpClient
 from ..json_files import read_json_file, write_json_file
-from ..write_safety import reviewed_plan_apply_requested
+from ..write_safety import check_reviewed_change, review_connection, reviewed_plan_apply_requested
 
 
 def _read_json_arg(raw: Any, field: str) -> Any:
@@ -134,14 +134,16 @@ def _normalize_request_body(raw: Any, *, field: str = "request-json") -> dict[st
     return dict(payload)
 
 
-def _resolve_stores_products_v3_auth(*, ctx: dict[str, Any]) -> tuple[dict[str, str], str]:
-    auth = resolve_auth_mode(
+def _resolve_stores_products_v3_auth(*, ctx: dict[str, Any], for_write: bool = False) -> tuple[dict[str, str], str]:
+    auth = resolve_authorization_headers(
         cfg=ctx["cfg"],
         env_file=str(ctx["env_file"]),
         verbose=bool(ctx.get("verbose")),
         command_family="stores-products-v3",
     )
-    return auth["headers"], auth["mode"]
+    if for_write:
+        ctx["review_connection"] = review_connection(ctx["cfg"], auth)
+    return auth.headers, auth.mode
 
 
 def _request_json(
@@ -237,6 +239,7 @@ def _build_plan(
         "preconditions": preconditions,
         "selector": selector,
         "request": request,
+        "connection": ctx["review_connection"],
         "baseline": {
             "env_fingerprint": ctx["cfg"].base_url,
             "selector": selector,
@@ -386,7 +389,7 @@ def _run_provider_response_write(
     requires_ack: bool = False,
     verification_notes: str = "Provider-response-only in this boundary. Run follow-up product reads or searches for live verification.",
 ) -> int:
-    headers, auth_mode = _resolve_stores_products_v3_auth(ctx=ctx)
+    headers, auth_mode = _resolve_stores_products_v3_auth(ctx=ctx, for_write=True)
     request = {"method": http_method, "path": path}
     if body is not None:
         request["body"] = body
@@ -422,7 +425,7 @@ def _run_provider_response_write(
             }
         )
         return 0
-    loaded_plan = _load_plan(plan_in=str(plan_in), expected_method=method_name, expected_selector=selector, ctx=ctx)
+    check_reviewed_change(plan, request, ctx["review_connection"])
     response = _request_json(
         method=http_method,
         base_url=ctx["cfg"].base_url,
@@ -440,7 +443,7 @@ def _run_provider_response_write(
         request=request,
         response=response,
         verification=verification,
-        plan=loaded_plan,
+        plan=plan,
         ctx=ctx,
     )
     ctx["out"].emit(
@@ -954,7 +957,7 @@ def cmd_stores_products_v3_count(args, ctx) -> int:
 def cmd_stores_products_v3_create(args, ctx) -> int:
     try:
         product_json = _normalize_create_body(getattr(args, "product_json", None))
-        headers, auth_mode = _resolve_stores_products_v3_auth(ctx=ctx)
+        headers, auth_mode = _resolve_stores_products_v3_auth(ctx=ctx, for_write=True)
         request = {"method": "POST", "path": "/stores/v3/products", "body": product_json}
         selector = {"kind": "wix-stores-product-v3", "operation": "create"}
         plan_in = ctx.get("plan_in")
@@ -990,12 +993,7 @@ def cmd_stores_products_v3_create(args, ctx) -> int:
                 }
             )
             return 0
-        loaded_plan = _load_plan(
-            plan_in=str(plan_in),
-            expected_method="stores-products-v3.create",
-            expected_selector=selector,
-            ctx=ctx,
-        )
+        check_reviewed_change(plan, request, ctx["review_connection"])
         response = _request_json(
             method="POST",
             base_url=ctx["cfg"].base_url,
@@ -1024,7 +1022,7 @@ def cmd_stores_products_v3_create(args, ctx) -> int:
             request=request,
             response=response,
             verification=verification,
-            plan=loaded_plan,
+            plan=plan,
             ctx=ctx,
         )
         ctx["out"].emit(
@@ -1052,11 +1050,23 @@ def cmd_stores_products_v3_create(args, ctx) -> int:
         return 1
 
 
+def _matches_requested_value(expected: Any, actual: Any) -> bool:
+    if isinstance(expected, dict):
+        return isinstance(actual, dict) and all(
+            name in actual and _matches_requested_value(value, actual[name]) for name, value in expected.items()
+        )
+    if isinstance(expected, list):
+        return isinstance(actual, list) and len(expected) == len(actual) and all(
+            _matches_requested_value(item, saved) for item, saved in zip(expected, actual, strict=True)
+        )
+    return expected == actual
+
+
 def cmd_stores_products_v3_update(args, ctx) -> int:
     try:
         product_id = _coerce_non_empty_text(getattr(args, "product_id", None), field="product-id")
         product_json = _normalize_update_body(getattr(args, "product_json", None), product_id=product_id)
-        headers, auth_mode = _resolve_stores_products_v3_auth(ctx=ctx)
+        headers, auth_mode = _resolve_stores_products_v3_auth(ctx=ctx, for_write=True)
         request = {"method": "PATCH", "path": f"/stores/v3/products/{product_id}", "body": product_json}
         selector = {"kind": "wix-stores-product-v3", "operation": "update", "product_id": product_id}
         plan_in = ctx.get("plan_in")
@@ -1096,14 +1106,9 @@ def cmd_stores_products_v3_update(args, ctx) -> int:
                 }
             )
             return 0
-        loaded_plan = _load_plan(
-            plan_in=str(plan_in),
-            expected_method="stores-products-v3.update",
-            expected_selector=selector,
-            ctx=ctx,
-        )
+        check_reviewed_change(plan, request, ctx["review_connection"])
         current_product = _get_product(product_id=product_id, ctx=ctx, headers=headers)
-        _assert_no_state_drift(plan=loaded_plan, current_state={"product": current_product})
+        _assert_no_state_drift(plan=plan, current_state={"product": current_product})
         response = _request_json(
             method="PATCH",
             base_url=ctx["cfg"].base_url,
@@ -1114,16 +1119,29 @@ def cmd_stores_products_v3_update(args, ctx) -> int:
             timeout_s=float(ctx["cfg"].timeout_s),
             verbose=bool(ctx.get("verbose")),
         )
-        after_product = _get_product(product_id=product_id, ctx=ctx, headers=headers)
+        expected = {field: value for field, value in product_json["product"].items() if field != "revision"}
+        try:
+            after_product = _get_product(product_id=product_id, ctx=ctx, headers=headers)
+        except (RuntimeError, ValidationError, ValueError):
+            after_product = None
+        checks = [
+            {"field": field, "matches": bool(after_product and field in after_product
+                                              and _matches_requested_value(value, after_product[field]))}
+            for field, value in expected.items()
+        ]
+        verified = all(check["matches"] for check in checks)
         verification = {
-            "ok": str(after_product.get("id") or "") == product_id,
+            "ok": verified,
             "type": "read-after-write",
             "path": f"/stores/v3/products/{product_id}",
             "method": "GET",
             "before": current_product,
             "after": after_product,
-            "checks": [{"field": "id", "expected": product_id, "actual": after_product.get("id")}],
-            "notes": "Update verification uses read-back get product.",
+            "checks": checks,
+            "notes": (
+                "Wix returned the requested fields."
+                if verified else "Wix accepted the request, but the requested fields could not all be confirmed. Check before trying again."
+            ),
         }
         receipt = _build_receipt(
             method="stores-products-v3.update",
@@ -1131,7 +1149,7 @@ def cmd_stores_products_v3_update(args, ctx) -> int:
             request=request,
             response=response,
             verification=verification,
-            plan=loaded_plan,
+            plan=plan,
             ctx=ctx,
         )
         ctx["out"].emit(
