@@ -1,8 +1,6 @@
 # Command reference
 
-These commands cover Jobber GraphQL reads, writes, registry-backed operations, plans, and receipts. Start with account-area reads before client, job, quote, invoice, or schedule changes.
-
-For the guided path, start with [What you can do with Jobber](use_cases.md), [Set up your account step by step](onboarding.md), and [Quickstart](quickstart.md).
+Start with [connection setup](onboarding.md) or [a first read](quickstart.md). See [approval and recovery](safety_model.md) before changing a record.
 
 ## Get connected
 
@@ -32,7 +30,7 @@ qwayk-jobber-safe-agent-cli --output json schema webhook-topics
 
 ## Read commands
 
-Read commands are generated from the Jobber Query registry in `docs/api_coverage.md`.
+Use the [coverage list](api_coverage.md) to find a named read.
 
 Use one named subcommand at a time:
 
@@ -40,7 +38,7 @@ Use one named subcommand at a time:
 qwayk-jobber-safe-agent-cli --output json read clients --selection "nodes { id name } totalCount" --limit 10
 ```
 
-Optional shared read inputs:
+Use the flags you need for the requested fields.
 - `--args-json` to pass JSON arguments
 - `--args-file` to load JSON args from file
 - `--selection` to define GraphQL selection fields
@@ -49,9 +47,7 @@ Optional shared read inputs:
 
 ## Write commands
 
-Write commands are generated from the Jobber Mutation registry.
-Writes are dry-run by default. Live apply requires a saved plan from `--plan-out`, then `--apply --yes --plan-in <plan.json>`.
-Some mutations are marked high-risk because no useful before-state is captured. For those, include `--ack-no-snapshot` before live apply. If the mutation is clearly irreversible, also include `--ack-irreversible`.
+Save the preview first. Apply only after the user approves that exact plan. See [approval and recovery](safety_model.md) for high-risk or irreversible changes.
 
 ```bash
 qwayk-jobber-safe-agent-cli --output json write clientCreate --args-json '{"input": {"firstName":"Acme","lastName":"Client"}}' --selection 'client { id name } userErrors { message path }'
@@ -59,7 +55,7 @@ qwayk-jobber-safe-agent-cli --output json --plan-out plan.json write clientCreat
 qwayk-jobber-safe-agent-cli --output json --apply --yes --plan-in plan.json write clientCreate --args-json '{"input": {"firstName":"Acme","lastName":"Client"}}' --selection 'client { id name } userErrors { message path }'
 ```
 
-Shared write inputs:
+Write options
 - `--args-json`, `--args-file`, `--selection`, `--selection-file`
 - `--plan-out` to save a plan
 - `--plan-in` to apply from a plan
@@ -76,21 +72,28 @@ qwayk-jobber-safe-agent-cli --output json webhooks verify-signature --body-file 
 qwayk-jobber-safe-agent-cli --output json webhooks verify-signature --body '{"id":"..." , "event":"CLIENT_CREATE"}' --header X-Jobber-Hmac-SHA256=<header>
 ```
 
-## Job files and runs
+## Run a CSV job
+
+Each row uses a named action such as `read.clients` or `write.clientCreate`. In the checkout, start with `examples/jobs.csv` for a read preview or `examples/jobs_with_write.csv` for a preview that includes a write.
 
 ```bash
 qwayk-jobber-safe-agent-cli --output json jobs run --file jobs.csv
 qwayk-jobber-safe-agent-cli --output json --plan-out plan.json jobs run --file jobs.csv
+```
+
+To execute a reviewed job, use the same file. The tool checks that the file hash still matches the plan. A job with writes needs the approved plan and `--yes`. Add the required [high-risk flags](safety_model.md) when they apply.
+
+```bash
 qwayk-jobber-safe-agent-cli --output json --apply --yes --plan-in plan.json jobs run --file jobs.csv
 ```
+
+## Check past runs
 
 ```bash
 qwayk-jobber-safe-agent-cli --output json runs list --limit 20
 qwayk-jobber-safe-agent-cli --output json runs show --run-id <run-id>
 ```
 
-## Why so much automation in read/write names
+## Find the code
 
-The `read` and `write` families are generated from the schema inventory, so command names are official operation names like `read clients` and `write clientCreate`.
-
-Use `docs/api_coverage.md` to confirm full coverage before you ask for a command.
+In `src/jobber_safe_agent_cli/`, `cli.py` defines the commands and flags, and `commands/` handles the work. `schema_registry.py` loads the list of named reads and writes. `config.py` reads settings, and `http.py` sends the requests. `runs.py`, `json_files.py` and `audit_log.py` save local records. `errors.py` defines the errors the CLI can report.

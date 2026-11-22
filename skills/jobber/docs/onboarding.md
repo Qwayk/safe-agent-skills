@@ -1,63 +1,48 @@
-# Connect your Jobber account
+# Connect Jobber
 
-Jobber needs local OAuth settings and token state before an agent can inspect account areas, clients, jobs, requests, invoices, or scheduling data.
+Use an app from the Jobber Developer Center. An admin for the intended account approves it in Jobber. The app receives the authorization code and exchanges it for a token on its server. Keep codes, secrets and tokens out of chat, Git and shared logs. [Jobber authorization guide](https://developer.getjobber.com/docs/building_your_app/app_authorization/)
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## Save app settings
 
-After setup, start with an access check and a small read before asking for service-business changes.
+Create a private `.env` file, or choose a file with `--env-file`. Settings in your shell take precedence over the file. When working with several accounts, use a separate folder for each so the tool picks its own token.
 
-## Step 1: Add local settings
+| Setting | What it does |
+| --- | --- |
+| `JOBBER_CLIENT_ID` and `JOBBER_CLIENT_SECRET` | Credentials from your app. Keep the secret on your computer or app server. |
+| `JOBBER_REDIRECT_URI` | The exact address saved in Jobber for your app to receive the code. |
+| `JOBBER_API_BASE_URL` | API address. Default `https://api.getjobber.com`. |
+| `JOBBER_GRAPHQL_VERSION` | Version sent in the `X-JOBBER-GRAPHQL-VERSION` header. Default `2025-04-16` for this copy. |
+| `JOBBER_TIMEOUT_S` | Request timeout. Default `30` seconds. |
+| `JOBBER_API_TOKEN` | Optional token fallback. A token in `.state/token.json` beside the chosen settings file takes precedence. |
 
-In the tool folder:
+## Add the account token
 
-1. Copy `.env.example` to `.env`.
-2. Keep any local secrets out of git and out of chat.
-3. Keep `JOBBER_API_BASE_URL` as `https://api.getjobber.com` unless your setup needs another base URL.
+1. Start approval through your app. The CLI's `auth authorize-url` command can build the link using your app settings. The app handles the returned code and exchanges it for tokens. Keep any URL with OAuth state out of saved logs.
+2. Save the token JSON privately and import it. These commands use the same settings file for the import and the account check:
 
-## Step 2: Configure OAuth 2.0 credentials
+```bash
+qwayk-jobber-safe-agent-cli --env-file account.env auth token set --file token.json
+qwayk-jobber-safe-agent-cli --env-file account.env auth token status
+qwayk-jobber-safe-agent-cli --env-file account.env auth check
+qwayk-jobber-safe-agent-cli --env-file account.env read account --selection "id name"
+```
 
-Create a Jobber app in the Jobber Developer Center and add:
+Confirm the name and ID returned match the intended company before reading client records.
 
-- Client ID
-- Client Secret
-- Redirect URI used by your app callback
+## Renew access
 
-Then add them to `.env`:
+If the token has expired and renewal is approved, use the saved refresh token. Keep the app credentials available in your settings file or shell.
 
-- `JOBBER_CLIENT_ID`
-- `JOBBER_CLIENT_SECRET`
-- `JOBBER_REDIRECT_URI`
+```bash
+qwayk-jobber-safe-agent-cli --env-file account.env --apply --yes auth token refresh
+```
 
-When available, add your preferred API version:
-- `JOBBER_GRAPHQL_VERSION` (defaults to `2025-04-16` if missing)
+Run `auth check` again after renewal. If Jobber rejects the refresh, check the app and account before starting a new authorization.
 
-## Step 3: Connect a token
+## If a check stops
 
-1. Ask your agent or run:
-   - `qwayk-jobber-safe-agent-cli auth authorize-url`
-2. Complete Jobber OAuth flow and collect the token JSON.
-3. Save the token JSON with:
-   - `qwayk-jobber-safe-agent-cli auth token set --file token.json`
-4. Confirm with:
-   - `qwayk-jobber-safe-agent-cli auth token status`
-
-## Step 4: Verify
-
-- Run `qwayk-jobber-safe-agent-cli auth check`.
-- Fix any missing config before moving to commands.
-
-## Step 3: What to ask your AI agent (examples)
-
-- “Check that the skill is connected and tell me what it can safely review.”
-- “Show me which accounts and areas are currently readable with this token.”
-- “Prepare a safe plan for this change and stop before any writes.”
-- “Give me the next best step after the first account check.”
-
-## What success looks like
-
-Setup is working when:
-- `auth check` confirms token availability and account probe.
-- The tool can list read families from schema helpers.
-- No secret values are exposed in responses.
-
-If you want the command version, continue with [Quickstart](quickstart.md).
+- **Token missing.** Run `auth token status` with the intended `--env-file` and check whether you imported the token into that account's folder.
+- **The account probe failed.** Check whether the token expired or the app lacks access.
+- **Jobber rejected a request.** Read the error and check the named command and requested fields. If Jobber asks you to slow down, wait before trying another read.
+- **A write was refused.** Review the plan and approval flags before trying again. [Review a change](safety_model.md)
+- **Need more detail.** Use `--verbose` for request details or `--debug` for a stack trace. Remove any private values before sharing the output.

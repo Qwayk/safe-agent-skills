@@ -23,7 +23,7 @@ A good first coverage check is: "Check whether this skill can inspect clients, j
 - Authorization header: `Authorization: Bearer <ACCESS_TOKEN>`
 - OAuth is required to obtain token and refresh token values.
 - Header requirement: `X-JOBBER-GRAPHQL-VERSION` is required for all apps.
-- Latest active version in changelog: `2025-04-16`.
+- The packaged command list uses `2025-04-16`. See the [Jobber changelog](https://developer.getjobber.com/docs/changelog/) for later dates.
 
 ## OAuth and token behavior
 - Authorization endpoint: `GET https://api.getjobber.com/api/oauth/authorize`.
@@ -87,7 +87,7 @@ A good first coverage check is: "Check whether this skill can inspect clients, j
 
 ## Runtime implementation note
 
-The CLI now loads `docs/jobber_schema_inventory.json` and creates one named `read` subcommand for every Query field and one named `write` subcommand for every Mutation field. These commands are explicit registry-backed commands, not a raw GraphQL bridge. Mutation commands create reviewed plans and only apply when `--plan-in` matches the current endpoint, mutation, arguments, selection, and GraphQL document. Live account behavior, account scopes, provider side effects, and per-mutation business verification remain `live-unverified`.
+The CLI loads the command list from `docs/jobber_schema_inventory.json` in a checkout or from the installed package and creates one named `read` subcommand for every Query field and one named `write` subcommand for every Mutation field. These commands are explicit registry-backed commands, not a raw GraphQL bridge. Mutation commands create reviewed plans and only apply when `--plan-in` matches the current endpoint, mutation, arguments, selection, and GraphQL document. Live account behavior, account scopes, provider side effects, and per-mutation business verification remain `live-unverified`.
 
 Write commands always include before-state metadata in every plan and receipt:
 - `snapshot_status` is always `"No snapshot available"` for this runtime.

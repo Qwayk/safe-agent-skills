@@ -1,36 +1,12 @@
 ---
 name: jobber
-description: Run Jobber read/write operations safely using qwayk-jobber-safe-agent-cli.
+description: Check Jobber clients, requests, quotes, jobs, visits and invoices. Show proposed changes for approval before applying them.
 ---
 
-This is the agent-facing rule sheet for the Jobber safe skill.
-If you want the CLI, use `qwayk-jobber-safe-agent-cli`.
+# Jobber
 
-Core rules:
-- Always use `--output json` for parseable results.
-- Never ask for or print secrets.
-- Start with `auth check` and `schema summary` before read/write work.
-- Use registry-generated read/write commands only.
-- Never call raw GraphQL.
-- Writes are plan-first by default.
-- Apply writes only with `--apply --yes --plan-in <reviewed-plan.json>`.
-- High-risk writes with no snapshot need `--ack-no-snapshot`.
-- Clearly irreversible writes need `--ack-irreversible`.
-- For token refresh and batch writes, keep explicit approval flow.
+Use `qwayk-jobber-safe-agent-cli` with `--output json`. Start with `auth check` and confirm the intended company with `read account --selection "id name"`. If access is missing, use [Connect Jobber](docs/onboarding.md). Keep token values and OAuth codes out of chat.
 
-Workflow:
-1. Confirm connectivity:
-   - `qwayk-jobber-safe-agent-cli --output json auth check`
-2. Confirm command exists in coverage:
-   - `qwayk-jobber-safe-agent-cli --output json schema summary`
-3. Run a safe first read if needed:
-   - `qwayk-jobber-safe-agent-cli --output json read clients --selection "nodes { id name } totalCount" --limit 10`
-4. Build a safe write plan:
-  - `qwayk-jobber-safe-agent-cli --output json --plan-out plan.json write clientCreate --args-json '{"input":{"firstName":"Sample","lastName":"Client"}}' --selection 'client { id name } userErrors { message path }'`
-5. Apply only after review:
-  - `qwayk-jobber-safe-agent-cli --output json --apply --yes --plan-in plan.json write clientCreate --args-json '{"input":{"firstName":"Sample","lastName":"Client"}}' --selection 'client { id name } userErrors { message path }'`
-6. For high-risk no-snapshot writes and irreversible writes, include the extra ack flags:
-   - `qwayk-jobber-safe-agent-cli --output json --apply --yes --ack-no-snapshot --ack-irreversible --plan-in plan.json write clientDelete --selection 'client { id }'`
-7. Check run proof when needed:
-  - `qwayk-jobber-safe-agent-cli --output json runs list`
-  - `qwayk-jobber-safe-agent-cli --output json runs show --run-id <run-id>`
+Pick a named read from the [command guide](docs/command_reference.md). Use `schema summary` to check the installed command list. Webhook commands list topics and verify signatures locally.
+
+For a write, show the saved preview and wait for approval. Apply with `--apply --yes --plan-in`. Add `--ack-no-snapshot` for high-risk changes without a saved copy of the previous state and `--ack-irreversible` for clearly irreversible changes. Review the receipt and check the record before repeating an unclear result. Token renewal also uses `--apply --yes`. [Approval and recovery](docs/safety_model.md)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -36,7 +37,10 @@ def _repo_root() -> Path:
 
 
 def _registry_path() -> Path:
-    return _repo_root() / "docs" / "jobber_schema_inventory.json"
+    source = _repo_root() / "docs" / "jobber_schema_inventory.json"
+    if source.is_file():
+        return source
+    return Path(sys.prefix) / "share" / "qwayk-jobber-safe-agent-cli" / "docs" / source.name
 
 
 def _parse_type(raw: Any) -> GraphQLTypeRef:

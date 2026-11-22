@@ -1,25 +1,9 @@
-# Jobber docs
+# Jobber guides
 
-Jobber is easiest to use when you start with the real job, then check setup, safety, and proof before asking an agent to do more. These docs explain how to review clients, requests, quotes, jobs, invoices, and field-service records, what access is needed, and where the tool stops before risky changes.
-
-If you are new, read the first few links before asking for account data or changes. They explain the useful jobs, the setup path, and the safety limits.
-
-## Start with the work
-- [What you can do with Jobber](use_cases.md) - real jobs to hand to an agent for Jobber
-- [Quickstart](quickstart.md) - the shortest path to one useful first result
-- [Connect your Jobber account](onboarding.md) - what must be connected or confirmed before the first run
-- [How this stays safe](safety_model.md) - what the tool can and cannot change, and where approval is needed
-
-## Commands, setup, and fixes
-- [Command reference](command_reference.md) - the exact commands and options
-- [Authentication details](authentication.md) - credential rules and safe auth checks
-- [Configuration](configuration.md) - local settings, environment values, and precedence rules
-- [Troubleshooting](troubleshooting.md) - what to check when a command fails or refuses to run
-- [Jobs and batch work](jobs_and_batches.md) - repeatable or larger jobs that need more care
-
-## Proof and details
-- [Proof and verification](proof.md) - what has been checked and what still needs live verification
-- [API coverage](api_coverage.md) - the API surfaces this skill actually covers
-- [Source references](references.md) - source notes behind the implementation and docs
-- [Technical architecture](architecture.md) - how the command, config, client, and output layers fit together
-- [Examples](examples/) - sample inputs or outputs when the tool ships them
+- [Connect Jobber](onboarding.md) for app settings, tokens, renewal and common errors.
+- [Check the account](quickstart.md) for the first read.
+- [See what you can ask](use_cases.md) for examples.
+- [Review a change](safety_model.md) for approval flags and receipts.
+- [Find a command](command_reference.md) for exact flags, CSV jobs and local run history.
+- [See the included commands](api_coverage.md) and [what was tested](proof.md).
+- [Browse the sample files](examples/) and [official Jobber docs](references.md).

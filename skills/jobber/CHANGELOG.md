@@ -22,6 +22,8 @@ The tool is currently in early 0.x development.
 - Updated write/job receipts so no-snapshot metadata is explicit and there is no rollback promise for unsupported rollback paths.
 
 ### Fixed
+- Include the Jobber command list in the install package so the CLI starts outside the checkout.
+- Combine repeated guides and keep live apply examples out of the installation checks.
 - Corrected OAuth authorize URL defaults to avoid sending an undocumented scope value.
 - Corrected public examples so global flags appear before subcommands.
 - Added tests proving direct `--apply --yes write ...` without `--plan-in` refuses before HTTP and that plan drift refuses before execution.
