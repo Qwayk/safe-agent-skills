@@ -1,57 +1,18 @@
-# Safety model
+# Approval and recovery
 
-Reddit can touch posts, comments, mod actions, users, subreddits, and generated API calls, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Use this retired tool to inspect old runs and preview requests offline. A dry run shows what the tool would send. Reddit’s response is unknown until a request reaches it.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## How to read a plan
 
-A good safety ask is: "Read the post or subreddit first, then review the plan before comments, moderation, messages, votes, or generated writes."
+Check the action, target account and subreddit, the exact fields you expected to change, and whether the tool could save the old data. The tool compares settings such as its URLs, client ID, permissions, and User-Agent when checking a saved plan. Check the signed-in account separately.
 
-## Live calls
+The old live commands required `--live`. A change also required `--apply`. Risky changes required `--plan-in` and `--yes`. Irreversible changes required `--ack-irreversible`. When the tool could not save the old data, it required `--ack-no-snapshot`.
 
-- No live Reddit API call happens unless you pass `--live`.
-- This includes `auth exchange-code`, `auth refresh`, `auth check --live`, and all live `api` calls.
-- `auth exchange-code` and `auth refresh` are live, token-writing steps.
+## How to read a result
 
-## Reads
+- A refusal means the tool stopped. The plan can still be useful for seeing what it would have tried.
+- `before_state.status="no_snapshot_available"` means the tool has no saved copy to restore. An approved receipt should record that limit and the approval to proceed.
+- Treat a success value in the output as unverified. The tool marked a simulated Reddit error as successful. Check the actual post or moderation result.
+- If the reply was lost, check Reddit for the result before repeating a request that could make the same change twice.
 
-- Reads can run with `--live` only.
-- Without `--live`, the tool returns a dry-run plan.
-
-## API writes
-
-- Pinned API writes stay dry-run by default.
-- To attempt an API write apply, use `--live --apply`.
-- Risky or irreversible writes still require their extra gates, but approved write applies require explicit no-snapshot approval after the gates pass and must record the recovery limit.
-- A successful Reddit write receipt must not be emitted until the command can save real endpoint-specific before-state or provider backup data first.
-
-## Plan checks
-
-- Plans include an environment fingerprint from public Reddit setup fields (host, auth URLs, redirect URI, OAuth scopes, client id, and user-agent).
-- A plan with a different fingerprint is refused on apply, even if the command is otherwise valid.
-
-## Local setup files
-
-- `auth login` can save local OAuth setup state without calling Reddit.
-- `auth exchange-code` and `auth refresh` call Reddit and can save tokens locally. Both require `--live`.
-- `auth token set`, `auth exchange-code`, and `auth refresh` overwrite local token state without an automatic restore path in this tool.
-
-## Risky writes
-
-- Risky writes also need `--plan-in --yes`.
-- This makes you reuse a reviewed plan instead of applying a fresh unchecked command.
-
-## Irreversible writes
-
-- Irreversible writes also need `--ack-irreversible`.
-
-## Rollback model
-
-- Current Reddit write families should be treated as `irreversible_and_clearly_labeled`.
-- This includes live API writes plus the local template write helpers such as `jobs run` and `demo write`.
-- The tool saves plans and local run history for review, but it does not create provider restore flows, rollback helpers, or before-state snapshots.
-- If a write apply is refused, confirm `before_state.status` is `no_snapshot_available` and the receipt records no-snapshot approval, or missing approval refused before provider HTTP.
-
-## Proof
-
-- Write-capable commands save local run folders under `.state/runs/`.
-- Plans and refusal outputs can be reviewed later.
+See the [saved examples and test results](proof.md).

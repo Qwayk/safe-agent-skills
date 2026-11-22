@@ -1,72 +1,11 @@
 # Command reference
 
-These commands cover Reddit OAuth, account reads, subreddits, posts, comments, messages, and moderation gates. Start with auth and small reads before any post or moderation action.
+Use the [offline quickstart](quickstart.md) to run commands from the source folder. The command names come from the [saved Reddit inventory](api_coverage.md).
 
-For the guided path, start with [What you can do with Reddit](use_cases.md), [Connect your Reddit account](onboarding.md), and [Quickstart](quickstart.md).
+- `api ops list` lists commands. Filter with `--section account`, `--method GET`, or `--scope submit`.
+- `api <operation_command>` previews a request. Use `--path`, `--query`, and `--body` with `key=value` pairs. The JSON variants `--path-json`, `--query-json`, and `--body-json` accept JSON or a file. `--file field=/path/to/file` adds a file to the request and `--body-format` selects `form` or `json`.
+- `onboarding --no-write-env`, `auth check`, and `auth token status` can inspect local setup without calling Reddit. See [old sign-in and settings](onboarding.md) to understand what they report.
+- `runs list --limit 20` shows local run records. `runs show --run-id <run_id>` opens one. Runs are saved under `.state/runs/` unless you use `--no-artifacts`.
+- `jobs run --file jobs.csv`, `demo read`, and `demo write --selector demo-resource` came from the shared tool template. They are outside the Reddit command list.
 
-## Onboarding
-
-- `qwayk-reddit-safe-agent-cli onboarding [--no-write-env]`
-
-## Auth
-
-- `qwayk-reddit-safe-agent-cli auth check`
-- `qwayk-reddit-safe-agent-cli --live auth check`
-- `qwayk-reddit-safe-agent-cli auth login [--duration permanent|temporary] [--scopes "identity read"]`
-- `qwayk-reddit-safe-agent-cli --live auth exchange-code --redirect-url 'http://127.0.0.1:8080/callback?...'`
-- `qwayk-reddit-safe-agent-cli --live auth exchange-code --code <code> --state <state>`
-- `qwayk-reddit-safe-agent-cli --live auth refresh`
-- `qwayk-reddit-safe-agent-cli auth token set --file token.json`
-- `qwayk-reddit-safe-agent-cli auth token status`
-
-## API inventory
-
-- `qwayk-reddit-safe-agent-cli api ops list`
-- `qwayk-reddit-safe-agent-cli api ops list --section account`
-- `qwayk-reddit-safe-agent-cli api ops list --method POST --scope submit`
-
-## API operations
-
-Every pinned Reddit operation is exposed as:
-
-- `qwayk-reddit-safe-agent-cli api <operation_command>`
-
-Shared flags:
-
-- `--path-json <json-or-file>`
-- `--query-json <json-or-file>`
-- `--body-json <json-or-file>`
-- `--path key=value`
-- `--query key=value`
-- `--body key=value`
-- `--file field=/path/to/file`
-- `--body-format form|json`
-
-Read examples:
-
-- `qwayk-reddit-safe-agent-cli --live api get-api-v1-me`
-- `qwayk-reddit-safe-agent-cli --live api get-top --path subreddit=python --query limit=10`
-
-Write examples:
-
-- `qwayk-reddit-safe-agent-cli api post-api-vote --body id=t3_abc123 --body dir=1 --plan-out vote-plan.json`
-- `qwayk-reddit-safe-agent-cli --live --apply --plan-in vote-plan.json --yes api post-api-vote --body id=t3_abc123 --body dir=1`
-- `qwayk-reddit-safe-agent-cli api delete-api-filter-filterpath --path filterpath=example --plan-out delete-plan.json`
-- `qwayk-reddit-safe-agent-cli --live --apply --plan-in delete-plan.json --yes --ack-irreversible api delete-api-filter-filterpath --path filterpath=example`
-
-When a write command cannot save before-state, it must disclose the no-snapshot limit and require explicit no-snapshot approval before applying. Successful receipts must record the approval and recovery limit.
-
-## Runs
-
-Write-capable commands save local proof under `.state/runs/`.
-
-- `qwayk-reddit-safe-agent-cli runs list [--limit 20]`
-- `qwayk-reddit-safe-agent-cli runs show --run-id <run_id>`
-
-## Template helpers
-
-These generic helpers still exist, but they are not part of Reddit API coverage:
-
-- `qwayk-reddit-safe-agent-cli jobs run --file jobs.csv`
-- `qwayk-reddit-safe-agent-cli demo read`
-- `qwayk-reddit-safe-agent-cli demo write --selector demo-resource`
+The [approval and recovery guide](safety_model.md) explains the flags and results you may see in old plans or receipts.

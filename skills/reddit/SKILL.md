@@ -1,34 +1,10 @@
 ---
 name: reddit
-description: "Read Reddit Data API content and prepare supported changes through qwayk-reddit-safe-agent-cli."
+description: "Look up commands and preview requests offline for the retired Reddit Data API tool."
 ---
 
-# reddit-safe-cli
+# Reddit
 
-This page is the agent-facing rule sheet for the public Reddit skill.
-If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+This is an offline reference for a retired tool. See the [README](README.md) for Reddit’s shutdown dates and the [offline quickstart](docs/quickstart.md) for the commands that still help.
 
-Use this skill to work with the official Reddit Data API through `qwayk-reddit-safe-agent-cli`.
-
-## First steps
-
-- If setup is unknown, run `qwayk-reddit-safe-agent-cli onboarding`.
-- To inspect setup, run `qwayk-reddit-safe-agent-cli auth check`.
-- To see available endpoint commands, run `qwayk-reddit-safe-agent-cli api ops list`.
-
-## Safe usage
-
-- Use `--live` for reads and for any command that checks live data.
-- Writes stay dry-run by default.
-- To apply a write, use `--live --apply`.
-- `--live auth exchange-code` and `--live auth refresh` are required before live token checks/writes.
-- Risky writes also need `--plan-in --yes`.
-- Irreversible writes also need `--ack-irreversible`.
-- Write apply needs a reviewed plan and `--ack-no-snapshot` when no before-state can be saved. Expect `before_state.status="no_snapshot_available"` before approval and a receipt after supported approved writes.
-- Never ask the user to paste secrets into chat.
-
-## Common commands
-
-- `qwayk-reddit-safe-agent-cli --live api get-api-v1-me`
-- `qwayk-reddit-safe-agent-cli --live api get-top --path subreddit=python --query limit=10`
-- `qwayk-reddit-safe-agent-cli api post-api-vote --body id=t3_abc123 --body dir=1 --plan-out vote-plan.json`
+Use sample data to look up or preview a request. Leave out `--live` and `--apply`. Keep codes, tokens, and private account data out of chat. If a user asks what happened in an old run, read the [approval and recovery guide](docs/safety_model.md) and check what the output actually shows.

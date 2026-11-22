@@ -1,52 +1,19 @@
-# Connect your Reddit account
+# Old sign-in and settings
 
-Reddit needs local OAuth app details before an agent can inspect account access, subreddits, posts, comments, or moderation data.
+This page explains an existing setup. Reddit requires its approval before Data API access. The old setup used `auth login` to open Reddit’s consent page and `auth exchange-code` to save the returned token. The tool can record the temporary sign-in code in a local log and can save a failed reply as if it were a token. Use the [offline quickstart](quickstart.md) for this retired tool. [Reddit’s access rules](https://support.reddithelp.com/hc/en-us/articles/42728983564564-Responsible-Builder-Policy)
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## Where settings were saved
 
-After setup, start with an auth check or small read before asking for posts, comments, or moderation actions.
+The tool reads `.env` or the file given with `--env-file`. Environment variables take priority. Keep both settings and token files private.
 
-## Step by step
+| Setting | What it was for |
+| --- | --- |
+| `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_REDIRECT_URI` | The approved app’s sign-in details. A client secret was needed for apps that have one. |
+| `REDDIT_CONTACT_USERNAME`, `REDDIT_USER_AGENT` | Reddit expects a descriptive User-Agent with the app and contact. The tool builds one from the contact username unless you set your own. |
+| `REDDIT_OAUTH_SCOPES` | The permissions requested from Reddit. |
+| `REDDIT_ACCESS_TOKEN` | An optional token that takes priority over the saved file. |
+| `REDDIT_API_BASE_URL` | Defaults to `https://oauth.reddit.com`. |
+| `REDDIT_OAUTH_AUTHORIZE_URL`, `REDDIT_OAUTH_TOKEN_URL` | Default to `https://www.reddit.com/api/v1/authorize` and `https://www.reddit.com/api/v1/access_token`. |
+| `REDDIT_TIMEOUT_S` | Defaults to 30 seconds. |
 
-1. Run:
-
-```bash
-qwayk-reddit-safe-agent-cli onboarding
-```
-
-2. Create or open your Reddit app details.
-3. If your use case needs Reddit Data API approval, request it before trying live calls.
-4. Fill `.env` with:
-   - `REDDIT_CLIENT_ID`
-   - `REDDIT_CLIENT_SECRET` if your app has one
-   - `REDDIT_REDIRECT_URI`
-   - `REDDIT_CONTACT_USERNAME`
-5. Run:
-
-```bash
-qwayk-reddit-safe-agent-cli auth login
-```
-
-6. Open the printed URL, approve the app, then run:
-
-```bash
-qwayk-reddit-safe-agent-cli --live auth exchange-code --redirect-url 'http://127.0.0.1:8080/callback?...'
-```
-
-7. Check the connection:
-
-```bash
-qwayk-reddit-safe-agent-cli --live auth check
-```
-
-## What to ask your AI agent
-
-- “List the pinned Reddit account operations.”
-- “Show my Reddit auth status.”
-- “Read my Reddit account profile with a live safe call.”
-- “Build a dry-run plan to vote on a post.”
-
-## What to avoid
-
-- Do not approve posts, comments, votes, saves, moderation actions, or messages until the agent shows a reviewed plan.
-- Do not paste the OAuth code or token files into chat. Let the tool save them locally.
+`.state/token.json` sits next to the settings file. The tool uses a saved token with a future expiry or tries to refresh it if a refresh token is present. `auth token status` shows what is saved without showing token values. `auth token set`, `auth exchange-code`, and `auth refresh` can replace the saved file. See [approval and recovery](safety_model.md) for how settings affected old plans.

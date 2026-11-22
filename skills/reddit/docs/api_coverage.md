@@ -1,30 +1,10 @@
 # API coverage
 
-Reddit coverage shows exactly what this skill can do with posts, comments, mod actions, users, subreddits, and generated API calls. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+The saved May 22, 2026 list contains 234 commands from Reddit’s public Data API. Each row matches a command you can look up or preview with `qwayk-reddit-safe-agent-cli api <operation_command>`. It shows what the tool can build from the saved list. See the [test results](proof.md) for the flows we checked and the problems we found.
 
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+The old tool used OAuth 2.0 with a registered Reddit app and `https://oauth.reddit.com` by default. [Saved Reddit docs](official_api_docs_2026-05-22.html) · [Saved operation list](official_operations_v1_2026-05-22.txt)
 
-A good first coverage check is: "Check whether this skill can inspect posts, comments, and subreddit data, then show which Reddit actions are covered."
-
-## Coverage notes
-
-- Make official Reddit REST coverage measurable.
-- Keep `api <operation>` commands tied to a pinned official docs snapshot.
-
-## Summary
-
-- Provider: Reddit Data API (`/dev/api`)
-- Base URL (default): `https://oauth.reddit.com`
-- Auth: OAuth 2.0 bearer token for a registered Reddit app
-- Pinned docs snapshot: `docs/official_api_docs_2026-05-22.html`
-- Total operations in snapshot: **234**
-- Last audited (UTC): 2026-05-22
-
-## Inventory mapping
-
-Definition of coverage for this tool:
-- Every row below must be available as an explicit CLI subcommand under `qwayk-reddit-safe-agent-cli api <operation_command>`.
-- No raw request bridge counts toward coverage.
+Square brackets show an optional part of an address. For example, `[/r/{subreddit}]/new` can include a subreddit.
 
 | operation_command | METHOD | PATH | section | oauth_scope | primary_cli |
 |---|---:|---|---|---|---|
@@ -262,12 +242,3 @@ Definition of coverage for this tool:
 | `get-wiki-settings-page` | `GET` | `[/r/{subreddit}]/wiki/settings/{page}` | `wiki` | `modwiki` | `qwayk-reddit-safe-agent-cli api get-wiki-settings-page` |
 | `post-wiki-settings-page` | `POST` | `[/r/{subreddit}]/wiki/settings/{page}` | `wiki` | `modwiki` | `qwayk-reddit-safe-agent-cli api post-wiki-settings-page` |
 | `get-wiki-page` | `GET` | `[/r/{subreddit}]/wiki/{page}` | `wiki` | `wikiread` | `qwayk-reddit-safe-agent-cli api get-wiki-page` |
-
-## Known gaps
-
-- None in the pinned inventory file. Runtime support still needs live access approval and OAuth setup.
-
-## Notes
-
-- Optional subreddit prefixes are shown in square brackets, for example `[/r/{subreddit}]/new`.
-- Deprecated or policy-limited endpoints stay in scope if they are still listed in the official docs snapshot.
