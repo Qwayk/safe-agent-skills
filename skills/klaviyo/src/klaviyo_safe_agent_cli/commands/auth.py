@@ -41,13 +41,13 @@ def cmd_auth_check(args, ctx) -> int:
                 "ok": False,
                 "error_type": "ValidationError",
                 "error": "Missing KLAVIYO_API_KEY for live auth checks",
-                "live_checked": True,
+                "live_checked": False,
                 "live_ok": False,
             }
         )
         ctx["audit"].write("auth.check", out)
         ctx["out"].emit(out)
-        return 0
+        return 1
 
     headers = {
         "authorization": f"Klaviyo-API-Key {cfg.api_key}",
@@ -94,24 +94,31 @@ def cmd_auth_check(args, ctx) -> int:
             out["env_company_id_present"] = True
         ctx["audit"].write("auth.check", out)
         ctx["out"].emit(out)
-        return 0
+        return 1
 
     out["live_checked"] = True
     out["live_status_code"] = response.status
-    out["live_ok"] = response.status < 400
-    if response.status < 400 and cfg.company_id is None:
-        try:
-            payload = response.json()
-            if isinstance(payload, dict):
-                if isinstance(payload.get("data"), list):
-                    first = payload["data"][0] if payload["data"] else None
-                    if isinstance(first, dict):
-                        attributes = first.get("attributes") or {}
-                        if isinstance(attributes, dict) and attributes.get("public_api_key"):
-                            out["derived_company_id"] = str(attributes["public_api_key"])
-        except Exception:
-            pass
+    try:
+        payload = response.json()
+    except (ValueError, UnicodeError):
+        payload = None
+    data = payload.get("data") if isinstance(payload, dict) else None
+    account = data[0] if isinstance(data, list) and data else None
+    connected = (
+        200 <= response.status < 300
+        and isinstance(account, dict)
+        and account.get("type") == "account"
+        and bool(account.get("id"))
+    )
+    out["ok"] = out["live_ok"] = connected
+    if connected and isinstance(account, dict):
+        attributes = account.get("attributes")
+        if not cfg.company_id and isinstance(attributes, dict) and attributes.get("public_api_key"):
+            out["derived_company_id"] = str(attributes["public_api_key"])
+    else:
+        out["error_type"] = "InvalidAccountResponse"
+        out["error"] = "Klaviyo returned no account. Check the key and its accounts:read permission."
 
     ctx["audit"].write("auth.check", out)
     ctx["out"].emit(out)
-    return 0
+    return 0 if connected else 1

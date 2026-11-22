@@ -32,15 +32,11 @@ def _as_tuple_str_values(obj: object) -> tuple[str, ...]:
     return tuple(sorted(set(out)))
 
 
-def tool_root_path() -> Path:
-    return Path(__file__).resolve().parents[2]
-
-
 def pinned_operations_path() -> Path:
-    docs = tool_root_path() / "docs"
-    candidates = sorted(docs.glob("official_operations_v1_*.json"))
+    package = Path(__file__).resolve().parent
+    candidates = sorted(package.glob("official_operations_v1_*.json"))
     if not candidates:
-        raise RuntimeError(f"Missing pinned official operations JSON under {docs}")
+        raise RuntimeError(f"Missing pinned official operations JSON under {package}")
     return candidates[-1]
 
 
@@ -61,16 +57,16 @@ def load_official_operations_file(path: Path) -> list[OperationSpec]:
 
         operation_command = str(item.get("operation_command") or "").strip()
         method = str(item.get("method") or "").strip().upper()
-        path = str(item.get("path") or "").strip()
+        route = str(item.get("path") or "").strip()
         doc_url = str(item.get("doc_url") or "").strip()
-        if not operation_command or not method or not path or not doc_url:
+        if not operation_command or not method or not route or not doc_url:
             raise RuntimeError(f"Invalid operation #{idx} in {path}: missing command/method/path/doc_url")
 
         parsed.append(
             OperationSpec(
                 operation_command=operation_command,
                 method=method,
-                path=path,
+                path=route,
                 doc_url=doc_url,
                 tags=_as_tuple_str_values(item.get("tags")),
                 subtag=str(item.get("subtag") or ""),

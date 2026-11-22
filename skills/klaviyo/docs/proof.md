@@ -1,12 +1,12 @@
-# Proof and verification
+# Klaviyo verification
 
-Klaviyo proof should answer a simple question: what has actually been checked for profiles, lists, segments, campaigns, flows, templates, and events, and what still needs live credentials, permissions, or reviewer judgment?
+## November 22, 2026 checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Both local copies passed 26 tests in the checkout and from a fresh install outside the repo. The source download includes the skill, and the install includes all 308 [command definitions](../src/klaviyo_safe_agent_cli/official_operations_v1_2026-05-25.json). The installed setup and first audience list passed with simulated replies.
 
-If you only check one thing, check profile/list proof and campaign or flow plan evidence before trusting marketing changes.
+The tests cover settings paths with spaces, a missing account or rejected key, a flow status change without approval, changes to a reviewed upload, and receipts for accepted jobs and lost replies. The live account remains to be checked with the proper access.
 
-## Current proof summary
+## June 11, 2026 checks
 
 Date (UTC): 2026-06-11
 
@@ -17,7 +17,7 @@ Date (UTC): 2026-06-11
 - Local command outputs are real command runs with no secrets.
 - Live write proof intentionally requires explicit no-snapshot approval before Klaviyo HTTP when no saved snapshot is available.
 - API coverage shipped: `308` stable operations, `87` beta operations excluded by product choice.
-- Stable surface file: `docs/official_operations_v1_2026-05-25.json`.
+- The original command file lived at `docs/official_operations_v1_2026-05-25.json`. The same file is now in the package.
 
 ## Local checks (no network needed)
 

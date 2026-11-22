@@ -1,70 +1,32 @@
 from __future__ import annotations
 
+import re
+import shlex
 import unittest
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
+
+from klaviyo_safe_agent_cli.cli import build_parser
 
 
 class TestReadmePublicContract(unittest.TestCase):
-    def test_public_readme_opening_stays_user_facing(self) -> None:
+    def test_local_guide_links_resolve(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
+        for relative in ("README.md", "docs/README.md", "docs/quickstart.md", "docs/onboarding.md"):
+            page = root / relative
+            for url in re.findall(r"\[[^\]\n]+\]\(([^()\n]+)\)", page.read_text(encoding="utf-8")):
+                link = urlsplit(url)
+                if link.scheme or link.netloc:
+                    continue
+                target = page.parent / unquote(link.path) if link.path else page
+                self.assertTrue(target.exists(), f"{relative} links to a missing path: {url}")
 
-        self.assertTrue(text.startswith("# Klaviyo\n"))
-        self.assertNotIn("## Simplicity lock", text)
-        self.assertNotIn("# klaviyo-safe-agent-cli", text)
-
-        required_sections = [
-            "## Start here first",
-            "## What this skill helps with",
-            "## Install and first run",
-            "## How this skill stays safe",
-            "## What happens before live changes",
+    def test_quickstart_commands_use_the_installed_cli(self) -> None:
+        quickstart = Path(__file__).resolve().parents[1] / "docs" / "quickstart.md"
+        parser = build_parser()
+        commands = [
+            parser.parse_args(shlex.split(line)[1:])
+            for line in quickstart.read_text(encoding="utf-8").splitlines()
+            if line.startswith("klaviyo-safe-agent-cli ")
         ]
-        for section in required_sections:
-            self.assertIn(section, text)
-
-    def test_helpful_docs_stay_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("## Helpful docs", text)
-        self.assertIn("[Browse all Klaviyo docs](docs/README.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-        self.assertIn("[Proof and verification](docs/proof.md)", text)
-        self.assertNotIn("- `docs/use_cases.md`", text)
-        self.assertNotIn("- `docs/onboarding.md`", text)
-
-    def test_start_here_section_stays_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("## Start here first", text)
-        self.assertIn("[What you can do with Klaviyo](docs/use_cases.md)", text)
-        self.assertIn("[Connect your Klaviyo account](docs/onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
-        self.assertIn("[Quickstart](docs/quickstart.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-
-    def test_opening_rejects_template_voice(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-        opening = text.split("## Start here first", 1)[0]
-
-        banned = [
-            "Use this skill when",
-            "You can hand it jobs like",
-            "without guessing from raw docs",
-            "Read work stays simple",
-            "Riskier Klaviyo changes slow down on purpose",
-        ]
-        for phrase in banned:
-            self.assertNotIn(phrase, opening)
-
-    def test_quickstart_opens_with_human_links(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "quickstart.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do with Klaviyo](use_cases.md)", text)
-        self.assertIn("[Connect your Klaviyo account](onboarding.md)", text)
-        self.assertNotIn("`docs/use_cases.md`", text)
-        self.assertNotIn("`docs/onboarding.md`", text)
+        self.assertTrue(any(args.live and getattr(args, "op", None) == "get_lists" for args in commands))

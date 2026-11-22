@@ -1,62 +1,24 @@
-# Safety model
+# Review a plan and receipt
 
-Klaviyo can touch profiles, lists, segments, campaigns, flows, templates, and events, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Run the command without `--live` or `--apply` to see what it would do. A read can use `--live` once you’ve confirmed the intended account and records.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## Before a change
 
-A good safety ask is: "Read the profile, list, or campaign first, then review the plan before profile, messaging, list, segment, or flow changes."
+Save the preview with `--plan-out plan.json`. Review the account, record IDs, request and any attached files. For a list change, check whether the request adds people to a list or also changes what they agreed to receive. For a flow change, check which flow or action will change status.
 
-## Core rules
+After approval, use the same settings and inputs. Writes need `--live --apply --ack-no-snapshot`. The last flag confirms approval to proceed without a saved copy of the previous state. If you provide `--plan-in`, the tool checks the request and file contents against the reviewed plan before sending.
 
-- Dry-run by default.
-- Real calls need `--live`.
-- Reads can run live with `--live`.
-- Writes also need `--apply`.
-- High-impact writes also need `--plan-in` and `--yes`.
-- Current Klaviyo write families do not save before-state snapshots, so approved live writes also need `--ack-no-snapshot`.
-- No secrets are printed in output, audit logs, or artifacts.
-- Plans always include `plan.no_recovery`.
-- Write plans mark `before_state.required: true` and `before_state.supported: false`.
-- No automatic rollback is available for writes. There are no snapshots, no provider backups, and no automatic restore in this tool.
+Flow and flow-action status changes, bulk jobs, sends and cancellations, suppressions, removal and deletion, and other high-impact actions also require `--plan-in` and `--yes`. Make a new preview for a flow status change or attached file if the plan was saved before this update.
 
-## Safe operation flow
+A result with `refused=true` means the tool stopped before sending a change. Read the reason before deciding what to do.
 
-1. Build the plan first.
-2. Review the plan output and proof artifacts.
-3. Confirm the recovery limit when no useful before-state can be saved.
-4. Apply only after the required gates are present.
-5. Store the plan, receipt or refusal summary, and proof artifacts.
+## After a change
 
-## Gate names used for every write
+Save the receipt and check `verification.status`.
 
-- `live`
-- `apply`
-- `plan_in` (high impact only)
-- `yes` (high impact only)
+- **Accepted.** Klaviyo has the job. Run the check in `verification.next_command` when the receipt includes one. For a bulk import, check failed rows as well as progress.
+- **Response received.** Read the reply and then check the actual record. For a flow, use `api get_flow --path id=<flow-id>` with the same settings file and `--live`.
+- **Rejected.** The provider returned an error. Check what it rejected before preparing another request.
+- **Uncertain.** Check the account or job in Klaviyo before trying again. The first request may already have taken effect.
 
-## High-impact classification
-
-Operations with path, command, or tags matching any of these
-keywords are treated as high impact:
-
-- `delete`, `bulk`, `send`, `cancel`, `suppress`, `unsubscribe`, `request_profile_deletion`
-- `relationship` and `relationships`
-
-These require `--yes` and `--plan-in` when running with `--live --apply`.
-
-## Run history
-
-For write-capable commands, local run artifacts can include:
-
-- `plan.json`
-- `receipt.json` is written for approved supported writes; refusals for missing approval or failed safety checks do not write it
-- `audit.jsonl`
-- `summary.md`
-
-Artifacts are stored under a run folder and are safe by design: no keys or tokens.
-
-## No-recovery contract
-
-- `plan.no_recovery` is explicit in plan output for API calls.
-- Approved supported writes output receipts; real blockers output safe refusals.
-- Recovery is manual and comes from re-planning or manual fix actions only.
+The tool saves plans and receipts under `.state/runs/` by default. It can also save to paths you choose. Keep those files private if they contain customer data. This tool leaves recovery to the person approving the change, so check what can be restored before you proceed. [Klaviyo bulk import results](https://developers.klaviyo.com/en/docs/use_klaviyos_bulk_profile_import_api)

@@ -2,20 +2,19 @@ from __future__ import annotations
 
 import hashlib
 import json
-from contextlib import ExitStack
+import shlex
 from pathlib import Path
 from typing import Any
 
 from ..api_dispatch import (
     build_api_call_plan,
-    load_operations_from_pinned_snapshot,
     operations_by_command,
 )
 from ..config import build_env_fingerprint
 from ..errors import SafetyError, ValidationError
-from ..http import HttpClient
+from ..http import HttpClient, HttpStatusError
 from ..json_files import read_json_file, write_json_file
-
+from ..official_inventory import OperationSpec, load_operations_from_pinned_snapshot
 
 HIGH_IMPACT_PATH_KEYWORDS = (
     "delete",
@@ -51,6 +50,7 @@ def _classify_operation(op: Any) -> dict[str, Any]:
     is_write = not is_read
     high_impact = is_write and (
         method == "DELETE"
+        or command in {"update_flow", "update_flow_action"}
         or any(keyword in path_lower for keyword in HIGH_IMPACT_PATH_KEYWORDS)
         or any(keyword in command for keyword in HIGH_IMPACT_PATH_KEYWORDS)
         or any(keyword in tag for tag in tags for keyword in ("delete", "bulk", "send"))
@@ -279,6 +279,40 @@ def _to_headers(cfg: Any, op: Any) -> dict[str, str]:
     return headers
 
 
+def _job_result(op: OperationSpec, operations: dict[str, OperationSpec], plan: dict[str, Any],
+                response: dict[str, Any], env_file: str) -> dict[str, Any]:
+    result: dict[str, Any] = {
+        "status": "accepted",
+        "details": "Klaviyo accepted the request. Check the result before trying again.",
+    }
+    body = response["body"].get("body_json")
+    data = body.get("data") if isinstance(body, dict) else None
+    job_id = data.get("id") if isinstance(data, dict) else None
+    if not job_id and op.operation_command == "send_campaign":
+        body = plan["inputs"]["body"]
+        data = body.get("data")
+        job_id = data.get("id") if isinstance(data, dict) else None
+    if not job_id and op.operation_command == "cancel_campaign_send":
+        job_id = plan["inputs"]["path"].get("id")
+    if not isinstance(job_id, str) or not job_id.strip():
+        return result
+
+    result["job_id"] = job_id
+    job_route = op.path.rstrip("/").split("/{", 1)[0]
+    for status_op in operations.values():
+        params = status_op.required_path_params
+        if (
+            status_op.method == "GET" and len(params) == 1
+            and status_op.path.rstrip("/") == f"{job_route}/{{{params[0]}}}"
+        ):
+            result["next_command"] = shlex.join([
+                "klaviyo-safe-agent-cli", "--env-file", env_file, "--output", "json", "--live",
+                "api", status_op.operation_command, "--path", f"{params[0]}={job_id}",
+            ])
+            break
+    return result
+
+
 def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
     op_cmd = str(getattr(args, "op", "") or "").strip()
     if not op_cmd:
@@ -310,8 +344,35 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
     )
 
     classification = _classify_operation(op)
+    is_write = bool(classification["is_write"])
+    apply = bool(ctx.get("apply"))
+    live = bool(ctx.get("live"))
+    plan_in = ctx.get("plan_in")
+    plan_out = ctx.get("plan_out")
+    receipt_out = ctx.get("receipt_out")
+    if plan_in and apply:
+        reviewed_file = Path(plan_in)
+        for name in (plan_out, receipt_out):
+            if name:
+                output_file = Path(name)
+                if output_file.resolve() == reviewed_file.resolve() or (
+                    output_file.exists() and reviewed_file.exists() and output_file.samefile(reviewed_file)
+                ):
+                    raise SafetyError("Choose an output file that is separate from the reviewed plan.")
+
+    attachments = {}
+    for field, value in plan["inputs"]["files"].items():
+        file_path = Path(value)
+        try:
+            attachments[field] = (file_path.name, file_path.read_bytes())
+        except OSError:
+            raise ValidationError(f"Cannot read the file for {field}. Check its path and permissions.") from None
+    if attachments:
+        plan["inputs"]["file_sha256"] = {
+            field: hashlib.sha256(data).hexdigest() for field, (_, data) in attachments.items()
+        }
     plan["classification"] = classification
-    plan["before_state"] = _build_before_state_info(is_write=bool(classification["is_write"]))
+    plan["before_state"] = _build_before_state_info(is_write=is_write)
     plan["no_recovery"] = _build_no_recovery_info()
 
     plan_hash = _compute_plan_hash(plan)
@@ -319,7 +380,6 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
 
     sanitized_plan = _sanitize_for_output(plan)
 
-    plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, sanitized_plan) if plan_out else None
 
     ctx["audit"].write(
@@ -328,8 +388,6 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
     )
 
     missing_required = plan.get("requirements", {}).get("missing_required") or []
-    apply = bool(ctx.get("apply"))
-    live = bool(ctx.get("live"))
     gates = classification["gates"]
     reasons: list[str] = []
 
@@ -337,7 +395,7 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
         reasons.append("Refused: company_id is required for /client/* operations")
     if apply and not live:
         reasons.append("Refused: --live is required for real HTTP calls")
-    if gates["plan_in"] and apply and not ctx.get("plan_in"):
+    if gates["plan_in"] and apply and not plan_in:
         reasons.append("Refused: --plan-in is required for high-impact operations")
     if apply and gates["yes"] and not bool(ctx.get("yes")):
         reasons.append("Refused: --yes is required for high-impact operations")
@@ -355,12 +413,11 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
         ctx["out"].emit(payload)
         return 0
 
-    plan_in = ctx.get("plan_in")
-    if apply and gates["plan_in"]:
+    if apply and plan_in:
         plan_in_obj = read_json_file(plan_in)
         _validate_plan_for_apply(plan, plan_in_obj, build_env_fingerprint(cfg))
 
-    if apply and bool(classification["is_write"]) and not bool(ctx.get("ack_no_snapshot")):
+    if apply and is_write and not bool(ctx.get("ack_no_snapshot")):
         return _emit_refusal(ctx, op_cmd, [_write_refusal_message()], sanitized_plan, plan_path)
 
     headers = _to_headers(cfg, op)
@@ -370,58 +427,62 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
     if op.has_multipart_request or bool(plan["inputs"]["files"]):
         headers.pop("content-type", None)
 
-    files = plan["inputs"]["files"]
     body_obj = plan["inputs"]["body"] or None
-
     request_kwargs: dict[str, Any] = {
         "method": plan["operation"]["method"],
         "url": plan["operation"]["url"],
         "headers": headers,
         "params": plan["inputs"]["query"],
-        "json_body": None,
-        "data": None,
-        "files": None,
+        "json_body": None if attachments else body_obj,
+        "data": (body_obj or {}) if attachments else None,
+        "files": attachments or None,
     }
-    if files:
-        request_kwargs["data"] = body_obj or {}
-    else:
-        request_kwargs["json_body"] = body_obj
 
-    receipt_out = ctx.get("receipt_out")
-    client = HttpClient(timeout_s=float(ctx.get("timeout_s") or cfg.timeout_s), verbose=bool(ctx.get("verbose")), user_agent=f"klaviyo-safe-agent-cli/{ctx.get('tool_version') or '0.1.0'}")
-
-    with ExitStack() as stack:
-        file_objs: dict[str, Any] = {}
-        if files:
-            for field, file_path in files.items():
-                p = Path(file_path)
-                if not p.exists():
-                    raise ValidationError(f"File not found: {file_path}")
-                handle = stack.enter_context(open(p, "rb"))
-                file_objs[field] = (p.name, handle)
-            request_kwargs["files"] = file_objs
-
-        try:
-            response = client.request(**request_kwargs)
-        except RuntimeError as exc:
-            out = {
-                "ok": False,
-                "dry_run": False,
-                "refused": True,
-                "refusal_type": "HttpError",
-                "reasons": [str(exc).splitlines()[0] if str(exc) else "HTTP error"],
-                "error_type": "HttpError",
-            }
-            ctx["audit"].write("api.call.http_error", {"operation_command": op_cmd})
-            ctx["out"].emit(out)
+    client = HttpClient(
+        timeout_s=float(ctx.get("timeout_s") or cfg.timeout_s),
+        verbose=bool(ctx.get("verbose")),
+        user_agent=f"klaviyo-safe-agent-cli/{ctx.get('tool_version') or '0.1.0'}",
+    )
+    response_summary: dict[str, Any]
+    try:
+        response = client.request(**request_kwargs)
+    except RuntimeError as exc:
+        status = exc.status if isinstance(exc, HttpStatusError) else None
+        result_status = "rejected" if status is not None and 400 <= status < 500 else "uncertain"
+        error = (
+            f"Klaviyo rejected the request with HTTP {status}."
+            if result_status == "rejected"
+            else "Klaviyo did not confirm the result. Check the account before trying again."
+        )
+        response_summary = {"status": status}
+        verification = {"status": result_status, "details": error}
+        sent_ok = False
+        ctx["audit"].write("api.call.http_error", {"operation_command": op_cmd, "response_status": status})
+        if not (apply and is_write):
+            ctx["out"].emit({
+                "ok": False, "dry_run": False, "refused": True, "refusal_type": "HttpError",
+                "reasons": [error], "error_type": "HttpError",
+            })
             return 0
+    else:
+        status = response.status
+        sent_ok = 200 <= status < 300
+        response_summary = {
+            "status": status,
+            "url": response.url,
+            "headers": _sanitize_headers(response.headers),
+            "body": _build_body_summary(response),
+        }
+        verification = {
+            "status": "response_received" if sent_ok else "uncertain",
+            "details": (
+                "Klaviyo returned this response. Check the affected item to confirm the change."
+                if sent_ok and is_write else "See the response for the result."
+            ),
+        }
+        if is_write and sent_ok and (status == 202 or "-jobs" in op.path):
+            verification = _job_result(op, op_map, plan, response_summary, str(ctx.get("env_file") or ".env"))
 
-    response_summary = {
-        "status": response.status,
-        "url": response.url,
-        "headers": _sanitize_headers(response.headers),
-        "body": _build_body_summary(response),
-    }
     receipt = {
         "plan_hash": plan_hash,
         "operation": plan["operation"],
@@ -439,7 +500,7 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
             "files": list(plan["inputs"]["files"].keys()) if plan["inputs"]["files"] else [],
         },
         "response": response_summary,
-        "verification": {"status": "not run", "details": "No automatic verification in this slice"},
+        "verification": verification,
     }
     sanitized_receipt = _sanitize_for_output(receipt)
 
@@ -451,15 +512,15 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
         {
             "operation_command": op_cmd,
             "plan_hash": plan_hash,
-            "response_status": response.status,
+            "response_status": status,
         },
     )
     payload = {
-        "ok": True,
+        "ok": sent_ok,
         "dry_run": False,
         "plan": sanitized_plan,
         "receipt": sanitized_receipt,
         "receipt_out": receipt_out,
     }
     ctx["out"].emit(payload)
-    return 0
+    return 0 if sent_ok else 1

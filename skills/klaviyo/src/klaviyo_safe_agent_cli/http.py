@@ -9,6 +9,12 @@ from typing import Any
 import requests
 
 
+class HttpStatusError(RuntimeError):
+    def __init__(self, status: int, url: str, method: str, body: str):
+        self.status = status
+        super().__init__(f"HTTP {status} for {method} {url}\n{body}")
+
+
 @dataclasses.dataclass(frozen=True)
 class HttpResponse:
     status: int
@@ -96,4 +102,4 @@ class HttpClient:
                 time.sleep(min(2**attempt, 10))
                 continue
 
-            raise RuntimeError(f"HTTP {resp.status_code} for {method} {resp.url}\n{resp.text}")
+            raise HttpStatusError(resp.status_code, resp.url, method, resp.text)

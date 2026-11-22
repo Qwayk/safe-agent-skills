@@ -6,7 +6,10 @@ import unittest
 from pathlib import Path
 
 from klaviyo_safe_agent_cli.cli import build_parser
-from klaviyo_safe_agent_cli.official_inventory import load_official_operations_file
+from klaviyo_safe_agent_cli.official_inventory import (
+    load_official_operations_file,
+    pinned_operations_path,
+)
 
 
 def _tool_root() -> Path:
@@ -14,11 +17,7 @@ def _tool_root() -> Path:
 
 
 def _latest_official_ops_file() -> Path:
-    docs = _tool_root() / "docs"
-    candidates = sorted(docs.glob("official_operations_v1_*.json"))
-    if not candidates:
-        raise AssertionError("Missing docs/official_operations_v1_*.json")
-    return candidates[-1]
+    return pinned_operations_path()
 
 
 def _get_subparser(choices, name: str) -> argparse.ArgumentParser:

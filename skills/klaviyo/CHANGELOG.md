@@ -1,5 +1,17 @@
 # Changelog
 
+## November 22, 2026
+
+- The source download includes the skill and a fresh install loads all 308 commands.
+- Onboarding keeps your settings file. The live connection check reports an error if Klaviyo rejects the key or returns no account.
+- Flow status changes require a reviewed plan and confirmation. When you apply a saved upload plan, the file contents still need to match.
+- Job receipts show acceptance and how to check progress when there’s a matching status command. A lost write reply leaves a receipt that says to check before retrying.
+- Setup, examples, and approval steps live in fewer guides.
+
+All notable changes to this project are documented here.
+
+This tool follows Keep a Changelog style.
+
 All notable changes to this project are documented here.
 
 This tool follows Keep a Changelog style.

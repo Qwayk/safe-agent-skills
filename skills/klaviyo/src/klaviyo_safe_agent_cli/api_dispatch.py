@@ -6,8 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .errors import ValidationError
-from .official_inventory import OperationSpec, load_operations_from_pinned_snapshot
-
+from .official_inventory import OperationSpec
 
 _PATH_PARAM_RE = re.compile(r"{([a-zA-Z0-9_\\-]+)}")
 

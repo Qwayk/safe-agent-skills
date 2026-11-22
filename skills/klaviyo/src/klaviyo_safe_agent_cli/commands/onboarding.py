@@ -1,87 +1,52 @@
 from __future__ import annotations
 
+import os
+import shlex
 from pathlib import Path
 
-
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
+from ..config import DEFAULT_BASE_URL, load_config
 
 
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
-
-
-def cmd_onboarding(args: object, ctx: dict) -> int:
-    out = ctx["out"]
-    env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
-
-    env_path = Path(env_file)
+def cmd_onboarding(args, ctx: dict) -> int:
+    env_path = Path(args.env_file)
     env_created = False
+    if not args.no_write_env and not env_path.exists():
+        example = env_path.parent / ".env.example"
+        template = (
+            example.read_text(encoding="utf-8")
+            if example.is_file()
+            else f"KLAVIYO_API_BASE_URL={DEFAULT_BASE_URL}\nKLAVIYO_API_KEY=\n"
+        )
+        try:
+            with open(env_path, "x", encoding="utf-8", opener=lambda name, flags: os.open(name, flags, 0o600)) as f:
+                f.write(template)
+            env_created = True
+        except FileExistsError:
+            pass
 
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
-        else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
-
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "KLAVIYO_API_BASE_URL"):
-        missing.append("KLAVIYO_API_BASE_URL")
-    if not _has_nonempty_env_value(lines, "KLAVIYO_API_KEY"):
-        missing.append("KLAVIYO_API_KEY")
-    if not _has_nonempty_env_value(lines, "KLAVIYO_COMPANY_ID"):
-        missing.append("KLAVIYO_COMPANY_ID (optional for /client/* calls)")
-
+    cfg = load_config(args.env_file)
+    missing = [] if cfg.api_key else ["KLAVIYO_API_KEY"]
+    next_command = shlex.join(
+        ["klaviyo-safe-agent-cli", "--env-file", args.env_file, "--output", "json", "--live", "api", "get_lists"]
+    )
     steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Open .env and fill the required values:",
-        "  - KLAVIYO_API_BASE_URL=https://a.klaviyo.com",
-        "  - KLAVIYO_API_KEY=<your private API key>",
-        "Optional:",
-        "  - KLAVIYO_COMPANY_ID=<company id for /client/* calls>",
-        "Run: klaviyo-safe-agent-cli --output json auth check",
+        f"Save your Klaviyo private API key in {env_path} as KLAVIYO_API_KEY.",
+        "Use a key with lists:read to list audiences.",
+        "If you only need client commands, set KLAVIYO_COMPANY_ID and use the client command directly.",
     ]
-
-    payload = {
-        "ok": True,
-        "onboarding": {
-            "env_file": env_file,
-            "env_created": env_created,
-            "missing": missing,
-            "next_command": "klaviyo-safe-agent-cli --output json auth check",
-            "steps": steps,
-        },
-    }
-
-    if str(getattr(args, "output", "json")) == "json":
-        out.emit(payload)
+    if args.output == "text":
+        for step in steps:
+            print(step)
+        print(next_command)
     else:
-        print("To connect this tool to your API, do this once:")
-        for i, s in enumerate(steps, start=1):
-            print(f"{i}. {s}")
-        if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        print("")
-        print("Next: klaviyo-safe-agent-cli --output json auth check")
+        ctx["out"].emit({
+            "ok": True,
+            "onboarding": {
+                "env_file": str(env_path),
+                "env_created": env_created,
+                "missing": missing,
+                "next_command": next_command,
+                "steps": steps,
+            },
+        })
     return 0

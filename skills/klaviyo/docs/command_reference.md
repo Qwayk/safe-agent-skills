@@ -1,49 +1,27 @@
-# Command reference
+# Klaviyo commands
 
-These commands cover Klaviyo lists, segments, profiles, campaigns, flows, forms, events, and write gates. Check one audience or profile before bulk marketing changes.
+Start with the [quickstart](quickstart.md) if you want to list your audiences.
 
-For the guided path, start with [What you can do with Klaviyo](use_cases.md), [Connect your Klaviyo account](onboarding.md), and [Quickstart](quickstart.md).
+- `klaviyo-safe-agent-cli onboarding [--no-write-env]` creates or checks your local setup.
+- `klaviyo-safe-agent-cli auth check` checks local settings. Put `--live` before `auth check` to check the account.
+- `klaviyo-safe-agent-cli api ops list [--method GET|POST|PATCH|DELETE] [--tag <tag>]` lists commands.
+- `klaviyo-safe-agent-cli api ops show --op <operation_command>` shows the required options for one command.
+- `klaviyo-safe-agent-cli runs list [--limit 20]` finds recent runs.
+- `klaviyo-safe-agent-cli runs show --run-id <id>` opens the summary for one run.
 
-## Onboarding
+All 308 stable operations in the included April 2026 command list have an `api <operation_command>` command. See the [coverage table](api_coverage.md).
 
-- `klaviyo-safe-agent-cli onboarding [--no-write-env]`
+## Run a command
 
-## Auth
+Put shared options, including `--env-file`, `--live`, `--apply`, and the approval flags, before `api`. Put operation inputs after the command name.
 
-- `klaviyo-safe-agent-cli auth check`
+- Repeat `--path key=value` or `--query key=value` as needed.
+- `--path-json`, `--query-json`, and `--body-json` take a JSON object or the path to a JSON file.
+- Upload a file with `--file field=path`. Keep the same contents after reviewing the plan.
+- Use `--artifacts-dir <path>` for a different local run folder, `--run-id <id>` to name the run, or `--no-artifacts` when you do not want automatic run files.
 
-## API operation discovery
+See [plans and receipts](safety_model.md) for write approvals and how to check a job.
 
-- `klaviyo-safe-agent-cli api ops list [--method GET|POST|PATCH|DELETE] [--tag <tag>]`
-- `klaviyo-safe-agent-cli api ops show --op <operation_command>`
+## Where to find the code
 
-## API operations (all 308 stable commands)
-
-Each stable operation is a direct subcommand:
-
-- `klaviyo-safe-agent-cli api <operation_command> [--path|--query|--body-json|--file ...]`
-
-`--path` and `--query` take `key=value` pairs and can be repeated.
-`--path-json` and `--query-json` accept JSON objects or file paths to JSON objects.
-`--body-json` accepts a JSON object or file path for request body.
-
-`--file field=path` is used for multipart upload operations.
-
-## Safety and run flags for API operations
-
-- `--live` is required before any real HTTP call.
-- Reads can run live with `--live` and do not need `--apply`.
-- `--apply` is required for writes.
-- Current write apply attempts also require explicit `--ack-no-snapshot` approval before Klaviyo HTTP because no saved snapshot is created for writes today.
-- High-impact write operations also require `--plan-in` and `--yes`.
-- Plan first: create plan output with `--plan-out` first, review it, and only then decide whether to apply.
-- This tool does not create snapshots, provider backups, or automatic rollback for writes.
-- Dry-run plans include `before_state` and `plan.no_recovery`.
-
-## Runs (history)
-
-- `klaviyo-safe-agent-cli runs list [--limit 20]`
-- `klaviyo-safe-agent-cli runs show --run-id <id>`
-- `--run-id <id>`: set a specific run id.
-- `--artifacts-dir <path>`: override run artifacts directory.
-- `--no-artifacts`: disable artifact writing.
+`cli.py` reads options and saves command names in run history. `commands/api.py` checks plans, sends requests, and records results. `api_dispatch.py` builds the request plan. `config.py` reads settings, and `official_inventory.py` loads the saved command list.

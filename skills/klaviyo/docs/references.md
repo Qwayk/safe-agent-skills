@@ -13,5 +13,5 @@
 - Stable docs revision used: `2026-04-15`
 - Shipped scope: 308 stable operations across `/api/*` and `/client/*`
 - Excluded by product choice: 87 beta operations
-- Stable surface snapshot: `docs/official_operations_v1_2026-05-25.json`
+- Stable surface snapshot: [Packaged command definitions](../src/klaviyo_safe_agent_cli/official_operations_v1_2026-05-25.json)
 - Last verified: 2026-05-25

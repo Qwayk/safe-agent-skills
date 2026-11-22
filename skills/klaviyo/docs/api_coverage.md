@@ -1,10 +1,6 @@
-# API coverage
+# Klaviyo API coverage
 
-Klaviyo coverage shows exactly what this skill can do with profiles, lists, segments, campaigns, flows, templates, and events. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
-
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can inspect profiles, campaigns, and flows, then show which marketing changes are covered."
+Use this table to find a command by name, method, or path. The [approval guide](safety_model.md) explains what to check before applying a change. Commands follow the saved API revision dated April 15, 2026.
 
 ## Coverage notes
 
@@ -309,8 +305,8 @@ A good first coverage check is: "Check whether this skill can inspect profiles, 
 | `update_coupon` | `PATCH` | `/api/coupons/{id}` | `api update_coupon` | plan first; apply after review with --ack-no-snapshot; gates: `live + apply + --ack-no-snapshot`| `tests/test_official_inventory_pinned.py`, `tests/test_api_runtime.py` | tags: Coupons |
 | `update_coupon_code` | `PATCH` | `/api/coupon-codes/{id}` | `api update_coupon_code` | plan first; apply after review with --ack-no-snapshot; gates: `live + apply + --ack-no-snapshot`| `tests/test_official_inventory_pinned.py`, `tests/test_api_runtime.py` | tags: Coupons |
 | `update_custom_metric` | `PATCH` | `/api/custom-metrics/{id}` | `api update_custom_metric` | plan first; apply after review with --ack-no-snapshot; gates: `live + apply + --ack-no-snapshot`| `tests/test_official_inventory_pinned.py`, `tests/test_api_runtime.py` | tags: Metrics |
-| `update_flow` | `PATCH` | `/api/flows/{id}` | `api update_flow` | plan first; apply after review with --ack-no-snapshot; gates: `live + apply + --ack-no-snapshot`| `tests/test_official_inventory_pinned.py`, `tests/test_api_runtime.py` | tags: Flows |
-| `update_flow_action` | `PATCH` | `/api/flow-actions/{id}` | `api update_flow_action` | plan first; apply after review with --ack-no-snapshot; gates: `live + apply + --ack-no-snapshot`| `tests/test_official_inventory_pinned.py`, `tests/test_api_runtime.py` | tags: Flows |
+| `update_flow` | `PATCH` | `/api/flows/{id}` | `api update_flow` | plan first; apply after review with --ack-no-snapshot; gates: `live + apply + plan-in + yes + --ack-no-snapshot`| `tests/test_official_inventory_pinned.py`, `tests/test_api_runtime.py` | tags: Flows |
+| `update_flow_action` | `PATCH` | `/api/flow-actions/{id}` | `api update_flow_action` | plan first; apply after review with --ack-no-snapshot; gates: `live + apply + plan-in + yes + --ack-no-snapshot`| `tests/test_official_inventory_pinned.py`, `tests/test_api_runtime.py` | tags: Flows |
 | `update_image` | `PATCH` | `/api/images/{id}` | `api update_image` | plan first; apply after review with --ack-no-snapshot; gates: `live + apply + --ack-no-snapshot`| `tests/test_official_inventory_pinned.py`, `tests/test_api_runtime.py` | tags: Images |
 | `update_image_for_campaign_message` | `PATCH` | `/api/campaign-messages/{id}/relationships/image` | `api update_image_for_campaign_message` | plan first; apply after review with --ack-no-snapshot; gates: `live + apply + plan-in + yes + --ack-no-snapshot`| `tests/test_official_inventory_pinned.py`, `tests/test_api_runtime.py` | tags: Campaigns |
 | `update_items_for_catalog_category` | `PATCH` | `/api/catalog-categories/{id}/relationships/items` | `api update_items_for_catalog_category` | plan first; apply after review with --ack-no-snapshot; gates: `live + apply + plan-in + yes + --ack-no-snapshot`| `tests/test_official_inventory_pinned.py`, `tests/test_api_runtime.py` | tags: Catalogs |

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-import json
-import hashlib
 import dataclasses
+import hashlib
+import json
 import os
 from pathlib import Path
 
+DEFAULT_BASE_URL = "https://a.klaviyo.com"
 
 def _parse_env_file(path: Path) -> dict[str, str]:
     if not path.exists():
@@ -29,7 +30,7 @@ def _parse_env_file(path: Path) -> dict[str, str]:
 
 def _get(env: dict[str, str], key: str) -> str:
     # OS env overrides env-file.
-    return (os.environ.get(key) if key in os.environ else env.get(key) or "").strip()
+    return os.environ.get(key, env.get(key, "")).strip()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -64,7 +65,7 @@ def build_env_fingerprint(cfg: Config) -> str:
 def load_config(env_file: str | None) -> Config:
     env = _parse_env_file(Path(env_file or ".env"))
 
-    base_url = _get(env, "KLAVIYO_API_BASE_URL").rstrip("/")
+    base_url = (_get(env, "KLAVIYO_API_BASE_URL") or DEFAULT_BASE_URL).rstrip("/")
     api_key = _get(env, "KLAVIYO_API_KEY") or None
     company_id = _get(env, "KLAVIYO_COMPANY_ID") or None
     api_revision = _get(env, "KLAVIYO_API_REVISION") or "2026-04-15"

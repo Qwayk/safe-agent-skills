@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import sys
 import time
 from pathlib import Path
 
@@ -203,7 +202,7 @@ def build_parser() -> argparse.ArgumentParser:
     api_ops_show.add_argument("--op", required=True, help="Operation command name")
     api_ops_show.set_defaults(func=api_cmd.cmd_api_ops_show, write_capable=False)
 
-    from .api_dispatch import load_operations_from_pinned_snapshot
+    from .official_inventory import load_operations_from_pinned_snapshot
 
     operations = load_operations_from_pinned_snapshot()
     reserved = {"ops", "show"}
@@ -282,7 +281,9 @@ def main(argv: list[str]) -> int:
         }
     )
 
-    command_str = "klaviyo-safe-agent-cli " + " ".join(argv)
+    command_parts = [args.cmd, getattr(args, "api_cmd", None), getattr(args, "runs_cmd", None),
+                     getattr(args, "api_ops_cmd", None), getattr(args, "auth_cmd", None)]
+    command_str = " ".join(["klaviyo-safe-agent-cli", *(part for part in command_parts if part)])
     if bool(getattr(args, "version", False)):
         payload = {"ok": True, "tool": "klaviyo-safe-agent-cli", "version": __version__}
         out.emit(payload)

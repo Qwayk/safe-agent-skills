@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+import shlex
 import tempfile
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -11,6 +12,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from klaviyo_safe_agent_cli.cli import main
+from klaviyo_safe_agent_cli.http import HttpResponse
 
 
 class _CaptureHttpClient:
@@ -315,9 +317,114 @@ class TestApiRuntime(TestCase):
                     "check",
                 ])
 
-            self.assertEqual(rc, 0)
+            self.assertEqual(rc, 1)
             text = json.dumps(payload)
             self.assertFalse("super-secret-klaviyo-key" in text)
             self.assertFalse(payload["ok"])
             self.assertFalse(payload["live_ok"])
             self.assertEqual(payload["error_type"], "HttpError")
+
+    def test_account_check_needs_a_returned_account(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            env = self._env_file(Path(directory))
+            args = ["--env-file", str(env), "--live", "auth", "check"]
+            for data, expected_exit in [
+                ([], 1),
+                ([{"type": "account", "id": "account-test", "attributes": {"public_api_key": "PUBLIC123"}}], 0),
+            ]:
+                response = HttpResponse(200, {}, json.dumps({"data": data}).encode(), "https://a.klaviyo.com/api/accounts")
+                with patch("klaviyo_safe_agent_cli.commands.auth.HttpClient.request", return_value=response):
+                    rc, result = self._run_main(args)
+                self.assertEqual(rc, expected_exit)
+                self.assertEqual(result["live_ok"], expected_exit == 0)
+
+    def test_flow_status_change_requires_review_and_confirmation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            env = self._env_file(Path(directory))
+            args = ["--env-file", str(env), "--no-artifacts"]
+            plan = Path(directory) / "flow-plan.json"
+            change = ["api", "update_flow", "--path", "id=flow-test", "--body-json",
+                      '{"data":{"type":"flow","id":"flow-test","attributes":{"status":"live"}}}']
+            with patch("klaviyo_safe_agent_cli.commands.api.HttpClient.request") as request:
+                _, refused = self._run_main(args + ["--live", "--apply", "--ack-no-snapshot"] + change)
+                self.assertTrue(refused["refused"])
+                self.assertTrue(any("--plan-in" in reason for reason in refused["reasons"]))
+                self.assertTrue(any("--yes" in reason for reason in refused["reasons"]))
+                self._run_main(args + ["--plan-out", str(plan)] + change)
+                request.assert_not_called()
+                request.return_value = HttpResponse(200, {}, b"", "https://a.klaviyo.com/api/flows/flow-test")
+                _, result = self._run_main(args + [
+                    "--live", "--apply", "--yes", "--ack-no-snapshot", "--plan-in", str(plan),
+                ] + change)
+                self.assertTrue(result["ok"])
+                request.assert_called_once()
+
+    def test_reviewed_upload_uses_the_same_file_contents(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            env = self._env_file(root)
+            upload = root / "image.png"
+            upload.write_bytes(b"image approved for the preview")
+            plan = root / "image-plan.json"
+            args = ["--env-file", str(env), "--no-artifacts"]
+            operation = ["api", "upload_image_from_file", "--file", f"file={upload}", "--body-json", "{}"]
+            self._run_main(args + ["--plan-out", str(plan)] + operation)
+            apply = args + ["--live", "--apply", "--ack-no-snapshot", "--plan-in", str(plan)]
+            response = HttpResponse(201, {}, b"", "https://a.klaviyo.com/api/image-upload")
+            with patch("klaviyo_safe_agent_cli.commands.api.HttpClient.request", return_value=response) as request:
+                self.assertTrue(self._run_main(apply + operation)[1]["ok"])
+                request.assert_called_once()
+                self.assertEqual(request.call_args.kwargs["files"]["file"][1], upload.read_bytes())
+                request.reset_mock()
+                upload.write_bytes(b"updated image")
+                self.assertTrue(self._run_main(apply + operation)[1]["refused"])
+                request.assert_not_called()
+
+    def test_bulk_receipts_show_accepted_and_uncertain_results(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            env = self._env_file(root).rename(root / "my settings.env")
+            plan = root / "import-plan.json"
+            receipt = root / "import-receipt.json"
+            args = ["--env-file", str(env), "--no-artifacts"]
+            operation = ["api", "bulk_import_profiles", "--body-json", '{"data":{"type":"profile-bulk-import-job"}}']
+            self._run_main(args + ["--plan-out", str(plan)] + operation)
+            apply = args + [
+                "--live", "--apply", "--yes", "--ack-no-snapshot", "--plan-in", str(plan),
+                "--receipt-out", str(receipt),
+            ]
+            response = HttpResponse(
+                202, {"content-type": "application/vnd.api+json"}, b'{"data":{"id":"job-123"}}',
+                "https://a.klaviyo.com/api/profile-bulk-import-jobs",
+            )
+            with patch("klaviyo_safe_agent_cli.commands.api.HttpClient.request", return_value=response) as request:
+                rc, result = self._run_main(apply + operation)
+                request.assert_called_once()
+                self.assertEqual(rc, 0)
+                result = result["receipt"]["verification"]
+                self.assertEqual(result["status"], "accepted")
+                command = shlex.split(result["next_command"])
+                self.assertEqual(command[1:3], ["--env-file", str(env)])
+                self.assertEqual(command[-4:], ["api", "get_bulk_import_profiles_job", "--path", "job_id=job-123"])
+
+                request.reset_mock()
+                request.side_effect = RuntimeError("Simulated lost reply")
+                rc, result = self._run_main(apply + operation)
+                request.assert_called_once()
+                self.assertEqual(rc, 1)
+                self.assertEqual(result["receipt"], json.loads(receipt.read_text()))
+                self.assertEqual(result["receipt"]["verification"]["status"], "uncertain")
+
+    def test_raw_command_input_stays_out_of_run_history(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            env = self._env_file(root)
+            sample = "dummy-private-command-argument"
+            rc, result = self._run_main([
+                "--env-file", str(env), "api", "create_list",
+                "--body-json", json.dumps({"data": {"attributes": {"name": sample}}}),
+            ])
+            self.assertEqual(rc, 0)
+            run = Path(result["artifacts_dir"])
+            for path in (run / "summary.md", run / "audit.jsonl", Path(result["runs_index"])):
+                self.assertNotIn(sample, path.read_text())
