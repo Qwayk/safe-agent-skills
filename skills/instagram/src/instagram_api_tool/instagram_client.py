@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from urllib.parse import urlencode
 from typing import Any
+from urllib.parse import urlencode
 
 from . import __version__
 from .config import Config
@@ -86,12 +86,12 @@ class InstagramAPIClient:
             return payload
         return None
 
-    def _raise_payload_error(self, *, method: str, url: str, payload: Any) -> None:
+    def _raise_payload_error(self, *, method: str, url: str, payload: Any, secrets: set[str]) -> None:
         api_error = self._payload_error(payload)
         if api_error is None:
             return
         safe_url = HttpClient.redact_url(url)
-        safe_payload = HttpClient.redact_text(str(api_error))
+        safe_payload = HttpClient.redact_text(str(api_error), secrets=secrets)
         raise ToolError(f"Instagram API error for {method} {safe_url}: {safe_payload}")
 
     def _request(
@@ -120,7 +120,10 @@ class InstagramAPIClient:
         except RuntimeError as e:
             raise ToolError(HttpClient.redact_text(str(e))) from e
         payload = self._parse_json_response(resp)
-        self._raise_payload_error(method=method, url=url, payload=payload)
+        self._raise_payload_error(
+            method=method, url=url, payload=payload,
+            secrets=HttpClient.secret_values(final_params, data, json_body),
+        )
         return payload
 
     def _auth_request(
@@ -137,7 +140,10 @@ class InstagramAPIClient:
         except RuntimeError as e:
             raise ToolError(HttpClient.redact_text(str(e))) from e
         payload = self._parse_json_response(resp)
-        self._raise_payload_error(method=method, url=url, payload=payload)
+        self._raise_payload_error(
+            method=method, url=url, payload=payload,
+            secrets=HttpClient.secret_values(params, data),
+        )
         return payload
 
     def build_login_url(
@@ -170,6 +176,16 @@ class InstagramAPIClient:
         if fields:
             params["fields"] = fields
         return self._request("GET", "/me", params=params)
+
+    @staticmethod
+    def professional_account(result: Any) -> dict[str, Any]:
+        if isinstance(result, dict):
+            records = result.get("data")
+            if isinstance(records, list) and len(records) == 1:
+                result = records[0]
+        if not isinstance(result, dict) or not result.get("user_id"):
+            raise ValidationError("Instagram did not return a professional account ID for this token.")
+        return {"user_id": str(result["user_id"]), "username": result.get("username")}
 
     def exchange_auth_code(self, *, code: str) -> Any:
         app_id = self._need_str("INSTAGRAM_APP_ID", self.cfg.app_id)

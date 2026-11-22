@@ -1,89 +1,42 @@
 # Connect your Instagram account
 
-Instagram needs local app credentials and access tokens for a professional account before an agent can inspect media, comments, mentions, or insights.
+Run `instagram-api-tool onboarding` to create a local `.env` file. Add `--no-write-env` after `onboarding` to see setup instructions without creating a file. Keep settings, access tokens and sign-in codes private.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## If you already have a user token
 
-After setup, start by confirming which Instagram professional account the token reaches.
+Put the Instagram Login user token in `INSTAGRAM_ACCESS_TOKEN` and run `instagram-api-tool auth check`. It shows the professional account ID and username. You can also preview `auth token set --file token.json` and use `--apply --ack-no-snapshot` to save an approved local token file.
 
-## Step 1: Create the local `.env` file
+## If you need to sign in through your Meta app
 
-In the tool folder:
+1. Set `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET` and `INSTAGRAM_REDIRECT_URI` locally. Use the exact redirect URL registered with Meta.
+2. Run `instagram-api-tool auth login-url --scope instagram_business_basic` and open the returned link. Sign in to the professional account you want to work with.
+3. Use the code from the redirect locally. Preview `auth code exchange --code YOUR_CODE`. After approval, rerun with `--apply --ack-no-snapshot` before `auth` to exchange the code and save the token.
+4. Run `auth check` to confirm the account, and `auth token status` to check where the token is saved.
 
-1. Copy `.env.example` to `.env`.
-2. Open `.env` in a text editor.
-3. Fill these fields:
+Use `auth token exchange-long` to exchange a short-lived token and `auth token refresh` to renew a valid long-lived token. These commands preview first and need approval to save a token. [Meta’s sign-in guide](https://developers.facebook.com/documentation/instagram-platform/instagram-api-with-instagram-login/business-login)
 
-```text
-INSTAGRAM_APP_ID=
-INSTAGRAM_APP_SECRET=
-INSTAGRAM_REDIRECT_URI=
-```
+## Permissions
 
-If you want the tool to create the starter file for you, run:
+Request the permissions you need for the work.
 
-```bash
-instagram-api-tool onboarding
-```
+| Permission | What it lets you do |
+| --- | --- |
+| `instagram_business_basic` | Read the professional account and posts |
+| `instagram_business_content_publish` | Prepare and publish posts |
+| `instagram_business_manage_comments` | Read and manage comments |
+| `instagram_business_manage_messages` | Work with eligible messages |
 
-## Step 2: Build the Instagram Login URL
+Meta lists different insights permissions for its login methods. Check the [listed insights references](references.md) for the permission that applies to your app.
 
-Run:
+## Settings and separate accounts
 
-```bash
-instagram-api-tool auth login-url --scope instagram_business_basic
-```
+Use `--env-file /path/to/account/.env` before the command to choose an account settings file. Token commands save `.state/token.json` in that file’s directory. Use separate directories if you want separate saved tokens. Shell environment values take priority over the settings file. `INSTAGRAM_ACCESS_TOKEN` takes priority over the saved token file, including after a refresh.
 
-Add more scopes only when you need them, such as comments, publishing, messages, or insights.
-
-## Step 3: Sign in and exchange the code
-
-Open the login URL in a browser, sign in to the Instagram professional account, approve the requested scopes, then copy the `code` value from the redirect URL.
-
-To finish token exchange or save token state, the tool will plan first and can require explicit no-snapshot approval if it cannot save useful old token state.
-
-The normal exchange command is:
-
-```bash
-instagram-api-tool auth code exchange --code YOUR_CODE
-```
-
-That first run can show the plan first.
-If the tool says no saved before-state is available, rerun the reviewed exchange with:
-
-```bash
-instagram-api-tool --apply --ack-no-snapshot auth code exchange --code YOUR_CODE
-```
-
-If you already have a valid access token, you can also keep it local in `.env` as `INSTAGRAM_ACCESS_TOKEN`.
-
-## Step 4: Check access before real work
-
-Ask your agent to start with safe checks like:
-
-- "Check the Instagram skill is connected."
-- "Show which account this token reaches."
-- "List my recent media and comments before we plan any changes."
-
-If you want to run the first checks yourself:
-
-```bash
-instagram-api-tool auth check
-instagram-api-tool users me --fields user_id,username,account_type
-```
-
-## Step 5: First requests to give your agent
-
-These are good first requests in plain English:
-
-- "Show which Instagram account this token reaches."
-- "List my recent media and comments."
-- "Pull insights for these post IDs."
-- "Plan the publish or moderation change first and show me the review steps before any live Instagram write."
-
-## Common blockers
-
-- the account is not an Instagram professional account
-- the redirect URI in `.env` does not exactly match the app setting
-- the token was not exchanged yet, or it expired
-- the app does not have the scopes needed for the command family you want
+| Optional setting | Default |
+| --- | --- |
+| `INSTAGRAM_GRAPH_BASE_URL` | `https://graph.instagram.com` |
+| `INSTAGRAM_AUTH_API_BASE_URL` | `https://api.instagram.com` |
+| `INSTAGRAM_AUTH_WEB_BASE_URL` | `https://www.instagram.com` |
+| `INSTAGRAM_GRAPH_VERSION` | `v25.0` |
+| `INSTAGRAM_IG_USER_ID` | Accounts resolve from the token for `media list` if you leave this blank |
+| `INSTAGRAM_TIMEOUT_S` | 30 seconds |

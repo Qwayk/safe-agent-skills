@@ -6,6 +6,7 @@ import unittest
 from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 from instagram_api_tool.commands.write_utils import build_write_plan, run_write_command
 from instagram_api_tool.errors import SafetyError
@@ -14,7 +15,7 @@ from instagram_api_tool.errors import SafetyError
 class TestWriteUtils(unittest.TestCase):
     def _ctx(self, **overrides):
         ctx = {
-            "cfg": SimpleNamespace(base_url="https://graph.instagram.com"),
+            "cfg": SimpleNamespace(base_url="https://graph.instagram.com", graph_version="v25.0"),
             "tool": "instagram-api-tool",
             "tool_version": "0.1.0",
             "command_str": "instagram-api-tool media publish",
@@ -27,6 +28,25 @@ class TestWriteUtils(unittest.TestCase):
         }
         ctx.update(overrides)
         return ctx
+
+    def test_reviewed_plan_rejects_a_caption_changed_after_approval(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            plan = str(Path(d) / "draft.json")
+            command = "media.create-container"
+            selector = {"kind": "media.create_container", "ig_user_id": "123"}
+            execute = Mock()
+            run_write_command(
+                ctx=self._ctx(plan_out=plan), command=command, selector=selector,
+                proposed_changes=[{"caption": "Review this"}],
+                execute=execute, requires_reviewed_plan=True,
+            )
+            with self.assertRaisesRegex(SafetyError, "request or Graph API settings changed"):
+                run_write_command(
+                    ctx=self._ctx(apply=True, ack_no_snapshot=True, plan_in=plan),
+                    command=command, selector=selector, proposed_changes=[{"caption": "Edited later"}],
+                    execute=execute, requires_reviewed_plan=True,
+                )
+            execute.assert_not_called()
 
     def test_dry_run_can_write_plan_file(self) -> None:
         with tempfile.TemporaryDirectory() as d:

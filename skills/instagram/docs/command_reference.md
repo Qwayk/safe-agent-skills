@@ -1,8 +1,6 @@
 # Command reference
 
-These commands cover Instagram professional account checks, media, comments, mentions, insights, messages, and token flows. Confirm the account reached by the token before any moderation or publishing work.
-
-For the guided path, start with [What you can do with Instagram](use_cases.md), [Connect your Instagram access](onboarding.md), and [Quickstart](quickstart.md).
+Use `instagram-api-tool`. Put shared flags, including `--env-file` and `--plan-in`, before the command. Start with the [quickstart](quickstart.md) or [account setup](onboarding.md).
 
 ## Global flags
 
@@ -20,11 +18,12 @@ For the guided path, start with [What you can do with Instagram](use_cases.md), 
 - `--plan-in plan.json`
 - `--receipt-out receipt.json`
 - `--ack-irreversible`
+- `--ack-no-snapshot`
 - `--run-id custom_run_id`
 - `--artifacts-dir /path/to/artifacts`
 - `--no-artifacts`
 
-Runtime and audit notes:
+Flags for local records
 - `--config` loads non-secret project defaults from JSON.
 - `--project-dir` sets the project folder used with that config.
 - `--log-file` writes a sanitized JSONL audit trail.
@@ -48,7 +47,7 @@ Runtime and audit notes:
 - `instagram-api-tool auth token exchange-long [--short-token TOKEN]`
 - `instagram-api-tool auth token refresh [--long-token TOKEN]`
 
-Auth write commands create plans. When the tool cannot save useful current token state, apply requires explicit no-snapshot approval before token exchange or local token writes.
+Token changes preview first. Use `--apply --ack-no-snapshot` after approving the change. [Account setup](onboarding.md)
 
 ## Users
 
@@ -57,16 +56,19 @@ Auth write commands create plans. When the tool cannot save useful current token
 
 ## Media
 
-- `instagram-api-tool media list --ig-user-id 17841400000000000 [--fields id,caption,media_type,permalink] [--limit 25] [--before CURSOR] [--after CURSOR]`
+- `instagram-api-tool media list [--ig-user-id 17841400000000000] [--fields id,caption,media_type,permalink] [--limit 25] [--before CURSOR] [--after CURSOR]`
 - `instagram-api-tool media container get --container-id 17890000000000000 [--fields id,status_code,status]`
 - `instagram-api-tool media publish-limit --ig-user-id 17841400000000000 [--fields quota_usage,config]`
 - `instagram-api-tool media get --media-id 17900000000000000 [--fields id,caption,comments_count,media_type]`
 - `instagram-api-tool media children --media-id 17900000000000000 [--fields id,media_type,permalink]`
-- `instagram-api-tool media create-container --ig-user-id 17841400000000000 --image-url https://example.invalid/image.jpg [--caption TEXT] [--media-type IMAGE]`
+- `instagram-api-tool media create-container --ig-user-id 17841400000000000 --image-url https://example.invalid/image.jpg [--caption TEXT] [--media-type IMAGE] [--is-carousel-item]`
 - `instagram-api-tool media create-container --ig-user-id 17841400000000000 --video-url https://example.invalid/video.mp4 [--caption TEXT] [--media-type REELS]`
-- `instagram-api-tool media create-container --ig-user-id 17841400000000000 --children CHILD_ID_1,CHILD_ID_2 [--caption TEXT] [--media-type CAROUSEL]`
+- To prepare a video as part of a carousel, use `--media-type VIDEO --is-carousel-item` with the video URL.
+- `instagram-api-tool media create-container --ig-user-id 17841400000000000 --children CHILD_ID_1,CHILD_ID_2 --media-type CAROUSEL [--caption TEXT]`
 - `instagram-api-tool media publish --ig-user-id 17841400000000000 --creation-id 17890000000000000`
 - `instagram-api-tool media comments set --media-id 17900000000000000 --enabled true|false`
+
+`media list` uses the connected account unless you set `INSTAGRAM_IG_USER_ID` or pass an ID. `media container get` shows status by default. To create or publish a draft, save a plan and apply with the matching `--plan-in` file. Publishing also needs `--yes`. [Review and check changes](safety_model.md)
 
 ## Comments
 
@@ -99,7 +101,7 @@ Auth write commands create plans. When the tool cannot save useful current token
 
 - `instagram-api-tool tags list --ig-user-id 17841400000000000 [--fields id,caption,media_type]`
 - `instagram-api-tool stories list --ig-user-id 17841400000000000 [--fields id,media_type,permalink]`
-- `instagram-api-tool live-media list --ig-user-id 17841400000000000 [--fields id,status,title]`
+- `instagram-api-tool live-media list [--ig-user-id 17841400000000000] [--fields id,status,title]`
 
 ## Runs (history)
 

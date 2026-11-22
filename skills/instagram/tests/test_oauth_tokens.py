@@ -5,10 +5,22 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from instagram_api_tool.oauth_tokens import get_token_status, read_token_json, redact_token_dict, write_token_from_file
+from instagram_api_tool.oauth_tokens import (
+    get_token_status,
+    read_access_token,
+    read_token_json,
+    redact_token_dict,
+    write_token_from_file,
+)
 
 
 class TestOAuthTokens(unittest.TestCase):
+    def test_reads_token_from_an_existing_instagram_sign_in_reply(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            token = Path(d) / "token.json"
+            token.write_text(json.dumps({"data": [{"access_token": "fixture-token", "user_id": "123"}]}))
+            self.assertEqual(read_access_token(token), "fixture-token")
+
     def test_token_status_missing(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / ".state" / "token.json"

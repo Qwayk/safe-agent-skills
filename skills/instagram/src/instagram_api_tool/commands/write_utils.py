@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from ..errors import SafetyError, ValidationError
 from ..json_files import read_json_file, write_json_file
-from .write_safety import before_state_contract, before_state_refusal_output, before_state_refusal_verification_plan
+from .write_safety import (
+    before_state_contract,
+    before_state_refusal_output,
+    before_state_refusal_verification_plan,
+)
 
 
 def _utc_now() -> str:
@@ -75,7 +80,10 @@ def build_write_plan(
         "risk_level": risk_level,
         "risk_reasons": risk_reasons or ["write-operation"],
         "preconditions": preconditions,
-        "baseline": {"env_fingerprint": getattr(ctx["cfg"], "base_url", None)},
+        "baseline": {
+            "env_fingerprint": getattr(ctx["cfg"], "base_url", None),
+            "graph_version": getattr(ctx["cfg"], "graph_version", None),
+        },
         "proposed_changes": proposed_changes,
         "verification_plan": verification,
         "rollback": rollback,
@@ -123,6 +131,7 @@ def _load_plan_for_apply(
     *,
     expected_command: str,
     expected_selector: dict[str, Any],
+    expected_changes: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     plan_path = str(ctx.get("plan_in") or "").strip()
     if not plan_path:
@@ -142,6 +151,12 @@ def _load_plan_for_apply(
         raise SafetyError("Refused: plan command does not match the current write action")
     if plan.get("selector") != expected_selector:
         raise SafetyError("Refused: plan selector does not match the current target")
+    if expected_changes is not None and (
+        baseline.get("env_fingerprint") != ctx["cfg"].base_url
+        or baseline.get("graph_version") != ctx["cfg"].graph_version
+        or plan.get("proposed_changes") != expected_changes
+    ):
+        raise SafetyError("The request or Graph API settings changed. Save a new plan and get it reviewed.")
     return plan
 
 
@@ -155,12 +170,15 @@ def run_write_command(
     requires_yes: bool = False,
     requires_ack: bool = False,
     risk_level: str = "medium",
+    requires_reviewed_plan: bool = False,
+    verify_result: Callable[[Any], dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     if bool(ctx.get("plan_in")):
         _load_plan_for_apply(
             ctx,
             expected_command=command,
             expected_selector=selector,
+            expected_changes=(proposed_changes or []) if requires_reviewed_plan else None,
         )
 
     if bool(ctx.get("apply")) is False:
@@ -172,6 +190,10 @@ def run_write_command(
             risk_reasons=["safe-dry-run"],
             proposed_changes=proposed_changes or [],
         )
+        if requires_reviewed_plan:
+            plan["preconditions"].append("Use the matching reviewed plan with --plan-in.")
+        if verify_result:
+            plan["verification_plan"]["steps"].append("Read the published post using the ID Instagram returns.")
         plan_out = str(ctx.get("plan_out")) if ctx.get("plan_out") else None
         if plan_out:
             plan_out = write_json_file(plan_out, plan)
@@ -197,6 +219,8 @@ def run_write_command(
     )
     if not bool(ctx.get("ack_no_snapshot")):
         return before_state_refusal_output(plan)
+    if requires_reviewed_plan and not str(ctx.get("plan_in") or "").strip():
+        raise SafetyError("Use --plan-in with the reviewed plan for this post.")
 
     result = execute()
     reason = str(plan.get("before_state", {}).get("reason") or "No saved before-state snapshot is available for this write.")
@@ -221,6 +245,10 @@ def run_write_command(
         "verification_plan": plan.get("verification_plan"),
         "rollback": plan.get("rollback"),
     }
+    if verify_result:
+        receipt["verification"] = verify_result(result)
+    if requires_reviewed_plan and not (isinstance(result, dict) and result.get("id")):
+        receipt["changed"] = None
     receipt_out = str(ctx.get("receipt_out") or "").strip()
     receipt_path = write_json_file(receipt_out, receipt) if receipt_out else None
     return {

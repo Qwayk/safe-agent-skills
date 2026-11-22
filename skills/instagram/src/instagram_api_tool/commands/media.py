@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..errors import ValidationError
+from ..errors import SafetyError, ToolError, ValidationError
 from ..instagram_client import InstagramAPIClient
 from .write_utils import parse_bool_arg, run_write_command, split_csv_arg
 
@@ -16,10 +16,18 @@ def _client(ctx: dict[str, Any]) -> InstagramAPIClient:
     )
 
 
+def _check_post_account(client: InstagramAPIClient, ig_user_id: str) -> None:
+    account = client.professional_account(client.get_me(fields="user_id,username"))
+    if account["user_id"] != ig_user_id:
+        raise SafetyError("The connected Instagram account differs from the account in the reviewed plan.")
+
+
 def cmd_media_list(args: Any, ctx: dict[str, Any]) -> int:
-    ig_user_id = str(getattr(args, "ig_user_id", "") or "").strip()
+    client = _client(ctx)
+    ig_user_id = str(getattr(args, "ig_user_id", "") or getattr(ctx["cfg"], "ig_user_id", None) or "").strip()
     if not ig_user_id:
-        raise ValidationError("Missing --ig-user-id")
+        account = client.professional_account(client.get_me(fields="user_id,username"))
+        ig_user_id = account["user_id"]
     fields = split_csv_arg(getattr(args, "fields", None))
     params: dict[str, Any] = {}
     if fields:
@@ -31,7 +39,6 @@ def cmd_media_list(args: Any, ctx: dict[str, Any]) -> int:
     if getattr(args, "before", None):
         params["before"] = str(args.before)
 
-    client = _client(ctx)
     result = client.get(f"/{ig_user_id}/media", params=params)
     out = {"ok": True, "command": "media.list", "result": result}
     ctx["audit"].write("media.list", out)
@@ -44,7 +51,7 @@ def cmd_media_container_get(args: Any, ctx: dict[str, Any]) -> int:
     if not container_id:
         raise ValidationError("Missing --container-id")
     fields = split_csv_arg(getattr(args, "fields", None))
-    params = {"fields": ",".join(fields)} if fields else {}
+    params = {"fields": ",".join(fields) if fields else "status_code,status"}
 
     client = _client(ctx)
     result = client.get(f"/{container_id}", params=params)
@@ -121,6 +128,10 @@ def cmd_media_create_container(args: Any, ctx: dict[str, Any]) -> int:
         payload["video_url"] = video_url
     if children:
         payload["children"] = ",".join(children)
+    if bool(getattr(args, "is_carousel_item", False)):
+        if bool(image_url) == bool(video_url) or children or media_type == "CAROUSEL":
+            raise ValidationError("A carousel item needs one image or video. Use --children on the final carousel.")
+        payload["is_carousel_item"] = "true"
     caption = str(getattr(args, "caption", "") or "").strip()
     if caption:
         payload["caption"] = caption
@@ -132,6 +143,7 @@ def cmd_media_create_container(args: Any, ctx: dict[str, Any]) -> int:
     payload_key = payload.copy()
 
     def execute() -> Any:
+        _check_post_account(client, ig_user_id)
         return client.post(f"/{ig_user_id}/media", data=payload_key)
 
     out = run_write_command(
@@ -140,6 +152,7 @@ def cmd_media_create_container(args: Any, ctx: dict[str, Any]) -> int:
         selector={"kind": "media.create_container", "ig_user_id": ig_user_id},
         proposed_changes=[{"action": "create_container", "ig_user_id": ig_user_id, "payload": payload_key}],
         execute=execute,
+        requires_reviewed_plan=True,
     )
     out["command"] = "media.create_container"
     ctx["audit"].write("media.create_container", out)
@@ -160,7 +173,25 @@ def cmd_media_publish(args: Any, ctx: dict[str, Any]) -> int:
     payload_for_send = payload.copy()
 
     def execute() -> Any:
-        return client.post(f"/{ig_user_id}/media_publish", data=payload_for_send)
+        _check_post_account(client, ig_user_id)
+        try:
+            return client.post(f"/{ig_user_id}/media_publish", data=payload_for_send)
+        except ToolError as e:
+            raise ToolError(f"{e}\nCheck the draft with media container get before trying again.") from None
+
+    def verify(result: Any) -> dict[str, Any]:
+        post_id = str(result.get("id") or "") if isinstance(result, dict) else ""
+        if not post_id:
+            return {"ok": None, "message": "Instagram returned no post ID. Check the draft status before trying again."}
+        try:
+            post = client.get(f"/{post_id}", params={"fields": "id,caption,permalink"})
+        except ToolError:
+            return {"ok": None, "message": "Instagram returned a post ID. Check the post or draft before trying again."}
+        return {
+            "ok": isinstance(post, dict) and str(post.get("id") or "") == post_id,
+            "method": "read-back",
+            "result": post,
+        }
 
     out = run_write_command(
         ctx=ctx,
@@ -172,6 +203,8 @@ def cmd_media_publish(args: Any, ctx: dict[str, Any]) -> int:
         requires_yes=True,
         execute=execute,
         risk_level="high",
+        requires_reviewed_plan=True,
+        verify_result=verify,
     )
     out["command"] = "media.publish"
     ctx["audit"].write("media.publish", out)

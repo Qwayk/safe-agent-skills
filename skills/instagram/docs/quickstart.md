@@ -1,75 +1,48 @@
-# Quickstart
+# Start using Instagram
 
-Start with a small Instagram read: checking professional account access, media, comments, and insights before you post or moderate anything.
-
-Need more ideas? See [What you can do with Instagram](use_cases.md). Need setup help? See [Connect your Instagram access](onboarding.md).
-
-A good first ask is:
-
-> Show which Instagram professional account this token reaches and list my latest media.
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account or connection before asking for real work.
-3. Run one small read and make sure the result matches the real service.
-4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+Use Python 3.12 or later. From the Instagram tool folder, install the tool and [connect your account](onboarding.md).
 
 ```bash
-python3 -m venv .venv
-. .venv/bin/activate
-pip install -e '.[dev]'
+python -m pip install .
+instagram-api-tool --output json --version
 ```
 
-## 2. Check setup
-
-If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
-
-```bash
-instagram-api-tool onboarding
-```
+## Read your latest posts
 
 ```bash
 instagram-api-tool auth check
-instagram-api-tool users me --fields user_id,username,account_type
+instagram-api-tool media list --fields id,caption,media_type,permalink --limit 5
 ```
 
-## 3. Run one small first read
+The first command shows the professional account ID and username. The list uses the connected account unless you set a default ID or pass `--ig-user-id`. Posts are in `result.data`. If the response has a `result.paging.cursors.after` value, pass it with `--after` to see the next page.
 
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
+Use a post ID with `comments list --media-id` to read comments. Use the [command reference](command_reference.md) to find account insights, mentions or other reads.
+
+## Review and publish an image
+
+Use the professional account ID from `auth check` as `ACCOUNT_ID`. Replace the example URL with an image Instagram can download. Save a plan with the exact caption and image.
 
 ```bash
-instagram-api-tool media list --ig-user-id 17841400000000000 --fields id,caption,media_type,permalink --limit 10
+instagram-api-tool --plan-out image-plan.json media create-container --ig-user-id ACCOUNT_ID --image-url https://example.invalid/image.jpg --caption 'Example caption'
 ```
+
+After approving the plan, create the draft. The approval flag allows creating it without a saved copy of the previous state.
 
 ```bash
-instagram-api-tool comments list --media-id 17900000000000000 --fields id,text,username,timestamp
+instagram-api-tool --apply --ack-no-snapshot --plan-in image-plan.json media create-container --ig-user-id ACCOUNT_ID --image-url https://example.invalid/image.jpg --caption 'Example caption'
 ```
 
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
+Use `receipt.write_result.id` as `DRAFT_ID`. Check the draft status. When Instagram reports it is ready, save the publishing plan.
 
-## 4. Stop before anything risky
+```bash
+instagram-api-tool media container get --container-id DRAFT_ID
+instagram-api-tool --plan-out publish-plan.json media publish --ig-user-id ACCOUNT_ID --creation-id DRAFT_ID
+```
 
-Ask for a reviewed plan before media publishing, comment actions, message actions, token changes, or moderation work.
+After approving the publishing plan, apply it and check the receipt. The tool reads the new post by ID when Instagram returns one.
 
-## What a useful first result includes
+```bash
+instagram-api-tool --apply --yes --ack-no-snapshot --plan-in publish-plan.json media publish --ig-user-id ACCOUNT_ID --creation-id DRAFT_ID
+```
 
-A good first result should make these things clear:
-
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
-
-## Where to go next
-
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your Instagram access](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+For a carousel, prepare each image or video with `--is-carousel-item` and its own reviewed plan. Once the pieces are ready, use their IDs together with `--media-type CAROUSEL --children ID1,ID2` and save a plan for the whole carousel. Publish the resulting carousel draft after review. [Meta’s publishing guide](https://developers.facebook.com/documentation/instagram-platform/content-publishing)

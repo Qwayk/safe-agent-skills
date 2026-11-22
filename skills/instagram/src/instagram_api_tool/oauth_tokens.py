@@ -58,14 +58,22 @@ def write_token_payload(*, payload: dict[str, Any], dest_file: Path) -> TokenSta
     return get_token_status(dest_file)
 
 
-def read_access_token(path: Path) -> str | None:
-    if not path.exists():
-        return None
-    data = read_token_json(path) or {}
-    token = data.get("access_token")
-    if isinstance(token, str) and token.strip():
-        return token.strip()
+def usable_token_payload(data: Any) -> dict[str, Any] | None:
+    if isinstance(data, dict):
+        token = data.get("access_token")
+        if isinstance(token, str) and token.strip():
+            return data
+        records = data.get("data")
+        if isinstance(records, list) and len(records) == 1 and isinstance(records[0], dict):
+            token = records[0].get("access_token")
+            if isinstance(token, str) and token.strip():
+                return records[0]
     return None
+
+
+def read_access_token(path: Path) -> str | None:
+    payload = usable_token_payload(read_token_json(path))
+    return payload["access_token"].strip() if payload else None
 
 
 def get_token_status(path: Path) -> TokenStatus:

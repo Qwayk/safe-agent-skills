@@ -6,7 +6,13 @@ from typing import Any
 
 from ..errors import ValidationError
 from ..instagram_client import InstagramAPIClient
-from ..oauth_tokens import get_token_status, redact_token_dict, token_path_for_env_file, write_token_payload
+from ..oauth_tokens import (
+    get_token_status,
+    redact_token_dict,
+    token_path_for_env_file,
+    usable_token_payload,
+    write_token_payload,
+)
 from .write_utils import run_write_command
 
 
@@ -22,12 +28,14 @@ def _client(ctx: dict[str, Any]) -> InstagramAPIClient:
 def cmd_auth_check(args: object, ctx: dict) -> int:
     _ = args
     client = _client(ctx)
-    result = client.get_me()
+    result = client.get_me(fields="user_id,username")
+    account = client.professional_account(result)
     out = {
         "ok": True,
         "auth": "ok",
         "method": "auth.check",
         "result": result,
+        "account": account,
         "base_url": ctx["cfg"].base_url,
     }
     ctx["audit"].write("auth.check", out)
@@ -50,9 +58,9 @@ def cmd_auth_token_set(args, ctx) -> int:
     src = Path(args.file)
 
     def execute() -> dict[str, Any]:
-        src_data = json.loads(src.read_text(encoding="utf-8"))
-        if not isinstance(src_data, dict):
-            raise ValidationError("Token file must be a JSON object")
+        src_data = usable_token_payload(json.loads(src.read_text(encoding="utf-8")))
+        if src_data is None:
+            raise ValidationError("Token file must contain one usable Instagram access token.")
         dest = token_path_for_env_file(ctx["env_file"])
         st = write_token_payload(payload=src_data, dest_file=dest)
         return {"stored_to": st.path, "token_status": st.__dict__}
@@ -83,6 +91,14 @@ def cmd_auth_token_status(args, ctx) -> int:
     return 0
 
 
+def _save_returned_token(result: Any, env_file: str) -> dict[str, Any]:
+    payload = usable_token_payload(result)
+    if payload is None:
+        raise ValidationError("Instagram did not return a usable access token.")
+    write_token_payload(payload=payload, dest_file=token_path_for_env_file(env_file))
+    return redact_token_dict(payload)
+
+
 def cmd_auth_code_exchange(args, ctx) -> int:
     code = str(getattr(args, "code", "") or "").strip()
     if not code:
@@ -91,12 +107,7 @@ def cmd_auth_code_exchange(args, ctx) -> int:
     client = _client(ctx)
 
     def execute() -> dict[str, Any]:
-        payload = client.exchange_auth_code(code=code)
-        if not isinstance(payload, dict):
-            raise ValidationError("Auth code exchange returned unexpected payload")
-        dest = token_path_for_env_file(ctx["env_file"])
-        write_token_payload(payload=payload, dest_file=dest)
-        return redact_token_dict(payload)
+        return _save_returned_token(client.exchange_auth_code(code=code), ctx["env_file"])
 
     out = run_write_command(
         ctx=ctx,
@@ -123,12 +134,7 @@ def cmd_auth_token_exchange_long(args, ctx) -> int:
     )
 
     def execute() -> dict[str, Any]:
-        payload = client.exchange_short_lived_to_long()
-        if not isinstance(payload, dict):
-            raise ValidationError("Token exchange response has unexpected payload")
-        dest = token_path_for_env_file(ctx["env_file"])
-        write_token_payload(payload=payload, dest_file=dest)
-        return redact_token_dict(payload)
+        return _save_returned_token(client.exchange_short_lived_to_long(), ctx["env_file"])
 
     out = run_write_command(
         ctx=ctx,
@@ -155,12 +161,7 @@ def cmd_auth_token_refresh(args, ctx) -> int:
     )
 
     def execute() -> dict[str, Any]:
-        payload = client.refresh_long_lived_token()
-        if not isinstance(payload, dict):
-            raise ValidationError("Token refresh response has unexpected payload")
-        dest = token_path_for_env_file(ctx["env_file"])
-        write_token_payload(payload=payload, dest_file=dest)
-        return redact_token_dict(payload)
+        return _save_returned_token(client.refresh_long_lived_token(), ctx["env_file"])
 
     out = run_write_command(
         ctx=ctx,

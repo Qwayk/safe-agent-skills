@@ -1,91 +1,9 @@
-# Safety model
+# Review and check Instagram changes
 
-Instagram can touch media, comments, mentions, messages, insights, and token-related work, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Preview an action before changing posts, comments, messages, or token settings. Review the account, target and exact request. Use `--apply --ack-no-snapshot` after approval to proceed without a saved copy of the previous state. Publishing, sending messages and deleting comments also need `--yes`. Deleting comments needs `--ack-irreversible`. The tool has no automatic restore command.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+Save a plan with `--plan-out` when preparing a draft or publishing it. Use the same request and `--plan-in` to apply it. The command checks the account before sending it to Instagram. Save a new plan and get it reviewed if the account, media, caption, draft ID or Graph API settings change. [Publishing example](quickstart.md#review-and-publish-an-image)
 
-A good safety ask is: "Read the account or media first, then review the plan before comments, messages, publishing, or token writes."
+The receipt contains Instagram’s reply. After publishing, the tool reads the post by the ID Instagram returns and records whether that separate read confirmed it. If an answer is unclear, check the draft status before sending again. [Publishing help](troubleshooting.md#publishing)
 
-## Core safety rules
-
-- Dry-run by default.
-- Write apply attempts without saved before-state or provider backup use `before_state.status="no_snapshot_available"` and require explicit no-snapshot approval; missing approval refuses before provider HTTP.
-- Refuse when unsure; do not guess.
-- Risky writes still require `--yes` before the explicit no-snapshot approval is returned.
-- Comment delete still requires `--ack-irreversible` before the explicit no-snapshot approval is returned.
-- Never log secrets.
-
-## What counts as a write
-
-These command groups can change Instagram state or local token state:
-
-- `media create-container`
-- `media publish`
-- `media comments set`
-- `comments create`
-- `comments replies create`
-- `comments hide`
-- `comments delete`
-- `mentions reply-media`
-- `mentions reply-comment`
-- `messages send`
-- `messages private-reply`
-- `auth code exchange`
-- `auth token set`
-- `auth token exchange-long`
-- `auth token refresh`
-
-They create reviewable dry-run plans. confirmed applies require explicit no-snapshot approval; missing approval refuses before Instagram provider HTTP, local token-file writes, and receipt output.
-
-## Risk levels
-
-- Medium: token writes, comment replies, comment hide or unhide, message send
-- High: publish media, delete comment
-- Irreversible: comment delete without an API rollback path
-
-High-risk commands require `--yes`.
-Irreversible commands also require `--ack-irreversible`.
-
-## Plan, review, and refusal
-
-Recommended flow:
-
-1. run the command without `--apply`
-2. review the JSON plan
-3. attempt apply with the required extra flags only after review
-4. confirm missing approval is clearly labeled before apply
-5. for approved applies, confirm the receipt records the no-snapshot approval; for missing approval, confirm no provider or local token write happened
-
- `--receipt-out` is reserved for receipts from approved applies. missing-approval write refusals must not write that file unless apply is approved.
-
-## Verification limits
-
-The tool does not yet save live before-state before any write family.
-Because of that, it gives:
-
-- an explicit plan before apply
-- refusal gates for risky actions
-- `before_state.status="no_snapshot_available"` in write plans
-- a receipt for approved applies, or a refusal output when approval is missing
-- redacted local run artifacts under `.state/runs/`
-
-If you need to use read commands, configure auth through `.env` or an already prepared local token state. Do not use the write helpers to change token state when no saved snapshot is available.
-
-## No batch runner in the shipped CLI
-
-This tool does not ship the scaffold `jobs` command.
-For batch work, run repeated explicit CLI commands from your agent or your own wrapper script so each call still keeps the same safety gates.
-
-## Run history
-
-Write-capable commands save local proof under:
-
-- `.state/runs/<run_id>/plan.json`
-- `.state/runs/<run_id>/audit.jsonl`
-- `.state/runs/<run_id>/summary.md`
-- `.state/runs/index.jsonl`
-
-Keep these local files private:
-- These artifacts must never include secrets.
-- Plans and refusal outputs are your local proof trail.
-- missing-approval write refusals do not create `.state/runs/<run_id>/receipt.json`.
+For a group of changes, read the targets first and make a preview for each change. Send only the ones the user approved. Save a receipt with `--receipt-out` or look up the local plan, refusal or receipt with `runs list` and `runs show`. The run files live under `.state/runs/` next to your settings file. Keep private account details and credentials out of anything you share.

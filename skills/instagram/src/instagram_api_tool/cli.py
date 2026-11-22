@@ -8,30 +8,30 @@ from pathlib import Path
 from . import __version__
 from .audit_log import AuditLogger, CompositeAuditLogger
 from .commands import auth as auth_cmd
-from .commands import onboarding as onboarding_cmd
 from .commands import comments as comments_cmd
 from .commands import insights as insights_cmd
 from .commands import live_media as live_media_cmd
 from .commands import media as media_cmd
-from .commands import messages as messages_cmd
 from .commands import mentions as mentions_cmd
+from .commands import messages as messages_cmd
+from .commands import onboarding as onboarding_cmd
 from .commands import stories as stories_cmd
 from .commands import tags as tags_cmd
 from .commands import users as users_cmd
 from .config import load_config
-from .project_config import load_project_config
 from .errors import SafetyError, ToolError, ValidationError
 from .output import Output
+from .project_config import load_project_config
 from .runs import (
     RunContext,
+    append_index_row,
     build_deterministic_summary,
+    find_run,
     init_run_context,
     list_runs,
-    find_run,
-    write_summary_md,
-    append_index_row,
     runs_index_path_for_env_file,
- )
+    write_summary_md,
+)
 
 
 class _ToolArgumentParser(argparse.ArgumentParser):
@@ -247,7 +247,7 @@ def build_parser() -> argparse.ArgumentParser:
     media = sub.add_parser("media", help="Media operations")
     media_sub = media.add_subparsers(dest="media_cmd", required=True, parser_class=_ToolArgumentParser)
     media_list = media_sub.add_parser("list", help="List owned media")
-    media_list.add_argument("--ig-user-id", required=True, help="IG User ID")
+    media_list.add_argument("--ig-user-id", default=None, help="IG User ID (defaults to the connected account)")
     media_list.add_argument("--fields", default=None, help="Comma-separated field list")
     media_list.add_argument("--limit", type=int, default=None)
     media_list.add_argument("--before", default=None)
@@ -259,6 +259,7 @@ def build_parser() -> argparse.ArgumentParser:
     media_create.add_argument("--image-url", default=None, help="Image URL")
     media_create.add_argument("--video-url", default=None, help="Video URL")
     media_create.add_argument("--children", default=None, help="Comma list of child media IDs")
+    media_create.add_argument("--is-carousel-item", action="store_true", help="Prepare one image or video for a carousel")
     media_create.add_argument("--caption", default=None, help="Optional caption")
     media_create.add_argument("--fields", default=None, help="Comma-separated field list")
     media_create.set_defaults(func=media_cmd.cmd_media_create_container, write_capable=True)
@@ -469,6 +470,7 @@ def main(argv: list[str]) -> int:
         }
     )
 
+    command_str = "instagram-api-tool"
     try:
         if bool(args.version):
             payload = {"ok": True, "tool": "instagram-api-tool", "version": __version__}
@@ -481,7 +483,14 @@ def main(argv: list[str]) -> int:
         if not getattr(args, "cmd", None):
             parser.error("Missing command. Use --help to see available commands.")
 
-        command_str = "instagram-api-tool " + " ".join(argv)
+        if args.cmd == "auth":
+            auth_command = [args.auth_cmd]
+            subcommand = getattr(args, "auth_code_cmd", None) or getattr(args, "token_cmd", None)
+            if subcommand:
+                auth_command.append(subcommand)
+            command_str = "instagram-api-tool auth " + " ".join(auth_command)
+        else:
+            command_str = "instagram-api-tool " + " ".join(argv)
         audit.bind_context(
             {
                 "tool": "instagram-api-tool",
@@ -598,7 +607,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="instagram-api-tool",
             version=__version__,
-            command="instagram-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -614,7 +623,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="instagram-api-tool",
             version=__version__,
-            command="instagram-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -632,7 +641,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="instagram-api-tool",
             version=__version__,
-            command="instagram-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,

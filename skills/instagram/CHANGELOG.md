@@ -1,21 +1,12 @@
-# Instagram Tool Changelog
+# Instagram changelog
 
-All notable changes to this project are documented in this file.
+## Unreleased
 
-This format is based on Keep a Changelog, and this project follows Semantic Versioning.
-Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking changes.
+- Use the documented sign-in reply to save a working token. Keep codes and tokens out of printed and saved command records.
+- Create a usable settings file. Check the professional account ID and list recent posts from that account by default.
+- Check the saved plan and the account before creating or publishing a draft. Show draft status, support carousel items and read the new post back when Instagram returns its ID.
+- Combine repeated guides and keep the dated tests and examples.
 
-## [Unreleased]
+## Earlier work in 0.1.0
 
-### Added
-- Initial scaffold of `instagram-api-tool` from `python-api-tool`.
-- Added a blocked before-state contract to every write plan.
-
-### Changed
-- Renamed package namespace to `instagram_api_tool`.
-- Renamed CLI script and project name to `instagram-api-tool`.
-- Write apply now requires command-specific before-state support or explicit no-snapshot approval before Instagram provider writes, local token-file writes, or receipt output.
-
-### Fixed
-
-### Removed
+The first version added the `instagram-api-tool` commands and the local plan and receipt format. It required explicit approval before a write without a saved copy of the previous state.
