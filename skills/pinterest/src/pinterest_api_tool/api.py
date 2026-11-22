@@ -109,7 +109,7 @@ def refresh_access_token(
     - Authorization: Basic base64(app_id:app_secret)
     - form body: grant_type=refresh_token, refresh_token=...
     """
-    basic = b64encode(f"{app_id}:{app_secret}".encode("utf-8")).decode("utf-8")
+    basic = b64encode(f"{app_id}:{app_secret}".encode()).decode("utf-8")
     resp = http.request(
         "POST",
         f"{base_url.rstrip('/')}/oauth/token",
@@ -142,9 +142,9 @@ def resolve_access_token(
     base_url: str,
     http: HttpClient,
 ) -> str:
-    """
-    Read `.state/token.json` next to `--env-file` and extract `access_token`.
-    """
+    if env_access_token and env_access_token.strip():
+        return env_access_token.strip()
+
     tok_path = token_path_for_env_file(env_file)
     token = read_token_json(tok_path) or {}
 
@@ -152,10 +152,8 @@ def resolve_access_token(
     if isinstance(access_token, str) and access_token.strip() and not _is_token_expired(token):
         return access_token.strip()
 
-    # Try refresh (from env or token file).
-    rt = env_refresh_token
-    if rt is None and isinstance(token.get("refresh_token"), str):
-        rt = token["refresh_token"]
+    saved_refresh = token.get("refresh_token")
+    rt = saved_refresh.strip() if isinstance(saved_refresh, str) and saved_refresh.strip() else env_refresh_token
 
     if rt and app_id and app_secret:
         refreshed = refresh_access_token(
@@ -166,7 +164,7 @@ def resolve_access_token(
             refresh_token=rt,
         )
         # Store a minimal token file (no secrets beyond tokens themselves).
-        st = write_token_dict(
+        write_token_dict(
             data={
                 "access_token": refreshed.get("access_token"),
                 "refresh_token": refreshed.get("refresh_token") or rt,
@@ -176,16 +174,11 @@ def resolve_access_token(
             },
             dest_file=tok_path,
         )
-        _ = st  # status available if needed later
         return str(refreshed["access_token"]).strip()
 
-    # Fall back to env access token (short-term/manual mode).
-    if env_access_token is not None and env_access_token.strip():
-        return env_access_token.strip()
-
     raise RuntimeError(
-        "No usable access token found. Either set PINTEREST_ACCESS_TOKEN in .env, or store `.state/token.json`, "
-        "or configure PINTEREST_APP_ID + PINTEREST_APP_SECRET + PINTEREST_REFRESH_TOKEN to enable auto-refresh."
+        "No usable access token found for this settings file. Set PINTEREST_ACCESS_TOKEN, configure refresh credentials, "
+        "or import a known token file with auth token set. See docs/onboarding.md."
     )
 
 
@@ -196,10 +189,11 @@ class Page:
 
 
 class PinterestApi:
-    def __init__(self, *, base_url: str, http: HttpClient, access_token: str):
+    def __init__(self, *, base_url: str, http: HttpClient, access_token: str, retry_writes: bool = True):
         self._base_url = base_url.rstrip("/")
         self._http = http
         self._access_token = access_token
+        self._write_retries = 2 if retry_writes else 0
 
     @staticmethod
     def _json_or_empty(resp: HttpResponse) -> dict[str, Any]:
@@ -246,15 +240,20 @@ class PinterestApi:
         }
         if json_body is not None:
             headers["Content-Type"] = "application/json"
-        return self._http.request(
-            "POST",
-            f"{self._base_url}{path}",
-            headers=headers,
-            params=params or None,
-            json_body=json_body,
-            allowed_statuses=allowed_statuses,
-            retries=2,
-        )
+        try:
+            return self._http.request(
+                "POST",
+                f"{self._base_url}{path}",
+                headers=headers,
+                params=params or None,
+                json_body=json_body,
+                allowed_statuses=allowed_statuses,
+                retries=self._write_retries,
+            )
+        except RuntimeError as error:
+            if self._write_retries == 0 and str(error).startswith(("HTTP 5", "Request failed")):
+                raise RuntimeError(f"{error}\nPinterest may have made the change. Check Pinterest before retrying.") from error
+            raise
 
     def post(self, path: str, *, json_body: Any | None = None, params: dict[str, Any] | None = None) -> dict[str, Any]:
         return self._json_or_empty(self.post_response(path, json_body=json_body, params=params))
@@ -278,7 +277,7 @@ class PinterestApi:
             params=params or None,
             json_body=json_body,
             allowed_statuses=allowed_statuses,
-            retries=2,
+            retries=self._write_retries,
         )
 
     def patch(self, path: str, *, json_body: dict[str, Any], params: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -300,7 +299,7 @@ class PinterestApi:
             },
             params=params or None,
             allowed_statuses=allowed_statuses,
-            retries=2,
+            retries=self._write_retries,
         )
 
     def delete(self, path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -343,7 +342,8 @@ class PinterestApi:
         pages = 0
         next_bookmark: str | None = bookmark
         while True:
-            page = self.get_page(path, params=params, page_size=page_size, bookmark=next_bookmark)
+            remaining = limit - len(all_items)
+            page = self.get_page(path, params=params, page_size=min(page_size, remaining), bookmark=next_bookmark)
             pages += 1
             for item in page.items:
                 if not isinstance(item, dict):

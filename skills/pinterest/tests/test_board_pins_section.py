@@ -38,14 +38,12 @@ class TestBoardPinsSection(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp()
             ctx = {
                 "cfg": Config(
                     base_url="https://api.pinterest.com/v5",
-                    access_token=None,
+                    access_token="X",
                     app_id=None,
                     app_secret=None,
                     refresh_token=None,

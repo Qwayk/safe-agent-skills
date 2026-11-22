@@ -70,7 +70,7 @@ class TestCatalogsReportingCommands(unittest.TestCase):
         params = http.calls[0]["params"] or {}
         self.assertEqual(params["ad_account_id"], "123")
         self.assertEqual(params["foo"], "bar")
-        self.assertEqual(params["page_size"], 100)
+        self.assertEqual(params["page_size"], 10)
 
     def test_item_issues_list_builds_path_and_params(self) -> None:
         http = _FakeHttp([{"items": [{"id": "i1"}], "bookmark": None}])
@@ -105,7 +105,7 @@ class TestCatalogsReportingCommands(unittest.TestCase):
         self.assertIn("/catalogs/processing_results/pr1/item_issues", str(http.calls[0]["url"]))
         params = http.calls[0]["params"] or {}
         self.assertEqual(params["ad_account_id"], "123")
-        self.assertEqual(params["page_size"], 100)
+        self.assertEqual(params["page_size"], 10)
 
     def test_reports_list_and_stats_paths(self) -> None:
         http = _FakeHttp(
@@ -154,7 +154,7 @@ class TestCatalogsReportingCommands(unittest.TestCase):
         self.assertIn("/catalogs/reports", str(http.calls[0]["url"]))
         params0 = http.calls[0]["params"] or {}
         self.assertEqual(params0["ad_account_id"], "123")
-        self.assertEqual(params0["page_size"], 100)
+        self.assertEqual(params0["page_size"], 10)
 
         self.assertIn("/catalogs/reports/stats", str(http.calls[1]["url"]))
         params1 = http.calls[1]["params"] or {}

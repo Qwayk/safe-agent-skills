@@ -7,13 +7,13 @@ from pathlib import Path
 
 from . import __version__
 from .audit_log import AuditLogger
-from .commands import auth as auth_cmd
-from .commands import analytics as analytics_cmd
 from .commands import ads as ads_cmd
+from .commands import analytics as analytics_cmd
 from .commands import audit as audit_cmd
+from .commands import auth as auth_cmd
 from .commands import boards as boards_cmd
-from .commands import catalogs as catalogs_cmd
 from .commands import business_access as business_access_cmd
+from .commands import catalogs as catalogs_cmd
 from .commands import conversions as conversions_cmd
 from .commands import jobs as jobs_cmd
 from .commands import pin_links as pin_links_cmd
@@ -25,6 +25,7 @@ from .config import load_config
 from .http import HttpClient
 from .output import Output
 from .project_config import load_project_config
+from .write_framework import require_write_allowed
 
 
 class ValidationError(Exception):
@@ -75,6 +76,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--debug", action="store_true", help="Show stack traces on errors")
     p.add_argument("--output", choices=("json", "text"), default="json", help="Output format (default: json)")
     p.add_argument("--log-file", default=None, help="Optional audit log path (JSONL)")
+    p.add_argument("--plan-out", help="Save a board or pin preview for the signed-in account")
+    p.add_argument("--plan-in", help="Use the saved preview for an approved board or pin change")
     p.add_argument("--apply", action="store_true", help="Apply changes (default is dry-run)")
     p.add_argument("--yes", action="store_true", help="Additional confirmation for destructive/batch actions")
     p.add_argument(
@@ -142,7 +145,7 @@ def build_parser() -> argparse.ArgumentParser:
     token_sub = token.add_subparsers(dest="token_cmd", required=True)
     token_set = token_sub.add_parser(
         "set",
-        help="Store token JSON under .state/token.json (requires --yes --ack-no-snapshot)",
+        help="Store token JSON for this settings file (requires --yes --ack-no-snapshot)",
     )
     token_set.add_argument("--file", required=True, help="Token JSON file path (input)")
     token_set.set_defaults(func=auth_cmd.cmd_auth_token_set)
@@ -1395,6 +1398,23 @@ def main(argv: list[str]) -> int:
             "project_dir": str(project_dir),
             "skip_auth_for_write_plan": _is_write_plan_or_refusal_command(args),
         }
+        group = getattr(args, "sections_cmd" if args.cmd == "board-sections" else f"{args.cmd}_cmd", "")
+        reviewed = (
+            args.cmd in {"boards", "board-sections", "pins"} and ctx["skip_auth_for_write_plan"]
+        ) or (args.cmd == "pins" and group == "links" and args.pin_links_cmd == "apply")
+        if reviewed:
+            ctx["plan_in"] = args.plan_in
+            ctx["plan_out"] = args.plan_out
+            ctx["allow_mismatch"] = getattr(args, "allow_mismatch", False)
+            ctx["offline_preview"] = not args.apply and not args.plan_out and group not in {"ensure", "links"}
+            if args.apply:
+                require_write_allowed(ctx, acks_required=["ack-irreversible"] if group == "delete" else [])
+                if not args.plan_in or args.plan_out:
+                    raise RuntimeError("Pass --plan-in with the saved preview when applying.")
+            elif args.plan_in:
+                raise RuntimeError("Use --plan-in with --apply, or --plan-out to save a preview.")
+        elif args.plan_in or args.plan_out:
+            raise RuntimeError("--plan-in and --plan-out are for board, section, and pin changes.")
         return int(args.func(args, ctx))
     except KeyboardInterrupt:
         if _argv_wants_json(argv):

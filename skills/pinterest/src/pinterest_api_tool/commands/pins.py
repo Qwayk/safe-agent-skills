@@ -1,30 +1,17 @@
 from __future__ import annotations
 
-from urllib.parse import urlparse, urlunparse
 from typing import Any
+from urllib.parse import urlparse, urlunparse
 
-from ..api import PinterestApi, resolve_access_token
-from ..write_framework import build_plan, build_receipt, require_write_allowed, write_operation
-
-
-def _api(ctx: dict[str, Any]) -> PinterestApi:
-    cfg = ctx["cfg"]
-    access_token = "write-plan-or-refusal"
-    if not bool(ctx.get("skip_auth_for_write_plan")):
-        access_token = resolve_access_token(
-            env_file=ctx["env_file"],
-            env_access_token=cfg.access_token,
-            env_refresh_token=cfg.refresh_token,
-            app_id=cfg.app_id,
-            app_secret=cfg.app_secret,
-            base_url=cfg.base_url,
-            http=ctx["http"],
-        )
-    return PinterestApi(
-        base_url=cfg.base_url,
-        http=ctx["http"],
-        access_token=access_token,
-    )
+from ..api import PinterestApi
+from ..write_framework import (
+    board_pin_api,
+    build_plan,
+    build_receipt,
+    require_write_allowed,
+    review_change,
+    write_operation,
+)
 
 
 def _param_ad_account_id(args: Any) -> dict[str, Any]:
@@ -120,7 +107,7 @@ def _build_pin_media_source(args: Any) -> dict[str, Any]:
 
 
 def cmd_pins_list(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     params: dict[str, Any] = {}
     if args.ad_account_id:
         params["ad_account_id"] = str(args.ad_account_id).strip()
@@ -152,7 +139,7 @@ def cmd_pins_list(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_pins_get(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     pin_id = str(args.id).strip()
     if not pin_id:
         raise RuntimeError("--id is required")
@@ -169,7 +156,7 @@ def cmd_pins_get(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_pins_create(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     board_id = str(args.board_id).strip()
     if not board_id:
         raise RuntimeError("--board-id is required")
@@ -207,26 +194,28 @@ def cmd_pins_create(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="GET", path="/pins/{pin_id}", params=params or None),
     ]
 
+    plan = build_plan(
+        action=action,
+        operations=ops,
+        request={
+            "board_id": board_id,
+            "board_section_id": board_section_id,
+            "scan_limit": scan_limit,
+            "title": args.title,
+            "description": args.description,
+            "link": args.link,
+            "alt_text": args.alt_text,
+            "media_source_type": getattr(args, "media_source_type", None),
+        },
+    )
     if not bool(ctx.get("apply")):
-        plan = build_plan(
-            action=action,
-            operations=ops,
-            request={
-                "board_id": board_id,
-                "board_section_id": board_section_id,
-                "scan_limit": scan_limit,
-                "title": args.title,
-                "description": args.description,
-                "link": args.link,
-                "alt_text": args.alt_text,
-                "media_source_type": getattr(args, "media_source_type", None),
-            },
-        )
+        review_change(ctx, api, plan)
         ctx["audit"].write("pins.create.plan", {"board_id": board_id, "board_section_id": board_section_id})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx)
+    review_change(ctx, api, plan)
 
     desired_link = str(args.link).strip() if args.link is not None else ""
     desired_canonical = _canonicalize_link(desired_link) if desired_link else None
@@ -250,7 +239,7 @@ def cmd_pins_create(args: Any, ctx: dict[str, Any]) -> int:
     created = api.post("/pins", json_body=body, params=params or None)
     pin_id = str(created.get("id") or "").strip()
     if not pin_id:
-        raise RuntimeError("Unexpected create pin response: missing id")
+        raise RuntimeError("Pinterest did not return the new pin ID. Check Pinterest before retrying")
     after = api.get(f"/pins/{pin_id}", params=params or None)
 
     if str(after.get("id") or "").strip() != pin_id:
@@ -299,7 +288,7 @@ def cmd_pins_create(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_pins_update(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     pin_id = str(args.id).strip()
     if not pin_id:
         raise RuntimeError("--id is required")
@@ -340,13 +329,15 @@ def cmd_pins_update(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="GET", path=f"/pins/{pin_id}", params=params or None),
     ]
 
+    plan = build_plan(action=action, operations=ops, request={"pin_id": pin_id, **body})
     if not bool(ctx.get("apply")):
-        plan = build_plan(action=action, operations=ops, request={"pin_id": pin_id, **body})
+        review_change(ctx, api, plan)
         ctx["audit"].write("pins.update.plan", {"pin_id": pin_id, "fields": sorted(body.keys())})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx)
+    review_change(ctx, api, plan)
     before = api.get(f"/pins/{pin_id}", params=params or None)
     _ = api.patch(f"/pins/{pin_id}", json_body=body, params=params or None)
     after = api.get(f"/pins/{pin_id}", params=params or None)
@@ -380,7 +371,7 @@ def cmd_pins_update(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_pins_delete(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     pin_id = str(args.id).strip()
     if not pin_id:
         raise RuntimeError("--id is required")
@@ -393,13 +384,15 @@ def cmd_pins_delete(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="GET", path=f"/pins/{pin_id}", params=params or None),
     ]
 
+    plan = build_plan(action=action, operations=ops, acks_required=["ack-irreversible"], request={"pin_id": pin_id})
     if not bool(ctx.get("apply")):
-        plan = build_plan(action=action, operations=ops, acks_required=["ack-irreversible"], request={"pin_id": pin_id})
+        review_change(ctx, api, plan)
         ctx["audit"].write("pins.delete.plan", {"pin_id": pin_id})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx, acks_required=["ack-irreversible"])
+    review_change(ctx, api, plan)
     before_resp = api.get_response(f"/pins/{pin_id}", params=params or None, allowed_statuses=(404,))
     before = before_resp.json() if before_resp.status != 404 else None
 
@@ -439,7 +432,7 @@ def cmd_pins_delete(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_pins_save(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     source_id = str(args.id).strip()
     if not source_id:
         raise RuntimeError("--id is required")
@@ -469,17 +462,19 @@ def cmd_pins_save(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="GET", path="/pins/{pin_id}", params=params or None),
     ]
 
+    plan = build_plan(
+        action=action,
+        operations=ops,
+        request={"source_pin_id": source_id, "board_id": board_id, "board_section_id": board_section_id, "scan_limit": scan_limit},
+    )
     if not bool(ctx.get("apply")):
-        plan = build_plan(
-            action=action,
-            operations=ops,
-            request={"source_pin_id": source_id, "board_id": board_id, "board_section_id": board_section_id, "scan_limit": scan_limit},
-        )
+        review_change(ctx, api, plan)
         ctx["audit"].write("pins.save.plan", {"source_id": source_id, "board_id": board_id, "board_section_id": board_section_id})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx)
+    review_change(ctx, api, plan)
 
     source = api.get(f"/pins/{source_id}", params=params or None)
     source_canonical = _canonicalize_link(str(source.get("link") or ""))
@@ -546,7 +541,7 @@ def cmd_pins_save(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_pins_ensure(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     board_id = str(args.board_id).strip()
     if not board_id:
         raise RuntimeError("--board-id is required")
@@ -578,13 +573,15 @@ def cmd_pins_ensure(args: Any, ctx: dict[str, Any]) -> int:
 
     if matches:
         ops = [write_operation(method="GET", path=list_path, params={**params, "limit": scan_limit})]
+        plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "board_section_id": board_section_id, "link": link})
         if not bool(ctx.get("apply")):
-            plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "board_section_id": board_section_id, "link": link})
+            review_change(ctx, api, plan)
             ctx["audit"].write("pins.ensure.plan", {"board_id": board_id, "board_section_id": board_section_id, "mode": "noop"})
             ctx["out"].emit(plan)
             return 0
 
         require_write_allowed(ctx)
+        review_change(ctx, api, plan)
         receipt = build_receipt(
             action=action,
             changed=False,
@@ -616,30 +613,32 @@ def cmd_pins_ensure(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="GET", path="/pins/{pin_id}", params=params or None),
     ]
 
+    plan = build_plan(
+        action=action,
+        operations=ops,
+        request={
+            "board_id": board_id,
+            "board_section_id": board_section_id,
+            "link": link,
+            "scan_limit": scan_limit,
+            "title": args.title,
+            "description": args.description,
+            "alt_text": args.alt_text,
+            "media_source_type": getattr(args, "media_source_type", None),
+        },
+    )
     if not bool(ctx.get("apply")):
-        plan = build_plan(
-            action=action,
-            operations=ops,
-            request={
-                "board_id": board_id,
-                "board_section_id": board_section_id,
-                "link": link,
-                "scan_limit": scan_limit,
-                "title": args.title,
-                "description": args.description,
-                "alt_text": args.alt_text,
-                "media_source_type": getattr(args, "media_source_type", None),
-            },
-        )
+        review_change(ctx, api, plan)
         ctx["audit"].write("pins.ensure.plan", {"board_id": board_id, "board_section_id": board_section_id, "mode": "create"})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx)
+    review_change(ctx, api, plan)
     created = api.post("/pins", json_body=body, params=params or None)
     pin_id = str(created.get("id") or "").strip()
     if not pin_id:
-        raise RuntimeError("Unexpected create pin response: missing id")
+        raise RuntimeError("Pinterest did not return the new pin ID. Check Pinterest before retrying")
     after = api.get(f"/pins/{pin_id}", params=params or None)
 
     mismatches: list[str] = []

@@ -1,19 +1,6 @@
 # API coverage
 
-Pinterest coverage shows exactly what this skill can do with boards, pins, ads, catalogs, reports, and auth state. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
-
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can inspect boards, pins, catalogs, and ad reports, then show which Pinterest changes are covered."
-
-## Coverage notes
-
-Last verified (UTC): 2026-02-03
-- The “Scopes” column is a reminder only. **Confirm required scopes in the Pinterest developer UI** (and the official docs), since scope names/requirements can change.
-- Reference links point to the official Pinterest API v5 docs (operation IDs).
-- Write coverage is split into:
-  - Phase A: read-only surfaces (inventory + analytics + ads/catalog reads).
-  - Phase B: safety-gated write plans and blocked apply refusals (plan → explicit attempt → require explicit no-snapshot approval before write).
+Find the Pinterest requests each command uses. See [approval and recovery](safety_model.md) before making a change and [test results](proof.md) for the checks we ran.
 
 ## Inventory + account
 
@@ -144,17 +131,17 @@ Last verified (UTC): 2026-02-03
 | `audit snapshot --out-dir ...` | Local JSON files | Reads multiple inventory + analytics endpoints and writes snapshots to disk. |
 | `pins links plan --pins-json ... --out ...` | Local JSON file | Builds a plan file from a prior `audit snapshot` `pins.json`. |
 
-## Pinterest write workflow (safety gated)
+## Pin link changes
 
 | CLI command | Method + path | Safety contract | Reference |
 |---|---|---|---|
-| `pins links apply --plan ...` | Dry-run: `GET /pins/{pin_id}` preview. Apply attempt: requires explicit no-snapshot approval before `PATCH /pins/{pin_id}`. | Dry-run preview includes a before-state contract that requires explicit no-snapshot approval; confirmed apply requires `--apply --yes`, then requires explicit no-snapshot approval before write. | https://developers.pinterest.com/docs/api/v5/#operation/pins/update |
+| `pins links apply --plan ...` | `GET /pins/{pin_id}` then `PATCH /pins/{pin_id}` on apply. | Save the preview with `--plan-out` and review it before apply. Apply needs `--plan-in --apply --yes --ack-no-snapshot`. | https://developers.pinterest.com/docs/api/v5/#operation/pins/update |
 
-## Phase B — Writes (planned/implemented)
+## Changes
 
 Safety model (all commands in this section):
 - Dry-run by default (prints a deterministic plan or read-only preview; no remote writes).
-- Any remote write attempt requires `--apply --yes`.
+- Any remote write attempt requires `--apply --yes`. Board, section, and pin changes also require `--plan-in` with the saved preview.
 - Destructive operations additionally require `--ack-irreversible`.
 - Commands that can increase ad spend additionally require `--ack-spend`.
 - Commands that can trigger significant remote work additionally require `--ack-volume`.

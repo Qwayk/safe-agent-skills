@@ -8,6 +8,7 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
+from unittest.mock import patch
 
 from pinterest_api_tool.commands.boards import (
     cmd_board_sections_create,
@@ -139,11 +140,17 @@ class _Audit:
 
 
 class TestBoardsWriteCommands(unittest.TestCase):
+    def setUp(self) -> None:
+        # These tests exercise individual write handlers after the CLI has checked the plan.
+        review = patch("pinterest_api_tool.commands.boards.review_change")
+        review.start()
+        self.addCleanup(review.stop)
+
     def _ctx(self, tool_dir: Path, http: _FakeHttp, *, apply: bool, yes: bool, ack_irreversible: bool = False) -> dict[str, Any]:
         return {
             "cfg": Config(
                 base_url=http.base_url,
-                access_token=None,
+                access_token="X",
                 app_id=None,
                 app_secret=None,
                 refresh_token=None,
@@ -164,8 +171,6 @@ class TestBoardsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             ctx = self._ctx(tool_dir, http, apply=False, yes=False)
@@ -193,8 +198,6 @@ class TestBoardsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             http.boards = [{"id": "1", "name": "My Board"}]
@@ -217,8 +220,6 @@ class TestBoardsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             http.boards = [{"id": "10", "name": "Delete Me"}]
@@ -233,8 +234,6 @@ class TestBoardsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             http.sections_by_board = {"55": [{"id": "s1", "name": "My Section"}]}
@@ -249,15 +248,13 @@ class TestBoardsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5", omit_section_id_on_create=True)
             ctx = self._ctx(tool_dir, http, apply=True, yes=True)
             ctx["ack_no_snapshot"] = True
             args = SimpleNamespace(board_id="55", name="My Section", ad_account_id=None, scan_limit=5000, allow_mismatch=False)
 
-            with self.assertRaisesRegex(RuntimeError, "missing id"):
+            with self.assertRaisesRegex(RuntimeError, "did not return the new section ID"):
                 cmd_board_sections_create(args, ctx)
             self.assertTrue(any(c["method"] == "POST" and c["path"] == "/boards/55/sections" for c in http.calls))
 
@@ -265,15 +262,13 @@ class TestBoardsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5", omit_section_id_on_create=True)
             ctx = self._ctx(tool_dir, http, apply=True, yes=True)
             ctx["ack_no_snapshot"] = True
             args = SimpleNamespace(board_id="55", name="My Section", ad_account_id=None, scan_limit=5000)
 
-            with self.assertRaisesRegex(RuntimeError, "missing id"):
+            with self.assertRaisesRegex(RuntimeError, "did not return the new section ID"):
                 cmd_board_sections_ensure(args, ctx)
             self.assertTrue(any(c["method"] == "POST" and c["path"] == "/boards/55/sections" for c in http.calls))
 
@@ -281,8 +276,6 @@ class TestBoardsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5", remove_section_on_patch=True)
             http.sections_by_board = {"55": [{"id": "s1", "name": "Old"}]}
@@ -298,8 +291,6 @@ class TestBoardsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             http.sections_by_board = {"55": [{"id": "s1", "name": "Keep"}]}

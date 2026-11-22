@@ -5,7 +5,7 @@ Last verified (UTC): 2026-02-03
 ## Official Pinterest documentation
 
 - Pinterest API v5 reference (endpoints + operation IDs): https://developers.pinterest.com/docs/api/v5/
-- Authentication (OAuth, tokens, scopes overview): https://developers.pinterest.com/docs/getting-started/authentication/
+- Authentication (OAuth, tokens, scopes overview): https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/
 - Getting started overview: https://developers.pinterest.com/docs/getting-started/overview/
 
 ## User account discovery (API v5 operation IDs)

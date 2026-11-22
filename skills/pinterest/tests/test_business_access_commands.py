@@ -96,6 +96,6 @@ class TestBusinessAccessCommands(unittest.TestCase):
             self.assertEqual(http.calls[0]["method"], "GET")
             self.assertIn(expected_path, str(http.calls[0]["url"]))
             params = http.calls[0]["params"] or {}
-            self.assertEqual(params["page_size"], 20)
+            self.assertEqual(params["page_size"], 10)
             self.assertEqual(params["foo"], "bar")
 

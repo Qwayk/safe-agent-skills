@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -18,11 +20,8 @@ class TokenStatus:
 
 
 def token_path_for_env_file(env_file: str) -> Path:
-    """
-    Store OAuth tokens next to the env file (per-environment), under `.state/token.json`.
-    """
-    root = Path(env_file).resolve().parent
-    return root / ".state" / "token.json"
+    settings = Path(env_file).resolve()
+    return settings.parent / ".state" / "pinterest" / settings.name / "token.json"
 
 
 def _utc(ts: float) -> str:
@@ -45,19 +44,21 @@ def write_token_from_file(*, src_file: Path, dest_file: Path) -> TokenStatus:
     if not isinstance(data, dict):
         raise RuntimeError("Token file must be a JSON object")
 
-    dest_file.parent.mkdir(parents=True, exist_ok=True)
-    dest_file.write_text(json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    return get_token_status(dest_file)
+    return write_token_dict(data=data, dest_file=dest_file)
 
 
 def write_token_dict(*, data: dict[str, Any], dest_file: Path) -> TokenStatus:
-    """
-    Store a token dict under `.state/token.json` (gitignored).
-    """
     if not isinstance(data, dict):
         raise RuntimeError("Token data must be a JSON object")
     dest_file.parent.mkdir(parents=True, exist_ok=True)
-    dest_file.write_text(json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    descriptor, temporary = tempfile.mkstemp(dir=dest_file.parent)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            json.dump(data, handle, ensure_ascii=False, indent=2, sort_keys=True)
+            handle.write("\n")
+        os.replace(temporary, dest_file)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
     return get_token_status(dest_file)
 
 

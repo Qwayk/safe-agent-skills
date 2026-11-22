@@ -7,26 +7,14 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse, urlunparse
 
-from ..api import PinterestApi, resolve_access_token
-from ..write_framework import require_write_allowed
+from ..write_framework import (
+    board_pin_api,
+    build_plan,
+    require_write_allowed,
+    review_change,
+    write_operation,
+)
 from .write_safety import blocked_plan
-
-
-def _api(ctx: dict[str, Any]) -> PinterestApi:
-    cfg = ctx["cfg"]
-    return PinterestApi(
-        base_url=cfg.base_url,
-        http=ctx["http"],
-        access_token=resolve_access_token(
-            env_file=ctx["env_file"],
-            env_access_token=cfg.access_token,
-            env_refresh_token=cfg.refresh_token,
-            app_id=cfg.app_id,
-            app_secret=cfg.app_secret,
-            base_url=cfg.base_url,
-            http=ctx["http"],
-        ),
-    )
 
 
 def _canonicalize_url(url: str, *, canonical_host: str, allowed_hosts: set[str]) -> str | None:
@@ -187,7 +175,17 @@ def cmd_pin_links_apply(args: Any, ctx: dict[str, Any]) -> int:
 
     if ctx["apply"]:
         require_write_allowed(ctx)
-    api = _api(ctx)
+    api = board_pin_api(ctx)
+    preview = build_plan(
+        action="pins.links.apply",
+        operations=[
+            write_operation(method="PATCH", path=f"/pins/{fix.pin_id}", json_body={"link": fix.new_link})
+            for fix in to_apply
+        ],
+        request={"items": [vars(fix) for fix in to_apply]},
+    )
+    if ctx.get("apply"):
+        review_change(ctx, api, preview)
 
     dry_run = not bool(ctx["apply"])
     results: list[dict[str, Any]] = []
@@ -235,6 +233,9 @@ def cmd_pin_links_apply(args: Any, ctx: dict[str, Any]) -> int:
                 "reason": f.reason,
             }
         )
+
+    if dry_run:
+        review_change(ctx, api, preview)
 
     out = {
         "ok": True,

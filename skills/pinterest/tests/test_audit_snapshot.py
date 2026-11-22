@@ -42,9 +42,6 @@ class TestAuditSnapshot(unittest.TestCase):
             env_file = tool_dir / ".env"
             env_file.write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
 
-            token_dir = tool_dir / ".state"
-            token_dir.mkdir()
-            (token_dir / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             out_dir = Path(d) / "out"
 
@@ -76,7 +73,7 @@ class TestAuditSnapshot(unittest.TestCase):
             ctx = {
                 "cfg": Config(
                     base_url="https://api.pinterest.com/v5",
-                    access_token=None,
+                    access_token="X",
                     app_id=None,
                     app_secret=None,
                     refresh_token=None,
@@ -113,9 +110,6 @@ class TestAuditSnapshot(unittest.TestCase):
             env_file = tool_dir / ".env"
             env_file.write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
 
-            token_dir = tool_dir / ".state"
-            token_dir.mkdir()
-            (token_dir / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             out_dir = Path(d) / "out"
 
@@ -147,7 +141,7 @@ class TestAuditSnapshot(unittest.TestCase):
             ctx = {
                 "cfg": Config(
                     base_url="https://api.pinterest.com/v5",
-                    access_token=None,
+                    access_token="X",
                     app_id=None,
                     app_secret=None,
                     refresh_token=None,
@@ -178,9 +172,6 @@ class TestAuditSnapshot(unittest.TestCase):
             env_file = tool_dir / ".env"
             env_file.write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
 
-            token_dir = tool_dir / ".state"
-            token_dir.mkdir()
-            (token_dir / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             out_dir = Path(d) / "out"
 
@@ -235,7 +226,7 @@ class TestAuditSnapshot(unittest.TestCase):
             ctx = {
                 "cfg": Config(
                     base_url="https://api.pinterest.com/v5",
-                    access_token=None,
+                    access_token="X",
                     app_id=None,
                     app_secret=None,
                     refresh_token=None,
@@ -292,9 +283,6 @@ class TestAuditSnapshot(unittest.TestCase):
             env_file = tool_dir / ".env"
             env_file.write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
 
-            token_dir = tool_dir / ".state"
-            token_dir.mkdir()
-            (token_dir / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             out_dir = Path(d) / "out"
 
@@ -341,7 +329,7 @@ class TestAuditSnapshot(unittest.TestCase):
             ctx = {
                 "cfg": Config(
                     base_url="https://api.pinterest.com/v5",
-                    access_token=None,
+                    access_token="X",
                     app_id=None,
                     app_secret=None,
                     refresh_token=None,
@@ -374,9 +362,6 @@ class TestAuditSnapshot(unittest.TestCase):
             env_file = tool_dir / ".env"
             env_file.write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
 
-            token_dir = tool_dir / ".state"
-            token_dir.mkdir()
-            (token_dir / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             out_dir = Path(d) / "out"
 
@@ -408,7 +393,7 @@ class TestAuditSnapshot(unittest.TestCase):
             ctx = {
                 "cfg": Config(
                     base_url="https://api.pinterest.com/v5",
-                    access_token=None,
+                    access_token="X",
                     app_id=None,
                     app_secret=None,
                     refresh_token=None,
@@ -436,9 +421,6 @@ class TestAuditSnapshot(unittest.TestCase):
             env_file = tool_dir / ".env"
             env_file.write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
 
-            token_dir = tool_dir / ".state"
-            token_dir.mkdir()
-            (token_dir / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             out_dir = Path(d) / "out"
 
@@ -483,7 +465,7 @@ class TestAuditSnapshot(unittest.TestCase):
             ctx = {
                 "cfg": Config(
                     base_url="https://api.pinterest.com/v5",
-                    access_token=None,
+                    access_token="X",
                     app_id=None,
                     app_secret=None,
                     refresh_token=None,

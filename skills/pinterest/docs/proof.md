@@ -1,72 +1,23 @@
-# Proof and verification
+# Pinterest test results
 
-Pinterest proof should answer a simple question: what has actually been checked for boards, pins, ads, catalogs, reports, and auth state, and what still needs live credentials, permissions, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Both local copies passed 95 tests from source and again after building and installing a wheel in a fresh environment. Both command-line installs reported version 0.1.0. The skill files and local links passed their checks. The tests ran with network access disabled and used no Pinterest credentials.
 
-If you only check one thing, check board/pin/ad proof and auth or catalog plan evidence before trusting Pinterest changes.
+- Each settings file used its own token file. The explicit token took priority. Importing an old file left the original in place. A renewal used the saved refresh token and kept the returned token out of the output.
+- A board’s pin list resumed after the last pin returned. The section preview could read the existing section.
+- Board and pin previews saved the account and the exact request. Missing approval, a changed title or link, or a different account stopped the tested writes. The tool read back the board or pin after applying.
+- A simulated server error sent the create request once. The tool told the operator to check Pinterest before trying again.
 
-## Current proof summary
+The type check still reports three earlier findings in `config.py`, `cli.py`, and `commands/ads.py`. The live account, app permissions, and Pinterest’s response to real writes still need separate verification.
 
-This repo does not rely on live Pinterest API calls for normal verification. The proof here comes from the local suite, the committed redacted examples, and the explicit write-gating behavior.
+## Earlier checks
 
-## What is already proved
+The local docs and commands were checked on June 11, 2026. The earlier local test baseline was February 3, 2026. These examples are from that work.
 
-- The tool can validate its command surface and JSON output contract through the local suite.
-- Read-mostly flows can be exercised without live Pinterest writes.
-- Current write families stay plan-first and require explicit no-snapshot approval before live Pinterest changes.
-- The committed examples show the expected version, error, plan, and refusal/receipt shapes.
+- [Version](examples/outputs/version.json)
+- [Error](examples/outputs/error.json)
+- [Sample plan](examples/plan.example.json)
+- [Missing-approval example](examples/receipt.example.json)
 
-## Last checked
-
-- Local docs and contract alignment rechecked: **2026-06-11 UTC**
-- Local suite proof baseline: **2026-02-03 UTC**
-
-No live Pinterest credentials are stored here, so this proof pack is intentionally local-first and redacted.
-
-## Core validation
-
-From the tool folder:
-
-```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install -e .
-.venv/bin/python -m unittest -q
-```
-
-## Output contract
-
-- Default output mode is JSON with `--output json`.
-- In JSON mode, every invocation emits exactly one JSON object to stdout, including usage errors and `--version`.
-
-## Committed examples
-
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/error.json`
-- `docs/examples/plan.example.json`
-- `docs/examples/receipt.example.json`
-
-The current receipt example is still a refusal-shaped proof example, not a claim that a fully backed live write path exists.
-
-## What can still go wrong
-
-- missing or insufficient scopes
-- ads or catalogs access that needs extra roles or account tier
-- missing `--ad-account-id` or `--business-id` for optional snapshot expansions
-- expired tokens
-- operator confusion about no-snapshot write limits
-
-## How to verify the risky parts
-
-- If reads fail, confirm whether the issue is auth, scopes, or account access.
-- If a write attempt is missing approval, confirm the refusal happened before Pinterest HTTP.
-- If you are reviewing a plan, check the target IDs, payload, and acknowledgement flags before apply.
-- If a command writes local snapshot files, confirm the output folder and files look correct.
-
-## Intentional gaps
-
-Not covered on purpose:
-
-- undocumented Pinterest API write surfaces
-- rollback or restore claims for current live write families
-- provider-backup claims that the runtime does not actually implement
+Run `python3 -m unittest -q` from the tool folder after installing it. JSON mode emits one object to stdout, including errors and version output.

@@ -2,28 +2,15 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..api import PinterestApi, resolve_access_token
-from ..write_framework import build_plan, build_receipt, require_write_allowed, write_operation
-
-
-def _api(ctx: dict[str, Any]) -> PinterestApi:
-    cfg = ctx["cfg"]
-    access_token = "write-plan-or-refusal"
-    if not bool(ctx.get("skip_auth_for_write_plan")):
-        access_token = resolve_access_token(
-            env_file=ctx["env_file"],
-            env_access_token=cfg.access_token,
-            env_refresh_token=cfg.refresh_token,
-            app_id=cfg.app_id,
-            app_secret=cfg.app_secret,
-            base_url=cfg.base_url,
-            http=ctx["http"],
-        )
-    return PinterestApi(
-        base_url=cfg.base_url,
-        http=ctx["http"],
-        access_token=access_token,
-    )
+from ..api import PinterestApi
+from ..write_framework import (
+    board_pin_api,
+    build_plan,
+    build_receipt,
+    require_write_allowed,
+    review_change,
+    write_operation,
+)
 
 
 def _param_ad_account_id(args: Any) -> dict[str, Any]:
@@ -55,7 +42,7 @@ def _find_sections_by_name(
 
 
 def cmd_boards_create(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     name = str(args.name).strip()
     if not name:
         raise RuntimeError("--name is required")
@@ -80,17 +67,19 @@ def cmd_boards_create(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="GET", path="/boards/{board_id}", params=params or None),
     ]
 
+    plan = build_plan(
+        action=action,
+        operations=ops,
+        request={"name": name, "description": args.description, "privacy": args.privacy, "is_ads_only": args.is_ads_only},
+    )
     if not bool(ctx.get("apply")):
-        plan = build_plan(
-            action=action,
-            operations=ops,
-            request={"name": name, "description": args.description, "privacy": args.privacy, "is_ads_only": args.is_ads_only},
-        )
+        review_change(ctx, api, plan)
         ctx["audit"].write("boards.create.plan", {"name": name})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx)
+    review_change(ctx, api, plan)
     existing = _find_boards_by_name(api, name=name, params=params, scan_limit=scan_limit)
     if existing and not bool(getattr(args, "allow_mismatch", False)):
         raise RuntimeError(
@@ -101,13 +90,14 @@ def cmd_boards_create(args: Any, ctx: dict[str, Any]) -> int:
     created = api.post("/boards", json_body=body, params=params or None)
     board_id = str(created.get("id") or "").strip()
     if not board_id:
-        raise RuntimeError("Unexpected create board response: missing id")
+        raise RuntimeError("Pinterest did not return the new board ID. Check Pinterest before retrying")
     after = api.get(f"/boards/{board_id}", params=params or None)
 
     if str(after.get("id") or "").strip() != board_id:
         raise RuntimeError("Verification failed: board id mismatch")
-    if str(after.get("name") or "").strip() != name:
-        raise RuntimeError("Verification failed: board name mismatch")
+    for field, expected in body.items():
+        if field != "is_ads_only" and str(after.get(field) or "") != str(expected):
+            raise RuntimeError(f"Verification failed: board {field} mismatch")
 
     receipt = build_receipt(
         action=action,
@@ -124,7 +114,7 @@ def cmd_boards_create(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_boards_update(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     board_id = str(args.id).strip()
     if not board_id:
         raise RuntimeError("--id is required")
@@ -147,13 +137,15 @@ def cmd_boards_update(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="GET", path=f"/boards/{board_id}", params=params or None),
     ]
 
+    plan = build_plan(action=action, operations=ops, request={"board_id": board_id, **body})
     if not bool(ctx.get("apply")):
-        plan = build_plan(action=action, operations=ops, request={"board_id": board_id, **body})
+        review_change(ctx, api, plan)
         ctx["audit"].write("boards.update.plan", {"board_id": board_id, "fields": sorted(body.keys())})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx)
+    review_change(ctx, api, plan)
     before = api.get(f"/boards/{board_id}", params=params or None)
     _ = api.patch(f"/boards/{board_id}", json_body=body, params=params or None)
     after = api.get(f"/boards/{board_id}", params=params or None)
@@ -177,7 +169,7 @@ def cmd_boards_update(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_boards_delete(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     board_id = str(args.id).strip()
     if not board_id:
         raise RuntimeError("--id is required")
@@ -190,18 +182,20 @@ def cmd_boards_delete(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="GET", path=f"/boards/{board_id}", params=params or None),
     ]
 
+    plan = build_plan(
+        action=action,
+        operations=ops,
+        acks_required=["ack-irreversible"],
+        request={"board_id": board_id},
+    )
     if not bool(ctx.get("apply")):
-        plan = build_plan(
-            action=action,
-            operations=ops,
-            acks_required=["ack-irreversible"],
-            request={"board_id": board_id},
-        )
+        review_change(ctx, api, plan)
         ctx["audit"].write("boards.delete.plan", {"board_id": board_id})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx, acks_required=["ack-irreversible"])
+    review_change(ctx, api, plan)
     before_resp = api.get_response(f"/boards/{board_id}", params=params or None, allowed_statuses=(404,))
     before = before_resp.json() if before_resp.status != 404 else None
 
@@ -241,7 +235,7 @@ def cmd_boards_delete(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_boards_ensure(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     name = str(args.name).strip()
     if not name:
         raise RuntimeError("--name is required")
@@ -275,17 +269,19 @@ def cmd_boards_ensure(args: Any, ctx: dict[str, Any]) -> int:
             ),
             write_operation(method="GET", path="/boards/{board_id}", params=params or None),
         ]
+        plan = build_plan(
+            action=action,
+            operations=ops,
+            request={"name": name, **desired, "is_ads_only": bool(getattr(args, "is_ads_only", False))},
+        )
         if not bool(ctx.get("apply")):
-            plan = build_plan(
-                action=action,
-                operations=ops,
-                request={"name": name, **desired, "is_ads_only": bool(getattr(args, "is_ads_only", False))},
-            )
+            review_change(ctx, api, plan)
             ctx["audit"].write("boards.ensure.plan", {"name": name, "mode": "create"})
             ctx["out"].emit(plan)
             return 0
 
         require_write_allowed(ctx)
+        review_change(ctx, api, plan)
         created = api.post(
             "/boards",
             json_body={
@@ -297,10 +293,12 @@ def cmd_boards_ensure(args: Any, ctx: dict[str, Any]) -> int:
         )
         board_id = str(created.get("id") or "").strip()
         if not board_id:
-            raise RuntimeError("Unexpected create board response: missing id")
+            raise RuntimeError("Pinterest did not return the new board ID. Check Pinterest before retrying")
         after = api.get(f"/boards/{board_id}", params=params or None)
-        if str(after.get("name") or "").strip() != name:
-            raise RuntimeError("Verification failed: board name mismatch")
+        expected_fields = {"name": name, **desired}
+        for field, expected in expected_fields.items():
+            if str(after.get(field) or "") != str(expected):
+                raise RuntimeError(f"Verification failed: board {field} mismatch")
 
         receipt = build_receipt(
             action=action,
@@ -327,13 +325,15 @@ def cmd_boards_ensure(args: Any, ctx: dict[str, Any]) -> int:
             write_operation(method="PATCH", path=f"/boards/{board_id}", params=params or None, json_body=patch_body),
             write_operation(method="GET", path=f"/boards/{board_id}", params=params or None),
         ]
+        plan = build_plan(action=action, operations=ops, request={"board_id": board_id, **patch_body})
         if not bool(ctx.get("apply")):
-            plan = build_plan(action=action, operations=ops, request={"board_id": board_id, **patch_body})
+            review_change(ctx, api, plan)
             ctx["audit"].write("boards.ensure.plan", {"name": name, "board_id": board_id, "mode": "update"})
             ctx["out"].emit(plan)
             return 0
 
         require_write_allowed(ctx)
+        review_change(ctx, api, plan)
         _ = api.patch(f"/boards/{board_id}", json_body=patch_body, params=params or None)
         after = api.get(f"/boards/{board_id}", params=params or None)
         for k, v in patch_body.items():
@@ -353,13 +353,15 @@ def cmd_boards_ensure(args: Any, ctx: dict[str, Any]) -> int:
         return 0
 
     ops = [write_operation(method="GET", path=f"/boards/{board_id}", params=params or None)]
+    plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "name": name})
     if not bool(ctx.get("apply")):
-        plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "name": name})
+        review_change(ctx, api, plan)
         ctx["audit"].write("boards.ensure.plan", {"name": name, "board_id": board_id, "mode": "noop"})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx)
+    review_change(ctx, api, plan)
     receipt = build_receipt(
         action=action,
         changed=False,
@@ -375,7 +377,7 @@ def cmd_boards_ensure(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_board_sections_create(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     board_id = str(args.board_id).strip()
     if not board_id:
         raise RuntimeError("--board-id is required")
@@ -395,13 +397,15 @@ def cmd_board_sections_create(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="GET", path=f"/boards/{board_id}/sections", params={**params, "limit": scan_limit}),
     ]
 
+    plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "name": name})
     if not bool(ctx.get("apply")):
-        plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "name": name})
+        review_change(ctx, api, plan)
         ctx["audit"].write("board_sections.create.plan", {"board_id": board_id, "name": name})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx)
+    review_change(ctx, api, plan)
     existing = _find_sections_by_name(api, board_id=board_id, name=name, params=params, scan_limit=scan_limit)
     if existing and not bool(getattr(args, "allow_mismatch", False)):
         raise RuntimeError(
@@ -412,7 +416,7 @@ def cmd_board_sections_create(args: Any, ctx: dict[str, Any]) -> int:
     created = api.post(f"/boards/{board_id}/sections", json_body={"name": name}, params=params or None)
     section_id = str(created.get("id") or "").strip()
     if not section_id:
-        raise RuntimeError("Unexpected create section response: missing id")
+        raise RuntimeError("Pinterest did not return the new section ID. Check Pinterest before retrying")
     # Verification: list sections and ensure the new id exists.
     sections, _, _ = api.list_all(f"/boards/{board_id}/sections", params=params, limit=scan_limit, page_size=100)
     created_sections = [s for s in sections if isinstance(s, dict) and str(s.get("id") or "") == section_id]
@@ -439,7 +443,7 @@ def cmd_board_sections_create(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_board_sections_update(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     board_id = str(args.board_id).strip()
     section_id = str(args.section_id).strip()
     if not board_id:
@@ -463,13 +467,15 @@ def cmd_board_sections_update(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="GET", path=f"/boards/{board_id}/sections", params=params or None),
     ]
 
+    plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "section_id": section_id, "name": name})
     if not bool(ctx.get("apply")):
-        plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "section_id": section_id, "name": name})
+        review_change(ctx, api, plan)
         ctx["audit"].write("board_sections.update.plan", {"board_id": board_id, "section_id": section_id})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx)
+    review_change(ctx, api, plan)
     before_sections, _, _ = api.list_all(f"/boards/{board_id}/sections", params=params, limit=5000, page_size=100)
     _ = api.patch(
         f"/boards/{board_id}/sections/{section_id}",
@@ -498,7 +504,7 @@ def cmd_board_sections_update(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_board_sections_delete(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     board_id = str(args.board_id).strip()
     section_id = str(args.section_id).strip()
     if not board_id:
@@ -514,18 +520,20 @@ def cmd_board_sections_delete(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="GET", path=f"/boards/{board_id}/sections", params=params or None),
     ]
 
+    plan = build_plan(
+        action=action,
+        operations=ops,
+        acks_required=["ack-irreversible"],
+        request={"board_id": board_id, "section_id": section_id},
+    )
     if not bool(ctx.get("apply")):
-        plan = build_plan(
-            action=action,
-            operations=ops,
-            acks_required=["ack-irreversible"],
-            request={"board_id": board_id, "section_id": section_id},
-        )
+        review_change(ctx, api, plan)
         ctx["audit"].write("board_sections.delete.plan", {"board_id": board_id, "section_id": section_id})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx, acks_required=["ack-irreversible"])
+    review_change(ctx, api, plan)
     before_sections, _, _ = api.list_all(f"/boards/{board_id}/sections", params=params, limit=5000, page_size=100)
     exists_before = any(str(s.get("id") or "") == section_id for s in before_sections if isinstance(s, dict))
     if not exists_before:
@@ -568,7 +576,7 @@ def cmd_board_sections_delete(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_board_sections_ensure(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     board_id = str(args.board_id).strip()
     if not board_id:
         raise RuntimeError("--board-id is required")
@@ -589,13 +597,15 @@ def cmd_board_sections_ensure(args: Any, ctx: dict[str, Any]) -> int:
     if matches:
         section_id = str(matches[0].get("id") or "").strip()
         ops = [write_operation(method="GET", path=f"/boards/{board_id}/sections", params={**params, "limit": scan_limit})]
+        plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "section_id": section_id, "name": name})
         if not bool(ctx.get("apply")):
-            plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "section_id": section_id, "name": name})
+            review_change(ctx, api, plan)
             ctx["audit"].write("board_sections.ensure.plan", {"board_id": board_id, "section_id": section_id, "mode": "noop"})
             ctx["out"].emit(plan)
             return 0
 
         require_write_allowed(ctx)
+        review_change(ctx, api, plan)
         receipt = build_receipt(
             action=action,
             changed=False,
@@ -614,17 +624,19 @@ def cmd_board_sections_ensure(args: Any, ctx: dict[str, Any]) -> int:
         write_operation(method="POST", path=f"/boards/{board_id}/sections", params=params or None, json_body={"name": name}),
         write_operation(method="GET", path=f"/boards/{board_id}/sections", params={**params, "limit": scan_limit}),
     ]
+    plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "name": name})
     if not bool(ctx.get("apply")):
-        plan = build_plan(action=action, operations=ops, request={"board_id": board_id, "name": name})
+        review_change(ctx, api, plan)
         ctx["audit"].write("board_sections.ensure.plan", {"board_id": board_id, "name": name, "mode": "create"})
         ctx["out"].emit(plan)
         return 0
 
     require_write_allowed(ctx)
+    review_change(ctx, api, plan)
     created = api.post(f"/boards/{board_id}/sections", json_body={"name": name}, params=params or None)
     section_id = str(created.get("id") or "").strip()
     if not section_id:
-        raise RuntimeError("Unexpected create section response: missing id")
+        raise RuntimeError("Pinterest did not return the new section ID. Check Pinterest before retrying")
     after_sections, _, _ = api.list_all(f"/boards/{board_id}/sections", params=params, limit=scan_limit, page_size=100)
     created_sections = [s for s in after_sections if isinstance(s, dict) and str(s.get("id") or "") == section_id]
     if not created_sections:
@@ -647,7 +659,7 @@ def cmd_board_sections_ensure(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_boards_list(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     params: dict[str, Any] = {}
     if args.ad_account_id:
         params["ad_account_id"] = str(args.ad_account_id).strip()
@@ -668,7 +680,7 @@ def cmd_boards_list(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_boards_get(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     board_id = str(args.id).strip()
     if not board_id:
         raise RuntimeError("--id is required")
@@ -683,7 +695,7 @@ def cmd_boards_get(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_board_sections_list(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     board_id = str(args.board_id).strip()
     if not board_id:
         raise RuntimeError("--board-id is required")
@@ -712,7 +724,7 @@ def cmd_board_sections_list(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_board_pins_list(args: Any, ctx: dict[str, Any]) -> int:
-    api = _api(ctx)
+    api = board_pin_api(ctx)
     board_id = str(args.board_id).strip()
     if not board_id:
         raise RuntimeError("--board-id is required")

@@ -8,6 +8,7 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
+from unittest.mock import patch
 
 from pinterest_api_tool.commands.pins import (
     cmd_pins_create,
@@ -152,11 +153,17 @@ class _Audit:
 
 
 class TestPinsWriteCommands(unittest.TestCase):
+    def setUp(self) -> None:
+        # These tests exercise individual write handlers after the CLI has checked the plan.
+        review = patch("pinterest_api_tool.commands.pins.review_change")
+        review.start()
+        self.addCleanup(review.stop)
+
     def _ctx(self, tool_dir: Path, http: _FakeHttp, *, apply: bool, yes: bool, ack_irreversible: bool = False) -> dict[str, Any]:
         return {
             "cfg": Config(
                 base_url=http.base_url,
-                access_token=None,
+                access_token="X",
                 app_id=None,
                 app_secret=None,
                 refresh_token=None,
@@ -177,8 +184,6 @@ class TestPinsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             ctx = self._ctx(tool_dir, http, apply=False, yes=False)
@@ -214,8 +219,6 @@ class TestPinsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             http.pins = [{"id": "p1", "board_id": "b1", "board_section_id": None, "link": "https://example.com/post/"}]
@@ -246,8 +249,6 @@ class TestPinsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             http.pins = [{"id": "p1", "board_id": "b1", "board_section_id": None, "link": "https://example.com/post/"}]
@@ -278,8 +279,6 @@ class TestPinsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5", created_pin_get_link_none=True)
             ctx = self._ctx(tool_dir, http, apply=True, yes=True)
@@ -310,8 +309,6 @@ class TestPinsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5", created_pin_get_link_none=True)
             ctx = self._ctx(tool_dir, http, apply=True, yes=True)
@@ -346,8 +343,6 @@ class TestPinsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             ctx = self._ctx(tool_dir, http, apply=True, yes=True)
@@ -370,8 +365,6 @@ class TestPinsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5", ignore_patch_keys={"title"})
             http.pins = [{"id": "p1", "board_id": "b1", "board_section_id": None, "title": "Old"}]
@@ -397,8 +390,6 @@ class TestPinsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             ctx = self._ctx(tool_dir, http, apply=True, yes=True, ack_irreversible=False)
@@ -413,8 +404,6 @@ class TestPinsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             ctx = self._ctx(tool_dir, http, apply=True, yes=True, ack_irreversible=True)
@@ -428,8 +417,6 @@ class TestPinsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             http.pins = [
@@ -454,8 +441,6 @@ class TestPinsWriteCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             tool_dir = Path(d)
             (tool_dir / ".env").write_text("PINTEREST_API_BASE_URL=https://api.pinterest.com/v5\n", encoding="utf-8")
-            (tool_dir / ".state").mkdir()
-            (tool_dir / ".state" / "token.json").write_text(json.dumps({"access_token": "X"}), encoding="utf-8")
 
             http = _FakeHttp(base_url="https://api.pinterest.com/v5")
             http.pins = [{"id": "src1", "board_id": "src_board", "board_section_id": None, "link": "https://example.com/post/"}]

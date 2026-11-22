@@ -1,79 +1,11 @@
-# Safety model
+# Approval and recovery
 
-Pinterest can touch boards, pins, ads, catalogs, reports, and auth state, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Start with a read or a preview. Before a board, section, or pin change, use `--plan-out` to save the preview for the signed-in account. Review the account, target, fields, and any difference you asked the tool to allow.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+Apply the same command with `--apply --yes --ack-no-snapshot --plan-in FILE`. Deleting also needs `--ack-irreversible`. The tool checks the account and the exact plan before sending the change. For commands that look up what already exists, a changed target or request needs a new preview. See the [quickstart](quickstart.md) for a pin example.
 
-A good safety ask is: "Read the board, pin, or ad account first, then review the plan before pins, boards, catalogs, ads, reports, or token writes."
+For a group of pin-link edits, build the candidate list with `pins links plan --out FILE`. Use `--plan-out REVIEW.json pins links apply --plan FILE` to check the current links and save the preview for approval. Apply with the same candidate file and options plus the usual flags and `--plan-in REVIEW.json`.
 
-## Core safety rules
+The tool can read what was saved after a change. It cannot restore deleted boards or pins. `--ack-no-snapshot` records permission to proceed without a saved copy the tool could restore. If a create request has an unclear result, check Pinterest before sending it again. Board and pin commands send each change once per attempt.
 
-This skill is read-mostly today.
-
-The safest starting point is a simple boards-and-pins snapshot before you plan any live account change.
-
-## What stays simple
-
-- inventory reads
-- analytics reads
-- ads reads
-- catalog reads
-- audit snapshots built from read-only Pinterest calls
-
-Those flows do not send Pinterest writes.
-
-## What needs extra care
-
-Current remote write families are still plan-first because they do not have saved before-state support yet.
-
-That means:
-
-- the default path is a dry-run plan or read-only preview
-- confirmed apply still needs `--apply --yes`
-- destructive work can also need `--ack-irreversible`
-- spend-sensitive work can also need `--ack-spend`
-- high-volume or remote-work-triggering commands can also need `--ack-volume`
-- no-snapshot paths also need explicit no-snapshot approval before live Pinterest HTTP
-
-## What this skill does not promise
-
-- no rollback
-- no restore
-- no provider backup
-- no saved before-state for current live write families
-
-The tool should say those limits plainly before any live Pinterest write is allowed.
-
-## Local writes that are allowed
-
-- `audit snapshot` can write JSON files locally after read-only Pinterest calls
-- `pins links plan` can write a local plan file
-- optional `--log-file` can write redacted JSONL audit events
-
-## Local writes that still need no-snapshot approval
-
-- `auth login`
-- `auth code exchange`
-- `auth token set`
-- report outputs, receipts, or job output that only happen after a write path
-
-Those flows can write token state or other local files without a saved before-state, so they still need explicit no-snapshot approval first.
-
-## Write families that stay plan-first
-
-- boards
-- board sections
-- pins
-- pin-link apply
-- ads campaign, ad-group, and ad writes
-- catalog create and feed write flows
-- ads report creation and run flows
-- batch jobs that include remote-write rows
-
-## Recommended workflow with an AI agent
-
-1. Start with a small read or audit snapshot.
-2. If you need a change, review the dry-run plan first.
-3. Check whether the command needs irreversible, spend, volume, or no-snapshot approval.
-4. Approve only when the target, payload, and limits are clear.
-5. Save the plan, refusal, or receipt when you want an audit trail.
+The account inventory writes JSON files to your machine. Sign-ins and token imports can change local token files and need `--yes --ack-no-snapshot`. For ads, catalogs, reports, and jobs, use the [command reference](command_reference.md) for existing approval flags, including `--ack-spend` and `--ack-volume` where they apply.

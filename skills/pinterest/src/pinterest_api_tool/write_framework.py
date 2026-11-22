@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+import json
 import time
-from typing import Any, Iterable
+from collections.abc import Iterable
+from pathlib import Path
+from typing import Any
 
+from .api import PinterestApi, resolve_access_token
 from .commands.write_safety import (
     before_state_refusal_verification_plan,
     blocked_plan,
     rollback_contract,
 )
-
 
 _REDACT_KEYS = {
     "authorization",
@@ -65,6 +68,62 @@ def require_write_allowed(ctx: dict[str, Any], *, acks_required: Iterable[str] =
 
     if missing:
         raise RuntimeError(_missing_flags_message(missing=missing))
+
+
+def board_pin_api(ctx: dict[str, Any]) -> PinterestApi:
+    cfg = ctx["cfg"]
+    token = ""
+    if not ctx.get("offline_preview"):
+        token = resolve_access_token(
+            env_file=ctx["env_file"],
+            env_access_token=cfg.access_token,
+            env_refresh_token=cfg.refresh_token,
+            app_id=cfg.app_id,
+            app_secret=cfg.app_secret,
+            base_url=cfg.base_url,
+            http=ctx["http"],
+        )
+    return PinterestApi(base_url=cfg.base_url, http=ctx["http"], access_token=token, retry_writes=False)
+
+
+def review_change(ctx: dict[str, Any], api: PinterestApi, plan: dict[str, Any]) -> None:
+    plan["apply_requires"].append("--plan-in")
+    plan_in = ctx.get("plan_in")
+    plan_out = ctx.get("plan_out")
+    if not ctx.get("apply") and not plan_out:
+        return
+
+    review = {
+        "api_url": ctx["cfg"].base_url.rstrip("/"),
+        "allow_mismatch": bool(ctx.get("allow_mismatch")),
+    }
+    plan["review"] = review
+    if ctx.get("apply"):
+        if not plan_in:
+            raise RuntimeError("Pass --plan-in with a saved plan for this change.")
+        saved = json.loads(Path(plan_in).read_text(encoding="utf-8"))
+        if not isinstance(saved, dict):
+            raise RuntimeError("The plan file must contain a JSON object.")
+        saved_review = saved.get("review")
+        if not isinstance(saved_review, dict) or not saved_review.get("account"):
+            raise RuntimeError("Save the preview with --plan-out to record the Pinterest account.")
+        review["account"] = saved_review["account"]
+        current = {key: value for key, value in plan.items() if key != "generated_at_utc"}
+        expected = {key: value for key, value in saved.items() if key != "generated_at_utc"}
+        if current != expected:
+            raise RuntimeError("The command or target changed after review. Save and review a new plan.")
+
+    account = api.get("/user_account").get("username")
+    if not isinstance(account, str) or not account.strip():
+        raise RuntimeError("Pinterest did not name the signed-in account.")
+    if ctx.get("apply"):
+        if review["account"] != account:
+            raise RuntimeError("The signed-in Pinterest account differs from the saved plan.")
+    elif plan_out:
+        review["account"] = account
+        with Path(plan_out).open("x", encoding="utf-8") as handle:
+            json.dump(plan, handle, ensure_ascii=False, indent=2, sort_keys=True)
+            handle.write("\n")
 
 
 def write_operation(

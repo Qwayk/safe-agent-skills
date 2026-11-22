@@ -1,61 +1,48 @@
 # Command reference
 
-These commands cover Pinterest boards, pins, ads, catalogs, analytics, tokens, and write gates. Resolve board, ad account, and business IDs before changes.
-
-For the guided path, start with [What you can do with Pinterest](use_cases.md), [Connect your Pinterest account](onboarding.md), and [Quickstart](quickstart.md).
+[Connect your account](onboarding.md) and start with the [quickstart](quickstart.md). Put global flags before the command.
 
 ## Auth
 
-- `pinterest-api-tool auth check`
-- `pinterest-api-tool auth login` (currently returns a safety refusal before token exchange or local token writes)
-- `pinterest-api-tool auth token set --file token.json` (currently returns a safety refusal before local token writes)
-- `pinterest-api-tool auth token status`
-- `pinterest-api-tool auth code exchange --code CODE --redirect-uri http://localhost/ --continuous-refresh` (currently returns a safety refusal before token exchange or local token writes)
+- `pinterest-api-tool auth check` shows the signed-in account.
+- `pinterest-api-tool auth token status` shows the token file for the chosen settings.
+- `auth login`, `auth token set --file token.json`, and `auth code exchange --code CODE --redirect-uri http://localhost/ --continuous-refresh` need `--yes --ack-no-snapshot` to change local credentials.
 
 ## Inventory
 
+See [approval and recovery](safety_model.md) for saving and applying a board or pin plan.
+
 - `pinterest-api-tool boards list`
 - `pinterest-api-tool boards get --id BOARD_ID`
-- `pinterest-api-tool boards create --name "Board name"` (dry-run plan; apply attempt requires explicit no-snapshot approval before write)
-- `pinterest-api-tool boards update --id BOARD_ID --name "New name"` (dry-run plan; apply attempt requires explicit no-snapshot approval before write)
-- `pinterest-api-tool boards delete --id BOARD_ID` (dry-run plan; apply attempt also needs `--ack-irreversible`, then requires explicit no-snapshot approval before write)
-- `pinterest-api-tool boards ensure --name "Board name"` (idempotent dry-run plan; apply attempt requires explicit no-snapshot approval before write)
+- `pinterest-api-tool boards create --name "Board name"`
+- `pinterest-api-tool boards update --id BOARD_ID --name "New name"`
+- `pinterest-api-tool boards delete --id BOARD_ID`
+- `pinterest-api-tool boards ensure --name "Board name"`
 - `pinterest-api-tool board-sections list --board-id BOARD_ID`
-- `pinterest-api-tool board-sections create --board-id BOARD_ID --name "Section"` (dry-run plan; apply attempt requires explicit no-snapshot approval before write)
-- `pinterest-api-tool board-sections update --board-id BOARD_ID --section-id SECTION_ID --name "New section name"` (dry-run plan; apply attempt requires explicit no-snapshot approval before write)
-- `pinterest-api-tool board-sections delete --board-id BOARD_ID --section-id SECTION_ID` (dry-run plan; apply attempt also needs `--ack-irreversible`, then requires explicit no-snapshot approval before write)
-- `pinterest-api-tool board-sections ensure --board-id BOARD_ID --name "Section"` (idempotent dry-run plan; apply attempt requires explicit no-snapshot approval before write)
+- `pinterest-api-tool board-sections create --board-id BOARD_ID --name "Section"`
+- `pinterest-api-tool board-sections update --board-id BOARD_ID --section-id SECTION_ID --name "New section name"`
+- `pinterest-api-tool board-sections delete --board-id BOARD_ID --section-id SECTION_ID`
+- `pinterest-api-tool board-sections ensure --board-id BOARD_ID --name "Section"`
 - `pinterest-api-tool pins list`
 - `pinterest-api-tool pins get --id PIN_ID`
-- `pinterest-api-tool pins create --board-id BOARD_ID --media-source-type image_url --media-url https://example.com/image.jpg [--link https://example.com/page]` (dry-run plan; apply attempt requires explicit no-snapshot approval before write)
-- `pinterest-api-tool pins update --id PIN_ID --title "New title"` (dry-run plan; apply attempt requires explicit no-snapshot approval before write)
-- `pinterest-api-tool pins delete --id PIN_ID` (dry-run plan; apply attempt also needs `--ack-irreversible`, then requires explicit no-snapshot approval before write)
-- `pinterest-api-tool pins save --id SOURCE_PIN_ID --board-id BOARD_ID [--board-section-id SECTION_ID]` (dry-run plan; apply attempt requires explicit no-snapshot approval before write)
-- `pinterest-api-tool pins ensure --board-id BOARD_ID --link https://example.com/page --media-source-type image_url --media-url https://example.com/image.jpg` (idempotent dry-run plan; apply attempt requires explicit no-snapshot approval before write)
+- `pinterest-api-tool pins create --board-id BOARD_ID --media-source-type image_url --media-url https://example.com/image.jpg [--link https://example.com/page]`
+- `pinterest-api-tool pins update --id PIN_ID --title "New title"`
+- `pinterest-api-tool pins delete --id PIN_ID`
+- `pinterest-api-tool pins save --id SOURCE_PIN_ID --board-id BOARD_ID [--board-section-id SECTION_ID]`
+- `pinterest-api-tool pins ensure --board-id BOARD_ID --link https://example.com/page --media-source-type image_url --media-url https://example.com/image.jpg`
 - `pinterest-api-tool board-pins list --board-id BOARD_ID [--section-id SECTION_ID]`
 - `pinterest-api-tool pins links plan --pins-json PATH --out plan.json --canonical-host example.com [--allowed-host HOST]...`
-- `pinterest-api-tool pins links apply --plan plan.json` (read-only dry-run preview; apply attempt requires explicit no-snapshot approval before write)
+- `pinterest-api-tool pins links apply --plan plan.json`
 
-Notes:
-- List commands support pagination via `--limit`, `--page-size`, and `--bookmark`.
-- Business Access (optional) is supported via `--ad-account-id` on most commands.
+Use `--limit` and `--page-size` to choose how much to read. Pass the returned `--bookmark` to continue. Use `--ad-account-id` for Business Access on commands that offer it.
 
-Useful inventory flags:
-- `pinterest-api-tool boards list --privacy SECRET` (requires appropriate scope)
-- `pinterest-api-tool pins list --include-protected-pins` (requires appropriate scope)
+- `pinterest-api-tool boards list --privacy SECRET`
+- `pinterest-api-tool pins list --include-protected-pins`
 - `pinterest-api-tool pins list --creative-types REGULAR,VIDEO`
 - `pinterest-api-tool pins list --pin-metrics`
 - `pinterest-api-tool board-pins list --board-id BOARD_ID --creative-types REGULAR,VIDEO --pin-metrics`
-- `pinterest-api-tool board-pins list --board-id BOARD_ID --section-id SECTION_ID`
-  - When `--section-id` is used, Pinterest uses a different endpoint and `--creative-types/--pin-metrics` are not supported.
 
-Pins writes (safety + idempotence notes):
-- `pins create|update|delete|save|ensure` are dry-run by default and require `--apply --yes` to attempt apply. Current apply attempts require explicit no-snapshot approval before write.
-- `pins delete` additionally requires `--ack-irreversible` before the refusal point.
-- `--allow-mismatch` is a sharp tool:
-  - for `pins create`/`pins save`, it allows duplicates even when the tool can detect an existing destination match
-  - for future live writes, it may bypass strict mismatch refusal
-- `pins ensure` is idempotent by **canonicalized `--link` + destination (board/section)**; it refuses when multiple destination pins match.
+With `--section-id`, the section endpoint takes neither `--creative-types` nor `--pin-metrics`. The `ensure` commands look for the matching board, section, or pin before planning a change. Pin matching uses the destination board or section and the normalized link. Review `--allow-mismatch` explicitly because it can allow a duplicate or a different result.
 
 ## User account discovery (read-only)
 

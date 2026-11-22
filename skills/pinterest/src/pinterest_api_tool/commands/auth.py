@@ -5,9 +5,9 @@ import sys
 import threading
 import time
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse, urlencode
+from urllib.parse import parse_qs, urlencode, urlparse
 
-from ..api import PinterestApi, refresh_access_token, resolve_access_token
+from ..api import PinterestApi, resolve_access_token
 from ..oauth_tokens import (
     get_token_status,
     redact_token_dict,
@@ -90,8 +90,6 @@ def cmd_auth_check(args, ctx) -> int:
     _ = args
     cfg = ctx["cfg"]
     tok_path = token_path_for_env_file(ctx["env_file"])
-    status = get_token_status(tok_path)
-
     api = PinterestApi(
         base_url=cfg.base_url,
         http=ctx["http"],
@@ -106,6 +104,7 @@ def cmd_auth_check(args, ctx) -> int:
         ),
     )
     user = api.get("/user_account")
+    status = get_token_status(tok_path)
     out = {
         "ok": True,
         "base_url": cfg.base_url,
@@ -237,7 +236,7 @@ def _exchange_authorization_code(
     """
     from base64 import b64encode  # local import to keep module load simple
 
-    basic = b64encode(f"{app_id}:{app_secret}".encode("utf-8")).decode("utf-8")
+    basic = b64encode(f"{app_id}:{app_secret}".encode()).decode("utf-8")
     data = http.request(
         "POST",
         f"{base_url.rstrip('/')}/oauth/token",
@@ -446,15 +445,7 @@ def cmd_auth_login(args, ctx) -> int:
     api = PinterestApi(
         base_url=cfg.base_url,
         http=ctx["http"],
-        access_token=resolve_access_token(
-            env_file=ctx["env_file"],
-            env_access_token=cfg.access_token,
-            env_refresh_token=cfg.refresh_token,
-            app_id=cfg.app_id,
-            app_secret=cfg.app_secret,
-            base_url=cfg.base_url,
-            http=ctx["http"],
-        ),
+        access_token=str(data["access_token"]),
     )
     user = api.get("/user_account")
 

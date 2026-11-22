@@ -1,62 +1,39 @@
 # Connect your Pinterest account
 
-Pinterest needs local credentials before an agent can inspect boards, pins, ads, catalogs, analytics, or business access data.
+Use a private settings file. Pass `--env-file PATH` before the command when you use a file other than `.env`. Environment variables override values from that file. Keep settings, tokens, and sign-in codes out of chat and Git.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## Start with a read
 
-After setup, start with an account or boards read before asking for pin, catalog, ad, or business-access changes.
-
-## What you need
-
-- A Pinterest access token for the fastest first test, or the app ID, app secret, and refresh token for longer-lived access.
-- The Pinterest scopes needed for inventory, analytics, ads, or catalogs.
-- An ad account ID if you want ads or catalogs work.
-- A business ID if you want Business Access inventory.
-
-## Step 1. Choose the auth path
-
-You have two normal options:
-
-1. a short-lived access token for the fastest first check
-2. refresh-token auth for ongoing use
-
-The full step-by-step lives in [Authentication details](authentication.md).
-
-## Step 2. Fill the local `.env` file
-
-In the tool folder:
-
-1. Copy `.env.example` to `.env`.
-2. Fill the values from [Configuration](configuration.md).
-3. If you only want a fast first read test, start with the access token path.
-4. If you want a longer-lived setup, fill the app and refresh-token values too.
-
-## Step 3. Run the first safe checks
-
-These are the best first commands:
+Put a Pinterest access token in `PINTEREST_ACCESS_TOKEN` in your local settings file. The tool uses that token first. Leave out ads, catalog, and business permissions when you only need boards and pins. Start with `boards:read`, `pins:read`, and `user_accounts:read` for the account check.
 
 ```bash
-pinterest-api-tool --output json --version
-pinterest-api-tool --output json auth check
-pinterest-api-tool --output json boards list --limit 1
+pinterest-api-tool --env-file .env auth check
 ```
 
-If those commands work, the setup is good enough to start inventory snapshots or analytics checks.
+Check the username before working with boards or pins. [Pinterest’s sign-in guide](https://developers.pinterest.com/docs/getting-started/set-up-authentication-and-authorization/)
 
-For most people, the best next step is one board read and one audit snapshot before anything more advanced.
+## Renew access
 
-## What to ask your agent next
+For ongoing access, set `PINTEREST_APP_ID` and `PINTEREST_APP_SECRET`. Use a saved token or put the initial refresh token in `PINTEREST_REFRESH_TOKEN`. Pinterest can return a new refresh token. The tool saves the new token for this settings file and uses it for the next renewal.
 
-- "Confirm the Pinterest skill is connected, then export an audit snapshot of my boards and pins."
-- "If analytics fails, rerun the snapshot without analytics and explain which permission is missing."
-- "Preview a pin-link cleanup plan for these pins before any change goes live."
+With an app that has the exact redirect address registered, you can sign in through your browser. This approved command saves local token state and updates the settings file.
 
-## If something fails
+```bash
+pinterest-api-tool --env-file .env --yes --ack-no-snapshot auth login \
+  --redirect-uri http://localhost:8765/ --continuous-refresh \
+  --scopes boards:read,pins:read,user_accounts:read
+```
 
-The most common causes are:
+For a sign-in code you already obtained, use `auth code exchange` with the registered redirect address and the same approval flags. Ask for permissions that match the job. Board changes need the relevant board write permission, and pin changes need `pins:write`. Pinterest can also limit features based on the app’s access.
 
-- an expired access token
-- missing scopes
-- missing ad-account or business access for the endpoints you want
+## Bring over an existing token file
 
-Use [Troubleshooting](troubleshooting.md) if the auth check or first board read fails.
+Each settings file now has its own token file. For `.env` it is `.state/pinterest/.env/token.json` next to the settings file. Run `auth token status` to see the path without showing token values. When a saved token can be renewed during a read, the tool may update that file.
+
+If you used the old shared `.state/token.json`, first confirm which account it belongs to, then import it into the matching settings file. This copies the token into the new path.
+
+```bash
+pinterest-api-tool --env-file .env --yes --ack-no-snapshot auth token set --file .state/token.json
+```
+
+Then run `auth check` and confirm the username. The API defaults to `https://api.pinterest.com/v5` and the timeout defaults to 30 seconds. Use `PINTEREST_API_BASE_URL` or `PINTEREST_TIMEOUT_S` when those settings need to change.
