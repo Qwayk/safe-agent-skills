@@ -28,11 +28,11 @@ def _render_api_coverage_md(*, ops_lines: list[str]) -> str:
     header = [
         "# API coverage",
         "",
-        f"Last audited (UTC): {_utc_now().split('T', 1)[0]}",
+        "This list comes from the X API file shipped with the tool. It shows the operation names and access each command needs. For posts and messages, see [How approvals work](safety_model.md).",
         "",
         f"Last refreshed (UTC): `{_utc_now()}`",
         "",
-        "This file is generated from the pinned OpenAPI snapshot.",
+        "## Coverage",
         "",
         "| operationId | method | path | tags | security | primary_cli |",
         "|---|---|---|---|---|---|",
@@ -76,7 +76,7 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser()
     p.add_argument(
         "--snapshot",
-        default="docs/official_openapi_x_api_v2.json",
+        default="src/x_api_tool/official_openapi_x_api_v2.json",
         help="Path to pinned OpenAPI snapshot JSON",
     )
     p.add_argument(

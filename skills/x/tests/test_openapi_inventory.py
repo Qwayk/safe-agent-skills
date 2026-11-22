@@ -62,7 +62,7 @@ def _parse_api_coverage_primary_cli(md: str) -> dict[str, str]:
 class TestOpenApiInventory(unittest.TestCase):
     def test_official_operations_matches_snapshot(self) -> None:
         root = _tool_root()
-        snap = root / "docs" / "official_openapi_x_api_v2.json"
+        snap = root / "src/x_api_tool/official_openapi_x_api_v2.json"
         committed = root / "docs" / "official_operations.txt"
         self.assertTrue(snap.exists(), "Missing pinned OpenAPI snapshot")
         self.assertTrue(committed.exists(), "Missing committed official_operations.txt")
@@ -76,7 +76,7 @@ class TestOpenApiInventory(unittest.TestCase):
 
     def test_api_coverage_has_one_row_per_operation(self) -> None:
         root = _tool_root()
-        snap = root / "docs" / "official_openapi_x_api_v2.json"
+        snap = root / "src/x_api_tool/official_openapi_x_api_v2.json"
         coverage = root / "docs" / "api_coverage.md"
         self.assertTrue(snap.exists(), "Missing pinned OpenAPI snapshot")
         self.assertTrue(coverage.exists(), "Missing docs/api_coverage.md")

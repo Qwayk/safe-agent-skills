@@ -275,6 +275,8 @@ def build_parser() -> argparse.ArgumentParser:
     dm_send.add_argument("--to-username", default=None, help="Recipient username (without @)")
     dm_send.add_argument("--to-user-id", default=None, help="Recipient user id")
     dm_send.add_argument("--message", required=True, help="Message text")
+    dm_send.add_argument("--intent-evidence", default="", help="Where the recipient asked for or invited this message")
+    dm_send.add_argument("--opt-out-line", default="", help="How the recipient can ask to stop")
     dm_send.set_defaults(func=dm_cmd.cmd_dm_send, write_capable=True)
 
     dm_bulk = dm_sub.add_parser("bulk-send", help="Send DMs from a CSV (strict policy gates)")
@@ -329,6 +331,23 @@ def _output_mode_from_argv(argv: list[str]) -> str:
         return "json"
     v = str(argv[idx + 1] or "").strip()
     return v if v in {"json", "text"} else "json"
+
+
+def _audit_command(argv: list[str]) -> str:
+    hidden = {"--code", "--redirect-url", "--state"}
+    parts = []
+    hide_next = False
+    for arg in argv:
+        key, equals, _ = arg.partition("=")
+        if hide_next:
+            parts.append("<redacted>")
+            hide_next = False
+        elif key in hidden:
+            parts.append(key + "=<redacted>" if equals else key)
+            hide_next = not equals
+        else:
+            parts.append(arg)
+    return "x-api-tool " + " ".join(parts)
 
 
 def main(argv: list[str]) -> int:
@@ -403,7 +422,7 @@ def main(argv: list[str]) -> int:
         if not getattr(args, "cmd", None):
             parser.error("Missing command. Use --help to see available commands.")
 
-        command_str = "x-api-tool " + " ".join(argv)
+        command_str = _audit_command(argv)
         audit.bind_context(
             {
                 "tool": "x-api-tool",
@@ -418,7 +437,7 @@ def main(argv: list[str]) -> int:
         )
 
         # Some commands are local-only and don't need API config.
-        if str(getattr(args, "cmd", "") or "") in {"runs", "onboarding"}:
+        if args.func is api_cmd.cmd_api_ops_list or args.cmd in {"runs", "onboarding"}:
             ctx = {
                 "cfg": None,
                 "out": out,
@@ -522,7 +541,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="x-api-tool",
             version=__version__,
-            command="x-api-tool " + " ".join(argv),
+            command=_audit_command(argv),
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -538,7 +557,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="x-api-tool",
             version=__version__,
-            command="x-api-tool " + " ".join(argv),
+            command=_audit_command(argv),
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -556,7 +575,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="x-api-tool",
             version=__version__,
-            command="x-api-tool " + " ".join(argv),
+            command=_audit_command(argv),
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,

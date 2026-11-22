@@ -28,7 +28,7 @@ def tool_root_path() -> Path:
 
 
 def openapi_snapshot_path() -> Path:
-    return tool_root_path() / "docs" / "official_openapi_x_api_v2.json"
+    return Path(__file__).with_name("official_openapi_x_api_v2.json")
 
 
 def load_operations_from_pinned_snapshot() -> list[OperationSpec]:

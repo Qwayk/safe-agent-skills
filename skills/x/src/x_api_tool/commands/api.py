@@ -15,8 +15,39 @@ from ..errors import SafetyError, ValidationError
 from ..http import HttpClient, redact_url
 from ..json_files import read_json_file, write_json_file
 from ..oauth_tokens import read_token_json, token_path_for_env_file
-from .write_safety import ensure_blocked_apply_contract, refusal_output
+from .write_safety import check_review, ensure_blocked_apply_contract, mark_reviewed, read_account, refusal_output
 
+
+_POST_CHANGES = {"createPosts", "deletePosts"}
+_MESSAGE_SENDS = {
+    "createDirectMessagesByConversationId",
+    "createDirectMessagesByParticipantId",
+    "createDirectMessagesConversation",
+    "sendChatMessage",
+}
+
+
+def _check_created_post(
+    response: dict[str, Any], *, ctx: dict[str, Any], headers: dict[str, str], account: dict[str, str]
+) -> dict[str, Any]:
+    body = response.get("body_json")
+    data = body.get("data") if isinstance(body, dict) else None
+    post_id = str(data.get("id") or "") if isinstance(data, dict) else ""
+    result: dict[str, Any] = {"supported": True, "ok": False, "post_id": post_id or None}
+    if not post_id.isascii() or not post_id.isdigit():
+        return {**result, "notes": "X did not confirm the post ID. Check X before trying again."}
+    client = HttpClient(timeout_s=float(ctx["timeout_s"]), verbose=bool(ctx.get("verbose")), user_agent="x-api-tool")
+    try:
+        readback = client.request(
+            "GET", ctx["cfg"].base_url.rstrip("/") + f"/tweets/{post_id}",
+            headers=headers, params={"tweet.fields": "author_id"}, retries=0,
+        ).json()
+        confirmed = readback.get("data") if isinstance(readback, dict) else None
+    except (RuntimeError, ValueError):
+        confirmed = None
+    if not isinstance(confirmed, dict) or str(confirmed.get("id")) != post_id or str(confirmed.get("author_id")) != account["id"]:
+        return {**result, "notes": "X returned a post ID, but read-back did not confirm it. Check X before trying again."}
+    return {**result, "ok": True}
 
 def _load_user_access_token(env_file: str) -> str | None:
     tok_path = token_path_for_env_file(env_file)
@@ -161,7 +192,16 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
 
     auth = str(getattr(args, "auth", "auto") or "auto").strip()
 
+    post_change = op_id in _POST_CHANGES
     plan_in = ctx.get("plan_in")
+    if post_change and plan_in and (
+        auth != "auto" or any(
+            getattr(args, field, None) for field in ("path_json", "query_json", "body_json", "path", "query", "file")
+        )
+    ):
+        raise SafetyError("Use only the saved plan for the post. Save a new preview if the request changes.")
+    if ctx.get("apply") and op_id in _MESSAGE_SENDS:
+        raise SafetyError("Use dm send or dm bulk-send to review recipients, consent and opt-outs before sending.")
     if plan_in:
         plan_obj = read_json_file(plan_in)
         if not isinstance(plan_obj, dict):
@@ -187,13 +227,18 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
         )
 
     plan_out = ctx.get("plan_out")
+    if post_change and plan_out and ctx.get("live") and not ctx.get("apply"):
+        token = _load_user_access_token(str(ctx["env_file"]))
+        if not token or plan.get("auth", {}).get("mode") != "oauth2":
+            raise SafetyError("Use a user token to save a connected post plan.")
+        mark_reviewed(plan, read_account(ctx, token))
     plan_path = write_json_file(plan_out, plan) if plan_out else None
 
     operation_raw = plan.get("operation")
     plan_operation: dict[str, Any] = operation_raw if isinstance(operation_raw, dict) else {}
     method = str(plan_operation.get("method") or "").upper()
-    if not method:
-        raise ValidationError("Plan missing operation.method")
+    if method != op.method.upper():
+        raise ValidationError("The plan method does not match the X command.")
 
     # Default is plan-only.
     will_execute = False
@@ -232,6 +277,17 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
             return 0
         will_execute = True
 
+    account = None
+    reviewed_token = None
+    if post_change and ctx.get("apply"):
+        if not plan_in:
+            raise SafetyError("Apply this post change with --plan-in and the saved connected preview.")
+        token = _load_user_access_token(str(ctx["env_file"]))
+        if not token or plan.get("auth", {}).get("mode") != "oauth2":
+            raise SafetyError("Use the reviewed user account for this post change.")
+        account = check_review(plan, ctx, token)
+        reviewed_token = token
+
     # Prepare live request from plan.
     op_obj = plan_operation
     # plan stores redacted url; rebuild the real url from cfg + filled path.
@@ -258,7 +314,7 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
     elif auth_mode == "bearer":
         token = ctx["cfg"].token
     elif auth_mode == "oauth2":
-        token = _load_user_access_token(str(ctx["env_file"]))
+        token = reviewed_token or _load_user_access_token(str(ctx["env_file"]))
     else:
         token = None
 
@@ -277,15 +333,25 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
         ctx["out"].emit(out)
         return 0
 
-    resp = _execute_live_http(
-        method=method,
-        url=real_url,
-        headers=headers,
-        query=query_inputs,
-        body=body_inputs,
-        files={str(k): str(v) for k, v in file_inputs.items()},
-        ctx=ctx,
-    )
+    try:
+        resp = _execute_live_http(
+            method=method,
+            url=real_url,
+            headers=headers,
+            query=query_inputs,
+            body=body_inputs,
+            files={str(k): str(v) for k, v in file_inputs.items()},
+            ctx=ctx,
+        )
+    except RuntimeError as error:
+        if op_id == "createPosts" and str(error).startswith(("HTTP 5", "Request failed")):
+            raise RuntimeError("X did not confirm the create request. Check the account before retrying.") from error
+        raise
+
+    verification: dict[str, Any] = {"supported": False, "ok": None, "notes": "Automatic read-back verification is not implemented for this operation."}
+    if op_id == "createPosts" and account is not None:
+        verification = _check_created_post(resp, ctx=ctx, headers=headers, account=account)
+    ok = 200 <= int(resp["status"]) < 300 and verification["ok"] is not False
 
     receipt = {
         "tool": ctx.get("tool") or "x-api-tool",
@@ -298,14 +364,15 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
             "flag": "--ack-no-snapshot",
             "reason": "No reliable before-state snapshot is available for this X write.",
         } if method not in {"GET", "HEAD"} else None,
-        "verification": {"supported": False, "ok": None, "notes": "Automatic read-back verification is not implemented for this operation."},
+        "verification": verification,
+        "account": account,
         "http": {"status": resp.get("status"), "headers": resp.get("headers")},
     }
 
     receipt_out = ctx.get("receipt_out")
     receipt_path = write_json_file(receipt_out, receipt) if receipt_out else None
     out = {
-        "ok": True,
+        "ok": ok,
         "dry_run": False,
         "plan_out": plan_path,
         "receipt_out": receipt_path,
@@ -322,4 +389,4 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
         {"operation_id": op_id, "method": method, "status": resp.get("status"), "plan_out": plan_path, "receipt_out": receipt_path},
     )
     ctx["out"].emit(out)
-    return 0
+    return 0 if ok else 1

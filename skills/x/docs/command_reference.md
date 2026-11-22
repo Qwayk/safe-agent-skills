@@ -1,66 +1,45 @@
-# Command reference
+# X commands
 
-These commands cover X account reads, mentions, OpenAPI operations, DMs, PKCE auth, and write gates. Confirm account and permission scope before posts, replies, or DMs.
+Start with [Quickstart](quickstart.md) to install and [Connect your X account](onboarding.md) to sign in. Put shared flags such as `--live` and `--env-file` before the command. Values like `POST_ID` are examples.
 
-For the guided path, start with [What you can do with X](use_cases.md), [Connect your X account](onboarding.md), and [Quickstart](quickstart.md).
+## Find a command or read data
 
-## Good first commands
+~~~bash
+x-api-tool api ops list [--tag TAG] [--security-scheme SCHEME]
+x-api-tool api OPERATION_ID [--auth auto|app|user|none] [--path key=value] [--query key=value] [--body-json '{}']
+x-api-tool --live users resolve --username USERNAME [--include-receives-your-dm]
+x-api-tool --live dm can-send --to-username USERNAME
+~~~
 
-- `x-api-tool onboarding [--no-write-env]`
-- `x-api-tool --output json --version`
-- `x-api-tool auth check`
-- `x-api-tool --live auth check` (optional live read: validates OAuth user token by calling `GET /2/users/me`)
-- `x-api-tool auth token set --file token.json` (plan-only by default; apply with `--apply --yes --ack-no-snapshot`)
-- `x-api-tool auth token status`
-- `x-api-tool auth pkce start` (plan-only by default; apply with `--apply --yes --ack-no-snapshot`)
-- `x-api-tool auth pkce finish --redirect-url '<paste redirect url here>'` (apply with `--apply --yes --ack-no-snapshot`)
+Run a GET or HEAD command without `--live` to preview it. `dm can-send` checks whether the recipient can receive a message from your account. Confirm permission to message them separately.
 
-## Explicit OpenAPI operations
+## Post or delete a post
 
-- `x-api-tool api ops list [--tag <tag>] [--security-scheme <scheme>]`
-- `x-api-tool api <operationId> [--auth auto|app|user|none] [--path k=v] [--query k=v] [--body-json '{...}']`
-- `x-api-tool --live api <operationId> ...` (GET/HEAD live)
-- `x-api-tool --apply --yes --ack-no-snapshot api <operationId> ...` (write apply when no saved snapshot is available)
-- `x-api-tool --apply --yes --ack-no-snapshot --ack-irreversible api <operationId> ...` (DELETE apply when no saved snapshot is available)
+Approve the live account check used to save the preview. Read the account username and ID and the full post before approving apply. A reply uses the same `createPosts` command with reply details in the body.
 
-## User helpers
+~~~bash
+x-api-tool --live --plan-out post.json api createPosts --auth user --body-json '{"text":"Example post"}'
+x-api-tool --apply --yes --ack-no-snapshot --plan-in post.json api createPosts
+x-api-tool --live --plan-out delete.json api deletePosts --auth user --path id=POST_ID
+x-api-tool --apply --yes --ack-no-snapshot --ack-irreversible --plan-in delete.json api deletePosts
+~~~
 
-- `x-api-tool users resolve --username <name>`
-- `x-api-tool --live users resolve --username <name> [--include-receives-your-dm]`
+For other write operations, preview the exact command, get approval, then add `--apply --yes --ack-no-snapshot` and `--ack-irreversible` for deletes. See [How approvals work](safety_model.md).
 
-## DM helpers
+## Send a direct message
 
-- `x-api-tool --live dm can-send --to-username <name>`
-  - Returns a simple yes/no style result for “does this user receive DMs from *your sender account* right now?”
-- `x-api-tool dm send --to-user-id <id> --message 'hi' [--plan-out plan.json]`
-- `x-api-tool --apply --yes --ack-no-snapshot dm send --to-user-id <id> --message 'hi'`
-- `x-api-tool dm opt-out add --recipient <name-or-id> [--reason '...']`
-- `x-api-tool dm opt-out list`
-- `x-api-tool dm bulk-send --csv job.csv --opt-out-line 'Reply STOP to opt out.' [--plan-out plan.json]`
-- `x-api-tool --apply --yes --ack-no-snapshot --plan-in plan.json dm bulk-send --csv job.csv --opt-out-line 'Reply STOP to opt out.' --min-delay-s 1.0`
-  - `--min-delay-s` is used only after the required approvals and policy checks pass.
+Use a real reason the person asked for or agreed to this message. The text below is an example. The tool adds the opt-out line to the message.
 
-## Jobs and batches
+~~~bash
+x-api-tool --live --plan-out dm.json dm send --to-user-id USER_ID --message 'Example reply' --intent-evidence 'They asked for this on X' --opt-out-line 'Reply STOP to opt out.'
+x-api-tool --apply --yes --ack-no-snapshot --plan-in dm.json dm send --to-user-id USER_ID --message 'Example reply' --intent-evidence 'They asked for this on X' --opt-out-line 'Reply STOP to opt out.'
+~~~
 
-- `x-api-tool jobs run --file jobs.csv [--limit N] [--plan-out plan.json]`
-- `x-api-tool --apply --yes --plan-in plan.json jobs run --file jobs.csv` (`write.ping` is template-only and refuses instead of pretending to write)
+You can use `--to-username` in place of `--to-user-id`. To review several one-to-one messages, use `dm bulk-send --csv job.csv` with the columns `recipient,message,intent_evidence`. Use the same `--opt-out-line` and `--min-delay-s` in preview and apply. Keep the wording specific to each person. If a recipient opts out, record it with `dm opt-out add --recipient NAME_OR_ID`. Use `dm opt-out list` to check the list.
 
-## Local runs and history
+## Jobs and saved runs
 
-Write-capable commands automatically save proof artifacts under `.state/runs/` and append an index row to `.state/runs/index.jsonl`.
-
-These live next to your `--env-file` (usually next to your `.env` file), so they’re easy to find.
-
-Optional flags:
-- `--run-id <id>`: set a specific run id (otherwise the tool generates one)
-- `--artifacts-dir <path>`: override where artifacts are written for this run
-- `--no-artifacts`: disable writing run artifacts (advanced)
-
-- `x-api-tool runs list [--limit 20]`
-- `x-api-tool runs show --run-id 2026-01-19T104512Z_a3f91c`
-
-## Demo safety examples
-
-- `x-api-tool demo read`
-- `x-api-tool demo write --selector demo-resource [--plan-out plan.json]`
-- `x-api-tool --apply --yes --plan-in plan.json --receipt-out receipt.json demo write --selector demo-resource` (template-only; refuses instead of pretending to write)
+- `x-api-tool jobs run --file jobs.csv [--limit N] [--plan-out plan.json]` runs a CSV with an `action` column. The runner stops on the first error. Use `--apply --yes --plan-in plan.json` with the same file to apply a reviewed run that has a supported write action.
+- `x-api-tool demo read` and `x-api-tool demo write --selector demo-resource` are examples. Applying `demo write` or the sample `write.ping` job refuses because neither has an X write handler. See [sample jobs](../examples/jobs.csv) and [the sample with a write](../examples/jobs_with_write.csv).
+- `x-api-tool runs list [--limit 20]` and `x-api-tool runs show --run-id RUN_ID` open local run records. Write-capable commands save records under `.state/runs/` next to your settings file. `--run-id` and `--artifacts-dir` change where a record is saved. `--no-artifacts` turns off the automatic run record.
+- Use `--plan-out` to save a preview, `--plan-in` to use a reviewed plan and `--receipt-out` to choose where the apply receipt is saved.

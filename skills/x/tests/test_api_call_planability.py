@@ -22,7 +22,7 @@ def _tool_root() -> Path:
 class TestApiCallPlanability(unittest.TestCase):
     def test_every_operation_is_plannable_offline(self) -> None:
         root = _tool_root()
-        snap = root / "docs" / "official_openapi_x_api_v2.json"
+        snap = root / "src/x_api_tool/official_openapi_x_api_v2.json"
         obj = load_openapi_snapshot(snap)
         ops = extract_operations(obj)
 
@@ -146,44 +146,18 @@ class TestApiCallPlanability(unittest.TestCase):
             self.assertEqual(payload["verification_plan"]["status"], "best_effort_after_apply")
             self.assertFalse(mock_http.called)
 
-    def test_write_apply_with_ack_no_snapshot_calls_http(self) -> None:
+    def test_post_apply_requires_a_saved_connected_plan(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             env = Path(d) / ".env"
-            env.write_text("X_API_BASE_URL=https://api.x.com/2\nX_API_BEARER_TOKEN=\nX_API_TIMEOUT_S=30\n", encoding="utf-8")
-
+            env.write_text("X_API_BASE_URL=https://api.x.com/2\n", encoding="utf-8")
             buf = io.StringIO()
-            with patch(
-                "x_api_tool.commands.api._execute_live_http",
-                return_value={
-                    "status": 201,
-                    "url": "https://api.x.com/2/tweets",
-                    "headers": {},
-                    "body_json": {"data": {"id": "123"}},
-                    "body_text": None,
-                },
-            ) as mock_http:
-                with redirect_stdout(buf):
-                    rc = main(
-                        [
-                            "--output",
-                            "json",
-                            "--env-file",
-                            str(env),
-                            "--apply",
-                            "--yes",
-                            "--ack-no-snapshot",
-                            "api",
-                            "createPosts",
-                            "--auth",
-                            "none",
-                            "--body-json",
-                            "{}",
-                        ]
-                    )
+            with patch("x_api_tool.commands.api._execute_live_http") as mock_http, redirect_stdout(buf):
+                rc = main([
+                    "--env-file", str(env), "--no-artifacts", "--apply", "--yes",
+                    "--ack-no-snapshot", "api", "createPosts", "--body-json", '{"text":"Sample"}',
+                ])
             self.assertEqual(rc, 0)
-            payload = json.loads(buf.getvalue())
-            self.assertTrue(payload["ok"])
-            self.assertFalse(payload.get("refused", False))
-            self.assertTrue(mock_http.called)
-            self.assertEqual(payload["receipt"]["before_state"]["status"], "no_snapshot_available")
-            self.assertTrue(payload["receipt"]["no_snapshot_approval"]["acknowledged"])
+            result = json.loads(buf.getvalue())
+            self.assertTrue(result["refused"])
+            self.assertIn("--plan-in", result["reasons"][0])
+            mock_http.assert_not_called()

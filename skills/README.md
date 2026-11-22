@@ -127,7 +127,7 @@ Start here if you want website publishing, content updates, or social account wo
 | [**Bluesky**](bluesky/README.md)<br><sub>Install slug: <code>bluesky</code></sub> | Read public profiles and feeds. Review posts before publishing. | Sign in for private data or changes | Reads + careful changes |
 | [**Instagram**](instagram/README.md)<br><sub>Install slug: <code>instagram</code></sub> | Read recent posts, comments, and insights. Review media before publishing. | Instagram professional account | Reads + careful changes |
 | [**Threads**](threads/README.md)<br><sub>Install slug: <code>threads</code></sub> | Read recent posts, replies, and insights. Review a draft before publishing. | Threads account | Reads + careful changes |
-| [**X**](x/README.md)<br><sub>Install slug: <code>x</code></sub> | Review and plan X API, DM, auth, and posting workflows | X account | Reads + careful changes |
+| [**X**](x/README.md)<br><sub>Install slug: <code>x</code></sub> | Find posts and mentions, check the connected account, and preview posts and direct messages for approval. | X account | Reads + careful changes |
 | [**YouTube**](youtube/README.md)<br><sub>Install slug: <code>youtube</code></sub> | Review and plan YouTube channel, video, upload, and data workflows | YouTube channel | Reads + careful changes |
 
 ## Creative and media tools

@@ -25,6 +25,9 @@ x-api-tool = "x_api_tool.__main__:main"
 [tool.setuptools]
 package-dir = {"" = "src"}
 
+[tool.setuptools.package-data]
+x_api_tool = ["official_openapi_x_api_v2.json"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

@@ -1,62 +1,38 @@
 # Connect your X account
 
-X needs local API credentials and token settings before an agent can inspect account data, mentions, posts, DMs, or safe read options.
+Use your approved X app. Keep its tokens and the local `.state` folder out of chat and Git. Use a different folder for each account because the tool keeps token files next to the chosen `.env` file.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## Set up the app
 
-After setup, start with a safe account or mentions read before asking for posts, replies, DMs, or auth changes.
+Create a private `.env` file in the folder where you will work. You can use `x-api-tool onboarding` to create it, or `x-api-tool onboarding --no-write-env` to check for missing settings without writing the file. Add `X_API_BASE_URL=https://api.x.com/2`.
 
-## Step 1: Create the local `.env` file
+For app-level reads, add `X_API_BEARER_TOKEN` from your X app. For account reads and writes, add the OAuth settings below. Get the client ID from the app and use the exact same redirect URI in X and in this file.
 
-In the tool folder:
+~~~dotenv
+X_API_BASE_URL=https://api.x.com/2
+X_API_OAUTH2_CLIENT_ID=YOUR_CLIENT_ID
+X_API_OAUTH2_REDIRECT_URI=http://127.0.0.1:8080/callback
+X_API_OAUTH2_SCOPES=users.read tweet.read
+~~~
 
-1. Copy `.env.example` to `.env`.
-2. Open `.env` in a text editor.
-3. Fill at least:
-   - `X_API_BASE_URL=https://api.x.com/2`
-   - one auth option to start:
-     - app bearer token: `X_API_BEARER_TOKEN=...`
-     - OAuth user setup: `X_API_OAUTH2_CLIENT_ID=...` and `X_API_OAUTH2_REDIRECT_URI=...`
+Add `tweet.write` if you have approval to post. Add `dm.read dm.write` if you have approval to read and send messages. X controls which actions the app can use and which people can receive messages from your account. [X OAuth setup](https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code)
 
-## Step 2: Create credentials in the X Developer Portal
+Use `--env-file` to choose another settings file. Environment variables override file values. `X_API_TIMEOUT_S` is optional and defaults to 30 seconds.
 
-Open the X Developer Portal and create (or select) your app/project. You will need one of:
+## Sign in as the account
 
-### Option A: App-only bearer token
+First preview both commands without the approval flags. With approval, start sign-in:
 
-1. In your app settings, locate the app-only bearer token.
-2. Copy it into `.env` as `X_API_BEARER_TOKEN=<paste token here>`.
+~~~bash
+x-api-tool --apply --yes --ack-no-snapshot auth pkce start
+~~~
 
-### Option B: OAuth2 user token (recommended for DMs)
+Open the returned URL and sign in as the intended account. Copy the final redirect URL from the browser address bar even if the loopback page fails to load. Run the finish command locally. The URL contains a short-lived code, so keep it out of chat.
 
-1. In your app settings, enable OAuth 2.0 (Authorization Code with PKCE).
-2. Set the callback or redirect URL to match your `.env` exactly.
-   - Recommended for CLIs (loopback): `X_API_OAUTH2_REDIRECT_URI=http://127.0.0.1:8080/callback`
-   - You can usually copy the full redirect URL from your browser’s address bar after authorization, even if the loopback URL can’t be reached.
-3. Copy the OAuth2 client ID into `.env` as `X_API_OAUTH2_CLIENT_ID=<paste client id here>`.
-4. Set scopes in `.env` and start minimal:
-   - `X_API_OAUTH2_SCOPES=users.read tweet.read`
-   - For DMs, include: `dm.read dm.write`
+~~~bash
+x-api-tool --apply --yes --ack-no-snapshot auth pkce finish --redirect-url 'YOUR_REDIRECT_URL'
+~~~
 
-## Step 3: Ask for a safe first check
+The first command saves sign-in state in `.state/pkce.json`. The second exchanges the code and saves the token in `.state/token.json`. If you already have a token file, preview `x-api-tool auth token set --file token.json`, then add `--apply --yes --ack-no-snapshot` after review. Use `x-api-tool auth token status` to check whether the token file exists.
 
-Good first requests:
-
-- “Confirm the tool is connected, then show me the available X API operations.”
-- “Check my account, recent mentions, and the safe read options I can run first.”
-- “Plan a DM send to this user ID, but do not send it until I approve.”
-- “Plan a bulk DM send from this CSV, and block anything missing consent evidence or an opt-out line.”
-
-## Step 4: If something fails
-
-The most common issues are:
-- Missing or incorrect values in `.env`
-- Missing scopes for user-context endpoints (OAuth2).
-- Network/auth restrictions in your X developer account
-
-Extra notes for outreach (DMs):
-- DMs require **OAuth user-context auth** (not just the app bearer token).
-- Whether you *can* DM someone depends on the **recipient’s DM settings** (and your sender account’s status). Use `x-api-tool --live dm can-send --to-username <name>` to check first.
-- “Verified” for DM reach is an X product decision (X Premium + eligibility review). The API does not make an account verified.
-
-See `docs/troubleshooting.md` for common errors and fixes.
+Run `x-api-tool auth check` for a local check. When a credit-using read is approved, run `x-api-tool --live auth check` to see the username and ID for the OAuth token. [X API pricing](https://docs.x.com/x-api/getting-started/pricing)

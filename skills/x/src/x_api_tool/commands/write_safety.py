@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from typing import Any
+
+from ..errors import SafetyError
+from ..http import HttpClient
 
 BEFORE_STATE_REFUSAL_REASON = (
     "Refused: this X write has no reliable before-state snapshot. "
@@ -125,3 +130,42 @@ def refusal_output(
     if isinstance(plan.get("rollback"), dict):
         out["rollback"] = plan["rollback"]
     return out
+
+
+def read_account(ctx: dict[str, Any], token: str) -> dict[str, str]:
+    client = HttpClient(timeout_s=float(ctx["timeout_s"]), verbose=bool(ctx.get("verbose")), user_agent="x-api-tool")
+    response = client.request(
+        "GET", ctx["cfg"].base_url.rstrip("/") + "/users/me",
+        headers={"Authorization": f"Bearer {token}"}, retries=0,
+    )
+    if response.status != 200:
+        raise SafetyError("X could not confirm the connected account.")
+    result = response.json()
+    account = result.get("data") if isinstance(result, dict) else None
+    if not isinstance(account, dict) or not account.get("id") or not account.get("username"):
+        raise SafetyError("X did not return the connected account's ID and username.")
+    return {"id": str(account["id"]), "username": str(account["username"])}
+
+
+def _review_hash(plan: dict[str, Any], account: dict[str, str]) -> str:
+    content = {key: value for key, value in plan.items() if key not in {"generated_at_utc", "review"}}
+    content["account"] = account
+    raw = json.dumps(content, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(raw.encode()).hexdigest()
+
+
+def mark_reviewed(plan: dict[str, Any], account: dict[str, str]) -> None:
+    plan["review"] = {"account": account, "request_sha256": _review_hash(plan, account)}
+
+
+def check_review(plan: dict[str, Any], ctx: dict[str, Any], token: str) -> dict[str, str]:
+    review = plan.get("review")
+    if not isinstance(review, dict) or not isinstance(review.get("account"), dict):
+        raise SafetyError("Save a connected preview with --live --plan-out before applying.")
+    approved = review["account"]
+    if review.get("request_sha256") != _review_hash(plan, approved):
+        raise SafetyError("The saved plan changed. Save a new preview and review it.")
+    current = read_account(ctx, token)
+    if current["id"] != approved.get("id"):
+        raise SafetyError("The connected X account differs from the account in the saved plan.")
+    return current

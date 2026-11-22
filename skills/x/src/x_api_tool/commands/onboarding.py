@@ -55,14 +55,12 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
         missing.extend(["X_API_BEARER_TOKEN (or OAuth2 PKCE settings)", "X_API_OAUTH2_CLIENT_ID", "X_API_OAUTH2_REDIRECT_URI"])
 
     steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Open .env and fill the required values:",
-        "  - X_API_BASE_URL=https://api.x.com/2",
-        "Choose one auth option (or both):",
-        "  - App-only (server-to-server): set X_API_BEARER_TOKEN",
-        "  - User OAuth2 (PKCE): set X_API_OAUTH2_CLIENT_ID and X_API_OAUTH2_REDIRECT_URI",
-        "Then (optional) set X_API_OAUTH2_SCOPES to the minimum you need.",
-        "Run: x-api-tool --output json auth check",
+        "Keep the settings file private.",
+        "Set X_API_BASE_URL=https://api.x.com/2.",
+        "For app reads, set X_API_BEARER_TOKEN.",
+        "To sign in as a user, set X_API_OAUTH2_CLIENT_ID and X_API_OAUTH2_REDIRECT_URI.",
+        "Set X_API_OAUTH2_SCOPES to the permissions you need.",
+        "Run x-api-tool --output json auth check.",
     ]
 
     payload = {

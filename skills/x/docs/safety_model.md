@@ -1,73 +1,15 @@
-# Safety model
+# How approvals work
 
-X can touch users, posts, DMs, lists, spaces, and auth-related work, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Run a preview first. GET and HEAD operations need `--live` to make an X call. Writes need `--apply --yes` after review. If the tool could not save the earlier state, use `--ack-no-snapshot` only after approving that limit. Deletes also need `--ack-irreversible`. Most writes have no automatic undo.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## What to review
 
-A good safety ask is: "Read the account or post first, then review the plan before DMs, posts, auth writes, or generated API changes."
+Check that the plan shows the right account, target and exact change. Before posting, replying, deleting a post or sending a message, save a preview with `--live --plan-out`. X may charge for the checks done during preview, apply and post read-back. Apply with `--plan-in`. If the request or account changes, save and review a new plan.
 
-## Core safety rules
+A single direct message and a batch follow the same rules. Check that every recipient asked for or agreed to the specific message, and keep the evidence in the plan. Seeing that someone accepts DMs does not establish that they agreed to this one. Include a clear opt-out line, respect the opt-out list and stop messaging anyone who opts out. Use `dm send` or `dm bulk-send` to send one-to-one messages. The API message commands are available for previews, including group messages. [X automation rules](https://help.x.com/en/rules-and-policies/x-automation)
 
-This skill covers a broad X API v2 surface, so safety here means keeping every live action explicit, reviewable, and honest about its limits.
+## Check what happened
 
-## What safety means here
+A refusal reports `refused: true` in JSON and can exit with code 0. Check the output before moving on. After a create, the tool asks X for the post and checks that its ID and author match. A message receipt records acceptance only when X returns a message event ID. That cannot tell you whether the recipient read it. A batch stops at the first rejected or unconfirmed send and keeps the results it already got.
 
-- Live reads need explicit `--live`.
-- Write-capable actions start as dry-run plans by default.
-- When no useful before-state exists, applies need explicit `--ack-no-snapshot`.
-- DELETE actions also need `--ack-irreversible`.
-- The tool refuses when the auth mode is unsupported or the request is too risky for the current path.
-- Secrets stay redacted in plans, receipts, logs, and errors.
-
-## Explicit operation safety
-
-The tool exposes one explicit CLI command per `operationId` from the pinned X API v2 snapshot.
-
-That means:
-
-- GET and HEAD calls stay plan-only unless you add `--live`
-- non-GET calls stay plan-only unless you add the required apply flags
-- DELETE calls need the same write approval plus `--ack-irreversible`
-- the agent can show you the exact operation inventory with `x-api-tool api ops list`
-
-## DM safety rules
-
-Bulk DMs are high-risk, so this tool blocks them unless:
-
-- every row includes intent evidence
-- an opt-out line is provided
-- recipients already present in the local opt-out ledger are excluded
-
-The local opt-out ledger lives under `.state/dm_opt_out.json` next to your `--env-file`.
-Manage it with `x-api-tool dm opt-out add` and `x-api-tool dm opt-out list`.
-
-## Plan, review, apply, receipt
-
-The recommended write flow is:
-
-1. Build the dry-run plan first.
-2. Review the target, auth mode, payload, and risk.
-3. Apply only with the required approval flags.
-4. Review the receipt and any available provider response.
-
-Useful file outputs:
-
-- `--plan-out <path>` saves the dry-run plan
-- `--plan-in <path>` applies from a reviewed plan
-- `--receipt-out <path>` saves the apply receipt
-
-## Local run history
-
-Write-capable commands can save local proof under:
-
-- `.state/runs/<run_id>/`
-- `.state/runs/index.jsonl`
-
-Those files stay local and must never contain secrets.
-
-## Honest limits
-
-- Most current X write paths do not have automatic rollback.
-- Demo writes and `jobs write.ping` stay template-only and refuse instead of pretending to write.
-- DM reachability depends on recipient settings and your sender account status.
-- Some X endpoints still depend on the right scopes, app review, or product access outside this repo.
+If X did not confirm a write, check X before trying again. Use the receipt to see where a batch stopped. Keep plans and receipts private. They can contain message text and the reason someone was contacted, even when tokens have been removed.

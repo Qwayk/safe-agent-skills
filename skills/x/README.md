@@ -1,110 +1,23 @@
 # X
 
-**Capability:** Reads + careful changes
+Use this tool to find posts and mentions, check an X account, and prepare changes such as a post, reply or direct message. You can check which account is connected before approving a change.
 
-X is where posts, mentions, lists, DMs, follows, likes, bookmarks, and account identity can affect a public brand or creator account fast.
+## Install
 
-This skill helps an agent check account and token readiness, review users, posts, mentions, lists, trends, Spaces, and DMs, and prepare X API v2 changes before anything posts, messages, follows, likes, bookmarks, or edits account state.
+Ask your agent to install the X skill from Qwayk, or run:
 
-Use it for questions like: "Which account does this token reach?", "What mentions need review?", "Can this user receive a DM?", "Can you resolve these usernames?", or "Can you build the safest plan before we post or send anything?"
-
-X work is sensitive because public posts and DMs are easy to get wrong. Live reads need `--live`, write-capable actions start as dry-run plans, and provider or local token writes need explicit no-snapshot approval when the tool cannot save useful before-state first.
-
-A good first ask is: "Check the X connection, show my account, recent mentions, and DM safety status, then stop before any writes."
-
-## Start here first
-
-- Want ideas for real X work? [What you can do with X](docs/use_cases.md)
-- Need setup? [Connect your X account](docs/onboarding.md)
-- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
-
-If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
-
-## What this skill helps with
-
-- Check auth readiness, token state, and which X auth mode is available.
-- Review users, posts, mentions, lists, trends, Spaces, and other pinned X API v2 reads.
-- Inspect the exact supported endpoint inventory through the pinned operation list.
-- Plan post, follow, like, bookmark, list, or moderation changes before the account is changed.
-- Check DM reachability, plan DM sends, and enforce safer bulk DM rules with local opt-out protection.
-- Run batch jobs from CSV with the same review-first safety pattern.
-
-## What access this skill needs
-
-- An X app bearer token for many app-level reads.
-- An OAuth user token for user-context reads, DMs, and most live writes.
-- Your OAuth client ID and redirect URI if you want to use the PKCE helper flow.
-- The right X scopes for DMs, follows, likes, bookmarks, list work, or other write-capable families.
-
-## Install and first run
-
-Install slug: `x`
-
-Ask your agent to install the `x` skill from `Qwayk/safe-agent-skills`.
-
-If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
-
-If your host does not let the agent install skills directly, run:
-
-```bash
+~~~bash
 npx skills add Qwayk/safe-agent-skills@x -g -y
-```
+~~~
 
-Then try a safe first ask like:
+Follow [Quickstart](docs/quickstart.md) to install the command and run the first checks. Follow [Connect your X account](docs/onboarding.md) when you are ready to use your account.
 
-```text
-Check the X connection, show my account, recent mentions, and DM safety status, then stop before any writes.
-```
+## What you can ask
 
-## How this skill stays safe
+- Show my connected account and the five most recent mentions.
+- Draft a reply and show me the exact post and account before publishing.
+- Check whether this person can receive a direct message from my account. Show me the message and why we have permission before sending.
 
-- Live reads need explicit `--live`.
-- Write-capable actions start as dry-run plans first.
-- Provider writes, DM sends, and token or PKCE state writes need `--ack-no-snapshot` when no saved before-state exists.
-- Deletes and other irreversible actions also need `--ack-irreversible`.
-- Bulk DM sends require intent evidence, an opt-out line, and a clean local opt-out ledger.
-- The pinned X API snapshot, docs, tests, proof files, and coverage ledger all live in this repo so you can inspect what the agent is using.
+X may charge for live reads and writes, including the account and recipient checks used to prepare a plan. Review the cost and exact action before approving live work. [X API pricing](https://docs.x.com/x-api/getting-started/pricing)
 
-## What it covers today
-
-This skill covers:
-
-- local onboarding, auth checks, token status, token set, and PKCE helpers
-- explicit pinned `api <operationId>` commands for supported X API v2 reads and writes
-- user helpers like `users resolve`
-- DM helpers for can-send checks, single sends, bulk sends, and local opt-out protection
-- batch jobs, demo safety examples, and local run history for review
-
-## What happens before live changes
-
-- The agent should show the dry-run plan first.
-- You review the auth mode, target account, endpoint, and payload before apply.
-- Read-only calls can run live with `--live`.
-- Write-capable actions need `--apply --yes --ack-no-snapshot` when no saved before-state exists.
-- DELETE actions also need `--ack-irreversible`.
-- Demo writes and `jobs write.ping` stay template-only and refuse instead of pretending to write.
-
-## What proof it leaves behind
-
-- Dry-run plans can be saved with `--plan-out`.
-- Approved applies can save receipts with `--receipt-out`.
-- Local run history can be reviewed with `runs list` and `runs show`.
-- The proof pack includes redacted example outputs for version, auth checks, explicit API planning, and DM planning.
-- The docs, tests, examples, and API coverage ledger are all in this repo.
-
-## Limits
-
-- Most current writes do not have built-in rollback support.
-- DM reachability still depends on recipient settings and your sender-account status.
-- Some endpoints still depend on the right scopes, app review state, or X product access.
-- Demo write flows and `jobs write.ping` are template-only safety examples, not real provider writes.
-
-## Helpful docs
-
-- [Browse all X docs](docs/README.md)
-- [Quickstart](docs/quickstart.md)
-- [Command guide](docs/command_reference.md)
-- [Authentication details](docs/authentication.md)
-- [Jobs and batch work](docs/jobs_and_batches.md)
-- [Proof and verification](docs/proof.md)
-- [API coverage](docs/api_coverage.md)
+See [Commands](docs/command_reference.md), [How approvals work](docs/safety_model.md), and [What we tested](docs/proof.md).

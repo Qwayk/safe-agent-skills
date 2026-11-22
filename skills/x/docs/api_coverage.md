@@ -1,10 +1,6 @@
 # API coverage
 
-X coverage shows exactly what this skill can do with users, posts, DMs, lists, spaces, and auth-related work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
-
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can inspect users, posts, and lists, then show which X actions are shipped."
+This list comes from the X API file shipped with the tool. It shows the operation names and access each command needs. For posts and messages, see [How approvals work](safety_model.md).
 
 ## Coverage notes
 

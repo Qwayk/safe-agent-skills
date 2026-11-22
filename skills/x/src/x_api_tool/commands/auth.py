@@ -21,6 +21,7 @@ from ..oauth_tokens import (
     write_token_from_file,
 )
 from .write_safety import (
+    read_account,
     before_state_refusal_verification_plan,
     blocked_before_state,
     ensure_blocked_apply_contract,
@@ -49,17 +50,9 @@ def cmd_auth_check(args, ctx) -> int:
             raise ValidationError(
                 "Missing OAuth access token for live check. Current auth write helpers plan/require explicit no-snapshot approval before storing tokens."
             )
-        url = cfg.base_url.rstrip("/") + "/users/me"
-        client = HttpClient(timeout_s=float(ctx["timeout_s"]), verbose=bool(ctx.get("verbose")), user_agent="x-api-tool")
-        resp = client.request("GET", url, headers={"Authorization": f"Bearer {access_token}"})
-        resp_keys: list[str] | None = None
-        try:
-            obj = resp.json()
-            if isinstance(obj, dict):
-                resp_keys = sorted([k for k in obj.keys() if isinstance(k, str)])
-        except Exception:
-            resp_keys = None
-        out["live_check"] = {"attempted": True, "status": resp.status, "response_keys": resp_keys}
+        account = read_account(ctx, access_token)
+        out["live_check"] = {"attempted": True, "status": 200, "response_keys": ["data"]}
+        out["account"] = account
     ctx["audit"].write("auth.check", out)
     ctx["out"].emit(out)
     return 0
