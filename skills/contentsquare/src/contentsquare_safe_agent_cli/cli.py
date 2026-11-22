@@ -194,7 +194,7 @@ def _add_contentsquare_commands(sub: argparse._SubParsersAction) -> None:
     # Register one explicit parser per documented endpoint row.
     for spec in ALL_ENDPOINTS:
         current_sub = families[spec.command[0]]
-        prefix = (spec.command[0],)
+        prefix: tuple[str, ...] = (spec.command[0],)
         for part in spec.command[1:-1]:
             prefix = prefix + (part,)
             if prefix not in nested:

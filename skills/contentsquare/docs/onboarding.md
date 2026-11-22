@@ -1,64 +1,46 @@
-# Connect your Contentsquare account
+# Connect Contentsquare
 
-Start the same way you would start a careful Contentsquare review: connect the local OAuth credentials, confirm the token endpoint, run one small read, then stop before any change.
+Create server-to-server OAuth credentials in Contentsquare for the API you want to use. Keep the client secret and access tokens on your machine.
 
-You do not need to learn every command first. Contentsquare setup has two parts: local server-to-server OAuth credentials, and enough Contentsquare entitlement for the API family you want the agent to inspect.
-
-Keep the setup files private. Do not paste `.env`, client secrets, OAuth responses, access tokens, or exported data into chat.
-
-## Step 1: Create the local settings file
-
-From the tool folder:
+## Set up a private settings file
 
 ```bash
-cp .env.example .env
+contentsquare-safe-cli onboarding
 ```
 
-Keep `.env` private and local.
-
-## Step 2: Get OAuth credentials
-
-In the Contentsquare console, create server-to-server OAuth credentials for the API areas you plan to use.
-
-Fill these local values:
+The command creates `.env` if it is missing. Only your user account can read and write a file created this way. To choose another file, put `--env-file` before the command:
 
 ```bash
-CONTENTSQUARE_CLIENT_ID=...
-CONTENTSQUARE_CLIENT_SECRET=...
-CONTENTSQUARE_PROJECT_ID=
-CONTENTSQUARE_AUTH_BASE_URL=https://api.contentsquare.com
-CONTENTSQUARE_API_BASE_URL=
-CONTENTSQUARE_TIMEOUT_S=30
+contentsquare-safe-cli --env-file 'team settings.env' onboarding
 ```
 
-Leave `CONTENTSQUARE_API_BASE_URL` empty unless Contentsquare gives you a fixed API endpoint. The OAuth response can return the right API endpoint for your cloud.
+Fill `CONTENTSQUARE_CLIENT_ID` and `CONTENTSQUARE_CLIENT_SECRET` in that file or set them in your shell. For account-level credentials, set `CONTENTSQUARE_PROJECT_ID` to the project you want to read. A project-level credential can use its assigned project. Shell settings take precedence over the settings file. The global `--oauth-project-id` flag selects the OAuth project for a single command.
 
-If your OAuth credentials were created at the account level, fill `CONTENTSQUARE_PROJECT_ID` with the project you want the token to target. You can also pass `--oauth-project-id` for one command.
+Keep the file out of Git. Run `onboarding --no-write-env` if you only want to see what's missing.
 
-## Step 3: Confirm the connection
+| Setting | When to use it |
+| --- | --- |
+| `CONTENTSQUARE_AUTH_BASE_URL` | Leave it at `https://api.contentsquare.com` unless Contentsquare gives you a different OAuth address. |
+| `CONTENTSQUARE_API_BASE_URL` | Leave it empty to use the API address from the token reply. Fill it only if Contentsquare gives you a fixed API address. |
+| `CONTENTSQUARE_TIMEOUT_S` | The default is 30 seconds. Use `--timeout-s` to change it for one command. |
+
+## Check the connection
+
+Run the exact command onboarding gives you. For the default file, use:
 
 ```bash
 contentsquare-safe-cli auth check
 ```
 
-A good result returns `ok: true`, confirms a token was obtained for the default `data-export` scope, and shows the API endpoint without printing the token or secret. This is still only a setup check. The first live Contentsquare proof is one safe read against a project or object list you recognize.
+A successful check shows the requested or returned scope and the API address without printing the token. This confirms Contentsquare issued a token. Use the [first export read](quickstart.md#list-five-export-jobs) to check what that connection can see.
 
-## Step 4: What to ask your AI agent
+`auth check` asks for `data-export` by default. Normal commands choose `data-export`, `metrics`, `enrichment`, or `speed-analysis` based on the command. To check a different scope, use `auth check --scope metrics`, for example. Contentsquare requires `enrichment` to be used on its own. To check which projects and scopes a credential can use, run `contentsquare-safe-cli auth me`.
 
-- “Run the Contentsquare onboarding command and tell me what is missing.”
-- “Check Contentsquare auth and confirm no secrets are printed.”
-- “List export jobs for project 123.”
-- “Show site visits for project 123 last week.”
-- “Tell me which Contentsquare API family is safe to read first before preparing any change.”
+## If setup fails
 
-## What success looks like
+- **Missing client ID or secret.** Use the same settings file for onboarding and the next command. Check that both values are set locally.
+- **Wrong project or missing access.** Check the project ID, scope and permissions. For Enrichment, also confirm the integration ID. For a metrics read, check the date range.
+- **Wrong API address.** Clear a custom `CONTENTSQUARE_API_BASE_URL` if Contentsquare supplies the address with the token.
+- **A change stopped before sending.** Read the reason and check the [approval guide](safety_model.md).
 
-Setup is working when the agent can:
-
-- confirm OAuth credentials are present without printing secrets
-- name the API endpoint returned by Contentsquare or configured locally
-- explain whether a project id is needed for account-level credentials
-- run one read-only request that your Contentsquare permissions allow
-- stop before any live change
-
-If auth works but a real API read fails, setup is only partly working. The usual missing piece is the project id, API family entitlement, date range, integration id, or Contentsquare permission.
+Use the JSON error to explain what needs fixing. Keep credentials and exported data out of chat. Use `--verbose` for request details and `--debug` for a Python stack trace when debugging the CLI.

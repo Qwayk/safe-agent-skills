@@ -34,7 +34,7 @@ Start here if you want reporting, tracking, search visibility, incidents, or acc
 | [**Google Search Console**](google-search-console/README.md)<br><sub>Install slug: <code>google-search-console</code></sub> | Review Search Console sites, sitemaps, URL inspection, and search analytics | Google account | Reads + careful changes |
 | [**Google Tag Manager**](google-tag-manager/README.md)<br><sub>Install slug: <code>google-tag-manager</code></sub> | Review GTM containers, workspaces, tags, triggers, variables, and versions | Google account | Reads + careful changes |
 | [**Plausible Analytics**](plausible/README.md)<br><sub>Install slug: <code>plausible</code></sub> | Check traffic, top pages, sources, and goals. Preview site or event changes for approval. | Plausible account | Reads + careful changes |
-| [**Contentsquare**](contentsquare/README.md)<br><sub>Install slug: <code>contentsquare</code></sub> | Review visitor behavior exports, metrics, enrichment batches, and Speed Analysis reports | Contentsquare account | Reads + careful changes |
+| [**Contentsquare**](contentsquare/README.md)<br><sub>Install slug: <code>contentsquare</code></sub> | Check visitor metrics and speed reports. Download exports or preview changes for approval. | Contentsquare account | Reads + careful changes |
 | [**CallRail**](callrail/README.md)<br><sub>Install slug: <code>callrail</code></sub> | Review CallRail accounts, calls, forms, companies, trackers, integrations, and webhooks | CallRail account | Reads + careful changes |
 | [**Statuspage**](statuspage/README.md)<br><sub>Install slug: <code>statuspage</code></sub> | Check public status, incidents, maintenance, and components | Public status page URL | Read-only |
 

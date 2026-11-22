@@ -1,85 +1,67 @@
 from __future__ import annotations
 
+import os
+import shlex
 from pathlib import Path
 
+from ..config import _get, _parse_env_file
 
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
+REQUIRED_SETTINGS = ("CONTENTSQUARE_CLIENT_ID", "CONTENTSQUARE_CLIENT_SECRET")
 
 
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+def _create_env_file(env_path: Path) -> bool:
+    env_path.parent.mkdir(parents=True, exist_ok=True)
+    example_path = env_path.parent / ".env.example"
+    template = (
+        example_path.read_text(encoding="utf-8")
+        if example_path.is_file()
+        else "".join(f"{name}=\n" for name in REQUIRED_SETTINGS)
+    )
+    try:
+        with os.fdopen(
+            os.open(env_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "w", encoding="utf-8"
+        ) as file:
+            file.write(template)
+    except FileExistsError:
+        return False
+    return True
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
-    out = ctx["out"]
     env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
-
     env_path = Path(env_file)
     env_created = False
+    if not getattr(args, "no_write_env", False) and not env_path.exists():
+        env_created = _create_env_file(env_path)
 
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
-        else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
-
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "CONTENTSQUARE_CLIENT_ID"):
-        missing.append("CONTENTSQUARE_CLIENT_ID")
-    if not _has_nonempty_env_value(lines, "CONTENTSQUARE_CLIENT_SECRET"):
-        missing.append("CONTENTSQUARE_CLIENT_SECRET")
-
+    settings = _parse_env_file(env_path)
+    missing = [name for name in REQUIRED_SETTINGS if not _get(settings, name)]
+    next_args = ["contentsquare-safe-cli", "--output", "json", "--env-file", env_file]
+    if project_id := getattr(args, "oauth_project_id", None):
+        next_args.extend(("--oauth-project-id", project_id))
+    next_command = shlex.join([*next_args, "auth", "check"])
     steps = [
-        "Copy .env.example to .env. Keep .env local and never commit it.",
-        "In the Contentsquare console, create server-to-server OAuth credentials for the API areas you need.",
-        "Paste only these values into .env: CONTENTSQUARE_CLIENT_ID and CONTENTSQUARE_CLIENT_SECRET.",
-        "If those credentials are account-level, also set CONTENTSQUARE_PROJECT_ID to the target project id.",
-        "Leave CONTENTSQUARE_AUTH_BASE_URL as https://api.contentsquare.com unless Contentsquare gives you another OAuth host.",
-        "Only set CONTENTSQUARE_API_BASE_URL if Contentsquare gives you a fixed API endpoint; otherwise the OAuth token response supplies it.",
-        "Run: contentsquare-safe-cli --output json auth check",
+        "Create server-to-server OAuth credentials in Contentsquare for the API you need.",
+        f"Set CONTENTSQUARE_CLIENT_ID and CONTENTSQUARE_CLIENT_SECRET in {env_file} or in your shell.",
+        "For account-level credentials, also set CONTENTSQUARE_PROJECT_ID to the project you want to use.",
+        "Leave CONTENTSQUARE_API_BASE_URL blank unless Contentsquare gave you a fixed API address.",
+        "Run the connection check, then list export jobs in a project you recognize.",
     ]
-
-    payload = {
-        "ok": True,
-        "onboarding": {
-            "env_file": env_file,
-            "env_created": env_created,
-            "missing": missing,
-            "next_command": "contentsquare-safe-cli --output json auth check",
-            "steps": steps,
-        },
-    }
-
     if str(getattr(args, "output", "json")) == "json":
-        out.emit(payload)
+        ctx["out"].emit({
+            "ok": True,
+            "onboarding": {
+                "env_file": env_file,
+                "env_created": env_created,
+                "missing": missing,
+                "next_command": next_command,
+                "steps": steps,
+            },
+        })
     else:
-        print("To connect this tool to your API, do this once:")
-        for i, s in enumerate(steps, start=1):
-            print(f"{i}. {s}")
+        for step in steps:
+            print(step)
         if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        print("")
-        print("Next: contentsquare-safe-cli --output json auth check")
+            print("Missing settings: " + ", ".join(missing))
+        print(f"Next: {next_command}")
     return 0

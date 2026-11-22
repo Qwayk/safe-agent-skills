@@ -1,52 +1,14 @@
 ---
 name: contentsquare-safe-cli
-description: Use Contentsquare for server-side Data Export, Metrics, Enrichment, and Speed Analysis Lab work with safe dry-run/review/apply gates.
+description: Use Contentsquare to read exports, visitor metrics and Speed Analysis Lab reports, or prepare a reviewed export, enrichment or event change.
 ---
 
-# Skill: Contentsquare
+# Contentsquare
 
-Trigger this skill when the user wants help with Contentsquare Data Export, metrics, enrichment batches, Speed Analysis Lab reports, or a reviewed server-side Contentsquare change.
+Start with the user's account and project. If setup is missing, run `contentsquare-safe-cli onboarding` and use the connection check it prints. Keep the chosen settings file and project on subsequent commands. Once OAuth works, use a small read the user can recognize, such as `contentsquare-safe-cli data-export list-jobs --limit 5`.
 
-Start with a safe read. A good first move is to check Contentsquare access, name the API endpoint the token uses, run one small read the user can recognize, explain the result in normal words, and stop before any live change.
+Use the [quickstart](docs/quickstart.md) and [command guide](docs/command_reference.md) for the exact commands. The CLI selects the normal OAuth scope for each API. For account-level credentials, set `CONTENTSQUARE_PROJECT_ID` or pass `--oauth-project-id`. Keep secrets, tokens, and raw authentication replies out of chat.
 
-## First checks
+Use the [approval guide](docs/safety_model.md) before an export job, enrichment batch, or event change. Show the saved preview, wait for approval, and use the required flags. If the tool refuses, explain the reason. If Contentsquare accepts an export job, use the follow-up command to check its runs. If the result is uncertain, check Contentsquare before trying again.
 
-1. Run `contentsquare-safe-cli onboarding` when setup may be missing.
-2. Run `contentsquare-safe-cli auth check` before live reads.
-3. Never ask the user to paste `CONTENTSQUARE_CLIENT_SECRET` or access tokens into chat.
-
-OAuth scopes are chosen by command family. Use the default family scopes unless the user or project docs explicitly require an official override. For account-level OAuth credentials, use `CONTENTSQUARE_PROJECT_ID` in `.env` or pass `--oauth-project-id` before the command.
-
-## Safe reads
-
-Use read commands directly for Data Export reads, Metrics reads, and Speed Analysis report/list endpoints.
-
-Good first commands:
-
-- `contentsquare-safe-cli data-export list-jobs --state completed --limit 25`
-- `contentsquare-safe-cli metrics site bounce-rate --project-id <id> --start-date <date> --end-date <date>`
-- `contentsquare-safe-cli speed-analysis monitoring-list --body-json body.json`
-
-When using filters, keep the CLI flags readable. The tool sends official Contentsquare query names to the API, such as `projectId`, `startDate`, `endDate`, `segmentIds`, `goalId`, `period`, `ids`, `state`, `order`, `format`, `frequency`, `scope`, `from`, and `to`.
-
-## Live changes
-
-Never apply a live change first.
-
-1. Create a dry-run plan with `--plan-out`.
-2. Review the plan against the user's goal.
-3. Apply only with `--plan-in --apply --yes`.
-4. Add `--ack-no-snapshot` for Enrichment sends and Speed Analysis event writes.
-5. Add `--ack-irreversible` for Speed Analysis event deletes.
-6. Save a receipt with `--receipt-out` when applying.
-
-## Reporting back
-
-Tell the user what happened in plain English:
-
-- risk level
-- whether anything changed
-- how it was verified
-- where proof was saved
-
-Do not print secrets, tokens, raw auth responses, or `.env` contents.
+When downloading an export with multiple parts, select a part with `--part-id` or `--file-index`. In your answer, say what you checked, what Contentsquare returned, where you saved any result, and what remains open.

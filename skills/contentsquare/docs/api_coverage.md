@@ -1,10 +1,6 @@
 # API coverage
 
-Contentsquare coverage shows exactly what the shipped commands can do: which official server-side REST endpoints have explicit commands, which areas are excluded from this product shape, and which safety class applies before a live change. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-This is source coverage, not live account proof. It shows which official Contentsquare operations the tool maps, how those operations are classified for safety, and which documented limits the user should preserve.
-
-A good first coverage check is: search for the Contentsquare area you plan to use, then confirm the row has the expected method, endpoint, command, safety class, and documented limit before asking for a live read or plan.
+Use this list to see which Contentsquare REST operations have a command and what approval they need. See [the test record](proof.md) for what has been checked with simulated replies.
 
 Last verified against official Contentsquare docs: **2026-06-25**.
 
@@ -13,14 +9,14 @@ Last verified against official Contentsquare docs: **2026-06-25**.
 | Area | Status | Count | Notes |
 |---|---:|---:|---|
 | OAuth | Shipped | 2 | Token requests use documented scopes and optional account-level `project_id`; credential identity uses the documented body |
-| Data Export | Shipped | 9 | Job creation is plan-first |
-| Metrics | Shipped | 59 | One all-zone path appears in both Web and Apps docs and is counted honestly as two docs rows |
+| Data Export | Shipped | 9 | Job creation needs a reviewed plan |
+| Metrics | Shipped | 59 | One all-zone path appears in both Web and Apps docs and is listed in both sections |
 | Enrichment | Shipped | 1 | Batch send only; surrounding integration steps are documented workflows |
 | Speed Analysis Lab | Shipped | 13 | Report/list POSTs are treated as reads; event create/delete are writes |
-| Data Connect | Excluded by product choice | n/a | Warehouse sync product, not this REST CLI |
+| Data Connect | Excluded by product choice | n/a | Warehouse sync |
 | Web Tag | Excluded by product choice | n/a | Customer-code tag API |
 | WebView tracking | Excluded by product choice | n/a | Customer-code implementation API |
-| Android, iOS, React Native SDKs | Excluded by product choice | n/a | Mobile SDK APIs, not server-side REST CLI commands |
+| Android, iOS, React Native SDKs | Excluded by product choice | n/a | Mobile SDK APIs |
 
 ## OAuth
 
@@ -47,7 +43,7 @@ OAuth follows the official Contentsquare request shape. Token calls send `client
 
 Data Export read filters use the official documented query names in the API request: `state`, `order`, `format`, `frequency`, `scope`, `page`, `limit`, `from`, and `to`, depending on the endpoint. The CLI flag `--scope-filter` is the Data Export query filter and is separate from the OAuth `--scope` override.
 
-`data-export download-run-file` is a helper, not a separate Contentsquare endpoint. It first reads the documented run endpoint and only downloads a URL returned by `payload.files[].url`. If the run has more than one file, the user must choose with `--file-index` or `--part-id`.
+`data-export download-run-file` is a helper, not a separate Contentsquare endpoint. It first reads the documented run endpoint and only downloads a URL returned by `payload.files[].url`. If the run has more than one file, choose with `--file-index` or `--part-id`. See the [command guide](command_reference.md#data-export) for run states and downloading.
 
 ## Metrics objects
 
@@ -112,7 +108,7 @@ The docs also describe creating integration schemas, installing integrations, re
 | POST | `/v1/speed-analysis/scenario/report/har` | `speed-analysis scenario-report-har --body-json` | POST read | Shipped |
 | POST | `/v1/speed-analysis/event/list` | `speed-analysis event-list --body-json` | POST read | Shipped |
 | POST | `/v1/speed-analysis/event/create` | `speed-analysis event-create --body-json` | Dry-run plan, reviewed apply, no-snapshot ack | Shipped |
-| POST | `/v1/speed-analysis/event/delete` | `speed-analysis event-delete --body-json` | Dry-run plan, reviewed apply, no-snapshot and irreversible ack | Shipped |
+| POST | `/v1/speed-analysis/event/delete` | `speed-analysis event-delete --body-json` | Dry-run plan, reviewed apply, irreversible ack | Shipped |
 
 ## Documented limits to preserve
 

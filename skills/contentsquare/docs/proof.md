@@ -1,97 +1,40 @@
-# Proof and verification
+# Contentsquare test results
 
-Most users will never need to run these commands themselves. This proof page answers what has actually been checked, what was only tested locally, and what still needs a real Contentsquare read before anyone claims live account behavior.
+The June 25, 2026 source build used simulated replies and redacted examples. Testing against a live Contentsquare account is still open. To check live access, get a token and run one [export read](quickstart.md) in a project you recognize.
 
-The short version: local tests, docs checks, safety gates, and redacted examples passed; live Contentsquare account behavior has not been verified yet.
+## November 22, 2026 local checks
 
-A good evidence request is: "Show me what has already been verified for Contentsquare, what is still live-unverified, and the first safe read needed for real account proof." If you only check one thing, check whether the reported proof came from a local test, a redacted example, or a real Contentsquare account read.
+- Both copies passed 40 tests from the checkout and from a fresh install outside it. Both installed copies loaded all 82 API entries. The tests used simulated Contentsquare replies, and the network check recorded zero connection attempts.
+- The source archives include the skill, guides, settings example and saved examples. I checked 80 local links and parsed 44 command examples from each copy.
+- A different project, OAuth credential, scope, request or body stops before the tool requests a token. An approved write goes out once per apply. If the reply is lost, the receipt tells you to check Contentsquare before trying again.
+- A rejected speed report returns an error. Export runs show their state and whether there are download links. An empty, short or error-page download leaves the existing file alone. Enrichment accepts the documented [HTTP 200 reply](https://docs.contentsquare.com/en/api/enrichment/sending-enrichment-data-batches-cs/#response) when it has no body.
+- Python type checks passed. Five existing Ruff style findings remain.
 
-## What this page proves
+## June 25, 2026 source build
 
-- the CLI installs
-- the local test suite passes
-- the docs contract checks pass
-- committed examples are redacted safe-shape examples
-- OAuth request bodies, query names, plan gates, receipts, and redaction are covered by tests
+- Version `0.1.0`. Codex installed the source and recorded 46 passing unit tests, a new-tool audit, a Control Room alignment audit and a clean `git diff --check`.
+- The tool mapped 82 documented server-side entries. Local tests checked the API-family scopes, explicit scope overrides, account-level `project_id`, the credential body for `auth me`, and the rule against combining Enrichment with other scopes. The auth checks kept the client secret and token out of their output.
+- Tests checked that the CLI sends official query names such as `projectId`, `startDate`, `endDate`, `segmentIds`, `goalId`, `period`, `ids`, `state`, `order`, `format`, `frequency`, `scope`, `from`, and `to`.
+- Tests covered plan previews and required confirmation, the run lookup's `files[].url` field, and selecting one of several files by `--file-index` or `--part-id`. The public docs were also checked for old starter copy and commands that would bypass the named operations.
 
-This page does not prove that a real Contentsquare project, metric, export job, enrichment integration, or Speed Analysis report was read successfully.
+## Run the checks locally
 
-## Last verified
-
-- Date (UTC): `2026-06-25`
-- Verified by: `Codex`
-- Tool version: `0.1.0`
-- Provider source: official Contentsquare server-side REST docs
-- Environment: local source build; no live Contentsquare account verification yet
-
-## Smoke checks
-
-Run inside the tool folder.
+From the tool folder:
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 .venv/bin/python -m unittest -q
+.venv/bin/contentsquare-safe-cli --output json --version
 ```
 
-Check the command:
+Use `contentsquare-safe-cli --output json auth check` when you have approved access to a real account. This obtains a token. Follow it with a read from the API and project you plan to use.
 
-```bash
-contentsquare-safe-cli --output json --version
-```
+## Saved examples from the first build
 
-Check local OAuth setup:
-
-```bash
-contentsquare-safe-cli --output json auth check
-```
-
-`auth check` proves whether the local OAuth fields can obtain a token. It does not prove that every live Contentsquare API family is entitled for the account.
-
-## Latest local validation
-
-Run on 2026-06-25:
-
-- Tool install: passed with `.venv/bin/python -m pip install -e .`
-- Unit tests: passed, 46 tests
-- Repo new-tool audit: passed
-- Control-room alignment audit: passed
-- Diff whitespace check: passed with `git diff --check`
-- OAuth request-shape tests: passed for `auth check`, `auth me`, Data Export, Metrics, Enrichment, Speed Analysis Lab, explicit scope override, account-level `project_id`, and refusal of unsafe combined Enrichment scopes
-
-## What local tests prove
-
-- The CLI imports cleanly.
-- The command catalog has 82 documented server-side rows.
-- Write commands dry-run before auth and require reviewed apply for live changes.
-- Read commands send official Contentsquare query parameter names such as `projectId`, `startDate`, `endDate`, `segmentIds`, `goalId`, `period`, `ids`, `state`, `order`, `format`, `frequency`, `scope`, `from`, and `to`.
-- Data Export file downloads use the documented nested `files[].url` values from the run lookup and refuse to guess when a run has multiple files; tests cover choosing by `--file-index` and by `--part-id`.
-- OAuth token requests send the official API-family scopes: `data-export`, `metrics`, `enrichment`, and `speed-analysis`.
-- Account-level OAuth token requests can include the documented `project_id` from `CONTENTSQUARE_PROJECT_ID` or `--oauth-project-id`.
-- `auth me` sends the documented `client_id` / `client_secret` body to `/v1/oauth/me`.
-- Enrichment scope overrides refuse combined scopes because the official docs say Enrichment cannot be combined with other scopes.
-- Auth errors do not print configured secret values.
-- Public docs reject starter copy and raw-request shortcuts.
-
-## What still needs live credentials
-
-Live Contentsquare OAuth credentials are required to prove account-specific scopes, endpoint routing, and provider responses. Missing live credentials are not by itself a source-build blocker; live behavior must stay marked unverified until a safe Contentsquare project is available.
-
-## What can go wrong
-
-- **OAuth credentials are missing.** `auth check` returns a credential error and no write runs.
-- **The project is wrong.** Account-level credentials may need `CONTENTSQUARE_PROJECT_ID` or `--oauth-project-id`.
-- **The account lacks an entitlement.** Contentsquare may reject a Metrics, Enrichment, Data Export, or Speed Analysis request even when OAuth works.
-- **A date range is too wide.** Metrics date ranges cannot exceed the documented limit.
-- **An export file expired.** Data Export generated files expire after the documented period.
-- **Verification is limited.** Write receipts can record the provider response, but some actions have no safe universal before/after snapshot in the official docs.
-
-## Redacted examples
-
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check.json`
-- `docs/examples/outputs/data_export_list_jobs.json`
-- `docs/examples/outputs/metrics_site_bounce_rate.json`
-- `docs/examples/outputs/data_export_download_run_file.json`
-- `docs/examples/plan.example.json`
-- `docs/examples/receipt.example.json`
+- [Version](examples/outputs/version.json)
+- [Connection check](examples/outputs/auth_check.json)
+- [Export jobs](examples/outputs/data_export_list_jobs.json)
+- [Bounce rate](examples/outputs/metrics_site_bounce_rate.json)
+- [Export download](examples/outputs/data_export_download_run_file.json)
+- [Original plan](examples/plan.example.json) and [receipt](examples/receipt.example.json). Create a new plan for an actual change.

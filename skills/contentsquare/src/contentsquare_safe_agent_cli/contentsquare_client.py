@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import Config
-from .http import HttpClient
+from .http import HttpClient, HttpRequestError
 
 
 @dataclass(frozen=True)
@@ -15,6 +15,10 @@ class TokenInfo:
     endpoint: str | None
     expires_in: int | None
     scope: str | None
+
+
+class UncertainWrite(RuntimeError):
+    """Contentsquare might have received the change, but the result is unknown."""
 
 
 def _json_body(path: str | None) -> dict[str, Any]:
@@ -104,21 +108,38 @@ class ContentsquareClient:
         body: dict[str, Any] | None = None,
         scope: str | None = None,
         integration_id: str | None = None,
+        write: bool = False,
     ) -> Any:
         token = self.token(scope=scope, integration_id=integration_id)
         base = self.api_base_url(scope=scope, integration_id=integration_id)
-        resp = self.http.request(
-            method,
-            f"{base}{path}",
-            headers={"Authorization": f"Bearer {token.access_token}"},
-            params=params,
-            json_body=body,
-            retries=2,
-        )
         try:
-            return resp.json()
-        except Exception:
-            return {"status": resp.status, "text": resp.text()}
+            resp = self.http.request(
+                method,
+                f"{base}{path}",
+                headers={"Authorization": f"Bearer {token.access_token}"},
+                params=params,
+                json_body=body,
+                retries=0 if write else 2,
+                allow_redirects=not write,
+            )
+        except HttpRequestError as exc:
+            if write and (exc.status is None or exc.status == 408 or exc.status >= 500):
+                detail = f"HTTP {exc.status}" if exc.status is not None else "connection lost"
+                raise UncertainWrite(detail) from exc
+            raise
+        # Contentsquare documents a status-only HTTP 200 for Enrichment.
+        if write and (resp.status == 204 or (path == "/v1/enrichments" and resp.status == 200 and not resp.body.strip())):
+            return {"status": resp.status}
+        try:
+            result = resp.json()
+        except (UnicodeError, ValueError):
+            result = None
+        if not isinstance(result, (dict, list)):
+            message = f"Contentsquare returned an unreadable reply (HTTP {resp.status})."
+            if write:
+                raise UncertainWrite(message)
+            raise RuntimeError(message)
+        return result
 
 
 def read_json_body(path: str | None) -> dict[str, Any]:

@@ -1,8 +1,6 @@
 # Command reference
 
-Use the command reference when you already know the Contentsquare project, mapping, page group, zoning, zone, job, or report ID you want to query and need the exact command shape, body file, or safety flag.
-
-For the guided path, start with [Good first asks](use_cases.md), [Set up your account step by step](onboarding.md), and [Understand the safety checks](safety_model.md). All JSON mode commands print one JSON object.
+Use this page to find the command and flags for your project, job, report or metric. Start with the [quickstart](quickstart.md) for your first read. In JSON mode, a command prints one JSON object. See [approvals and receipts](safety_model.md) before sending a change.
 
 ## Setup
 
@@ -14,22 +12,26 @@ For the guided path, start with [Good first asks](use_cases.md), [Set up your ac
 - `contentsquare-safe-cli runs list`
 - `contentsquare-safe-cli runs show --run-id <run_id>`
 
-`auth check` defaults to the official `data-export` OAuth scope. API commands use their own documented family scope automatically: `data-export`, `metrics`, `enrichment`, or `speed-analysis`. Use `--scope` only when you intentionally need an official override. Use `--oauth-project-id` or `CONTENTSQUARE_PROJECT_ID` when account-level OAuth credentials need the documented token `project_id`.
+See [setup](onboarding.md) for settings, OAuth scopes and how to select a project.
 
 ## Data Export
 
 - `contentsquare-safe-cli data-export create-job --body-json body.json`
-- `contentsquare-safe-cli data-export list-jobs --state completed --order DESC --format CSV --frequency daily --scope-filter views --page 1 --limit 25`
+- `contentsquare-safe-cli data-export list-jobs --state COMPLETED --order DESC --format CSV --frequency daily --scope-filter views --page 1 --limit 25`
 - `contentsquare-safe-cli data-export list-successful-runs --page 1 --limit 25`
-- `contentsquare-safe-cli data-export get-job --job-id job_123`
-- `contentsquare-safe-cli data-export list-runs --job-id job_123 --state completed --page 1 --limit 25`
-- `contentsquare-safe-cli data-export get-run --job-id job_123 --run-id-value run_123`
+- `contentsquare-safe-cli data-export get-job --job-id 123`
+- `contentsquare-safe-cli data-export list-runs --job-id 123 --state SUCCESS --page 1 --limit 25`
+- `contentsquare-safe-cli data-export get-run --job-id 123 --run-id-value 77`
 - `contentsquare-safe-cli data-export exportable-fields --scope-filter sessions`
 - `contentsquare-safe-cli data-export custom-vars`
 - `contentsquare-safe-cli data-export dynamic-var-keys --from 2026-06-01T00:00:00Z --to 2026-06-07T00:00:00Z`
-- `contentsquare-safe-cli data-export download-run-file --job-id job_123 --run-id-value run_123 --file-index 0 --output-file export.ndjson`
+- `contentsquare-safe-cli data-export download-run-file --job-id 123 --run-id-value 77 --file-index 0 --output-file export.ndjson`
 
-The CLI keeps friendly flag names, but the API request uses Contentsquare's documented query names. For example `--scope-filter` is sent as `scope`, `--from` is sent as `from`, and `--to` is sent as `to`. `download-run-file` first reads `GET /v1/exports/{jobId}/runs/{runId}` and downloads only a documented `files[].url`. If the run has more than one file, choose with `--file-index` or `--part-id`.
+`--scope-filter` is the export filter sent as `scope`. The separate `--scope` flag is for OAuth. Date filters `--from` and `--to` use the same names in Contentsquare's API.
+
+An accepted `create-job` reply gives a command to list runs when Contentsquare returns the job ID. Use `get-run` to see the run's reported state and whether it has download links. For example, `RUNNABLE` means it is waiting to start, and `SUCCESS` means it finished. See [Contentsquare's export states](https://docs.contentsquare.com/en/api/export/enumerations/).
+
+`download-run-file` first reads `GET /v1/exports/{jobId}/runs/{runId}` and uses the URL in `files[].url`. If there is more than one file, choose with `--file-index` (starting at zero) or `--part-id`. Download before the link expires. The CLI checks the download before saving it. Pass `--overwrite` when you intend to replace the file.
 
 ## Metrics
 
@@ -71,7 +73,7 @@ contentsquare-safe-cli --plan-in enrichment-plan.json --apply --yes --ack-no-sna
 
 ## Speed Analysis Lab
 
-Read-style POST commands:
+These commands read reports or lists. They use POST to send the report options in a JSON file.
 
 - `speed-analysis analysis-report --body-json body.json`
 - `speed-analysis analysis-har --body-json body.json`
@@ -85,15 +87,20 @@ Read-style POST commands:
 - `speed-analysis scenario-report-har --body-json body.json`
 - `speed-analysis event-list --body-json body.json`
 
-Event writes are dry-run first:
+Preview the event, then apply the saved plan after approval:
 
 ```bash
 contentsquare-safe-cli --plan-out event-plan.json speed-analysis event-create --body-json event.json
 contentsquare-safe-cli --plan-in event-plan.json --apply --yes --ack-no-snapshot speed-analysis event-create
 ```
 
-Delete requires both acknowledgements:
+For a delete, use the extra confirmation for an action you can't undo:
 
 ```bash
-contentsquare-safe-cli --plan-in delete-plan.json --apply --yes --ack-no-snapshot --ack-irreversible speed-analysis event-delete
+contentsquare-safe-cli --plan-out delete-plan.json speed-analysis event-delete --body-json event-to-delete.json
+contentsquare-safe-cli --plan-in delete-plan.json --apply --yes --ack-irreversible speed-analysis event-delete
 ```
+
+## Where the code handles each step
+
+`catalog.py` lists the documented operations and `cli.py` turns them into commands. `config.py` and `project_config.py` read local settings. `contentsquare_client.py` gets the token and sends requests through `http.py`. `commands/contentsquare.py` checks plans, records replies and handles export downloads. `errors.py`, `output.py`, `audit_log.py` and `runs.py` handle errors, results and saved run records.

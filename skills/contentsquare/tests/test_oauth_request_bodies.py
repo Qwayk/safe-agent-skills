@@ -185,7 +185,9 @@ class OAuthRequestBodyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             env = _env(Path(td) / ".env", project_id="42")
             plan = Path(td) / "plan.json"
-            plan.write_text('{"proposed_changes": {"items": []}}', encoding="utf-8")
+            plan_args = ["--env-file", str(env), "enrichment", "send-batch", "--integration-id", "123"]
+            code, _ = run_cli(["--no-artifacts", "--plan-out", str(plan), *plan_args])
+            self.assertEqual(code, 0)
             with mock.patch(
                 "contentsquare_safe_agent_cli.contentsquare_client.HttpClient.request",
                 side_effect=_http_response,

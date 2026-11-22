@@ -1,42 +1,30 @@
-# Safety model
+# Approvals and receipts
 
-Contentsquare work can expose sensitive behavior data, create export jobs, send enrichment batches, or change Speed Analysis events. This skill is built around a simple rule: look first, review second, change last.
+Read export jobs and runs, metrics, and Speed Analysis reports without applying a change. Downloads save a local file. Creating a job, sending an enrichment batch, or changing an event needs a saved plan and your approval.
 
-Safe use should feel calm. The agent checks the account and project, explains what it found, shows a plan before risky work, and leaves a record after live work. Secrets stay local.
+## Before a change
 
-A good safety ask is: "Check the Contentsquare project, endpoint, request body, risk, and approval step before any live change, then tell me whether verification will be full read-back or limited provider-response verification."
+1. Run the intended write command with `--plan-out` and without `--apply`. The CLI saves the plan without contacting Contentsquare.
+2. Check the action, project, integration or event when relevant, and the exact request. If you use a project-level credential without a project ID set locally, confirm its assigned project before approving. Check what you can verify afterward and whether the change can be undone.
+3. After approval, run the same action with `--plan-in`, `--apply` and `--yes`. If the command, settings, requested changes, or connection changed, make a fresh plan. Plans made before these checks were added also need a fresh preview. Use the same project and other request flags. The CLI can read the body from the saved plan.
 
-## Read-only work
+| Command | Extra confirmation |
+| --- | --- |
+| `data-export create-job` | Use the saved plan and standard confirmation. |
+| `enrichment send-batch` | Add `--ack-no-snapshot`. |
+| `speed-analysis event-create` | Add `--ack-no-snapshot`. |
+| `speed-analysis event-delete` | Add `--ack-irreversible`. |
 
-Metrics, object lists, export job reads, export run reads, and Speed Analysis report/list operations return data without changing Contentsquare state.
+If a command returns `refused: true`, read `reasons`. The CLI stopped before sending the change.
 
-## Plan-first writes
+## After a change
 
-These commands are dry-run by default:
+Read the receipt beside the plan. Check that the reply matches what you asked for and look for any unexpected result. The CLI sends an approved change once per apply. Here is what the receipt can tell you:
 
-- `data-export create-job`
-- `enrichment send-batch`
-- `speed-analysis event-create`
-- `speed-analysis event-delete`
+- **`accepted`** means Contentsquare accepted the request. Check the result before treating the work as complete. For an export, follow the command in `follow_up` to list runs for that job.
+- **`rejected`** means Contentsquare returned a failure in the reply. Use that reply to see what needs fixing.
+- **`uncertain`** means the reply was lost or did not confirm what happened. Check Contentsquare before trying again. For a new export with no returned ID, check the project’s jobs.
 
-Dry-run writes save a plan when `--plan-out` is used. Live apply requires `--plan-in --apply --yes`.
+Some changes have no documented way to undo them. If a follow-up change is needed, show the proposed fix and get approval first.
 
-## No-snapshot acknowledgements
-
-Enrichment sends and Speed Analysis event writes do not have a universal safe before/after snapshot in the official docs. The CLI requires `--ack-no-snapshot` for those writes. Event deletes also require `--ack-irreversible`.
-
-## Proof files
-
-Write-capable commands can save plans, receipts, audit logs, and summaries under `.state/runs/`. These files are local, gitignored, and should never contain secrets.
-
-## If the target changes after planning
-
-When applying from a saved plan, the tool should refuse if the reviewed target no longer matches. Examples include a different project, integration id, job id, event body, endpoint, or request body.
-
-If the target changed, make a new plan.
-
-## Recovery and follow-up
-
-Do not assume a Contentsquare change can be undone. Some actions can be checked after the provider responds, some actions need manual follow-up in Contentsquare, and some actions do not have a safe universal before/after snapshot in the official docs.
-
-If verification fails and a safe follow-up action exists, create a new plan and require approval. If no safe follow-up exists, the tool should say that plainly before the user approves the risky work.
+Use `--receipt-out` to choose a receipt file. Write-capable commands can also save plans, receipts, summaries and audit logs under the local `.state/runs/` folder. Keep these files private, especially when a request includes behavioral data.

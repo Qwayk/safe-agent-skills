@@ -1,6 +1,11 @@
 # Changelog
 
-All notable Contentsquare tool changes are tracked here.
+## November 22, 2026
+
+- Setup keeps the chosen settings file and creates new files with owner-only access. Source archives include the skill, guides and settings example.
+- Applying a change checks the saved action, request and Contentsquare connection. Make a fresh preview for an older plan. The CLI sends each approved change once.
+- Receipts show whether Contentsquare accepted a request, rejected it or left the result uncertain. Export replies show the run state and where to check for files. Download checks protect an existing file from an empty or incomplete replacement.
+- The setup, command and approval guides now hold the instructions that were spread across several pages.
 
 ## [0.1.0] - 2026-06-25
 
