@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any
 from urllib.request import urlopen
 
-
 AUDIT_DATE = "2026-05-25"
 CLI_NAME = "bluesky-safe-cli"
 ATPROTO_TARBALL_URL = "https://codeload.github.com/bluesky-social/atproto/tar.gz/refs/heads/main"
@@ -218,7 +217,7 @@ def _render_references(rows: list[dict[str, Any]]) -> str:
     lines = [
         "# References",
         "",
-        f"- Provider: Bluesky / atproto lexicon APIs",
+        "- Provider: Bluesky / atproto lexicon APIs",
         f"- Last verified (UTC): {AUDIT_DATE}",
         "",
         "Official sources used for this tool:",
@@ -280,7 +279,9 @@ def refresh_inventory() -> dict[str, Any]:
         rows = _build_inventory(lex_root, docs_map)
 
     rows.sort(key=lambda item: (str(item["lexicon_id"]), str(item["operation_command"])))
-    inventory_path = docs_dir / f"official_xrpc_inventory_v1_{AUDIT_DATE}.json"
+    data_dir = Path(__file__).resolve().parents[1] / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    inventory_path = data_dir / f"official_xrpc_inventory_v1_{AUDIT_DATE}.json"
     operations_path = docs_dir / f"official_operations_v1_{AUDIT_DATE}.tsv"
     api_coverage_path = docs_dir / "api_coverage.md"
     references_path = docs_dir / "references.md"

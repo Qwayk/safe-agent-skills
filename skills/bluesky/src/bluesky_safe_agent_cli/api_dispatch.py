@@ -50,6 +50,8 @@ def _load_json_arg(value: str | None) -> Any:
     text = str(value).strip()
     if not text:
         return None
+    if text.startswith("{"):
+        return json.loads(text)
     path = Path(text)
     if path.exists() and path.is_file():
         return json.loads(path.read_text(encoding="utf-8"))

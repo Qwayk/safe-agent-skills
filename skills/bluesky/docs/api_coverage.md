@@ -1,21 +1,12 @@
 # API coverage
 
-Bluesky coverage shows exactly what this skill can do with profile, post, graph, moderation, and session work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+The May 25, 2026 inventory has 304 Bluesky API commands. Use `bluesky-safe-cli api ops list` to find a command in the installed tool. Each row below names the command, the provider operation and the service it uses.
 
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can read this profile, inspect recent posts, and show which write or moderation actions need extra care."
-
-## Coverage notes
-
-- Make official Bluesky API coverage measurable.
-- Keep every callable official lexicon tied to an explicit CLI subcommand.
-- Keep record lexicons honest: they are not fake extra endpoints; they are used through `com.atproto.repo.*` methods.
+Record types such as `app.bsky.feed.post` are used with repository commands such as `com-atproto-repo-create-record`. [Official sources](references.md)
 
 ## Summary
 
 - Provider: Bluesky / atproto lexicon APIs
-- Product shape: one official XRPC API world, not split products
 - Primary auth path: handle or DID plus app password via `com.atproto.server.createSession`, then authenticated calls via the user's PDS
 - Public read option: `https://public.api.bsky.app` for public Bluesky AppView reads
 - Official HTTP reference pages: 222
@@ -36,7 +27,6 @@ Stability notes:
 
 Coverage rule for this tool:
 - Every row below must be reachable as an explicit subcommand under `bluesky-safe-cli api <operation_command>`.
-- No raw request bridge counts toward coverage.
 
 ## Inventory mapping
 

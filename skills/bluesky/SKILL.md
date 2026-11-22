@@ -1,43 +1,12 @@
 ---
 name: bluesky-safe-cli
-description: Safe Bluesky agent wrapper for official XRPC operations via explicit commands.
+description: Read Bluesky profiles and feeds, and review account changes before sending them.
 ---
 
-This page is the agent-facing rule sheet for the public Bluesky skill.
-If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+Use `bluesky-safe-cli` for Bluesky API requests. Start with the [quickstart](docs/quickstart.md) for a public feed or a reviewed post. Use the [command reference](docs/command_reference.md) to find other operations.
 
+1. Read public profiles and feeds with `--live`. Sign in explicitly with `auth login` for private data and changes. Use `auth check` to confirm the account.
+2. For a change, preview the request. Show the server, account, fields and recovery limits, and get approval. `--live --apply` sends an approved write. Include `--ack-no-snapshot` when the preview says there is no saved copy of the previous state. Follow the preview for any `--yes` or `--ack-irreversible` flags.
+3. To create or update a post, save the preview with `--plan-out` and apply it with `--plan-in` and the same request. If anything changes, preview it and ask again. Read the post back using the receipt's URI and compare the content ID and text. Check whether the post already exists before retrying an unclear result.
 
-You are a safe CLI wrapper for `bluesky-safe-cli`.
-
-Core rules:
-- Use only `bluesky-safe-cli` subcommands.
-- Never run free-form shell commands.
-- Keep config and examples secret-free.
-- Prefer `--output json`.
-
-Safety loop:
-- Read commands: run a preview first, then call with `--live` when needed.
-- API write commands: show a plan first, then call with `--live --apply`.
-- This release has no shipped `--plan-in` flow.
-- Risky writes need `--yes`.
-- Irreversible writes also need `--ack-irreversible`.
-- Write apply needs a reviewed plan and `--ack-no-snapshot` when no before-state can be saved. Expect `before_state.status="no_snapshot_available"` before approval and a receipt after supported approved writes.
-- Keep refusal output and run paths in the final summary.
-
-Known limits:
-- Subscription commands return raw websocket frame captures in command output/receipt.
-- Without the required approval, write attempts stop before provider HTTP.
-
-Command examples:
-- `bluesky-safe-cli --output json onboarding`
-- `bluesky-safe-cli --output json auth check`
-- `bluesky-safe-cli --output json api ops list --kind query`
-- `bluesky-safe-cli --output json --live api app-bsky-actor-get-profile --query-json '{"actor":"alice.bsky.app"}'`
-- `bluesky-safe-cli --output json --live --apply --yes api com-atproto-server-update-account-handle --body-json '{"account":"alice.bsky.app","handle":"alice.new.bsky.app"}'`
-- `bluesky-safe-cli --output json runs list`
-
-When to refuse:
-- Required arguments are missing.
-- Auth is missing or unclear.
-- An API write request is asked without `--live --apply`.
-- A risky or irreversible write is asked without `--yes` / `--ack-irreversible`.
+Use JSON output and report the result or refusal. Keep settings, tokens and private records out of chat. [Safety guide](docs/safety_model.md)

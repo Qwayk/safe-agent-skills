@@ -1,29 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
+from shlex import quote
 
+from ..config import load_config
+from ..session_store import configured_access_session
 
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
+_ENV_TEMPLATE = "# Settings for signing in to Bluesky. Keep this file private.\nBLUESKY_IDENTIFIER=\nBLUESKY_APP_PASSWORD=\n"
 
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
@@ -40,25 +24,25 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
         if example_path.exists():
             env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
         else:
-            env_path.write_text("", encoding="utf-8")
+            env_path.write_text(_ENV_TEMPLATE, encoding="utf-8")
         env_created = True
 
-    lines = _read_text_lines(env_path)
-
+    cfg = load_config(env_file)
+    token, _, _ = configured_access_session(cfg.access_jwt, env_file)
     missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "BLUESKY_IDENTIFIER"):
+    if not token and not cfg.identifier:
         missing.append("BLUESKY_IDENTIFIER")
-    if not _has_nonempty_env_value(lines, "BLUESKY_APP_PASSWORD"):
+    if not token and not cfg.app_password:
         missing.append("BLUESKY_APP_PASSWORD")
 
     steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "In Bluesky Settings, create an app password for this tool.",
-        "Open .env and fill the required values:",
-        "  - BLUESKY_IDENTIFIER=<your handle or DID>",
-        "  - BLUESKY_APP_PASSWORD=<your app password>",
-        "Run: bluesky-safe-cli --output json auth check",
+        "You can read public feeds without signing in.",
+        "To sign in, create an app password in Bluesky Settings and add it and your handle to this file.",
+        "Use auth login to save a session and auth check to confirm the signed-in account.",
     ]
+    env_option = f" --env-file {quote(env_file)}" if env_file != ".env" else ""
+    next_action = "check" if token else "login"
+    next_command = f"bluesky-safe-cli --output json{env_option} auth {next_action}"
 
     payload = {
         "ok": True,
@@ -66,7 +50,7 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             "env_file": env_file,
             "env_created": env_created,
             "missing": missing,
-            "next_command": "bluesky-safe-cli --output json auth check",
+            "next_command": next_command,
             "steps": steps,
         },
     }
@@ -81,5 +65,5 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             print("")
             print(f"Missing in {env_file}: " + ", ".join(missing))
         print("")
-        print("Next: bluesky-safe-cli --output json auth check")
+        print(f"Next: {next_command}")
     return 0

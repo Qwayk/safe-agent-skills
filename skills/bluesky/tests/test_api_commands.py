@@ -12,6 +12,33 @@ from bluesky_safe_agent_cli.cli import main
 
 
 class TestApiCommands(unittest.TestCase):
+    def test_post_apply_refuses_edited_text(self) -> None:
+        with tempfile.TemporaryDirectory() as d, patch.dict("os.environ", {}, clear=True):
+            root = Path(d)
+            plan = root / "post-plan.json"
+            body = root / "post.json"
+            record = {"$type": "app.bsky.feed.post", "text": "Review this", "createdAt": "2026-11-23T00:00:00Z"}
+            payload = {"repo": "did:plc:sampleauthor", "collection": "app.bsky.feed.post", "record": record}
+            body.write_text(json.dumps(payload), encoding="utf-8")
+            flags = ["--output", "json", "--no-artifacts", "--env-file", str(root / ".env")]
+            command = ["api", "com-atproto-repo-create-record", "--body-json", str(body)]
+
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(main([*flags, "--plan-out", str(plan), *command]), 0)
+
+            record["text"] = "This text was never approved"
+            body.write_text(json.dumps(payload), encoding="utf-8")
+            out = io.StringIO()
+            with redirect_stdout(out), patch("bluesky_safe_agent_cli.commands.api._client") as client:
+                self.assertEqual(
+                    main([*flags, "--live", "--apply", "--ack-no-snapshot", "--plan-in", str(plan), *command]),
+                    0,
+                )
+                client.assert_not_called()
+            result = json.loads(out.getvalue())
+            self.assertTrue(result["refused"])
+            self.assertIn("differs from the reviewed plan", json.dumps(result))
+
     def test_api_ops_list_returns_inventory_rows(self) -> None:
         buf = io.StringIO()
         with redirect_stdout(buf):
@@ -136,7 +163,7 @@ class TestApiCommands(unittest.TestCase):
         self.assertTrue(payload["dry_run"])
         self.assertEqual(payload["plan"]["operation"]["kind"], "subscription")
 
-    def test_unknown_plan_in_argument_is_rejected(self) -> None:
+    def test_post_plan_cannot_be_used_for_a_read(self) -> None:
         buf = io.StringIO()
         with redirect_stdout(buf):
             rc = main(
@@ -155,5 +182,4 @@ class TestApiCommands(unittest.TestCase):
         payload = json.loads(buf.getvalue())
         self.assertFalse(payload["ok"])
         self.assertEqual(payload["error_type"], "ValidationError")
-        self.assertIn("invalid choice", payload["error"])
-        self.assertIn("plan.json", payload["error"])
+        self.assertIn("publishes a Bluesky post", payload["error"])

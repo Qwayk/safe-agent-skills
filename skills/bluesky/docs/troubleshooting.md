@@ -1,40 +1,7 @@
-# Troubleshooting
+# Fix a Bluesky error
 
-When Bluesky stops or returns an error, start with the boring checks first: setup, account access, target IDs, API limits, and the tool's safety gates. That usually tells you whether the problem is local configuration, provider permissions, a bad request, or a write that correctly refused to run.
-
-Keep the JSON error output. It is the best clue for an agent reading public posts, profiles, feeds, and social context, and it is safer than retrying commands blindly. For any write-related error, stop before retrying and confirm the needed approval or plan.
-
-A good first troubleshooting ask is: "Read the Bluesky error, explain what failed in plain English, tell me the safest next check, and do not retry any write or destructive action."
-
-## Debug HTTP
-
-Use `--verbose` to print request timing to stderr.
-Use `--debug` for full trace output.
-
-Secrets are never printed.
-
-## Auth checks
-
-- If `auth check` says no session is active:
-  - fill `BLUESKY_IDENTIFIER` and `BLUESKY_APP_PASSWORD`
-  - run `bluesky-safe-cli auth login`
-- If your app password is old, refresh auth:
-  - run `bluesky-safe-cli auth refresh`
-- To clear a bad local session:
-  - run `bluesky-safe-cli auth logout`
-- For token files:
-  - run `bluesky-safe-cli auth token set --file token.json`
-  - confirm with `bluesky-safe-cli auth token status`
-
-## Apply refusals
-
-Common reasons shown in tool output:
-- `Refused: --live is required for apply`
-- `Refused: --yes is required for risky operations`
-- `Refused: --ack-irreversible is required for irreversible operations`
-
-## API behaviors to remember
-
-- Read commands run as dry-run plans until `--live`.
-- Subscription commands return raw websocket frame captures in the receipt.
-- Current write attempts require explicit no-snapshot approval before provider HTTP when no saved snapshot is available.
+- If a public request fails, check the handle and the service URL in the output. Use the [public feed example](quickstart.md#read-public-posts) with a separate settings directory if you want an anonymous request from a machine with a saved account.
+- If `auth check` reports no session, use `auth login` to start one or `auth refresh` to renew it. If the app password was revoked, replace it in your local settings and sign in again. [Account setup](onboarding.md)
+- If a write is refused, read the reason before trying again. Check the approval flags, and for a post, check the saved plan, account, server and text. Get a new approval if the request changed. [Safety guide](safety_model.md)
+- If a write times out or returns an unclear response, read the account or record to see whether the change happened before retrying. If Bluesky limits requests, check the status and wait before sending more.
+- Use `--verbose` to see request timings or `--debug` for more detail. Share only the parts needed to explain the error. Keep tokens and private account data out of the reply.

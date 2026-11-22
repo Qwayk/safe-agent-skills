@@ -1,54 +1,41 @@
-# Connect your Bluesky account
+# Connect a Bluesky account
 
-Bluesky needs your handle and an app password stored locally before an agent can check profiles, posts, sessions, or account data.
+Public profiles and feeds are available without an account. Sign in when you need private account data or want to make an approved change.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## Sign in
 
-After setup, start with a profile or session check before asking for any post or account action.
-
-## What you need
-
-- Your Bluesky handle or DID
-- A Bluesky app password
-- Optional custom service URLs only if you are working against non-default Bluesky services
-
-## Step 1. Fill the local `.env` file
-
-1. Copy `.env.example` to `.env`.
-2. Fill:
-   - `BLUESKY_IDENTIFIER`
-   - `BLUESKY_APP_PASSWORD`
-3. Leave the optional service URL overrides alone unless you already know you need them.
-
-## Step 2. Log in once
+1. Make an [app password in Bluesky settings](https://bsky.app/settings/app-passwords).
+2. Run `bluesky-safe-cli --output json onboarding` to create a local `.env` file. Use `onboarding --no-write-env` to see what setup needs without creating a file.
+3. Enter your handle or DID in `BLUESKY_IDENTIFIER` and the app password in `BLUESKY_APP_PASSWORD`. Keep both in the local file.
+4. Run these commands to sign in and check the account.
 
 ```bash
 bluesky-safe-cli --output json auth login
-```
-
-## Step 3. Run the first safe checks
-
-```bash
 bluesky-safe-cli --output json auth check
-bluesky-safe-cli --output json api app-bsky-actor-get-profile --query-json '{"actor":"your-handle.bsky.social"}'
-bluesky-safe-cli --output json --live api app-bsky-actor-get-profile --query-json '{"actor":"your-handle.bsky.social"}'
 ```
 
-The second command is the preview. The third command is the first real live read.
+`auth login` creates and saves the session. `auth check` reads the active session and shows the account and server. When the session expires, use `auth refresh` to renew it, or sign in again if the refresh token has expired. Use `auth logout` to clear the saved local session.
 
-## What to ask your agent next
+## Use separate accounts
 
-- "Check the Bluesky skill is connected and show my profile safely."
-- "List the operations for the area I need before we pick one."
-- "Preview the exact write plan first and do not apply anything yet."
+Choose an account file with `--env-file /path/to/account/.env` before the command and use that choice for setup, sign-in and API calls. The state file is `.state/token.json` in the settings file's directory. Two settings files in the same directory share that state file. Use a separate directory for each account.
 
-## If something fails
+To use an existing local token file, run `bluesky-safe-cli auth token set --file token.json`. Use `auth token status` to check where it is saved. Keep settings and tokens out of chat and Git.
 
-The most common causes are:
+## Optional settings
 
-- the handle or DID is wrong
-- the app password is missing or invalid
-- the service URL overrides do not match the account you are using
-- the account does not have permission for the endpoint you chose
+Environment variables set by your shell take priority over the settings file. `BLUESKY_ACCESS_JWT` and `BLUESKY_REFRESH_JWT` supply existing session tokens. `BLUESKY_ADMIN_TOKEN` is for Ozone commands that need it.
 
-Use [Troubleshooting](troubleshooting.md) if auth or the first live read fails.
+| Setting | Default |
+| --- | --- |
+| `BLUESKY_PDS_URL` | Saved account server or the entryway |
+| `BLUESKY_ENTRYWAY_URL` | `https://bsky.social` |
+| `BLUESKY_PUBLIC_API_URL` | `https://public.api.bsky.app` |
+| `BLUESKY_APPVIEW_URL` | `https://api.bsky.app` |
+| `BLUESKY_CHAT_URL` | `https://api.bsky.chat` |
+| `BLUESKY_OZONE_URL` | `https://mod.bsky.app` |
+| `BLUESKY_LABELER_URL` | The Ozone URL |
+| `BLUESKY_RELAY_URL` | `https://bsky.network` |
+| `BLUESKY_TIMEOUT_S` | 30 seconds |
+
+A saved account server takes priority over `BLUESKY_PDS_URL`. If setup fails, see [Troubleshooting](troubleshooting.md).

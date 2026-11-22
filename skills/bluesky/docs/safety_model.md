@@ -1,53 +1,11 @@
-# Safety model
+# Review and check Bluesky changes
 
-Bluesky can touch profile, post, graph, moderation, and session work, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+API commands show a preview by default. Use `--live` for an actual read. Before a change, show the user which server, account, operation and data you will send and what can be recovered. Ask for approval of that change.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+Use `--live --apply` to send an approved change. The preview lists any extra flags, including `--yes` for risky writes and `--ack-irreversible` for irreversible writes. API writes without a reliable copy of the previous state require `--ack-no-snapshot`. The receipt records that approval. There is no general restore command.
 
-A good safety ask is: "Read the account or record first, then require a reviewed plan before posts, graph changes, moderation actions, or session writes."
+When a repository command creates or updates a Bluesky post, save the preview with `--plan-out` and use the reviewed file with `--plan-in`. Review the full request if it changes more than one record. The command checks the request and confirms the account with the planned server before it sends the write. If a field, account or server changes, make a new preview and get it approved. [Post example](quickstart.md#publish-a-post)
 
-## Core safety rules
+Use `--receipt-out` to save the response. Check for a refusal before claiming anything changed. For posts, read back the record and compare its text and content ID with the plan and receipt. The receipt records the API response and leaves automatic verification marked as skipped. If a response is lost, check the account before you send the change again. Use `runs list` and `runs show` to see local run records.
 
-This tool is built to slow Bluesky changes down before they go live.
-
-## What this tool does by default
-
-- API calls preview first as dry-run plans.
-- Live reads need `--live`.
-- Live writes need `--live --apply`.
-- Secrets stay redacted in normal output and logs.
-
-## Where the extra caution happens
-
-Some Bluesky writes do not have a saved before-state or a real rollback path.
-
-When that happens:
-
-- the plan must disclose the no-snapshot limit
-- live apply needs `--ack-no-snapshot`
-- risky writes can also need `--yes`
-- irreversible writes can also need `--ack-irreversible`
-
-If the needed approval is missing, the tool should refuse before provider HTTP.
-
-## Recommended workflow
-
-1. Run auth and one small live read first.
-2. Preview the exact write plan.
-3. Review the endpoint, payload, target account, and recovery limits.
-4. Apply only with the required live and approval flags.
-5. Review the refusal or receipt after the run.
-
-## Plans, receipts, and run history
-
-- `--plan-out <path>` saves a dry-run plan.
-- `--receipt-out <path>` saves an apply receipt when the write is approved and runs.
-- `runs list` and `runs show` help inspect local run history.
-
-These files are the proof trail for what the tool planned, what it refused, and what it actually ran.
-
-## Limits
-
-- Many Bluesky write families should still be treated as irreversible.
-- This tool does not promise rollback, backup, or restore helpers for those writes.
-- Subscription output is raw frame capture, not a polished decoded event view.
+Keep settings, tokens and sensitive account details private.

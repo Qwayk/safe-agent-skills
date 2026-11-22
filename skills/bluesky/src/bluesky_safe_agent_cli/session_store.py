@@ -39,6 +39,18 @@ def access_token_from_session(session_obj: dict[str, Any] | None) -> str | None:
     return text or None
 
 
+def configured_access_session(
+    access_jwt: str | None, env_file: str
+) -> tuple[str | None, str | None, dict[str, Any] | None]:
+    saved = read_session_json(env_file)
+    saved_access = access_token_from_session(saved)
+    if access_jwt:
+        return access_jwt, "env_access_jwt", saved if access_jwt == saved_access else None
+    if saved_access:
+        return saved_access, "saved_session", saved
+    return None, None, None
+
+
 def refresh_token_from_session(session_obj: dict[str, Any] | None) -> str | None:
     if not isinstance(session_obj, dict):
         return None

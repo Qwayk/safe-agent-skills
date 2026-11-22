@@ -194,6 +194,7 @@ class HttpClient:
         json_body: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
         content: bytes | None = None,
+        allow_redirects: bool = True,
         retries: int = 0,
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),
     ) -> HttpResponse:
@@ -222,6 +223,7 @@ class HttpClient:
                     json=json_body,
                     data=content if content is not None else data,
                     timeout=self._timeout_s,
+                    allow_redirects=allow_redirects,
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
@@ -238,7 +240,7 @@ class HttpClient:
             if self._verbose:
                 print(f"[http] {method} {self.redact_url(str(resp.url))} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
-            if resp.status_code < 400:
+            if resp.status_code < (400 if allow_redirects else 300):
                 return HttpResponse(
                     status=resp.status_code,
                     headers={k.lower(): v for k, v in resp.headers.items()},

@@ -6,16 +6,20 @@ import time
 from pathlib import Path
 from typing import Any
 
-from ..api_dispatch import build_api_call_plan, load_operations_from_pinned_snapshot, operations_by_command
+from ..api_dispatch import (
+    build_api_call_plan,
+    load_operations_from_pinned_snapshot,
+    operations_by_command,
+)
 from ..errors import ValidationError
 from ..http import HttpClient
-from ..session_store import access_token_from_session, pds_url_from_session, read_session_json, refresh_token_from_session
+from ..json_files import read_json_file
+from ..session_store import configured_access_session, pds_url_from_session
 from .write_safety import (
     before_state_contract,
     before_state_refusal_output,
     before_state_refusal_verification_plan,
 )
-
 
 IRREVERSIBLE_KEYWORDS = (
     "delete",
@@ -238,73 +242,52 @@ def _client(ctx: dict[str, Any]) -> HttpClient:
     )
 
 
-def _create_session(cfg: Any, ctx: dict[str, Any], *, persist: bool) -> dict[str, Any]:
-    if not cfg.identifier:
-        raise ValidationError("Missing BLUESKY_IDENTIFIER")
-    if not cfg.app_password:
-        raise ValidationError("Missing BLUESKY_APP_PASSWORD")
-    client = _client(ctx)
-    response = client.request(
-        "POST",
-        cfg.entryway_url.rstrip("/") + "/xrpc/com.atproto.server.createSession",
-        headers={"Accept": "application/json"},
-        json_body={"identifier": cfg.identifier, "password": cfg.app_password},
-    )
-    payload = response.json()
-    if not isinstance(payload, dict):
-        raise RuntimeError("Session response must be a JSON object")
-    if persist:
-        write_session_json(ctx["env_file"], payload)
-    return payload
-
-
-def _refresh_session(cfg: Any, ctx: dict[str, Any], *, persist: bool) -> dict[str, Any]:
-    saved = read_session_json(ctx["env_file"])
-    refresh_token = cfg.refresh_jwt or refresh_token_from_session(saved)
-    if not refresh_token:
-        raise ValidationError("Missing refresh JWT. Run `bluesky-safe-cli auth login` first.")
-    base_url = pds_url_from_session(saved) or cfg.default_pds_url or cfg.entryway_url
-    client = _client(ctx)
-    response = client.request(
-        "POST",
-        base_url.rstrip("/") + "/xrpc/com.atproto.server.refreshSession",
-        headers={"Authorization": f"Bearer {refresh_token}", "Accept": "application/json"},
-    )
-    payload = response.json()
-    if not isinstance(payload, dict):
-        raise RuntimeError("Refresh response must be a JSON object")
-    if persist:
-        write_session_json(ctx["env_file"], payload)
-    return payload
-
-
 def _resolve_auth(op: Any, cfg: Any, ctx: dict[str, Any]) -> tuple[dict[str, str], str | None, dict[str, Any] | None]:
     if op.namespace == "tools.ozone" and cfg.admin_token:
         return {"Authorization": f"Bearer {cfg.admin_token}"}, "env_admin_token", None
 
-    saved = read_session_json(ctx["env_file"])
-    env_access = str(cfg.access_jwt or "").strip()
-    if env_access:
-        return {"Authorization": f"Bearer {env_access}"}, "env_access_jwt", saved
+    token, source, saved = configured_access_session(cfg.access_jwt, ctx["env_file"])
+    return ({"Authorization": f"Bearer {token}"} if token else {}), source, saved
 
-    saved_access = access_token_from_session(saved)
-    if saved_access:
-        return {"Authorization": f"Bearer {saved_access}"}, "saved_session", saved
 
-    if cfg.identifier and cfg.app_password:
-        session = _create_session(cfg, ctx, persist=False)
-        access = access_token_from_session(session)
-        if access:
-            return {"Authorization": f"Bearer {access}"}, "ephemeral_session", session
+def _publishes_post(lexicon_id: str, body: dict[str, Any]) -> bool:
+    if lexicon_id in {"com.atproto.repo.createRecord", "com.atproto.repo.putRecord"}:
+        return body.get("collection") == "app.bsky.feed.post"
+    if lexicon_id == "com.atproto.repo.applyWrites" and isinstance(body.get("writes"), list):
+        return any(
+            isinstance(write, dict)
+            and write.get("collection") == "app.bsky.feed.post"
+            and write.get("$type") in {"com.atproto.repo.applyWrites#create", "com.atproto.repo.applyWrites#update"}
+            for write in body["writes"]
+        )
+    return False
 
-    refresh = cfg.refresh_jwt or refresh_token_from_session(saved)
-    if refresh:
-        session = _refresh_session(cfg, ctx, persist=False)
-        access = access_token_from_session(session)
-        if access:
-            return {"Authorization": f"Bearer {access}"}, "refreshed_session", session
 
-    return {}, None, saved
+def _reviewed_post_plan(plan: dict[str, Any], path: str) -> dict[str, Any] | None:
+    reviewed = read_json_file(path)
+    if not isinstance(reviewed, dict):
+        return None
+    expected = {**plan, "generated_at_utc": reviewed.get("generated_at_utc")}
+    expected["plan_hash"] = _compute_plan_hash(expected)
+    return reviewed if reviewed == _sanitize_for_output(expected) else None
+
+
+def _post_account_matches(
+    client: HttpClient, plan: dict[str, Any], headers: dict[str, str]
+) -> bool:
+    response = client.request(
+        method="GET",
+        url=plan["operation"]["service_url"].rstrip("/") + "/xrpc/com.atproto.server.getSession",
+        headers=headers,
+        allow_redirects=False,
+    )
+    session = response.json()
+    if not isinstance(session, dict) or not session.get("did"):
+        return False
+    if plan["posting_account"] and plan["posting_account"] != session["did"]:
+        return False
+    repo = str(plan["inputs"]["body"]["repo"])
+    return repo == session["did"] or repo.casefold() == str(session.get("handle") or "").casefold()
 
 
 def _emit_refusal(ctx: dict[str, Any], op_cmd: str, reasons: list[str], plan: dict[str, Any], plan_path: str | None) -> int:
@@ -389,19 +372,28 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
     if not op:
         raise ValidationError(f"Unknown operation command: {op_cmd}")
 
+    cfg = ctx["cfg"]
+    auth_headers, token_source, session_obj = _resolve_auth(op, cfg, ctx)
+    service_url = getattr(args, "service_url", None)
+    if op.route_hint == "entryway-or-pds":
+        if op.namespace == "app.bsky" and op.kind == "query" and not auth_headers:
+            service_url = cfg.public_api_url
+        else:
+            service_url = pds_url_from_session(session_obj) or cfg.default_pds_url or cfg.entryway_url
+
     plan = build_api_call_plan(
         tool=ctx.get("tool") or "bluesky-safe-cli",
         tool_version=ctx.get("tool_version") or "",
         env_fingerprint=str(ctx.get("env_fingerprint") or getattr(ctx.get("cfg"), "base_url", "")),
         op=op,
-        cfg=ctx.get("cfg"),
+        cfg=cfg,
         query_json=getattr(args, "query_json", None),
         body_json=getattr(args, "body_json", None),
         query_pairs=getattr(args, "query", None),
         body_pairs=getattr(args, "body", None),
         input_file=getattr(args, "input_file", None),
         input_content_type=getattr(args, "input_content_type", None),
-        service_url=getattr(args, "service_url", None),
+        service_url=service_url,
     )
     classification = _classify_operation(op)
     missing_required = plan.get("requirements", {}).get("missing_required") or []
@@ -410,18 +402,26 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
     plan["risk_level"] = _risk_level(classification)
     plan["risk_reasons"] = _risk_reasons(classification)
     plan["preconditions"] = _preconditions(classification, missing_required)
+    publishing_post = _publishes_post(op.lexicon_id, plan["inputs"]["body"])
+    plan_in = ctx.get("plan_in")
+    if plan_in and not publishing_post:
+        raise ValidationError("Use --plan-in for a command that publishes a Bluesky post.")
+    if publishing_post:
+        repo = str(plan["inputs"]["body"].get("repo") or "")
+        plan["posting_account"] = (session_obj or {}).get("did") or (repo if repo.startswith("did:") else None)
+        plan["preconditions"].append("Publishing a post requires the matching reviewed plan file.")
     plan["verification_plan"] = _verification_plan(classification, op)
     plan["rollback"] = _rollback_contract(classification)
     plan = _ensure_write_safety_contract(plan, op, classification)
     plan["plan_hash"] = _compute_plan_hash(plan)
     sanitized_plan = _sanitize_for_output(plan)
 
-    plan_path = _write_json_file(ctx.get("plan_out"), sanitized_plan)
-    if ctx.get("plan_out") and plan_path is None:
-        raise ValidationError("Unable to write --plan-out file")
-
     apply = bool(ctx.get("apply"))
     live = bool(ctx.get("live"))
+    plan_out = None if publishing_post and apply else ctx.get("plan_out")
+    plan_path = _write_json_file(plan_out, sanitized_plan)
+    if plan_out and plan_path is None:
+        raise ValidationError("Unable to write --plan-out file")
     gates = classification["gates"]
     reasons: list[str] = []
 
@@ -461,27 +461,40 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
             ctx["out"].emit(out)
             return 0
 
-    cfg = ctx["cfg"]
-    headers = {"Accept": "application/json"}
-    auth_headers, token_source, session_obj = _resolve_auth(op, cfg, ctx)
-    headers.update(auth_headers)
+    if publishing_post:
+        if not plan["posting_account"]:
+            return _emit_refusal(
+                ctx, op_cmd, ["Use your account DID as repo, then save and review the plan again."],
+                sanitized_plan, plan_path,
+            )
+        if not plan_in:
+            return _emit_refusal(ctx, op_cmd, ["Use --plan-in with the reviewed post plan."], sanitized_plan, plan_path)
+        reviewed = _reviewed_post_plan(plan, plan_in)
+        if reviewed is None:
+            return _emit_refusal(
+                ctx, op_cmd, ["The post request differs from the reviewed plan. Save and review a new plan."],
+                sanitized_plan, plan_path,
+            )
+        sanitized_plan = reviewed
+        plan["plan_hash"] = reviewed["plan_hash"]
+
+    headers = {"Accept": "application/json", **auth_headers}
 
     if classification["is_write"] and op.lexicon_id not in {
         "com.atproto.server.createAccount",
         "com.atproto.server.createSession",
     } and "Authorization" not in headers:
-        raise ValidationError("Live write requires a stored session, env JWT, or app-password credentials")
+        raise ValidationError("Live write needs an access token. Run auth login or auth refresh to save a session.")
 
     client = _client(ctx)
 
     live_base_url = plan["operation"]["service_url"]
-    if op.route_hint == "entryway-or-pds":
-        if op.namespace == "app.bsky" and classification["is_read"] and "Authorization" not in headers:
-            live_base_url = cfg.public_api_url
-        else:
-            live_base_url = pds_url_from_session(session_obj) or pds_url_from_session(read_session_json(ctx["env_file"])) or cfg.default_pds_url or cfg.entryway_url
-
-    live_url = str(live_base_url).rstrip("/") + op.path
+    live_url = plan["operation"]["url"]
+    if publishing_post and not _post_account_matches(client, plan, headers):
+        return _emit_refusal(
+            ctx, op_cmd, ["The signed-in account differs from the account in the reviewed post plan."],
+            sanitized_plan, plan_path,
+        )
     receipt: dict[str, Any]
 
     if op.kind == "subscription":
@@ -533,6 +546,7 @@ def cmd_api_call(args: Any, ctx: dict[str, Any]) -> int:
             json_body=json_body,
             data=data,
             content=content,
+            allow_redirects=not publishing_post,
         )
         receipt = {
             "tool": ctx.get("tool") or "bluesky-safe-cli",

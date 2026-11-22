@@ -1,31 +1,13 @@
 # Changelog
 
-All notable changes to this project are documented in this file.
+## Unreleased
 
-This format is based on Keep a Changelog, and this project follows Semantic Versioning.
-Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking changes.
+- Include the May 25, 2026 list of 304 Bluesky API commands in the installed package.
+- Create a settings file with the two sign-in fields even when the example file is missing.
+- Use `auth login` to create a session and `auth refresh` to renew it. Public feed reads and `auth check` leave sign-in to those commands.
+- Require a saved, reviewed plan when a repository command creates or updates a Bluesky post. Check the account, server and request before sending it. The post guide shows how to read it back separately.
+- Put setup, examples and the steps for reviewing changes in the guides linked from the README.
 
-## [Unreleased]
+## 0.1.0
 
-### Added
-- New `bluesky-safe-cli` package for the official Bluesky API surface.
-- Pinned official Bluesky inventory files generated from the official atproto lexicons and Bluesky HTTP reference pages.
-- Explicit `api <operation_command>` command surface for 304 official callable lexicons.
-- `api ops list` inventory command and pinned coverage ledger in `docs/api_coverage.md`.
-- Real Bluesky session helpers: `auth check`, `auth login`, `auth refresh`, `auth logout`, `auth token set`, and `auth token status`.
-- Live public read execution for query endpoints and raw websocket frame capture for subscription endpoints.
-- Added or updated the customer-ready agent skill prompt.
-
-### Changed
-- Switched the user-facing CLI command name to `bluesky-safe-cli`.
-- Replaced generic API base/token onboarding with Bluesky handle or DID plus app-password onboarding.
-- Replaced starter example outputs with real tool outputs in `docs/examples/`.
-- Removed starter-only `jobs` and `demo` commands from the shipped CLI.
-- Removed global `--plan-in` flag and related context plumbing.
-- Kept write-capable behavior on real shipped commands (`api` + `auth`) while dropping unsupported workflow paths.
-
-### Fixed
-- `--output json` parse errors still emit exactly one JSON error object.
-- Dry-run plans now redact password and token fields before output or file writes.
-
-### Removed
+The first package included 304 explicit Bluesky API commands, public reads, local session commands, WebSocket frame capture and the agent skill. It also included local previews, redacted JSON output, the command list and example results. The `jobs` and `demo` starter commands were dropped before this release. Generic `--plan-in` was removed at that time.

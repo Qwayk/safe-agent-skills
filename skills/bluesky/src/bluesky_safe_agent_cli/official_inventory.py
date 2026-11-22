@@ -27,15 +27,11 @@ class OperationSpec:
     required_body_fields: tuple[str, ...] = ()
 
 
-def tool_root_path() -> Path:
-    return Path(__file__).resolve().parents[2]
-
-
 def pinned_official_inventory_path() -> Path:
-    docs = tool_root_path() / "docs"
-    candidates = sorted(docs.glob("official_xrpc_inventory_v1_*.json"))
+    data = Path(__file__).with_name("data")
+    candidates = sorted(data.glob("official_xrpc_inventory_v1_*.json"))
     if not candidates:
-        raise RuntimeError(f"Missing pinned Bluesky inventory under {docs}")
+        raise RuntimeError(f"Missing pinned Bluesky inventory under {data}")
     return candidates[-1]
 
 

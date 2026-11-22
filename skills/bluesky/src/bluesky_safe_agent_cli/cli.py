@@ -11,19 +11,19 @@ from .commands import api as api_cmd
 from .commands import auth as auth_cmd
 from .commands import onboarding as onboarding_cmd
 from .config import load_config
-from .project_config import load_project_config
 from .errors import SafetyError, ToolError, ValidationError
 from .output import Output
+from .project_config import load_project_config
 from .runs import (
     RunContext,
+    append_index_row,
     build_deterministic_summary,
+    find_run,
     init_run_context,
     list_runs,
-    find_run,
-    write_summary_md,
-    append_index_row,
     runs_index_path_for_env_file,
- )
+    write_summary_md,
+)
 
 
 class _ToolArgumentParser(argparse.ArgumentParser):
@@ -164,6 +164,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Acknowledge that this approved write may run without a saved before-state snapshot",
     )
     p.add_argument("--plan-out", default=None, help="Write a dry-run plan JSON to a file")
+    p.add_argument("--plan-in", default=None, help="Reviewed plan required for publishing a Bluesky post")
     p.add_argument("--receipt-out", default=None, help="Write an apply receipt JSON to a file")
     p.add_argument(
         "--ack-irreversible",
@@ -401,6 +402,7 @@ def main(argv: list[str]) -> int:
             "yes": bool(args.yes),
             "ack_no_snapshot": bool(args.ack_no_snapshot),
             "plan_out": args.plan_out,
+            "plan_in": args.plan_in,
             "receipt_out": args.receipt_out,
             "ack_irreversible": bool(args.ack_irreversible),
             "run_id": run_ctx.run_id,

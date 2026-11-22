@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import io
 import json
+import tempfile
 import unittest
-from contextlib import redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
+from pathlib import Path
+from unittest.mock import patch
 
 import requests
 
+from bluesky_safe_agent_cli.cli import main
 from bluesky_safe_agent_cli.http import HttpClient
 
 
@@ -23,6 +27,21 @@ class _FakeResponse:
 
 
 class TestAuthRedaction(unittest.TestCase):
+    def test_auth_check_does_not_sign_in_with_an_app_password(self) -> None:
+        with tempfile.TemporaryDirectory() as d, patch.dict("os.environ", {}, clear=True):
+            root = Path(d)
+            env = root / ".env"
+            env.write_text(
+                "BLUESKY_IDENTIFIER=sample.bsky.social\nBLUESKY_APP_PASSWORD=fixture-password\n",
+                encoding="utf-8",
+            )
+            out = io.StringIO()
+            with redirect_stdout(out), patch("bluesky_safe_agent_cli.commands.auth._client") as client:
+                self.assertEqual(main(["--output", "json", "--env-file", str(env), "auth", "check"]), 0)
+                client.assert_not_called()
+            self.assertFalse(json.loads(out.getvalue())["live_checked"])
+            self.assertFalse((root / ".state/token.json").exists())
+
     def test_auth_http_error_response_does_not_leak_app_password_or_tokens(self) -> None:
         access = "ACCESS.JWT.LEAK.123"
         refresh = "REFRESH.JWT.LEAK.456"

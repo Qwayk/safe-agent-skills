@@ -1,72 +1,56 @@
-# Quickstart
+# Start using Bluesky
 
-Start with a small Bluesky read: checking profiles, posts, and account access before you publish or change anything.
+## Install
 
-Need more ideas? See [What you can do with Bluesky](use_cases.md). Need setup help? See [Connect your Bluesky account](onboarding.md).
-
-A good first ask is:
-
-> Check this Bluesky profile and show me the recent post surface safely.
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account or connection before asking for real work.
-3. Run one small read and make sure the result matches the real service.
-4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+Use Python 3.12 or later. From the Bluesky tool folder, install it in your Python environment.
 
 ```bash
-python3 -m venv .venv
-. .venv/bin/activate
-pip install -e .
+python -m pip install .
+bluesky-safe-cli --output json --version
 ```
 
-## 2. Check setup
+## Read public posts
 
-If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
+Ask for the latest posts from a handle. Replace the example handle with the one you want.
 
 ```bash
-cp .env.example .env
+bluesky-safe-cli --output json --live api app-bsky-feed-get-author-feed --query actor=sample.bsky.social --query limit=5
 ```
+
+The posts are in `receipt.response.body.body_json.feed`. If that response includes a `cursor`, pass it as `--query cursor=...` to get the next page. You can also read a public profile with `app-bsky-actor-get-profile` and the same `actor` field, or find feed, graph and moderation commands in the [command list](api_coverage.md).
+
+## Publish a post
+
+[Sign in](onboarding.md) and use the DID shown by `auth check`. A DID is the account's stable ID. Save the post in `post.json` and replace the example DID, text and time.
+
+```json
+{
+  "repo": "did:plc:your-account",
+  "collection": "app.bsky.feed.post",
+  "record": {
+    "$type": "app.bsky.feed.post",
+    "text": "Example post",
+    "createdAt": "2026-11-23T05:00:00Z"
+  }
+}
+```
+
+Save the preview. Review the account, server, text and the rest of the post before approving it.
 
 ```bash
-bluesky-safe-cli --output json onboarding
-bluesky-safe-cli --output json auth login
-bluesky-safe-cli --output json auth check
+bluesky-safe-cli --output json --plan-out post-plan.json api com-atproto-repo-create-record --body-json post.json
 ```
 
-## 3. Run one small first read
-
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
+After approval, use the same post file and the reviewed plan. Include `--ack-no-snapshot` to approve sending the post without a saved copy of the previous state.
 
 ```bash
-bluesky-safe-cli --output json api ops list --kind query
+bluesky-safe-cli --output json --live --apply --ack-no-snapshot --plan-in post-plan.json --receipt-out post-receipt.json api com-atproto-repo-create-record --body-json post.json
 ```
 
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
+Find `uri` and `cid` under `response.body.body_json` in the saved receipt. The URI ends with the record key. Use the DID and key from that URI to read the post back.
 
-## 4. Stop before anything risky
+```bash
+bluesky-safe-cli --output json --live api com-atproto-repo-get-record --query repo=did:plc:your-account --query collection=app.bsky.feed.post --query rkey=the-record-key
+```
 
-Ask for a reviewed plan before posting, deleting, session changes, or any action that touches the live Bluesky account.
-
-## What a useful first result includes
-
-A good first result should make these things clear:
-
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
-
-## Where to go next
-
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your Bluesky account](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+Compare the returned `cid` and text with the receipt and the reviewed post. If the write times out, check whether the post appeared before trying again. Keep the plan and receipt private when they contain account or post details.

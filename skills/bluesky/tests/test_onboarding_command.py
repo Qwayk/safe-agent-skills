@@ -39,4 +39,7 @@ class TestOnboardingCommand(unittest.TestCase):
             payload = json.loads(buf.getvalue())
             self.assertTrue(payload["ok"])
             self.assertTrue(payload["onboarding"]["env_created"])
-            self.assertTrue(os.path.exists(env_path))
+            with open(env_path, encoding="utf-8") as f:
+                settings = f.read().splitlines()
+            self.assertIn("BLUESKY_IDENTIFIER=", settings)
+            self.assertIn("BLUESKY_APP_PASSWORD=", settings)

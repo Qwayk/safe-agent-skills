@@ -29,6 +29,9 @@ package-dir = {"" = "src"}
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+bluesky_safe_agent_cli = ["data/official_xrpc_inventory_v1_*.json"]
+
 [tool.ruff]
 target-version = "py312"
 line-length = 100

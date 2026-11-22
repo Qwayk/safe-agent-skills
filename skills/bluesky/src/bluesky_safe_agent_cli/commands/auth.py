@@ -6,8 +6,8 @@ from typing import Any
 from ..http import HttpClient
 from ..oauth_tokens import get_token_status, token_path_for_env_file, write_token_from_file
 from ..session_store import (
-    access_token_from_session,
     clear_session_json,
+    configured_access_session,
     pds_url_from_session,
     read_session_json,
     refresh_token_from_session,
@@ -23,7 +23,7 @@ def _client(ctx: dict[str, Any]) -> HttpClient:
     )
 
 
-def _create_session(cfg: Any, ctx: dict[str, Any], *, persist: bool) -> dict[str, Any]:
+def _create_session(cfg: Any, ctx: dict[str, Any]) -> dict[str, Any]:
     if not cfg.identifier:
         raise RuntimeError("Missing BLUESKY_IDENTIFIER")
     if not cfg.app_password:
@@ -39,12 +39,11 @@ def _create_session(cfg: Any, ctx: dict[str, Any], *, persist: bool) -> dict[str
     payload = response.json()
     if not isinstance(payload, dict):
         raise RuntimeError("Session response must be a JSON object")
-    if persist:
-        write_session_json(ctx["env_file"], payload)
+    write_session_json(ctx["env_file"], payload)
     return payload
 
 
-def _refresh_session(cfg: Any, ctx: dict[str, Any], *, persist: bool) -> dict[str, Any]:
+def _refresh_session(cfg: Any, ctx: dict[str, Any]) -> dict[str, Any]:
     saved = read_session_json(ctx["env_file"])
     refresh_token = cfg.refresh_jwt or refresh_token_from_session(saved)
     if not refresh_token:
@@ -59,14 +58,12 @@ def _refresh_session(cfg: Any, ctx: dict[str, Any], *, persist: bool) -> dict[st
     payload = response.json()
     if not isinstance(payload, dict):
         raise RuntimeError("Refresh response must be a JSON object")
-    if persist:
-        write_session_json(ctx["env_file"], payload)
+    write_session_json(ctx["env_file"], payload)
     return payload
 
 
 def _current_session(cfg: Any, ctx: dict[str, Any]) -> tuple[dict[str, Any] | None, str | None]:
-    saved = read_session_json(ctx["env_file"])
-    access_token = cfg.access_jwt or access_token_from_session(saved)
+    access_token, _, saved = configured_access_session(cfg.access_jwt, ctx["env_file"])
     if access_token:
         base_url = pds_url_from_session(saved) or cfg.default_pds_url or cfg.entryway_url
         client = _client(ctx)
@@ -79,12 +76,6 @@ def _current_session(cfg: Any, ctx: dict[str, Any]) -> tuple[dict[str, Any] | No
         if not isinstance(payload, dict):
             raise RuntimeError("Session check response must be a JSON object")
         return payload, base_url.rstrip("/")
-    if cfg.identifier and cfg.app_password:
-        payload = _create_session(cfg, ctx, persist=False)
-        return payload, pds_url_from_session(payload) or cfg.default_pds_url or cfg.entryway_url
-    if cfg.refresh_jwt or refresh_token_from_session(saved):
-        payload = _refresh_session(cfg, ctx, persist=False)
-        return payload, pds_url_from_session(payload) or cfg.default_pds_url or cfg.entryway_url
     return None, None
 
 
@@ -113,6 +104,8 @@ def cmd_auth_check(args: Any, ctx: dict[str, Any]) -> int:
         out["active"] = session.get("active")
         out["status"] = session.get("status")
         out["resolved_pds_url"] = pds_url_from_session(session)
+    else:
+        out["message"] = "No access session to check. Use auth login or auth refresh to start or renew one."
     ctx["audit"].write("auth.check", out)
     ctx["out"].emit(out)
     return 0
@@ -120,7 +113,7 @@ def cmd_auth_check(args: Any, ctx: dict[str, Any]) -> int:
 
 def cmd_auth_login(args: Any, ctx: dict[str, Any]) -> int:
     _ = args
-    payload = _create_session(ctx["cfg"], ctx, persist=True)
+    payload = _create_session(ctx["cfg"], ctx)
     status = get_token_status(token_path_for_env_file(ctx["env_file"]))
     out = {
         "ok": True,
@@ -137,7 +130,7 @@ def cmd_auth_login(args: Any, ctx: dict[str, Any]) -> int:
 
 def cmd_auth_refresh(args: Any, ctx: dict[str, Any]) -> int:
     _ = args
-    payload = _refresh_session(ctx["cfg"], ctx, persist=True)
+    payload = _refresh_session(ctx["cfg"], ctx)
     status = get_token_status(token_path_for_env_file(ctx["env_file"]))
     out = {
         "ok": True,
