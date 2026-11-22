@@ -5,6 +5,7 @@ import json
 import sys
 import time
 from typing import Any
+from urllib.parse import quote, quote_plus
 
 import requests
 
@@ -73,8 +74,29 @@ class HttpClient:
         retries: int = 0,
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),
     ) -> HttpResponse:
+        credentials: set[str] = set()
+        for name, value in (headers or {}).items():
+            if name.lower() == "authorization":
+                credentials.add(value)
+                if value.lower().startswith("bearer "):
+                    credentials.add(value[7:])
+            elif name.lower() in {"cf-access-client-id", "cf-access-client-secret"}:
+                credentials.add(value)
+        hidden = {
+            variant
+            for value in credentials
+            if value
+            for variant in (value, quote(value, safe=""), quote_plus(value), json.dumps(value)[1:-1])
+        }
+        hidden_values = sorted(hidden, key=len, reverse=True)
+
+        def safe(text: str) -> str:
+            for value in hidden_values:
+                text = text.replace(value, "***REDACTED***")
+            return text
+
         attempt = 0
-        display_url = self._format_url(url, params)
+        display_url = safe(self._format_url(url, params))
         while True:
             attempt += 1
             start = time.time()
@@ -95,26 +117,26 @@ class HttpClient:
                 ms = int((time.time() - start) * 1000)
                 if self._verbose:
                     print(
-                        f"[http] {method} {display_url} -> EXCEPTION ({ms}ms): {type(e).__name__}: {e}",
+                        f"[http] {method} {display_url} -> EXCEPTION ({ms}ms): {type(e).__name__}: {safe(str(e))}",
                         file=sys.stderr,
                     )
                 raise RuntimeError(
-                    f"Request failed for {method} {display_url}: {type(e).__name__}: {e}"
-                ) from e
+                    f"Request failed for {method} {display_url}: {type(e).__name__}: {safe(str(e))}"
+                ) from None
             ms = int((time.time() - start) * 1000)
             if self._verbose:
-                print(f"[http] {method} {resp.url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
+                print(f"[http] {method} {safe(resp.url)} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
             if resp.status_code < 400:
                 return HttpResponse(
                     status=resp.status_code,
                     headers={k.lower(): v for k, v in resp.headers.items()},
                     body=resp.content,
-                    url=resp.url,
+                    url=safe(resp.url),
                 )
 
             if attempt <= retries and resp.status_code in retry_on:
                 time.sleep(min(2**attempt, 10))
                 continue
 
-            raise RuntimeError(f"HTTP {resp.status_code} for {method} {resp.url}\n{resp.text}")
+            raise RuntimeError(f"HTTP {resp.status_code} for {method} {safe(resp.url)}\n{safe(resp.text)}")

@@ -1,39 +1,31 @@
 # Connect your Plausible account
 
-Plausible needs a local API key before an agent can inspect sites, traffic, goals, conversions, and privacy-friendly reports.
+Start with a **Stats API key** for the team that owns the site. In Plausible, select the team, open your account settings, choose **API Keys**, and create a Stats API key. Copy it while it is visible. Its access is limited to sites that team owns. [Plausible Stats API](https://plausible.io/docs/stats-api#authentication)
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+From the tool folder, copy the example to a new local settings file. If you already have a file, open that file and use its path in the commands.
 
-After setup, start with one site and a short date range before asking for trends or site changes.
+```bash
+umask 077
+cp -n .env.example .env
+```
 
-## Step 1. Get a Plausible API key
+- Set `PLAUSIBLE_SITE_ID` to the site's domain as it appears in Plausible.
+- Set `PLAUSIBLE_API_KEY` to the key. Keep it out of chat and Git.
+- Keep `PLAUSIBLE_BASE_URL=https://plausible.io` for hosted Plausible. For a self-hosted instance, enter that instance's base address.
+- `PLAUSIBLE_TIMEOUT_S` defaults to 30 seconds. If your instance uses Cloudflare Access, set `CF_ACCESS_CLIENT_ID` and `CF_ACCESS_CLIENT_SECRET` to its existing service token values. The longer `CLOUDFLARE_ACCESS_CLIENT_ID` and `CLOUDFLARE_ACCESS_CLIENT_SECRET` names also work.
+- Values set in your shell take priority over values in the file. If the tool connects somewhere unexpected, check the shell settings and the file selected by `--env-file`.
 
-In your Plausible account settings, create an API key (the exact steps can change).
-If you plan to use Sites API commands (creating/updating/deleting sites, goals, guests, custom properties), make sure the key has access to the site; destructive operations may require an owner key.
+Run the connection check with the same file. It asks Plausible for the last seven days of visitor data and checks that the response contains Stats API results.
 
-## Step 2. Fill the local `.env` file (on your machine)
+```bash
+plausible-api-tool --env-file .env auth check
+```
 
-In the tool folder, copy `.env.example` to `.env` and fill:
+A Stats key can also use supported read-only Sites API commands. Hosted site changes need a Sites API key for the owning team on a plan with that access. Use a separate local settings file when the job needs a different key. Some destructive actions require a key from the site owner. [Plausible Sites API](https://plausible.io/docs/sites-api)
 
-- `PLAUSIBLE_BASE_URL` (keep the default unless you’re self-hosting)
-- `PLAUSIBLE_SITE_ID` (your site/domain identifier in Plausible)
-- `PLAUSIBLE_API_KEY` (your API key)
+## If the check fails
 
-## Step 3. What to ask your AI agent (examples)
-
-For safety, event writes should be planned first and applied only after your explicit approval.
-Some writes also need an extra no-snapshot acknowledgement because they do not have an automatic restore point.
-
-- “Confirm the tool is connected and run a weekly report for the last 7 days.”
-- “Validate this Stats query JSON, then run it and export results to a file.”
-- “Plan a test event (no write). Apply only after I approve.”
-- “List all sites and confirm the site settings (timezone + tracker config).”
-
-## If something fails
-
-Common causes:
-- Missing or invalid API key
-- Wrong base URL (self-hosted vs cloud)
-- Wrong site ID/domain mismatches
-
-See [Troubleshooting](troubleshooting.md) for symptoms and fixes.
+- **401 or 403.** Check the file path, key type, site, and team. If Cloudflare shows a sign-in page, check the instance address and the existing Cloudflare Access token.
+- **Unexpected reply.** Check that the address points to the Plausible API. In `auth check`, the Stats API result is what confirms account access. The optional health check can fail on an instance that restricts or lacks that endpoint.
+- **Query error.** Use [query validation](queries.md#validate-a-query-json-file) to check the local JSON. If Plausible says that a goal is missing, verify its exact name in the right site. Adding one is a site change and needs approval.
+- **Debugging.** `--verbose` prints request timing and status to stderr. `--debug` shows a Python traceback. Keep your settings and output files private. Check the [safety guide](safety_model.md) before retrying a write.

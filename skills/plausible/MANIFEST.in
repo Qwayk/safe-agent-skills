@@ -1,0 +1,5 @@
+include .env.example
+include CHANGELOG.md
+include SKILL.md
+recursive-include docs *.md *.json
+recursive-include examples *.json

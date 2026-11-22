@@ -1,14 +1,21 @@
 # Proof and verification
 
+## November 22, 2026 local checks
+
+All 57 tests passed from the checkout and after installing a wheel built from the source archive. The install opened help and loaded all 34 commands. The archive included the skill, settings example, guides and working query files. The skill passed validation and all 25 local links worked.
+
+Simulated replies confirmed that query validation runs before setup, a connection check rejects an unexpected reply, incomplete pages show what is missing, and membership reports distinguish missing goals from zero events. The tests also checked key redaction and receipts when some requested site values still differ. No tests contacted a live Plausible account.
+
+
 Plausible proof should answer a simple question: what has actually been checked for sites, stats, goals, shared links, team members, and account settings, and what still needs live credentials, permissions, or reviewer judgment?
 
 You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
 
 If you only check one thing, check stats/site proof and goal or shared-link plan evidence before trusting analytics changes.
 
-## Current proof summary
+## Previous verification
 
-Last verified (UTC): 2026-06-01
+The previous June 1, 2026 record reported this as its last verification date.
 
 ## Smoke commands (safe)
 
@@ -18,7 +25,7 @@ All commands below are safe to run locally; they do not print secrets.
 - Optional (dev extras): `.venv/bin/python -m pip install -e '.[dev]'`
 - Version (JSON): `python3 -m plausible_api_tool --output json --version`
 - Config/auth sanity (requires valid env file): `python3 -m plausible_api_tool --output json --env-file .env auth check`
-- Stats query from file (read-only): `python3 -m plausible_api_tool --output json --env-file .env stats validate --file examples/goals_list_query.json`
+- Check a query file locally: `plausible-api-tool stats validate --file examples/goals_list_query.json`
 - Sites list (read-only; requires valid env file): `python3 -m plausible_api_tool --output json --env-file .env site list`
 - Events dry-run plan (no write; requires valid env file): `python3 -m plausible_api_tool --output json --env-file .env event send --name test_event --url https://example.com/ --referrer https://example.com/from --revenue-currency USD --revenue-amount 9.99`
 

@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from ..plausible import PlausibleClient
+from ..stats_utils import page_summary, total_result_rows
 
 
 def _date_range_from_days(days: int) -> str:
@@ -23,17 +24,32 @@ def _breakdown_query(
     filters: list[Any] | None = None,
     limit: int = 50,
 ) -> dict[str, Any]:
+    if limit <= 0:
+        raise RuntimeError("--limit must be > 0")
     q: dict[str, Any] = {
         "site_id": site_id,
         "date_range": date_range,
         "metrics": metrics,
         "dimensions": [dimension],
         "order_by": [[order_by_metric, "desc"]],
+        "include": {"total_rows": True},
         "pagination": {"limit": int(limit), "offset": 0},
     }
     if filters:
         q["filters"] = filters
     return q
+
+
+def _breakdown_result(query: dict[str, Any], response: dict[str, Any]) -> dict[str, Any]:
+    rows = len(response["results"])
+    return {
+        "query": query,
+        "response": response,
+        "pagination": page_summary(
+            rows=rows, offset=0, limit=query["pagination"]["limit"],
+            total_rows=total_result_rows(response), last_page_rows=rows,
+        ),
+    }
 
 
 def _write_breakdown_csv(out_path: Path, *, query: dict[str, Any], response: dict[str, Any]) -> None:
@@ -52,9 +68,12 @@ def _write_breakdown_csv(out_path: Path, *, query: dict[str, Any], response: dic
         for row in results:
             if not isinstance(row, dict):
                 continue
-            row_dims = row.get("dimensions") if isinstance(row.get("dimensions"), list) else []
-            row_mets = row.get("metrics") if isinstance(row.get("metrics"), list) else []
-            w.writerow([*row_dims, *row_mets])
+            row_dims = row.get("dimensions")
+            row_mets = row.get("metrics")
+            w.writerow([
+                *(row_dims if isinstance(row_dims, list) else []),
+                *(row_mets if isinstance(row_mets, list) else []),
+            ])
 
 
 def _goal_aggregate(
@@ -79,14 +98,14 @@ def _goal_aggregate(
             return {
                 "goal": goal,
                 "query": q,
-                "response": {"meta": {}, "query": q, "results": [{"dimensions": [], "metrics": [0, 0, None]}]},
+                "response": None,
                 "missing_goal": True,
                 "warning": f"Goal not configured in Plausible: {goal}",
             }
         raise
 
 
-def _membership_funnels(client: PlausibleClient, *, site_id: str, date_range: str) -> dict[str, Any]:
+def membership_funnels(client: PlausibleClient, *, site_id: str, date_range: str) -> dict[str, Any]:
     # Important: submit/email/confirmed are tracked as a single goal with a `trigger` prop, not separate goals.
     # We split by `event:props:trigger` here so the funnel is reportable without extra goal setup.
     funnels: dict[str, list[dict[str, Any]]] = {
@@ -125,14 +144,14 @@ def _membership_funnels(client: PlausibleClient, *, site_id: str, date_range: st
     missing_goals: list[str] = []
     out: dict[str, Any] = {"missing_goals": []}
     for name, chain in funnels.items():
-        steps = []
+        steps: list[dict[str, Any]] = []
         for step in chain:
             row = get_step_row(step)
             if bool(row.get("missing_goal")):
                 missing_goals.append(str(step.get("goal")))
 
-            events = 0
-            results = row.get("response", {}).get("results") if isinstance(row.get("response"), dict) else None
+            results = row["response"]["results"] if row["response"] is not None else None
+            events = 0 if results == [] else None
             if isinstance(results, list) and results and isinstance(results[0], dict):
                 metrics = results[0].get("metrics")
                 if isinstance(metrics, list) and metrics and isinstance(metrics[0], (int, float)):
@@ -148,8 +167,8 @@ def _membership_funnels(client: PlausibleClient, *, site_id: str, date_range: st
                 {
                     "from": steps[i - 1]["goal"],
                     "to": steps[i]["goal"],
-                    "drop_events": max(prev - cur, 0),
-                    "step_ratio": (cur / prev) if prev > 0 else None,
+                    "drop_events": max(prev - cur, 0) if prev is not None and cur is not None else None,
+                    "step_ratio": (cur / prev) if prev and cur is not None else None,
                 }
             )
         out[name] = {"steps": steps, "drop_off": drops}
@@ -193,7 +212,6 @@ def cmd_report_weekly(args, ctx) -> int:
     pages = client.stats_query(pages_q)
     sources = client.stats_query(sources_q)
     goals = client.stats_query(goals_q)
-    funnels = _membership_funnels(client, site_id=cfg.site_id, date_range=dr)
 
     project_cfg = ctx.get("project_cfg") or {}
     out_dir_str = args.out_dir or project_cfg.get("reports_out_dir")
@@ -213,10 +231,9 @@ def cmd_report_weekly(args, ctx) -> int:
         "ok": True,
         "date_range": dr,
         "reports": {
-            "top_pages": {"query": pages_q, "response": pages},
-            "sources_channel": {"query": sources_q, "response": sources},
-            "goals": {"query": goals_q, "response": goals},
-            "membership_funnels": funnels,
+            "top_pages": _breakdown_result(pages_q, pages),
+            "sources_channel": _breakdown_result(sources_q, sources),
+            "goals": _breakdown_result(goals_q, goals),
         },
         "csv_files": csv_files,
     }
@@ -233,7 +250,7 @@ def cmd_report_membership(args, ctx) -> int:
     dr = _date_range_from_days(days)
     limit = int(args.limit)
 
-    funnels = _membership_funnels(client, site_id=cfg.site_id, date_range=dr)
+    funnels = membership_funnels(client, site_id=cfg.site_id, date_range=dr)
     goals_q = _breakdown_query(
         site_id=cfg.site_id,
         date_range=dr,
@@ -253,7 +270,15 @@ def cmd_report_membership(args, ctx) -> int:
         filters=[["is", "event:goal", ["members_modal_shown_manual"]]],
         limit=limit,
     )
-    placement = client.stats_query(placement_q)
+    placement_result: dict[str, Any]
+    if "members_modal_shown_manual" in funnels["missing_goals"]:
+        placement_result = {
+            "query": placement_q,
+            "response": None,
+            "warning": "The members_modal_shown_manual goal is not configured in Plausible.",
+        }
+    else:
+        placement_result = _breakdown_result(placement_q, client.stats_query(placement_q))
 
     project_cfg = ctx.get("project_cfg") or {}
     out_dir_str = args.out_dir or project_cfg.get("reports_out_dir")
@@ -261,19 +286,19 @@ def cmd_report_membership(args, ctx) -> int:
     if out_dir_str:
         out_dir = Path(str(out_dir_str)).expanduser().resolve()
         _write_breakdown_csv(out_dir / f"membership_goals_{days}d.csv", query=goals_q, response=goals)
-        _write_breakdown_csv(out_dir / f"members_modal_shown_manual_by_placement_{days}d.csv", query=placement_q, response=placement)
-        csv_files = [
-            str(out_dir / f"membership_goals_{days}d.csv"),
-            str(out_dir / f"members_modal_shown_manual_by_placement_{days}d.csv"),
-        ]
+        csv_files = [str(out_dir / f"membership_goals_{days}d.csv")]
+        if placement_result["response"] is not None:
+            placement_path = out_dir / f"members_modal_shown_manual_by_placement_{days}d.csv"
+            _write_breakdown_csv(placement_path, query=placement_q, response=placement_result["response"])
+            csv_files.append(str(placement_path))
 
     out = {
         "ok": True,
         "date_range": dr,
         "reports": {
             "membership_funnels": funnels,
-            "goals": {"query": goals_q, "response": goals},
-            "members_modal_shown_manual_by_placement": {"query": placement_q, "response": placement},
+            "goals": _breakdown_result(goals_q, goals),
+            "members_modal_shown_manual_by_placement": placement_result,
         },
         "csv_files": csv_files,
     }

@@ -7,7 +7,6 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
-
 _ALLOWED_QUERY_KEYS = {"site_id", "date_range", "metrics", "dimensions", "filters", "order_by", "include", "pagination"}
 _ALLOWED_INCLUDE_KEYS = {"imports", "time_labels", "total_rows"}
 _ALLOWED_PAGINATION_KEYS = {"limit", "offset"}
@@ -132,6 +131,35 @@ def merge_paginated_responses(first: dict[str, Any], parts: list[dict[str, Any]]
             merged_results.extend(r)
     merged["results"] = merged_results
     return merged
+
+
+def total_result_rows(response: dict[str, Any]) -> int | None:
+    meta = response.get("meta")
+    total = meta.get("total_rows") if isinstance(meta, dict) else None
+    return total if type(total) is int and total >= 0 else None
+
+
+def page_summary(
+    *,
+    rows: int,
+    offset: int,
+    limit: int,
+    total_rows: int | None,
+    last_page_rows: int,
+) -> dict[str, Any]:
+    next_offset = offset + rows
+    complete: bool | None
+    if total_rows is not None:
+        complete = next_offset >= total_rows
+    else:
+        complete = True if last_page_rows < limit else None
+    return {
+        "limit": limit,
+        "rows": rows,
+        "total_rows": total_rows,
+        "complete": complete,
+        "next_offset": next_offset if complete is not True else None,
+    }
 
 
 def date_range_pair_for_days(days: int) -> DateRangePair:

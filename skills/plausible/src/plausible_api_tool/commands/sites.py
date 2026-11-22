@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any
 
 from .. import __version__
-from ..plausible import PlausibleClient
 from ..output import write_json_file
+from ..plausible import PlausibleClient
 from ..recovery import build_inverse_recovery, build_irreversible_recovery
 
 
@@ -387,7 +387,33 @@ def cmd_site_update(args, ctx) -> int:
     verification: dict[str, Any]
     try:
         got = client.site_get(verify_site_id)
-        verification = {"ok": True, "site_id": verify_site_id, "response": got}
+        returned_site = got if isinstance(got, dict) else {}
+        observed = {"domain": returned_site.get("domain")}
+        expected: dict[str, Any] = {"domain": verify_site_id}
+        if tracker_cfg is not None:
+            returned_config = returned_site.get("tracker_script_configuration")
+            returned_config = returned_config if isinstance(returned_config, dict) else {}
+            for field, value in tracker_cfg.items():
+                name = f"tracker_script_configuration.{field}"
+                expected[name] = value
+                if field in returned_config:
+                    observed[name] = returned_config[field]
+        fields = {
+            name: {
+                "expected": value,
+                "actual": observed.get(name),
+                "confirmed": (
+                    name in observed and type(observed[name]) is type(value) and observed[name] == value
+                ),
+            }
+            for name, value in expected.items()
+        }
+        verification = {
+            "ok": all(field["confirmed"] for field in fields.values()),
+            "site_id": verify_site_id,
+            "fields": fields,
+            "response": got,
+        }
     except Exception as e:  # noqa: BLE001
         verification = {"ok": False, "site_id": verify_site_id, "error": str(e), "error_type": type(e).__name__}
     verified = bool(verification.get("ok"))
@@ -399,7 +425,7 @@ def cmd_site_update(args, ctx) -> int:
         "env_fingerprint": env_fingerprint,
         "command": "site update",
         "selector": selector,
-        "changed": True,
+        "changed": True if verified else None,
         "verification": verification,
         "diff_applied": [{"action": "plausible.sites.update", "updated": {"site_id": site_id, "new_domain": new_domain}}],
         "recovery": build_irreversible_recovery(),
@@ -414,7 +440,7 @@ def cmd_site_update(args, ctx) -> int:
     out = {
         "ok": True,
         "dry_run": False,
-        "changed": True,
+        "changed": True if verified else None,
         "verified": verified,
         "plan": plan,
         "receipt": receipt,

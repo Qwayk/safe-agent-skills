@@ -1,10 +1,10 @@
 # API coverage
 
-Plausible coverage shows exactly what this skill can do with sites, stats, goals, shared links, team members, and account settings. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Plausible coverage shows exactly what the shipped commands can do with sites, stats, goals, shared links, team members, and account settings. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
 
 Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
 
-A good first coverage check is: "Check whether this skill can report site stats, inspect goals, and show which Plausible account changes are covered."
+A good first coverage check is: "Check whether the shipped commands can report site stats, inspect goals, and show which Plausible account changes are covered."
 
 ## Coverage notes
 
@@ -48,13 +48,13 @@ Each row is intended to be specific enough to implement and test without re-read
 
 | Method | Path | Purpose | CLI | Safety | Verification | Tests |
 |---|---|---|---|---|---|---|
-| GET | `/api/health` | Basic availability check | `auth check` | Read-only | N/A | `tests/test_smoke.py` (construction); `auth` behavior covered via CLI contract tests |
+| GET | `/api/health` | Basic availability check | `auth check` | Read-only | N/A | `tests/test_stats_commands.py` |
 
 ### Stats API v2 (read-only)
 
 | Method | Path | Purpose | CLI | Safety | Verification | Tests |
 |---|---|---|---|---|---|---|
-| POST | `/api/v2/query` | Run Stats API v2 queries | `stats query` | Read-only | Response returned as-is | `tests/test_stats_commands.py`, `tests/test_cli_stats_validate_roundtrip.py` |
+| POST | `/api/v2/query` | Run Stats API v2 queries | `stats query` | Read-only | Returns valid Stats API rows and shows available page information | `tests/test_stats_commands.py`, `tests/test_cli_stats_validate_roundtrip.py` |
 
 ### Events API (write; irreversible)
 
@@ -86,7 +86,7 @@ Explicit refusals (by design):
 | GET | `/api/v1/sites/teams` | List teams | `site teams list` | Read-only | N/A | `tests/test_sites_commands.py` |
 | GET | `/api/v1/sites/:site_id` | Get site details | `site get [--site-id]` | Read-only | N/A | `tests/test_sites_commands.py` |
 | POST | `/api/v1/sites` | Create site | `site create` | Default refused without `--apply`; apply requires `--apply --yes` | Read-back: `GET /api/v1/sites/:site_id` | `tests/test_sites_commands.py` |
-| PUT | `/api/v1/sites/:site_id` | Update site (domain and/or tracker config) | `site update` | Default refused without `--apply`; apply requires `--apply --yes` | Read-back: `GET /api/v1/sites/:site_id` (new domain if changed) | `tests/test_sites_commands.py` |
+| PUT | `/api/v1/sites/:site_id` | Update site (domain and/or tracker config) | `site update` | Default refused without `--apply`; apply requires `--apply --yes` | Read-back: `GET /api/v1/sites/:site_id` and compare the requested domain and tracker settings | `tests/test_stats_commands.py` |
 | DELETE | `/api/v1/sites/:site_id` | Delete site (destructive) | `site delete` | Default refused without `--apply`; apply requires `--apply --yes --ack-irreversible` | Best-effort: confirm removed from `GET /api/v1/sites` | `tests/test_sites_commands.py` |
 | PUT | `/api/v1/sites/shared-links` | Find-or-create shared link (idempotent) | `site shared-links ensure` | Dry-run by default; apply requires `--apply --yes --ack-no-snapshot` | Read-back: repeat PUT (idempotent) | `tests/test_sites_commands.py` |
 | GET | `/api/v1/sites/goals` | List goals | `site goals list` | Read-only | N/A | `tests/test_sites_commands.py` |

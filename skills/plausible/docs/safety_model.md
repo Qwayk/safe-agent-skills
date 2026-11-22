@@ -45,6 +45,10 @@ Important detail:
   - `event send` (no API read for exact state)
   - `site shared-links ensure` (no API path to fetch prior state)
 
+## Check site changes
+
+After a site update, read the receipt's `verification.fields`. It lists each expected value, what Plausible returned, and whether it matched. A successful write reply can arrive before the read confirms the change. Check the site before trying again if the requested values have not been confirmed.
+
 ## Events API verification note
 
 Plausible's Events API does not provide a direct “read back this exact event” endpoint.

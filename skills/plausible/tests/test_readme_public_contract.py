@@ -1,76 +1,47 @@
 from __future__ import annotations
 
+import re
+import shlex
 import unittest
 from pathlib import Path
 
+from plausible_api_tool.cli import build_parser
+
+ROOT = Path(__file__).resolve().parents[1]
+
 
 class TestReadmePublicContract(unittest.TestCase):
-    def test_public_readme_opening_stays_user_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
+    def test_install_command_uses_public_slug(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        commands = re.findall(r"^npx skills add (\S+)", readme, re.MULTILINE)
+        self.assertEqual(commands, ["Qwayk/safe-agent-skills@plausible"])
 
-        self.assertTrue(text.startswith("# Plausible\n"))
-        self.assertNotIn("## Simplicity lock", text)
-        self.assertNotIn("# plausible-api-tool", text)
-        self.assertIn("Plausible is useful when you want privacy-friendly", text)
-        for stale_phrase in [
-            "Use this skill when",
-            "You can hand your agent jobs like",
-            "without guessing from raw docs",
-            "Read work stays simple",
-            "Riskier work slows down on purpose",
-        ]:
-            self.assertNotIn(stale_phrase, text)
+    def test_readme_guide_links_open(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        links = re.findall(r"\]\((docs/[^)]+)\)", readme)
+        self.assertTrue(links)
+        for link in links:
+            with self.subTest(link=link):
+                file, _, anchor = link.partition("#")
+                guide = ROOT / file
+                self.assertTrue(guide.is_file())
+                if anchor:
+                    headings = re.findall(r"^#{1,6} (.+)$", guide.read_text(encoding="utf-8"), re.MULTILINE)
+                    anchors = {re.sub(r"[^\w -]", "", heading.lower()).replace(" ", "-") for heading in headings}
+                    self.assertIn(anchor, anchors)
 
-        required_sections = [
-            "## Start here first",
-            "## What this skill helps with",
-            "## Install and first run",
-            "## How this skill stays safe",
-            "## What happens before live changes",
-        ]
-        for section in required_sections:
-            self.assertIn(section, text)
-
-    def test_helpful_docs_stay_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("## Helpful docs", text)
-        self.assertIn("[Browse all Plausible docs](docs/README.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-        self.assertIn("[Proof and verification](docs/proof.md)", text)
-        self.assertNotIn("- `docs/use_cases.md`", text)
-        self.assertNotIn("- `docs/onboarding.md`", text)
-
-    def test_start_here_section_stays_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("## Start here first", text)
-        self.assertIn("[What you can do with Plausible](docs/use_cases.md)", text)
-        self.assertIn("[Connect your Plausible account](docs/onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
-        self.assertIn("[Quickstart](docs/quickstart.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-
-    def test_quickstart_opens_with_human_links(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "quickstart.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do](use_cases.md)", text)
-        self.assertIn("[Connect your account](onboarding.md)", text)
-        self.assertNotIn("`docs/use_cases.md`", text)
-        self.assertNotIn("`docs/onboarding.md`", text)
-
-    def test_use_cases_stay_specific_and_human(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
-
-        self.assertIn("Plausible is useful when you want a clean answer", text)
-        self.assertIn("## Good questions to ask", text)
-        self.assertIn("## Everyday work this helps with", text)
-        self.assertIn("## What the agent should show you", text)
-        self.assertIn("## Good first path", text)
-        self.assertNotIn("Why this is powerful", text)
-        self.assertNotIn("Common use cases", text)
+    def test_quickstart_invokes_real_read_commands(self) -> None:
+        quickstart = (ROOT / "docs" / "quickstart.md").read_text(encoding="utf-8")
+        examples = re.findall(r"^plausible-api-tool (.+)$", quickstart, re.MULTILINE)
+        parser = build_parser()
+        checked = set()
+        for example in examples:
+            args = shlex.split(example)
+            if args == ["--version"]:
+                continue
+            with self.subTest(command=example):
+                options = parser.parse_args(args)
+                self.assertFalse(options.apply)
+                self.assertIn(options.cmd, {"auth", "stats"})
+                checked.add(options.cmd)
+        self.assertEqual(checked, {"auth", "stats"})

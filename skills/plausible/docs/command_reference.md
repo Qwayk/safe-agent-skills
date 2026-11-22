@@ -1,6 +1,6 @@
 # Command reference
 
-These commands cover Plausible sites, stats, goals, events, custom properties, and guarded writes. Confirm site ID and date range before reports or site changes.
+Find the command for the site and period you want. Check the approval flags before changing a site or sending an event.
 
 For the guided path, start with [What you can do with Plausible](use_cases.md), [Connect your Plausible account](onboarding.md), and [Quickstart](quickstart.md).
 
@@ -91,7 +91,9 @@ Before-state capture:
 ### Pagination note
 
 Stats API v2 uses the `pagination` object (`{"limit": 100, "offset": 0}`), not a top-level `limit`.
-This tool handles that for the built-in `goals` commands.
+Built-in breakdowns show `pagination.complete` and `pagination.next_offset`. A `null` value for `complete` means Plausible filled the page and gave no total. With `--all`, an early stop before Plausible's stated total returns a failure with the rows already received. A selected offset starts partway through the full result.
+
+For `stats query`, add `"include": {"total_rows": true}` to the query when you need Plausible's total. `stats validate` reads and checks your query file locally before you set up a key.
 
 ## Events (write; disabled by default)
 
@@ -155,9 +157,13 @@ Other Sites API writes:
 
 ## Reports (read-only)
 
-- Weekly snapshot:
+- Weekly traffic, sources and goals:
   - `python3 -m plausible_api_tool report weekly --days 7 --limit 50`
   - `python3 -m plausible_api_tool report weekly --days 7 --limit 50 --out-dir <PROJECT_DIR>/plausible-analytics/reports`
   - Or set a default export dir via `--config` using `reports_out_dir`
-- Membership snapshot:
+- Membership counts and missing goals:
   - `python3 -m plausible_api_tool report membership --days 30 --limit 50`
+
+## Where to find the code
+
+The CLI lives under `src/plausible_api_tool/`. `cli.py` defines commands and flags. `commands/` holds command behavior. `config.py` reads settings, and `plausible.py` and `http.py` send requests. `audit_log.py` records runs with secrets removed from error messages.

@@ -41,7 +41,17 @@ class PlausibleClient:
     def stats_query(self, query: dict[str, Any]) -> dict[str, Any]:
         headers = {**self._auth_headers(), "Content-Type": "application/json"}
         resp = self.http.request("POST", self._url("/api/v2/query"), headers=headers, json_body=query)
-        return resp.json()
+        result = resp.json()
+        if not isinstance(result, dict) or not isinstance(result.get("results"), list):
+            raise RuntimeError("Plausible did not return a Stats API results list.")
+        if any(
+            not isinstance(row, dict)
+            or not isinstance(row.get("dimensions"), list)
+            or not isinstance(row.get("metrics"), list)
+            for row in result["results"]
+        ):
+            raise RuntimeError("Plausible returned a Stats API row without dimensions or metrics.")
+        return result
 
     def send_event(self, payload: dict[str, Any], *, user_agent: str | None = None) -> dict[str, Any]:
         headers = {

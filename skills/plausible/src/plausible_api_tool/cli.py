@@ -100,7 +100,7 @@ def build_parser() -> argparse.ArgumentParser:
     pages_sub = pages.add_subparsers(dest="pages_cmd", required=True)
     pages_top = pages_sub.add_parser("top", help="Top pages by a metric")
     pages_top.add_argument("--metric", default="pageviews", help="Metric name (default: pageviews)")
-    pages_top.add_argument("--days", type=int, default=30, help="Lookback days (default: 30)")
+    pages_top.add_argument("--days", type=int, help="Lookback days (default: 30)")
     pages_top.add_argument("--date-range", default=None, help="Override Plausible date_range (e.g. 30d)")
     pages_top.add_argument("--limit", type=int, default=50, help="Rows per page (default: 50)")
     pages_top.add_argument("--offset", type=int, default=0, help="Pagination offset (default: 0)")
@@ -125,7 +125,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Dimension to break down by",
     )
     sources.add_argument("--metric", default="visitors", help="Metric to sort by (default: visitors)")
-    sources.add_argument("--days", type=int, default=30, help="Lookback days (default: 30)")
+    sources.add_argument("--days", type=int, help="Lookback days (default: 30)")
     sources.add_argument("--date-range", default=None, help="Override Plausible date_range (e.g. 30d)")
     sources.add_argument("--limit", type=int, default=50, help="Rows per page (default: 50)")
     sources.add_argument("--offset", type=int, default=0, help="Pagination offset (default: 0)")
@@ -134,7 +134,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     referrers = stats_sub.add_parser("referrers", help="Top referrers")
     referrers.add_argument("--metric", default="visitors", help="Metric to sort by (default: visitors)")
-    referrers.add_argument("--days", type=int, default=30, help="Lookback days (default: 30)")
+    referrers.add_argument("--days", type=int, help="Lookback days (default: 30)")
     referrers.add_argument("--date-range", default=None, help="Override Plausible date_range (e.g. 30d)")
     referrers.add_argument("--limit", type=int, default=50, help="Rows per page (default: 50)")
     referrers.add_argument("--offset", type=int, default=0, help="Pagination offset (default: 0)")
@@ -143,7 +143,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     entry_exit = stats_sub.add_parser("entry-exit", help="Entry/exit page breakdown")
     entry_exit.add_argument("--type", choices=("entry", "exit", "both"), default="both", help="Which breakdown to fetch")
-    entry_exit.add_argument("--days", type=int, default=30, help="Lookback days (default: 30)")
+    entry_exit.add_argument("--days", type=int, help="Lookback days (default: 30)")
     entry_exit.add_argument("--date-range", default=None, help="Override Plausible date_range (e.g. 30d)")
     entry_exit.add_argument("--limit", type=int, default=50, help="Rows per page (default: 50)")
     entry_exit.add_argument("--offset", type=int, default=0, help="Pagination offset (default: 0)")
@@ -152,7 +152,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     devices = stats_sub.add_parser("devices", help="Device/browser/OS breakdown")
     devices.add_argument("--dimension", choices=("visit:device", "visit:browser", "visit:os"), default="visit:device")
-    devices.add_argument("--days", type=int, default=30, help="Lookback days (default: 30)")
+    devices.add_argument("--days", type=int, help="Lookback days (default: 30)")
     devices.add_argument("--date-range", default=None, help="Override Plausible date_range (e.g. 30d)")
     devices.add_argument("--limit", type=int, default=50, help="Rows per page (default: 50)")
     devices.add_argument("--offset", type=int, default=0, help="Pagination offset (default: 0)")
@@ -188,7 +188,7 @@ def build_parser() -> argparse.ArgumentParser:
     goal_breakdown = goal_sub.add_parser("breakdown", help="Break down a goal by a custom property")
     goal_breakdown.add_argument("--goal", required=True, help="Goal display name (exact)")
     goal_breakdown.add_argument("--prop", required=True, help="Custom prop name (without event:props:)")
-    goal_breakdown.add_argument("--days", type=int, default=30, help="Lookback days (default: 30)")
+    goal_breakdown.add_argument("--days", type=int, help="Lookback days (default: 30)")
     goal_breakdown.add_argument("--date-range", default=None, help="Override Plausible date_range (e.g. 30d)")
     goal_breakdown.add_argument("--limit", type=int, default=50, help="Rows per page (default: 50)")
     goal_breakdown.add_argument("--offset", type=int, default=0, help="Pagination offset (default: 0)")
@@ -197,7 +197,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     goal_pages = goal_sub.add_parser("pages", help="Which pages generate a goal")
     goal_pages.add_argument("--goal", required=True, help="Goal display name (exact)")
-    goal_pages.add_argument("--days", type=int, default=30, help="Lookback days (default: 30)")
+    goal_pages.add_argument("--days", type=int, help="Lookback days (default: 30)")
     goal_pages.add_argument("--date-range", default=None, help="Override Plausible date_range (e.g. 30d)")
     goal_pages.add_argument("--limit", type=int, default=50, help="Rows per page (default: 50)")
     goal_pages.add_argument("--offset", type=int, default=0, help="Pagination offset (default: 0)")
@@ -207,7 +207,7 @@ def build_parser() -> argparse.ArgumentParser:
     funnel = stats_sub.add_parser("funnel", help="Funnel helpers")
     funnel_sub = funnel.add_subparsers(dest="funnel_cmd", required=True)
     funnel_members = funnel_sub.add_parser("members", help="Membership funnel summary (common membership goals)")
-    funnel_members.add_argument("--days", type=int, default=30, help="Lookback days (default: 30)")
+    funnel_members.add_argument("--days", type=int, help="Lookback days (default: 30)")
     funnel_members.add_argument("--date-range", default=None, help="Override Plausible date_range (e.g. 30d)")
     funnel_members.set_defaults(func=stats_cmd.cmd_stats_funnel_members)
 
@@ -371,7 +371,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     report = sub.add_parser("report", help="Opinionated read-only reports (Stats API)")
     report_sub = report.add_subparsers(dest="report_cmd", required=True)
-    weekly = report_sub.add_parser("weekly", help="Weekly snapshot (top pages/sources/goals + membership funnel)")
+    weekly = report_sub.add_parser("weekly", help="Weekly traffic report (top pages, sources and goals)")
     weekly.add_argument("--days", type=int, default=7, help="Lookback days (default: 7)")
     weekly.add_argument("--limit", type=int, default=50, help="Rows per breakdown (default: 50)")
     weekly.add_argument("--out-dir", default=None, help="Optional output directory for CSV exports")
@@ -407,6 +407,9 @@ def main(argv: list[str]) -> int:
     audit = AuditLogger(path=args.log_file, enabled=bool(args.log_file))
 
     try:
+        if args.func is stats_cmd.cmd_stats_validate:
+            return stats_cmd.cmd_stats_validate(args, {"out": out})
+
         if bool(getattr(args, "version", False)):
             if _argv_wants_json(argv):
                 out.emit({"ok": True, "tool": "plausible-api-tool", "version": __version__})

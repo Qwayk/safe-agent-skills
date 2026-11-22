@@ -10,10 +10,13 @@ from ..stats_utils import (
     ensure_site_id,
     load_query_from_sources,
     merge_paginated_responses,
+    page_summary,
     set_include_total_rows,
     set_pagination,
+    total_result_rows,
     validate_query,
 )
+from .report import membership_funnels
 
 
 def _date_range_from_args(*, days: int | None, date_range: str | None, default_days: int) -> str:
@@ -37,53 +40,40 @@ def _paginate_if_needed(
     if offset < 0:
         raise RuntimeError("--offset must be >= 0")
 
-    if not all_rows:
-        q = set_pagination(query, limit=limit, offset=offset)
-        resp = client.stats_query(q)
-        return resp, {"all": False, "limit": limit, "offset": offset}
-
-    # Auto-loop pagination until we reach total_rows (when available), otherwise until a short page.
-    q = set_include_total_rows(query, True)
-    page_limit = min(int(limit), 10000)
-    q = set_pagination(q, limit=page_limit, offset=int(offset))
-
-    first = client.stats_query(q)
+    page_limit = min(limit, 10000)
+    query = set_include_total_rows(query, True)
+    first = client.stats_query(set_pagination(query, limit=page_limit, offset=offset))
+    total_rows = total_result_rows(first)
+    row_count = len(first["results"])
+    last_page_rows = row_count
     parts: list[dict[str, Any]] = []
 
-    total_rows = None
-    meta = first.get("meta")
-    if isinstance(meta, dict) and isinstance(meta.get("total_rows"), int):
-        total_rows = int(meta["total_rows"])
-
-    got = len(first.get("results") or []) if isinstance(first.get("results"), list) else 0
-    next_offset = int(offset) + page_limit
-
-    while True:
-        if total_rows is not None and next_offset >= total_rows:
-            break
-        if total_rows is None and got % page_limit != 0:
+    while all_rows and last_page_rows > 0:
+        if total_rows is not None:
+            if offset + row_count >= total_rows:
+                break
+        elif last_page_rows < page_limit:
             break
 
-        qn = set_pagination(q, limit=page_limit, offset=next_offset)
-        part = client.stats_query(qn)
+        part = client.stats_query(set_pagination(query, limit=page_limit, offset=offset + row_count))
         parts.append(part)
+        last_page_rows = len(part["results"])
+        row_count += last_page_rows
+        if total_rows is None:
+            total_rows = total_result_rows(part)
 
-        part_results_len = len(part.get("results") or []) if isinstance(part.get("results"), list) else 0
-        got += part_results_len
-        next_offset += page_limit
-        if part_results_len < page_limit:
-            break
+    info = page_summary(
+        rows=row_count, offset=offset, limit=page_limit, total_rows=total_rows, last_page_rows=last_page_rows,
+    )
+    info.update({"all": all_rows, "pages": 1 + len(parts)})
+    info["offset_start" if all_rows else "offset"] = offset
+    if all_rows and info["complete"] is not True:
+        info["reason"] = "Plausible stopped returning rows before the total it reported."
+    return (merge_paginated_responses(first, parts) if all_rows else first), info
 
-    merged = merge_paginated_responses(first, parts)
-    info = {
-        "all": True,
-        "limit": page_limit,
-        "offset_start": int(offset),
-        "pages": 1 + len(parts),
-        "rows": len(merged.get("results") or []) if isinstance(merged.get("results"), list) else None,
-        "total_rows": total_rows,
-    }
-    return merged, info
+
+def _page_ok(info: dict[str, Any]) -> bool:
+    return not info["all"] or info["complete"] is True
 
 
 def _breakdown_query(
@@ -116,6 +106,17 @@ def cmd_stats_query(args, ctx) -> int:
 
     resp = client.stats_query(query)
     out = {"ok": True, "query": query, "response": resp}
+    pagination = query.get("pagination") or {}
+    total_rows = total_result_rows(resp)
+    if pagination or total_rows is not None:
+        rows = len(resp["results"])
+        out["pagination"] = page_summary(
+            rows=rows,
+            offset=int(pagination.get("offset", 0)),
+            limit=int(pagination.get("limit", 10000)),
+            total_rows=total_rows,
+            last_page_rows=rows,
+        )
     ctx["audit"].write("stats.query", {"query": query})
     ctx["out"].emit(out)
     return 0
@@ -149,10 +150,10 @@ def cmd_stats_pages_top(args, ctx) -> int:
     )
 
     resp, page_info = _paginate_if_needed(client, query, limit=int(args.limit), offset=int(args.offset), all_rows=bool(args.all))
-    out = {"ok": True, "query": query, "pagination": page_info, "response": resp}
+    out = {"ok": _page_ok(page_info), "query": query, "pagination": page_info, "response": resp}
     ctx["audit"].write("stats.pages_top", {"query": query, "pagination": page_info})
     ctx["out"].emit(out)
-    return 0
+    return 0 if out["ok"] else 1
 
 
 def cmd_stats_sources(args, ctx) -> int:
@@ -170,10 +171,10 @@ def cmd_stats_sources(args, ctx) -> int:
         order_by_metric=metric,
     )
     resp, page_info = _paginate_if_needed(client, query, limit=int(args.limit), offset=int(args.offset), all_rows=bool(args.all))
-    out = {"ok": True, "query": query, "pagination": page_info, "response": resp}
+    out = {"ok": _page_ok(page_info), "query": query, "pagination": page_info, "response": resp}
     ctx["audit"].write("stats.sources", {"query": query, "pagination": page_info})
     ctx["out"].emit(out)
-    return 0
+    return 0 if out["ok"] else 1
 
 
 def cmd_stats_referrers(args, ctx) -> int:
@@ -189,10 +190,10 @@ def cmd_stats_referrers(args, ctx) -> int:
         order_by_metric=metric,
     )
     resp, page_info = _paginate_if_needed(client, query, limit=int(args.limit), offset=int(args.offset), all_rows=bool(args.all))
-    out = {"ok": True, "query": query, "pagination": page_info, "response": resp}
+    out = {"ok": _page_ok(page_info), "query": query, "pagination": page_info, "response": resp}
     ctx["audit"].write("stats.referrers", {"query": query, "pagination": page_info})
     ctx["out"].emit(out)
-    return 0
+    return 0 if out["ok"] else 1
 
 
 def cmd_stats_entry_exit(args, ctx) -> int:
@@ -222,9 +223,10 @@ def cmd_stats_entry_exit(args, ctx) -> int:
         q, page, resp = run("visit:exit_page")
         out["exit"] = {"query": q, "pagination": page, "response": resp}
 
+    out["ok"] = all(_page_ok(out[key]["pagination"]) for key in ("entry", "exit") if key in out)
     ctx["audit"].write("stats.entry_exit", {"type": which, "date_range": dr})
     ctx["out"].emit(out)
-    return 0
+    return 0 if out["ok"] else 1
 
 
 def cmd_stats_devices(args, ctx) -> int:
@@ -240,10 +242,10 @@ def cmd_stats_devices(args, ctx) -> int:
         order_by_metric="visits",
     )
     resp, page_info = _paginate_if_needed(client, query, limit=int(args.limit), offset=int(args.offset), all_rows=bool(args.all))
-    out = {"ok": True, "query": query, "pagination": page_info, "response": resp}
+    out = {"ok": _page_ok(page_info), "query": query, "pagination": page_info, "response": resp}
     ctx["audit"].write("stats.devices", {"query": query, "pagination": page_info})
     ctx["out"].emit(out)
-    return 0
+    return 0 if out["ok"] else 1
 
 
 def cmd_stats_goals_list(args, ctx) -> int:
@@ -258,10 +260,10 @@ def cmd_stats_goals_list(args, ctx) -> int:
         order_by_metric="events",
     )
     resp, page_info = _paginate_if_needed(client, query, limit=int(args.limit), offset=int(args.offset), all_rows=bool(args.all))
-    out = {"ok": True, "query": query, "pagination": page_info, "response": resp}
+    out = {"ok": _page_ok(page_info), "query": query, "pagination": page_info, "response": resp}
     ctx["audit"].write("stats.goals_list", {"query": query, "pagination": page_info})
     ctx["out"].emit(out)
-    return 0
+    return 0 if out["ok"] else 1
 
 
 def cmd_stats_goals_timeseries(args, ctx) -> int:
@@ -297,10 +299,10 @@ def cmd_stats_goals_breakdown(args, ctx) -> int:
         filters=[["is", "event:goal", [args.goal]]],
     )
     resp, page_info = _paginate_if_needed(client, query, limit=int(args.limit), offset=int(args.offset), all_rows=bool(args.all))
-    out = {"ok": True, "query": query, "pagination": page_info, "response": resp}
+    out = {"ok": _page_ok(page_info), "query": query, "pagination": page_info, "response": resp}
     ctx["audit"].write("stats.goals_breakdown", {"query": query, "pagination": page_info})
     ctx["out"].emit(out)
-    return 0
+    return 0 if out["ok"] else 1
 
 
 def cmd_stats_goal_breakdown(args, ctx) -> int:
@@ -318,10 +320,10 @@ def cmd_stats_goal_breakdown(args, ctx) -> int:
         filters=[["is", "event:goal", [args.goal]]],
     )
     resp, page_info = _paginate_if_needed(client, query, limit=int(args.limit), offset=int(args.offset), all_rows=bool(args.all))
-    out = {"ok": True, "query": query, "pagination": page_info, "response": resp}
+    out = {"ok": _page_ok(page_info), "query": query, "pagination": page_info, "response": resp}
     ctx["audit"].write("stats.goal_breakdown", {"query": query, "pagination": page_info})
     ctx["out"].emit(out)
-    return 0
+    return 0 if out["ok"] else 1
 
 
 def cmd_stats_goal_pages(args, ctx) -> int:
@@ -337,118 +339,19 @@ def cmd_stats_goal_pages(args, ctx) -> int:
         filters=[["is", "event:goal", [args.goal]]],
     )
     resp, page_info = _paginate_if_needed(client, query, limit=int(args.limit), offset=int(args.offset), all_rows=bool(args.all))
-    out = {"ok": True, "query": query, "pagination": page_info, "response": resp}
+    out = {"ok": _page_ok(page_info), "query": query, "pagination": page_info, "response": resp}
     ctx["audit"].write("stats.goal_pages", {"query": query, "pagination": page_info})
     ctx["out"].emit(out)
-    return 0
-
-
-def _goal_aggregate(
-    client: PlausibleClient,
-    *,
-    site_id: str,
-    date_range: str,
-    goal: str,
-    extra_filters: list[Any] | None = None,
-) -> dict[str, Any]:
-    q: dict[str, Any] = {
-        "site_id": site_id,
-        "date_range": date_range,
-        "metrics": ["events", "visitors", "conversion_rate"],
-        "filters": [["is", "event:goal", [goal]]] + (list(extra_filters or [])),
-    }
-    try:
-        return {"goal": goal, "query": q, "response": client.stats_query(q), "missing_goal": False}
-    except RuntimeError as e:
-        msg = str(e)
-        if f"The goal `{goal}` is not configured" in msg:
-            return {
-                "goal": goal,
-                "query": q,
-                "response": {"meta": {}, "query": q, "results": [{"dimensions": [], "metrics": [0, 0, None]}]},
-                "missing_goal": True,
-                "warning": f"Goal not configured in Plausible: {goal}",
-            }
-        raise
+    return 0 if out["ok"] else 1
 
 
 def cmd_stats_funnel_members(args, ctx) -> int:
     cfg = ctx["cfg"]
     client = PlausibleClient(cfg=cfg, http=ctx["http"])
     dr = _date_range_from_args(days=args.days, date_range=args.date_range, default_days=30)
-
-    # Ordered chains (best-effort; these are not strict subsets, but they are still useful signals).
-    #
-    # Important: submit/email/confirmed are tracked as a single goal with a `trigger` prop, not separate goals.
-    # We split by `event:props:trigger` here so the funnel is reportable without extra goal setup.
-    funnels: dict[str, list[dict[str, Any]]] = {
-        "popup_auto": [
-            {"id": "members_modal_shown_auto", "goal": "members_modal_shown_auto"},
-            {"id": "members_modal_submit (auto)", "goal": "members_modal_submit", "filters": [["is", "event:props:trigger", ["auto"]]]},
-            {"id": "members_magic_link_sent (auto)", "goal": "members_magic_link_sent", "filters": [["is", "event:props:trigger", ["auto"]]]},
-            {"id": "members_confirmed (auto)", "goal": "members_confirmed", "filters": [["is", "event:props:trigger", ["auto"]]]},
-        ],
-        "popup_manual": [
-            {"id": "members_modal_shown_manual", "goal": "members_modal_shown_manual"},
-            {"id": "members_modal_submit (manual)", "goal": "members_modal_submit", "filters": [["is", "event:props:trigger", ["manual"]]]},
-            {"id": "members_magic_link_sent (manual)", "goal": "members_magic_link_sent", "filters": [["is", "event:props:trigger", ["manual"]]]},
-            {"id": "members_confirmed (manual)", "goal": "members_confirmed", "filters": [["is", "event:props:trigger", ["manual"]]]},
-        ],
-        "member_gate": [
-            {"id": "member_gate_shown", "goal": "member_gate_shown"},
-            {"id": "member_gate_cta_click", "goal": "member_gate_cta_click"},
-        ],
-        "footer_newsletter": [
-            {"id": "footer_signup_submit", "goal": "footer_signup_submit"},
-            {"id": "footer_signup_success", "goal": "footer_signup_success"},
-        ],
-    }
-
-    cache: dict[str, dict[str, Any]] = {}
-
-    def get_step_row(step: dict[str, Any]) -> dict[str, Any]:
-        goal = str(step["goal"])
-        extra_filters = step.get("filters") if isinstance(step.get("filters"), list) else None
-        cache_key = f"{goal}:{extra_filters!r}"
-        if cache_key not in cache:
-            cache[cache_key] = _goal_aggregate(client, site_id=cfg.site_id, date_range=dr, goal=goal, extra_filters=extra_filters)
-        return cache[cache_key]
-
-    missing_goals: list[str] = []
-    summaries: dict[str, Any] = {}
-    for name, chain in funnels.items():
-        steps = []
-        for step in chain:
-            row = get_step_row(step)
-            if bool(row.get("missing_goal")):
-                missing_goals.append(str(step.get("goal")))
-
-            events = 0
-            results = row.get("response", {}).get("results") if isinstance(row.get("response"), dict) else None
-            if isinstance(results, list) and results and isinstance(results[0], dict):
-                metrics = results[0].get("metrics")
-                if isinstance(metrics, list) and metrics and isinstance(metrics[0], (int, float)):
-                    events = int(metrics[0])
-
-            steps.append({"goal": str(step.get("id") or step.get("goal")), "events": events, "raw": row})
-
-        drops = []
-        for i in range(1, len(steps)):
-            prev = steps[i - 1]["events"]
-            cur = steps[i]["events"]
-            drop = max(prev - cur, 0)
-            ratio = (cur / prev) if prev > 0 else None
-            drops.append(
-                {
-                    "from": steps[i - 1]["goal"],
-                    "to": steps[i]["goal"],
-                    "drop_events": drop,
-                    "step_ratio": ratio,
-                }
-            )
-        summaries[name] = {"steps": steps, "drop_off": drops}
-
-    out = {"ok": True, "date_range": dr, "funnels": summaries, "missing_goals": sorted(set(missing_goals))}
+    funnels = membership_funnels(client, site_id=cfg.site_id, date_range=dr)
+    missing_goals = funnels.pop("missing_goals")
+    out = {"ok": True, "date_range": dr, "funnels": funnels, "missing_goals": missing_goals}
     ctx["audit"].write("stats.funnel_members", {"date_range": dr})
     ctx["out"].emit(out)
     return 0
