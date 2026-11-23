@@ -1,18 +1,9 @@
-# Architecture
+# Where the code lives
 
-Qdrant Cloud is built as a small command-line tool for clusters, backups, API keys, cloud accounts, and vector database resources. The architecture is intentionally plain: commands parse the user request, configuration loads only the needed account settings, the client layer talks to the API, and the output layer returns one predictable JSON result.
+- `cli.py` reads arguments and starts the command. `config.py` reads the settings.
+- `operations_v1.py` lists the commands from Qdrant’s pinned API definitions.
+- `commands/operations.py` builds plans, checks approvals and records results.
+- `cloud_http.py` and `http.py` send requests and check replies.
+- `runs.py` and `audit_log.py` write local run history. `json_files.py` reads and writes plans and receipts.
 
-This matters when an agent is using the skill for real work. You can see where credentials are loaded, where HTTP requests happen, where local plans or receipts are saved, and where safety checks stop a risky action before it reaches Qdrant Cloud.
-
-A good architecture check is: "Show me which layer handles configuration, which layer sends the API request, and where a plan or receipt would be saved for Qdrant Cloud."
-
-## Runtime layers
-
-- `cli.py`: argument parsing + shared flags
-- `commands/*`: user-facing verbs
-- `config.py`: `.env` parsing and validation
-- `http.py`: HTTP client wrapper around `requests`
-- `audit_log.py`: optional JSONL audit events (secrets redacted)
-- `runs.py`: local run artifacts + history index (`.state/runs/`)
-- `errors.py`: consistent error taxonomy (`ValidationError`, `SafetyError`, `NotSupportedError`)
-- `json_files.py`: safe JSON read/write helpers for plan/refusal/receipt files
+[Command list](official_commands_v1.txt) · [What the tests cover](proof.md)

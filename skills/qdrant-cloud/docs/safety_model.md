@@ -1,71 +1,20 @@
-# Safety model
+# Approve a change or restore
 
-Qdrant Cloud can touch clusters, backups, API keys, cloud accounts, and vector database resources, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Use `--live` only after the user approves access to Qdrant. Listing resources and getting a price quote can run with live access. Every change starts with a dry run. Save its plan with `--plan-out` and show the user the exact target, request, likely effect and recovery options.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## Send the approved request
 
-A good safety ask is: "Read the cluster or backup state first, then review the plan before keys, backups, restores, cluster changes, or deletes."
+Use `--live --apply --plan-in plan.json` with the same API address, key, target and request. Make and review a new plan if any of those changed, if the plan was made without a key, or if it predates these checks.
 
-## Core safety rules
+- Use `--yes` for destructive changes and actions that can affect spending.
+- Use `--ack-irreversible` for deletes and restores over an existing cluster.
+- Use `--ack-spend-money` for payment or billing changes and actions that can affect costs. Examples include creating or resizing clusters, taking backups or setting up a schedule, and restoring a cluster to capacity it had at backup time. Show the relevant cost before approval.
+- Use `--ack-no-snapshot` for ordinary changes where the tool has no saved before-state or backup to restore. The three Qdrant recovery commands use their own backup and restore steps.
 
-The safest first step is a simple live inventory read like account, cluster, or backup review before you plan any change.
+## Review a backup or restore
 
-## What stays simple
+Check the account, cluster, backup ID and backup time. Restoring over a cluster takes it offline and can discard data written after the backup. A new cluster from a backup gives you a separate copy and can add cost. [Qdrant’s backup guide](https://qdrant.tech/documentation/cloud/backups/)
 
-- offline config checks
-- live account reads
-- live cluster and backup reads
-- live billing, IAM, and monitoring reads
+After sending a restore, use the receipt’s `list-backup-restores` command and look for a new entry for that backup around the request time. Check whether Qdrant reports that the job is running, succeeded or failed. A reply to the request alone only shows what Qdrant accepted. If the reply was lost or an error occurred, check the result in Qdrant before trying the change again. The tool sends writes once per apply.
 
-Those flows still need the right API key, but they do not change Qdrant Cloud resources.
-
-## What needs extra care
-
-Current ordinary writes are still plan-first because many operations do not have saved before-state or provider backup capture yet.
-
-That means:
-
-- nothing reaches the real API unless you add `--live`
-- the default path for a write is a dry-run plan
-- confirmed apply needs `--live --apply`
-- higher-risk work can also need `--yes`
-- destructive work can also need `--ack-irreversible`
-- billing or payment work can also need `--ack-spend-money`
-- ordinary writes without saved before-state or provider backup also need explicit no-snapshot approval before Qdrant Cloud HTTP
-
-## What this skill does not promise
-
-- no generic rollback
-- no hidden network calls
-- no automatic restore for ordinary writes
-- no saved before-state for every write family
-
-The tool should say those limits plainly before any live write is allowed.
-
-## The narrow recovery exception
-
-These workflows are different because they are already explicit provider recovery paths:
-
-- `create-backup`
-- `restore-backup`
-- `create-cluster-from-backup`
-
-They still need the normal gates, but they are not the same as pretending a normal write has automatic rollback.
-
-## Local files and proof
-
-This skill can save:
-
-- dry-run plans with `--plan-out`
-- provider backup or restore receipts with `--receipt-out`
-- local run history under `.state/runs`
-
-Those files are meant to help review what happened later. They must not contain secrets.
-
-## Recommended workflow with an AI agent
-
-1. Start with a live read that proves the account and target IDs are correct.
-2. If you need a change, review the dry-run plan first.
-3. Check whether the action also needs destructive, spend, or no-snapshot approval.
-4. Keep provider backup and restore workflows separate from ordinary writes.
-5. Save the plan, refusal, or receipt when you want an audit trail.
+Keep plans, receipts, request files and run history private. Check what changed and get approval for any separate recovery action.

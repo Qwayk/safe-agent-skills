@@ -1,81 +1,50 @@
 from __future__ import annotations
 
+import os
+import shlex
+import sys
 from pathlib import Path
 
-
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
+from ..config import _get, _parse_env_file
 
 
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+def _create_settings(path: Path) -> bool:
+    if path.exists():
+        return False
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError:
+        return False
+    with os.fdopen(fd, "w", encoding="utf-8") as file:
+        file.write("# Keep this file private. Add your Cloud Management Key.\nQDRANT_CLOUD_API_KEY=\n")
+    return True
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
-    out = ctx["out"]
-    env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
-
-    env_path = Path(env_file)
-    env_created = False
-
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
-        else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
-
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "QDRANT_CLOUD_API_KEY"):
-        missing.append("QDRANT_CLOUD_API_KEY")
-
-    steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Open .env and fill the required values:",
-        "  - QDRANT_CLOUD_API_KEY=<your Qdrant Cloud API key>",
-        "  - QDRANT_CLOUD_API_BASE_URL=https://api.cloud.qdrant.io  (optional override)",
-        "Run: qdrant-cloud-api-tool --output json auth check",
-    ]
-
-    payload = {
-        "ok": True,
-        "onboarding": {
-            "env_file": env_file,
-            "env_created": env_created,
-            "missing": missing,
-            "next_command": "qdrant-cloud-api-tool --output json auth check",
-            "steps": steps,
-        },
-    }
-
-    if str(getattr(args, "output", "json")) == "json":
-        out.emit(payload)
+    path = Path(ctx["env_file"]).expanduser()
+    created = not bool(getattr(args, "no_write_env", False)) and _create_settings(path)
+    missing = [] if _get(_parse_env_file(path), "QDRANT_CLOUD_API_KEY") else ["QDRANT_CLOUD_API_KEY"]
+    launcher = Path(sys.argv[0])
+    entrypoint = shlex.quote(str(launcher.absolute())) if launcher.name == "qdrant-cloud-api-tool" else "qdrant-cloud-api-tool"
+    command = f"{entrypoint} --output json --env-file {shlex.quote(str(path))}"
+    auth = f"{command} auth check"
+    first_read = f"{command} --live account-v1 list-accounts"
+    steps = []
+    if missing:
+        steps.append(f"Set QDRANT_CLOUD_API_KEY in {path} or in your shell. Keep it out of chat and Git.")
+    steps.extend([f"Check the local settings with {auth}", f"List accounts when live access is approved with {first_read}"])
+    if getattr(args, "output", "json") == "json":
+        ctx["out"].emit({
+            "ok": True,
+            "onboarding": {
+                "env_file": str(path),
+                "env_created": created,
+                "missing": missing,
+                "next_command": auth,
+                "steps": steps,
+            },
+        })
     else:
-        print("To connect this tool to your API, do this once:")
-        for i, s in enumerate(steps, start=1):
-            print(f"{i}. {s}")
-        if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        print("")
-        print("Next: qdrant-cloud-api-tool --output json auth check")
+        print("\n".join(steps))
     return 0

@@ -1,16 +1,12 @@
-# API coverage
+# Qdrant Cloud API coverage
 
-Qdrant Cloud coverage shows exactly what this skill can do with clusters, backups, API keys, cloud accounts, and vector database resources. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+The tool has 118 commands from the pinned Cloud management API definitions. The original mapping was checked March 15, 2026 at 11:14 UTC. See [the pinned commit](references.md) and the [command list](official_commands_v1.txt).
 
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+## November 23, 2026 comparison
 
-A good first coverage check is: "Check whether this skill can inspect clusters, backups, and API keys, then show which cloud actions need a reviewed plan."
+Qdrant’s newer Cloud management definitions list 168 REST routes. The comparison found 58 new or changed entries and eight entries from the pinned copy that are absent from the newer list. Those eight cover seven older serverless collection and key routes and `GET /api/ui/v1/feature-flags`. This tool still ships the pinned command list. Check the newer Qdrant definitions before relying on an older route.
 
-## Coverage notes
-
-Last audited (UTC): 2026-03-15 11:14 UTC
-100% coverage definition: every RPC listed in `docs/official_rpcs_v1.txt` has a first-class CLI command.
-Coverage count: **118 RPCs**.
+[Compared Cloud management definitions](https://github.com/qdrant/qdrant-cloud-public-api/tree/b2f868851ae970ee6fd30fa78d27ee77a946c7e7/proto/qdrant/cloud)
 
 ## Mapping (RPC → CLI)
 

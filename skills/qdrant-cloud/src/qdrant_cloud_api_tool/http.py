@@ -67,6 +67,7 @@ class HttpClient:
                     json=json_body,
                     data=data,
                     timeout=self._timeout_s,
+                    allow_redirects=method.upper() == "GET",
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
@@ -82,17 +83,14 @@ class HttpClient:
             if self._verbose:
                 print(f"[http] {method} {resp.url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
-            if resp.status_code < 400:
-                return HttpResponse(
-                    status=resp.status_code,
-                    headers={k.lower(): v for k, v in resp.headers.items()},
-                    body=resp.content,
-                    url=resp.url,
-                )
-
             if attempt <= retries and resp.status_code in retry_on:
                 time.sleep(min(2**attempt, 10))
                 continue
 
-            raise RuntimeError(f"HTTP {resp.status_code} for {method} {resp.url}\n{resp.text}")
+            return HttpResponse(
+                status=resp.status_code,
+                headers={k.lower(): v for k, v in resp.headers.items()},
+                body=resp.content,
+                url=resp.url,
+            )
 

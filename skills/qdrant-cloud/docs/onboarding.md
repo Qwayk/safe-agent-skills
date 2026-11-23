@@ -1,69 +1,30 @@
 # Connect your Qdrant Cloud account
 
-Qdrant Cloud needs a local management API key before an agent can inspect accounts, clusters, releases, backups, and infrastructure details.
+Get a Cloud Management Key from Access Management in the Qdrant Cloud Console. [Qdrant Cloud API setup](https://qdrant.tech/documentation/cloud-api/)
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+Open the [tool’s source folder](https://github.com/Qwayk/safe-agent-skills/tree/main/skills/qdrant-cloud). From that folder, install the CLI with Python 3.12 or later and create your local settings file:
 
-After setup, start with account and cluster inventory before asking for backup, restore, or infrastructure changes.
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e .
+.venv/bin/qdrant-cloud-api-tool onboarding
+```
 
-## What you need
+Put the key in the file that setup shows. Keep the file and key out of chat and Git. Keys can contain characters such as `|`. Put single quotes around the value when your shell will read the file:
 
-- A Qdrant Cloud management API key.
-- The account ID for most real account, cluster, IAM, billing, or backup work.
-- Cluster IDs, backup IDs, or other resource IDs when you move past the first inventory checks.
-
-## Step 1. Create the local `.env` file
-
-In the tool folder:
-
-1. Copy `.env.example` to `.env`.
-2. Add `QDRANT_CLOUD_API_KEY`.
-3. If the key contains shell-special characters like `|`, wrap it in single quotes.
-4. If your real env file lives elsewhere, plan to use `--env-file /full/path/to/.env`.
-
-Example:
-
-```env
+```dotenv
 QDRANT_CLOUD_API_KEY='your_real_key_here'
 ```
 
-## Step 2. Check optional settings only if you need them
+For a different file, put `--env-file "path/to/qdrant.env"` before `onboarding`. The tool creates a private starter file if it is missing and shows both commands with that path. Use `onboarding --no-write-env` to see the setup steps without creating a file.
 
-Most people can leave the defaults alone.
+`auth check` checks the local settings. When you approve live access, `--live auth check` checks the key against Qdrant, and `--live account-v1 list-accounts` lists the accounts the key can access. The first account and cluster reads are in the [quickstart](quickstart.md).
 
-Optional settings:
+## Settings and common problems
 
-- `QDRANT_CLOUD_API_BASE_URL`
-- `QDRANT_CLOUD_TIMEOUT_S`
-
-You only need those if your environment requires a different base URL or timeout.
-
-## Step 3. Run the first safe checks
-
-These are the best first commands:
-
-```bash
-qdrant-cloud-api-tool --output json --version
-qdrant-cloud-api-tool --output json auth check
-qdrant-cloud-api-tool --output json --live auth check
-qdrant-cloud-api-tool --output json --live account-v1 list-accounts
-```
-
-The offline `auth check` confirms config shape. The `--live` checks confirm that the key works against the real API.
-
-## What to ask your agent next
-
-- "Confirm the Qdrant Cloud skill is connected, then list my accounts and clusters."
-- "Show me backups, backup schedules, and cluster recovery options for this account."
-- "Preview this cluster or billing change and tell me what approval it needs before applying it."
-
-## If something fails
-
-The most common causes are:
-
-- the key is missing or incorrect
-- the wrong env file is being used
-- the API key needs different account access
-- `--live` was missing on a real API read
-
-Use [Troubleshooting](troubleshooting.md) if the live auth check or account list fails.
+- A value in your shell takes priority over the same setting in the file.
+- The default API address is `https://api.cloud.qdrant.io`. Set `QDRANT_CLOUD_API_BASE_URL` only when you need a different address, and use a test key for a local test server.
+- The default timeout is 30 seconds. Set `QDRANT_CLOUD_TIMEOUT_S` or pass `--timeout-s` for one command.
+- For a rejected key, check the file you selected and the key’s account access. The Cloud API uses the `Authorization: apikey <KEY>` header.
+- If a write stops, read the reason before trying again. [Which approvals are needed](safety_model.md)
+- `--verbose` shows request start and end messages. `--debug` shows a Python error trace for local debugging. Check output for private details before sharing it.

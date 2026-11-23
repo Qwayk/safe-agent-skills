@@ -61,7 +61,7 @@ class QdrantCloudHttpClient:
                 headers=self._auth_header(),
                 params=query_params,
                 json_body=json_body,
-                retries=1,
+                retries=1 if method.upper() == "GET" else 0,
             )
         except Exception as e:  # noqa: BLE001
             return CloudCallResult(
@@ -80,13 +80,13 @@ class QdrantCloudHttpClient:
         except Exception:
             response_text = resp.text()
 
-        ok = 200 <= int(resp.status) < 400
+        ok = 200 <= int(resp.status) < 300
         return CloudCallResult(
             ok=ok,
             status=int(resp.status),
             url=str(resp.url),
             response_json=redact_any(response_json) if response_json is not None else None,
             response_text=response_text,
-            error=None if ok else (response_text or "HTTP error"),
+            error=None if ok else f"HTTP {resp.status}",
         )
 

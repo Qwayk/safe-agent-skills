@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import dataclasses
 import hashlib
+import hmac
 import json
+import shlex
 import time
 from typing import Any
 
@@ -23,15 +25,43 @@ _PROVIDER_BACKUP_RESTORE_METHODS = {
     "RestoreBackup",
     "CreateClusterFromBackup",
 }
+_RESTORE_BACKUP_RPC = "qdrant.cloud.cluster.backup.v1.BackupService.RestoreBackup"
+_PRICE_QUOTE_RPCS = {
+    "qdrant.cloud.booking.v1.BookingService.GetQuote",
+    "qdrant.cloud.booking.v1.BookingService.GetBackupQuote",
+}
+_POTENTIALLY_PAID_RPCS = {
+    _RESTORE_BACKUP_RPC,
+    "qdrant.cloud.cluster.backup.v1.BackupService.CreateBackup",
+    "qdrant.cloud.cluster.backup.v1.BackupService.CreateBackupSchedule",
+    "qdrant.cloud.cluster.backup.v1.BackupService.UpdateBackupSchedule",
+    "qdrant.cloud.cluster.v1.ClusterService.CreateCluster",
+    "qdrant.cloud.cluster.v1.ClusterService.CreateClusterFromBackup",
+    "qdrant.cloud.cluster.v1.ClusterService.UnsuspendCluster",
+    "qdrant.cloud.cluster.v1.ClusterService.UpdateCluster",
+    "qdrant.cloud.serverless.collection.v1.CollectionService.CreateCollection",
+    "qdrant.cloud.serverless.collection.v1.CollectionService.UpgradeCollection",
+}
 
 
 def _utc(ts: float | None = None) -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(ts or time.time()))
 
 
+def _canonical_json(obj: Any) -> bytes:
+    return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
 def _json_sha256(obj: Any) -> str:
-    b = json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    return hashlib.sha256(b).hexdigest()
+    return hashlib.sha256(_canonical_json(obj)).hexdigest()
+
+
+def _sign_plan(plan: dict[str, Any], api_key: str) -> str:
+    return hmac.new(api_key.encode("utf-8"), _canonical_json(plan), hashlib.sha256).hexdigest()
+
+
+def is_read_operation(verb: str, rpc: str) -> bool:
+    return verb.upper() == "GET" or rpc in _PRICE_QUOTE_RPCS
 
 
 @dataclasses.dataclass(frozen=True)
@@ -91,6 +121,8 @@ def _operation_before_state_contract(*, op: Operation, risk: OperationRisk) -> d
 
 
 def _operation_verification_plan(*, op: Operation, risk: OperationRisk) -> Any:
+    if op.rpc == _RESTORE_BACKUP_RPC:
+        return {"type": "restore_history", "notes": "Check for a new restore entry for this backup in the account."}
     if risk.requires_apply and not _is_provider_backup_restore_family(op=op):
         return {
             "type": "best_effort_after_apply",
@@ -108,15 +140,16 @@ def classify_operation_risk(*, verb: str, path: str, rpc: str, domain: str) -> O
     d = domain.strip().lower()
     p = path.strip().lower()
 
-    is_read = v == "GET"
     is_delete = v == "DELETE"
-    is_payment = ("payment" in d) or ("billing" in d) or ("payment" in p) or ("billing" in p)
+    can_charge = (
+        rpc in _POTENTIALLY_PAID_RPCS
+        or "payment" in d or "billing" in d or "payment" in p or "billing" in p
+    )
 
-    reasons: list[str] = []
-    if is_read:
+    if is_read_operation(v, rpc):
         return OperationRisk(
             level="low",
-            reasons=["read-like (GET)"],
+            reasons=["reads account data or returns a price estimate"],
             requires_apply=False,
             requires_yes=False,
             requires_ack_irreversible=False,
@@ -124,25 +157,24 @@ def classify_operation_risk(*, verb: str, path: str, rpc: str, domain: str) -> O
             requires_plan_in=False,
         )
 
-    reasons.append("write-like (non-GET)")
+    reasons = ["changes Qdrant Cloud"]
+    irreversible = is_delete or rpc == _RESTORE_BACKUP_RPC
     if is_delete:
-        reasons.append("irreversible (DELETE)")
-    if is_payment:
-        reasons.append("money-moving or billing-adjacent")
+        reasons.append("deletes a resource")
+    if rpc == _RESTORE_BACKUP_RPC:
+        reasons.append("restores over the existing cluster, replacing newer data and settings")
+    if can_charge:
+        reasons.append("can change what you pay")
 
-    requires_yes = bool(is_delete or is_payment)
-    requires_ack_irreversible = bool(is_delete)
-    requires_ack_spend_money = bool(is_payment)
-    requires_plan_in = bool(is_delete or is_payment)
-    level = "high" if (is_delete or is_payment) else "medium"
+    high_risk = irreversible or can_charge
     return OperationRisk(
-        level=level,
+        level="high" if high_risk else "medium",
         reasons=reasons,
         requires_apply=True,
-        requires_yes=requires_yes,
-        requires_ack_irreversible=requires_ack_irreversible,
-        requires_ack_spend_money=requires_ack_spend_money,
-        requires_plan_in=requires_plan_in,
+        requires_yes=high_risk,
+        requires_ack_irreversible=irreversible,
+        requires_ack_spend_money=can_charge,
+        requires_plan_in=True,
     )
 
 
@@ -166,9 +198,13 @@ def _load_path_params(args: Any, op: Operation) -> dict[str, str]:
     return out
 
 
-def _build_plan(*, op: Operation, request_obj: dict[str, Any], risk: OperationRisk, ctx: dict[str, Any]) -> dict[str, Any]:
+def _build_plan(
+    *, op: Operation, path_params: dict[str, str], request_obj: dict[str, Any],
+    risk: OperationRisk, ctx: dict[str, Any],
+) -> dict[str, Any]:
     recovery = _operation_recovery_contract(op=op)
-    return {
+    cfg = ctx["cfg"]
+    plan = {
         "tool": ctx["tool"],
         "version": ctx["tool_version"],
         "generated_at_utc": _utc(),
@@ -179,7 +215,7 @@ def _build_plan(*, op: Operation, request_obj: dict[str, Any], risk: OperationRi
             "domain": op.domain,
             "http_verb": op.http_verb,
             "http_path": op.http_path,
-            "path_params": [{"template": t, "arg": a} for (t, a) in op.path_params],
+            "path_params": path_params,
         },
         "risk_level": risk.level,
         "risk_reasons": list(risk.reasons),
@@ -197,32 +233,33 @@ def _build_plan(*, op: Operation, request_obj: dict[str, Any], risk: OperationRi
         "request": redact_any(request_obj),
         "verification_plan": _operation_verification_plan(op=op, risk=risk),
     }
+    if risk.requires_apply:
+        if cfg.api_key:
+            plan["review_signature"] = _sign_plan(plan, cfg.api_key)
+        else:
+            plan["review_note"] = "Set the API key and make a new plan before approving this write."
+    return plan
 
 
-def _enforce_plan_drift(*, plan_obj: dict[str, Any], op: Operation, request_obj: dict[str, Any], ctx: dict[str, Any]) -> None:
-    env_fp_in = str(plan_obj.get("env_fingerprint") or "").strip()
-    if not env_fp_in:
-        raise SafetyError("Plan missing env_fingerprint; refuse to apply")
-    if env_fp_in != ctx["cfg"].env_fingerprint:
-        raise SafetyError(f"Plan env_fingerprint mismatch: plan={env_fp_in} cli={ctx['cfg'].env_fingerprint}")
-
-    op_obj = plan_obj.get("operation") if isinstance(plan_obj.get("operation"), dict) else {}
-    rpc_in = str(op_obj.get("rpc") or "").strip()
-    if rpc_in and rpc_in != op.rpc:
-        raise SafetyError(f"Plan rpc mismatch: plan={rpc_in} cli={op.rpc}")
-    verb_in = str(op_obj.get("http_verb") or "").strip().upper()
-    path_in = str(op_obj.get("http_path") or "").strip()
-    if verb_in and verb_in != op.http_verb:
-        raise SafetyError(f"Plan verb mismatch: plan={verb_in} cli={op.http_verb}")
-    if path_in and path_in != op.http_path:
-        raise SafetyError(f"Plan path mismatch: plan={path_in} cli={op.http_path}")
-
-    req_sha_in = str(plan_obj.get("request_sha256") or "").strip()
-    if not req_sha_in:
-        raise SafetyError("Plan missing request_sha256; refuse to apply")
-    req_sha_now = _json_sha256(request_obj)
-    if req_sha_in != req_sha_now:
-        raise SafetyError("Plan request mismatch (request_sha256 differs); refuse to apply")
+def _enforce_plan_drift(
+    *, plan_obj: dict[str, Any], op: Operation, path_params: dict[str, str],
+    request_obj: dict[str, Any], ctx: dict[str, Any],
+) -> None:
+    cfg = ctx["cfg"]
+    signature = plan_obj.pop("review_signature", None)
+    if not isinstance(signature, str) or not signature.isascii():
+        raise SafetyError("This plan does not have a review signature. Generate and review a new plan with the API key set.")
+    if not cfg.api_key or not hmac.compare_digest(signature, _sign_plan(plan_obj, cfg.api_key)):
+        raise SafetyError("The API key or saved plan changed. Generate and review a new plan.")
+    if plan_obj.get("env_fingerprint") != cfg.env_fingerprint:
+        raise SafetyError("The Qdrant API address changed. Review a new plan.")
+    if plan_obj.get("operation") != {
+        "rpc": op.rpc, "domain": op.domain, "http_verb": op.http_verb,
+        "http_path": op.http_path, "path_params": path_params,
+    }:
+        raise SafetyError("The operation or target changed. Review a new plan.")
+    if plan_obj.get("request_sha256") != _json_sha256(request_obj):
+        raise SafetyError("The request changed. Review a new plan.")
 
 
 def cmd_qdrant_cloud_operation(args: Any, ctx: dict[str, Any]) -> int:
@@ -235,6 +272,7 @@ def cmd_qdrant_cloud_operation(args: Any, ctx: dict[str, Any]) -> int:
     path_params = _load_path_params(args, op)
 
     risk = classify_operation_risk(verb=op.http_verb, path=op.http_path, rpc=op.rpc, domain=op.domain)
+    is_get = op.http_verb.upper() == "GET"
     live = bool(ctx.get("live"))
     apply = bool(ctx.get("apply"))
     yes = bool(ctx.get("yes"))
@@ -257,7 +295,8 @@ def cmd_qdrant_cloud_operation(args: Any, ctx: dict[str, Any]) -> int:
             method=op.http_verb,
             path=op.http_path,
             path_params=path_params,
-            query_params=request_obj or None,
+            query_params=(request_obj or None) if is_get else None,
+            json_body=None if is_get else (request_obj or None),
         )
         out = {
             "ok": bool(result.ok),
@@ -280,12 +319,11 @@ def cmd_qdrant_cloud_operation(args: Any, ctx: dict[str, Any]) -> int:
         ctx["out"].emit(out)
         return 0
 
-    plan = _build_plan(op=op, request_obj=request_obj, risk=risk, ctx=ctx)
-    plan_out = ctx.get("plan_out")
-    plan_path = write_json_file(plan_out, redact_any(plan)) if plan_out else None
-
     if not apply:
-        out = {"ok": True, "dry_run": True, "plan": redact_any(plan), "plan_out": plan_path}
+        plan = _build_plan(op=op, path_params=path_params, request_obj=request_obj, risk=risk, ctx=ctx)
+        plan_out = ctx.get("plan_out")
+        plan_path = write_json_file(plan_out, plan) if plan_out else None
+        out = {"ok": True, "dry_run": True, "plan": plan, "plan_out": plan_path}
         ctx["audit"].write("qdrant_cloud.operation.plan", {"rpc": op.rpc, "plan_out": plan_path})
         ctx["out"].emit(out)
         return 0
@@ -300,14 +338,14 @@ def cmd_qdrant_cloud_operation(args: Any, ctx: dict[str, Any]) -> int:
     if risk.requires_plan_in and not plan_in:
         raise SafetyError(f"{op.rpc} requires --plan-in (apply from a reviewed plan file)")
 
-    if plan_in:
+    if not live:
+        raise SafetyError("Refusing to make network requests without --live")
+
+    if risk.requires_plan_in and plan_in:
         plan_obj = read_json_file(plan_in)
         if not isinstance(plan_obj, dict):
             raise ValidationError("--plan-in must be a JSON object plan")
-        _enforce_plan_drift(plan_obj=plan_obj, op=op, request_obj=request_obj, ctx=ctx)
-
-    if not live:
-        raise SafetyError("Refusing to make network requests without --live")
+        _enforce_plan_drift(plan_obj=plan_obj, op=op, path_params=path_params, request_obj=request_obj, ctx=ctx)
 
     if risk.requires_apply and not _is_provider_backup_restore_family(op=op) and not bool(ctx.get("ack_no_snapshot")):
         out = {
@@ -317,26 +355,40 @@ def cmd_qdrant_cloud_operation(args: Any, ctx: dict[str, Any]) -> int:
             "reasons": [_BEFORE_STATE_REFUSAL_REASON],
             "refusal_type": "SafetyError",
             "operation": {"rpc": op.rpc, "domain": op.domain, "http_verb": op.http_verb, "http_path": op.http_path},
-            "plan_out": plan_path,
+            "plan_out": None,
         }
         ctx["audit"].write("qdrant_cloud.operation.refused", {"rpc": op.rpc, "reason": _BEFORE_STATE_REFUSAL_REASON})
         ctx["out"].emit(out)
         return 0
 
     # Execute
-    is_get = op.http_verb.upper() == "GET"
     result = client.request_json(
         live=live,
         method=op.http_verb,
         path=op.http_path,
         path_params=path_params,
-        query_params=request_obj or None if is_get else None,
+        query_params=(request_obj or None) if is_get else None,
         json_body=None if is_get else (request_obj or None),
     )
 
     # Best-effort verification
     verification: dict[str, Any] = {"ok": None, "details": "not attempted"}
-    if op.http_verb.upper() == "DELETE":
+    if op.rpc == _RESTORE_BACKUP_RPC:
+        verification = {
+            "ok": None,
+            "details": "Check restore history for a new entry for this backup before reporting completion or trying again.",
+            "backup_id": path_params["backup_id"],
+            "command": shlex.join([
+                "qdrant-cloud-api-tool", "--env-file", ctx["env_file"], "--output", "json", "--live",
+                "cluster-backup-v1", "list-backup-restores", "--account-id", path_params["account_id"],
+            ]),
+        }
+    elif not result.ok:
+        verification = {
+            "ok": None,
+            "details": "Check the affected resource before trying this write again.",
+        }
+    elif op.http_verb.upper() == "DELETE":
         verification = {"ok": None, "details": "Not implemented for DELETE in v0.1.0 (provider-specific semantics)."}
     else:
         read_op = find_verification_read_op(op)

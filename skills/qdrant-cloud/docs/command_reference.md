@@ -1,61 +1,41 @@
-# Command reference
+# Qdrant Cloud commands
 
-These commands cover Qdrant Cloud accounts, clusters, releases, backups, IAM, and infrastructure gates. Resolve account and cluster IDs before backup or cluster changes.
+See [the full command list](official_commands_v1.txt) for the shipped operations. Run a command with `--help` to see its required IDs. Put shared flags such as `--env-file` before the command group.
 
-For the guided path, start with [What you can do with Qdrant Cloud](use_cases.md), [Connect your Qdrant Cloud account](onboarding.md), and [Quickstart](quickstart.md).
+## Read account data or get a price
 
-## Onboarding
+```bash
+qdrant-cloud-api-tool --output json --live account-v1 list-accounts
+qdrant-cloud-api-tool --output json --live account-v1 get-account --account-id ACCOUNT_ID
+qdrant-cloud-api-tool --output json --live booking-v1 get-quote --account-id ACCOUNT_ID --request-json quote.json
+```
 
-- `qdrant-cloud-api-tool onboarding [--no-write-env]`
+For a GET request, `--request-json` supplies filters and other query parameters. For other HTTP methods, it supplies the request body. Qdrant requires the relevant cluster or backup permission to return a price quote.
 
-## Auth
+## Plan and apply a change
 
-- `qdrant-cloud-api-tool --output json --version`
-- `qdrant-cloud-api-tool --output json auth check` (offline OK)
-- `qdrant-cloud-api-tool --output json --live auth check` (validates credentials against the API)
+```bash
+qdrant-cloud-api-tool --output json --plan-out plan.json account-v1 create-account --request-json request.json
+qdrant-cloud-api-tool --output json --live --apply --plan-in plan.json --ack-no-snapshot --receipt-out receipt.json account-v1 create-account --request-json request.json
+```
 
-## Qdrant Cloud API operations (explicit)
+Use the second command after reviewing and approving the saved plan. Add the flags listed in [the approval guide](safety_model.md) for the action you are taking.
 
-Every official RPC has a first-class command.
-The canonical list is committed at `docs/official_commands_v1.txt`.
+## Restore a backup
 
-Common patterns:
+```bash
+qdrant-cloud-api-tool --output json --plan-out restore.json cluster-backup-v1 restore-backup --account-id ACCOUNT_ID --backup-id BACKUP_ID
+qdrant-cloud-api-tool --output json --live --apply --yes --ack-irreversible --ack-spend-money --plan-in restore.json --receipt-out receipt.json cluster-backup-v1 restore-backup --account-id ACCOUNT_ID --backup-id BACKUP_ID
+qdrant-cloud-api-tool --output json --live cluster-backup-v1 list-backup-restores --account-id ACCOUNT_ID
+```
 
-- Read:
-  - `qdrant-cloud-api-tool --output json --live account-v1 list-accounts`
-- Read with path parameters:
-  - `qdrant-cloud-api-tool --output json --live account-v1 get-account --account-id <id>`
-- Write plan (dry-run; no network):
-  - `qdrant-cloud-api-tool --output json account-v1 create-account --request-json request.json --plan-out plan.json`
-- Ordinary write apply request (currently requires explicit no-snapshot approval before Qdrant Cloud HTTP when no saved snapshot is available):
-  - `qdrant-cloud-api-tool --output json --live --apply account-v1 create-account --request-json request.json --plan-out plan.json --receipt-out receipt.json`
-- Write plans include `safety.before_state` and `safety.recovery.contract`:
-  - `no-recovery` for ordinary writes; current apply requires explicit no-snapshot approval before provider HTTP when no saved snapshot is available
-  - `provider-backup-restore` for explicit `create-backup`, `restore-backup`, and `create-cluster-from-backup` workflows
-- `no-recovery` means the tool does not offer implicit rollback. Current ordinary apply requires explicit no-snapshot approval when no operation-specific snapshot or provider backup is available.
-- Provider-backup plan example:
-  - `qdrant-cloud-api-tool --output json cluster-backup-v1 restore-backup --account-id <account-id> --backup-id <backup-id> --request-json request.json --plan-out plan.json`
-- Provider-backup apply example:
-  - `qdrant-cloud-api-tool --output json --live --apply cluster-backup-v1 restore-backup --account-id <account-id> --backup-id <backup-id> --request-json request.json --receipt-out receipt.json`
-- Irreversible apply (DELETE):
-  - `qdrant-cloud-api-tool --output json --live --apply --yes --ack-irreversible --plan-in plan.json account-v1 delete-account --account-id <id>`
-- Money-moving/billing apply:
-  - `qdrant-cloud-api-tool --output json --live --apply --yes --ack-spend-money --plan-in plan.json payment-v1 <command> ...`
+Check the receipt and match the new restore record by backup and time.
 
-Notes:
-- For GET operations, `--request-json` is interpreted as query parameters.
-- For non-GET operations, `--request-json` is interpreted as the JSON body.
+## Find plans and receipts
 
-## Runs (history)
+Write commands save run history under `.state/runs/` beside the selected settings file.
 
-Write-capable commands automatically save proof artifacts under `.state/runs/` and append an index row to `.state/runs/index.jsonl`.
+- `qdrant-cloud-api-tool runs list --limit 20`
+- `qdrant-cloud-api-tool runs show --run-id RUN_ID`
 
-These live next to your `--env-file` (usually next to your `.env` file), so they’re easy to find.
-
-Optional flags:
-- `--run-id <id>`: set a specific run id (otherwise the tool generates one)
-- `--artifacts-dir <path>`: override where artifacts are written for this run
-- `--no-artifacts`: disable writing run artifacts (advanced)
-
-- `qdrant-cloud-api-tool runs list [--limit 20]`
-- `qdrant-cloud-api-tool runs show --run-id <run_id>`
+Use `--run-id` to name the run, `--artifacts-dir` to choose where to put its files, or `--no-artifacts` to skip the automatic run files. The saved review plan is still required when applying a write.

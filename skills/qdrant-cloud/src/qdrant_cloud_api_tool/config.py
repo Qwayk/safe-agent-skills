@@ -43,7 +43,7 @@ class Config:
 
 
 def load_config(env_file: str | None) -> Config:
-    env = _parse_env_file(Path(env_file or ".env"))
+    env = _parse_env_file(Path(env_file or ".env").expanduser())
 
     base_url = (_get(env, "QDRANT_CLOUD_API_BASE_URL") or "https://api.cloud.qdrant.io").rstrip("/")
     api_key = _get(env, "QDRANT_CLOUD_API_KEY") or None

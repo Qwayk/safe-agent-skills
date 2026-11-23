@@ -1,87 +1,23 @@
-# Quickstart
+# List accounts, clusters and backups
 
-Start with a small Qdrant Cloud read: checking accounts, clusters, releases, and backups before you touch vector infrastructure.
-
-Need more ideas? See [What you can do with Qdrant Cloud](use_cases.md). Need setup help? See [Connect your Qdrant Cloud account](onboarding.md).
-
-A good first ask is:
-
-> Which accounts, clusters, and releases exist right now?
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account or connection before asking for real work.
-3. Run one small read and make sure the result matches the real service.
-4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+[Install the CLI and set up your key](onboarding.md). If you used the virtual environment from setup, activate it before running the examples:
 
 ```bash
-python3 --version
-python3 -m venv .venv
-.venv/bin/python -m pip install -e .
+source .venv/bin/activate
 ```
+
+When live access is approved, list the accounts that your key can see:
 
 ```bash
-.venv/bin/python -m pip install -e '.[dev]'
+qdrant-cloud-api-tool --output json --env-file .env --live account-v1 list-accounts
 ```
 
-## 2. Check setup
-
-If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
-
-```env
-QDRANT_CLOUD_API_KEY='your_real_key_here'
-```
+Use the account ID from the result for the next reads:
 
 ```bash
-qdrant-cloud-api-tool --output json --version
-qdrant-cloud-api-tool --env-file .env --output json auth check
-qdrant-cloud-api-tool --env-file .env --output json --live auth check
-qdrant-cloud-api-tool --env-file .env --output json --live account-v1 list-accounts
+qdrant-cloud-api-tool --output json --env-file .env --live cluster-v1 list-clusters --account-id ACCOUNT_ID
+qdrant-cloud-api-tool --output json --env-file .env --live cluster-backup-v1 list-backups --account-id ACCOUNT_ID
+qdrant-cloud-api-tool --output json --env-file .env --live cluster-backup-v1 list-backup-schedules --account-id ACCOUNT_ID
 ```
 
-## 3. Run one small first read
-
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
-
-```bash
-qdrant-cloud-api-tool --env-file .env --output json --live account-v1 list-accounts
-qdrant-cloud-api-tool --env-file .env --output json --live cluster-v1 list-clusters --account-id ACCOUNT_ID
-qdrant-cloud-api-tool --env-file .env --output json --live cluster-backup-v1 list-backups --account-id ACCOUNT_ID
-qdrant-cloud-api-tool --env-file .env --output json --live cluster-backup-v1 list-backup-schedules --account-id ACCOUNT_ID
-```
-
-```bash
-qdrant-cloud-api-tool --env-file .env --output json --live billing-v1 list-invoices --account-id ACCOUNT_ID
-qdrant-cloud-api-tool --env-file .env --output json --live auth-v1 list-management-keys --account-id ACCOUNT_ID
-qdrant-cloud-api-tool --env-file .env --output json --live iam-v1 list-roles --account-id ACCOUNT_ID
-qdrant-cloud-api-tool --env-file .env --output json --live monitoring-v1 get-cluster-summary-metrics --account-id ACCOUNT_ID --cluster-id CLUSTER_ID
-```
-
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
-
-## 4. Stop before anything risky
-
-Ask for a reviewed plan before cluster, database, backup, restore, API key, or infrastructure changes.
-
-## What a useful first result includes
-
-A good first result should make these things clear:
-
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
-
-## Where to go next
-
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your Qdrant Cloud account](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+If setup used a different file, replace `.env` with that path in each command. [Example commands for quotes and changes](command_reference.md)

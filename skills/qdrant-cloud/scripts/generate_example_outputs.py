@@ -31,7 +31,7 @@ class _StubHandler(BaseHTTPRequestHandler):
             self._send_json({"account": {"id": "00000000-0000-0000-0000-000000000000", "name": "Example"}})
             return
         if "/backups/" in self.path and self.path.endswith("/restore"):
-            self._send_json({"restore": "started"})
+            self._send_json({})
             return
         self.send_response(404)
         self.end_headers()
@@ -49,7 +49,7 @@ def _start_server() -> HTTPServer:
 
 def _run_cli(tool_root: Path, argv: list[str], env: dict[str, str]) -> dict:
     proc = subprocess.run(
-        [sys.executable, "-m", "qdrant_cloud_api_tool", *argv],
+        [sys.executable, "-m", "qdrant_cloud_api_tool", "--no-artifacts", *argv],
         cwd=str(tool_root),
         env=env,
         stdout=subprocess.PIPE,
@@ -75,7 +75,7 @@ def main() -> int:
     base_url = f"http://127.0.0.1:{server.server_address[1]}"
 
     env = dict(os.environ)
-    env["PYTHONPATH"] = str(tool_root / "src")
+    env["PYTHONPATH"] = os.pathsep.join(filter(None, (str(tool_root / "src"), env.get("PYTHONPATH"))))
     env["QDRANT_CLOUD_API_BASE_URL"] = base_url
     env["QDRANT_CLOUD_API_KEY"] = "EXAMPLE_KEY_SHOULD_NEVER_APPEAR"
     env["QDRANT_CLOUD_TIMEOUT_S"] = "30"
@@ -114,7 +114,6 @@ def main() -> int:
                 "json",
                 "--live",
                 "--apply",
-                "--no-artifacts",
                 "--plan-in",
                 str(examples / "plan.example.json"),
                 "--receipt-out",
@@ -126,13 +125,13 @@ def main() -> int:
             ],
             env,
         )
-        # Ordinary writes currently refuse before Qdrant Cloud HTTP. Keep the old receipt filename
-        # as the committed refusal example so stale successful write receipts cannot linger.
+        if not apply_out.get("refused"):
+            raise RuntimeError("The ordinary write example should refuse without --ack-no-snapshot")
         (examples / "receipt.example.json").write_text(json.dumps(apply_out, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         (outputs_dir / "receipt_stdout.example.json").write_text(json.dumps(apply_out, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
         backup_req_path = examples / "backup_restore.request.example.json"
-        backup_req_path.write_text(json.dumps({"snapshot": "example"}, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        backup_req_path.write_text("{}\n", encoding="utf-8")
 
         _run_cli(
             tool_root,
@@ -153,13 +152,16 @@ def main() -> int:
             env,
         )
 
-        _run_cli(
+        restore = _run_cli(
             tool_root,
             [
                 "--output",
                 "json",
                 "--live",
                 "--apply",
+                "--yes",
+                "--ack-irreversible",
+                "--ack-spend-money",
                 "--plan-in",
                 str(examples / "backup_restore.plan.example.json"),
                 "--receipt-out",
@@ -175,6 +177,8 @@ def main() -> int:
             ],
             env,
         )
+        if not restore.get("ok") or restore.get("refused"):
+            raise RuntimeError("The reviewed restore example did not reach the test server")
 
     finally:
         server.shutdown()

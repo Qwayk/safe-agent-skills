@@ -21,4 +21,10 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ### Fixed
 
+- Setup creates a private settings file at the selected path.
+- Saved write plans verify the API key, target and request. In-place restores require explicit irreversible and spending approval.
+- Writes are sent once per apply. Backup restore receipts show how to check the job.
+- Cluster and backup price quotes can run with live read access.
+- Setup and review advice live in fewer guides.
+
 ### Removed

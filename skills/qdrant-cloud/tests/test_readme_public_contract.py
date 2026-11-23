@@ -1,72 +1,47 @@
 from __future__ import annotations
 
+import importlib
+import re
+import shlex
+import tomllib
 import unittest
 from pathlib import Path
 
+from qdrant_cloud_api_tool.cli import build_parser
 
-class TestReadmePublicContract(unittest.TestCase):
-    def test_public_readme_opening_stays_user_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
 
-        self.assertTrue(text.startswith("# Qdrant Cloud\n"))
-        self.assertNotIn("## Simplicity lock", text)
-        self.assertNotIn("# qdrant-cloud-api-tool", text)
-        self.assertIn("**Capability:** Reads + careful changes", text)
+class TestPublicInstall(unittest.TestCase):
+    root = Path(__file__).resolve().parents[1]
 
-        required_sections = [
-            "## Start here first",
-            "## What this skill helps with",
-            "## Install and first run",
-            "## How this skill stays safe",
-            "## What happens before live changes",
-            "## Helpful docs",
+    def test_readme_install_command_matches_the_skill(self) -> None:
+        readme = (self.root / "README.md").read_text(encoding="utf-8")
+        skill = (self.root / "SKILL.md").read_text(encoding="utf-8")
+        slug = re.search(r"^name: ([a-z0-9-]+)$", skill, re.MULTILINE)
+        self.assertIsNotNone(slug)
+        commands = [
+            shlex.split(line) for line in readme.splitlines() if line.startswith("npx skills add ")
         ]
-        for section in required_sections:
-            self.assertIn(section, text)
+        self.assertEqual(len(commands), 1)
+        self.assertEqual(commands[0][3], f"Qwayk/safe-agent-skills@{slug.group(1)}")
 
-    def test_start_here_section_stays_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do with Qdrant Cloud](docs/use_cases.md)", text)
-        self.assertIn("[Connect your Qdrant Cloud account](docs/onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
-        self.assertIn("[Quickstart](docs/quickstart.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-
-    def test_opening_rejects_template_voice(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-        opening = text.split("## Start here first", 1)[0]
-
-        banned = [
-            "Use this skill when",
-            "You can hand your agent jobs like",
-            "without guessing from raw docs",
-            "Read work stays careful",
-            "Riskier work slows down on purpose",
+    def test_onboarding_uses_the_installed_entry_point(self) -> None:
+        config = tomllib.loads((self.root / "pyproject.toml").read_text(encoding="utf-8"))
+        onboarding = (self.root / "docs/onboarding.md").read_text(encoding="utf-8")
+        commands = [
+            shlex.split(line)
+            for line in onboarding.splitlines()
+            if line.startswith(".venv/bin/") and line.endswith(" onboarding")
         ]
-        for phrase in banned:
-            self.assertNotIn(phrase, opening)
+        self.assertEqual(len(commands), 1)
+        entry_point = Path(commands[0][0]).name
+        module, function = config["project"]["scripts"][entry_point].split(":")
+        self.assertTrue(callable(getattr(importlib.import_module(module), function)))
+        self.assertIsNotNone(build_parser().parse_args(commands[0][1:]).func)
 
-    def test_helpful_docs_stay_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("[Browse all Qdrant Cloud docs](docs/README.md)", text)
-        self.assertIn("[Authentication details](docs/authentication.md)", text)
-        self.assertIn("[Proof and verification](docs/proof.md)", text)
-        self.assertIn("[API coverage](docs/api_coverage.md)", text)
-        self.assertNotIn("- `docs/use_cases.md`", text)
-        self.assertNotIn("- `docs/onboarding.md`", text)
-
-    def test_quickstart_opens_with_human_links(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "quickstart.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do with Qdrant Cloud](use_cases.md)", text)
-        self.assertIn("[Connect your Qdrant Cloud account](onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](safety_model.md)", text)
-        self.assertNotIn("`use_cases.md`", text)
-        self.assertNotIn("`onboarding.md`", text)
+    def test_readme_and_setup_guide_links_work(self) -> None:
+        for path in (self.root / "README.md", self.root / "docs/onboarding.md"):
+            text = path.read_text(encoding="utf-8")
+            for link in re.findall(r"\]\(([^()\s]+)\)", text):
+                if "://" not in link and not link.startswith("#"):
+                    with self.subTest(file=path.name, link=link):
+                        self.assertTrue((path.parent / link.partition("#")[0]).exists())

@@ -156,7 +156,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Acknowledge that this approved write may run without a saved before-state snapshot",
     )
     p.add_argument("--plan-out", default=None, help="Write a dry-run plan JSON to a file")
-    p.add_argument("--plan-in", default=None, help="Apply from an existing plan JSON file (high-risk writes)")
+    p.add_argument("--plan-in", default=None, help="Apply a write from its reviewed plan file")
     p.add_argument("--receipt-out", default=None, help="Write an apply receipt JSON to a file")
     p.add_argument(
         "--ack-irreversible",
@@ -212,7 +212,7 @@ def build_parser() -> argparse.ArgumentParser:
                 )
             cmd.set_defaults(
                 func=ops_cmd.cmd_qdrant_cloud_operation,
-                write_capable=(op.http_verb.upper() != "GET"),
+                write_capable=not ops_cmd.is_read_operation(op.http_verb, op.rpc),
                 rpc=op.rpc,
             )
 

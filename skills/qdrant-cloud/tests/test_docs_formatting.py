@@ -6,14 +6,13 @@ from pathlib import Path
 
 
 class TestDocsFormatting(unittest.TestCase):
-    def test_api_coverage_has_real_newlines_and_last_audited(self) -> None:
+    def test_api_coverage_has_real_newlines(self) -> None:
         root = Path(__file__).resolve().parents[1]
         api_coverage = root / "docs" / "api_coverage.md"
         text = api_coverage.read_text(encoding="utf-8")
 
         self.assertIn("\n", text, "docs/api_coverage.md must contain real newline characters")
         self.assertNotIn("\\n", text, "docs/api_coverage.md must not contain literal \\n escapes")
-        self.assertRegex(text, r"Last audited \(UTC\): \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC")
 
     def test_no_double_bullet_lines(self) -> None:
         root = Path(__file__).resolve().parents[1]
@@ -40,27 +39,11 @@ class TestDocsFormatting(unittest.TestCase):
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
 
-    def test_use_cases_stays_human_and_specific(self) -> None:
+    def test_guide_links_point_to_existing_files(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
-
-        required = [
-            "Qdrant Cloud is useful when a team needs to understand",
-            "## Good questions to ask",
-            "## Everyday work this helps with",
-            "## What the agent should show you",
-            "## Good first path",
-            "Which accounts, clusters, and releases exist right now?",
-        ]
-        for phrase in required:
-            self.assertIn(phrase, text)
-
-        stale_phrases = [
-            "Qdrant Cloud work usually starts with infrastructure questions",
-            "A good first ask",
-            "Good jobs to give the agent",
-            "What you should expect from the agent",
-            "dry-run plan",
-        ]
-        for phrase in stale_phrases:
-            self.assertNotIn(phrase, text)
+        for path in [root / "README.md", *(root / "docs").glob("*.md")]:
+            for link in re.findall(r"\]\(([^()\s]+)\)", path.read_text(encoding="utf-8")):
+                if "://" in link or link.startswith("#"):
+                    continue
+                with self.subTest(file=path.name, link=link):
+                    self.assertTrue((path.parent / link.partition("#")[0]).exists())

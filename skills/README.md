@@ -160,7 +160,7 @@ Start here if you want infrastructure, domain, account, or AI-platform work.
 | [**Spaceship**](spaceship/README.md)<br><sub>Install slug: <code>spaceship</code></sub> | Check domains, prices, DNS, and sales. Review renewals, transfers, and SafePay deals before approving them. | Spaceship account | Reads + careful changes |
 | [**OpenAI Platform**](openai/README.md)<br><sub>Install slug: <code>openai</code></sub> | Check models, files, and usage. Review uploads, batches, and paid requests before sending them. | OpenAI account | Reads + careful changes |
 | [**Gemini API**](gemini/README.md)<br><sub>Install slug: <code>gemini</code></sub> | List models, count tokens, and check files or batches. Review paid requests before sending them. | Gemini API key | Reads + careful changes |
-| [**Qdrant Cloud**](qdrant-cloud/README.md)<br><sub>Install slug: <code>qdrant-cloud</code></sub> | Review Qdrant Cloud resources and use provider backup or restore workflows where supported | Qdrant Cloud account | Reads + careful changes |
+| [**Qdrant Cloud**](qdrant-cloud/README.md)<br><sub>Install slug: <code>qdrant-cloud</code></sub> | Check clusters, costs, and backups. Review changes and restores before sending them. | Qdrant Cloud account | Reads + careful changes |
 
 ## Public data and reference
 

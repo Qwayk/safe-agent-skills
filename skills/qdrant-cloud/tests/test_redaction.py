@@ -84,30 +84,20 @@ class TestRedaction(unittest.TestCase):
                 plan_out = root / "plan.json"
                 receipt_out = root / "receipt.json"
 
-                buf2 = io.StringIO()
-                with redirect_stdout(buf2):
-                    rc2 = main(
-                        [
-                            "--output",
-                            "json",
-                            "--env-file",
-                            str(env_path),
-                            "--live",
-                            "--apply",
-                            "--plan-out",
-                            str(plan_out),
-                            "--receipt-out",
-                            str(receipt_out),
-                            "cluster-backup-v1",
-                            "restore-backup",
-                            "--account-id",
-                            "00000000-0000-0000-0000-000000000000",
-                            "--backup-id",
-                            "11111111-1111-1111-1111-111111111111",
-                            "--request-json",
-                            str(req_path),
-                        ]
-                    )
+                base = ["--output", "json", "--env-file", str(env_path)]
+                restore = [
+                    "cluster-backup-v1", "restore-backup",
+                    "--account-id", "00000000-0000-0000-0000-000000000000",
+                    "--backup-id", "11111111-1111-1111-1111-111111111111",
+                    "--request-json", str(req_path),
+                ]
+                with redirect_stdout(io.StringIO()):
+                    self.assertEqual(0, main([*base, "--plan-out", str(plan_out), *restore]))
+                    rc2 = main([
+                        *base, "--live", "--apply", "--yes", "--ack-irreversible",
+                        "--ack-spend-money", "--plan-in", str(plan_out),
+                        "--receipt-out", str(receipt_out), *restore,
+                    ])
                 self.assertEqual(rc2, 0)
 
                 plan_obj = json.loads(plan_out.read_text(encoding="utf-8"))
