@@ -1,18 +1,5 @@
-# Examples
+# Saved Hacker News examples
 
-This folder contains committed, repeatable examples for the Hacker News tool.
+Start with the [story](item_8863.json), [user](user_pg.json), [top story IDs](topstories.json) or [recent changes](updates.json) to see what Hacker News returns.
 
-## Raw API fixtures
-
-- `item_8863.json`
-- `user_pg.json`
-- `topstories.json`
-- `updates.json`
-
-## CLI output examples
-
-See `outputs/` for deterministic `--output json` command outputs.
-
-Additional files:
-- `plan.example.json`: static note showing that this read-only tool does not create plan files
-- `receipt.example.json`: static note showing that this read-only tool does not create receipt files
+The CLI adds the endpoint and status to its [story](outputs/item_8863.json), [user](outputs/user_pg.json), [top stories](outputs/stories_top.json) and [updates](outputs/updates.json) results. There are also saved [connection check](outputs/auth_check.json) and [version](outputs/version.json) results.

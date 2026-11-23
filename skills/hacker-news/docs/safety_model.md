@@ -1,32 +1,7 @@
-# Safety model
+# What the Hacker News tool can read
 
-Hacker News is safest when you treat the agent as a focused reader for public stories, comments, users, and item changes. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+The tool uses named read commands for the public Hacker News API. Posting, voting, editing, moderation and account actions are outside this API. It has no full-text search. The jobs list shows public job posts.
 
-The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+Story lists contain item IDs. A story can also contain the IDs of its comments. Open the items you need before you summarize a list or discussion. Use the links returned with the items to see their sources.
 
-A good safety ask is: "Fetch the real items behind a story list before summarizing trends or making a report."
-
-## Core safety rules
-
-This tool is intentionally read-only. It can fetch public Hacker News data, but it cannot change Hacker News.
-
-## What keeps it safe
-
-- No authentication secrets are required.
-- No `--apply`, `--yes`, or write workflow exists.
-- The tool only performs `GET` requests to the public Hacker News API.
-- In `--output json` mode, every command prints exactly one JSON object.
-- Missing items or users come back as clear JSON errors instead of silent `null` payloads.
-
-## What this means in plain English
-
-- The tool can fetch public Hacker News data.
-- The tool cannot post, vote, comment, edit, hide, delete, or moderate anything.
-- The tool cannot leak an API key because there is no API key in this workflow.
-- The main user mistake is making a big conclusion from a story-list result before fetching the actual items.
-
-## Safe first check
-
-Ask:
-
-"Show me the current top Hacker News stories, fetch the first five items, and tell me the main topics people are discussing. Do not summarize from IDs alone."
+In JSON mode, each read returns a result or an error. The optional `--log-file` saves command events locally. The optional `onboarding` command can create a local settings file. [See the commands and options](command_reference.md).

@@ -9,7 +9,7 @@ from typing import Any, Callable, cast
 
 from . import __version__
 from .audit_log import AuditLogger
-from .config import DEFAULT_HACKER_NEWS_API_ROOT, load_config, normalize_hacker_news_api_root
+from .config import DEFAULT_HACKER_NEWS_API_ROOT, load_config
 from .errors import ToolError, ValidationError
 from .output import Output
 from .hacker_news_client import HackerNewsClient
@@ -303,10 +303,9 @@ def main(argv: list[str]) -> int:
         audit = AuditLogger(path=str(args.log_file) if args.log_file else None, enabled=bool(args.log_file))
 
         config_defaults = _load_project_config(str(args.config) if args.config else None)
-        if args.api_root is not None and str(args.api_root).strip():
-            config_defaults["HACKER_NEWS_API_ROOT"] = normalize_hacker_news_api_root(str(args.api_root))
-
-        cfg = load_config(str(args.env_file), config_defaults=config_defaults)
+        cfg = load_config(
+            str(args.env_file), config_defaults=config_defaults, api_root_override=args.api_root
+        )
         timeout_s = float(args.timeout_s) if args.timeout_s is not None else float(cfg.timeout_s)
 
         ctx: dict[str, Any] = {

@@ -1,20 +1,18 @@
-# Proof and verification
+# Hacker News test results
 
-Hacker News proof should answer a simple question: what has actually been checked for public stories, comments, users, and item changes, and what can still fail because of public API limits, changed upstream data, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Both local copies passed 40 offline tests after a fresh wheel install. I ran the installed CLI from an empty folder. With simulated replies, it opened item `8863`, kept the order of the top stories, returned an empty story list, and gave an error for replies that did not match the request. The API address from `--api-root` took priority over the shell and settings file.
 
-If you only check one thing, check the saved item, user, story-list, and updates examples before trusting a summary.
+A fresh local Codex install matched all 45 files under the existing skill name, `hacker-news-api-safe-cli`. Before these changes, a live read opened item `8863` and the top list returned 500 story IDs.
 
-## Last verified
+## May 21, 2026 checks
 
-- Date (UTC): 2026-05-21
-- Tool version: 0.1.0
-- Provider API version: Hacker News Firebase API v0
+The original checks used CLI version `0.1.0` and the Hacker News Firebase API v0. [See the saved replies](examples/README.md) for the version, connection check, top stories, item `8863`, user `pg`, and recent updates.
 
-## Blessed local validation
+## Run the checks
 
-Run inside the tool folder:
+Run the tests inside the tool folder.
 
 ```bash
 python3 -m venv .venv
@@ -22,33 +20,4 @@ python3 -m venv .venv
 .venv/bin/python -m unittest -q
 ```
 
-## Smoke commands
-
-- `hacker-news-api-tool --output json --version`
-- `hacker-news-api-tool --output json auth check`
-- `hacker-news-api-tool --output json stories top`
-- `hacker-news-api-tool --output json items get --id 8863`
-- `hacker-news-api-tool --output json users get --id pg`
-- `hacker-news-api-tool --output json updates get`
-
-## Example outputs
-
-Committed examples live under `docs/examples/outputs/`:
-- `version.json`
-- `auth_check.json`
-- `stories_top.json`
-- `item_8863.json`
-- `user_pg.json`
-- `updates.json`
-
-## What can go wrong
-
-- Wrong API root → verify `auth check` fails cleanly and the error stays JSON-safe.
-- Missing item or user → verify the CLI returns `ok=false` and `error_type=ValidationError`.
-- Upstream response drift → verify `docs/api_coverage.md`, tests, and committed examples still match.
-- Thin story-list summaries → fetch item details before asking an agent to explain trends or relevance.
-
-## Links
-
-- Sources used: `docs/references.md`
-- Coverage source of truth: `docs/api_coverage.md`
+The tests use simulated replies for the network calls. To check the connection yourself, run `hacker-news-api-tool --output json auth check` with the CLI installed. For exact commands and error meanings, see the [command guide](command_reference.md). For the ten HTTP reads and their tests, see [API coverage](api_coverage.md).

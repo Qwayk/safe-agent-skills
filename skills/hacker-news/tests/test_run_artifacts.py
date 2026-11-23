@@ -119,7 +119,7 @@ class TestCommandWiring(unittest.TestCase):
             fake = self._fake_request_for(
                 expected_url=f"https://status.example.com/v0/{route}stories.json",
                 status_code=200,
-                body='[1,2,3]',
+                body='[3,1,2]',
             )
             buf = io.StringIO()
             with patch("requests.Session.request", new=fake):
@@ -129,6 +129,7 @@ class TestCommandWiring(unittest.TestCase):
             payload = json.loads(buf.getvalue())
             self.assertTrue(payload["ok"])
             self.assertEqual(payload["endpoint"], endpoint)
+            self.assertEqual(payload["data"], [3, 1, 2])
 
     def test_maxitem_get(self) -> None:
         with tempfile.TemporaryDirectory() as d:
@@ -256,3 +257,50 @@ class TestCommandWiring(unittest.TestCase):
             payload = json.loads(buf.getvalue())
             self.assertFalse(payload["ok"])
             self.assertEqual(payload["error_type"], "ToolError")
+
+    def _run_with_reply(self, args: list[str], endpoint: str, reply: object) -> tuple[int, dict]:
+        fake = self._fake_request_for(
+            expected_url=f"https://status.example.com/v0/{endpoint}.json",
+            status_code=200,
+            body=json.dumps(reply),
+        )
+        buf = io.StringIO()
+        with patch("requests.Session.request", new=fake), redirect_stdout(buf):
+            rc = main(["--api-root", "https://status.example.com/v0", *args])
+        return rc, json.loads(buf.getvalue())
+
+    def test_unexpected_upstream_replies_are_errors(self) -> None:
+        cases = [
+            (["auth", "check"], "maxitem", {"error": "wrong API"}),
+            (["maxitem", "get"], "maxitem", True),
+            (["items", "get", "--id", "1"], "item/1", []),
+            (["items", "get", "--id", "1"], "item/1", {"id": 2}),
+            (["items", "get", "--id", "1"], "item/1", {"id": True}),
+            (["users", "get", "--id", "Alice"], "user/Alice", "Alice"),
+            (["users", "get", "--id", "Alice"], "user/Alice", {"id": "alice"}),
+            (["stories", "top"], "topstories", {"error": "wrong API"}),
+            (["stories", "new"], "newstories", [1, "2"]),
+            (["updates", "get"], "updates", None),
+            (["updates", "get"], "updates", {"items": ["1"], "profiles": []}),
+            (["updates", "get"], "updates", {"items": [], "profiles": [1]}),
+        ]
+        for args, endpoint, reply in cases:
+            with self.subTest(args=args, reply=reply):
+                rc, result = self._run_with_reply(args, endpoint, reply)
+                self.assertEqual(rc, 1)
+                self.assertFalse(result["ok"])
+                self.assertEqual(result["error_type"], "ToolError")
+
+    def test_empty_lists_and_extra_item_fields_are_kept(self) -> None:
+        deleted_item = {"id": 8863, "deleted": True, "new_field": "kept"}
+        cases = [
+            (["stories", "top"], "topstories", []),
+            (["updates", "get"], "updates", {"items": [], "profiles": []}),
+            (["items", "get", "--id", "8863"], "item/8863", deleted_item),
+        ]
+        for args, endpoint, reply in cases:
+            with self.subTest(args=args):
+                rc, result = self._run_with_reply(args, endpoint, reply)
+                self.assertEqual(rc, 0)
+                self.assertTrue(result["ok"])
+                self.assertEqual(result["data"], reply)

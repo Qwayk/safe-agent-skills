@@ -62,12 +62,19 @@ class Config:
     timeout_s: float
 
 
-def load_config(env_file: str | None, *, config_defaults: dict[str, str] | None = None) -> Config:
+def load_config(
+    env_file: str | None,
+    *,
+    config_defaults: dict[str, str] | None = None,
+    api_root_override: str | None = None,
+) -> Config:
     env: dict[str, str] = dict(config_defaults or {})
     env.update(_parse_env_file(Path(env_file or ".env")))
 
     api_root = normalize_hacker_news_api_root(
-        _get(env, "HACKER_NEWS_API_ROOT") or _get(env, "HACKER_NEWS_BASE_URL")
+        (api_root_override or "").strip()
+        or _get(env, "HACKER_NEWS_API_ROOT")
+        or _get(env, "HACKER_NEWS_BASE_URL")
     )
 
     timeout_s_raw = _get(env, "HACKER_NEWS_TIMEOUT_S") or "30"

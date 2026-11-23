@@ -168,7 +168,7 @@ Start here if you want read-only public datasets or reference lookups.
 
 | Product | What it helps with | What you connect | Mode |
 | --- | --- | --- | --- |
-| [**Hacker News**](hacker-news/README.md)<br><sub>Install slug: <code>hacker-news</code></sub> | Read Hacker News stories, users, and public item data | No account | Read-only |
+| [**Hacker News**](hacker-news/README.md)<br><sub>Install slug: <code>hacker-news-api-safe-cli</code></sub> | Read Hacker News stories, users, and public item data | No account | Read-only |
 | [**Open Library**](open-library/README.md)<br><sub>Install slug: <code>open-library</code></sub> | Search Open Library books, authors, works, and public metadata | No account | Read-only |
 | [**TheMealDB**](themealdb/README.md)<br><sub>Install slug: <code>themealdb</code></sub> | Search recipes, ingredients, categories, and public meal data | No account | Read-only |
 

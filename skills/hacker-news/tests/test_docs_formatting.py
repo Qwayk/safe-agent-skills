@@ -3,30 +3,33 @@ from __future__ import annotations
 import re
 import unittest
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SKILL = ROOT / "SKILL.md"
+if not SKILL.is_file():
+    SKILL = ROOT / "skills" / "hacker-news-api-safe-cli" / "SKILL.md"
 
 
 class TestDocsFormatting(unittest.TestCase):
-    def test_no_double_bullet_lines(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        patterns = [
-            root / "README.md",
-            root / "docs",
-        ]
-        bad_lines: list[str] = []
-        for p in patterns:
-            if p.is_file():
-                files = [p]
-            else:
-                files = list(p.rglob("*.md"))
-            for f in files:
-                try:
-                    text = f.read_text(encoding="utf-8")
-                except Exception:
-                    continue
-                for i, line in enumerate(text.splitlines(), start=1):
-                    if re.match(r"^\s*-\s+-\s", line):
-                        rel = f.relative_to(root)
-                        bad_lines.append(f"{rel}:{i}: {line}")
-        if bad_lines:
-            joined = "\n".join(bad_lines)
-            self.fail("Double-bullet lines found:\n" + joined)
+    def test_install_command_matches_the_skill_name(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        front_matter = SKILL.read_text(encoding="utf-8").split("---", 2)[1]
+        name = re.search(r"^name: (\S+)$", front_matter, re.MULTILINE)
+        command = re.search(r"^npx skills add Qwayk/safe-agent-skills@(\S+) ", readme, re.MULTILINE)
+        self.assertIsNotNone(name)
+        self.assertIsNotNone(command)
+        self.assertEqual(name.group(1), command.group(1))
+
+    def test_relative_links_point_to_existing_paths(self) -> None:
+        paths = [ROOT / "README.md", SKILL, *(ROOT / "docs").rglob("*.md")]
+        for path in paths:
+            sections = path.read_text(encoding="utf-8").split("```")
+            for section in sections[::2]:
+                for target in re.findall(r"\[[^\]]+\]\(([^)\s]+)\)", section):
+                    url = urlsplit(target)
+                    if url.scheme or url.netloc or not url.path:
+                        continue
+                    with self.subTest(file=path.relative_to(ROOT), link=target):
+                        self.assertTrue((path.parent / unquote(url.path)).exists())

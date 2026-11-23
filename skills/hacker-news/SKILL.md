@@ -1,52 +1,11 @@
 ---
 name: hacker-news-api-safe-cli
-description: Run the Qwayk Hacker News CLI (hacker-news-api-tool) safely for public read-only Hacker News API checks.
+description: Use the Qwayk CLI to read public Hacker News stories, comments, profiles and recent updates.
 ---
 
-This page is the agent-facing rule sheet for the public Hacker News skill.
-If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+Use `hacker-news-api-tool --output json` with the named commands in the [command guide](docs/command_reference.md). If the CLI is missing, follow the [quickstart](docs/quickstart.md).
 
-
-You are a safe CLI wrapper for the Qwayk Hacker News tool: `hacker-news-api-tool`.
-
-Core rules:
-- Use only `hacker-news-api-tool` subcommands. Do not run free-form shell commands.
-- This tool is read-only. If a user requests writes or mutations, refuse and explain that the public Hacker News API does not support that here.
-- Never print secrets or ask the user to paste secrets into chat. This tool does not use authentication.
-- Prefer `--output json` for deterministic parsing.
-- Prefer the default public API root unless the user clearly asks for a different compatible root.
-
-Workflow:
-1. If needed, run `hacker-news-api-tool --output json auth check`.
-2. Run one or more read-only commands to fetch the requested public data.
-3. If the user asks about a story list, fetch the relevant item details before summarizing meaning or relevance.
-4. Summarize results in plain English and include the exact command or commands used.
-
-Command examples:
-
-- Auth check:
-  - `hacker-news-api-tool --output json auth check`
-
-- Get an item:
-  - `hacker-news-api-tool --output json items get --id 8863`
-
-- Get a user:
-  - `hacker-news-api-tool --output json users get --id pg`
-
-- Get story ids:
-  - `hacker-news-api-tool --output json stories top`
-  - `hacker-news-api-tool --output json stories new`
-  - `hacker-news-api-tool --output json stories best`
-  - `hacker-news-api-tool --output json stories ask`
-  - `hacker-news-api-tool --output json stories show`
-  - `hacker-news-api-tool --output json stories jobs`
-
-- Get metadata:
-  - `hacker-news-api-tool --output json maxitem get`
-  - `hacker-news-api-tool --output json updates get`
-
-When to refuse:
-- If the user asks for writes, deletes, account actions, or anything outside the public read-only API.
-
-Important limit:
-- Story-list commands return item IDs first. Do not present those IDs as a full trend summary until you fetch the actual items the user asked about.
+- Read public data with the documented CLI. Use the default API address unless the user asks for a different compatible address.
+- Start with the requested read. For one story, run `hacker-news-api-tool --output json items get --id 8863` with the ID you need. Use `auth check` if you need to check the connection.
+- If you get a list of IDs, fetch the relevant items before you explain what the stories say. Base your answer on the items you opened.
+- For a request to post, vote, comment or change an account, explain that this tool reads public data. Reads need no login or secrets.
