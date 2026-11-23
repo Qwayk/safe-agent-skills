@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import hashlib
 import time
 from pathlib import Path
 from typing import Any
 
 from ..errors import SafetyError, ValidationError
-from ..json_files import read_json_file, write_json_file
-from .read_api import redact_error, require_read_context
+from ..json_files import read_json_file, read_json_input, write_json_file
+from .read_api import require_read_context
+from .write_api import check_plan, credential_fingerprint, finish_write, post_write, response_object
 
 
 _REQUIRED_FIELDS = {
@@ -25,14 +25,6 @@ _REQUIRED_FIELDS = {
 
 def _utc_now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-
-
-def _sha256_of_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as fh:
-        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def _strip(value: Any) -> str:
@@ -92,17 +84,17 @@ def _validate_offer(*, offer: dict[str, Any], offer_num: int = 1) -> None:
         raise ValidationError("promotionCategories is required")
 
 
-def _load_offer_payload(path_raw: str | None) -> tuple[dict[str, Any], Path]:
+def _load_offer_payload(path_raw: str | None) -> tuple[dict[str, Any], Path, str]:
     source_path = Path(path_raw) if path_raw else Path("")
-    payload = read_json_file(source_path)
+    payload, file_digest = read_json_input(source_path)
     if not isinstance(payload, dict):
         raise ValidationError("--offer-file must contain one offer object")
 
     _validate_offer(offer=payload)
-    return payload, source_path
+    return payload, source_path, file_digest
 
 
-def _build_plan(*, ctx: dict[str, Any], advertiser_id: str, payload: dict[str, Any], source_path: Path) -> dict[str, Any]:
+def _build_plan(*, ctx: dict[str, Any], advertiser_id: str, payload: dict[str, Any], source_path: Path, file_digest: str) -> dict[str, Any]:
     return {
         "tool": ctx.get("tool"),
         "version": ctx.get("tool_version"),
@@ -118,8 +110,9 @@ def _build_plan(*, ctx: dict[str, Any], advertiser_id: str, payload: dict[str, A
         "preconditions": ["Dry-run only by default", "Apply requires --apply --yes --ack-irreversible"],
         "baseline": {
             "env_fingerprint": ctx["cfg"].base_url,
+            "credential_fingerprint": credential_fingerprint(ctx["cfg"]),
             "offer_file": str(source_path),
-            "offer_file_sha256": _sha256_of_file(source_path),
+            "offer_file_sha256": file_digest,
             "offer_type": payload.get("type"),
         },
         "proposed_changes": [
@@ -131,7 +124,7 @@ def _build_plan(*, ctx: dict[str, Any], advertiser_id: str, payload: dict[str, A
         ],
         "verification_plan": {
             "type": "provider-response",
-            "notes": "Refuse only on transport or validation failure; review apply receipt",
+            "notes": "Check whether Awin confirmed the offer.",
         },
         "rollback": {
             "supported": False,
@@ -140,39 +133,7 @@ def _build_plan(*, ctx: dict[str, Any], advertiser_id: str, payload: dict[str, A
     }
 
 
-def _validate_plan(
-    *,
-    advertiser_id: str,
-    plan_obj: Any,
-    source_path: Path,
-    ctx: dict[str, Any],
-) -> None:
-    if not isinstance(plan_obj, dict):
-        raise ValidationError("--plan-in must contain a JSON object")
-
-    baseline = plan_obj.get("baseline")
-    if not isinstance(baseline, dict):
-        raise ValidationError("--plan-in is missing baseline")
-
-    expected_env = str(baseline.get("env_fingerprint") or "")
-    if expected_env != ctx["cfg"].base_url:
-        raise SafetyError("Refused: --plan-in env_fingerprint does not match the current environment")
-
-    selector = plan_obj.get("selector")
-    if not isinstance(selector, dict):
-        raise ValidationError("--plan-in is missing selector")
-
-    if str(selector.get("advertiser_id") or "") != advertiser_id:
-        raise SafetyError("Refused: --plan-in selector does not match requested advertiser id")
-
-    expected_sha = str(baseline.get("offer_file_sha256") or "")
-    if not expected_sha:
-        raise ValidationError("--plan-in is missing offer_file_sha256")
-    if expected_sha != _sha256_of_file(source_path):
-        raise SafetyError("Refused: offer file changed since --plan-in was created")
-
-
-def _build_receipt(*, ctx: dict[str, Any], advertiser_id: str, response_status: int) -> dict[str, Any]:
+def _build_receipt(*, ctx: dict[str, Any], advertiser_id: str) -> dict[str, Any]:
     return {
         "tool": ctx.get("tool"),
         "version": ctx.get("tool_version"),
@@ -183,13 +144,7 @@ def _build_receipt(*, ctx: dict[str, Any], advertiser_id: str, response_status: 
             "advertiser_id": advertiser_id,
             "endpoint": "promotion/advertiser/{advertiser_id}".format(advertiser_id=advertiser_id),
         },
-        "changed": True,
-        "verification": {
-            "ok": 200 <= int(response_status) < 300,
-            "details": {
-                "response_status": response_status,
-            },
-        },
+        "verification": {"details": {}},
         "diff_applied": [
             {
                 "resource": "offers",
@@ -211,9 +166,9 @@ def cmd_offers_create(args, ctx) -> int:
     if not advertiser_id:
         raise ValidationError("Missing --advertiser-id")
 
-    offer_payload, source_path = _load_offer_payload(getattr(args, "offer_file", None))
+    offer_payload, source_path, file_digest = _load_offer_payload(getattr(args, "offer_file", None))
 
-    plan = _build_plan(ctx=ctx, advertiser_id=advertiser_id, payload=offer_payload, source_path=source_path)
+    plan = _build_plan(ctx=ctx, advertiser_id=advertiser_id, payload=offer_payload, source_path=source_path, file_digest=file_digest)
 
     if not bool(ctx.get("apply")):
         plan_path = None
@@ -244,51 +199,29 @@ def cmd_offers_create(args, ctx) -> int:
     if not bool(ctx.get("ack_irreversible", False)):
         raise SafetyError("Refused: offers create requires --apply --yes --ack-irreversible")
 
-    _validate_plan(
-        advertiser_id=advertiser_id,
-        plan_obj=read_json_file(ctx["plan_in"]),
-        source_path=source_path,
-        ctx=ctx,
-    )
-
-    headers = {"Authorization": f"Bearer {cfg.token}", "content-type": "application/json"}
     endpoint = f"promotion/advertiser/{advertiser_id}"
-    http = ctx["http_client"]
-    try:
-        response = http.request(
-            "POST",
-            f"{cfg.base_url.rstrip('/')}/{endpoint}",
-            headers=headers,
-            params={},
-            json_body=offer_payload,
-        )
-    except Exception as exc:  # noqa: BLE001
-        message = redact_error(str(exc), cfg.token)
-        raise ValidationError(f"offers create request failed: {message}") from exc
-
-    receipt = _build_receipt(
-        ctx=ctx,
-        advertiser_id=advertiser_id,
-        response_status=response.status,
+    check_plan(
+        read_json_file(ctx["plan_in"]), cfg=cfg, advertiser_id=advertiser_id, endpoint=endpoint,
+        file_field="offer_file_sha256", file_digest=file_digest, file_description="offer file",
     )
 
-    if bool(ctx.get("receipt_out")):
-        receipt_out = write_json_file(ctx["receipt_out"], receipt)
-    else:
-        receipt_out = None
+    response, details = post_write(
+        ctx, endpoint, headers={"Authorization": f"Bearer {cfg.token}", "content-type": "application/json"},
+        params={}, json_body=offer_payload,
+    )
+    if response is not None:
+        data = response_object(response)
+        if data and (data.get("error") or data.get("errors") or data.get("success") is False):
+            details.update(state="rejected", error="Awin reported an offer error.")
+        elif response.status == 200 and (not response.body.strip() or data is not None):
+            details["state"] = "confirmed"
+        elif response.status == 202:
+            details["state"] = "pending"
+        else:
+            details["state"] = "unknown"
 
-    result = {
-        "ok": True,
-        "dry_run": False,
-        "operation": "offers create",
-        "advertiser_id": advertiser_id,
-        "endpoint": f"/promotion/advertiser/{advertiser_id}",
-        "method": "POST",
-        "status": response.status,
-        "result": {"response_status": response.status},
-        "receipt": receipt,
-        "receipt_out": receipt_out,
-    }
-    ctx["audit"].write("offers.create.apply", result)
-    ctx["out"].emit(result)
-    return 0
+    return finish_write(
+        ctx, operation="offers create", event="offers.create.apply",
+        receipt=_build_receipt(ctx=ctx, advertiser_id=advertiser_id),
+        details=details, next_step="Check MyOffers in Awin before creating the offer again.", fields={},
+    )

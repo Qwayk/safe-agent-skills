@@ -2,8 +2,10 @@
 
 ## [Unreleased]
 
-### Changed
-- Rebuilt the public-facing Awin Advertiser README and the main user docs into the newer user-first skill pattern, and added the README contract test.
+- Fixed the skill install command and first-run setup. The selected settings file controls which Awin account and token the CLI uses.
+- Saved plans now check the Awin token and the input contents used for the request. Recreate plans saved before this update.
+- Receipts now show pending and partial results, rejected transactions, and feed versions. A lost reply leaves a receipt with the next check.
+- Shortened the guides and removed demo files. Kept the dated checks and Awin example outputs.
 
 ## [0.1.1] - 2026-06-09
 

@@ -1189,9 +1189,9 @@ class TestConversionOrdersCreateCommand(unittest.TestCase):
     @patch.object(HttpClient, "request")
     def test_conversion_create_apply_uses_x_api_key_only(self, request_mock) -> None:
         request_mock.return_value = HttpResponse(
-            status=201,
+            status=200,
             headers={},
-            body=b'{"ok":true}',
+            body=b'{"batchId":"batch-1","successfulOrders":[{"orderReference":"o-1"}]}',
             url="https://api.awin.com/s2s/advertiser/123/orders",
         )
         with tempfile.TemporaryDirectory() as td:
@@ -1572,9 +1572,9 @@ class TestConversionOrdersCreateCommand(unittest.TestCase):
     @patch.object(HttpClient, "request")
     def test_conversion_create_plan_in_drift_check(self, request_mock) -> None:
         request_mock.return_value = HttpResponse(
-            status=201,
+            status=200,
             headers={},
-            body=b'{"ok":true}',
+            body=b'{"batchId":"batch-1","successfulOrders":[{"orderReference":"o-1"}]}',
             url="https://api.awin.com/s2s/advertiser/123/orders",
         )
         with tempfile.TemporaryDirectory() as td:
@@ -1663,9 +1663,9 @@ class TestConversionOrdersCreateCommand(unittest.TestCase):
     @patch.object(HttpClient, "request")
     def test_conversion_create_applies_and_writes_receipt(self, request_mock) -> None:
         request_mock.return_value = HttpResponse(
-            status=201,
+            status=200,
             headers={},
-            body=b'{"ok":true}',
+            body=b'{"batchId":"batch-1","successfulOrders":[{"orderReference":"o-1"}]}',
             url="https://api.awin.com/s2s/advertiser/123/orders",
         )
         with tempfile.TemporaryDirectory() as td:
@@ -1743,9 +1743,9 @@ class TestOffersCreateCommand(unittest.TestCase):
     @patch.object(HttpClient, "request")
     def test_offers_create_auth_mode_is_bearer_only(self, request_mock) -> None:
         request_mock.return_value = HttpResponse(
-            status=201,
+            status=200,
             headers={},
-            body=b'{"ok":true}',
+            body=b'{}',
             url="https://api.awin.com/promotion/advertiser/123",
         )
         with tempfile.TemporaryDirectory() as td:
@@ -2050,7 +2050,7 @@ class TestProductFeedsUploadCommand(unittest.TestCase):
         request_mock.return_value = HttpResponse(
             status=200,
             headers={},
-            body=b'{"status":"ok"}',
+            body=b'{"productsReceived":1,"version":8}',
             url="https://api.awin.com/advertisers/123/awinfeeds/retail/en_GB/products",
         )
         with tempfile.TemporaryDirectory() as td:
@@ -2245,7 +2245,7 @@ class TestProductFeedsUploadCommand(unittest.TestCase):
         request_mock.return_value = HttpResponse(
             status=200,
             headers={},
-            body=b'{"status":"ok"}',
+            body=b'{"productsReceived":1,"version":8}',
             url="https://api.awin.com/advertisers/123/awinfeeds/retail/en_GB/products",
         )
         with tempfile.TemporaryDirectory() as td:

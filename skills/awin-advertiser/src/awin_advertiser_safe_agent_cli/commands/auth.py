@@ -17,7 +17,7 @@ def cmd_auth_check(args, ctx) -> int:
             "setup_needed": True,
             "error": "Missing AWIN_ADVERTISER_ID",
             "error_type": "SetupNeeded",
-            "next_step": "Set AWIN_ADVERTISER_ID in .env and run auth check again",
+            "next_step": f"Set AWIN_ADVERTISER_ID in {ctx['env_file']} and run the same command again",
         }
         ctx["out"].emit(out)
         return 1
@@ -41,6 +41,7 @@ def cmd_auth_check(args, ctx) -> int:
     out = {
         "ok": True,
         "auth_check": {
+            "advertiser_id": cfg.advertiser_id,
             "endpoint": endpoint,
             "method": "GET",
             "auth_header": "Bearer",

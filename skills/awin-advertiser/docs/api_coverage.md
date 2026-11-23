@@ -1,10 +1,6 @@
 # API coverage
 
-Awin Advertiser coverage shows exactly what this skill can do with advertiser transactions, publisher checks, offers, product feeds, and conversion work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
-
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can review advertiser transactions, publisher details, and product-feed coverage for this account."
+These are the Awin requests the tool can make. [Run a command](command_reference.md) or [check the test results](proof.md).
 
 ## Summary
 
@@ -19,7 +15,7 @@ A good first coverage check is: "Check whether this skill can review advertiser 
 |---|---|---|---|---|---|
 | GET `/advertisers/{advertiserId}/transactions/` | list transactions | `transactions list` | implemented | none | Officially used list endpoint; query uses `startDate`, `endDate`, optional `dateType`, `publisherId`, `status`, `timezone`, and `showBasketProducts`. |
 | GET `/advertisers/{advertiserId}/transactions` | transactions by ids | `transactions by-ids` | implemented | none | Implemented now for comma-separated `ids` lookups; shares request shape with list endpoint except path and ID query. |
-| POST `/advertisers/{advertiserId}/transactions/batch` | batch validate (approve/decline/amend/amendTrackingParameters) | `transactions batch validate` | implemented | `--apply --yes --ack-irreversible --plan-in`, `--plan-out`, `--receipt-out` | Local validation enforces action/object requirements, target selection, and max 40,000 actions before request. Apply path posts JSON array to endpoint and rejects provider responses with failure markers. Auth uses `Authorization: Bearer <token>` plus `accessToken=<token>` for deterministic parity with other non-conversion transaction commands. Batch page is ambiguous in docs (`accessToken` appears as a header label); this tool uses a documented deterministic choice. |
+| POST `/advertisers/{advertiserId}/transactions/batch` | batch validate (approve/decline/amend/amendTrackingParameters) | `transactions batch validate` | implemented | `--apply --yes --ack-irreversible --plan-in`, `--plan-out`, `--receipt-out` | Local validation enforces action/object requirements, target selection, and max 40,000 actions before request. Sends a JSON array and reads the returned batch or transaction status. Auth uses `Authorization: Bearer <token>` plus `accessToken=<token>` for parity with other non-conversion transaction commands. The batch page is ambiguous in docs (`accessToken` appears as a header label), so the command uses the documented bearer-plus-query pattern. |
 | GET `/advertisers/{advertiserId}/transactions/jobs` | transaction job status list | `transactions jobs list` | implemented | none | Header-only `Bearer`. |
 | GET `/advertisers/{advertiserId}/transactions/jobs/{jobId}` | transaction job status detail | `transactions jobs show` | implemented | none | Header-only `Bearer` with optional `output` query param (`errors` or `all`). |
 | POST `/s2s/advertiser/{advertiser_id}/orders` | conversion order posting | `conversion orders create` | implemented | `--apply --yes --ack-irreversible --plan-in`, `--plan-out` | `x-api-key` only. `orders` required. Supports dry-run by default with optional `--webhook-url` and receipt output on apply. |
@@ -27,11 +23,10 @@ A good first coverage check is: "Check whether this skill can review advertiser 
 | GET `/advertisers/{advertiserId}/reports/campaign` | campaign reporting | `reports campaign` | implemented | none | Uses `Authorization: Bearer <token>` plus `accessToken=<token>` query param. Supports `startDate`, `endDate`, `campaign`, `publisherIds`, `includeNumbersWithoutCampaign`, `interval`, and `timezone`. `--date-type` is not supported on this command. |
 | GET `/advertisers/{advertiserId}/publishers` | publisher accounts for advertiser | `auth check`, `publishers list` | implemented | read-only | Both shipped commands use the same official publishers endpoint. `auth check` is the auth smoke command, and `publishers list` is the full list read. Uses `Authorization: Bearer <token>` and `accessToken=<token>` query param. |
 | POST `/promotion/advertiser/{advertiser_id}` | offers create | `offers create` | implemented | `--apply --yes --ack-irreversible --plan-in`, `--plan-out` | Bearer header only. One offer per request with required fields/validation. |
-| POST `/advertisers/{ADVERTISER_ID}/awinfeeds/{VERTICAL}/{LOCALE}/products` | product-feeds upload | `product-feeds upload` | implemented | `--apply --yes --ack-irreversible --plan-in`, `--plan-out` | Bearer header only. JSONL body requires `id`, `title`, `description`, `link`, `image_link`. Response success checks body for validation errors even on HTTP 200. |
+| POST `/advertisers/{ADVERTISER_ID}/awinfeeds/{VERTICAL}/{LOCALE}/products` | product-feeds upload | `product-feeds upload` | implemented | `--apply --yes --ack-irreversible --plan-in`, `--plan-out` | Bearer header only. JSONL body requires `id`, `title`, `description`, `link`, `image_link`. Uses `application/jsonlines` and checks returned product count, feed version and errors. |
 
 ## Implementation notes and live limits
 
-- `publishers`, `transactions`, `transactions/jobs`, reports, offers, product-feeds, conversion orders create, and transaction batch validate are implemented as deterministic JSON in this tool.
-- `transactions/jobs`, `offers`, and `product-feeds` use header-only bearer auth; `publishers`, `transactions`, `reports`, and `transactions batch validate` use bearer + access-token query.
-- Conversion uses `x-api-key` auth for POST `/s2s/advertiser/{advertiser_id}/orders`. Conversion command is dry-run by default with explicit write gates and optional plan/receipt artifacts.
-- Run history is implemented for local tracking.
+- The table covers the legacy advertiser routes this tool ships. See [Awin's authentication guide](https://help.awin.com/apidocs/api-authentication) for its newer API and current access requirements.
+- Batch validation still sends Bearer auth and `accessToken` in the query. Awin's batch page lists `accessToken` under headers, and live acceptance of the current form remains unverified.
+- The CLI saves review plans and records what Awin returns. No live advertiser run is recorded in [the test results](proof.md).

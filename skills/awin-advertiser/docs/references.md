@@ -1,8 +1,8 @@
-# References (sources)
+# Awin references
 
 ## Official Awin source pages used by this tool
 
-Last verified (UTC): 2026-06-09
+Original mapping checked June 9, 2026 (UTC).
 
 - API overview / plan access context
   - `Awin's APIs overview` - https://help.awin.com/advertisers/docs/en/awins-apis-overview
@@ -32,41 +32,6 @@ Last verified (UTC): 2026-06-09
 - Conversion API
   - `Conversion API` - https://help.awin.com/apidocs/conversion-api
 
-## Provider
+## Authentication and replies
 
-- Provider: Awin Advertiser API
-- Base URL: `https://api.awin.com`
-- API reference: Awin API docs published by the platform (entry URL in tool environment)
-
-## Auth mapping by endpoint (this tool)
-
-- `GET /advertisers/{advertiserId}/transactions/`
-- `GET /advertisers/{advertiserId}/transactions`
-- `GET /advertisers/{advertiserId}/reports/publisher`
-- `GET /advertisers/{advertiserId}/reports/campaign`
-- `GET /advertisers/{advertiserId}/publishers`
-
-  - `Authorization: Bearer <AWIN_API_TOKEN>`
-  - `accessToken=<AWIN_API_TOKEN>` query parameter
-
-- `POST /advertisers/{advertiserId}/transactions/batch`
-
-  - `Authorization: Bearer <AWIN_API_TOKEN>` (required by non-conversion rules)
-  - `accessToken=<AWIN_API_TOKEN>` query parameter was used by this tool for deterministic parity with other non-conversion transaction flows.
-  - Note: the public batch page currently shows `Authorization` and a stray `accessToken` entry in the header-parameters area. To keep behavior deterministic, this implementation treats access token as query token as well.
-
-- `GET /advertisers/{advertiserId}/transactions/jobs`
-- `GET /advertisers/{advertiserId}/transactions/jobs/{jobId}`
-  - `Authorization: Bearer <AWIN_API_TOKEN>` only
-
-- `POST /promotion/advertiser/{advertiser_id}`
-- `POST /advertisers/{ADVERTISER_ID}/awinfeeds/{VERTICAL}/{LOCALE}/products`
-  - `Authorization: Bearer <AWIN_API_TOKEN>` (no `accessToken` query parameter shown in fetched docs)
-
-- `POST /s2s/advertiser/{advertiser_id}/orders`
-  - `x-api-key: <AWIN_API_TOKEN>` only
-  - dry-run by default in CLI
-
-## Source-use note
-
-- Only official Awin docs were used for this tool mapping and the auth notes above.
+[API coverage](api_coverage.md) lists the authentication used by each command. On November 23, 2026, the cleanup checked the Awin pages above for authentication, advertiser publishers, offers, feed uploads, transaction validation and jobs, and conversion orders. The tests used simulated replies.

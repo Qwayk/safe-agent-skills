@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
@@ -8,11 +9,16 @@ from .errors import ValidationError
 
 
 def read_json_file(path: str | Path) -> Any:
+    return read_json_input(path)[0]
+
+
+def read_json_input(path: str | Path) -> tuple[Any, str]:
     p = Path(path)
     if not p.exists():
         raise ValidationError(f"JSON file not found: {p}")
     try:
-        return json.loads(p.read_text(encoding="utf-8"))
+        contents = p.read_bytes()
+        return json.loads(contents.decode("utf-8")), sha256(contents).hexdigest()
     except Exception as e:  # noqa: BLE001
         raise ValidationError(f"Invalid JSON file: {p}: {type(e).__name__}: {e}") from None
 

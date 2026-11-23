@@ -162,25 +162,31 @@ def _safe_error_text(error: Exception, *, cfg=None) -> str:
     return redact_sensitive_text(str(error), secrets=secrets or None)
 
 
+def _add_write_flags(parser: argparse.ArgumentParser, *, use_parent_defaults: bool = False) -> None:
+    # Subcommands can accept these flags without replacing values set before the command.
+    switch_default = argparse.SUPPRESS if use_parent_defaults else False
+    path_default = argparse.SUPPRESS if use_parent_defaults else None
+    parser.add_argument("--apply", default=switch_default, action="store_true", help="Send the approved change to Awin")
+    parser.add_argument("--yes", default=switch_default, action="store_true", help="Confirm the approved change")
+    parser.add_argument(
+        "--ack-irreversible", default=switch_default, action="store_true",
+        help="Confirm that you reviewed how to recover if the change goes wrong",
+    )
+    parser.add_argument("--plan-out", default=path_default, help="Save the preview to this JSON file")
+    parser.add_argument("--plan-in", default=path_default, help="Check apply against this saved preview")
+    parser.add_argument("--receipt-out", default=path_default, help="Save the receipt to this JSON file")
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = _ToolArgumentParser(prog=_TOOL)
     p.add_argument("--version", action="store_true", help="Print version and exit")
-    p.add_argument("--env-file", default=".env", help="Optional .env file path (default: .env)")
+    p.add_argument("--env-file", help="Read Awin settings only from this file")
     p.add_argument("--timeout-s", type=float, default=None, help="Override timeout seconds")
     p.add_argument("--verbose", action="store_true", help="Verbose HTTP logging to stderr")
     p.add_argument("--debug", action="store_true", help="Show stack traces on errors")
     p.add_argument("--output", choices=("json", "text"), default="json", help="Output format (default: json)")
     p.add_argument("--log-file", default=None, help="Optional audit log path (JSONL)")
-    p.add_argument("--apply", action="store_true", help="Apply remote changes (default is dry-run for write commands)")
-    p.add_argument("--yes", action="store_true", help="Required with --apply for risky actions")
-    p.add_argument("--plan-out", default=None, help="Optional path to write a dry-run plan JSON")
-    p.add_argument("--plan-in", default=None, help="Optional plan JSON to validate before apply")
-    p.add_argument("--receipt-out", default=None, help="Optional path to write an apply receipt JSON")
-    p.add_argument(
-        "--ack-irreversible",
-        action="store_true",
-        help="Required with --apply --yes for irreversible write actions",
-    )
+    _add_write_flags(p)
     p.add_argument("--run-id", default=None, help="Optional run id (for run history/audit)")
     p.add_argument("--artifacts-dir", default=None, help="Optional artifacts directory for this run")
     p.add_argument("--no-artifacts", action="store_true", help="Disable writing run artifacts")
@@ -261,16 +267,7 @@ def build_parser() -> argparse.ArgumentParser:
     transactions_batch_validate = transactions_batch_sub.add_parser("validate", help="Validate and apply advertiser transaction actions")
     transactions_batch_validate.add_argument("--advertiser-id", required=True, help="Advertiser id for batch endpoint")
     transactions_batch_validate.add_argument("--batch-file", required=True, help="JSON file containing batch action array")
-    transactions_batch_validate.add_argument("--apply", action="store_true", help="Apply remote change (default is dry-run plan)")
-    transactions_batch_validate.add_argument("--yes", action="store_true", help="Required with --apply for risky actions")
-    transactions_batch_validate.add_argument("--plan-out", default=None, help="Optional path to write a dry-run plan JSON")
-    transactions_batch_validate.add_argument("--plan-in", default=None, help="Optional plan JSON to validate before apply")
-    transactions_batch_validate.add_argument("--receipt-out", default=None, help="Optional path to write apply receipt JSON")
-    transactions_batch_validate.add_argument(
-        "--ack-irreversible",
-        action="store_true",
-        help="Required with --apply --yes for irreversible write actions",
-    )
+    _add_write_flags(transactions_batch_validate, use_parent_defaults=True)
     transactions_batch_validate.set_defaults(func=transactions_cmd.cmd_transactions_batch_validate, write_capable=True)
 
     transactions_jobs_list = transactions_sub.add_parser("jobs", help="Advertiser transaction job reads")
@@ -344,16 +341,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="JSON file containing conversion orders",
     )
     conversion_orders_create.add_argument("--webhook-url", default=None, help="Optional webhook URL for completion events")
-    conversion_orders_create.add_argument("--apply", action="store_true", help="Apply remote change (default is dry-run plan)")
-    conversion_orders_create.add_argument("--yes", action="store_true", help="Required with --apply for risky actions")
-    conversion_orders_create.add_argument("--plan-out", default=None, help="Optional path to write a dry-run plan JSON")
-    conversion_orders_create.add_argument("--plan-in", default=None, help="Optional path to validate against before apply")
-    conversion_orders_create.add_argument("--receipt-out", default=None, help="Optional path to write apply receipt JSON")
-    conversion_orders_create.add_argument(
-        "--ack-irreversible",
-        action="store_true",
-        help="Required with --apply --yes for irreversible write actions",
-    )
+    _add_write_flags(conversion_orders_create, use_parent_defaults=True)
     conversion_orders_create.set_defaults(func=conversion_cmd.cmd_conversion_orders_create, write_capable=True)
 
     offers = sub.add_parser("offers", help="Advertiser offer writes")
@@ -361,16 +349,7 @@ def build_parser() -> argparse.ArgumentParser:
     offers_create = offers_sub.add_parser("create", help="Create one advertiser offer")
     offers_create.add_argument("--advertiser-id", required=True, help="Advertiser id for offer endpoint")
     offers_create.add_argument("--offer-file", required=True, help="JSON file containing one offer object")
-    offers_create.add_argument("--apply", action="store_true", help="Apply remote change (default is dry-run plan)")
-    offers_create.add_argument("--yes", action="store_true", help="Required with --apply for risky actions")
-    offers_create.add_argument("--plan-out", default=None, help="Optional path to write a dry-run plan JSON")
-    offers_create.add_argument("--plan-in", default=None, help="Optional plan JSON to validate before apply")
-    offers_create.add_argument("--receipt-out", default=None, help="Optional path to write apply receipt JSON")
-    offers_create.add_argument(
-        "--ack-irreversible",
-        action="store_true",
-        help="Required with --apply --yes for irreversible write actions",
-    )
+    _add_write_flags(offers_create, use_parent_defaults=True)
     offers_create.set_defaults(func=offers_cmd.cmd_offers_create, write_capable=True)
 
     product_feeds = sub.add_parser("product-feeds", help="Advertiser product feed writes")
@@ -384,16 +363,7 @@ def build_parser() -> argparse.ArgumentParser:
     product_feeds_upload.add_argument("--vertical", required=True, choices=("retail",), help="Feed vertical")
     product_feeds_upload.add_argument("--locale", required=True, help="Feed locale token, e.g. en_GB")
     product_feeds_upload.add_argument("--feed-file", required=True, help="UTF-8 JSONL file path")
-    product_feeds_upload.add_argument("--apply", action="store_true", help="Apply remote change (default is dry-run plan)")
-    product_feeds_upload.add_argument("--yes", action="store_true", help="Required with --apply for risky actions")
-    product_feeds_upload.add_argument("--plan-out", default=None, help="Optional path to write a dry-run plan JSON")
-    product_feeds_upload.add_argument("--plan-in", default=None, help="Optional plan JSON to validate before apply")
-    product_feeds_upload.add_argument("--receipt-out", default=None, help="Optional path to write apply receipt JSON")
-    product_feeds_upload.add_argument(
-        "--ack-irreversible",
-        action="store_true",
-        help="Required with --apply --yes for irreversible write actions",
-    )
+    _add_write_flags(product_feeds_upload, use_parent_defaults=True)
     product_feeds_upload.set_defaults(func=product_feeds_cmd.cmd_product_feeds_upload, write_capable=True)
 
     return p
@@ -423,9 +393,10 @@ def main(argv: list[str]) -> int:
         return 1
 
     command_str = f"{_TOOL} {' '.join(argv)}"
+    env_path = args.env_file or ".env"
     write_capable = bool(getattr(args, "write_capable", False))
     run_ctx: RunContext = init_run_context(
-        env_file=str(args.env_file),
+        env_file=env_path,
         enabled=write_capable,
         run_id=str(args.run_id) if args.run_id else None,
         artifacts_dir=str(args.artifacts_dir) if args.artifacts_dir else None,
@@ -442,7 +413,7 @@ def main(argv: list[str]) -> int:
         loggers.append(AuditLogger(path=global_audit_log_path, enabled=True))
     audit = CompositeAuditLogger(loggers) if len(loggers) > 1 else (loggers[0] if loggers else AuditLogger(path=None, enabled=False))
 
-    runs_index_path = runs_index_path_for_env_file(str(args.env_file))
+    runs_index_path = runs_index_path_for_env_file(env_path)
     if str(getattr(args, "cmd", "") or "") == "runs":
         run_ctx = RunContext(
             enabled=False,
@@ -483,7 +454,7 @@ def main(argv: list[str]) -> int:
                 "tool": _TOOL,
                 "tool_version": __version__,
                 "command_str": command_str,
-                "env_file": str(args.env_file),
+                "env_file": env_path,
                 "timeout_s": None,
                 "verbose": bool(args.verbose),
                 "run_id": run_ctx.run_id,
@@ -503,7 +474,7 @@ def main(argv: list[str]) -> int:
             "tool": _TOOL,
             "tool_version": __version__,
             "command_str": command_str,
-            "env_file": str(args.env_file),
+            "env_file": env_path,
             "timeout_s": timeout_s,
             "verbose": bool(args.verbose),
             "apply": bool(args.apply),
@@ -522,7 +493,9 @@ def main(argv: list[str]) -> int:
         }
 
         if run_ctx.enabled and run_ctx.artifacts_dir:
-            if not ctx.get("plan_out") and not ctx.get("receipt_out"):
+            if ctx["apply"] and not ctx.get("receipt_out"):
+                ctx["receipt_out"] = str(run_ctx.artifacts_dir / "receipt.json")
+            elif not ctx["apply"] and not ctx.get("plan_out") and not ctx.get("receipt_out"):
                 ctx["plan_out"] = str(run_ctx.artifacts_dir / "plan.json")
 
         audit.bind_context(
@@ -542,20 +515,23 @@ def main(argv: list[str]) -> int:
         output_plan = output_obj.get("plan_out") if isinstance(output_obj, dict) else None
         output_receipt = output_obj.get("receipt_out") if isinstance(output_obj, dict) else None
 
-        _finalize_run_artifacts(
-            run_ctx=run_ctx,
-            tool=_TOOL,
-            version=__version__,
-            command=command_str,
-            env_fingerprint=cfg.base_url,
-            output_obj=output_obj,
-            audit_log_path=run_audit_log_path or global_audit_log_path,
-            audit_log_global_path=global_audit_log_path,
-            apply=bool(args.apply),
-            yes=bool(args.yes),
-            plan_path=str(output_plan) if isinstance(output_plan, str) else None,
-            receipt_path=str(output_receipt) if isinstance(output_receipt, str) else None,
-        )
+        try:
+            _finalize_run_artifacts(
+                run_ctx=run_ctx,
+                tool=_TOOL,
+                version=__version__,
+                command=command_str,
+                env_fingerprint=cfg.base_url,
+                output_obj=output_obj,
+                audit_log_path=run_audit_log_path or global_audit_log_path,
+                audit_log_global_path=global_audit_log_path,
+                apply=bool(args.apply),
+                yes=bool(args.yes),
+                plan_path=str(output_plan) if isinstance(output_plan, str) else None,
+                receipt_path=str(output_receipt) if isinstance(output_receipt, str) else None,
+            )
+        except OSError as exc:
+            print(f"Could not save run history: {_safe_error_text(exc, cfg=cfg)}", file=sys.stderr)
         return rc
 
     except KeyboardInterrupt:

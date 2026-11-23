@@ -54,7 +54,7 @@ def require_read_context(out, cfg: Config | None) -> Config | None:
         emit_setup_needed_result(
             out,
             error="Missing AWIN_API_TOKEN",
-            next_step="Set AWIN_API_TOKEN in .env and run again",
+            next_step="Set AWIN_API_TOKEN in the selected settings file and run again",
         )
         return None
 

@@ -1,22 +1,20 @@
-# Proof and verification
+# Awin Advertiser test results
 
-Awin Advertiser proof should answer a simple question: what has actually been checked for advertiser transactions, publisher checks, offers, product feeds, and conversion work, and what still needs live credentials, permissions, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Fresh CLI installs from the source and the local release copy each passed 84 tests with the network blocked. The local skill installer copied all 66 release files under `awin-advertiser-safe-cli` in a temporary Codex skills folder.
 
-If you only check one thing, check the latest verification date, report proof, and any upload or conversion-plan refusal before trusting an advertiser task.
+The tests ran the quickstart and checked that an explicit settings file controls the account. All four write commands refused a changed token. The tests also covered changed input, older plans, pending and partly failed orders, rejected transactions, feed version and product count, and an unclear reply that left a receipt without resending the request.
 
-## Last verified
+## June 11, 2026 checks
 
 - Date (UTC): 2026-06-11
 - Tool version: 0.1.1
 - Base URL: `https://api.awin.com`
 
-## Smoke checks
+### Commands from the June record
 
-Run in this folder:
-
-You do not need to run these commands yourself. They exist for auditing and proof.
+The June record listed these commands. Use the [current quickstart](quickstart.md) or [command guide](command_reference.md) for setup and new work.
 
 1. `python3 -m venv .venv`
 2. `.venv/bin/python -m pip install -e .`
@@ -41,18 +39,6 @@ You do not need to run these commands yourself. They exist for auditing and proo
 21. `.venv/bin/python -m awin_advertiser_safe_agent_cli --output json transactions batch validate --advertiser-id <id> --batch-file <path/to/batch.json> --plan-out <path/to/plan.json>`
 22. `.venv/bin/python -m awin_advertiser_safe_agent_cli --output json transactions batch validate --advertiser-id <id> --batch-file <path/to/batch.json> --apply --yes --ack-irreversible --plan-in <path/to/plan.json> --receipt-out <path/to/receipt.json>`
 
-## Live verification notes
+## Live access
 
-- This tool is locally tested, documented, and shipped in this repo, but no recorded live run with real Awin advertiser credentials is stored here yet.
-- `publishers list`, `transactions list`, `transactions by-ids`, `transactions jobs list`, `transactions jobs show`, `transactions batch validate`, `reports publisher`, `reports campaign`, `offers create`, `product-feeds upload`, and `conversion orders create` are implemented in the shipped CLI surface.
-- All relevant read commands keep explicit `--advertiser-id` on the command line.
-- Auth behavior differs by endpoint family:
-  - `transactions/jobs` endpoints use `Authorization: Bearer <token>` header only.
-- `publishers`, `transactions`, `transactions batch validate`, `reports publisher`, and `reports campaign` use both `Authorization: Bearer <token>` and `accessToken=<token>` query.
-  - For batch validate, the endpoint docs are ambiguous because they show an `accessToken` header label; this tool resolves that by adding the token both in `Authorization` and query for deterministic behavior in this tool.
-- `offers create` and `product-feeds upload` are Bearer-only (no `accessToken` query param).
-- `conversion orders create` uses the same `AWIN_API_TOKEN`, but the official endpoint expects it as `x-api-key` and runs in dry-run mode by default.
-- The smoke commands above are the local audit baseline for this shipped version. They do not mean live provider verification already happened.
-- If required env values are missing, read commands return `blocked: true` and `setup_needed: true` when auth context is unavailable.
-- Write requires `--apply --yes --ack-irreversible --plan-in` and supports `--plan-out` and `--receipt-out`.
-- Current write families leave plans and receipts, but they do not promise a broad saved before-state or automatic restore path.
+No run with real Awin advertiser credentials is recorded here. The [coverage page](api_coverage.md) explains the endpoint limits. The JSON in [example outputs](examples/outputs/) shows earlier tool versions.

@@ -87,6 +87,12 @@ class HttpResponse:
         return self.body.decode("utf-8", errors="replace")
 
 
+class HttpStatusError(RuntimeError):
+    def __init__(self, status: int, message: str):
+        super().__init__(message)
+        self.status = status
+
+
 class HttpClient:
     def __init__(self, *, timeout_s: float, verbose: bool, user_agent: str):
         self._timeout_s = timeout_s
@@ -132,6 +138,7 @@ class HttpClient:
                     json=json_body,
                     data=data,
                     timeout=self._timeout_s,
+                    allow_redirects=method.upper() != "POST",
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
@@ -162,4 +169,4 @@ class HttpClient:
                 continue
 
             safe_body = redact_sensitive_text(resp.text, secrets=secrets)
-            raise RuntimeError(f"HTTP {resp.status_code} for {method} {safe_response_url}\n{safe_body}")
+            raise HttpStatusError(resp.status_code, f"HTTP {resp.status_code} for {method} {safe_response_url}\n{safe_body}")

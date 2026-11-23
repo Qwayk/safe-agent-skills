@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import hashlib
 import time
 from pathlib import Path
 from typing import Any
 
 from ..errors import SafetyError, ValidationError
-from ..json_files import read_json_file, write_json_file
+from ..json_files import read_json_file, read_json_input, write_json_file
 from .read_api import extract_list, parse_iso8601, read_request, redact_error, require_read_context
+from .write_api import check_plan, credential_fingerprint, finish_write, post_write
 
 _MAX_BATCH_ACTIONS = 40000
 _ALLOWED_BATCH_ACTIONS = {"approve", "decline", "amend", "amendTrackingParameters"}
@@ -15,14 +15,6 @@ _ALLOWED_BATCH_ACTIONS = {"approve", "decline", "amend", "amendTrackingParameter
 
 def _utc_now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-
-
-def _sha256_of_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as fh:
-        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def _strip(value: Any) -> str:
@@ -364,19 +356,19 @@ def _validate_amend_tracking_parameters_action(*, action_payload: dict[str, Any]
             raise ValidationError(f"Item #{action_num} customParameters.put value for '{key}' cannot be blank")
 
 
-def _load_batch_payload(path_raw: str | None) -> tuple[list[dict[str, Any]], Path, int]:
+def _load_batch_payload(path_raw: str | None) -> tuple[list[dict[str, Any]], Path, int, str]:
     source_path = Path(path_raw) if path_raw else Path("")
-    payload_obj = read_json_file(source_path)
+    payload_obj, file_digest = read_json_input(source_path)
 
     if not isinstance(payload_obj, list):
         raise ValidationError("--batch-file must be a JSON array of actions")
 
     payload = [item for item in payload_obj]
     _validate_batch_payload(batch_payload=payload)
-    return payload, source_path, len(payload)
+    return payload, source_path, len(payload), file_digest
 
 
-def _build_batch_plan(*, ctx: dict[str, Any], advertiser_id: str, batch_payload: list[dict[str, Any]], source_path: Path) -> dict[str, Any]:
+def _build_batch_plan(*, ctx: dict[str, Any], advertiser_id: str, batch_payload: list[dict[str, Any]], source_path: Path, file_digest: str) -> dict[str, Any]:
     action_breakdown = _count_batch_actions(batch_payload)
 
     return {
@@ -394,8 +386,9 @@ def _build_batch_plan(*, ctx: dict[str, Any], advertiser_id: str, batch_payload:
         "preconditions": ["Dry-run only by default", "Apply requires --apply --yes --ack-irreversible"],
         "baseline": {
             "env_fingerprint": ctx["cfg"].base_url,
+            "credential_fingerprint": credential_fingerprint(ctx["cfg"]),
             "batch_file": str(source_path),
-            "batch_file_sha256": _sha256_of_file(source_path),
+            "batch_file_sha256": file_digest,
             "batch_action_count": len(batch_payload),
             "action_breakdown": action_breakdown,
         },
@@ -410,7 +403,7 @@ def _build_batch_plan(*, ctx: dict[str, Any], advertiser_id: str, batch_payload:
         ],
         "verification_plan": {
             "type": "provider-response",
-            "notes": "Refuse on transport or provider rejection; review response for rejected actions",
+            "notes": "Check the returned transaction or job status.",
         },
         "rollback": {
             "supported": False,
@@ -419,47 +412,10 @@ def _build_batch_plan(*, ctx: dict[str, Any], advertiser_id: str, batch_payload:
     }
 
 
-def _validate_plan(
-    *,
-    advertiser_id: str,
-    plan_obj: object,
-    source_path: Path,
-    ctx: dict[str, Any],
-) -> None:
-    if not isinstance(plan_obj, dict):
-        raise ValidationError("--plan-in must contain a JSON object")
-
-    baseline = plan_obj.get("baseline")
-    if not isinstance(baseline, dict):
-        raise ValidationError("--plan-in is missing baseline")
-
-    expected_env = str(baseline.get("env_fingerprint") or "")
-    if expected_env != ctx["cfg"].base_url:
-        raise SafetyError("Refused: --plan-in env_fingerprint does not match the current environment")
-
-    selector = plan_obj.get("selector")
-    if not isinstance(selector, dict):
-        raise ValidationError("--plan-in is missing selector")
-
-    if str(selector.get("advertiser_id") or "") != advertiser_id:
-        raise SafetyError("Refused: --plan-in selector does not match requested advertiser id")
-
-    expected_endpoint = f"advertisers/{advertiser_id}/transactions/batch"
-    if str(selector.get("endpoint") or "") != expected_endpoint:
-        raise SafetyError("Refused: --plan-in selector does not match requested endpoint")
-
-    expected_sha = str(baseline.get("batch_file_sha256") or "")
-    if not expected_sha:
-        raise ValidationError("--plan-in is missing batch_file_sha256")
-    if expected_sha != _sha256_of_file(source_path):
-        raise SafetyError("Refused: batch file changed since --plan-in was created")
-
-
 def _build_receipt(
     *,
     ctx: dict[str, Any],
     advertiser_id: str,
-    response_status: int,
     batch_count: int,
     action_breakdown: dict[str, int],
 ) -> dict[str, Any]:
@@ -473,11 +429,8 @@ def _build_receipt(
             "advertiser_id": advertiser_id,
             "endpoint": f"advertisers/{advertiser_id}/transactions/batch",
         },
-        "changed": True,
         "verification": {
-            "ok": 200 <= int(response_status) < 300,
             "details": {
-                "response_status": response_status,
                 "batch_action_count": batch_count,
                 "action_breakdown": action_breakdown,
             },
@@ -612,13 +565,14 @@ def cmd_transactions_batch_validate(args, ctx) -> int:
     if not advertiser_id:
         raise ValidationError("Missing --advertiser-id")
 
-    batch_payload, source_path, action_count = _load_batch_payload(getattr(args, "batch_file", None))
+    batch_payload, source_path, action_count, file_digest = _load_batch_payload(getattr(args, "batch_file", None))
     action_breakdown = _count_batch_actions(batch_payload)
     plan = _build_batch_plan(
         ctx=ctx,
         advertiser_id=advertiser_id,
         batch_payload=batch_payload,
         source_path=source_path,
+        file_digest=file_digest,
     )
 
     if not bool(ctx.get("apply")):
@@ -651,73 +605,67 @@ def cmd_transactions_batch_validate(args, ctx) -> int:
     if not bool(ctx.get("ack_irreversible", False)):
         raise SafetyError("Refused: transactions batch validate requires --apply --yes --ack-irreversible")
 
-    _validate_plan(
-        advertiser_id=advertiser_id,
-        plan_obj=read_json_file(str(ctx["plan_in"])),
-        source_path=source_path,
-        ctx=ctx,
-    )
-
-    headers = {
-        "Authorization": f"Bearer {cfg.token}",
-        "content-type": "application/json",
-    }
     endpoint = f"advertisers/{advertiser_id}/transactions/batch"
-    http = ctx["http_client"]
-    try:
-        response = http.request(
-            "POST",
-            f"{cfg.base_url.rstrip('/')}/{endpoint}",
-            headers=headers,
-            params={"accessToken": cfg.token},
-            json_body=batch_payload,
-        )
-    except Exception as exc:  # noqa: BLE001
-        message = redact_error(str(exc), cfg.token)
-        raise ValidationError(f"transactions batch validate request failed: {message}") from exc
-
-    try:
-        payload = response.json()
-    except Exception as exc:  # noqa: BLE001
-        raise ValidationError(f"transactions batch validate response was not JSON: {exc}") from exc
-
-    validation_messages = _extract_batch_rejections(payload)
-    if validation_messages:
-        raise ValidationError(
-            "transactions batch validate rejected by provider: "
-            f"{', '.join(sorted(set(validation_messages)))}"
-        )
-
-    receipt = _build_receipt(
-        ctx=ctx,
-        advertiser_id=advertiser_id,
-        response_status=response.status,
-        batch_count=action_count,
-        action_breakdown=action_breakdown,
+    check_plan(
+        read_json_file(ctx["plan_in"]), cfg=cfg, advertiser_id=advertiser_id, endpoint=endpoint,
+        file_field="batch_file_sha256", file_digest=file_digest, file_description="batch file",
     )
 
-    if bool(ctx.get("receipt_out")):
-        receipt_out = write_json_file(ctx["receipt_out"], receipt)
-    else:
-        receipt_out = None
+    response, details = post_write(
+        ctx, endpoint, headers={"Authorization": f"Bearer {cfg.token}", "content-type": "application/json"},
+        params={"accessToken": cfg.token}, json_body=batch_payload,
+    )
+    if response is not None:
+        try:
+            payload = response.json()
+        except (ValueError, UnicodeError):
+            payload = None
+        details.update(_batch_result(response.status, payload, cfg.token))
 
-    out = {
-        "ok": True,
-        "dry_run": False,
-        "operation": "transactions batch validate",
-        "advertiser_id": advertiser_id,
-        "endpoint": f"/advertisers/{advertiser_id}/transactions/batch",
-        "method": "POST",
-        "status": response.status,
-        "action_count": action_count,
-        "action_breakdown": action_breakdown,
-        "result": {"response_status": response.status},
-        "receipt": receipt,
-        "receipt_out": receipt_out,
-    }
-    ctx["audit"].write("transactions.batch.validate.apply", out)
-    ctx["out"].emit(out)
-    return 0
+    next_step = "Check transaction status in Awin before submitting any failed or missing action again."
+    if details.get("job_id"):
+        next_step = "Use transactions jobs show with the advertiser and job ID, then check the individual transactions."
+    return finish_write(
+        ctx, operation="transactions batch validate", event="transactions.batch.validate.apply",
+        receipt=_build_receipt(
+            ctx=ctx, advertiser_id=advertiser_id,
+            batch_count=action_count, action_breakdown=action_breakdown,
+        ),
+        details=details, next_step=next_step,
+        fields={"action_count": action_count, "action_breakdown": action_breakdown},
+    )
+
+
+def _batch_result(status: int, payload: object, token: str | None) -> dict[str, Any]:
+    data = payload if isinstance(payload, dict) else {}
+    if isinstance(data.get("body"), dict):
+        body = data["body"]
+    else:
+        body = data
+    details: dict[str, Any] = {"state": "unknown"}
+    job_id = body.get("jobId") or data.get("jobId")
+    if isinstance(job_id, (str, int)) and job_id:
+        details["job_id"] = redact_error(str(job_id), token)
+    reported_status = data.get("statusCodeValue")
+    if type(reported_status) is not int:
+        status_word = _strip(data.get("statusCode")).split(" ", 1)[0]
+        reported_status = int(status_word) if status_word.isascii() and status_word.isdigit() else None
+    if reported_status is not None:
+        details["awin_status"] = reported_status
+
+    messages = _extract_batch_rejections(payload)
+    if messages or (reported_status is not None and 400 <= reported_status < 500):
+        details.update(state="rejected", error=redact_error(", ".join(sorted(set(messages))), token) if messages else f"Awin rejected the batch with status {reported_status}.")
+    elif status == 304 or reported_status == 304:
+        details["state"] = "unchanged"
+    elif reported_status == 206 or status == 206:
+        details["state"] = "partial"
+    elif status == 202 or reported_status == 202 or job_id or _strip(body.get("status")).lower() in {"pending", "accepted", "queued"}:
+        details["state"] = "pending"
+    elif status == 200 and reported_status == 200:
+        details["state"] = "confirmed"
+    return details
+
 
 
 def cmd_reports_publisher(args, ctx) -> int:

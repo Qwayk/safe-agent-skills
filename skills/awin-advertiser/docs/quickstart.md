@@ -1,70 +1,34 @@
-# Quickstart
+# Get your first Awin report
 
-Start with a small Awin Advertiser read: checking publisher performance, transactions, offers, and feed work before you approve anything live.
+Start with “Which publishers drove the most sales last month?” Check the advertiser ID and the dates in the answer before using the results.
 
-Need more ideas? See [What you can do with Awin Advertiser](use_cases.md). Need setup help? See [Connect your Awin advertiser account](onboarding.md).
+## Install the command
 
-A good first ask is:
-
-> Which publishers drove results last month?
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account or connection before asking for real work.
-3. Run one small read and make sure the result matches the real service.
-4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+Run these commands from the folder containing `pyproject.toml`. Use Python 3.12 or newer.
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e .
-.venv/bin/python -m unittest -q
+.venv/bin/python -m pip install .
+.venv/bin/awin-advertiser-safe-cli --version
 ```
 
-## 2. Check setup
-
-If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
+## Connect your account
 
 ```bash
-cp .env.example .env
-awin-advertiser-safe-cli --output json onboarding
-awin-advertiser-safe-cli --output json auth check
+.venv/bin/awin-advertiser-safe-cli --env-file .env onboarding
+.venv/bin/awin-advertiser-safe-cli --env-file .env auth check
 ```
 
-## 3. Run one small first read
+Open the file created by the first command. Add your API token and advertiser ID before running the second command. Check that it returns the advertiser ID you expected. [Setup and help](onboarding.md)
 
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
+## Read a report
+
+Replace `123456` and the dates with the advertiser ID and period you want to check.
 
 ```bash
-awin-advertiser-safe-cli --output json publishers list --advertiser-id 123456
-awin-advertiser-safe-cli --output json reports publisher --advertiser-id 123456 --start-date 2026-06-01 --end-date 2026-06-30
-awin-advertiser-safe-cli --output json transactions by-ids --advertiser-id 123456 --ids 1001,1002
+.venv/bin/awin-advertiser-safe-cli --env-file .env reports publisher --advertiser-id 123456 --start-date 2026-06-01 --end-date 2026-06-30
 ```
 
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
+Ask your agent to show the publishers that drove sales, the dates and account it used, and whether the result was empty or Awin returned an error.
 
-## 4. Stop before anything risky
-
-Ask for a reviewed plan before validating transactions, changing offers, uploading feeds, or sending any advertiser-side update.
-
-## What a useful first result includes
-
-A good first result should make these things clear:
-
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
-
-## Where to go next
-
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your Awin advertiser account](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+[Find more commands](command_reference.md) · [Review a change before sending it](safety_model.md)

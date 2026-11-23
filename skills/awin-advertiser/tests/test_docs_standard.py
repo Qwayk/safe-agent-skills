@@ -1,10 +1,17 @@
 from __future__ import annotations
 
 import argparse
+import io
+import json
+import shlex
+import tempfile
+from contextlib import redirect_stdout
+from unittest.mock import patch
 import unittest
 from pathlib import Path
 
-from awin_advertiser_safe_agent_cli.cli import build_parser
+from awin_advertiser_safe_agent_cli.cli import build_parser, main
+from awin_advertiser_safe_agent_cli.http import HttpResponse
 
 
 class TestDocsStandard(unittest.TestCase):
@@ -22,38 +29,33 @@ class TestDocsStandard(unittest.TestCase):
             with self.subTest(path=path.name):
                 self.assertTrue(path.exists(), f"Missing required docs file: {path.name}")
 
-    def test_readme_is_non_technical_first(self) -> None:
-        text = (self.root / "README.md").read_text(encoding="utf-8")
-        self.assertIn("## Start here first", text)
-        self.assertIn("## Install and first run", text)
-        self.assertIn("## Helpful docs", text)
-        self.assertIn("[What you can do with Awin Advertiser](docs/use_cases.md)", text)
-        self.assertIn("[Connect your Awin advertiser account](docs/onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
+    def test_quickstart_commands_use_the_same_advertiser(self) -> None:
+        lines = (self.docs / "quickstart.md").read_text().splitlines()
+        commands = {
+            kind: shlex.split(next(line for line in lines if line.startswith(".venv/bin/awin-advertiser-safe-cli ") and kind in line))
+            for kind in ("--version", "onboarding", "auth check", "reports publisher")
+        }
 
-    def test_docs_readme_lists_required_order(self) -> None:
-        text = (self.docs / "README.md").read_text(encoding="utf-8")
-        use_cases_idx = text.index("[What you can do with Awin Advertiser](use_cases.md)")
-        onboarding_idx = text.index("[Connect your Awin advertiser account](onboarding.md)")
-        safety_idx = text.index("[How this skill stays safe](safety_model.md)")
-        quickstart_idx = text.index("[Quickstart](quickstart.md)")
-        command_idx = text.index("[Command reference](command_reference.md)")
-        self.assertLess(use_cases_idx, onboarding_idx)
-        self.assertLess(onboarding_idx, safety_idx)
-        self.assertLess(safety_idx, quickstart_idx)
-        self.assertLess(quickstart_idx, command_idx)
+        def run(kind: str) -> dict:
+            args = commands[kind][1:]
+            if "--env-file" in args:
+                args[args.index("--env-file") + 1] = str(settings)
+            with redirect_stdout(out := io.StringIO()):
+                self.assertEqual(main(args), 0)
+            return json.loads(out.getvalue())
 
-    def test_onboarding_and_technical_labels_exist(self) -> None:
-        onboarding = (self.docs / "onboarding.md").read_text(encoding="utf-8")
-        quickstart = (self.docs / "quickstart.md").read_text(encoding="utf-8")
-        command_reference = (self.docs / "command_reference.md").read_text(encoding="utf-8")
-        proof = (self.docs / "proof.md").read_text(encoding="utf-8")
-
-        self.assertIn("## What to ask your agent", onboarding)
-        self.assertIn("[What you can do with Awin Advertiser](use_cases.md)", quickstart)
-        self.assertIn("[Connect your Awin advertiser account](onboarding.md)", quickstart)
-        self.assertIn("[What you can do with Awin Advertiser](use_cases.md)", command_reference)
-        self.assertIn("You do not need to run these commands yourself", proof)
+        with tempfile.TemporaryDirectory() as directory:
+            settings = Path(directory) / ".env"
+            self.assertEqual(run("--version")["tool"], "awin-advertiser-safe-cli")
+            self.assertTrue(run("onboarding")["onboarding"]["env_created"])
+            settings.write_text("AWIN_API_TOKEN=fixture-token\nAWIN_ADVERTISER_ID=123456\n")
+            with patch("awin_advertiser_safe_agent_cli.http.HttpClient.request", return_value=HttpResponse(200, {}, b"[]", "")) as call:
+                self.assertEqual(run("auth check")["auth_check"]["advertiser_id"], "123456")
+                run("reports publisher")
+            self.assertEqual([args.args[1] for args in call.call_args_list], [
+                "https://api.awin.com/advertisers/123456/publishers",
+                "https://api.awin.com/advertisers/123456/reports/publisher",
+            ])
 
     def test_api_coverage_lists_all_provider_backed_commands(self) -> None:
         parser = build_parser()

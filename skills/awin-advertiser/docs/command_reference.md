@@ -1,8 +1,8 @@
 # Command reference
 
-These commands cover publisher checks, transactions, jobs, offers, feeds, and advertiser write gates. Use the read commands first, then review plans before uploads or validations.
+Run these commands from the installed environment. Put global flags such as `--env-file <path>` before the command name. Use the same settings file for setup, preview, and apply.
 
-For the guided path, start with [What you can do with Awin Advertiser](use_cases.md), [Connect your Awin advertiser account](onboarding.md), and [Quickstart](quickstart.md).
+[First report](quickstart.md) · [Setup and connection help](onboarding.md) · [Approval and receipt guide](safety_model.md)
 
 ## Onboarding
 
@@ -41,24 +41,13 @@ For the guided path, start with [What you can do with Awin Advertiser](use_cases
 
 - `awin-advertiser-safe-cli conversion orders create --advertiser-id <id> --orders-file <path> [--webhook-url <url>]`
 
-## Write gates (all write commands in this tool)
+## Preview, approve and check a change
 
-- `--apply` to apply remote changes (default is dry-run)
-- `--yes` required with `--apply`
-- `--ack-irreversible` required with `--apply --yes`
-- `--plan-in <path>` required with `--apply`; command output plan must pass drift checks
-- `--plan-out <path>` writes a dry-run plan JSON
-- `--receipt-out <path>` writes a write receipt JSON
-- current write families do not promise a broad saved before-state or automatic restore path
-
-### Conversion write support
-
-- `--apply` to apply (default is dry-run plan)
-- `--yes` required with `--apply`
-- `--ack-irreversible` required with `--apply --yes`
-- `--plan-out <path>` to write a dry-run plan JSON
-- `--plan-in <path>` required with `--apply`, and validated again on apply
-- `--receipt-out <path>` to write receipt JSON after apply
+- Run the write command with `--plan-out <path>` to save its preview.
+- After approval, use the same input and pass `--apply --yes --ack-irreversible --plan-in <path>`. The write flags go before the command name or after the final subcommand.
+- Add `--receipt-out <path>` to choose where to save the receipt. By default, the CLI saves it with that run. `--no-artifacts` disables the default run files.
+- If the plan is refused, compare the account, settings and input, then make a new plan. For a rejected batch, check the action and its transaction fields against [Awin's batch examples](https://help.awin.com/apidocs/approve-decline-amend-batch-transactions-for-a-given-advertiser).
+- If Awin accepted a request for later processing, returns only some results, or the reply was lost, check Awin before resending. Read `result.state` and the receipt's `verification` together. An accepted request can return `ok: true` while verification is still pending.
 
 ## Runs
 

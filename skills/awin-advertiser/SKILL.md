@@ -1,43 +1,16 @@
 ---
 name: awin-advertiser-safe-cli
-description: Awin advertiser safe CLI for read checks and advertiser write flows.
-commands:
-  - awin-advertiser-safe-cli onboarding
-  - awin-advertiser-safe-cli auth check
-  - awin-advertiser-safe-cli publishers list --advertiser-id <id>
-  - awin-advertiser-safe-cli transactions list --advertiser-id <id> --start-date <ISO8601> --end-date <ISO8601>
-  - awin-advertiser-safe-cli transactions by-ids --advertiser-id <id> --ids <comma-separated>
-  - awin-advertiser-safe-cli transactions jobs list --advertiser-id <id>
-  - awin-advertiser-safe-cli transactions jobs show --advertiser-id <id> --job-id <id> [--job-output errors|all]
-  - awin-advertiser-safe-cli transactions batch validate --advertiser-id <id> --batch-file <path> [--apply --yes --ack-irreversible --plan-in <path>] [--plan-out <path>] [--receipt-out <path>]
-  - awin-advertiser-safe-cli reports publisher --advertiser-id <id> --start-date <YYYY-MM-DD or ISO8601> --end-date <YYYY-MM-DD or ISO8601>
-  - awin-advertiser-safe-cli reports campaign --advertiser-id <id> --start-date <YYYY-MM-DD or ISO8601> --end-date <YYYY-MM-DD or ISO8601>
-  - awin-advertiser-safe-cli offers create --advertiser-id <id> --offer-file <path> [--apply --yes --ack-irreversible --plan-in <path>] [--plan-out <path>] [--receipt-out <path>]
-  - awin-advertiser-safe-cli product-feeds upload --advertiser-id <id> --vertical retail --locale <token> --feed-file <path> [--apply --yes --ack-irreversible --plan-in <path>] [--plan-out <path>] [--receipt-out <path>]
-  - awin-advertiser-safe-cli conversion orders create --advertiser-id <id> --orders-file <path> [--webhook-url <url>] [--apply --yes --ack-irreversible --plan-in <path>] [--plan-out <path>] [--receipt-out <path>]
-  - awin-advertiser-safe-cli runs list
-  - awin-advertiser-safe-cli runs show
+description: Review Awin advertiser results, find transactions, and prepare offers, feeds, conversion orders, or transaction changes for approval.
 ---
 
-Use this skill only with these commands:
-- `awin-advertiser-safe-cli onboarding [--no-write-env]`
-- `awin-advertiser-safe-cli auth check`
-- `awin-advertiser-safe-cli publishers list --advertiser-id <id>`
-- `awin-advertiser-safe-cli transactions list --advertiser-id <id> --start-date <ISO8601> --end-date <ISO8601>`
-- `awin-advertiser-safe-cli transactions by-ids --advertiser-id <id> --ids <comma-separated>`
-- `awin-advertiser-safe-cli transactions jobs list --advertiser-id <id>`
-- `awin-advertiser-safe-cli transactions jobs show --advertiser-id <id> --job-id <id> [--job-output errors|all]`
-- `awin-advertiser-safe-cli transactions batch validate --advertiser-id <id> --batch-file <path> [--apply --yes --ack-irreversible --plan-in <path>] [--plan-out <path>] [--receipt-out <path>]`
-- `awin-advertiser-safe-cli reports publisher --advertiser-id <id> --start-date <YYYY-MM-DD or ISO8601> --end-date <YYYY-MM-DD or ISO8601> [--date-type transaction|validation] [--timezone <value>]`
-- `awin-advertiser-safe-cli reports campaign --advertiser-id <id> --start-date <YYYY-MM-DD or ISO8601> --end-date <YYYY-MM-DD or ISO8601> [--campaign <value>] [--publisher-id <id> ...] [--include-numbers-without-campaign] [--interval day|month|year] [--timezone <value>]`
-- `awin-advertiser-safe-cli offers create --advertiser-id <id> --offer-file <path> [--apply --yes --ack-irreversible --plan-in <path>] [--plan-out <path>] [--receipt-out <path>]`
-- `awin-advertiser-safe-cli product-feeds upload --advertiser-id <id> --vertical retail --locale <token> --feed-file <path> [--apply --yes --ack-irreversible --plan-in <path>] [--plan-out <path>] [--receipt-out <path>]`
-- `awin-advertiser-safe-cli conversion orders create --advertiser-id <id> --orders-file <path> [--webhook-url <url>] [--apply --yes --ack-irreversible --plan-in <path>] [--plan-out <path>] [--receipt-out <path>]`
-- `awin-advertiser-safe-cli runs list [--limit N]`
-- `awin-advertiser-safe-cli runs show --run-id <id>`
+# Awin Advertiser
 
-Rules:
-- Always call with `--output json`.
-- Never output `.env` content or token values.
-- Never expose Authorization headers or raw order data.
-- If the user asks for a command not in this list, reply: `No such live command in this slice.`
+Use this skill for an advertiser's own program. Start by checking the chosen settings file and advertiser ID. For a report, confirm the date range and use the named read command that answers the question. For a setup problem, run onboarding, then check that auth can read the expected advertiser. Keep tokens out of chat.
+
+Useful first commands are `awin-advertiser-safe-cli --env-file .env auth check` and `awin-advertiser-safe-cli --env-file .env publishers list --advertiser-id <id>`. Use JSON output and keep the selected settings file in each command.
+
+Before any live change, prepare a preview and save the plan. Show the advertiser, action and what the input file contains. For a feed, include the locale. For conversion orders, include any webhook destination. Wait for approval before using `--apply --yes --ack-irreversible --plan-in`. Return the receipt path and explain what Awin confirmed. For a pending, partial or unclear result, check Awin before resending anything.
+
+Use the named commands in the command guide. For work outside those commands, explain what Awin supports and what still needs to be done outside this skill.
+
+[Command guide](docs/command_reference.md) · [Setup](docs/onboarding.md) · [Plan and receipt review](docs/safety_model.md)

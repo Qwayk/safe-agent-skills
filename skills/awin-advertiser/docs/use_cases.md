@@ -1,49 +1,19 @@
-# What you can do with Awin Advertiser
+# What you can ask your agent
 
-Awin Advertiser is useful when a brand needs to understand publisher performance, transaction follow-up, offers, product feeds, and conversion orders from the advertiser side.
+## Find the publishers driving sales
 
-Ask the agent for the work an affiliate manager or ecommerce team checks before making changes: which publishers are producing results, which transactions need attention, whether a batch file is shaped correctly, and what would happen before an offer, feed, or conversion order goes live.
+> Which publishers drove the most sales for this advertiser last month? Show me the account and dates you checked.
 
-## Good questions to ask
+Use a publisher report for partner results or a campaign report to compare campaigns. The agent can show where the numbers came from and tell you when a result is empty.
 
-- "Which publishers drove results last month?"
-- "Which campaigns or publishers are worth a closer look?"
-- "Can you find these transaction IDs and explain their status?"
-- "Can you review this transaction batch before we submit anything?"
-- "Can you prepare an offer draft and show the proof files first?"
-- "Can you check this product-feed file before upload?"
-- "Can you plan conversion order posting with a preview first?"
-- "Which advertiser action is safest to do next?"
+## Follow up on a sale or a batch
 
-## Everyday work this helps with
+> Find these transaction IDs. Which are still waiting for review, and which were already approved or declined?
 
-### Publisher and campaign review
+The agent can also look up a validation job to see whether Awin is still working through it. Before submitting a new batch, ask the agent which transactions it would approve, decline or amend and what would change.
 
-The agent can pull publisher and campaign reports so you can see what is driving results. The useful answer should name the advertiser ID, date range, report type, and the publishers or campaigns that matter.
+## Check an offer, feed or conversion file
 
-### Transaction follow-up
+> Check this product feed for our UK program. Show me the account, language, product count and any errors before uploading it.
 
-Ask the agent to list transactions, find known transaction IDs, or check transaction jobs. This is useful before approving, declining, amending, or investigating a batch.
-
-### Batch and file review
-
-For batch validation, offers, product feeds, and conversion orders, the agent can inspect the input shape and prepare a plan first. It should make unclear file paths, advertiser IDs, and endpoint-specific auth requirements visible before any live action.
-
-### Advertiser change planning
-
-When you want to submit an offer, feed, conversion order, or transaction batch, the agent should show what would be sent and what proof it will leave behind.
-
-## What the agent should show you
-
-- The advertiser ID, date range, report type, and filters it used.
-- The publishers, campaigns, transactions, jobs, or files that matter most.
-- A short summary before raw report output.
-- Any endpoint-specific auth difference that affects the request.
-- A review plan before batch validation, offer creation, feed upload, or conversion-order posting.
-- A receipt after a live write, only when you explicitly approve it.
-
-## Good first path
-
-Start with: "Check the Awin Advertiser skill is configured, show which publishers drove results last month, and stop before any live advertiser write."
-
-After that, ask one useful follow-up, such as: "Find these transaction IDs and explain their status" or "Review this product-feed file before upload."
+You can also ask the agent to preview a promotion or voucher, or review a list of conversion orders. For orders, check the references, totals and where Awin will send updates if you supplied a webhook. [How to review a change](safety_model.md)
