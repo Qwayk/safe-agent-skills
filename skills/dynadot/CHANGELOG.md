@@ -7,12 +7,29 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ## [Unreleased]
 
+### November 23, 2026
+
+- Onboarding creates a private settings file and uses the chosen path in the connection check.
+- Saved write plans are tied to the Dynadot keys used to create them. Transfer codes now go to a private file.
+- The tool checks one-year registration and renewal quotes against the approved maximum before sending an order. It stops after a write if Dynadot's reply leaves the result unclear.
+- The catalog copy now includes the bulk availability command and its tests. Removed demo and jobs commands that only ran examples, and combined overlapping guides.
+
+### Earlier work
+
+### Added
+- `domains availability` accepts repeatable domains or a domains file, checks
+  Regular Accounts one domain per request by default, paces request starts,
+  and retries only unresolved provider results.
+
 ### Changed
 - Dynadot write plans now disclose `no_snapshot_available` when no useful before-state can be saved; reviewed write apply requires command-specific before-state support or explicit no-snapshot approval before Dynadot HTTP.
-- API3 writes, domain push, push-request accept/decline, name-server set, transfer run, demo writes, and jobs writes no longer produce write receipts while before-state is unsupported.
+- Saved plans and receipts explain when a change needs approval without a saved copy of the current state.
 - `domains name-servers set` now treats the Dynadot `server_list` availability check as clearly advisory by default, which makes external providers like Cloudflare less confusing.
 - `runs list` and `runs show` now filter to Dynadot tool rows only, even when the local run index contains mixed tools.
-- API3 write plans may retain read-back details as `post_apply_verification_plan`, but those notes do not unlock apply while before-state is unsupported.
+- API3 write plans list the available follow-up checks in `post_apply_verification_plan`.
+- Domain availability exports now distinguish `available`, `unavailable`, and
+  `unresolved`; registry and connection errors can no longer be mistaken for
+  unavailable domains in the reusable bulk workflow.
 
 ### Fixed
 - `dynadot-api-tool --help` no longer crashes on the API3 help text.

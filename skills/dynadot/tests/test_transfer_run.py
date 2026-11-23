@@ -8,8 +8,11 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from types import SimpleNamespace
 
+from dynadot_api_tool.commands._write_safety import sign_plan
 from dynadot_api_tool.commands.transfer import cmd_transfer_run
+from dynadot_api_tool.config import load_config_file_only
 from dynadot_api_tool.dynadot_api import DynadotApiResult
+from dynadot_api_tool.errors import SafetyError
 from dynadot_api_tool.output import Output
 
 
@@ -324,7 +327,7 @@ class TestTransferRun(unittest.TestCase):
             self.assertNotIn("expired.com", domains)
             self.assertNotIn("grace.com", domains)
 
-    def test_apply_runs_push_accept_and_sets_name_servers(self) -> None:
+    def test_transfer_requires_no_snapshot_approval_and_the_reviewed_receiver(self) -> None:
         receiver = _ReceiverStubApi()
         sender = _SenderStubApi(receiver=receiver)
         with tempfile.TemporaryDirectory() as td:
@@ -392,6 +395,20 @@ class TestTransferRun(unittest.TestCase):
             self.assertEqual(payload["before_state"]["status"], "no_snapshot_available")
             self.assertEqual(sender.calls, [])
             self.assertEqual(receiver.calls, [])
+            receiver_env.write_text(
+                "DYNADOT_API_BASE_URL=http://receiver.invalid\nDYNADOT_API_KEY=other-key\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(SafetyError, "different Dynadot keys"):
+                cmd_transfer_run(
+                    args, self._ctx(
+                        sender_cfg=sender_cfg, api_sender=sender, api_receiver=receiver,
+                        apply=True, yes=True, plan_in=str(plan_path), ack_no_snapshot=True,
+                    ),
+                )
+            self.assertEqual(sender.calls, [])
+            self.assertEqual(receiver.calls, [])
+
 
     def test_apply_fast_mode_skips_name_server_verification(self) -> None:
         receiver = _ReceiverStubApi()
@@ -681,6 +698,7 @@ class TestTransferRun(unittest.TestCase):
             self.assertEqual(rc1, 0)
             plan = json.loads(plan_path.read_text(encoding="utf-8"))
             plan["baseline"]["selected_domains_comma"] = "a.com,expired.com"
+            sign_plan(plan, sender_cfg, load_config_file_only(str(receiver_env)))
             plan_path.write_text(json.dumps(plan), encoding="utf-8")
 
             buf2 = io.StringIO()
@@ -744,6 +762,7 @@ class TestTransferRun(unittest.TestCase):
                 )
             plan = json.loads(plan_path.read_text(encoding="utf-8"))
             plan["baseline"]["selected_domains_comma"] = "a.com,expired.com"
+            sign_plan(plan, sender_cfg, load_config_file_only(str(receiver_env)))
             plan_path.write_text(json.dumps(plan), encoding="utf-8")
 
             buf2 = io.StringIO()

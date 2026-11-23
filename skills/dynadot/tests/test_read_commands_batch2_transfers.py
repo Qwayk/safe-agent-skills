@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import io
 import json
+import stat
+import tempfile
 import unittest
 from contextlib import redirect_stdout
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
@@ -82,26 +85,18 @@ class TestReadCommandsBatch2Transfers(unittest.TestCase):
         self.assertEqual(api.calls, [("get_transfer_status", {"domain": "example.com", "transfer_type": "away"})])
         self.assertNotIn("TESTKEY", buf.getvalue())
 
-    def test_transfers_auth_code_param_mapping(self) -> None:
+    def test_transfer_code_goes_only_to_the_private_file(self) -> None:
         api = _StubApi()
-        args = SimpleNamespace(domain="example.com", out=None)
-        buf = io.StringIO()
-        with redirect_stdout(buf):
-            rc = cmd_transfers_auth_code(args, self._ctx(api=api))
-        self.assertEqual(rc, 0)
-        payload = json.loads(buf.getvalue())
-        self.assertTrue(payload["ok"])
-        self.assertEqual(payload["command"], "get_transfer_auth_code")
-        self.assertEqual(payload["domain"], "example.com")
-        self.assertNotIn("new_code", payload)
-        self.assertNotIn("unlock_domain_for_transfer", payload)
-        self.assertEqual(
-            api.calls,
-            [
-                (
-                    "get_transfer_auth_code",
-                    {"domain": "example.com"},
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "code.json"
+            out = io.StringIO()
+            with redirect_stdout(out):
+                rc = cmd_transfers_auth_code(
+                    SimpleNamespace(domain="example.com", out=str(path)), self._ctx(api=api)
                 )
-            ],
-        )
-        self.assertNotIn("TESTKEY", buf.getvalue())
+            self.assertEqual(rc, 0)
+            self.assertEqual(api.calls, [("get_transfer_auth_code", {"domain": "example.com"})])
+            self.assertTrue(json.loads(out.getvalue())["dynadot"]["stored_privately"])
+            self.assertNotIn("EXAMPLE", out.getvalue())
+            self.assertEqual(json.loads(path.read_text())["response"]["AuthCode"], "EXAMPLE")
+            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)

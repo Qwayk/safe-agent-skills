@@ -3,15 +3,11 @@
   "dry_run": true,
   "command": "get_transfer_auth_code",
   "domain": "example.com",
-  "out_path": null,
+  "out_path": "transfer-code.json",
   "dynadot": {
     "command": "get_transfer_auth_code",
     "status": "success",
     "response_code": "0",
-    "raw": {
-      "Status": "success",
-      "ResponseCode": "0",
-      "AuthCode": "***REDACTED_AUTH_CODE***"
-    }
+    "stored_privately": true
   }
 }

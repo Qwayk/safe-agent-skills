@@ -72,7 +72,7 @@ class _StubApi:
 class TestNameServersCommands(unittest.TestCase):
     def _ctx(self, *, api: object, **overrides) -> dict:
         ctx = {
-            "cfg": SimpleNamespace(base_url="http://example.invalid", api_key=None),
+            "cfg": SimpleNamespace(base_url="http://example.invalid", api_key="fixture-dynadot-key"),
             "tool": "dynadot-api-tool",
             "tool_version": "0.0.0",
             "command_str": "dynadot-api-tool",

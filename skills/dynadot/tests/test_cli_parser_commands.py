@@ -45,12 +45,6 @@ class TestCliParserCommands(unittest.TestCase):
         self.assertTrue(callable(getattr(args, "func", None)))
         self.assertTrue(bool(getattr(args, "write_capable", False)))
 
-    def test_jobs_run_command_registered(self) -> None:
-        p = build_parser()
-        args = p.parse_args(["jobs", "run"])
-        self.assertTrue(callable(getattr(args, "func", None)))
-        self.assertTrue(bool(getattr(args, "write_capable", False)))
-
     def test_domains_name_servers_commands_registered(self) -> None:
         p = build_parser()
         export_args = p.parse_args(["domains", "name-servers", "export", "--domains-file", "domains.txt"])
@@ -97,7 +91,7 @@ class TestCliParserCommands(unittest.TestCase):
         self.assertTrue(callable(getattr(status_args, "func", None)))
         self.assertFalse(bool(getattr(status_args, "write_capable", True)))
 
-        auth_args = p.parse_args(["transfers", "auth-code", "--domain", "example.com"])
+        auth_args = p.parse_args(["transfers", "auth-code", "--domain", "example.com", "--out", "code.json"])
         self.assertTrue(callable(getattr(auth_args, "func", None)))
         self.assertFalse(bool(getattr(auth_args, "write_capable", True)))
 

@@ -1,31 +1,12 @@
 # API coverage
 
-Dynadot coverage shows exactly what this skill can do with domains, DNS, auctions, backorders, transfers, and account checks. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+This tool ships 103 named commands from the pinned Dynadot API3 list in `official_commands.txt`. Each row shows the matching CLI command and the approvals it needs. [Provider references](references.md)
 
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+Dynadot plans to retire API3 and recommends REST. The current API3 request examples differ from the pinned list. See [November 23 coverage check](proof.md#november-23-2026-coverage-check) for the comparison and the next step for a REST plan.
 
-A good first coverage check is: "Check whether this skill can inspect this domain, DNS settings, and renewal details, then show which domain actions are outside the tool."
+Last audited vs official docs (UTC): 2026-11-23. The comparison leaves the pinned list in place.
 
-## Coverage notes
-
-- Give the Manager a single source of truth for review/approval.
-- Help customers quickly see what the tool can and cannot do.
-- If behavior differs from the provider docs, note it and link `docs/references.md`.
-
-## Summary
-
-- Provider: Dynadot
-- API base URL: https://api.dynadot.com/api3.json (sandbox: https://api-sandbox.dynadot.com/api3.json)
-- Auth method: API key (URL query param `key=...`)
-- Official docs: https://www.dynadot.com/domain/api-commands
-- Last audited vs official docs (UTC): 2026-02-25
-- Official command snapshot (for tests): `docs/official_commands.txt` (extracted from Dynadot’s published request examples)
-- Current write contract: all shipped Dynadot write families plan only, then require explicit no-snapshot approval before Dynadot HTTP until command-specific saved snapshot support is available.
-- Write plans expose `before_state.required: true`, `before_state.supported: false`, and `before_state.status: no_snapshot_available`.
-- Plans expose the no-recovery contract through `recovery`, with `end_state`, `backups: []`, `snapshots: []`, and `rollback_plan: null`.
-- Approved supported writes can produce receipts with `--receipt-out`, and apply runs also save local run artifacts.
-
-## Command coverage ledger (official docs)
+## Pinned command coverage
 
 Columns:
 - API command: Dynadot `command=` value (API3 is command-based)
@@ -39,7 +20,7 @@ Dynadot API3 is **command-based** (not REST paths). This ledger maps `command=` 
 Legend:
 - `Implemented` = available in the CLI (tested + documented)
 - `Missing` = not started yet
-- Any row with `--apply --yes --plan-in` is currently plan-only at apply time: after gates pass, it requires explicit no-snapshot approval before Dynadot HTTP because before-state support is missing.
+- Any row with `--apply --yes --plan-in` requires an approved saved plan and `--ack-no-snapshot` when the tool cannot save the state before a change.
 
 | API command | Status | CLI command(s) | Safety gates | Notes |
 |---|---|---|---|---|
@@ -95,7 +76,7 @@ Legend:
 | `register` | Implemented | `dynadot-api-tool api3 register` | `--apply --yes --plan-in` `--ack-irreversible` | — |
 | `register_ns` | Implemented | `dynadot-api-tool api3 register-ns` | `--apply --yes --plan-in` | — |
 | `renew` | Implemented | `dynadot-api-tool api3 renew` | `--apply --yes --plan-in` `--ack-irreversible` | — |
-| `search` | Implemented | `dynadot-api-tool api3 search` | read-only | Supports `--show-price` and optional `--currency`. Does not support per-domain `languageN` params. |
+| `search` | Implemented | `dynadot-api-tool api3 search`; `dynadot-api-tool domains search`; `dynadot-api-tool domains availability` | read-only | `domains availability` adds file input, normalized clear/unresolved states, Regular Account pacing, and retry of unresolved results. Official docs allow one searched domain per request for Regular Accounts and up to 100 for Bulk/Super Bulk. Does not support per-domain `languageN` params. |
 | `server_list` | Implemented | `dynadot-api-tool api3 server-list` | read-only | Pre-checks that desired name servers exist in the account; can warn or refuse depending on flags. |
 | `set_afternic_confirm_action` | Implemented | `dynadot-api-tool api3 set-afternic-confirm-action` | `--apply --yes --plan-in` | — |
 | `set_clear_default_setting` | Implemented | `dynadot-api-tool api3 set-clear-default-setting` | `--apply --yes --plan-in` | — |
@@ -147,19 +128,8 @@ Legend:
 | `transfer` | Implemented | `dynadot-api-tool api3 transfer` | `--apply --yes --plan-in` `--ack-irreversible` | — |
 | `transfer_domain_list` | Implemented | `dynadot-api-tool api3 transfer-domain-list` | read-only | Docs label this “Transfer Out Domain List”. |
 
-## Known gaps (explicit)
+## Coverage gaps
 
-- None for request-example-backed commands: this tool implements every Dynadot API3 `command=` value in `docs/official_commands.txt`.
+The tool covers the pinned list. See the [November 23 comparison](proof.md#november-23-2026-coverage-check) for commands that now appear in Dynadot's request examples.
 
-### Out of scope (Dynadot docs list items without full request examples/params)
-
-Dynadot’s docs page includes some command names in menus/links that do not have full request examples/parameter tables on the page.
-To avoid guessing parameters, we treat these as out-of-scope until Dynadot publishes complete docs for them:
-
-- `clear_dnssec`
-- `get_dnssec`
-- `restore`
-- `set_contact_lt_setting`
-- `set_reseller_contact_whois_verification_status`
-
-If Dynadot later publishes full request examples for these, we will add them to `docs/official_commands.txt` and implement them as first-class `api3` subcommands.
+The pinned list also leaves out `get_dnssec`, `restore`, and `set_reseller_contact_whois_verification_status`. Those names still need complete commands or a documented reason to leave them out before expanding coverage.

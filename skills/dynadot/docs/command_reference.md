@@ -2,7 +2,7 @@
 
 These commands cover Dynadot API3 actions, domain inventory, DNS, name servers, transfers, and write gates. Read the domain state first before any domain or DNS change.
 
-For the guided path, start with [What you can do with Dynadot](use_cases.md), [Connect your Dynadot account](onboarding.md), and [Quickstart](quickstart.md).
+Start with [Onboarding](onboarding.md) or [Quickstart](quickstart.md).
 
 ## Onboarding
 
@@ -13,21 +13,21 @@ For the guided path, start with [What you can do with Dynadot](use_cases.md), [C
 - `dynadot-api-tool --output json --version`
 - `dynadot-api-tool auth check`
 
-## API3 (all official commands; read + write)
+## API3 commands
 
-This tool implements **every official Dynadot API3** `command=` value via first-class subcommands under `api3/`.
+The `api3` group has a named command for each of the 103 commands in the pinned inventory. See [coverage](api_coverage.md).
 
 Discovery:
 - `dynadot-api-tool api3 --help`
 - `dynadot-api-tool api3 <command> --help`
 
 Examples (preview-only; no live write):
-- `dynadot-api-tool --output json api3 register --domain example.com --duration 1 --currency USD`
+- `dynadot-api-tool --output json api3 register --domain example.com --duration 1 --currency USD --max-price 15.00`
 - `dynadot-api-tool --output json --plan-out plan.json api3 set-privacy --domain example.com --option off --whois-privacy-option yes`
 - `dynadot-api-tool --output json --plan-out plan.json api3 place-auction-bid --domain example.com --bid-amount 100 --currency usd`
 
 Apply (requires reviewed plan + confirmations):
-- `dynadot-api-tool --output json --apply --yes --plan-in plan.json api3 set-privacy --domain example.com --option off --whois-privacy-option yes`
+- `dynadot-api-tool --output json --apply --yes --ack-no-snapshot --plan-in plan.json api3 set-privacy --domain example.com --option off --whois-privacy-option yes`
 
 Write contract:
 - Dynadot write plans are currently `irreversible_and_clearly_labeled`.
@@ -37,7 +37,7 @@ Write contract:
 - Every write plan includes `recovery`.
 - `recovery.end_state` is `irreversible_and_clearly_labeled`.
 - `recovery.backups = []`, `recovery.snapshots = []`, and `recovery.rollback_plan = null`.
-- Any read-back plans are verification notes only. They are not restoreable backups.
+- See the [approval guide](safety_model.md) for price checks and how to read the receipt.
 
 ## Account (read-only)
 
@@ -82,8 +82,8 @@ Write contract:
 
 - `dynadot-api-tool transfers list [--out export.json]`
 - `dynadot-api-tool transfers status --domain example.com --transfer-type {in,away} [--out export.json]`
-- `dynadot-api-tool transfers auth-code --domain example.com [--out export.json]`
-  - Treat the returned auth/EPP code as sensitive (don’t paste it into tickets or public chat).
+- `dynadot-api-tool transfers auth-code --domain example.com --out code.json`
+  - For the API3 write command that can create a code or unlock a domain, use `--secret-out code.json` during apply. Both paths require a new private file.
 
 ## Orders (read-only)
 
@@ -103,12 +103,12 @@ Write contract:
 
 Sender side:
 - `dynadot-api-tool domains push --to-push-username "<RECEIVER_PUSH_USERNAME>" --domains-file "<FILE>" [--max-batches N] [--sleep-between-batches-s S] [--resume-from-receipt receipt.json]`
-- `dynadot-api-tool --apply --yes --plan-in plan.json domains push --to-push-username "<RECEIVER_PUSH_USERNAME>" --domains-file "<FILE>" [--max-batches N] [--sleep-between-batches-s S] [--resume-from-receipt receipt.json]`
+- `dynadot-api-tool --apply --yes --ack-no-snapshot --plan-in plan.json domains push --to-push-username "<RECEIVER_PUSH_USERNAME>" --domains-file "<FILE>" [--max-batches N] [--sleep-between-batches-s S] [--resume-from-receipt receipt.json]`
 
 Receiver side:
 - `dynadot-api-tool domains push-requests list`
-- `dynadot-api-tool --apply --yes --plan-in plan.json domains push-requests accept --domains-file "<FILE>" [--max-batches N] [--sleep-between-batches-s S] [--resume-from-receipt receipt.json]`
-- `dynadot-api-tool --apply --yes --plan-in plan.json domains push-requests decline --domains-file "<FILE>" [--max-batches N] [--sleep-between-batches-s S] [--resume-from-receipt receipt.json]`
+- `dynadot-api-tool --apply --yes --ack-no-snapshot --plan-in plan.json domains push-requests accept --domains-file "<FILE>" [--max-batches N] [--sleep-between-batches-s S] [--resume-from-receipt receipt.json]`
+- `dynadot-api-tool --apply --yes --ack-no-snapshot --plan-in plan.json domains push-requests decline --domains-file "<FILE>" [--max-batches N] [--sleep-between-batches-s S] [--resume-from-receipt receipt.json]`
 
 Apply result:
 - These write commands require reviewed `--plan-in`, `--yes`, and explicit no-snapshot approval when no saved before-state exists. Receipts record which approved writes ran and what recovery is possible.
@@ -132,7 +132,7 @@ Preview (plan):
 - `dynadot-api-tool --output json --plan-out plan.json --env-file "<SENDER_ENV>" transfer run --receiver-env-file "<RECEIVER_ENV>" --to-push-username "<RECEIVER_PUSH_USERNAME>" --desired-ns "ns1.example.net" --desired-ns "ns2.example.net"`
 
 Apply (requires `--apply --yes` and reviewed `--plan-in`):
-- `dynadot-api-tool --output json --apply --yes --plan-in plan.json --env-file "<SENDER_ENV>" transfer run --receiver-env-file "<RECEIVER_ENV>" --to-push-username "<RECEIVER_PUSH_USERNAME>" --desired-ns "ns1.example.net" --desired-ns "ns2.example.net"`
+- `dynadot-api-tool --output json --apply --yes --ack-no-snapshot --plan-in plan.json --env-file "<SENDER_ENV>" transfer run --receiver-env-file "<RECEIVER_ENV>" --to-push-username "<RECEIVER_PUSH_USERNAME>" --desired-ns "ns1.example.net" --desired-ns "ns2.example.net"`
 
 Apply result:
 - `transfer run` requires explicit no-snapshot approval before sender or receiver Dynadot HTTP when sender or receiver before-state cannot be saved.
@@ -155,7 +155,7 @@ Diff vs desired name servers:
 
 Set name servers (preview first, then apply):
 - `dynadot-api-tool --plan-out plan.json domains name-servers set --diff-in diff.json [--max-domains N] [--max-batches N] [--sleep-between-batches-s S] [--sleep-between-verifications-s S] [--continue-on-error] [--resume-from-receipt receipt.json] [--skip-availability-check] [--require-available-name-servers]`
-- `dynadot-api-tool --apply --yes --plan-in plan.json domains name-servers set --diff-in diff.json [--max-domains N] [--max-batches N] [--sleep-between-batches-s S] [--sleep-between-verifications-s S] [--continue-on-error] [--resume-from-receipt receipt.json] [--skip-availability-check] [--require-available-name-servers]`
+- `dynadot-api-tool --apply --yes --ack-no-snapshot --plan-in plan.json domains name-servers set --diff-in diff.json [--max-domains N] [--max-batches N] [--sleep-between-batches-s S] [--sleep-between-verifications-s S] [--continue-on-error] [--resume-from-receipt receipt.json] [--skip-availability-check] [--require-available-name-servers]`
 
 Important:
 - The default availability check is only a warning based on Dynadot `server_list`.
@@ -170,11 +170,16 @@ Important:
 - `dynadot-api-tool domains status [--domain example.com] [--domains-file domains.txt] [--sleep-s S] [--max-domains N] [--out export.json]`
 - `dynadot-api-tool domains folders list [--out export.json]`
 - `dynadot-api-tool domains search --domain example.com [--domain other.com ...] [--show-price] [--currency {USD,EUR,CNY}] [--out export.json]`
+- `dynadot-api-tool domains availability [--domain example.com] [--domains-file domains.txt] [--max-attempts N] [--domains-per-request N] [--min-request-interval-s S] [--retry-delay-s S] [--show-price] [--currency {USD,EUR,CNY}] [--out availability.json]`
 
-## Jobs
-
-- `dynadot-api-tool jobs run --file jobs.csv [--limit N] [--plan-out plan.json]`
-- `dynadot-api-tool --apply --yes --plan-in plan.json jobs run --file jobs.csv`
+For reliable large checks, use `domains availability`, not repeated raw
+`domains search` calls. The defaults match a Regular Account: one domain per
+request and at least `1.05` seconds between request starts. Only set
+`--domains-per-request` above `1` when the Dynadot account is Bulk or Super
+Bulk. A clear provider `Available=yes` becomes `available`, a clear
+`Available=no` becomes `unavailable`, and missing/error/registry-connection
+results stay `unresolved` and are retried. The command exits nonzero if the
+configured retry cap is reached with unresolved domains.
 
 ## Runs (history)
 
@@ -190,11 +195,6 @@ Optional flags:
 - `dynadot-api-tool runs list [--limit 20]`
 - `dynadot-api-tool runs show --run-id 2026-01-19T104512Z_a3f91c`
 
-## Demo (plan/receipt workflow examples)
+## Source files
 
-- `dynadot-api-tool demo read`
-- `dynadot-api-tool demo write --selector demo-resource [--plan-out plan.json]`
-- `dynadot-api-tool --apply --yes --plan-in plan.json --receipt-out receipt.json demo write --selector demo-resource`
-
-Review note:
-- For any write family above, read the plan `before_state` and `recovery` blocks as the real safety contract.
+`src/dynadot_api_tool/commands` contains the named commands. `config.py` reads settings, `http.py` and `dynadot_api.py` send requests, and `commands/_write_safety.py` checks and records approved changes. `runs.py` owns local run history. Keep response and refusal behavior covered by the existing tests when changing those files.

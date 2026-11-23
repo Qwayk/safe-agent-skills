@@ -39,8 +39,8 @@ class HttpClient:
         if not text:
             return text
         out = text
-        out = re.sub(r"(?i)(\bkey=)([^&\s]+)", r"\1***REDACTED***", out)
-        out = re.sub(r"(?i)(\bkey%3d)([^&\s]+)", r"\1***REDACTED***", out)
+        out = re.sub(r"(?i)(\b(?:key|auth|auth_code)=)([^&\s]+)", r"\1***REDACTED***", out)
+        out = re.sub(r"(?i)(\b(?:key|auth|auth_code)%3d)([^&\s]+)", r"\1***REDACTED***", out)
         return out
 
     @staticmethod
@@ -52,7 +52,7 @@ class HttpClient:
             q = []
             changed = False
             for k, v in parse_qsl(parts.query, keep_blank_values=True):
-                if k.lower() == "key":
+                if k.lower() in {"key", "auth", "auth_code"}:
                     q.append((k, "***REDACTED***"))
                     changed = True
                 else:
@@ -69,7 +69,7 @@ class HttpClient:
             return params
         out = dict(params)
         for k in list(out.keys()):
-            if str(k).lower() == "key":
+            if str(k).lower() in {"key", "auth", "auth_code"}:
                 out[k] = "***REDACTED***"
         return out
 
@@ -110,6 +110,7 @@ class HttpClient:
                     json=json_body,
                     data=data,
                     timeout=self._timeout_s,
+                    allow_redirects=False,
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
@@ -126,7 +127,7 @@ class HttpClient:
             if self._verbose:
                 print(f"[http] {method} {self._redact_url(resp.url)} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
-            if resp.status_code < 400:
+            if 200 <= resp.status_code < 300:
                 return HttpResponse(
                     status=resp.status_code,
                     headers={k.lower(): v for k, v in resp.headers.items()},

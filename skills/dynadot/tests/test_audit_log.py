@@ -17,7 +17,7 @@ class TestAuditLog(unittest.TestCase):
                 {
                     "tool": "dynadot-api-tool",
                     "version": "0.0.0",
-                    "command": "dynadot-api-tool demo read",
+                    "command": "dynadot-api-tool account info",
                     "apply": False,
                     "yes": False,
                     "env_fingerprint": "http://example.invalid",

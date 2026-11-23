@@ -11,7 +11,7 @@ from dynadot_api_tool.cli import main
 
 
 class TestRunArtifacts(unittest.TestCase):
-    def test_demo_write_creates_run_folder_and_index(self) -> None:
+    def test_write_plan_creates_run_folder_and_index(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             env_path = root / ".env"
@@ -30,7 +30,7 @@ class TestRunArtifacts(unittest.TestCase):
 
             buf = io.StringIO()
             with redirect_stdout(buf):
-                rc = main(["--env-file", str(env_path), "--run-id", run_id, "demo", "write", "--selector", "x"])
+                rc = main(["--env-file", str(env_path), "--run-id", run_id, "api3", "set-note", "--domain", "example.com", "--note", "example"])
             self.assertEqual(rc, 0)
 
             payload = json.loads(buf.getvalue())
@@ -61,7 +61,7 @@ class TestRunArtifacts(unittest.TestCase):
             run_id = "2026-01-19T120500Z_c0ffee"
             buf = io.StringIO()
             with redirect_stdout(buf):
-                _ = main(["--env-file", str(env_path), "--run-id", run_id, "demo", "write", "--selector", "x"])
+                _ = main(["--env-file", str(env_path), "--run-id", run_id, "api3", "set-note", "--domain", "example.com", "--note", "example"])
 
             buf2 = io.StringIO()
             with redirect_stdout(buf2):
@@ -119,9 +119,6 @@ class TestRunArtifacts(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            job_csv = root / "jobs.csv"
-            job_csv.write_text("action\nwrite.ping\n", encoding="utf-8")
-
             run_id = "2026-01-19T121000Z_refuse1"
             buf = io.StringIO()
             with redirect_stdout(buf):
@@ -132,10 +129,12 @@ class TestRunArtifacts(unittest.TestCase):
                         "--run-id",
                         run_id,
                         "--apply",
-                        "jobs",
-                        "run",
-                        "--file",
-                        str(job_csv),
+                        "api3",
+                        "set-note",
+                        "--domain",
+                        "example.com",
+                        "--note",
+                        "example",
                     ]
                 )
             self.assertEqual(rc, 0)

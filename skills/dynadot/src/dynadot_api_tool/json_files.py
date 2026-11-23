@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import json
+import os
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from tempfile import NamedTemporaryFile
+from typing import Any, TextIO
 
 from .errors import ValidationError
 
@@ -20,6 +24,30 @@ def read_json_file(path: str | Path) -> Any:
 def write_json_file(path: str | Path, obj: Any) -> str:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(obj, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary = None
+    try:
+        with NamedTemporaryFile(mode="w", encoding="utf-8", dir=p.parent, delete=False) as stream:
+            temporary = Path(stream.name)
+            json.dump(obj, stream, ensure_ascii=False, indent=2, sort_keys=True)
+            stream.write("\n")
+        temporary.replace(p)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
     return str(p)
 
+
+@contextmanager
+def new_private_file(path: str | Path) -> Iterator[TextIO]:
+    """Reserve a new private destination before a sensitive request."""
+    p = Path(path)
+    try:
+        fd = os.open(p, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except OSError as exc:
+        raise ValidationError(f"Choose a new writable file: {p}") from exc
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            yield stream
+    except BaseException:
+        p.unlink(missing_ok=True)
+        raise

@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import hashlib
+import hmac
+import json
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any
 
 from ..errors import SafetyError, ValidationError
 from ..json_files import read_json_file, write_json_file
@@ -96,6 +100,31 @@ def emit_before_state_refusal(
     return 0
 
 
+def _plan_signature(plan: dict[str, Any], *configs: Any) -> str:
+    keys = [cfg.api_key for cfg in configs]
+    if not all(keys):
+        raise SafetyError("Set the Dynadot key for each account and save a new plan.")
+    key = json.dumps(keys, separators=(",", ":")).encode()
+    body = {name: value for name, value in plan.items() if name != "approval_signature"}
+    data = json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
+    return hmac.new(key, b"dynadot-approved-plan-v1\0" + data, hashlib.sha256).hexdigest()
+
+
+def sign_plan(plan: dict[str, Any], *configs: Any) -> None:
+    if all(cfg.api_key for cfg in configs):
+        plan["approval_signature"] = _plan_signature(plan, *configs)
+
+
+def verify_plan(plan: dict[str, Any], selector: str, *configs: Any) -> None:
+    signature = plan.get("approval_signature")
+    if not isinstance(signature, str) or not hmac.compare_digest(
+        signature.encode(), _plan_signature(plan, *configs).encode()
+    ):
+        raise SafetyError("This plan was edited, made with different Dynadot keys, or saved before the account check. Save and review a new plan.")
+    if (plan.get("selector") or {}).get("kind") != selector:
+        raise SafetyError("The saved plan is for a different command. Save and review a new plan.")
+
+
 def _validate_plan_for_apply(
     plan: dict[str, Any],
     *,
@@ -108,7 +137,7 @@ def _validate_plan_for_apply(
     if not isinstance(b, dict):
         raise ValidationError("Plan missing baseline object")
     for k, v in baseline.items():
-        if str(b.get(k) or "") != str(v or ""):
+        if b.get(k) != v:
             raise SafetyError(f"Refused: plan baseline mismatch for {k}")
 
 
@@ -127,7 +156,6 @@ class WriteSpec:
     rollback: dict[str, Any]
 
 
-ApplyCall = Callable[[], dict[str, Any]]
 VerifyCall = Callable[[], dict[str, Any]]
 
 
@@ -135,7 +163,7 @@ def run_write_command(
     *,
     ctx: dict[str, Any],
     spec: WriteSpec,
-    apply_call: ApplyCall,
+    apply_call: Callable[[dict[str, Any]], dict[str, Any]],
     verify_call: VerifyCall | None = None,
 ) -> int:
     """
@@ -153,13 +181,6 @@ def run_write_command(
         if not isinstance(plan_obj, dict):
             raise ValidationError("Plan file must be a JSON object")
         plan = dict(plan_obj)
-        plan.setdefault("rollback", spec.rollback)
-        plan.setdefault("recovery", build_no_recovery_contract(notes=str(spec.rollback.get("notes") or "")))
-        ensure_before_state_refusal_plan(
-            plan,
-            selector_kind=spec.selector_kind,
-            selector_value=spec.selector_value,
-        )
     else:
         recovery = build_no_recovery_contract(notes=str(spec.rollback.get("notes") or ""))
         plan = {
@@ -185,6 +206,9 @@ def run_write_command(
             selector_kind=spec.selector_kind,
             selector_value=spec.selector_value,
         )
+
+    if not plan_in:
+        sign_plan(plan, ctx["cfg"])
 
     plan_out = str(ctx.get("plan_out") or "").strip() or None
     if plan_out and not bool(ctx.get("apply")):
@@ -232,6 +256,7 @@ def run_write_command(
     if spec.irreversible and not bool(ctx.get("ack_irreversible")):
         raise SafetyError("Refused: irreversible/monetary actions require --ack-irreversible")
 
+    verify_plan(plan, spec.selector_kind, ctx["cfg"])
     _validate_plan_for_apply(plan, baseline=spec.baseline, env_fingerprint=env_fp)
     if not bool(ctx.get("ack_no_snapshot")):
         return emit_before_state_refusal(
@@ -241,7 +266,7 @@ def run_write_command(
             extra={"api_command": spec.api_command},
         )
 
-    apply_result = apply_call()
+    apply_result = apply_call(plan)
     verification = verify_call() if verify_call else {"ok": True, "details": {"type": "provider-response-only"}}
     receipt = {
         "tool": ctx.get("tool") or "dynadot-api-tool",

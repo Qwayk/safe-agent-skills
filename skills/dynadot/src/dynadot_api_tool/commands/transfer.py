@@ -10,11 +10,13 @@ from typing import Type
 
 from ..config import load_config_file_only
 from ..domains_list import chunk
-from ..dynadot_api import DynadotApi
+from ..dynadot_api import DynadotApi, UncertainWriteError
 from ..errors import SafetyError, ValidationError
 from ..http import HttpClient
 from ..json_files import read_json_file, write_json_file
 from ._write_safety import (
+    sign_plan,
+    verify_plan,
     build_before_state_refusal_verification_plan,
     build_no_recovery_contract,
     emit_before_state_refusal,
@@ -123,6 +125,9 @@ def _push_domains_one_by_one(
                     "attempt": i,
                 }
             )
+        except UncertainWriteError as exc:
+            results.append({"chunk": chunk_id, "domains": [d], "ok": False, "error": str(exc), "outcome_unclear": True})
+            break
         except Exception as e:  # noqa: BLE001
             msg = str(e)
             row: dict[str, Any] = {
@@ -166,6 +171,9 @@ def _accept_domains_one_by_one(
                     "attempt": i,
                 }
             )
+        except UncertainWriteError as exc:
+            results.append({"chunk": chunk_id, "domains": [d], "ok": False, "error": str(exc), "outcome_unclear": True})
+            break
         except Exception as e:  # noqa: BLE001
             msg = str(e)
             if _is_no_push_order_found_error(msg):
@@ -794,6 +802,8 @@ def cmd_transfer_run(args: Any, ctx: dict[str, Any]) -> int:
         if not isinstance(plan_obj, dict):
             raise ValidationError("Plan file must be a JSON object")
         plan = plan_obj
+        if ctx.get("apply"):
+            verify_plan(plan, "transfer.run", sender_cfg, receiver_cfg)
         ensure_before_state_refusal_plan(
             plan,
             selector_kind="transfer.run",
@@ -918,6 +928,9 @@ def cmd_transfer_run(args: Any, ctx: dict[str, Any]) -> int:
             selector_value=to_username,
             notes="Transfer run has no reliable combined before-state snapshot here; apply requires explicit no-snapshot approval.",
         )
+
+    if not plan_in:
+        sign_plan(plan, sender_cfg, receiver_cfg)
 
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if plan_out and not bool(ctx.get("apply")) else None
@@ -1075,6 +1088,7 @@ def cmd_transfer_run(args: Any, ctx: dict[str, Any]) -> int:
     # Push: only domains that are not already present and not already pending.
     to_push = [d for d in to_push_candidates if d and d not in ineligible_for_push]
     push_chunks = chunk(to_push, 50)
+    outcome_unclear = False
     attempted_push_chunks: list[list[str]] = []
     for idx, c in enumerate(push_chunks, start=1):
         if push_max_batches is not None and idx > push_max_batches:
@@ -1086,6 +1100,11 @@ def cmd_transfer_run(args: Any, ctx: dict[str, Any]) -> int:
         try:
             res = sender_api.call(command="push", params=payload)
             push_results.append({"chunk": idx, "domains": c, "ok": True, "status": res.status, "response": res.response})
+        except UncertainWriteError as exc:
+            errors += 1
+            outcome_unclear = True
+            push_results.append({"chunk": idx, "domains": c, "ok": False, "error": str(exc), "outcome_unclear": True})
+            break
         except Exception as e:  # noqa: BLE001
             errors += 1
             msg = str(e)
@@ -1127,6 +1146,10 @@ def cmd_transfer_run(args: Any, ctx: dict[str, Any]) -> int:
                         chunk_id=idx,
                     )
                     errors += sum(1 for r in fallback_results if r.get("ok") is False)
+                    if any(r.get("outcome_unclear") for r in fallback_results):
+                        outcome_unclear = True
+                        push_results.extend(fallback_results)
+                        break
                     if any(r.get("blocked_reason") == "sender_account_locked" for r in fallback_results):
                         push_blocked_reason = "sender_account_locked"
                         push_results.extend(fallback_results)
@@ -1145,6 +1168,10 @@ def cmd_transfer_run(args: Any, ctx: dict[str, Any]) -> int:
                 chunk_id=idx,
             )
             errors += sum(1 for r in fallback_results if r.get("ok") is False)
+            if any(r.get("outcome_unclear") for r in fallback_results):
+                outcome_unclear = True
+                push_results.extend(fallback_results)
+                break
             if any(r.get("blocked_reason") == "sender_account_locked" for r in fallback_results):
                 push_blocked_reason = "sender_account_locked"
                 push_results.extend(fallback_results)
@@ -1181,13 +1208,18 @@ def cmd_transfer_run(args: Any, ctx: dict[str, Any]) -> int:
     to_accept = sorted([d for d in eligible_domains if d in receiver_pending_mid])
     accept_chunks = chunk(to_accept, 50)
     attempted_accept_chunks: list[list[str]] = []
-    for idx, c in enumerate(accept_chunks, start=1):
+    for idx, c in enumerate(accept_chunks if not outcome_unclear else [], start=1):
         if accept_max_batches is not None and idx > accept_max_batches:
             break
         attempted_accept_chunks.append(c)
         try:
             res = receiver_api.call(command="set_domain_push_request", params={"domains": ",".join(c), "action": "accept"})
             accept_results.append({"chunk": idx, "domains": c, "ok": True, "status": res.status, "response": res.response})
+        except UncertainWriteError as exc:
+            errors += 1
+            outcome_unclear = True
+            accept_results.append({"chunk": idx, "domains": c, "ok": False, "error": str(exc), "outcome_unclear": True})
+            break
         except Exception as e:  # noqa: BLE001
             msg = str(e)
             failed = _extract_domains_from_error_message(msg, candidates=c)
@@ -1225,6 +1257,11 @@ def cmd_transfer_run(args: Any, ctx: dict[str, Any]) -> int:
                                 "fallback": "retry_still_pending",
                             }
                         )
+                    except UncertainWriteError as exc:
+                        errors += 1
+                        outcome_unclear = True
+                        accept_results.append({"chunk": idx, "domains": still_pending, "ok": False, "error": str(exc), "outcome_unclear": True})
+                        break
                     except Exception as e2:  # noqa: BLE001
                         msg2 = str(e2)
                         if _is_no_push_order_found_error(msg2):
@@ -1308,6 +1345,9 @@ def cmd_transfer_run(args: Any, ctx: dict[str, Any]) -> int:
             errors += sum(1 for r in fallback_results if r.get("ok") is False)
             accept_results.extend(fallback_results)
             continue
+        if any(row.get("outcome_unclear") for row in accept_results):
+            outcome_unclear = True
+            break
         if accept_sleep_between_batches_s > 0 and idx < len(accept_chunks) and (accept_max_batches is None or idx < accept_max_batches):
             time.sleep(accept_sleep_between_batches_s)
 
@@ -1432,13 +1472,17 @@ def cmd_transfer_run(args: Any, ctx: dict[str, Any]) -> int:
 
         batches = chunk(need_change, 100)
         verification_sleep_count = 0
-        for idx, batch_domains in enumerate(batches, start=1):
+        for idx, batch_domains in enumerate(batches if not outcome_unclear else [], start=1):
             if ns_max_batches is not None and idx > ns_max_batches:
                 break
             attempted_ns_batches.append(batch_domains)
             try:
                 res = receiver_api.call(command="set_ns", params=({"domain": ",".join(batch_domains)} | ns_params))
                 ns_results.append({"batch": idx, "domains": batch_domains, "ok": True, "status": res.status, "response": res.response})
+            except UncertainWriteError as exc:
+                errors += 1
+                ns_results.append({"batch": idx, "domains": batch_domains, "ok": False, "error": str(exc), "outcome_unclear": True})
+                break
             except Exception as e:  # noqa: BLE001
                 errors += 1
                 ns_results.append({"batch": idx, "domains": batch_domains, "ok": False, "error": str(e)})

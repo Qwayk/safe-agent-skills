@@ -210,7 +210,19 @@ def main(argv: list[str]) -> int:
         if not getattr(args, "cmd", None):
             parser.error("Missing command. Use --help to see available commands.")
 
-        command_str = "dynadot-api-tool " + " ".join(argv)
+        display_args = []
+        hide_next = False
+        for word in argv:
+            flag, separator, _value = word.partition("=")
+            if hide_next:
+                display_args.append("[private]")
+                hide_next = False
+            elif flag in {"--auth", "--auth-code"}:
+                hide_next = not separator
+                display_args.append(flag + "=[private]" if separator else flag)
+            else:
+                display_args.append(word)
+        command_str = "dynadot-api-tool " + " ".join(display_args)
         audit.bind_context(
             {
                 "tool": "dynadot-api-tool",

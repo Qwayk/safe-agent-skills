@@ -13,6 +13,22 @@ class DynadotApiError(ToolError):
     pass
 
 
+class UncertainWriteError(DynadotApiError):
+    """The provider may have received the request. Inspect state before retrying."""
+
+
+def is_write_command(cmd: str) -> bool:
+    c = str(cmd).strip().lower()
+    # Dynadot's request examples for get_transfer_auth_code include optional params
+    # that can mutate state (e.g. new_code=1, unlock_domain_for_transfer=1), so we
+    # treat it as write-capable and gate it behind the write safety contract.
+    if c == "get_transfer_auth_code":
+        return True
+    if c.startswith("get_") or c.startswith("list_") or c in {"account_info", "contact_list", "folder_list", "domain_info", "order_list", "search", "server_list", "tld_price", "is_processing", "transfer_domain_list", "backorder_request_list"}:
+        return False
+    return True
+
+
 @dataclasses.dataclass(frozen=True)
 class DynadotApiResult:
     command: str
@@ -47,6 +63,21 @@ def _find_response_payload(raw: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     raise DynadotApiError("Unexpected Dynadot API response: missing *Response object")
 
 
+def _without_transfer_secrets(value: Any, secrets: tuple[str, ...]) -> Any:
+    if isinstance(value, dict):
+        return {
+            k: _without_transfer_secrets(v, secrets)
+            for k, v in value.items()
+            if str(k).lower().replace("_", "") not in {"auth", "authcode", "transferauthcode", "eppcode"}
+        }
+    if isinstance(value, list):
+        return [_without_transfer_secrets(item, secrets) for item in value]
+    if isinstance(value, str):
+        for secret in secrets:
+            value = value.replace(secret, "[private]")
+    return value
+
+
 class DynadotApi:
     def __init__(self, *, base_url: str, api_key: str, http: HttpClient):
         self._base_url = base_url
@@ -70,27 +101,35 @@ class DynadotApi:
         def _retry_sleep_seconds(msg: str) -> float:
             m = (msg or "").lower()
             # Common Dynadot message: "Too many requests. Please try again in 1 minute after."
-            mm = re.search(r"in\\s+(\\d+)\\s+minute", m)
+            mm = re.search(r"in\s+(\d+)\s+minute", m)
             if mm:
                 return float(int(mm.group(1)) * 60 + 5)
-            ss = re.search(r"in\\s+(\\d+)\\s+second", m)
+            ss = re.search(r"in\s+(\d+)\s+second", m)
             if ss:
                 return float(int(ss.group(1)) + 2)
             return 65.0
 
-        for attempt in range(0, 2):
-            resp = self._http.request("GET", self._base_url, params=p, retries=2)
+        read_only = not is_write_command(cmd) or (cmd == "renew" and p.get("price_check") == "1")
+        uncertain = (
+            "Dynadot did not confirm the change. Check the domain or order in Dynadot before trying again."
+        )
+        for attempt in range(2 if read_only else 1):
             try:
+                resp = self._http.request(
+                    "GET", self._base_url, params=p, retries=2 if read_only else 0
+                )
                 raw = resp.json()
-            except Exception as e:  # noqa: BLE001
-                raise DynadotApiError(f"Dynadot API returned non-JSON: {type(e).__name__}") from None
+                raw_obj = _coerce_dict(raw, what="top-level")
+                _, payload = _find_response_payload(raw_obj)
+                payload_obj = _coerce_dict(payload, what="*Response")
+                if payload_obj.get("ResponseCode") in (None, ""):
+                    raise DynadotApiError("Dynadot API response missing ResponseCode")
+            except (RuntimeError, ValueError, DynadotApiError) as exc:
+                if not read_only:
+                    raise UncertainWriteError(uncertain) from None
+                message = str(exc).replace(self._api_key, "[private]") if self._api_key else str(exc)
+                raise DynadotApiError(message) from None
 
-            raw_obj = _coerce_dict(raw, what="top-level")
-            _, payload = _find_response_payload(raw_obj)
-            payload_obj = _coerce_dict(payload, what="*Response")
-
-            if "ResponseCode" not in payload_obj:
-                raise DynadotApiError("Dynadot API response missing ResponseCode")
             code_raw = payload_obj.get("ResponseCode")
             code = "" if code_raw is None else str(code_raw)
             if code and code != "0":
@@ -101,14 +140,21 @@ class DynadotApi:
                     or "Dynadot API error"
                 )
                 msg_s = str(msg or "")
-                if "too many requests" in msg_s.lower() and attempt == 0:
+                if "too many requests" in msg_s.lower() and read_only and attempt == 0:
                     time.sleep(_retry_sleep_seconds(msg_s))
                     continue
+                for secret in (p.get("key"), p.get("auth"), p.get("auth_code")):
+                    if secret:
+                        msg_s = msg_s.replace(str(secret), "[private]")
                 raise DynadotApiError(f"Dynadot API error (ResponseCode={code}): {msg_s}")
 
             if not code:
                 raise DynadotApiError("Dynadot API response missing ResponseCode")
 
-            return DynadotApiResult(command=cmd, response=payload_obj)
+            secret_values = tuple(str(p[key]) for key in ("key", "auth", "auth_code") if p.get(key))
+            safe_response = payload_obj if cmd == "get_transfer_auth_code" else _without_transfer_secrets(
+                payload_obj, secret_values
+            )
+            return DynadotApiResult(command=cmd, response=safe_response)
 
         raise DynadotApiError("Dynadot API error: rate limit retries exhausted")

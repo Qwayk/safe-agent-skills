@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import argparse
+import json
 import time
 from typing import Any, Type
 
 from ..dynadot_api import DynadotApi
 from ..errors import ValidationError
 from ..http import HttpClient
-from ..json_files import write_json_file
+from ..json_files import new_private_file, write_json_file
 
 
 def _utc_now() -> str:
@@ -128,16 +129,17 @@ def cmd_transfers_auth_code(args: Any, ctx: dict[str, Any]) -> int:
     api = _api(ctx)
     params: dict[str, Any] = {"domain": domain}
 
-    res = api.call(command="get_transfer_auth_code", params=params)
-    out_path = str(getattr(args, "out", "") or "").strip() or None
-    export_written = (
-        write_json_file(
-            out_path,
-            _export_obj(ctx, command="get_transfer_auth_code", params=dict(params), response=res.response),
+    out_path = str(getattr(args, "out", "") or "").strip()
+    if not out_path:
+        raise ValidationError("Use --out with a new private file for the transfer code.")
+    with new_private_file(out_path) as secret_file:
+        res = api.call(command="get_transfer_auth_code", params=params)
+        json.dump(
+            _export_obj(ctx, command="get_transfer_auth_code", params=params, response=res.response),
+            secret_file, ensure_ascii=False, indent=2,
         )
-        if out_path
-        else None
-    )
+        secret_file.write("\n")
+    export_written = out_path
 
     out = {
         "ok": True,
@@ -149,7 +151,7 @@ def cmd_transfers_auth_code(args: Any, ctx: dict[str, Any]) -> int:
             "command": "get_transfer_auth_code",
             "status": res.status,
             "response_code": res.response_code,
-            "raw": res.response,
+            "stored_privately": True,
         },
     }
     ctx["audit"].write("transfers.auth_code", {"domain": domain, "out_path": export_written})
@@ -183,5 +185,5 @@ def register_transfers(
 
     auth = transfers_sub.add_parser("auth-code", help="Get transfer auth code for a domain (read-only)")
     auth.add_argument("--domain", required=True, help="Domain name")
-    auth.add_argument("--out", default=None, help="Write full JSON export to a file")
+    auth.add_argument("--out", required=True, help="Save the transfer code in a new private file")
     auth.set_defaults(func=cmd_transfers_auth_code, write_capable=False)

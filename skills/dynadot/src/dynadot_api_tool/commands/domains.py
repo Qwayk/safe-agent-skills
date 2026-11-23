@@ -9,11 +9,13 @@ from typing import Any
 from typing import Type
 
 from ..domains_list import chunk, parse_domains_from_args
-from ..dynadot_api import DynadotApi
+from ..dynadot_api import DynadotApi, UncertainWriteError
 from ..errors import SafetyError, ValidationError
 from ..http import HttpClient
 from ..json_files import read_json_file, write_json_file
 from ._write_safety import (
+    sign_plan,
+    verify_plan,
     build_before_state_refusal_verification_plan,
     build_no_recovery_contract,
     emit_before_state_refusal,
@@ -309,6 +311,9 @@ def cmd_domains_push(args: Any, ctx: dict[str, Any]) -> int:
             notes="Domain push has no reliable generic before-state snapshot here; apply requires explicit no-snapshot approval.",
         )
 
+    if not plan_in:
+        sign_plan(plan, ctx["cfg"])
+
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if plan_out and not bool(ctx.get("apply")) else None
 
@@ -363,6 +368,8 @@ def cmd_domains_push(args: Any, ctx: dict[str, Any]) -> int:
             audit_event="domains.push.refused",
             extra={"count": len(domains), "errors": 0},
         )
+
+    verify_plan(plan, "domains.push", ctx["cfg"])
 
     api = _api(ctx)
     results: list[dict[str, Any]] = []
@@ -574,6 +581,9 @@ def _cmd_push_requests_set(args: Any, ctx: dict[str, Any], *, action: str) -> in
             notes="Push-request accept/decline has no reliable generic before-state snapshot here; apply requires explicit no-snapshot approval.",
         )
 
+    if not plan_in:
+        sign_plan(plan, ctx["cfg"])
+
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if plan_out and not bool(ctx.get("apply")) else None
 
@@ -639,6 +649,8 @@ def _cmd_push_requests_set(args: Any, ctx: dict[str, Any], *, action: str) -> in
             audit_event="domains.push_requests.refused",
             extra={"count": len(domains), "errors": 0},
         )
+
+    verify_plan(plan, "domains.push-requests", ctx["cfg"])
 
     api = _api(ctx)
     results: list[dict[str, Any]] = []
@@ -1111,6 +1123,9 @@ def cmd_domains_name_servers_set(args: Any, ctx: dict[str, Any]) -> int:
             notes="Name-server set has no reliable generic before-state snapshot here; apply requires explicit no-snapshot approval and read-back verification.",
         )
 
+    if not plan_in:
+        sign_plan(plan, ctx["cfg"])
+
     plan_out = ctx.get("plan_out")
     plan_path = write_json_file(plan_out, plan) if plan_out and not bool(ctx.get("apply")) else None
 
@@ -1172,6 +1187,8 @@ def cmd_domains_name_servers_set(args: Any, ctx: dict[str, Any]) -> int:
             extra={"count": total_domains, "errors": 0},
         )
 
+    verify_plan(plan, "domains.name_servers.set", ctx["cfg"])
+
     api = _api(ctx)
     availability_check = None
     if availability_check_mode != "skip":
@@ -1221,6 +1238,9 @@ def cmd_domains_name_servers_set(args: Any, ctx: dict[str, Any]) -> int:
             except Exception as e:  # noqa: BLE001
                 errors += 1
                 results.append({"batch": idx, "domains": batch_domains, "ok": False, "error": str(e)})
+                if isinstance(e, UncertainWriteError):
+                    break
+                uncertain = False
                 if continue_on_error and len(batch_domains) > 1:
                     for d in batch_domains:
                         try:
@@ -1229,9 +1249,10 @@ def cmd_domains_name_servers_set(args: Any, ctx: dict[str, Any]) -> int:
                         except Exception as e1:  # noqa: BLE001
                             errors += 1
                             results.append({"batch": idx, "domains": [d], "ok": False, "error": str(e1)})
-                            if not continue_on_error:
+                            if isinstance(e1, UncertainWriteError):
+                                uncertain = True
                                 break
-                if not continue_on_error:
+                if uncertain or not continue_on_error:
                     break
 
             for d in batch_domains:
@@ -1504,6 +1525,209 @@ def cmd_domains_search(args: Any, ctx: dict[str, Any]) -> int:
     return 0
 
 
+def _search_result_rows(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    for key in ("SearchResults", "SearchResult"):
+        value = payload.get(key)
+        if isinstance(value, list):
+            return [row for row in value if isinstance(row, dict)]
+        if isinstance(value, dict):
+            return [value]
+    return []
+
+
+def _normalize_availability_row(row: dict[str, Any]) -> tuple[str, bool | None, str | None, str | None]:
+    status = str(row.get("Status") or "").strip().lower()
+    available_raw = row.get("Available")
+    available_text = str(available_raw or "").strip().lower()
+    price = str(row.get("Price") or "").strip() or None
+
+    error_any = row.get("Error") or row.get("Message") or row.get("ResponseMsg")
+    error = str(error_any or "").strip() or None
+
+    if status not in {"", "success"}:
+        return "unresolved", None, price, error or f"provider status: {status}"
+    if available_raw is True or available_text in {"yes", "true", "1"}:
+        return "available", True, price, None
+    if available_raw is False or available_text in {"no", "false", "0"}:
+        return "unavailable", False, price, None
+    return "unresolved", None, price, error or "provider did not return a clear availability value"
+
+
+def cmd_domains_availability(args: Any, ctx: dict[str, Any]) -> int:
+    api = _api(ctx)
+    domains = parse_domains_from_args(
+        domains=getattr(args, "domain", None),
+        domains_file=getattr(args, "domains_file", None),
+    )
+
+    max_attempts = int(getattr(args, "max_attempts", 8) or 0)
+    if max_attempts < 1:
+        raise ValidationError("--max-attempts must be >= 1")
+
+    domains_per_request = int(getattr(args, "domains_per_request", 1) or 0)
+    if domains_per_request < 1 or domains_per_request > 100:
+        raise ValidationError("--domains-per-request must be between 1 and 100")
+
+    min_request_interval_s = float(getattr(args, "min_request_interval_s", 1.05) or 0.0)
+    if min_request_interval_s < 0:
+        raise ValidationError("--min-request-interval-s must be >= 0")
+
+    retry_delay_s = float(getattr(args, "retry_delay_s", 2.0) or 0.0)
+    if retry_delay_s < 0:
+        raise ValidationError("--retry-delay-s must be >= 0")
+
+    show_price = bool(getattr(args, "show_price", False))
+    currency = str(getattr(args, "currency", "") or "").strip().upper() or None
+    if currency is not None and currency not in {"USD", "EUR", "CNY"}:
+        raise ValidationError("--currency must be one of: USD, EUR, CNY")
+    if currency is not None and not show_price:
+        raise ValidationError("--currency requires --show-price")
+
+    states: dict[str, dict[str, Any]] = {
+        domain: {
+            "domain": domain,
+            "status": "unresolved",
+            "available": None,
+            "price": None,
+            "attempts": 0,
+            "checked_at_utc": None,
+            "last_error": None,
+        }
+        for domain in domains
+    }
+
+    pending = list(domains)
+    request_count = 0
+    rounds_completed = 0
+    last_request_started: float | None = None
+
+    while pending and rounds_completed < max_attempts:
+        rounds_completed += 1
+        next_pending: list[str] = []
+
+        for request_domains in chunk(pending, domains_per_request):
+            if last_request_started is not None and min_request_interval_s > 0:
+                elapsed = time.monotonic() - last_request_started
+                remaining = min_request_interval_s - elapsed
+                if remaining > 0:
+                    time.sleep(remaining)
+
+            params: dict[str, Any] = {
+                f"domain{idx}": domain for idx, domain in enumerate(request_domains)
+            }
+            if show_price:
+                params["show_price"] = "1"
+                if currency is not None:
+                    params["currency"] = currency.lower()
+
+            last_request_started = time.monotonic()
+            request_count += 1
+            attempted_at = _utc_now()
+            for domain in request_domains:
+                states[domain]["attempts"] += 1
+
+            try:
+                response = api.call(command="search", params=params).response
+                rows_by_domain: dict[str, dict[str, Any]] = {}
+                for candidate in _search_result_rows(response):
+                    row_domain = str(candidate.get("DomainName") or "").strip().lower().rstrip(".")
+                    if row_domain:
+                        rows_by_domain[row_domain] = candidate
+
+                for domain in request_domains:
+                    state = states[domain]
+                    state["last_attempt_at_utc"] = attempted_at
+                    row = rows_by_domain.get(domain)
+                    if row is None:
+                        state["last_error"] = "provider response did not include this domain"
+                        next_pending.append(domain)
+                        continue
+
+                    status, available, price, error = _normalize_availability_row(row)
+                    state["status"] = status
+                    state["available"] = available
+                    state["price"] = price
+                    state["last_error"] = error
+                    if status in {"available", "unavailable"}:
+                        state["checked_at_utc"] = attempted_at
+                    else:
+                        next_pending.append(domain)
+            except Exception as exc:  # noqa: BLE001
+                safe_error = f"{type(exc).__name__}: {exc}"
+                for domain in request_domains:
+                    state = states[domain]
+                    state["last_attempt_at_utc"] = attempted_at
+                    state["last_error"] = safe_error
+                    next_pending.append(domain)
+
+        pending = next_pending
+        if pending and rounds_completed < max_attempts and retry_delay_s > 0:
+            time.sleep(retry_delay_s)
+
+    results = [states[domain] for domain in domains]
+    available_count = sum(1 for row in results if row["status"] == "available")
+    unavailable_count = sum(1 for row in results if row["status"] == "unavailable")
+    unresolved_count = sum(1 for row in results if row["status"] == "unresolved")
+
+    out_path = str(getattr(args, "out", "") or "").strip() or None
+    export = {
+        "tool": ctx.get("tool") or "dynadot-api-tool",
+        "version": ctx.get("tool_version") or None,
+        "generated_at_utc": _utc_now(),
+        "env_fingerprint": ctx["cfg"].base_url,
+        "command": "availability",
+        "params": {
+            "count": len(domains),
+            "max_attempts": max_attempts,
+            "domains_per_request": domains_per_request,
+            "min_request_interval_s": min_request_interval_s,
+            "retry_delay_s": retry_delay_s,
+            "show_price": show_price,
+            "currency": currency,
+        },
+        "counts": {
+            "total": len(domains),
+            "available": available_count,
+            "unavailable": unavailable_count,
+            "unresolved": unresolved_count,
+            "requests": request_count,
+            "rounds": rounds_completed,
+        },
+        "results": results,
+    }
+    export_written = write_json_file(out_path, export) if out_path else None
+
+    out: dict[str, Any] = {
+        "ok": unresolved_count == 0,
+        "dry_run": True,
+        "command": "availability",
+        "count": len(domains),
+        "available": available_count,
+        "unavailable": unavailable_count,
+        "unresolved": unresolved_count,
+        "requests": request_count,
+        "rounds": rounds_completed,
+        "out_path": export_written,
+    }
+    if out_path is None:
+        out["results"] = results
+
+    ctx["audit"].write(
+        "domains.availability",
+        {
+            "count": len(domains),
+            "available": available_count,
+            "unavailable": unavailable_count,
+            "unresolved": unresolved_count,
+            "requests": request_count,
+            "rounds": rounds_completed,
+            "out_path": export_written,
+        },
+    )
+    ctx["out"].emit(out)
+    return 0 if unresolved_count == 0 else 2
+
+
 def _domain_info_from_response(payload: dict[str, Any]) -> dict[str, Any] | None:
     for key in ("DomainInfo", "Domain", "domain", "domainInfo"):
         v = payload.get(key)
@@ -1730,6 +1954,46 @@ def register_domains(
     domains_search.add_argument("--currency", default=None, choices=("USD", "EUR", "CNY"), help="Currency (requires --show-price)")
     domains_search.add_argument("--out", default=None, help="Write full JSON export to a file")
     domains_search.set_defaults(func=cmd_domains_search, write_capable=False)
+
+    domains_availability = domains_sub.add_parser(
+        "availability",
+        help="Reliably check a domain list, retrying unresolved provider results (read-only)",
+    )
+    domains_availability.add_argument("--domain", action="append", default=None, help="One domain (repeatable)")
+    domains_availability.add_argument("--domains-file", default=None, help="File with one domain per line")
+    domains_availability.add_argument(
+        "--max-attempts",
+        type=int,
+        default=8,
+        help="Maximum attempts for each unresolved domain (default: 8)",
+    )
+    domains_availability.add_argument(
+        "--domains-per-request",
+        type=int,
+        default=1,
+        help="Domains per API request (default: 1 for Regular accounts; max: 100)",
+    )
+    domains_availability.add_argument(
+        "--min-request-interval-s",
+        type=float,
+        default=1.05,
+        help="Minimum seconds between API request starts (default: 1.05)",
+    )
+    domains_availability.add_argument(
+        "--retry-delay-s",
+        type=float,
+        default=2.0,
+        help="Extra delay between unresolved retry rounds (default: 2)",
+    )
+    domains_availability.add_argument("--show-price", dest="show_price", action="store_true", help="Include prices")
+    domains_availability.add_argument(
+        "--currency",
+        default=None,
+        choices=("USD", "EUR", "CNY"),
+        help="Currency (requires --show-price)",
+    )
+    domains_availability.add_argument("--out", default=None, help="Write full normalized JSON export to a file")
+    domains_availability.set_defaults(func=cmd_domains_availability, write_capable=False)
 
     domains_info = domains_sub.add_parser("info", help="Get domain info (read-only; one request per domain)")
     domains_info.add_argument("--domain", action="append", default=None, help="One domain (repeatable)")

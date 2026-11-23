@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from unittest.mock import patch
 
 import requests
 
@@ -48,3 +49,17 @@ class TestHttpRedaction(unittest.TestCase):
         msg = str(cm.exception)
         self.assertNotIn("SECRET", msg)
         self.assertIn("***REDACTED***", msg)
+
+    def test_does_not_follow_a_redirect(self) -> None:
+        hc = HttpClient(timeout_s=0.1, verbose=False, user_agent="dynadot-api-tool-test")
+        response = requests.Response()
+        response.status_code = 302
+        response.url = "https://api.dynadot.com/api3.json"
+        response.headers["Location"] = "https://example.invalid/"
+        response._content = b""
+
+        with patch.object(hc._session, "request", return_value=response) as request:
+            with self.assertRaisesRegex(RuntimeError, "HTTP 302"):
+                hc.request("GET", response.url, params={"key": "FIXTURE", "command": "account_info"})
+        request.assert_called_once()
+        self.assertIs(request.call_args.kwargs["allow_redirects"], False)

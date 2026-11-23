@@ -1,23 +1,6 @@
 # Quickstart
 
-Start with a small Dynadot read: checking domains, renewals, DNS, and account details before you touch ownership or name servers.
-
-Need more ideas? See [What you can do with Dynadot](use_cases.md). Need setup help? See [Connect your account](onboarding.md).
-
-A good first ask is:
-
-> List all active domains and flag anything expiring in the next 30 or 60 days.
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account or connection before asking for real work.
-3. Run one small read and make sure the result matches the real service.
-4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+If you downloaded the source, open its folder and install it:
 
 ```bash
 python3 -m venv .venv
@@ -25,56 +8,47 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -e .
 ```
 
-```bash
-.venv/bin/python -m pip install -e '.[dev]'
-```
+Follow [Onboarding](onboarding.md) to connect your account. These examples use `dynadot.env`.
 
-## 2. Check setup
-
-If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
+## Check domains, prices, or orders
 
 ```bash
-dynadot-api-tool onboarding
+dynadot-api-tool --output json --env-file dynadot.env domains list --page 1
+dynadot-api-tool --output json --env-file dynadot.env account balance
+dynadot-api-tool --output json --env-file dynadot.env pricing tld-price --currency USD
 ```
+
+For a long list of names, put one name per line in `domains.txt` and run:
 
 ```bash
-dynadot-api-tool auth check
+dynadot-api-tool --output json --env-file dynadot.env domains availability \
+  --domains-file domains.txt --show-price --currency USD --out availability.json
 ```
 
-## 3. Run one small first read
+The command reports how many names were available, unavailable, or still unresolved. Keep the default one name per request on a Regular Account. If a registry or connection error remains after retries, the command exits with an error and the file still shows which names need another check.
 
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
+## Review a purchase
+
+For example, to prepare a one-year registration with a maximum of $15:
 
 ```bash
-dynadot-api-tool --output json domains list --all --out domains.list.json
+dynadot-api-tool --output json --env-file dynadot.env --plan-out register.json \
+  api3 register --domain example.com --duration 1 --currency USD --max-price 15.00
 ```
+
+Check the account, domain, term, currency, and price. The same inputs must be used when applying a reviewed plan. See the [approval and price rules](safety_model.md).
+
+## Compare and change nameservers
 
 ```bash
-dynadot-api-tool --output json domains name-servers export \\
-  --domains-export-in domains.list.json \\
-  --out name_servers.current.json
+dynadot-api-tool --output json --env-file dynadot.env domains list --all --out domains.list.json
+dynadot-api-tool --output json --env-file dynadot.env domains name-servers export \
+  --domains-export-in domains.list.json --out name_servers.current.json
+dynadot-api-tool --output json --env-file dynadot.env domains name-servers diff \
+  --current-in name_servers.current.json --desired-ns ns1.example.net \
+  --desired-ns ns2.example.net --out name_servers.diff.json
+dynadot-api-tool --output json --env-file dynadot.env --plan-out name_servers.plan.json \
+  domains name-servers set --diff-in name_servers.diff.json
 ```
 
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
-
-## 4. Stop before anything risky
-
-Ask for a reviewed plan before DNS, name-server, renewal, transfer, contact, or domain setting changes.
-
-## What a useful first result includes
-
-A good first result should make these things clear:
-
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
-
-## Where to go next
-
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your account](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+Check the domains and intended nameservers before approving. For two-account moves, bids, contact changes, and other requests, see the [command reference](command_reference.md).

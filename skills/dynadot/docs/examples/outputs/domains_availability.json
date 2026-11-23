@@ -1,0 +1,46 @@
+{
+  "command": "availability",
+  "counts": {
+    "available": 1,
+    "requests": 2,
+    "rounds": 1,
+    "total": 2,
+    "unavailable": 1,
+    "unresolved": 0
+  },
+  "env_fingerprint": "https://api.dynadot.com/api3.json",
+  "generated_at_utc": "2026-07-31T00:00:00Z",
+  "params": {
+    "count": 2,
+    "currency": "USD",
+    "domains_per_request": 1,
+    "max_attempts": 8,
+    "min_request_interval_s": 1.05,
+    "retry_delay_s": 2.0,
+    "show_price": true
+  },
+  "results": [
+    {
+      "attempts": 1,
+      "available": true,
+      "checked_at_utc": "2026-07-31T00:00:01Z",
+      "domain": "available-example.shop",
+      "last_attempt_at_utc": "2026-07-31T00:00:01Z",
+      "last_error": null,
+      "price": "Registration Price: 1.99 in USD and Domain is not a Premium Domain",
+      "status": "available"
+    },
+    {
+      "attempts": 1,
+      "available": false,
+      "checked_at_utc": "2026-07-31T00:00:02Z",
+      "domain": "unavailable-example.shop",
+      "last_attempt_at_utc": "2026-07-31T00:00:02Z",
+      "last_error": null,
+      "price": null,
+      "status": "unavailable"
+    }
+  ],
+  "tool": "dynadot-api-tool",
+  "version": "0.5.0"
+}

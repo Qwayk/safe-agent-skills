@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import argparse
+import shlex
 from pathlib import Path
-from typing import Type
+
+from ..errors import ValidationError
+from ..json_files import new_private_file
 
 
 def _read_text_lines(path: Path) -> list[str]:
@@ -36,29 +39,30 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
     env_path = Path(env_file)
     env_created = False
 
+    if env_path.is_symlink() or (env_path.exists() and not env_path.is_file()):
+        raise ValidationError("The settings path must be a regular file.")
     if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
-        else:
-            env_path.write_text("", encoding="utf-8")
+        with new_private_file(env_path) as stream:
+            stream.write(
+                "DYNADOT_API_BASE_URL=https://api.dynadot.com/api3.json\n"
+                "DYNADOT_API_KEY=\n"
+                "DYNADOT_TIMEOUT_S=30\n"
+            )
         env_created = True
 
     lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "DYNADOT_API_BASE_URL"):
-        missing.append("DYNADOT_API_BASE_URL")
-    if not _has_nonempty_env_value(lines, "DYNADOT_API_KEY"):
-        missing.append("DYNADOT_API_KEY")
-
+    missing = [
+        key for key in ("DYNADOT_API_BASE_URL", "DYNADOT_API_KEY")
+        if not _has_nonempty_env_value(lines, key)
+    ]
+    next_command = shlex.join(
+        ["dynadot-api-tool", "--output", "json", "--env-file", env_file, "auth", "check"]
+    )
     steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Open .env and fill the required values:",
-        "  - DYNADOT_API_BASE_URL=https://api.dynadot.com/api3.json",
-        "  - DYNADOT_API_KEY=<your Dynadot API key>",
-        "Run: dynadot-api-tool --output json auth check",
-        "If you are moving domains between two Dynadot accounts: create TWO env files (one per account) and use --receiver-env-file for the receiving account.",
+        f"Open {env_file} and add your Dynadot API key. Keep it out of chat and Git.",
+        "Use https://api.dynadot.com/api3.json for a production key.",
+        f"Run {next_command}",
+        "For a move between two Dynadot accounts, use a separate settings file for each account.",
     ]
 
     payload = {
@@ -67,7 +71,7 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             "env_file": env_file,
             "env_created": env_created,
             "missing": missing,
-            "next_command": "dynadot-api-tool --output json auth check",
+            "next_command": next_command,
             "steps": steps,
         },
     }
@@ -82,14 +86,14 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             print("")
             print(f"Missing in {env_file}: " + ", ".join(missing))
         print("")
-        print("Next: dynadot-api-tool --output json auth check")
+        print(f"Next: {next_command}")
     return 0
 
 
 def register_onboarding(
-    subparsers: argparse._SubParsersAction,  # type: ignore[name-defined]
+    subparsers: argparse._SubParsersAction,
     *,
-    parser_class: Type[argparse.ArgumentParser],
+    parser_class: type[argparse.ArgumentParser],
 ) -> None:
     _ = parser_class
     onboarding = subparsers.add_parser("onboarding", help="First-time setup help (no secrets)")

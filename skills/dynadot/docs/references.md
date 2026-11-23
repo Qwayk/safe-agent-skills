@@ -1,19 +1,12 @@
-# References (sources)
+# Dynadot API sources
 
-Purpose:
-- Record what sources the tool implementation relies on (so behavior is auditable and reproducible).
-- Prefer official provider docs; use other sources only when needed and note why.
+Use the [pinned coverage list](api_coverage.md) for the commands the tool ships.
 
-Rules:
-- Never include secrets (tokens, client secrets) in this file.
-- When a capability depends on a specific documented behavior (rate limits, required headers, download tracking), link the exact doc page.
-- Update this file whenever you add/change an endpoint or behavior based on new research.
+- [Dynadot API3 docs and retirement notice](https://www.dynadot.com/domain/api-commands)
+- [Dynadot REST API docs](https://www.dynadot.com/domain/api-document)
+- [API key and IP settings](https://www.dynadot.com/help/question/find-API-settings)
+- [Where to find a Push Username](https://www.dynadot.com/community/help/question/what-is-push-username)
 
-## Provider docs (official)
-
-- Provider: Dynadot
-- API docs home (API3 command list + rate limits): https://www.dynadot.com/domain/api-commands
-- Note on completeness: Dynadot’s docs page includes some command names in menus/links without full request examples/parameter tables. This tool avoids guessing and treats those items as out-of-scope until Dynadot publishes complete docs for them (tracked in `docs/api_coverage.md`).
 - Command docs (anchors used by this tool):
   - `account_info`: https://www.dynadot.com/domain/api-commands#account_info
   - `contact_list`: https://www.dynadot.com/domain/api-commands#contact_list
@@ -46,10 +39,3 @@ Rules:
   - `order_list`: https://www.dynadot.com/domain/api-commands#order_list
   - `get_order_status`: https://www.dynadot.com/domain/api-commands#get_order_status
 - `server_list`: https://www.dynadot.com/domain/api-commands#server_list
-- Auth / API key help: https://www.dynadot.com/community/help/question/how-to-use-api
-- Push Username help (needed for domain pushes): https://www.dynadot.com/community/help/question/what-is-push-username
-- Last verified (UTC): 2026-02-25
-
-## Other sources (only if needed)
-
-- (None yet.)

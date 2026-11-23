@@ -1,18 +1,23 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import hmac
+import json
 import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Any, Type
 
 from ._api3_specs import API3_PARAM_SPECS
 from ._write_safety import WriteSpec, run_write_command
-from ..dynadot_api import DynadotApi
-from ..errors import ValidationError
+from ..dynadot_api import DynadotApi, DynadotApiError
+from ..dynadot_api import is_write_command as _is_write_command
+from ..errors import SafetyError, ValidationError
 from ..http import HttpClient
-from ..json_files import write_json_file
+from ..json_files import new_private_file, write_json_file
 
 
 def _utc_now() -> str:
@@ -65,18 +70,6 @@ def _to_flag_name(param: str) -> str:
     return str(param).strip().lower().replace("_", "-")
 
 
-def _is_write_command(cmd: str) -> bool:
-    c = str(cmd).strip().lower()
-    # Dynadot's request examples for get_transfer_auth_code include optional params
-    # that can mutate state (e.g. new_code=1, unlock_domain_for_transfer=1), so we
-    # treat it as write-capable and gate it behind the write safety contract.
-    if c == "get_transfer_auth_code":
-        return True
-    if c.startswith("get_") or c.startswith("list_") or c in {"account_info", "contact_list", "folder_list", "domain_info", "order_list", "search", "server_list", "tld_price", "is_processing", "transfer_domain_list", "backorder_request_list"}:
-        return False
-    return True
-
-
 _IRREVERSIBLE = {
     "register",
     "bulk_register",
@@ -95,7 +88,7 @@ _NS_SUFFIX_RE = re.compile(r"^ns(?P<idx>\d+)$", re.IGNORECASE)
 
 
 def _normalize_ns(value: object) -> str:
-    s = str(value or "").strip().lower()
+    s = str(value if value is not None else "").strip().lower()
     if s.endswith("."):
         s = s[:-1]
     return s
@@ -115,7 +108,7 @@ def _requested_ns_from_params(params: dict[str, Any]) -> list[str]:
 
 
 def _domains_from_param(value: object) -> list[str]:
-    s = str(value or "").strip()
+    s = str(value if value is not None else "").strip()
     if not s:
         return []
     return [d.strip() for d in s.split(",") if d.strip()]
@@ -430,6 +423,77 @@ def _add_list_args(p: argparse.ArgumentParser, list_params: dict[str, _ListKey])
         p.add_argument(flag, dest=base.lower(), action="append", default=None, help=f"Dynadot API params: {base}0..")
 
 
+_QUOTED_COMMANDS = {"register", "renew"}
+_PRICE_VALUE = re.compile(
+    r"(?:Registration Price:\s*)?(\d+(?:\.\d+)?)\s*(?:in\s+)?([A-Z]{3})?"
+    r"(?: and Domain is (?:not )?a Premium Domain)?",
+    re.IGNORECASE,
+)
+
+
+def _price(value: Any, currency: str = "") -> tuple[Decimal, str] | None:
+    if isinstance(value, dict):
+        currency = str(value.get("Currency") or currency)
+        value = value.get("TotalPrice", value.get("Price"))
+    match = _PRICE_VALUE.fullmatch(str(value if value is not None else "").strip())
+    if not match:
+        return None
+    return Decimal(match[1]), (match[2] or currency).upper()
+
+
+def _purchase_quote(cmd: str, params: dict[str, Any], ctx: dict[str, Any]) -> dict[str, str]:
+    currency = str(params.get("currency") or "").upper()
+    if not re.fullmatch("[A-Z]{3}", currency):
+        return {"status": "unavailable", "reason": "Choose a currency to check the price."}
+    if not ctx["cfg"].api_key:
+        return {"status": "unavailable", "reason": "Set your Dynadot key to check the price."}
+    if cmd == "register" and str(params.get("duration")) != "1":
+        return {"status": "unavailable", "reason": "The API3 search price is for one year. Check the full term at Dynadot checkout."}
+
+    try:
+        api = _api(ctx)
+        if cmd == "renew":
+            response = api.call(command="renew", params=params | {"price_check": "1"}).response
+            value = response.get("PriceInfo") if str(response.get("Status")).lower() == "price_check_success" else None
+        else:
+            domain = str(params["domain"]).lower().rstrip(".")
+            response = api.call(
+                command="search", params={"domain0": domain, "show_price": "1", "currency": currency}
+            ).response
+            rows = response.get("SearchResults")
+            matches = [
+                row for row in rows
+                if isinstance(row, dict)
+                and str(row.get("DomainName", "")).lower().rstrip(".") == domain
+                and str(row.get("Available", "")).lower() == "yes"
+                and str(row.get("Status") or "success").lower() == "success"
+            ] if isinstance(rows, list) else []
+            value = matches[0].get("Price") if len(matches) == 1 else None
+    except (RuntimeError, ValidationError, DynadotApiError):
+        value = None
+    quote = _price(value, str(response.get("Currency") or "") if value is not None else "")
+    if quote is None or quote[1] != currency:
+        return {"status": "unavailable", "reason": "Dynadot did not return a price in the selected currency."}
+    return {"status": "quoted", "amount": str(quote[0]), "currency": quote[1]}
+
+
+def _checked_purchase_quote(
+    cmd: str, params: dict[str, Any], ctx: dict[str, Any], plan: dict[str, Any]
+) -> dict[str, str]:
+    maximum = (plan.get("baseline") or {}).get("max_price")
+    reviewed_quote = (plan.get("preview") or {}).get("quote") or {}
+    if maximum is None or reviewed_quote.get("status") != "quoted":
+        raise SafetyError("Save a new plan with a Dynadot quote and the approved --max-price.")
+    if Decimal(reviewed_quote["amount"]) > Decimal(maximum):
+        raise SafetyError("The reviewed quote was above the approved maximum. Save and review a new plan.")
+    fresh_quote = _purchase_quote(cmd, params, ctx)
+    if fresh_quote["status"] != "quoted":
+        raise SafetyError("Dynadot did not confirm the current price. Check it before creating an order.")
+    if Decimal(fresh_quote["amount"]) > Decimal(maximum):
+        raise SafetyError("Dynadot's current quote is above the approved maximum. No order was sent.")
+    return fresh_quote
+
+
 def cmd_api3_call(args: Any, ctx: dict[str, Any]) -> int:
     cmd = str(getattr(args, "api3_command", "") or "").strip().lower().replace("-", "_")
     if not cmd:
@@ -515,6 +579,28 @@ def cmd_api3_call(args: Any, ctx: dict[str, Any]) -> int:
     if verify_call is None:
         verification_plan, verify_call = _build_api3_verification(cmd=cmd, params=params, ctx=ctx)
 
+    public_params = dict(params)
+    protected_params = dict(params)
+    for name in ("auth", "auth_code"):
+        if name in params:
+            public_params[name] = "[private]"
+            credential = str(ctx["cfg"].api_key or "").encode()
+            protected_params[name] = hmac.new(
+                credential, ("dynadot-private-input:" + str(params[name])).encode(), hashlib.sha256
+            ).hexdigest() if credential else None
+
+    baseline: dict[str, Any] = {"params": protected_params}
+    preview: dict[str, Any] = {"params": public_params}
+    if cmd in _QUOTED_COMMANDS:
+        limit = getattr(args, "max_price", None)
+        if limit is not None and not re.fullmatch(r"[0-9]+(?:\.[0-9]{1,2})?", limit):
+            raise ValidationError("--max-price must be a nonnegative amount, such as 15.00.")
+        baseline["max_price"] = str(Decimal(limit)) if limit is not None else None
+        preview["max_price"] = baseline["max_price"]
+        if not ctx.get("apply") and not ctx.get("plan_in"):
+            preview["quote"] = _purchase_quote(cmd, params, ctx)
+            preview["price_note"] = "The tool checks the quote again before sending an order. Dynadot sets the final charge."
+
     spec = WriteSpec(
         api_command=cmd,
         selector_kind=selector_kind,
@@ -522,18 +608,31 @@ def cmd_api3_call(args: Any, ctx: dict[str, Any]) -> int:
         risk_level=risk_level,
         risk_reasons=risk_reasons,
         irreversible=irreversible,
-        baseline={"params": params},
-        preview={"params": params},
-        proposed_changes=[{"params": params}],
+        baseline=baseline,
+        preview=preview,
+        proposed_changes=[{"params": public_params}],
         verification_plan=verification_plan,
         rollback={"supported": False, "notes": "Most Dynadot writes are not safely auto-reversible."},
     )
 
-    def _apply_call() -> dict[str, Any]:
+    def _apply_call(plan: dict[str, Any]) -> dict[str, Any]:
         _require_api_key(ctx)
+        quote = _checked_purchase_quote(cmd, params, ctx, plan) if cmd in _QUOTED_COMMANDS else None
         api = _api(ctx)
+        if cmd == "get_transfer_auth_code":
+            secret_out = str(getattr(args, "secret_out", None) or "").strip()
+            if not secret_out:
+                raise ValidationError("Use --secret-out with a new private file for the transfer code.")
+            with new_private_file(secret_out) as secret_file:
+                result = api.call(command=cmd, params=params)
+                json.dump(result.response, secret_file, ensure_ascii=False, indent=2)
+                secret_file.write("\n")
+            return {"ok": True, "status": result.status, "response_code": result.response_code, "secret_out": secret_out}
+
         res = api.call(command=cmd, params=params)
         out = {"ok": True, "status": res.status, "response_code": res.response_code, "raw": res.response}
+        if quote is not None:
+            out["quote_before_request"] = quote
         oid = _try_extract_order_id(res.response)
         if oid:
             out["order_id"] = oid
@@ -547,7 +646,7 @@ def register_api3(
     *,
     parser_class: Type[argparse.ArgumentParser],
 ) -> None:
-    api3 = subparsers.add_parser("api3", help="Raw Dynadot API3 command wrappers (full official command coverage)")
+    api3 = subparsers.add_parser("api3", help="Named commands for the pinned Dynadot API3 list")
     api3_sub = api3.add_subparsers(dest="api3_cmd", required=True, parser_class=parser_class)
 
     for cmd in sorted(API3_PARAM_SPECS.keys()):
@@ -559,5 +658,9 @@ def register_api3(
         _add_scalar_args(p, scalar_rows)
         _add_list_args(p, list_params)
 
+        if cmd in _QUOTED_COMMANDS:
+            p.add_argument("--max-price", help="Approved total in the selected currency")
+        if cmd == "get_transfer_auth_code":
+            p.add_argument("--secret-out", help="Save the code in a new private file during apply")
         if not _is_write_command(cmd):
             p.add_argument("--out", default=None, help="Write full JSON export to a file")

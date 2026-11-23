@@ -1,4 +1,3 @@
-import csv
 import io
 import json
 import tempfile
@@ -7,8 +6,8 @@ from contextlib import redirect_stdout
 from pathlib import Path
 
 from dynadot_api_tool.commands.api3 import cmd_api3_call
+from dynadot_api_tool.commands._write_safety import _validate_plan_for_apply
 from dynadot_api_tool.commands.domains import cmd_domains_push
-from dynadot_api_tool.commands.jobs import cmd_jobs_run
 from dynadot_api_tool.config import Config
 from dynadot_api_tool.dynadot_api import DynadotApiResult
 from dynadot_api_tool.json_files import read_json_file
@@ -17,6 +16,35 @@ from dynadot_api_tool.audit_log import AuditLogger
 
 
 class WriteRecoveryContractTests(unittest.TestCase):
+    def test_plan_baseline_mapping_order_does_not_change_approval(self) -> None:
+        plan = {
+            "env_fingerprint": "http://example.invalid/api3.json",
+            "baseline": {
+                "params": {
+                    "currency": "USD",
+                    "domain0": "a.example",
+                    "domain1": "b.example",
+                    "domain10": "k.example",
+                    "domain2": "c.example",
+                }
+            },
+        }
+        current_baseline = {
+            "params": {
+                "currency": "USD",
+                "domain0": "a.example",
+                "domain1": "b.example",
+                "domain2": "c.example",
+                "domain10": "k.example",
+            }
+        }
+
+        _validate_plan_for_apply(
+            plan,
+            baseline=current_baseline,
+            env_fingerprint="http://example.invalid/api3.json",
+        )
+
     def _ctx(self, *, cfg: Config, apply: bool, yes: bool, plan_out=None, plan_in=None, receipt_out=None, api=None, command_str="dynadot-api-tool write") -> dict:
         return {
             "cfg": cfg,
@@ -115,54 +143,6 @@ class WriteRecoveryContractTests(unittest.TestCase):
             self._assert_before_state_blocked(payload2["plan"])
             self.assertEqual(api.calls, [])
 
-    def test_jobs_plan_and_receipt_include_no_recovery_contract(self) -> None:
-        cfg = Config(base_url="http://example.invalid/api3.json", api_key="K", timeout_s=30.0)
-
-        class _Args:
-            def __init__(self, file_path: str) -> None:
-                self.file = file_path
-                self.limit = None
-
-        with tempfile.TemporaryDirectory() as td:
-            job_file = Path(td) / "jobs.csv"
-            with job_file.open("w", encoding="utf-8", newline="") as f:
-                writer = csv.DictWriter(f, fieldnames=["action"])
-                writer.writeheader()
-                writer.writerow({"action": "write.ping"})
-
-            plan_path = str(Path(td) / "plan.json")
-            receipt_path = str(Path(td) / "receipt.json")
-
-            buf = io.StringIO()
-            with redirect_stdout(buf):
-                rc = cmd_jobs_run(
-                    _Args(str(job_file)),
-                    self._ctx(cfg=cfg, apply=False, yes=False, plan_out=plan_path, command_str="dynadot-api-tool jobs run --file jobs.csv"),
-                )
-            self.assertEqual(rc, 0)
-            payload = json.loads(buf.getvalue())
-            self._assert_no_recovery(payload["plan"])
-            self._assert_before_state_blocked(payload["plan"])
-
-            buf2 = io.StringIO()
-            with redirect_stdout(buf2):
-                rc2 = cmd_jobs_run(
-                    _Args(str(job_file)),
-                    self._ctx(
-                        cfg=cfg,
-                        apply=True,
-                        yes=True,
-                        plan_in=plan_path,
-                        receipt_out=receipt_path,
-                        command_str="dynadot-api-tool --apply --yes --plan-in plan.json jobs run --file jobs.csv",
-                    ),
-                )
-            self.assertEqual(rc2, 0)
-            payload2 = json.loads(buf2.getvalue())
-            self.assertTrue(payload2["refused"])
-            self.assertNotIn("receipt", payload2)
-            self.assertFalse(Path(receipt_path).exists())
-            self._assert_before_state_blocked(payload2["plan"])
 
     def test_domains_push_plan_and_receipt_include_no_recovery_contract(self) -> None:
         cfg = Config(base_url="http://example.invalid/api3.json", api_key="K", timeout_s=30.0)

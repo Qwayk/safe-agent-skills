@@ -2,10 +2,14 @@ from __future__ import annotations
 
 import io
 import json
+import stat
 import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
+
+import requests
 
 from dynadot_api_tool.cli import build_parser, main
 from dynadot_api_tool.commands.api3 import cmd_api3_call
@@ -406,3 +410,136 @@ class TestApi3Commands(unittest.TestCase):
             self.assertTrue(payload2["ok"])
             self.assertTrue(payload2["refused"])
             self.assertIn("ack-irreversible", " ".join(payload2.get("reasons") or []))
+
+
+class TestInstalledWriteChecks(unittest.TestCase):
+    def run_cli(self, env: Path, args: list[str]) -> tuple[int, dict]:
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            code = main(["--no-artifacts", "--env-file", str(env), *args])
+        return code, json.loads(stdout.getvalue())
+
+    def make_env(self, root: Path, key: str = "fake-dynadot-test-key") -> Path:
+        path = root / "dynadot.env"
+        path.write_text(
+            f"DYNADOT_API_KEY={key}\nDYNADOT_API_BASE_URL=https://api.dynadot.com/api3.json\n"
+        )
+        return path
+
+    def response(self, payload: dict, status: int = 200):
+        result = requests.Response()
+        result.status_code = status
+        result.url = "https://api.dynadot.com/api3.json"
+        result._content = json.dumps(payload).encode()
+        return result
+
+    def test_register_checks_quote_account_and_sends_uncertain_write_only_once(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            env = self.make_env(root)
+            plan = root / "plan.json"
+            command = [
+                "api3", "register", "--domain", "example.test", "--duration", "1",
+                "--currency", "USD", "--max-price", "12.00",
+            ]
+            apply = ["--apply", "--yes", "--ack-no-snapshot", "--ack-irreversible", "--plan-in", str(plan)]
+            price = "10.00"
+            calls = []
+
+            def reply(_session, **kwargs):
+                cmd = kwargs["params"]["command"]
+                calls.append(cmd)
+                if cmd == "search":
+                    return self.response({"SearchResponse": {"ResponseCode": 0, "SearchResults": [
+                        {"DomainName": "example.test", "Available": "yes",
+                         "Price": f"Registration Price: {price} in USD and Domain is not a Premium Domain"},
+                    ]}})
+                self.assertEqual(cmd, "register")
+                return self.response({"message": "Server unavailable"}, 503)
+
+            with patch("requests.Session.request", autospec=True, side_effect=reply):
+                code, saved = self.run_cli(env, ["--plan-out", str(plan), *command])
+                self.assertEqual(code, 0)
+                self.assertEqual(saved["plan"]["preview"]["quote"]["amount"], "10.00")
+                self.assertEqual(calls, ["search"])
+                self.assertNotIn("fake-dynadot-test-key", plan.read_text())
+
+                self.make_env(root, "different-fake-key")
+                code, result = self.run_cli(env, [*apply, *command])
+                self.assertIn("different Dynadot keys", str(result))
+                self.assertEqual(calls, ["search"])
+                self.make_env(root)
+
+                price = "13.00"
+                code, result = self.run_cli(env, [*apply, *command])
+                self.assertIn("above the approved maximum", str(result))
+                self.assertNotIn("register", calls)
+                price = "11.00"
+                code, result = self.run_cli(env, [*apply, *command])
+                self.assertNotEqual(code, 0)
+                self.assertIn("Check the domain or order", str(result))
+                self.assertEqual(calls.count("register"), 1)
+                self.assertNotIn("receipt", result)
+
+    def test_renewal_quotes_the_same_term_and_sends_order_after_approval(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            env = self.make_env(root)
+            plan = root / "plan.json"
+            command = [
+                "api3", "renew", "--domain", "example.test", "--duration", "2",
+                "--currency", "USD", "--max-price", "25.00",
+            ]
+            requests_sent = []
+
+            def reply(_session, **kwargs):
+                params = kwargs["params"]
+                requests_sent.append(params)
+                if params.get("price_check"):
+                    return self.response({"RenewResponse": {
+                        "ResponseCode": 0, "Status": "price_check_success", "PriceInfo": "20.00 in USD",
+                    }})
+                if params["command"] == "domain_info":
+                    return self.response({"DomainInfoResponse": {"ResponseCode": 0, "Status": "success"}})
+                return self.response({"RenewResponse": {"ResponseCode": 0, "Status": "success"}})
+
+            with patch("requests.Session.request", autospec=True, side_effect=reply):
+                code, saved = self.run_cli(env, ["--plan-out", str(plan), *command])
+                self.assertEqual(code, 0)
+                self.assertEqual(saved["plan"]["preview"]["quote"]["amount"], "20.00")
+                code, applied = self.run_cli(env, [
+                    "--apply", "--yes", "--ack-no-snapshot", "--ack-irreversible",
+                    "--plan-in", str(plan), *command,
+                ])
+                self.assertEqual(code, 0)
+                self.assertIn("receipt", applied)
+                self.assertEqual([p.get("price_check") for p in requests_sent], ["1", "1", None, None])
+                self.assertTrue(all(p["duration"] == "2" for p in requests_sent if p["command"] == "renew"))
+
+    def test_mutating_transfer_code_is_saved_only_to_new_private_file(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            env = self.make_env(root)
+            plan = root / "plan.json"
+            secret = root / "secret.json"
+            command = [
+                "api3", "get-transfer-auth-code", "--domain", "example.test",
+                "--new-code", "1", "--unlock-domain-for-transfer", "0",
+            ]
+            code, _ = self.run_cli(env, ["--plan-out", str(plan), *command])
+            self.assertEqual(code, 0)
+            apply = ["--apply", "--yes", "--ack-no-snapshot", "--plan-in", str(plan)]
+            replies = [
+                self.response({"TransferAuthCodeResponse": {"ResponseCode": 0, "AuthCode": "FAKE_CODE_PRIVATE"}}),
+                self.response({"DomainInfoResponse": {"ResponseCode": 0, "AuthCode": "FAKE_CODE_PRIVATE"}}),
+            ]
+            with patch("requests.Session.request", side_effect=replies) as mock:
+                code, _ = self.run_cli(env, [*apply, *command])
+                self.assertNotEqual(code, 0)
+                mock.assert_not_called()
+                code, result = self.run_cli(env, [*apply, *command, "--secret-out", str(secret)])
+                self.assertEqual(code, 0)
+                self.assertNotIn("FAKE_CODE_PRIVATE", json.dumps(result))
+                self.assertIn("FAKE_CODE_PRIVATE", secret.read_text())
+                self.assertEqual(stat.S_IMODE(secret.stat().st_mode), 0o600)
+                self.assertEqual(mock.call_count, 2)

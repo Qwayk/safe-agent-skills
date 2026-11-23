@@ -12,10 +12,8 @@ from . import backorders as backorders_cmd
 from . import closeouts as closeouts_cmd
 from . import cn_audit as cn_audit_cmd
 from . import contacts as contacts_cmd
-from . import demo as demo_cmd
 from . import dns as dns_cmd
 from . import domains as domains_cmd
-from . import jobs as jobs_cmd
 from . import marketplace as marketplace_cmd
 from . import onboarding as onboarding_cmd
 from . import pricing as pricing_cmd
@@ -44,11 +42,9 @@ def register_all(subparsers: argparse._SubParsersAction, *, parser_class: Type[a
     transfer_cmd.register_transfer(subparsers, parser_class=parser_class)
     transfers_cmd.register_transfers(subparsers, parser_class=parser_class)
     orders_cmd.register_orders(subparsers, parser_class=parser_class)
-    jobs_cmd.register_jobs(subparsers, parser_class=parser_class)
     marketplace_cmd.register_marketplace(subparsers, parser_class=parser_class)
     auctions_cmd.register_auctions(subparsers, parser_class=parser_class)
     backorder_auctions_cmd.register_backorder_auctions(subparsers, parser_class=parser_class)
     closeouts_cmd.register_closeouts(subparsers, parser_class=parser_class)
     backorders_cmd.register_backorders(subparsers, parser_class=parser_class)
     cn_audit_cmd.register_cn_audit(subparsers, parser_class=parser_class)
-    demo_cmd.register_demo(subparsers, parser_class=parser_class)
