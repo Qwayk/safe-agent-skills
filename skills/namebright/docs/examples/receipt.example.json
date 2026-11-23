@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "tool": "namebright-safe-cli",
   "tool_version": "0.1.0",
   "operation": {
@@ -16,7 +16,8 @@
     "response": {
       "ok": true,
       "DomainName": "example.com"
-    }
+    },
+    "status": 200
   },
   "verification": {
     "ok": true,
@@ -46,5 +47,7 @@
       }
     }
   ],
-  "rollback_supported": false
+  "rollback_supported": false,
+  "outcome": "accepted",
+  "receipt_written": true
 }

@@ -26,12 +26,12 @@ class TestDocsAlignment(unittest.TestCase):
         receipt = json.loads((root / "docs" / "examples" / "receipt.example.json").read_text(encoding="utf-8"))
 
         self.assertEqual(plan["tool"], "namebright-safe-cli")
-        self.assertEqual(plan["schema_version"], "1.0")
+        self.assertEqual(plan["schema_version"], "2.0")
         self.assertIn("operation", plan)
         self.assertIn("snapshots", plan)
 
         self.assertEqual(receipt["tool"], "namebright-safe-cli")
-        self.assertEqual(receipt["schema_version"], "1.0")
+        self.assertEqual(receipt["schema_version"], "2.0")
         self.assertIn("operation", receipt)
         self.assertIn("write", receipt)
         self.assertIn("verification", receipt)
@@ -57,7 +57,9 @@ class TestDocsAlignment(unittest.TestCase):
             rows.append((columns[1], columns[2], columns[5], columns[8]))
 
         expected = {
-            (spec.family, spec.method, spec.command, "implemented; live-unverified")
+            (spec.family, spec.method, spec.command,
+             "July docs only; live-unverified" if spec.command.startswith("outbound-push force-")
+             else "implemented; live-unverified")
             for spec in OPERATIONS
         }
         self.assertEqual(set(rows), expected)

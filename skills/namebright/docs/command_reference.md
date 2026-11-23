@@ -27,21 +27,31 @@ Use this page for exact NameBright command patterns.
 - `namebright-safe-cli --output json whois-accuracy get --domain example.com`
 - `namebright-safe-cli --output json contact-verification list --domain example.com`
 
-## Write commands: plan then apply
+## Prepare and apply a change
 
 ```bash
 namebright-safe-cli --output json --plan-out plan.json domains update --domain example.com --opt-out-of-lock true --locked true
 namebright-safe-cli --output json --apply --yes --plan-in plan.json --receipt-out plan.receipt.json --ack-high-risk domains update --domain example.com --opt-out-of-lock true --locked true
 ```
 
-Global safety flags come before the family and command, as shown above. Repeat the same command values during apply so the reviewed plan fingerprint and target still match.
+Put the global flags first. Use the same NameBright credentials, settings folder, and command values that you used to save the plan.
 
-## Spend command example
+## Review a purchase
 
 ```bash
 namebright-safe-cli --output json --plan-out plan.json purchase register --domain-name example.com --years 1 --category-id 1 --category-name STANDARD
 namebright-safe-cli --output json --apply --yes --plan-in plan.json --receipt-out plan.receipt.json --ack-spend purchase register --domain-name example.com --years 1 --category-id 1 --category-name STANDARD
 ```
+
+## Check an order
+
+Use the order number from the receipt with the same account. A paid order can take time to appear.
+
+```bash
+namebright-safe-cli --output json orders get --customer-order-number EXAMPLE_ORDER
+```
+
+If NameBright is still creating the order, check again later. See the [approval guide](safety_model.md) before sending another purchase.
 
 ## Run history
 
@@ -52,5 +62,5 @@ namebright-safe-cli --output json --apply --yes --plan-in plan.json --receipt-ou
 
 - Reads run directly and do not change provider state.
 - Writes require `--plan-out` first, then `--apply --yes --plan-in`.
-- Apply checks required ack flags from the plan target (for example: `--ack-spend`, `--ack-high-risk`, `--ack-destructive`, `--ack-ownership`, `--ack-no-snapshot`, `--ack-irreversible`, `--ack-external-message`, `--ack-account-creation`).
-- `--receipt-out` is required when `--no-artifacts` is used.
+- The plan lists the approvals it needs (for example: `--ack-spend`, `--ack-high-risk`, `--ack-destructive`, `--ack-ownership`, `--ack-no-snapshot`, `--ack-irreversible`, `--ack-external-message`, `--ack-account-creation`).
+- Use a new receipt filename. Give `--receipt-out` when you use `--no-artifacts`.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import re
 import sys
@@ -15,7 +16,7 @@ from urllib.parse import quote, urlparse
 import requests
 
 from .config import OFFICIAL_NAMEBRIGHT_TOKEN_URL, Config
-from .errors import NotSupportedError, ToolError
+from .errors import NotSupportedError, ProviderStatusError, ToolError
 from .http import HttpClient, HttpResponse
 from .oauth_tokens import TokenCache
 from .operations import OPERATIONS, OperationSpec
@@ -164,6 +165,10 @@ class NameBrightClient:
             op for op in OPERATIONS if op.family == "auth" and op.command == "auth token"
         )
 
+    def sign_plan(self, fingerprint: str, state_path: str) -> str:
+        message = json.dumps(["namebright-plan-v2", self._client_id, fingerprint, state_path])
+        return hmac.new(self._client_secret.encode(), message.encode(), hashlib.sha256).hexdigest()
+
     @staticmethod
     def _normalize_path(path: str) -> str:
         clean = str(path or "").strip()
@@ -212,8 +217,9 @@ class NameBrightClient:
             if path != "/auth/token":
                 raise ToolError("Refused: OAuth endpoint must be https://api.namebright.com/auth/token")
         else:
-            if not (path == "/rest" or path.startswith("/rest/")):
-                raise ToolError("Refused: Domain API endpoint must use https://api.namebright.com/rest")
+            is_order_read = method == "GET" and bool(re.fullmatch(r"/orders/[^/]+", path))
+            if not (path == "/rest" or path.startswith("/rest/") or is_order_read):
+                raise ToolError("Refused: request is outside the supported NameBright API paths")
 
     def _throttle(self) -> None:
         now = _safe_now()
@@ -295,8 +301,11 @@ class NameBrightClient:
                 _attempted_429_retry=True,
             )
 
-        if resp.status >= 400:
-            raise RuntimeError(_build_safe_error(method=request_method, url=self._strip_query(full_url), status=resp.status))
+        if not 200 <= resp.status < 300:
+            raise ProviderStatusError(
+                _build_safe_error(method=request_method, url=self._strip_query(full_url), status=resp.status),
+                status=resp.status,
+            )
         return resp
 
     def _parse_json(self, response: HttpResponse) -> Any:
@@ -470,6 +479,8 @@ class NameBrightClient:
         method, path, params, body = self._build_operation_payload(spec, values=values)
         is_auth = spec.family == "auth" and self._normalize_path(spec.path) == "token"
         full_url = self._build_url(path=path, allow_auth=is_auth)
+        if spec.family == "orders":
+            full_url = f"https://api.namebright.com/{path}"
 
         if is_auth:
             response = self._request(
@@ -502,6 +513,7 @@ class NameBrightClient:
             body=body,
             auth_header=f"Bearer {token}",
             allow_auth=False,
+            retry_on_429=not spec.write_capable,
         )
         response_payload = self._parse_json(response)
         is_contact_response = spec.family == "contacts"

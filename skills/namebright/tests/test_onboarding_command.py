@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import json
 import os
+import shlex
 import stat
 import tempfile
 import unittest
@@ -37,7 +38,6 @@ class TestOnboardingCommand(unittest.TestCase):
             self.assertIn("NAMEBRIGHT_TIMEOUT_S", env_text)
             self.assertNotIn("client-id", env_text)
             self.assertNotIn("client-secret", env_text)
-            self.assertTrue(payload["onboarding"]["next_command"].endswith("auth check"))
-            self.assertTrue(
-                any("source IP" in step or "approved" in step for step in payload["onboarding"].get("steps", [])),
-            )
+            next_command = shlex.split(payload["onboarding"]["next_command"])
+            self.assertEqual(next_command[-2:], ["auth", "check"])
+            self.assertEqual(next_command[next_command.index("--env-file") + 1], env_path)

@@ -21,6 +21,7 @@ from namebright_safe_cli.workflow import apply_plan, create_plan
 class FakeResponse:
     def __init__(self, payload: Any):
         self.payload = payload
+        self.status = 200
         blob = json.dumps(
             payload,
             sort_keys=True,
@@ -78,6 +79,9 @@ class FakeClient:
         self.domains_get = domains_get or {"DomainName": "example.com", "Status": "ok"}
         self.defaults = defaults or {}
         self.write_overrides = write_overrides or {}
+
+    def sign_plan(self, fingerprint: str, state_path: str) -> str:
+        return f"{fingerprint}:{state_path}"
 
     def execute_operation(self, spec: OperationSpec, values: dict[str, Any] | None = None):
         values = dict(values or {})
@@ -400,10 +404,10 @@ class WorkflowTests(unittest.TestCase):
                     },
                 ),
             )
-            self.assertEqual(plan["purchase_quote"]["status"], "Available")
-            self.assertEqual(plan["purchase_quote"]["promotion_price"], 7)
-            self.assertEqual(plan["purchase_quote"]["quoted_unit_price"], 7)
-            self.assertEqual(plan["purchase_quote"]["quoted_total_price"], 14)
+            self.assertEqual(plan["purchase_quote"]["status"], "available")
+            self.assertEqual(plan["purchase_quote"]["promotion_price"], "7")
+            self.assertEqual(plan["purchase_quote"]["quoted_unit_price"], "15")
+            self.assertEqual(plan["purchase_quote"]["quoted_total_price"], "30")
             self.assertEqual(plan["purchase_quote"]["domain"], "example.com")
             self.assertEqual(plan["purchase_quote"]["years"], 2)
 
@@ -429,7 +433,7 @@ class WorkflowTests(unittest.TestCase):
             self.assertIn("NameBright charges the account's funded balance.", warnings)
             self.assertIn("NameBright purchases are non-refundable.", warnings)
             self.assertIn(
-                "Approval is limited to the exact domain and duration in this plan.",
+                "Review the price, domain, and years together. NameBright sets the final charge.",
                 warnings,
             )
             self.assertTrue(all("AccountBalance" not in item for item in warnings))

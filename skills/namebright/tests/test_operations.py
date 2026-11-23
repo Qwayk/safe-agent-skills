@@ -37,11 +37,11 @@ class TestNameBrightOperations(unittest.TestCase):
         cls.op_by_key = { (op.family, op.command): op for op in OPERATIONS }
 
     def test_rows_match_locked_coverage(self) -> None:
-        self.assertEqual(len(self.doc_rows), 61)
-        self.assertEqual(len(OPERATIONS), 61)
+        self.assertEqual(len(self.doc_rows), 62)
+        self.assertEqual(len(OPERATIONS), 62)
 
         keys = [(op.family, op.command) for op in OPERATIONS]
-        self.assertEqual(len(set(keys)), 61)
+        self.assertEqual(len(set(keys)), 62)
         self.assertEqual(len(keys), len(set(keys)))
 
         families = [op.family for op in OPERATIONS]
@@ -57,9 +57,10 @@ class TestNameBrightOperations(unittest.TestCase):
             "outbound-push",
             "whois-accuracy",
             "contact-verification",
+            "orders",
         })
 
-        self.assertEqual(len(set(families)), 11)
+        self.assertEqual(len(set(families)), 12)
 
         doc_methods = Counter(row[1] for row in self.doc_rows)
         actual_methods = method_counts()

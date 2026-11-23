@@ -1,8 +1,6 @@
 # Quickstart
 
-Start here for the first safe NameBright check.
-
-## Install for local use
+Install the skill and [connect your account](onboarding.md). For a local checkout, use Python 3.12 or newer:
 
 ```bash
 python3 -m venv .venv
@@ -10,36 +8,32 @@ python3 -m venv .venv
 pip install -e '.[dev]'
 ```
 
-## Add your account settings
-
-Copy `.env.example` to `.env` and fill:
-- `NAMEBRIGHT_CLIENT_ID`
-- `NAMEBRIGHT_CLIENT_SECRET`
-- `NAMEBRIGHT_TIMEOUT_S` (optional)
-
-## Onboard once
-
-```bash
-namebright-safe-cli onboarding
-```
-
-## First account check
-
-```bash
-namebright-safe-cli --output json auth check
-```
-
-## First useful read
-
-```bash
-namebright-safe-cli --output json account show
-namebright-safe-cli --output json domains list --domains-per-page 5
-```
-
-## Version
+From the tool folder, check the connection and get the first page of domains:
 
 ```bash
 namebright-safe-cli --output json --version
+namebright-safe-cli --output json auth check
+namebright-safe-cli --output json domains list --domains-per-page 5
 ```
 
-If `auth check` succeeds, move to the command guide for the operation you need.
+To see domains waiting to move into your account:
+
+```bash
+namebright-safe-cli --output json inbound-push list-pending
+```
+
+## Prepare a change
+
+Ask the agent to show the exact domain and setting before it applies a change. For example, to lock a domain:
+
+```bash
+namebright-safe-cli --output json --plan-out plan.json domains update --domain example.com --opt-out-of-lock false --locked true
+```
+
+After approval, use the same NameBright settings and command values:
+
+```bash
+namebright-safe-cli --output json --apply --yes --plan-in plan.json --receipt-out plan.receipt.json --ack-high-risk domains update --domain example.com --opt-out-of-lock false --locked true
+```
+
+Use a new filename for the receipt. See the [command guide](command_reference.md) for purchases, order checks, and other commands. The [approval guide](safety_model.md) explains what to do when NameBright's reply leaves the result open.

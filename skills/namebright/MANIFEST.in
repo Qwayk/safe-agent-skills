@@ -4,9 +4,8 @@ include .env.example
 recursive-include docs *.md
 recursive-include docs *.json
 recursive-include docs *.sha256
-recursive-include examples *
 recursive-include tests *.py
-include skills/namebright-safe-cli/SKILL.md
+include SKILL.md
 global-exclude AGENTS.md
 global-exclude .env
 global-exclude .state

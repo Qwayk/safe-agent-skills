@@ -23,3 +23,9 @@ class NotSupportedError(ToolError):
     """
     The tool/API does not support the requested operation (or it's intentionally not implemented yet).
     """
+
+
+class ProviderStatusError(RuntimeError):
+    def __init__(self, message: str, *, status: int):
+        super().__init__(message)
+        self.status = status

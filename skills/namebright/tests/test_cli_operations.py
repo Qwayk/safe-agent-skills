@@ -15,11 +15,15 @@ from namebright_safe_cli.operations import OPERATIONS, get_operation, method_cou
 class _FakeOperationResponse:
     def __init__(self, payload: dict | list):
         self.payload = payload
+        self.status = 200
 
 
 class _FakeClient:
     def __init__(self, *_args, **_kwargs):
         pass
+
+    def sign_plan(self, fingerprint: str, state_path: str) -> str:
+        return f"{fingerprint}:{state_path}"
 
     def execute_operation(self, spec, values=None):
         return _FakeOperationResponse({"ok": True})
@@ -99,12 +103,12 @@ class TestCliOperations(unittest.TestCase):
         return args
 
     def test_family_leaf_and_counts(self) -> None:
-        self.assertEqual(len(OPERATIONS), 61)
-        self.assertEqual(len(set((op.family, op.command) for op in OPERATIONS)), 61)
-        self.assertEqual(method_counts(), {"GET": 23, "POST": 18, "PUT": 8, "DELETE": 12})
+        self.assertEqual(len(OPERATIONS), 62)
+        self.assertEqual(len(set((op.family, op.command) for op in OPERATIONS)), 62)
+        self.assertEqual(method_counts(), {"GET": 24, "POST": 18, "PUT": 8, "DELETE": 12})
         self.assertEqual(sum(1 for op in OPERATIONS if op.write_capable), 37)
 
-    def test_all_61_operation_leaves_bind_exact_registry_specs(self) -> None:
+    def test_all_operation_leaves_bind_exact_registry_specs(self) -> None:
         parser = build_parser()
         for op in OPERATIONS:
             with self.subTest(operation=op.command):

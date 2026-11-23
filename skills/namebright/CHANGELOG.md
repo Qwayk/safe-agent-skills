@@ -4,6 +4,13 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+- Saved plans check the NameBright credentials and keep a private receipt before sending a change.
+- Purchases show and recheck the price. A paid order that is still being created keeps its order number for a later check.
+- Account-move receipts distinguish a request in the queue from a finished move.
+- Setup uses the file you chose. The shorter guides keep the July evidence and the command list.
+
+## 0.1.0 — July 31, 2026
+
 ### Added
 - NameBright-specific README, quickstart, command reference, safety, and proof documentation.
 - Added explicit NameBright configuration contract with `NAMEBRIGHT_CLIENT_ID`, `NAMEBRIGHT_CLIENT_SECRET`, and `NAMEBRIGHT_TIMEOUT_S`.

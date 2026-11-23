@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shlex
 from pathlib import Path
 
 
@@ -34,15 +35,15 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
     env_path = Path(env_file)
     env_created = False
 
-    if write_env and not env_path.exists():
-        env_path.write_text("\n".join(_env_payload()) + "\n", encoding="utf-8")
-        env_created = True
+    if write_env:
         try:
-            env_path.chmod(0o600)
-        except OSError:
+            fd = os.open(env_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        except FileExistsError:
             pass
-        if env_path.exists():
-            os.chmod(env_path, 0o600)
+        else:
+            with os.fdopen(fd, "w", encoding="utf-8") as file:
+                file.write("\n".join(_env_payload()) + "\n")
+            env_created = True
 
     lines = env_path.read_text(encoding="utf-8").splitlines(keepends=True) if env_path.exists() else []
 
@@ -51,13 +52,15 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
         if not _has_nonempty_env_value(lines, key):
             missing.append(key)
 
+    env_flag = f" --env-file {shlex.quote(env_file)}" if env_file != ".env" else ""
+    next_command = f"namebright-safe-cli --output json{env_flag} auth check"
     steps = [
-        "Create/update your local `.env` with official NameBright variables:",
+        f"Add your NameBright settings to {env_file}. Keep this file private.",
         "  - NAMEBRIGHT_CLIENT_ID=<client_id>",
         "  - NAMEBRIGHT_CLIENT_SECRET=<client_secret>",
         "  - NAMEBRIGHT_TIMEOUT_S=30 (optional; defaults to 30)",
-        "NameBright requires API access and an approved source-IP whitelist; this tool does not apply for access or change that whitelist.",
-        "Run: namebright-safe-cli --output json auth check",
+        "In NameBright, request API access and add the IP address that will send requests.",
+        f"Run {next_command}",
     ]
 
     payload = {
@@ -66,7 +69,7 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             "env_file": env_file,
             "env_created": env_created,
             "missing": missing,
-            "next_command": "namebright-safe-cli --output json auth check",
+            "next_command": next_command,
             "steps": steps,
         },
     }
@@ -81,5 +84,5 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             print("")
             print(f"Missing in {env_file}: " + ", ".join(missing))
         print("")
-        print("Next: namebright-safe-cli --output json auth check")
+        print(next_command)
     return 0

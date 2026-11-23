@@ -1310,6 +1310,14 @@ OPERATIONS: tuple[OperationSpec, ...] = (
             _cmd_ref("contact-verification", "contact-verification list"),
         ),
     ),
+    # 62
+    _spec(
+        family="orders",
+        method="GET",
+        path="/orders/{customerOrderNumber}",
+        command="orders get",
+        fields=(_path_field("customerOrderNumber"),),
+    ),
 )
 
 

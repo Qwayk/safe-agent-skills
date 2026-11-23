@@ -14,7 +14,7 @@ from .client import NameBrightClient
 from .commands import auth as auth_cmd
 from .commands import onboarding as onboarding_cmd
 from .config import Config, load_config
-from .errors import NotSupportedError, SafetyError, ToolError, ValidationError
+from .errors import NotSupportedError, ProviderStatusError, SafetyError, ToolError, ValidationError
 from .operations import OPERATIONS, OperationSpec
 from .output import Output
 from .runs import (
@@ -393,18 +393,21 @@ def _run_registry_command(
                 acknowledgements=_acknowledgements_from_args(args),
                 secret_values=secret_values,
                 tool_version=ctx["tool_version"],
+                settings_file=str(args.env_file),
             )
+            ok = receipt["write"]["ok"] and receipt["receipt_written"]
             ctx["out"].emit(
                 {
-                    "ok": True,
+                    "ok": ok,
                     "dry_run": False,
-                    "applied": True,
+                    "applied": receipt["applied"],
+                    "outcome": receipt["outcome"],
                     "operation": {"family": spec.family, "command": spec.command},
                     "receipt": receipt,
                     "receipt_out": args.receipt_out,
                 }
             )
-            return 0
+            return 0 if ok else 1
 
         if getattr(args, "plan_in", None):
             raise ValidationError("--plan-in is only available with --apply")
@@ -431,6 +434,7 @@ def _run_registry_command(
             plan_out=str(args.plan_out),
             client=client,
             tool_version=ctx["tool_version"],
+            settings_file=str(args.env_file),
         )
         ctx["out"].emit(
             {
@@ -443,7 +447,16 @@ def _run_registry_command(
         )
         return 0
 
-    envelope = client.execute_operation(spec, values=values)
+    try:
+        envelope = client.execute_operation(spec, values=values)
+    except ProviderStatusError as exc:
+        if spec.family != "orders" or exc.status != 404:
+            raise
+        ctx["out"].emit({
+            "ok": False, "outcome": "order_unavailable", "provider_status": exc.status,
+            "next_step": "The order may still be processing. Check it again with the same account before trying another purchase.",
+        })
+        return 1
     payload = envelope.payload if hasattr(envelope, "payload") else None
     ctx["out"].emit(
         {

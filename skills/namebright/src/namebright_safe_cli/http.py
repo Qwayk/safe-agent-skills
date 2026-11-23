@@ -71,6 +71,7 @@ class HttpClient:
                 json=json_body,
                 data=data,
                 timeout=self._timeout_s,
+                allow_redirects=False,
             )
         except requests.RequestException as e:
             ms = int((time.time() - start) * 1000)

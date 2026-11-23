@@ -1,6 +1,12 @@
 # References
 
-Source provenance for all documented NameBright coverage and command contracts.
+Use these sources to check the routes and reply formats in the tool.
+
+## November 23, 2026
+
+The [current NameBright API reference](https://api.namebright.com/documentation/current/doc.json) returned version `0.1.38.0` and SHA-256 `8b8159c538229743b56dd5b59cd5ed71e6958f9eebd4e25464863ae6d025c393`. It shows the current price fields, paid pending purchase replies, and `GET /orders/{customerOrderNumber}`. The July help pages now open the new guide. The two force-move routes appear only in the July evidence.
+
+## July 31, 2026
 
 - Provider: NameBright
 - API docs home: https://api.namebright.com/rest/Help
@@ -9,7 +15,7 @@ Source provenance for all documented NameBright coverage and command contracts.
   - Domain API: https://api.namebright.com/rest
   - OAuth token: https://api.namebright.com/auth/token
 - Official index retrieval date: 2026-07-31
-- Official index hashes from GOAL:
+- July index hashes:
   - `https://api.namebright.com/rest/Help` SHA-256: `34a1b5964a22ed757f414664a4dfdbd81d847d4fecffcecf63c2e1f39e55bbc0`
   - `https://api.namebright.com/auth/Help` SHA-256: `a7f4a5f3be07a537e14004f7696bcefefad0e8b977a5273ece2df9c8f00267c7`
 - Request limits (official docs):
