@@ -108,7 +108,7 @@ Start here if you want affiliate product research, creator catalogs, or partner-
 | Product | What it helps with | What you connect | Mode |
 | --- | --- | --- | --- |
 | [**Amazon Product Advertising API**](amazon-paapi-v5/README.md)<br><sub>Install slug: <code>amazon-paapi-v5</code></sub> | Search Amazon product data, resolve products, and build affiliate-ready product research | Amazon Associates account | Read-only |
-| [**Amazon Creators**](amazon-creators/README.md)<br><sub>Install slug: <code>amazon-creators</code></sub> | Review Amazon creator catalog data and affiliate-style media product details | Amazon Creators account | Reads + local changes only |
+| [**Amazon Creators**](amazon-creators/README.md)<br><sub>Install slug: <code>amazon-creators</code></sub> | Find Amazon products, compare versions, and look up categories | Amazon Creators credentials and an Associates tracking tag | Catalog reads and local setup |
 | [**Awin Publisher**](awin-publisher/README.md)<br><sub>Install slug: <code>awin-publisher-safe-cli</code></sub> | Review Awin publisher accounts, programs, offers, transactions, reports, feeds, linkbuilder work, and proof-of-purchase uploads | Awin publisher account | Reads + careful changes |
 | [**Sovrn**](sovrn/README.md)<br><sub>Install slug: <code>sovrn</code></sub> | Review Sovrn Commerce data, affiliate link checks, product suggestions, and advertising reports | Sovrn account | Read-only |
 | [**Awin Advertiser**](awin-advertiser/README.md)<br><sub>Install slug: <code>awin-advertiser-safe-cli</code></sub> | Review Awin advertiser performance and prepare careful validation, offer, feed, or conversion work | Awin advertiser account | Reads + careful changes |

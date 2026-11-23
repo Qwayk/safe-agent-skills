@@ -164,13 +164,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--version", action="store_true", help="Print version and exit")
     p.add_argument("--config", default=None, help="Optional project defaults JSON (non-secret)")
     p.add_argument("--project-dir", default=None, help="Optional project directory (defaults to config file folder)")
-    p.add_argument("--env-file", default=".env", help="Optional .env file path (default: .env)")
+    p.add_argument("--env-file", help="Use settings from this file alone. The default uses .env and shell settings.")
     p.add_argument("--timeout-s", type=float, default=None, help="Override timeout seconds")
     p.add_argument("--verbose", action="store_true", help="Verbose HTTP logging to stderr")
     p.add_argument("--debug", action="store_true", help="Show stack traces on errors")
     p.add_argument("--output", choices=("json", "text"), default="json", help="Output format (default: json)")
     p.add_argument("--log-file", default=None, help="Optional audit log path (JSONL)")
-    p.add_argument("--apply", action="store_true", help="Run live catalog reads or attempt local write helpers (default is dry-run)")
+    p.add_argument("--apply", action="store_true", help="Run an approved catalog read, token fetch, or local setup")
     p.add_argument("--yes", action="store_true", help="Additional confirmation for destructive/batch actions")
     p.add_argument(
         "--ack-no-snapshot",
@@ -178,8 +178,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="Acknowledge that this approved write may run without a saved before-state snapshot",
     )
     p.add_argument("--plan-out", default=None, help="Write a dry-run plan JSON to a file")
-    p.add_argument("--plan-in", default=None, help="Reserved for future apply-from-plan flows")
-    p.add_argument("--receipt-out", default=None, help="Write a receipt JSON only when a real catalog read apply succeeds")
+    p.add_argument("--plan-in", default=None, help="Check a saved catalog preview before sending the request")
+    p.add_argument("--receipt-out", default=None, help="Save the receipt from a complete or partial catalog read")
     p.add_argument(
         "--ack-irreversible",
         action="store_true",
@@ -228,7 +228,7 @@ def build_parser() -> argparse.ArgumentParser:
     auth = sub.add_parser("auth", help="Authentication checks")
     auth_sub = auth.add_subparsers(dest="auth_cmd", required=True, parser_class=_ToolArgumentParser)
     auth_check = auth_sub.add_parser("check", help="Smoke test credentials")
-    auth_check.set_defaults(func=auth_cmd.cmd_auth_check, write_capable=True)
+    auth_check.set_defaults(func=auth_cmd.cmd_auth_check, write_capable=False)
 
     token = auth_sub.add_parser("token", help="OAuth token helpers")
     token_sub = token.add_subparsers(dest="token_cmd", required=True, parser_class=_ToolArgumentParser)
@@ -237,7 +237,7 @@ def build_parser() -> argparse.ArgumentParser:
     token_set.set_defaults(func=auth_cmd.cmd_auth_token_set, write_capable=True)
     token_fetch = token_sub.add_parser(
         "fetch",
-        help="Plan token fetch; live token fetch/write is not implemented in this command",
+        help="Preview a token fetch, or fetch and save a private token with --apply",
     )
     token_fetch.add_argument("--force", action="store_true", help="Refresh even if a cached token exists")
     token_fetch.set_defaults(func=auth_cmd.cmd_auth_token_fetch, write_capable=True)
@@ -470,7 +470,7 @@ def main(argv: list[str]) -> int:
             return 0
     write_capable = bool(getattr(args, "write_capable", False))
     run_ctx: RunContext = init_run_context(
-        env_file=str(args.env_file),
+        env_file=str(args.env_file or ".env"),
         enabled=write_capable,
         run_id=str(args.run_id) if args.run_id else None,
         artifacts_dir=str(args.artifacts_dir) if args.artifacts_dir else None,
@@ -490,7 +490,7 @@ def main(argv: list[str]) -> int:
         loggers.append(AuditLogger(path=global_audit_log_path, enabled=True))
     audit = CompositeAuditLogger(loggers) if len(loggers) > 1 else (loggers[0] if loggers else AuditLogger(path=None, enabled=False))
 
-    runs_index_path = runs_index_path_for_env_file(str(args.env_file))
+    runs_index_path = runs_index_path_for_env_file(str(args.env_file or ".env"))
     if str(getattr(args, "cmd", "") or "") == "runs":
         # `runs` is a local-only command; it still needs to know where the index lives.
         run_ctx = RunContext(
@@ -538,7 +538,8 @@ def main(argv: list[str]) -> int:
         )
 
         # Some commands are local-only and don't need API config.
-        if str(getattr(args, "cmd", "") or "") in {"runs", "onboarding", "locales"}:
+        token_status = args.cmd == "auth" and args.auth_cmd == "token" and args.token_cmd == "status"
+        if args.cmd in {"runs", "onboarding", "locales"} or token_status:
             ctx = {
                 "cfg": None,
                 "out": out,
@@ -548,7 +549,7 @@ def main(argv: list[str]) -> int:
                 "command_str": command_str,
                 "project_cfg": project_cfg,
                 "project_dir": project_dir,
-                "env_file": str(args.env_file),
+                "env_file": str(args.env_file or ".env"),
                 "timeout_s": None,
                 "verbose": bool(args.verbose),
                 "apply": bool(args.apply),
@@ -579,7 +580,7 @@ def main(argv: list[str]) -> int:
             return rc
 
         cfg = load_config(args.env_file)
-        env_fingerprint = cfg.base_url
+        env_fingerprint = cfg.account_fingerprint
         timeout_s = float(args.timeout_s) if args.timeout_s is not None else cfg.timeout_s
         ctx = {
             "cfg": cfg,
@@ -590,7 +591,7 @@ def main(argv: list[str]) -> int:
             "command_str": command_str,
             "project_cfg": project_cfg,
             "project_dir": project_dir,
-            "env_file": str(args.env_file),
+            "env_file": str(args.env_file or ".env"),
             "timeout_s": timeout_s,
             "verbose": bool(args.verbose),
             "apply": bool(args.apply),
@@ -622,7 +623,7 @@ def main(argv: list[str]) -> int:
                 "apply": bool(args.apply),
                 "yes": bool(args.yes),
                 "ack_no_snapshot": bool(args.ack_no_snapshot),
-                "env_fingerprint": cfg.base_url,
+                "env_fingerprint": env_fingerprint,
                 "run_id": run_ctx.run_id,
             }
         )

@@ -13,6 +13,7 @@ from unittest.mock import patch
 import requests
 
 from amazon_creators_api_tool.cli import main
+from amazon_creators_api_tool.config import load_config
 
 TOKEN_LIKE_PATTERN = re.compile(r"^[A-Za-z0-9_-]{20,}$")
 
@@ -45,6 +46,7 @@ class TestSecretRedaction(unittest.TestCase):
                         "accessToken": "dummy-token",
                         "expires_in": 3600,
                         "fetched_at": time.time(),
+                        "account_fingerprint": load_config(str(env_file)).account_fingerprint,
                     }
                 )
                 + "\n"
@@ -65,6 +67,7 @@ class TestSecretRedaction(unittest.TestCase):
                 stderr = io.StringIO()
                 with redirect_stdout(stdout), redirect_stderr(stderr):
                     rc = main(args)
+                mock_request.assert_called_once()
 
         self.assertNotIn(secret, stdout.getvalue())
         self.assertNotIn(secret, stderr.getvalue())

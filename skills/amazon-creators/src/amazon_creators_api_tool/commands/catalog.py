@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import time
 from typing import Any, Callable
+from urllib.parse import quote
 
 from .. import __version__
-from ..commands.plan_helpers import build_plan, write_plan
-from ..errors import ValidationError, ToolError
+from ..commands.plan_helpers import build_plan, check_saved_plan, write_plan
+from ..errors import HttpError, ValidationError, ToolError
 from ..http import HttpClient
 from ..json_files import write_json_file
 from ..locale_data import LocaleInfo, locale_info
@@ -305,24 +306,57 @@ def _call_operation(
     body: dict[str, Any],
     locale: LocaleInfo,
 ) -> dict[str, Any]:
+    authorization = authorization_header(cfg, ctx["env_file"])
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "Authorization": authorization_header(cfg, ctx["env_file"]),
+        "Authorization": authorization,
         "x-marketplace": locale.marketplace,
     }
     client = _build_http_client(ctx)
     url = _catalog_url(cfg, operation)
     try:
         resp = client.request("POST", url, headers=headers, json_body=body, retries=2)
+    except HttpError as exc:
+        if exc.status_code == 403:
+            raise ToolError(
+                f"{exc}. Amazon denied the catalog request. Check Creators API access and the tracking tag."
+            ) from None
+        raise
     except RuntimeError as exc:
-        raise ToolError(f"{operation} failed: {exc}") from exc
-    return resp.json()
+        raise ToolError(f"{operation} failed: {exc}") from None
+    try:
+        payload = resp.json()
+    except ValueError:
+        raise ToolError(f"Amazon returned invalid JSON for {operation}.") from None
+    if not isinstance(payload, dict):
+        raise ToolError(f"Amazon returned an unexpected reply for {operation}.")
+    token = authorization.removeprefix("Bearer ").split(", Version ", 1)[0]
+    secrets = tuple(value for value in (cfg.credential_secret, cfg.credential_id, token) if value)
+    return _hide_credentials(payload, secrets)
 
 
-def _extract_items(payload: dict[str, Any]) -> list[dict[str, Any]]:
-    if not payload:
-        return []
+def _hide_credentials(value: Any, secrets: tuple[str, ...]) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: (
+                "<redacted>"
+                if key.lower().replace("_", "") in {
+                    "authorization", "accesstoken", "refreshtoken", "idtoken", "clientsecret", "credentialsecret",
+                }
+                else _hide_credentials(item, secrets)
+            )
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_hide_credentials(item, secrets) for item in value]
+    if isinstance(value, str):
+        for secret in secrets:
+            value = value.replace(secret, "<redacted>").replace(quote(secret, safe=""), "<redacted>")
+    return value
+
+
+def _extract_items(payload: dict[str, Any]) -> list[Any] | None:
     value = payload.get("items")
     if isinstance(value, list):
         return value
@@ -333,7 +367,7 @@ def _extract_items(payload: dict[str, Any]) -> list[dict[str, Any]]:
             items = obj.get("items")
             if isinstance(items, list):
                 return items
-    return []
+    return None
 
 
 def _display_value(field: Any) -> Any:
@@ -345,7 +379,7 @@ def _display_value(field: Any) -> Any:
 def _simplified_item(item: dict[str, Any]) -> dict[str, Any]:
     item_info = item.get("itemInfo", {}) or {}
     classifications = item_info.get("classifications", {}) or {}
-    return {
+    result = {
         "asin": item.get("asin"),
         "title": _display_value(item_info.get("title")),
         "binding": _display_value(classifications.get("binding")),
@@ -356,32 +390,35 @@ def _simplified_item(item: dict[str, Any]) -> dict[str, Any]:
         "parent_asin": item.get("parentASIN"),
         "variation_summary": item.get("variationSummary"),
     }
+    if "detailPageURL" in item:
+        result["detail_page_url"] = item["detailPageURL"]
+    return result
 
 
-def _simplified_items(payload: dict[str, Any]) -> list[dict[str, Any]]:
+def _simplified_items(payload: dict[str, Any]) -> list[dict[str, Any]] | None:
     rows = _extract_items(payload)
-    return [_simplified_item(item) for item in rows if isinstance(item, dict)]
+    if rows is None or any(not isinstance(item, dict) for item in rows):
+        return None
+    return [_simplified_item(item) for item in rows]
 
 
-def _extract_browse_nodes(payload: dict[str, Any]) -> list[dict[str, Any]]:
-    if not payload:
-        return []
+def _extract_browse_nodes(payload: dict[str, Any]) -> list[Any] | None:
     for key in ("browseNodes", "BrowseNodes"):
         value = payload.get(key)
         if isinstance(value, list):
-            return [node for node in value if isinstance(node, dict)]
+            return value
     result = payload.get("browseNodesResult")
     if isinstance(result, dict):
         value = result.get("browseNodes")
         if isinstance(value, list):
-            return [node for node in value if isinstance(node, dict)]
+            return value
     info = payload.get("browseNodeInfo") or payload.get("BrowseNodeInfo")
     if isinstance(info, dict):
         for key in ("browseNodes", "BrowseNodes"):
             value = info.get(key)
             if isinstance(value, list):
-                return [node for node in value if isinstance(node, dict)]
-    return []
+                return value
+    return None
 
 
 def _simplified_browse_node(node: dict[str, Any]) -> dict[str, Any]:
@@ -395,8 +432,10 @@ def _simplified_browse_node(node: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _simplified_browse_nodes(payload: dict[str, Any]) -> list[dict[str, Any]]:
+def _simplified_browse_nodes(payload: dict[str, Any]) -> list[dict[str, Any]] | None:
     rows = _extract_browse_nodes(payload)
+    if rows is None or any(not isinstance(node, dict) for node in rows):
+        return None
     return [_simplified_browse_node(node) for node in rows]
 
 
@@ -435,6 +474,12 @@ def _build_response(
     }
     if simplified is not None and simplified_key:
         response[simplified_key] = simplified
+    search_result = (payload or {}).get("searchResult")
+    if operation == "SearchItems" and isinstance(search_result, dict):
+        if "totalResultCount" in search_result:
+            response["total_result_count"] = search_result["totalResultCount"]
+        if "searchURL" in search_result:
+            response["search_url"] = search_result["searchURL"]
     if payload and args.include_raw:
         response["raw"] = payload
     return response
@@ -474,16 +519,25 @@ def _emit_catalog_apply(
     ctx: dict[str, Any],
     response: dict[str, Any],
     selector: dict[str, Any],
-    payload: dict[str, Any],
     plan: dict[str, Any],
     simplified: list[dict[str, Any]] | None,
     simplified_key: str | None,
 ) -> int:
+    errors = response.get("errors") or []
+    if simplified is None or (errors and not simplified):
+        status = "failed"
+        details = "Amazon did not return usable results."
+    elif errors:
+        status = "partial"
+        details = "Amazon returned results and reported errors."
+    else:
+        status = "complete"
+        details = "Amazon returned a valid catalog reply."
     receipt = {
         "tool": ctx.get("tool") or "amazon-creators-api-tool",
         "version": ctx.get("tool_version"),
         "applied_at_utc": _utc_now(),
-        "env_fingerprint": ctx["cfg"].base_url,
+        "env_fingerprint": plan["env_fingerprint"],
         "command": ctx.get("command_str"),
         "operation": selector.get("operation"),
         "locale": selector.get("locale"),
@@ -494,23 +548,33 @@ def _emit_catalog_apply(
         "payload": plan.get("payload"),
         "simplified_key": simplified_key,
         "simplified_count": len(simplified or []),
-        "verification": {"ok": True, "details": "Applied catalog request"},
+        "status": status,
+        "verification": {"ok": status == "complete", "details": details},
     }
+    if errors:
+        receipt["errors"] = errors
     receipt_path = None
-    if ctx.get("receipt_out"):
+    if status != "failed" and ctx.get("receipt_out"):
         receipt_path = write_json_file(ctx["receipt_out"], receipt)
 
     out = {
         **response,
-        "ok": True,
+        "ok": status != "failed",
         "dry_run": False,
+        "status": status,
         "receipt": receipt,
         "receipt_out": receipt_path,
     }
+    if status == "failed":
+        out["error"] = details
     if "audit" in ctx:
-        ctx["audit"].write("catalog.apply", {"receipt_out": receipt_path, "operation": selector.get("operation")})
+        ctx["audit"].write("catalog.apply", {
+            "receipt_out": receipt_path,
+            "operation": selector.get("operation"),
+            "status": status,
+        })
     ctx["out"].emit(out)
-    return 0
+    return 1 if status == "failed" else 0
 
 
 def _execute_catalog_operation(
@@ -519,7 +583,7 @@ def _execute_catalog_operation(
     operation: str,
     body: dict[str, Any],
     locale: LocaleInfo,
-    simplified_builder: Callable[[dict[str, Any]], list[dict[str, Any]]],
+    simplified_builder: Callable[[dict[str, Any]], list[dict[str, Any]] | None],
     simplified_key: str | None,
     selector_extra: dict[str, Any] | None = None,
 ) -> int:
@@ -531,13 +595,17 @@ def _execute_catalog_operation(
         response = _build_response(args, ctx, operation, body, locale, payload=None, simplified=None, simplified_key=None)
         return _emit_catalog_plan(ctx, response, plan, plan_path)
 
+    if ctx.get("plan_in"):
+        check_saved_plan(ctx["plan_in"], plan)
     payload = _call_operation(cfg, ctx, operation, body, locale)
-    simplified = simplified_builder(payload) if simplified_builder else None
+    simplified = simplified_builder(payload)
     response = _build_response(args, ctx, operation, body, locale, payload=payload, simplified=simplified, simplified_key=simplified_key)
-    return _emit_catalog_apply(ctx, response, selector, payload, plan, simplified, simplified_key)
+    if payload.get("errors"):
+        response["errors"] = payload["errors"]
+    return _emit_catalog_apply(ctx, response, selector, plan, simplified, simplified_key)
 
 
-def _simplified_search(payload: dict[str, Any]) -> list[dict[str, Any]]:
+def _simplified_search(payload: dict[str, Any]) -> list[dict[str, Any]] | None:
     simplified = _simplified_items(payload)
     search_result = payload.get("searchResult")
     if isinstance(search_result, dict):

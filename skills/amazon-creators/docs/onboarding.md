@@ -1,43 +1,43 @@
 # Connect your Amazon Creators account
 
-Amazon Creators needs local catalog credentials before an agent can check ASINs, classifications, variations, or parent items.
+## Create your settings file
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+Run `amazon-creators-api-tool onboarding` to see the fields. Run `amazon-creators-api-tool onboarding --apply` to create a private `.env` file. The command leaves an existing file in place.
 
-After setup, start with a small catalog read and confirm the marketplace, locale, and partner tag are the ones you expected.
+Fill in these values locally. Keep them out of chat and Git.
 
-## Step 1: Create the local `.env` file
+| Setting | What to enter |
+| --- | --- |
+| `AMAZON_CREATORS_CREDENTIAL_ID` | The Credential ID from Associates Central |
+| `AMAZON_CREATORS_CREDENTIAL_SECRET` | The Credential Secret from Associates Central |
+| `AMAZON_CREATORS_CREDENTIAL_VERSION` | The exact version Amazon issued, such as `3.1` |
+| `AMAZON_CREATORS_LOCALE` | The marketplace locale, such as `en_US` or `en_GB` |
+| `AMAZON_CREATORS_PARTNER_TAG` | Your Associates tracking tag for that marketplace |
 
-In the tool folder, copy `.env.example` to `.env`, then fill the Amazon Creators values you were given:
+[Register for Creators API](https://affiliate-program.amazon.com/creatorsapi/docs/en-us/onboarding/register-for-creators-api) if you need credentials. Amazon uses the credential version to pick the sign-in endpoint. Your marketplace and tracking tag determine which catalog you ask for. Review [Amazon's account requirements](https://affiliate-program.amazon.com/creatorsapi/docs/) if you can sign in but cannot read the catalog.
 
-```dotenv
-AMAZON_CREATORS_API_BASE_URL=https://creatorsapi.amazon/catalog/v1
-AMAZON_CREATORS_CREDENTIAL_ID=
-AMAZON_CREATORS_CREDENTIAL_SECRET=
-AMAZON_CREATORS_CREDENTIAL_VERSION=2.1
-AMAZON_CREATORS_LOCALE=en_US
-AMAZON_CREATORS_PARTNER_TAG=
-```
+For more than one account, keep a private settings file for each one. Put `--env-file /path/to/account.env` on each command. The named file supplies the settings. Without that option, shell settings take priority over the default `.env`.
 
-Set `AMAZON_CREATORS_LOCALE` to the marketplace you want the agent to use. Keep the base URL as shown unless Amazon gives you a newer host.
+## Get a token
 
-## Step 2: Use a saved token when you have one
-
-If `.state/token.json` already exists, keep it local and let the tool use it. Token fetch and token set helpers can write local token state, so review the plan before allowing them to run.
-
-## Step 3: Check the connection
-
-Run:
+Preview the token request, then use `--apply` after approval:
 
 ```bash
+amazon-creators-api-tool auth token fetch
+amazon-creators-api-tool auth token fetch --apply
 amazon-creators-api-tool auth check
 ```
 
-Then ask the agent to list supported locales or run one small item lookup before deeper catalog work.
+The tool gets a token from Amazon and saves it in a private file under `.state/` next to your settings. A token is reused only when it matches the credentials and has time left. Earlier caches without the account check need a fresh fetch. A failed refresh leaves the previous file in place. Use `auth check` to check the saved token without reaching Amazon. Use [a small search](quickstart.md) to check that Amazon lets the account read the catalog.
 
-## What to ask your AI agent (examples)
+For version 3 credentials the tool uses Login with Amazon and the `creatorsapi::default` scope. For version 2 credentials the tool uses the Cognito endpoint and the `creatorsapi/default` scope.
 
-- Show me the plan that spells out the locale, marketplace, and resources you intend to request before any live catalog call.
-- Gather the classifications, technical info, and variation summary for an ASIN, and wait for my approval before fetching real data.
-- List the supported locales first so the marketplace header aligns with the region I care about before we move forward.
-- Treat the dry-run plan as your audit log and only release the actual browse-node hierarchy once I explicitly give the go-ahead.
+## If a command fails
+
+- **Settings are missing.** Run onboarding with the same settings file and fill the listed fields.
+- **The token is missing, expired, or belongs to another set of credentials.** Check which settings file you selected, then preview and approve a token fetch for that account.
+- **Amazon issued a token but denied the search.** Check catalog access in Associates Central and make sure the tracking tag belongs to the marketplace in the preview.
+- **Amazon rejects a request field.** Check the identifier, marketplace, and resources in [the command guide](command_reference.md). Use a smaller request to identify the field it rejected.
+- **You need to find a failed request.** Keep the HTTP status and any Amazon request ID. Keep credentials and tokens private.
+
+The default catalog address is `https://creatorsapi.amazon/catalog/v1`. `AMAZON_CREATORS_API_BASE_URL`, `AMAZON_CREATORS_TOKEN_URL`, and `AMAZON_CREATORS_TIMEOUT_S` are optional overrides. The default timeout is 30 seconds.

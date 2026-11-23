@@ -1,5 +1,11 @@
 ## Unreleased
 
+- Added a private setup file and working approved token fetch from a fresh install. Named settings files keep their own tokens and account settings.
+- Catalog reads check a supplied preview before sending the request. Search results include Amazon’s product links and match count and show partial failures.
+- Combined the setup, review, and developer guides. Removed unused demo and batch files.
+
+## Earlier changes
+
 - Fixed live catalog requests to expand the CLI's high-level resource aliases into Amazon's official operation-specific resource enums, corrected the default `search` preset to `search-lens`, and updated the tests/docs so real authenticated catalog calls work.
 - Added an inventory test that locks the Issue #404 scope to the four public catalog operations plus the eight supported high-level resources, and added direct CLI coverage for `locales list/show`.
 - Local onboarding/env writes, token fetch/set, demo writes, and job write rows now produce reviewable `no_snapshot_available` plans and require explicit no-snapshot approval before local file writes, token endpoint calls, row writes, or success receipt output when before-state support is not available.

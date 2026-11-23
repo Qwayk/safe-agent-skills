@@ -6,6 +6,7 @@ import os
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from pathlib import Path
 from unittest.mock import patch
 
 from amazon_creators_api_tool.cli import main
@@ -24,11 +25,11 @@ class CatalogCommandTests(unittest.TestCase):
             f.write("AMAZON_CREATORS_PARTNER_TAG=partner-tag\n")
         return env_path
 
-    def _run_cmd(self, env_path: str, args: list[str]) -> dict[str, object]:
+    def _run_cmd(self, env_path: str, args: list[str], expected_code: int = 0) -> dict[str, object]:
         buf = io.StringIO()
         with redirect_stdout(buf):
             rc = main(["--output", "json", "--env-file", env_path] + args)
-        self.assertEqual(rc, 0)
+        self.assertEqual(rc, expected_code)
         return json.loads(buf.getvalue())
 
     def test_browse_nodes_request(self) -> None:
@@ -211,6 +212,7 @@ class CatalogCommandTests(unittest.TestCase):
             self.assertTrue(resp["dry_run"])
             self.assertIn("plan", resp)
             self.assertEqual(resp["plan"]["selector"]["operation"], "GetItems")
+
             self.assertEqual(
                 resp["plan"]["selector"]["resources"],
                 [
@@ -227,3 +229,69 @@ class CatalogCommandTests(unittest.TestCase):
                     "itemInfo.tradeInInfo",
                 ],
             )
+
+    def test_saved_preview_checks_account_and_request_before_calling_amazon(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            env = self._write_env(td)
+            file = Path(env)
+            original = file.read_text()
+            preview = str(file.with_name("preview.json"))
+            options = ["--no-artifacts", "search", "--keywords", "books"]
+            with patch(
+                "amazon_creators_api_tool.commands.catalog._call_operation",
+                return_value={"searchResult": {"items": []}},
+            ) as send:
+                self._run_cmd(env, [*options, "--plan-out", preview])
+                apply = ["--apply", "--plan-in", preview]
+                for settings, request in (
+                    (original.replace("cred-id", "another-id"), options),
+                    (original.replace("partner-tag", "another-tag"), options),
+                    (original.replace("creatorsapi.amazon", "api.example"), options),
+                    (original, [*options, "--item-page", "2"]),
+                ):
+                    file.write_text(settings)
+                    error = self._run_cmd(env, [*request, *apply], expected_code=1)
+                    self.assertIn("differs from the saved preview", error["error"])
+                send.assert_not_called()
+                file.write_text(original)
+                with patch.dict(os.environ, {"AMAZON_CREATORS_PARTNER_TAG": "wrong-shell-tag"}):
+                    result = self._run_cmd(env, [*options, *apply])
+                send.assert_called_once()
+                self.assertEqual(send.call_args.args[3]["partnerTag"], "partner-tag")
+                self.assertEqual(result["status"], "complete")
+
+    def test_search_shows_product_links_counts_and_partial_failures(self) -> None:
+        product = {
+            "asin": "B012345678",
+            "detailPageURL": "https://www.amazon.com/dp/B012345678?tag=example-20",
+        }
+        with tempfile.TemporaryDirectory() as td:
+            env = self._write_env(td)
+            errors = [{"code": "FixtureError", "message": "One result was unavailable."}]
+            reply = {"searchResult": {"items": [product], "totalResultCount": 23}, "errors": errors}
+            with patch("amazon_creators_api_tool.commands.catalog._call_operation", return_value=reply):
+                result = self._run_cmd(env, ["--apply", "search", "--keywords", "books"])
+            self.assertEqual(result["status"], "partial")
+            self.assertEqual(result["total_result_count"], 23)
+            self.assertEqual(result["items"][0]["detail_page_url"], product["detailPageURL"])
+            self.assertEqual(result["errors"], errors)
+            self.assertFalse(result["receipt"]["verification"]["ok"])
+
+    def test_search_distinguishes_empty_from_errors_or_malformed_replies(self) -> None:
+        cases = (
+            ({"searchResult": {"items": [], "totalResultCount": 0}}, "complete"),
+            ({"errors": [{"code": "FixtureError"}]}, "failed"),
+            ({"searchResult": {"items": [None]}}, "failed"),
+        )
+        with tempfile.TemporaryDirectory() as td:
+            env = self._write_env(td)
+            for reply, status in cases:
+                with self.subTest(reply=reply), patch(
+                    "amazon_creators_api_tool.commands.catalog._call_operation", return_value=reply,
+                ):
+                    result = self._run_cmd(
+                        env, ["--apply", "search", "--keywords", "books"],
+                        expected_code=0 if status == "complete" else 1,
+                    )
+                    self.assertEqual(result["status"], status)
+                    self.assertEqual(result["receipt"]["verification"]["ok"], status == "complete")

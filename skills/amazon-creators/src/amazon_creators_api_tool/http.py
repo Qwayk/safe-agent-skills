@@ -69,6 +69,7 @@ class HttpClient:
                     json=json_body,
                     data=data,
                     timeout=self._timeout_s,
+                    allow_redirects=False,
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
@@ -79,14 +80,14 @@ class HttpClient:
                     )
                 raise RuntimeError(
                     f"Request failed for {method} {display_url}: {type(e).__name__}"
-                ) from e
+                ) from None
             ms = int((time.time() - start) * 1000)
             if self._verbose:
-                print(f"[http] {method} {resp.url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
+                print(f"[http] {method} {display_url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
             response_headers = {k.lower(): v for k, v in resp.headers.items()}
             request_id = response_headers.get("x-amzn-requestid")
-            if resp.status_code < 400:
+            if 200 <= resp.status_code < 300:
                 return HttpResponse(
                     status=resp.status_code,
                     headers=response_headers,
@@ -100,7 +101,7 @@ class HttpClient:
 
             raise HttpError(
                 status_code=resp.status_code,
-                url=resp.url,
+                url=display_url,
                 reason=resp.reason,
                 request_id=request_id,
             )

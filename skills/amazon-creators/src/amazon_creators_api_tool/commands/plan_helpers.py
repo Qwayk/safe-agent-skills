@@ -3,7 +3,8 @@ from __future__ import annotations
 import time
 from typing import Any, Sequence
 
-from ..json_files import write_json_file
+from ..errors import ValidationError
+from ..json_files import read_json_file, write_json_file
 
 
 def _utc_now() -> str:
@@ -25,7 +26,8 @@ def build_plan(
         "tool": ctx.get("tool") or "amazon-creators-api-tool",
         "version": ctx.get("tool_version"),
         "generated_at_utc": _utc_now(),
-        "env_fingerprint": ctx["cfg"].base_url,
+        "env_fingerprint": ctx["cfg"].account_fingerprint,
+        "api_base_url": ctx["cfg"].base_url,
         "command": ctx.get("command_str"),
         "selector": selector,
         "risk_level": risk_level,
@@ -45,3 +47,14 @@ def write_plan(ctx: dict[str, Any], plan: dict[str, Any]) -> str | None:
     if not plan_out:
         return None
     return write_json_file(plan_out, plan)
+
+
+def check_saved_plan(path: str, current: dict[str, Any]) -> None:
+    saved = read_json_file(path)
+    if not isinstance(saved, dict):
+        raise ValidationError("The saved preview must be a JSON plan. Create a new preview.")
+    for field in ("tool", "env_fingerprint", "api_base_url", "selector", "payload"):
+        if saved.get(field) != current[field]:
+            raise ValidationError(
+                "The account or request differs from the saved preview. Create and review a new preview."
+            )

@@ -1,29 +1,14 @@
 ---
 name: amazon-creators
-description: "Find Amazon catalog items, variations and browse nodes through amazon-creators-api-tool. Use for product research and the documented local setup helpers."
+description: "Find Amazon products, compare variations, and look up categories with amazon-creators-api-tool."
 ---
 
-# Amazon Creators API CLI (codex skill)
+# Amazon Creators
 
-This page is the agent-facing rule sheet for the public Amazon Creators skill.
-If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+Use this skill to search Amazon, look up item details and variations, or describe categories. Start with [setup](docs/onboarding.md) when the account is new. Follow [the command guide](docs/command_reference.md) and keep the selected settings file on each command.
 
-This skill wraps `amazon-creators-api-tool` for safe, deterministic catalog planning and guarded local write-helper flows.
+Preview any catalog request before contacting Amazon. Show the marketplace, tracking tag, search terms or item IDs, and requested fields. Wait for approval, then send the read with `--apply`. Use `--plan-in` to check that a saved preview still matches. Report products and links, the total when Amazon returns one, and any errors.
 
-## Command surface
+Use `onboarding` to show the settings. Create a new settings file and fetch a token only with explicit approval. Keep credentials and tokens out of chat and logs. A saved token can pass the local check even when Amazon denies catalog access. Say which step worked.
 
-- Remote read-only catalog commands: `browse-nodes describe`, `items get`, `variations get`, `search`.
-- Local write helpers that currently plan/need required approval before writes: `onboarding`, `auth token set`, `auth token fetch`.
-
-## Safety alignment
-
-- Keep catalog calls review-driven: `--output json`, dry-run first, then `--apply`, then receipt.
-- Local write helpers must not be treated as file-write paths yet; confirmed apply needs `--ack-no-snapshot` before env/token writes when no before-state can be saved.
-- Keep `--plan-in`, `--yes`, and `--ack-irreversible` out of shipped command assumptions; they are present in the parser but not active for current flows.
-
-## Typical call pattern
-
-- For catalog reads, generate a plan first and only run once verified.
-- For local write helpers, generate a plan first, then if apply is requested, confirm the refusal and that no file changed.
-
-Call patterns should include `--output json` so the result is predictable.
+Use the returned product information to compare formats. Check Amazon or Audible separately before claiming that a title has no audiobook.

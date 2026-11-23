@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
 
@@ -43,12 +44,16 @@ class TestOAuthTokens(unittest.TestCase):
             self.assertEqual(safe["refresh_token"], "***REDACTED***")
             self.assertEqual(safe["scope"], "x")
 
-    def _write_token(self, env_dir: Path, value: str) -> Path:
+    def _write_token(self, env_dir: Path, cfg: Config, value: str, **expiry) -> Path:
         env_file = env_dir / ".env"
         env_file.write_text("", encoding="utf-8")
         token_path = token_path_for_env_file(str(env_file))
         token_path.parent.mkdir(parents=True, exist_ok=True)
-        token_path.write_text(json.dumps({"access_token": value}), encoding="utf-8")
+        token_path.write_text(json.dumps({
+            "access_token": value,
+            "account_fingerprint": cfg.account_fingerprint,
+            **(expiry or {"expires_at": 4_000_000_000}),
+        }), encoding="utf-8")
         return env_file
 
     def _build_config(self, version: str) -> Config:
@@ -65,17 +70,25 @@ class TestOAuthTokens(unittest.TestCase):
 
     def test_authorization_header_refuses_expired_token(self) -> None:
         with tempfile.TemporaryDirectory() as td:
-            env_file = self._write_token(Path(td), "expired")
-            path = token_path_for_env_file(str(env_file))
-            path.write_text(
-                json.dumps(
-                    {"access_token": "expired", "expires_at": 0},
-                ),
-                encoding="utf-8",
-            )
             cfg = self._build_config("2")
-            with self.assertRaises(ValidationError):
+            env_file = self._write_token(Path(td), cfg, "expired", expires_at=0)
+            with self.assertRaisesRegex(ValidationError, "expired"):
                 authorization_header(cfg, str(env_file))
+
+    def test_saved_token_rejects_wrong_account_and_unverifiable_expiry(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            cfg = self._build_config("3.1")
+            env_file = self._write_token(Path(td), cfg, "fixture", expires_in=3600)
+            with self.assertRaisesRegex(ValidationError, "valid expiry"):
+                authorization_header(cfg, str(env_file))
+            self._write_token(Path(td), cfg, "fixture")
+            changed = replace(cfg, credential_secret="replacement")
+            with self.assertRaisesRegex(ValidationError, "not tied"):
+                authorization_header(changed, str(env_file))
+            self.assertNotEqual(
+                token_path_for_env_file(str(env_file)),
+                token_path_for_env_file(str(env_file.with_name("another.env"))),
+            )
 
     def test_fetch_and_cache_token_saves_expiry(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -110,6 +123,7 @@ class TestOAuthTokens(unittest.TestCase):
             self.assertEqual(kwargs["data"]["scope"], "creatorsapi/default")
             self.assertEqual(kwargs["headers"]["Content-Type"], "application/x-www-form-urlencoded")
             self.assertTrue(status.exists)
+            self.assertEqual(token_file.stat().st_mode & 0o777, 0o600)
             data = read_token_json(token_file)
             self.assertIsNotNone(data)
             self.assertIn("expires_at", data)
@@ -151,23 +165,23 @@ class TestOAuthTokens(unittest.TestCase):
 
     def test_authorization_header_attaches_version_for_v2(self) -> None:
         with tempfile.TemporaryDirectory() as td:
-            env_file = self._write_token(Path(td), "abc")
             cfg = self._build_config("2")
+            env_file = self._write_token(Path(td), cfg, "abc")
             header = authorization_header(cfg, str(env_file))
             self.assertTrue(header.startswith("Bearer "))
             self.assertIn(", Version 2", header)
 
     def test_authorization_header_accepts_v_prefix(self) -> None:
         with tempfile.TemporaryDirectory() as td:
-            env_file = self._write_token(Path(td), "abc")
             cfg = self._build_config("v2.1")
+            env_file = self._write_token(Path(td), cfg, "abc")
             header = authorization_header(cfg, str(env_file))
             self.assertTrue(header.startswith("Bearer "))
             self.assertIn(", Version 2.1", header)
 
     def test_authorization_header_skips_version_for_v3(self) -> None:
         with tempfile.TemporaryDirectory() as td:
-            env_file = self._write_token(Path(td), "xyz")
             cfg = self._build_config("3")
+            env_file = self._write_token(Path(td), cfg, "xyz")
             header = authorization_header(cfg, str(env_file))
             self.assertEqual(header, "Bearer xyz")

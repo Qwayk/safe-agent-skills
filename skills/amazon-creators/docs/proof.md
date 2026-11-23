@@ -1,24 +1,23 @@
 # Proof and verification
 
-Amazon Creators proof should answer a simple question: what has actually been checked for creator storefront and product-catalog work, and what still needs live credentials, permissions, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Both clean Python installs passed 52 offline tests. Installing the local release as a Codex skill under `amazon-creators` matched all 65 files. Both skill instruction files and the guide links passed their checks.
 
-If you only check one thing, check the catalog read proof, the local helper gates, and the saved examples before trusting a creator workflow.
+Starting in an empty folder, the installed CLI created a private settings file and got a token from a simulated Amazon reply. It used the selected account when a shell setting disagreed, kept tokens for separate files apart, and left the previous token in place after a failed refresh. The search checked a saved preview before sending a request, returned product links and the match count, and distinguished a partial reply from a denial or an empty search.
 
-## Current proof summary
+These checks used fake credentials and replies. They establish how the local tool handles setup and results. Amazon catalog access still needs a live check with an eligible account.
 
-Verification command: `python3 -m venv .venv && .venv/bin/python -m pip install -e . && .venv/bin/python -m unittest -q`
-Sync command: `python3 agent-orchestrator/scripts/sync_tool_docs.py --apply --repo-path .`
+## June 4, 2026 checks
 
-Date (UTC): 2026-06-04
-Last verified (UTC): 2026-06-04
+The earlier version passed 47 unit tests, alongside compile, version, example JSON, catalog preview, and local helper refusal checks. The local token and file creation commands in that version could preview work and refused apply.
 
-What can go wrong:
+The examples below come from the earlier version. Generate a new preview with the current tool when you want to run a checked search.
 
-- OAuth token helpers now plan and require approval before token endpoint use or `.state/token.json` writes when no saved snapshot is available. Existing cached tokens can still be used by catalog reads.
-- Catalog queries rely on the cached token and the locale/credential version in `.env`. Keep `AMAZON_CREATORS_LOCALE` in sync with your target marketplace so the right token endpoint and headers are used.
-- The simplified output is best-effort: catalog commands default to a dry-run `plan`, and command-specific simplified fields such as `items` or `browse_nodes` appear only with `--apply`.
-- No built-in rollback, backup, or snapshot restore exists here. Catalog calls are read-only, and local write helpers require explicit no-snapshot approval before file changes.
-
-Latest local verification: `47` unit tests passed, plus compile, version, example JSON, catalog dry-run, and local helper refusal checks.
+- [Sign-in check](examples/outputs/auth_check.json)
+- [Search results](examples/outputs/search.json)
+- [Item details](examples/outputs/items.json)
+- [Book and media details](examples/outputs/items-book-media.json)
+- [Variations](examples/outputs/variations.json)
+- [Category details](examples/outputs/browse-nodes.json)
+- [Saved preview](examples/plan.example.json) and [receipt](examples/receipt.example.json)

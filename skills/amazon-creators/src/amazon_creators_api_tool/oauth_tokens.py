@@ -1,17 +1,21 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import math
+import os
+import tempfile
 import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import requests
 
 from .config import Config
 from .errors import ValidationError
-from .token_urls import default_token_url
 
 
 TOKEN_EXPIRY_SKEW_S = 60.0
@@ -28,11 +32,11 @@ class TokenStatus:
 
 
 def token_path_for_env_file(env_file: str) -> Path:
-    """
-    Store OAuth tokens next to the env file (per-environment), under `.state/token.json`.
-    """
-    root = Path(env_file).resolve().parent
-    return root / ".state" / "token.json"
+    settings_file = Path(env_file).resolve()
+    if settings_file.name == ".env":
+        return settings_file.parent / ".state" / "token.json"
+    suffix = hashlib.sha256(settings_file.name.encode()).hexdigest()[:24]
+    return settings_file.parent / ".state" / f"token-{suffix}.json"
 
 
 def _utc(ts: float) -> str:
@@ -68,12 +72,29 @@ def _ensure_expiry_fields(data: dict[str, Any], *, now: float | None = None) -> 
 
 
 def read_token_json(path: Path) -> dict[str, Any] | None:
-    if not path.exists():
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
         return None
-    data = json.loads(path.read_text(encoding="utf-8"))
+    except ValueError:
+        raise ValidationError("The saved token file is invalid. Fetch a new token.") from None
     if not isinstance(data, dict):
         raise RuntimeError("Token file must be a JSON object")
     return data
+
+
+def _write_private_token(path: Path, data: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, mode=0o700, exist_ok=True)
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent, delete=False) as handle:
+            temporary = Path(handle.name)
+            json.dump(data, handle, ensure_ascii=False, indent=2, sort_keys=True)
+            handle.write("\n")
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def write_token_from_file(*, src_file: Path, dest_file: Path) -> TokenStatus:
@@ -84,16 +105,13 @@ def write_token_from_file(*, src_file: Path, dest_file: Path) -> TokenStatus:
         raise RuntimeError("Token file must be a JSON object")
 
     _ensure_expiry_fields(data)
-    dest_file.parent.mkdir(parents=True, exist_ok=True)
-    dest_file.write_text(
-        json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    _write_private_token(dest_file, data)
     return get_token_status(dest_file)
 
 
 def get_token_status(path: Path) -> TokenStatus:
-    if not path.exists():
+    data = read_token_json(path)
+    if data is None:
         return TokenStatus(
             exists=False,
             path=str(path),
@@ -103,7 +121,6 @@ def get_token_status(path: Path) -> TokenStatus:
             expires_at_utc=None,
         )
 
-    data = read_token_json(path) or {}
     fields = sorted([k for k in data.keys() if isinstance(k, str)])
     has_refresh_token = None
     if "refresh_token" in data:
@@ -167,28 +184,25 @@ def _expiry_timestamp(data: dict[str, Any]) -> float | None:
             return parsed
     expires_in = data.get("expires_in")
     if expires_in is not None:
-        base_ts = None
         fetched_at = data.get("fetched_at")
-        if isinstance(fetched_at, (int, float)):
-            base_ts = float(fetched_at)
-        else:
-            base_ts = time.time()
+        if not isinstance(fetched_at, (int, float)):
+            return None
         try:
             delta = float(expires_in)
         except (TypeError, ValueError):
             return None
-        return base_ts + delta
+        return float(fetched_at) + delta
     return None
 
 
 def _ensure_token_not_expired(data: dict[str, Any]) -> None:
     expiry = _expiry_timestamp(data)
-    if expiry is None:
-        return
+    if expiry is None or not math.isfinite(expiry):
+        raise ValidationError("The saved token has no valid expiry time. Fetch a new token.")
     if expiry <= time.time() + TOKEN_EXPIRY_SKEW_S:
         raise ValidationError(
             "Cached OAuth token has expired or is about to expire. Run "
-            "`amazon-creators-api-tool auth token fetch` to review the blocked refresh plan."
+            "`amazon-creators-api-tool auth token fetch` to preview the refresh."
         )
 
 
@@ -209,19 +223,25 @@ def _normalize_credential_version(value: str | None) -> str:
     return normalized
 
 
-def authorization_header(cfg: object, env_file: str) -> str:
-    token_data = load_cached_token(token_path_for_env_file(env_file))
+def _validated_token(cfg: Config, token_data: dict[str, Any] | None) -> str:
     if not token_data:
         raise ValidationError(
             "No cached OAuth token found. Run "
-            "`amazon-creators-api-tool auth token fetch` to review the blocked token-cache plan."
+            "`amazon-creators-api-tool auth token fetch` to preview getting a token."
         )
+    if token_data.get("account_fingerprint") != cfg.account_fingerprint:
+        raise ValidationError("The saved token is not tied to these credentials. Fetch a new token for this account.")
     _ensure_token_not_expired(token_data)
     access_token = _first_token_value(token_data)
     if not access_token:
         raise ValidationError("Token file is missing an access token value.")
+    return access_token
+
+
+def authorization_header(cfg: Config, env_file: str) -> str:
+    access_token = _validated_token(cfg, load_cached_token(token_path_for_env_file(env_file)))
     header = f"Bearer {access_token}"
-    version = _normalize_credential_version(getattr(cfg, "credential_version", ""))
+    version = _normalize_credential_version(cfg.credential_version)
     if version.startswith("2"):
         header = f"{header}, Version {version}"
     return header
@@ -230,16 +250,18 @@ def authorization_header(cfg: object, env_file: str) -> str:
 def fetch_and_cache_token(cfg: Config, env_file: str, *, force: bool = False) -> TokenStatus:
     path = token_path_for_env_file(env_file)
     if not force:
-        cached = load_cached_token(path)
-        if cached:
-            try:
-                _ensure_token_not_expired(cached)
-                return get_token_status(path)
-            except ValidationError:
-                pass
+        try:
+            _validated_token(cfg, load_cached_token(path))
+        except ValidationError:
+            pass
+        else:
+            return get_token_status(path)
 
-    token_url = cfg.token_url or default_token_url(cfg.credential_version, cfg.locale)
-    version = _normalize_credential_version(getattr(cfg, "credential_version", ""))
+    token_url = cfg.token_endpoint
+    endpoint = urlsplit(token_url)
+    if endpoint.scheme != "https" or not endpoint.hostname or endpoint.username is not None:
+        raise ValidationError("The Amazon token endpoint must be an HTTPS URL without login details.")
+    version = _normalize_credential_version(cfg.credential_version)
     if version.startswith("3"):
         # v3.x credentials (LwA) use JSON and a different scope token.
         payload: dict[str, Any] = {
@@ -265,25 +287,23 @@ def fetch_and_cache_token(cfg: Config, env_file: str, *, force: bool = False) ->
             "headers": {"Content-Type": "application/x-www-form-urlencoded"},
         }
     try:
-        resp = requests.post(token_url, timeout=cfg.timeout_s, **request_kwargs)
+        resp = requests.post(token_url, timeout=cfg.timeout_s, allow_redirects=False, **request_kwargs)
     except requests.RequestException as exc:
-        raise RuntimeError(f"Token request failed: {type(exc).__name__}") from exc
+        raise RuntimeError(f"Token request failed: {type(exc).__name__}") from None
 
-    if resp.status_code >= 400:
+    if not 200 <= resp.status_code < 300:
         raise RuntimeError(f"Token request failed with status {resp.status_code}")
 
     try:
         data = resp.json()
-    except ValueError as exc:
-        raise RuntimeError("Token response was not valid JSON") from exc
+    except ValueError:
+        raise RuntimeError("Token response was not valid JSON") from None
 
     if not isinstance(data, dict):
         raise RuntimeError("Token response must be a JSON object")
 
-    _ensure_expiry_fields(data)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    data["account_fingerprint"] = cfg.account_fingerprint
+    _ensure_expiry_fields(data, now=time.time())
+    _validated_token(cfg, data)
+    _write_private_token(path, data)
     return get_token_status(path)

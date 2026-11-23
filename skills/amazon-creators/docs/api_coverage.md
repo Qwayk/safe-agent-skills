@@ -1,18 +1,6 @@
 # API coverage
 
-Amazon Creators coverage shows exactly what this skill can do with creator storefront and product-catalog work. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
-
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can inspect a storefront, list creator products, and show where catalog work stops."
-
-## Coverage notes
-
-Last audited (UTC): 2026-06-04
-Last verified (UTC): 2026-06-04
-The tool targets the Amazon Creators Catalog API at `https://creatorsapi.amazon/catalog/v1`.
-The four supported operations are mapped to explicit catalog commands with first-class resource controls.
-The Issue #404 inventory is test-locked: the coverage suite now fails if any of the four operations or eight high-level resources drift out of the ledger.
+This tool provides four catalog reads through `https://creatorsapi.amazon/catalog/v1`. The original Issue #404 check was on June 4, 2026. The November 23 local audit checked the current [setup and search definitions](references.md).
 
 ## Coverage
 
@@ -25,7 +13,7 @@ The Issue #404 inventory is test-locked: the coverage suite now fails if any of 
 
 Every command supports `--include-raw` to surface the raw API payload and `--locale` to override `AMAZON_CREATORS_LOCALE`.
 
-Each table entry describes the live flow: running without `--apply` produces a dry-run `plan`, while rerunning with `--apply` emits the simplified `items` data (under the `items` key for catalog calls) and records a `receipt` (and optional `receipt_out`) in `.state/runs/`.
+Each command previews the read by default. `--apply` sends it after approval. With `--plan-in`, the current account, endpoint, and request must match the saved preview. Results include errors when Amazon reports them. Search returns product links and the number of matches when Amazon supplies those fields.
 
 High-level resource vocabulary (all supported by the `--resource` flag):
 

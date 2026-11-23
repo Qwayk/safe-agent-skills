@@ -32,9 +32,7 @@ def before_state_refusal_verification_plan() -> dict[str, Any]:
     return {
         "status": "true_blocker",
         "steps": [
-            "Confirm this local helper did not write an env file, token cache, demo/job output, or success receipt.",
-            "Confirm token-fetch did not call the OAuth token endpoint.",
-            "Confirm catalog read-only apply flows remain separate from local write helpers.",
+            "Confirm this preview-only command did not write a token cache or a success receipt.",
         ],
         "blocker": "This command has no implemented live local-write executor.",
     }

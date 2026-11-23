@@ -22,7 +22,8 @@ class TestHttpClient(unittest.TestCase):
         with self.assertRaises(HttpError) as ctx:
             client.request("GET", "https://example.com")
         self.assertEqual(mock_request.call_count, 1)
+        self.assertFalse(mock_request.call_args.kwargs["allow_redirects"])
         self.assertEqual(ctx.exception.status_code, 400)
-        self.assertEqual(ctx.exception.url, "https://example")
+        self.assertEqual(ctx.exception.url, "https://example.com")
         self.assertEqual(ctx.exception.reason, "Bad Request")
         self.assertEqual(ctx.exception.request_id, "abc123")
