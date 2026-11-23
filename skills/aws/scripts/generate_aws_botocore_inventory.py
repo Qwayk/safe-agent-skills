@@ -12,6 +12,7 @@ import boto3
 import botocore
 from botocore.exceptions import DataNotFoundError
 from botocore.loaders import Loader
+from botocore.model import ServiceModel
 
 DEFAULT_DATE = "2026-06-24"
 
@@ -48,20 +49,23 @@ def _load_operations(loader: Loader, service: str) -> dict[str, object]:
     api_versions = loader.list_api_versions(service, "service-2")
     selected_api_version = loader.determine_latest_version(service, "service-2")
     service_model = loader.load_service_model(service, "service-2", selected_api_version)
+    model = ServiceModel(service_model, service_name=service)
     operation_names = sorted(service_model.get("operations", {}).keys())
     operations: list[dict[str, object]] = []
     for operation_name in operation_names:
         policy = _operation_policy(service, operation_name)
+        available = not model.operation_model(operation_name).has_event_stream_input
         operations.append(
             {
                 "operation_name": operation_name,
                 "command": _kebab_from_operation_name(operation_name),
-                "status": "generated_named_command",
+                "status": "generated_named_command" if available else "requires_bidirectional_stream",
                 "mode": policy["mode"],
                 "risk_categories": policy["risk_categories"],
-                "requires_plan": policy["requires_plan"],
-                "requires_ack_no_snapshot": policy["requires_ack_no_snapshot"],
-                "requires_ack_irreversible": policy["requires_ack_irreversible"],
+                "requires_plan": available and policy["requires_plan"],
+                "requires_ack_no_snapshot": available and policy["requires_ack_no_snapshot"],
+                "requires_ack_irreversible": available and policy["requires_ack_irreversible"],
+                **({"requires_ack_spend_money": True} if available and policy["requires_ack_spend_money"] else {}),
             }
         )
 
@@ -137,7 +141,7 @@ def build_inventory(*, date: str = DEFAULT_DATE) -> dict[str, object]:
         {
             "bucket": "modeled-but-conditional",
             "official_source": "AWS service API reference and packaged botocore service model",
-            "status": "covered_by_generated_command_when_access_allows",
+            "status": "generated_or_listed_as_unavailable",
             "note": "The operation has a generated named command, but AWS may still refuse it based on region, account state, permissions, resource type, or gated service access.",
         },
         {
@@ -238,15 +242,13 @@ def render_coverage_markdown(inventory: dict[str, object]) -> str:
     lines.append("# API coverage\n")
     lines.append("\n")
     lines.append(
-        "This is the exact boundary for the AWS coverage claim. The tool covers the pinned Botocore service models packaged with Boto3/Botocore 1.43.36, and it does not claim official AWS surfaces outside that package unless they are listed here.\n"
-    )
-    lines.append(
-        "Use this page when you need to check whether the command list and the coverage claim really match.\n"
+        f"The CLI lists the operations in Boto3 and Botocore {inventory['botocore_version']}. "
+        "Use the generated inventory to find the command and its approval requirements.\n"
     )
     lines.append("\n")
     lines.append("## Boundary\n")
     lines.append("\n")
-    lines.append("- Packaged botocore data only\n")
+    lines.append(f"- Packaged Boto3 and Botocore {inventory['botocore_version']} data\n")
     lines.append("- No `~/.aws/models` lookup\n")
     lines.append("- No `AWS_DATA_PATH` lookup\n")
     lines.append(f"- Date: {inventory['date']}\n")
@@ -283,7 +285,7 @@ def render_coverage_markdown(inventory: dict[str, object]) -> str:
     lines.append(
         _render_list_line(
             "Full per-operation inventory",
-            "`docs/_generated/aws_botocore_inventory.json`",
+            "`src/aws_safe_agent_cli/aws_botocore_inventory.json`",
         )
     )
     lines.append("\n")
@@ -297,11 +299,21 @@ def render_coverage_markdown(inventory: dict[str, object]) -> str:
     lines.append("|---|---:|\n")
     for status, count in status_counts.items():
         lines.append(f"| `{status}` | {count} |\n")
+    unavailable = [
+        f"`{row['service']} {operation['command']}`"
+        for row in inventory["services"]
+        for operation in row["operations"]
+        if operation["status"] == "requires_bidirectional_stream"
+    ]
+    if unavailable:
+        lines.append("\nBoto3 cannot run these commands because they need a two-way event stream. The CLI explains that before contacting AWS.\n\n")
+        lines.extend(f"- {name}\n" for name in unavailable)
+        lines.append("\n[AWS SDK streaming support](https://docs.aws.amazon.com/sdk-for-python/v4/guide/working-with-boto3-differences.html)\n")
     lines.append("\n")
     lines.append("## Safety and risk coverage\n")
     lines.append("\n")
     lines.append(
-        "These counts come from the same generated ledger. They do not replace human review; they prove that every pinned operation received a conservative safety class.\n"
+        "The inventory shows how the tool classifies each operation. Review the exact target, cost and other risks before approving a change.\n"
     )
     lines.append("\n")
     lines.append("| Mode | Operations |\n")
@@ -364,7 +376,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Generate the pinned AWS botocore inventory and coverage page.")
     parser.add_argument(
         "--output",
-        default=str(_tool_root() / "docs" / "_generated" / "aws_botocore_inventory.json"),
+        default=str(_tool_root() / "src" / "aws_safe_agent_cli" / "aws_botocore_inventory.json"),
         help="Write the inventory JSON here.",
     )
     parser.add_argument(

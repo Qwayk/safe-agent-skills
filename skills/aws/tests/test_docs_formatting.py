@@ -34,7 +34,7 @@ class TestDocsFormatting(unittest.TestCase):
     def test_committed_json_examples_do_not_leak_local_machine_paths(self) -> None:
         root = Path(__file__).resolve().parents[1]
         targets = [
-            root / "docs" / "_generated" / "aws_botocore_inventory.json",
+            root / "src" / "aws_safe_agent_cli" / "aws_botocore_inventory.json",
             *sorted((root / "docs" / "examples").rglob("*.json")),
         ]
         banned = [

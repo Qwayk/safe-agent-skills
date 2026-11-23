@@ -1,14 +1,18 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import sys
 import time
+from dataclasses import replace
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 import boto3
 import botocore
+from botocore.exceptions import BotoCoreError, ClientError
 
 from . import __version__
 from .allowlists import AllowLists
@@ -34,7 +38,7 @@ from .runs import (
     runs_index_path_for_env_file,
     write_summary_md,
 )
-from .sts_identity import fetch_caller_identity
+from .sts_identity import fetch_caller_identity, make_client, make_session
 from .validation import load_input_json, validate_operation_input
 
 
@@ -283,15 +287,20 @@ class _ToolArgumentParser(argparse.ArgumentParser):
         raise ValidationError(message)
 
 
-def _operation_snake_name(operation_name: str) -> str:
-    out = []
-    for idx, ch in enumerate(operation_name):
-        if ch.isupper() and idx:
-            prev = operation_name[idx - 1]
-            if prev.islower() or (prev.isupper() and idx + 1 < len(operation_name) and operation_name[idx + 1].islower()):
-                out.append("_")
-        out.append(ch.lower())
-    return "".join(out)
+_SPEND_APPROVAL_OPERATIONS = {
+    ("ec2", "CreateCapacityReservation"),
+    ("ec2", "CreateVolume"),
+    ("ec2", "PurchaseReservedInstancesOffering"),
+    ("ec2", "RequestSpotInstances"),
+    ("ec2", "RunInstances"),
+    ("ec2", "StartInstances"),
+    ("eks", "CreateCluster"),
+    ("rds", "CreateDBCluster"),
+    ("rds", "CreateDBInstance"),
+    ("rds", "StartDBCluster"),
+    ("rds", "StartDBInstance"),
+    ("redshift", "CreateCluster"),
+}
 
 
 def _has_any_token(text: str, tokens: tuple[str, ...]) -> bool:
@@ -355,6 +364,7 @@ def _operation_policy(service_name: str, operation_name: str) -> dict[str, Any]:
         "requires_plan": is_write,
         "requires_ack_no_snapshot": is_write and ("no_snapshot" in categories or high_risk),
         "requires_ack_irreversible": "irreversible" in categories,
+        "requires_ack_spend_money": (service, operation_name) in _SPEND_APPROVAL_OPERATIONS,
     }
 
 
@@ -445,20 +455,25 @@ def _build_version_payload(registry: GeneratedRegistry) -> dict[str, Any]:
     }
 
 
-def _add_service_command_flags(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--apply", action="store_true", help="Apply changes (default is dry-run)")
-    parser.add_argument("--yes", action="store_true", help="Additional confirmation for destructive/batch actions")
-    parser.add_argument("--plan-out", default=None, help="Write a dry-run plan JSON to a file")
-    parser.add_argument("--plan-in", default=None, help="Apply from an existing plan JSON file (high-risk writes)")
-    parser.add_argument("--receipt-out", default=None, help="Write an apply receipt JSON to a file")
-    parser.add_argument("--ack-no-snapshot", action="store_true", help="Extra acknowledgement for no-snapshot actions")
+def _add_service_command_flags(parser: argparse.ArgumentParser, *, inherit: bool = False) -> None:
+    flag_default = argparse.SUPPRESS if inherit else False
+    option_default = argparse.SUPPRESS if inherit else None
+    parser.add_argument("--apply", action="store_true", default=flag_default, help="Apply changes (default is dry-run)")
+    parser.add_argument("--yes", action="store_true", default=flag_default, help="Confirm the reviewed change")
+    parser.add_argument("--bind-aws", action="store_true", default=flag_default, help="Prepare a plan tied to the AWS account and role")
+    parser.add_argument("--plan-out", default=option_default, help="Write a dry-run plan JSON to a file")
+    parser.add_argument("--plan-in", default=option_default, help="Apply from a reviewed plan JSON file")
+    parser.add_argument("--receipt-out", default=option_default, help="Write an apply receipt JSON to a file")
+    parser.add_argument("--ack-no-snapshot", action="store_true", default=flag_default, help="Extra acknowledgement for no-snapshot actions")
+    parser.add_argument("--ack-spend-money", action="store_true", default=flag_default, help="Confirm approval for a change that can add charges")
     parser.add_argument(
         "--ack-irreversible",
         action="store_true",
+        default=flag_default,
         help="Extra acknowledgement for irreversible actions",
     )
-    parser.add_argument("--input-json", default=None, help="Operation input as JSON text or a JSON file path")
-    parser.add_argument("--output-file", default=None, help="Write binary or secret payloads to this path")
+    parser.add_argument("--input-json", default=option_default, help="Operation input as JSON text or a JSON file path")
+    parser.add_argument("--output-file", default=option_default, help="Write binary payloads to this path")
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -510,7 +525,7 @@ def _build_parser() -> argparse.ArgumentParser:
     for service_name in registry.service_names():
         service_index = registry.get_service(service_name)
         service_parser = sub.add_parser(service_name, help=f"AWS {service_name} operations")
-        _add_service_command_flags(service_parser)
+        _add_service_command_flags(service_parser, inherit=True)
         service_parser.add_argument(
             "operation",
             choices=service_index.operation_kebabs,
@@ -632,7 +647,7 @@ def _build_service_plan(
     operation_kebab: str,
     input_obj: dict[str, Any],
     policy: dict[str, Any],
-    identity: dict[str, str] | None,
+    connection: dict[str, Any] | None,
 ) -> dict[str, Any]:
     return redact_obj(
         {
@@ -650,9 +665,16 @@ def _build_service_plan(
             },
             "risk": policy,
             "input": input_obj,
-            "identity": identity,
+            "input_fingerprint": _fingerprint(input_obj),
+            "identity": connection["identity"] if connection else None,
+            "connection": connection,
         }
     )
+
+
+def _fingerprint(value: Any) -> str:
+    message = json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(message).hexdigest()
 
 
 def _validate_plan_for_apply(
@@ -662,6 +684,7 @@ def _validate_plan_for_apply(
     service_name: str,
     operation_kebab: str,
     input_obj: dict[str, Any],
+    policy: dict[str, Any],
 ) -> None:
     if not isinstance(plan, dict):
         raise ValidationError("Plan file must be a JSON object")
@@ -671,9 +694,36 @@ def _validate_plan_for_apply(
         raise SafetyError("Refused: plan operation does not match the current command")
     if str(plan.get("region") or "") != cfg.region_name:
         raise SafetyError("Refused: plan region does not match the current environment")
-    planned_input = plan.get("input") or {}
-    if redact_obj(planned_input) != redact_obj(input_obj):
+    if not isinstance(plan.get("connection"), dict):
+        raise SafetyError("Refused: save and review a new plan with --bind-aws before applying it")
+    if plan.get("input_fingerprint") != _fingerprint(input_obj) or plan.get("input") != redact_obj(input_obj):
         raise SafetyError("Refused: plan input does not match the current input")
+    if plan.get("risk") != policy:
+        raise SafetyError("Refused: approval requirements changed. Review a new plan.")
+
+
+def _open_operation(cfg: Config, service: str, api_version: str | None, operation: str):
+    session = make_session(cfg)
+    if service == "sts" and operation == "GetCallerIdentity":
+        return make_client(cfg, service, api_version=api_version, session=session), None
+
+    allowlists = AllowLists(accounts=cfg.allowed_accounts, regions=cfg.allowed_regions)
+    if cfg.allowed_regions and cfg.region_name not in cfg.allowed_regions:
+        raise SafetyError(f"region {cfg.region_name} is not in AWS_ALLOWED_REGIONS")
+    sts = make_client(cfg, "sts", session=session)
+    identity = fetch_caller_identity(cfg, client=sts)
+    reasons = allowlists.check(account_id=identity.account, region_name=cfg.region_name)
+    if reasons:
+        raise SafetyError(". ".join(reasons))
+    client = sts if service == "sts" else make_client(cfg, service, api_version=api_version, session=session)
+    return client, identity
+
+
+def _plan_connection(client: Any, identity: Any) -> dict[str, Any]:
+    return {
+        "identity": identity.for_plan(),
+        "endpoint_fingerprint": _fingerprint(client.meta.endpoint_url),
+    }
 
 
 def _apply_output_file_if_needed(response: Any, output_file: str | None) -> tuple[Any, str | None]:
@@ -705,6 +755,7 @@ def _build_apply_verification(
     plan: dict[str, Any],
     response_summary: Any,
     policy: dict[str, Any],
+    pending: bool = False,
 ) -> dict[str, Any]:
     http_status = _http_status_from_response(response_summary)
     checks: list[dict[str, Any]] = [
@@ -746,7 +797,7 @@ def _build_apply_verification(
         "attempted": False,
         "reason": "No generic safe read-back can be inferred for every pinned Botocore operation.",
     }
-    status = "verified" if read_back.get("attempted") and http_status is not None and 200 <= http_status < 400 else "limited"
+    status = "pending" if pending else "limited"
     return redact_obj(
         {
             "ran": True,
@@ -767,6 +818,27 @@ def _build_apply_verification(
     )
 
 
+def _response_pending(service: str, operation: str, response: Any) -> bool:
+    if not isinstance(response, dict):
+        return False
+    if _http_status_from_response(response) == 202:
+        return True
+    groups = {
+        "StartInstances": "StartingInstances", "StopInstances": "StoppingInstances",
+        "TerminateInstances": "TerminatingInstances", "RunInstances": "Instances",
+    }
+    if service == "ec2" and operation in groups:
+        return any(
+            instance.get("CurrentState", instance.get("State", {})).get("Name") in {"pending", "stopping", "shutting-down"}
+            for instance in response.get(groups[operation], [])
+        )
+    if service == "rds" and operation in {"CreateDBCluster", "CreateDBInstance", "StartDBCluster", "StartDBInstance"}:
+        cluster = response.get("DBCluster") or {}
+        instance = response.get("DBInstance") or {}
+        return (cluster.get("Status") or instance.get("DBInstanceStatus")) in {"creating", "starting"}
+    return False
+
+
 def cmd_generated_operation(args: argparse.Namespace, ctx: dict[str, Any]) -> int:
     registry: GeneratedRegistry = ctx["registry"]
     service_name = str(getattr(args, "cmd", "") or "").strip()
@@ -774,19 +846,26 @@ def cmd_generated_operation(args: argparse.Namespace, ctx: dict[str, Any]) -> in
     operation = registry.get_operation(service_name, operation_kebab)
     cfg: Config = ctx["cfg"]
     policy = _operation_policy(service_name, operation.operation_name)
+    api_version = registry.get_service(service_name).api_version
+    operation_model = load_operation_model(service_name, operation.operation_name)
+    if operation_model.has_event_stream_input:
+        raise SafetyError("Refused: this AWS operation needs a two-way event stream. The pinned Boto3 SDK does not support it.")
 
     input_obj = validate_operation_input(
         service_name=service_name,
         operation_name=operation.operation_name,
         input_obj=load_input_json(getattr(args, "input_json", None)),
     )
-    operation_model = load_operation_model(service_name, operation.operation_name)
 
     plan_out = ctx.get("plan_out")
     receipt_out = ctx.get("receipt_out")
     output_file = str(getattr(args, "output_file", None) or "")
     output_file = output_file or None
     if policy["is_write"] and not bool(getattr(args, "apply", False)):
+        connection = None
+        if args.bind_aws:
+            client, caller = _open_operation(cfg, service_name, api_version, operation.operation_name)
+            connection = _plan_connection(client, caller)
         plan = _build_service_plan(
             cfg=cfg,
             service_name=service_name,
@@ -794,19 +873,22 @@ def cmd_generated_operation(args: argparse.Namespace, ctx: dict[str, Any]) -> in
             operation_kebab=operation_kebab,
             input_obj=input_obj,
             policy=policy,
-            identity=None,
+            connection=connection,
         )
         if plan_out:
             write_json_file(plan_out, plan)
         out = {
             "ok": True,
             "dry_run": True,
+            "approval_ready": connection is not None,
             "service": service_name,
             "operation": operation_kebab,
             "plan": plan,
             "plan_out": plan_out,
             "risk": policy["mode"],
         }
+        if connection is None:
+            out["next_step"] = "Use --bind-aws to prepare a plan for approval."
         ctx["audit"].write("aws.plan", out)
         ctx["out"].emit(out)
         return 0
@@ -822,6 +904,8 @@ def cmd_generated_operation(args: argparse.Namespace, ctx: dict[str, Any]) -> in
             raise SafetyError("Refused: this write requires --ack-no-snapshot")
         if policy["requires_ack_irreversible"] and not bool(getattr(args, "ack_irreversible", False)):
             raise SafetyError("Refused: this write requires --ack-irreversible")
+        if policy["requires_ack_spend_money"] and not args.ack_spend_money:
+            raise SafetyError("Refused: this change can add charges. Get approval and use --ack-spend-money.")
         plan = read_json_file(str(getattr(args, "plan_in")))
         _validate_plan_for_apply(
             plan=plan,
@@ -829,45 +913,29 @@ def cmd_generated_operation(args: argparse.Namespace, ctx: dict[str, Any]) -> in
             service_name=service_name,
             operation_kebab=operation_kebab,
             input_obj=input_obj,
+            policy=policy,
         )
 
     if (_shape_has_blob(operation_model.output_shape) or bool(getattr(operation_model, "has_streaming_output", False))) and not output_file:
         raise SafetyError("Refused: this operation returns binary data and requires --output-file")
 
-    identity_obj: dict[str, str] | None = None
-    if not (service_name == "sts" and operation.operation_name == "GetCallerIdentity"):
-        identity = fetch_caller_identity(cfg)
-        identity_obj = {
-            "account": identity.account,
-            "arn": identity.arn,
-            "user_id": identity.user_id,
-        }
-        allowlists = AllowLists(accounts=cfg.allowed_accounts, regions=cfg.allowed_regions)
-        reasons = allowlists.check(account_id=identity.account, region_name=cfg.region_name)
-        if reasons:
-            raise SafetyError("; ".join(reasons))
+    boto_client, identity = _open_operation(cfg, service_name, api_version, operation.operation_name)
+    if policy["is_write"]:
+        connection = _plan_connection(boto_client, identity)
+        if plan["connection"] != connection or plan.get("identity") != connection["identity"]:
+            raise SafetyError("Refused: the AWS account, role or endpoint changed. Review a new plan.")
 
-    from .sts_identity import make_sts_client
-
-    if service_name == "sts":
-        boto_client = make_sts_client(cfg)
-    else:
-        import boto3 as _boto3
-        from botocore.config import Config as BotoConfig
-
-        session_kwargs: dict[str, str] = {"region_name": cfg.region_name}
-        if cfg.profile_name:
-            session_kwargs["profile_name"] = cfg.profile_name
-        session = _boto3.Session(**session_kwargs)
-        boto_client = session.client(
-            service_name,
-            region_name=cfg.region_name,
-            config=BotoConfig(connect_timeout=cfg.timeout_s, read_timeout=cfg.timeout_s, retries={"max_attempts": 0}),
-        )
-
-    method_name = _operation_snake_name(operation.operation_name)
-    method = getattr(boto_client, method_name)
-    response = method(**input_obj)
+    method = getattr(boto_client, botocore.xform_name(operation.operation_name), None)
+    if not callable(method):
+        raise SafetyError("Refused: the installed AWS SDK does not expose this operation.")
+    attempt_error = None
+    try:
+        response = method(**input_obj)
+    except (BotoCoreError, ClientError) as exc:
+        if policy["is_read"]:
+            raise
+        attempt_error = exc
+        response = None
 
     response_summary: Any = redact_obj(response)
     if _response_needs_output_file(response):
@@ -877,23 +945,49 @@ def cmd_generated_operation(args: argparse.Namespace, ctx: dict[str, Any]) -> in
         response_summary = {"binary_output_written": True, "output_file": output_file}
 
     if policy["is_write"]:
+        pending = _response_pending(service_name, operation.operation_name, response)
+        receipt_ok = attempt_error is None
+        applied = None if pending else True
         verification = _build_apply_verification(
             service_name=service_name,
             operation_kebab=operation_kebab,
             plan=plan,
             response_summary=response_summary,
             policy=policy,
+            pending=pending,
         )
+        if pending:
+            verification["next_step"] = "AWS is still working. Check the resource or operation before reporting completion."
+        if attempt_error is not None:
+            status = (
+                _http_status_from_response(attempt_error.response)
+                if isinstance(attempt_error, ClientError)
+                else None
+            )
+            rejected = status is not None and 400 <= status < 500 and status != 408
+            applied = False if rejected else None
+            verification.update(
+                status="rejected" if rejected else "outcome_unknown",
+                checks=[],
+                limits=["AWS did not return a successful response."],
+                next_step="Check the resource or AWS operation history before retrying.",
+            )
+            response_summary = {
+                "error_type": type(attempt_error).__name__,
+                "http_status": status,
+            }
+            if isinstance(attempt_error, ClientError):
+                response_summary["error_code"] = attempt_error.response.get("Error", {}).get("Code")
         receipt = redact_obj(
             {
-                "ok": True,
-                "applied": True,
+                "ok": receipt_ok,
+                "applied": applied,
                 "tool": "qwayk-aws-safe-agent-cli",
                 "version": __version__,
                 "service": service_name,
                 "operation": operation_kebab,
                 "region": cfg.region_name,
-                "identity": identity_obj,
+                "identity": {"account": identity.account, "arn": identity.arn, "user_id": identity.user_id},
                 "input": input_obj,
                 "response": response_summary,
                 "verification": verification,
@@ -902,14 +996,17 @@ def cmd_generated_operation(args: argparse.Namespace, ctx: dict[str, Any]) -> in
         if receipt_out:
             write_json_file(receipt_out, receipt)
         output_payload = {
-            "ok": True,
-            "applied": True,
+            "ok": receipt_ok,
+            "applied": applied,
             "service": service_name,
             "operation": operation_kebab,
             "receipt": receipt,
             "receipt_out": receipt_out,
             "response": response_summary,
         }
+        if attempt_error is not None:
+            output_payload["error_type"] = type(attempt_error).__name__
+            output_payload["error"] = verification["next_step"]
     else:
         output_payload = {
             "ok": True,
@@ -923,7 +1020,7 @@ def cmd_generated_operation(args: argparse.Namespace, ctx: dict[str, Any]) -> in
 
     ctx["audit"].write("aws.execute", output_payload)
     ctx["out"].emit(redact_obj(output_payload))
-    return 0
+    return 0 if output_payload["ok"] else 1
 
 
 def main(argv: list[str]) -> int:
@@ -965,7 +1062,13 @@ def main(argv: list[str]) -> int:
     project_dir = Path(project_dir_arg) if project_dir_arg else (Path(config_dir) if config_dir else Path("."))
 
     needs_config = cmd not in {"runs", "onboarding", "inventory"}
-    cfg = load_config(args.env_file) if needs_config else None
+    try:
+        cfg = load_config(args.env_file) if needs_config else None
+        if cfg is not None and args.timeout_s is not None:
+            cfg = replace(cfg, timeout_s=args.timeout_s)
+    except (ToolError, BotoCoreError) as exc:
+        out.emit({"ok": False, "error": redact_text(str(exc)), "error_type": type(exc).__name__})
+        return 1
 
     write_capable = bool(getattr(args, "write_capable", False))
     if cmd in registry.services:

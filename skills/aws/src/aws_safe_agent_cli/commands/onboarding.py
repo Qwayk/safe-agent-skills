@@ -1,80 +1,55 @@
 from __future__ import annotations
 
+import os
+import shlex
+import sys
 from pathlib import Path
 
 
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
-
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+def _create_settings(path: Path) -> bool:
+    if path.exists():
+        return False
+    path.parent.mkdir(parents=True, exist_ok=True)
+    example = path.parent / ".env.example"
+    settings = example.read_text(encoding="utf-8") if example.is_file() else (
+        "# Optional AWS settings. Keep credentials in your AWS profile or sign-in.\n"
+        "AWS_PROFILE=\nAWS_DEFAULT_REGION=\n"
+    )
+    try:
+        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError:
+        return False
+    with os.fdopen(descriptor, "w", encoding="utf-8") as output:
+        output.write(settings)
+    return True
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
-    out = ctx["out"]
-    env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
-
-    env_path = Path(env_file)
-    env_created = False
-
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
-        else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
-
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "AWS_DEFAULT_REGION"):
-        missing.append("AWS_DEFAULT_REGION (optional, defaults to us-east-1)")
-
+    path = Path(str(getattr(args, "env_file", ".env"))).expanduser()
+    created = not bool(getattr(args, "no_write_env", False)) and _create_settings(path)
+    launcher = Path(sys.argv[0])
+    entrypoint = (
+        shlex.quote(str(launcher.absolute()))
+        if launcher.name == "qwayk-aws-safe-agent-cli"
+        else "qwayk-aws-safe-agent-cli"
+    )
+    command = f"{entrypoint} --output json --env-file {shlex.quote(str(path))} auth check"
     steps = [
-        "Copy .env.example → .env if you want a local settings file.",
-        "Set AWS_PROFILE only if you want to use a named AWS profile.",
-        "Set AWS_DEFAULT_REGION if you want a region other than us-east-1.",
-        "Run: qwayk-aws-safe-agent-cli --output json auth check",
+        "Sign in with the AWS profile or role you want to use.",
+        "Set AWS_PROFILE to choose a named profile. Set AWS_DEFAULT_REGION only to override its region.",
+        f"Check the account, role and region with {command}",
     ]
-
-    payload = {
-        "ok": True,
-        "onboarding": {
-            "env_file": env_file,
-            "env_created": env_created,
-            "missing": missing,
-            "next_command": "qwayk-aws-safe-agent-cli --output json auth check",
-            "steps": steps,
-        },
-    }
-
     if str(getattr(args, "output", "json")) == "json":
-        out.emit(payload)
+        ctx["out"].emit({
+            "ok": True,
+            "onboarding": {
+                "env_file": str(path),
+                "env_created": created,
+                "missing": [],
+                "next_command": command,
+                "steps": steps,
+            },
+        })
     else:
-        print("To set up AWS access, do this once:")
-        for i, s in enumerate(steps, start=1):
-            print(f"{i}. {s}")
-        if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        print("")
-        print("Next: qwayk-aws-safe-agent-cli --output json auth check")
+        print("\n".join(steps))
     return 0

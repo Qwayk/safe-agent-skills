@@ -4,6 +4,8 @@ import dataclasses
 import os
 from pathlib import Path
 
+from botocore.session import Session
+
 from .errors import ValidationError
 
 
@@ -57,10 +59,12 @@ def _parse_csv_list(raw: str) -> tuple[str, ...]:
 
 
 def load_config(env_file: str | None) -> Config:
-    env = _parse_env_file(Path(env_file or ".env"))
+    env = _parse_env_file(Path(env_file or ".env").expanduser())
 
-    region_name = _get(env, "AWS_DEFAULT_REGION") or "us-east-1"
     profile_name = _get(env, "AWS_PROFILE") or None
+    region_name = _get(env, "AWS_DEFAULT_REGION")
+    if not region_name:
+        region_name = Session(profile=profile_name).get_config_variable("region") or "us-east-1"
     allowed_accounts = _parse_csv_list(_get(env, "AWS_ALLOWED_ACCOUNTS"))
     allowed_regions = _parse_csv_list(_get(env, "AWS_ALLOWED_REGIONS"))
 

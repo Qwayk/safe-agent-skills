@@ -14,15 +14,16 @@ Prefer official docs. If a capability depends on a specific documented behavior,
 | [Boto3 configuration guide](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html) | Explains region and config lookup order | 2026-06-24 |
 | [Boto3 credentials guide](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html) | Explains the credential chain the CLI follows | 2026-06-24 |
 | [AWS shared config and credentials files](https://docs.aws.amazon.com/sdkref/latest/guide/file-format.html) | Explains the local config files used by AWS SDKs and tools | 2026-06-24 |
+| [AWS SDK streaming support](https://docs.aws.amazon.com/sdk-for-python/v4/guide/working-with-boto3-differences.html) | Explains why Boto3 cannot run two-way streaming operations | 2026-11-23 |
 
 ## Local sources
 
 | Source | Why it matters | Last verified (UTC) |
 | --- | --- | --- |
-| `docs/_generated/aws_botocore_inventory.json` | Pinned Botocore service model inventory used by the CLI | 2026-06-24 |
+| `src/aws_safe_agent_cli/aws_botocore_inventory.json` | Pinned Botocore service model inventory used by the CLI | 2026-06-24 |
 | `docs/api_coverage.md` | Human-readable coverage counts and selected service-model versions | 2026-06-24 |
 | `src/aws_safe_agent_cli/aws_runtime.py` | Parser, risk classification, safety gates, and write flow | 2026-06-24 |
-| `tests/` | Local proof for refusal behavior, mocked apply, redaction, generated coverage, and docs contracts | 2026-06-24 |
+| `tests/` | Local proof for refusal behavior, mocked apply, redaction, generated coverage, and guide tests | 2026-06-24 |
 
 ## Notes
 

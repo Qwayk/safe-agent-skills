@@ -15,7 +15,7 @@
       "bucket": "modeled-but-conditional",
       "note": "The operation has a generated named command, but AWS may still refuse it based on region, account state, permissions, resource type, or gated service access.",
       "official_source": "AWS service API reference and packaged botocore service model",
-      "status": "covered_by_generated_command_when_access_allows"
+      "status": "generated_or_listed_as_unavailable"
     },
     {
       "bucket": "multi-version-service-model",
@@ -27765,13 +27765,13 @@
           "mode": "unknown_mutating",
           "operation_name": "InvokeModelWithBidirectionalStream",
           "requires_ack_irreversible": false,
-          "requires_ack_no_snapshot": true,
-          "requires_plan": true,
+          "requires_ack_no_snapshot": false,
+          "requires_plan": false,
           "risk_categories": [
             "no_snapshot",
             "unknown_mutating"
           ],
-          "status": "generated_named_command"
+          "status": "requires_bidirectional_stream"
         },
         {
           "command": "invoke-model-with-response-stream",
@@ -60915,13 +60915,13 @@
           "mode": "remote_write",
           "operation_name": "StartMedicalScribeListeningSession",
           "requires_ack_irreversible": false,
-          "requires_ack_no_snapshot": true,
-          "requires_plan": true,
+          "requires_ack_no_snapshot": false,
+          "requires_plan": false,
           "risk_categories": [
             "no_snapshot",
             "spend_quota"
           ],
-          "status": "generated_named_command"
+          "status": "requires_bidirectional_stream"
         },
         {
           "command": "start-patient-insights-job",
@@ -81039,6 +81039,7 @@
           "operation_name": "CreateCapacityReservation",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -82343,6 +82344,7 @@
           "operation_name": "CreateVolume",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -89176,6 +89178,7 @@
           "operation_name": "PurchaseReservedInstancesOffering",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -89572,6 +89575,7 @@
           "operation_name": "RequestSpotInstances",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -89827,6 +89831,7 @@
           "operation_name": "RunInstances",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -89916,6 +89921,7 @@
           "operation_name": "StartInstances",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -93184,6 +93190,7 @@
           "operation_name": "CreateCluster",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -143963,13 +143970,13 @@
           "mode": "remote_write",
           "operation_name": "StartConversation",
           "requires_ack_irreversible": false,
-          "requires_ack_no_snapshot": true,
-          "requires_plan": true,
+          "requires_ack_no_snapshot": false,
+          "requires_plan": false,
           "risk_categories": [
             "no_snapshot",
             "spend_quota"
           ],
-          "status": "generated_named_command"
+          "status": "requires_bidirectional_stream"
         }
       ],
       "paginator_count": 0,
@@ -185586,13 +185593,13 @@
           "mode": "remote_write",
           "operation_name": "StartSpeechSynthesisStream",
           "requires_ack_irreversible": false,
-          "requires_ack_no_snapshot": true,
-          "requires_plan": true,
+          "requires_ack_no_snapshot": false,
+          "requires_plan": false,
           "risk_categories": [
             "no_snapshot",
             "spend_quota"
           ],
-          "status": "generated_named_command"
+          "status": "requires_bidirectional_stream"
         },
         {
           "command": "start-speech-synthesis-task",
@@ -187460,13 +187467,13 @@
           "mode": "unknown_mutating",
           "operation_name": "Chat",
           "requires_ack_irreversible": false,
-          "requires_ack_no_snapshot": true,
-          "requires_plan": true,
+          "requires_ack_no_snapshot": false,
+          "requires_plan": false,
           "risk_categories": [
             "no_snapshot",
             "unknown_mutating"
           ],
-          "status": "generated_named_command"
+          "status": "requires_bidirectional_stream"
         },
         {
           "command": "chat-sync",
@@ -194141,6 +194148,7 @@
           "operation_name": "CreateDBCluster",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -194194,6 +194202,7 @@
           "operation_name": "CreateDBInstance",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -195881,6 +195890,7 @@
           "operation_name": "StartDBCluster",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -195894,6 +195904,7 @@
           "operation_name": "StartDBInstance",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -196503,6 +196514,7 @@
           "operation_name": "CreateCluster",
           "requires_ack_irreversible": false,
           "requires_ack_no_snapshot": true,
+          "requires_ack_spend_money": true,
           "requires_plan": true,
           "risk_categories": [
             "no_snapshot",
@@ -255381,7 +255393,8 @@
       "unknown_mutating": 1984
     },
     "operation_status_counts": {
-      "generated_named_command": 18727
+      "generated_named_command": 18722,
+      "requires_bidirectional_stream": 5
     },
     "paginator_count": 3186,
     "paginator_service_count": 343,

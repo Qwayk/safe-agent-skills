@@ -30,6 +30,7 @@ class InventorySummary:
     endpoints_model_version: int
     partitions_count: int
     services_with_multiple_versions: tuple[Any, ...]
+    operation_status_counts: dict[str, int]
 
     def to_payload(self) -> dict[str, Any]:
         return {
@@ -45,6 +46,7 @@ class InventorySummary:
             "endpoints_model_version": self.endpoints_model_version,
             "partitions_count": self.partitions_count,
             "services_with_multiple_versions": list(self.services_with_multiple_versions),
+            "operation_status_counts": self.operation_status_counts,
         }
 
 
@@ -108,7 +110,7 @@ def _load_inventory_payload(path: Path) -> dict[str, Any]:
 def load_generated_registry(inventory_path: str | None = None) -> GeneratedRegistry:
     path = Path(
         inventory_path
-        or Path(__file__).resolve().parents[2] / "docs" / "_generated" / "aws_botocore_inventory.json"
+        or Path(__file__).with_name("aws_botocore_inventory.json")
     )
     payload = _load_inventory_payload(path)
     raw_services = payload.get("services", [])
@@ -149,5 +151,6 @@ def load_generated_registry(inventory_path: str | None = None) -> GeneratedRegis
         services_with_multiple_versions=tuple(
             item for item in payload.get("services_with_multiple_versions", []) if item is not None
         ),
+        operation_status_counts=dict(payload.get("summary", {}).get("operation_status_counts", {})),
     )
     return GeneratedRegistry(inventory_path=path, summary=summary, services=services)

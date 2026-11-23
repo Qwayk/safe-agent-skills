@@ -1,66 +1,35 @@
-# Safety model
+# Review and approve AWS changes
 
-AWS safety starts with a simple rule: the agent must know the account, role, and region before it does useful work. A good AWS answer should never leave you wondering which account was touched.
+Start with a read so you can see what’s there. Before changing anything, show the user which account and resource will change, what will happen, what it could cost, and how you’ll check the result.
 
-After that, the safest path is read first, plan second, apply last. That matters because an AWS mistake can create access, expose a bucket, open a network rule, move data, send messages, delete resources, or increase spend.
+## Save a plan the user can approve
 
-A good safety ask is: "Show me the AWS account, role, and region first. Read the target resource if possible. If a change is needed, show the plan and the extra approval flags before anything runs."
+A write command previews the request by default and leaves `approval_ready: false`. To prepare a plan you can apply, use `--bind-aws --plan-out plan.json`. This checks the AWS identity and selects the service endpoint without sending the change. Generate a new plan with those flags if you saved it with an earlier version.
 
-## What safe use looks like
+Review the original input alongside the plan because the saved plan hides secrets. Confirm the account, role, region, exact resource, settings and approval flags. For changes to access, public exposure, data movement, messages or spending, say what people and systems will be affected. Check whether AWS offers a snapshot, restore or other recovery for that action. Say when recovery would be manual or unavailable. Show the exact apply command and wait for approval.
 
-- `auth check` proves the caller with STS `GetCallerIdentity`.
-- Account and region allowlists can block the wrong target before non-STS service calls.
-- Reads run directly when the caller has permission.
-- Writes start as dry-run plans.
-- Live writes need `--apply`, `--plan-in`, and `--yes`.
-- Generated AWS writes are treated as no-snapshot unless an operation-specific read-back is added later, so live writes normally need `--ack-no-snapshot`.
-- Delete-like and hard-to-undo operations need `--ack-irreversible`.
-- Receipts include a verification section. A response from AWS without resource read-back is recorded as `limited`, not `verified`.
-- Plans, receipts, logs, and run history are redacted.
+## Apply the approved plan
 
-## AWS risk categories
+Use the same input and pass `--plan-in plan.json --apply --yes`. The tool stops if the account, role, region, endpoint, request or required approvals changed. A fresh sign-in for the same IAM role can still use the plan. The configured account and region lists still apply.
 
-The tool classifies each pinned operation conservatively. These labels are not there to sound technical; they tell the reviewer what kind of real-world harm to slow down for:
+- `--ack-no-snapshot` confirms the user understands that this write does not save a copy of the previous state.
+- `--ack-irreversible` is required when the tool classifies the action as hard to undo.
+- `--ack-spend-money` is required for covered actions that can add charges, including launching or starting EC2 instances, creating disks or capacity reservations, and certain RDS, EKS and Redshift changes. Review the expected cost of other changes too.
+- `--output-file` gives the tool a private place to save a binary result.
 
-- `security_identity`: could affect IAM, roles, policies, credentials, SSO, KMS, or permissions.
-- `secret`: could touch secrets, keys, tokens, certificates, or credential-like material.
-- `spend_quota`: could affect billing, quotas, capacity, compute, marketplace, or usage.
-- `public_exposure`: could affect public access, DNS, CDN, firewall, routes, sharing, or internet reachability.
-- `data_movement`: could import, export, replicate, stream, transfer, back up, or download data.
-- `messaging`: could send, publish, notify, queue, email, or text someone.
-- `no_snapshot`: the generic AWS path cannot save a reliable before-state or read-back for this operation.
-- `unknown_mutating`: the AWS model suggests mutation, but the generic path cannot classify the effect more narrowly.
-- `irreversible`: delete-like or hard-to-undo.
+## Check the receipt
 
-## What the flags mean
+Receipts normally live under `.state/runs/`. You can choose a path with `--receipt-out receipt.json`. Keep receipts, plans, run summaries and logs private.
 
-- `--plan-out` saves the dry-run plan so a person can review it.
-- `--plan-in` loads the reviewed plan for live apply.
-- `--receipt-out` saves the apply receipt after a live attempt.
-- `--ack-no-snapshot` says you understand the tool cannot save a reliable before-state or generic read-back for this operation.
-- `--ack-irreversible` says you understand the action is delete-like or hard to undo.
-- `--output-file` is required when an AWS response returns binary data.
+| Receipt status | What to check |
+| --- | --- |
+| `limited` | The SDK returned a reply. Read the resource to check that AWS made the intended change. |
+| `pending` | AWS is still working. Read the operation or resource before reporting completion. |
+| `outcome_unknown` | A reply was lost or the result is unclear. Check the resource or AWS operation history before retrying. |
+| `rejected` | AWS returned a client error. Check the error and the resource before deciding what to do. |
 
-## Normal change flow
+Compare the result with the approved plan. Check the important fields, any extra changes and any snapshot or earlier state you saved. For example, read a security group after a rule change or check bucket policy and public access after changing sharing. The tool records when no resource read-back ran. If repair or recovery needs a write, prepare a new plan and get approval.
 
-1. Check identity.
-2. Build a dry-run plan.
-3. Review the account, region, service, operation, input, allowlists, and risk categories.
-4. Apply only after clear approval.
-5. Verify what the tool can verify. For the generated AWS surface, this means the tool checks the reviewed plan, confirms the SDK call returned, records the response status when present, and says if no resource read-back was possible.
-6. Save the receipt and local run summary.
+## Repeat work
 
-## What the tool refuses
-
-- A live write without `--apply`.
-- A live write without `--plan-in` or `--yes`.
-- A reviewed plan that no longer matches the current service, operation, region, or input.
-- A call blocked by account or region allowlists.
-- A no-snapshot, unknown mutating, or irreversible write without the matching acknowledgement flags.
-- A binary response without `--output-file`.
-
-## Run history
-
-For write-capable commands, the tool keeps a local run folder under `.state/runs/` and appends a row to `.state/runs/index.jsonl`.
-
-That history helps answer simple questions later: what was planned, what ran, which AWS target was used, and whether verification was full, limited, or failed.
+Run each command in its own process. Keep the account, region and exact targets visible when repeating a read in several regions or reviewing several resources. Review each group of changes before applying it. Stop on an unexpected refusal, access error or unclear result and check what happened. The tool has no separate batch worker.

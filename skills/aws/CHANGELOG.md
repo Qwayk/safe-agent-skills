@@ -15,6 +15,8 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Generated coverage now records per-operation command status, mode, risk categories, and acknowledgement requirements.
 
 ### Changed
+- Saved write plans now include the AWS account, role, region, endpoint and exact request check. Covered billable actions need a spending approval. Pending and uncertain writes leave receipts.
+- Combined the setup, approval and maintenance guides and linked to their new homes.
 - Reworked the AWS docs again after public review so the first-screen copy leads with concrete AWS jobs: IAM access review, EC2 inventory, S3 exposure, CloudTrail/CloudWatch evidence, billing, quotas, and careful change plans.
 - Rewrote the AWS public-facing docs around real account, region, IAM, EC2, S3, spend, public exposure, data movement, secrets, no-snapshot, and live-verification concerns.
 - Rewrote the README and docs front doors for the shipped AWS runtime.
@@ -25,6 +27,8 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Polished the source README, use cases, coverage, proof, references, docs hub, and skill wrapper so the source docs read like the future public AWS skill page without build-status wording.
 
 ### Fixed
+- Fresh Python installs include the AWS command list and use the AWS SDK’s exact method names.
+- Setup keeps the settings path and uses the selected AWS profile’s region when there is no override.
 - CLI JSON error handling still emits one JSON object for argument and usage failures.
 - Generic live AWS write receipts no longer imply read-back verification happened when only SDK-response verification was possible.
 - Generic apply verification now reports `limited`, not `verified`, when `read_back.attempted` is false even if the AWS SDK response is 2xx.

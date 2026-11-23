@@ -1,179 +1,57 @@
 from __future__ import annotations
 
+import io
+import json
+import re
+import shlex
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
+
+from aws_safe_agent_cli.aws_runtime import build_parser
 
 
-class TestDocsPublicContract(unittest.TestCase):
+class TestPublicGuides(unittest.TestCase):
     def setUp(self) -> None:
         self.root = Path(__file__).resolve().parents[1]
         self.docs = self.root / "docs"
 
-    def _read(self, name: str) -> str:
-        return (self.docs / name).read_text(encoding="utf-8")
+    def test_local_guide_links_resolve(self) -> None:
+        guides = [self.root / "README.md", self.root / "SKILL.md", *self.docs.glob("*.md")]
+        for guide in guides:
+            for href in re.findall(r"\[[^\]\n]+\]\(([^)\s]+)\)", guide.read_text(encoding="utf-8")):
+                link = urlsplit(href)
+                if not link.scheme and not link.netloc and link.path:
+                    with self.subTest(guide=guide.name, link=href):
+                        self.assertTrue((guide.parent / unquote(link.path)).exists())
 
-    def test_docs_home_groups_the_user_path_clearly(self) -> None:
-        text = self._read("README.md")
+    def test_quickstart_and_command_examples_use_supported_commands(self) -> None:
+        for name in ("quickstart.md", "command_reference.md"):
+            guide = (self.docs / name).read_text(encoding="utf-8")
+            commands = re.findall(r"^qwayk-aws-safe-agent-cli (?!<)(.+)$", guide, re.MULTILINE)
+            self.assertTrue(commands, name)
+            for command in commands:
+                with self.subTest(guide=name, command=command):
+                    argv = shlex.split(command)
+                    if "--help" in argv:
+                        with redirect_stdout(io.StringIO()), self.assertRaises(SystemExit) as result:
+                            build_parser().parse_args(argv)
+                        self.assertEqual(0, result.exception.code)
+                        continue
+                    args = build_parser().parse_args(argv)
+                    if args.plan_out:
+                        self.assertTrue(args.bind_aws and args.input_json)
+                    if args.apply:
+                        self.assertTrue(args.plan_in and args.yes)
 
-        self.assertIn("## Start with the work", text)
-        self.assertIn("## Commands, setup, and fixes", text)
-        self.assertIn("## Proof and details", text)
-        self.assertIn("[Choose useful AWS tasks](use_cases.md)", text)
-        self.assertIn("[Set up AWS access locally](onboarding.md)", text)
-        self.assertNotIn("Start here first:\n- `docs/", text)
-
-    def test_onboarding_stays_non_technical_up_front(self) -> None:
-        text = self._read("onboarding.md")
-        opening = text.split("## Step 1:", 1)[0]
-
-        self.assertIn("# Connect your AWS account", text)
-        self.assertIn("Keep the setup files private.", text)
-        self.assertIn("choose the local profile or role, confirm the region", text)
-        self.assertIn("Avoid starting from a broad admin profile", text)
-        self.assertIn("## What to ask your AI agent (examples)", text)
-        self.assertIn("## What success looks like", text)
-        self.assertNotIn("qwayk-aws-safe-agent-cli", opening)
-        self.assertNotIn("--", opening)
-
-    def test_use_cases_stays_plain_english(self) -> None:
-        text = self._read("use_cases.md")
-
-        self.assertIn("## Good first asks", text)
-        self.assertIn("## Access and identity review", text)
-        self.assertIn("## Infrastructure and production review", text)
-        self.assertIn("## Storage, data, and public exposure", text)
-        self.assertIn("## Spend and capacity review", text)
-        self.assertIn("## Review-first change jobs", text)
-        self.assertIn("## What the agent should show you", text)
-        self.assertIn("## When not to use it", text)
-        self.assertIn("who has access, whether a bucket is exposed, why a bill changed", text)
-        self.assertNotIn("`qwayk-aws-safe-agent-cli", text)
-        self.assertNotIn("--apply", text)
-
-    def test_safety_model_explains_meaning_before_mechanics(self) -> None:
-        text = self._read("safety_model.md")
-        opening = text.split("## What safe use looks like", 1)[0]
-
-        self.assertIn(
-            "AWS safety starts with a simple rule",
-            opening,
-        )
-        self.assertNotIn("--apply", opening)
-        self.assertNotIn("--yes", opening)
-        self.assertNotIn(".state/runs", opening)
-
-    def test_quickstart_and_command_reference_label_themselves_without_meta_page_talk(self) -> None:
-        quickstart = self._read("quickstart.md")
-        command_reference = self._read("command_reference.md")
-        opening = quickstart.split("## ", 1)[0].lower()
-
-        self.assertIn("A good first ask is:", quickstart)
-        self.assertIn("Start with a result you can recognize", quickstart)
-        self.assertIn("## What you will do first", quickstart)
-        self.assertIn("## 3. Run one small first read", quickstart)
-        self.assertIn("## Good next reads", quickstart)
-        self.assertIn("[Choose useful AWS tasks](use_cases.md)", quickstart)
-        self.assertIn("[Set up AWS access locally](onboarding.md)", quickstart)
-        self.assertIn("Use this technical page after you know the AWS account", command_reference)
-        self.assertIn("[Understand safety and approvals](safety_model.md)", command_reference)
-
-        banned_opening_bits = [
-            "this page helps",
-            "this page is for",
-            "without turning",
-            "full command manual",
-            "if you are still deciding",
-            "run one safe read that proves",
-        ]
-        for phrase in banned_opening_bits:
-            self.assertNotIn(phrase, opening)
-
-    def test_proof_opens_with_reassurance(self) -> None:
-        text = self._read("proof.md")
-
-        self.assertIn("This page is the evidence trail for the AWS skill.", text)
-        self.assertIn("If you only check one thing,", text)
-        self.assertIn("No live AWS writes were run during local validation.", text)
-        self.assertIn("## What this proves", text)
-        self.assertIn("## What this does not prove", text)
-
-    def test_front_door_openings_reject_stock_ai_phrases(self) -> None:
-        banned = [
-            "without guessing from raw docs",
-            "without turning",
-            "full command manual",
-            "this page helps",
-            "if you are still deciding",
-            "run one safe read that proves",
-            "stays simple",
-            "slows down on purpose",
-            "real product work",
-            "vibe coders",
-            "purpose:",
-            "rules:",
-            "this template supports",
-            "example skill",
-            "example-skill",
-        ]
-        targets = [
-            "README.md",
-            "onboarding.md",
-            "quickstart.md",
-            "command_reference.md",
-            "safety_model.md",
-            "use_cases.md",
-            "proof.md",
-        ]
-
-        for name in targets:
-            text = self._read(name)
-            opening = text.split("## ", 1)[0].lower()
-            for phrase in banned:
-                self.assertNotIn(phrase, opening, msg=f"{name} opening contains banned phrase: {phrase}")
-
-    def test_all_docs_open_like_help_pages(self) -> None:
-        banned_opening_bits = [
-            "purpose:",
-            "rules:",
-            "goal:",
-            "this template supports",
-            "layers:",
-        ]
-
-        for path in sorted(self.docs.glob("*.md")):
-            text = path.read_text(encoding="utf-8")
-            opening = text.split("## ", 1)[0].lower()
-            for phrase in banned_opening_bits:
-                self.assertNotIn(phrase, opening, msg=f"{path.name} opens with cold builder phrasing: {phrase}")
-
-    def test_support_docs_explain_technical_words_in_plain_language(self) -> None:
-        authentication = self._read("authentication.md")
-        configuration = self._read("configuration.md")
-        jobs = self._read("jobs_and_batches.md")
-
-        self.assertIn("Authentication means", authentication)
-        self.assertIn("Configuration means", configuration)
-        self.assertIn("This tool does not ship a separate background worker.", jobs)
-
-        receipt_path = self.docs / "receipt_review_prompt.md"
-        if receipt_path.exists():
-            receipt = receipt_path.read_text(encoding="utf-8")
-            self.assertIn("A receipt is the record of what the tool actually did.", receipt)
-
-    def test_docs_reject_template_placeholders(self) -> None:
-        banned = [
-            "Example Skill",
-            "example-skill",
-            "<REPLACE_ME>",
-            "<YYYY-MM-DD>",
-            "After copying this template",
-            "This template",
-            "api.example.com",
-            "demo write",
-            "demo read",
-        ]
-        for path in sorted(self.docs.glob("*.md")):
-            text = path.read_text(encoding="utf-8")
-            lower = text.lower()
-            for phrase in banned:
-                self.assertNotIn(phrase.lower(), lower, msg=f"{path.name} still contains placeholder text: {phrase}")
+    def test_saved_examples_are_json_and_the_write_samples_are_marked(self) -> None:
+        examples = self.docs / "examples"
+        paths = sorted(examples.rglob("*.json"))
+        self.assertEqual(5, len(paths))
+        for path in paths:
+            with self.subTest(example=path.name):
+                payload = json.loads(path.read_text(encoding="utf-8"))
+                self.assertIsInstance(payload, dict)
+                if path.name.endswith(".example.json"):
+                    self.assertIs(payload["example"], True)

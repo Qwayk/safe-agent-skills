@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,14 @@ def read_json_file(path: str | Path) -> Any:
 def write_json_file(path: str | Path, obj: Any) -> str:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(obj, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    data = json.dumps(obj, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=p.parent, delete=False) as file:
+        temporary = Path(file.name)
+        try:
+            file.write(data)
+            file.close()
+            temporary.replace(p)
+        finally:
+            temporary.unlink(missing_ok=True)
     return str(p)
 

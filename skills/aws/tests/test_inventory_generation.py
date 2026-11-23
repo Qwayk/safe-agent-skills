@@ -8,11 +8,11 @@ from pathlib import Path
 class TestInventoryGeneration(unittest.TestCase):
     def setUp(self) -> None:
         self.root = Path(__file__).resolve().parents[1]
-        self.inventory_path = self.root / "docs" / "_generated" / "aws_botocore_inventory.json"
+        self.inventory_path = self.root / "src" / "aws_safe_agent_cli" / "aws_botocore_inventory.json"
         self.coverage_path = self.root / "docs" / "api_coverage.md"
 
     def test_inventory_json_exists_and_has_known_counts(self) -> None:
-        self.assertTrue(self.inventory_path.exists(), "Missing docs/_generated/aws_botocore_inventory.json")
+        self.assertTrue(self.inventory_path.exists(), "Missing src/aws_safe_agent_cli/aws_botocore_inventory.json")
         payload = json.loads(self.inventory_path.read_text(encoding="utf-8"))
 
         self.assertEqual(payload["date"], "2026-06-24")
@@ -28,7 +28,9 @@ class TestInventoryGeneration(unittest.TestCase):
         self.assertEqual(payload["botocore_data_dir"], "botocore/data from the pinned botocore wheel")
         self.assertEqual(len(payload["services_with_multiple_versions"]), 10)
         self.assertEqual(len(payload["services"]), 428)
-        self.assertEqual(payload["summary"]["operation_status_counts"]["generated_named_command"], 18727)
+        counts = payload["summary"]["operation_status_counts"]
+        self.assertEqual(counts["generated_named_command"], 18722)
+        self.assertEqual(counts["requires_bidirectional_stream"], 5)
         self.assertIn("security_identity", payload["summary"]["risk_category_counts"])
         self.assertIn("no_snapshot", payload["summary"]["risk_category_counts"])
 
@@ -50,7 +52,7 @@ class TestInventoryGeneration(unittest.TestCase):
             "Endpoints model version: 3",
             "Partitions: 8",
             "Date: 2026-06-24",
-            "Generated named commands: 18727",
+            "Generated named commands: 18722",
             "## Safety and risk coverage",
             "## Generated per-operation evidence",
         ]

@@ -1,14 +1,10 @@
 # API coverage
 
-AWS coverage shows exactly what the shipped commands can do from the pinned Boto3/Botocore package. AWS has many services, many versions, and many account-specific features, so this page tells you which AWS service models this skill ships with and whether a command is part of the tested package or outside the current boundary.
-
-The boundary is the Boto3/Botocore 1.43.36 package shipped with the CLI. Botocore is the AWS SDK data layer that names services, operations, input shapes, paginators, waiters, and endpoints. The tool turns those packaged models into named commands and does not claim AWS surfaces outside that pinned package. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: compare the service and operation you want against the inventory summary here, then check the exact command syntax before asking for a plan.
+The CLI lists the operations in Boto3 and Botocore 1.43.36. Use the generated inventory to find the command and its approval requirements.
 
 ## Boundary
 
-- Packaged Boto3/Botocore 1.43.36 data only
+- Packaged Boto3 and Botocore 1.43.36 data
 - No `~/.aws/models` lookup
 - No `AWS_DATA_PATH` lookup
 - Date: 2026-06-24
@@ -23,9 +19,9 @@ A good first coverage check is: compare the service and operation you want again
 - Waiters: 367
 - Endpoints model version: 3
 - Partitions: 8
-- Generated named commands: 18727
+- Generated named commands: 18722
 - Services with multiple service-model versions: 10
-- Full per-operation inventory: `docs/_generated/aws_botocore_inventory.json`
+- Full per-operation inventory: `src/aws_safe_agent_cli/aws_botocore_inventory.json`
 
 ## Generated per-operation evidence
 
@@ -33,11 +29,22 @@ The generated JSON ledger records every operation with `operation_name`, generat
 
 | Status | Operations |
 |---|---:|
-| `generated_named_command` | 18727 |
+| `generated_named_command` | 18722 |
+| `requires_bidirectional_stream` | 5 |
+
+Boto3 cannot run these commands because they need a two-way event stream. The CLI explains that before contacting AWS.
+
+- `bedrock-runtime invoke-model-with-bidirectional-stream`
+- `connecthealth start-medical-scribe-listening-session`
+- `lexv2-runtime start-conversation`
+- `polly start-speech-synthesis-stream`
+- `qbusiness chat`
+
+[AWS SDK streaming support](https://docs.aws.amazon.com/sdk-for-python/v4/guide/working-with-boto3-differences.html)
 
 ## Safety and risk coverage
 
-These counts come from the same generated ledger. They do not replace human review; they prove that every pinned operation received a conservative safety class.
+The inventory shows how the tool classifies each operation. Review the exact target, cost and other risks before approving a change.
 
 | Mode | Operations |
 |---|---:|
@@ -516,7 +523,7 @@ This ledger keeps the model boundary honest. It does not claim official AWS surf
 | Bucket | Official source bucket | Status | Note |
 |---|---|---|---|
 | console-only-api | AWS service API reference or AWS console/help documentation | outside_coverage_not_claimed | Official AWS surfaces outside packaged Botocore were not claimed as covered in this source build. |
-| modeled-but-conditional | AWS service API reference and packaged botocore service model | covered_by_generated_command_when_access_allows | The operation has a generated named command, but AWS may still refuse it based on region, account state, permissions, resource type, or gated service access. |
+| modeled-but-conditional | AWS service API reference and packaged botocore service model | generated_or_listed_as_unavailable | The operation has a generated named command, but AWS may still refuse it based on region, account state, permissions, resource type, or gated service access. |
 | multi-version-service-model | botocore/data/<service>/<apiVersion>/service-2.json | selected_latest_packaged_api_version | When Botocore ships multiple service-model apiVersions, the generated inventory records the selected latest packaged version. |
 | support-metadata | botocore paginators, waiters, endpoint, retry, and sdk-extras models | accounted_as_metadata | Paginator, waiter, endpoint, retry, and SDK metadata are counted separately because they are not standalone AWS operations. |
 | legacy-or-separate-guide | Official AWS legacy appendix, separate service guide, or migration page | outside_coverage_not_claimed_until_researched | Legacy or separately documented official surfaces outside packaged Botocore need a targeted official-doc review before any full-AWS claim includes them. |

@@ -1,131 +1,41 @@
 # AWS
 
-**Capability:** Reads + careful changes
+Check what’s running in an AWS account, who can access it, and what may be adding to your bill. Start with the account, role and region you recognize. The agent checks that connection and runs a small read before suggesting a change.
 
-AWS work should start by proving the account, role, and region before the agent reads or changes resources. The agent can review IAM access, S3 exposure, EC2 costs, CloudTrail events, quotas, billing signals, and careful change plans without guessing which account it is touching.
+> Check which AWS account, role and region you’re using. List the EC2 instances in that region and tell me what’s running. Wait before changing anything.
 
-A good first ask is: Check my AWS account, role, and region, then review IAM users, S3 buckets, and EC2 instances if this role has permission.
+## What you can ask for
 
-## Start here first
+- Review IAM users, roles and policies for access that needs a closer look.
+- See whether S3 buckets or network settings could expose data.
+- Check EC2, RDS and other running resources for costs worth reviewing.
+- Look at CloudTrail events or CloudWatch alarms after a problem.
+- Prepare a plan for an AWS change and show what needs approval.
 
-- [See real AWS jobs this skill helps with](docs/use_cases.md)
-- [Set up AWS access locally](docs/onboarding.md)
-- [Understand the AWS safety rules](docs/safety_model.md)
-- [Run the first safe AWS checks](docs/quickstart.md)
-- [Use the exact command guide](docs/command_reference.md)
+[More AWS examples](docs/use_cases.md) · [Commands and input files](docs/command_reference.md)
 
-If you already know the job, go to [Install and first run](#install-and-first-run). If you want evidence before trusting it, go to [Helpful docs](#helpful-docs).
+## Before a change
 
-## What this skill helps with
+A write first shows a preview. Use `--bind-aws` to save a plan for the actual AWS account and role. The tool checks that the account, role, region, endpoint and request still match when you apply the plan. Some changes, such as starting an EC2 instance, also need explicit permission to spend money. The receipt shows what AWS reported and what you still need to check. [Review and approval steps](docs/safety_model.md)
 
-- **Know the target first.** Confirm the AWS account id, caller ARN, role/user, and region before the agent looks at anything else.
-- **Review access.** Inspect IAM users, roles, policies, groups, access keys, MFA devices, and last-used signals when the account allows it.
-- **Check infrastructure.** Look at EC2 instances, security groups, load balancers, VPC resources, Lambda functions, RDS databases, ECS/EKS resources, CloudFront, Route 53, and other common AWS areas.
-- **Check storage and exposure.** Review S3 buckets, bucket policies, public-access settings, replication, backups, and data-movement services before any policy or sharing change.
-- **Check spend and limits.** Review billing, budgets, Cost Explorer, service quotas, marketplace, and capacity-related services before you change something that can cost money.
-- **Investigate recent events.** Use CloudTrail, CloudWatch, Config, Health, GuardDuty, or other readable services to gather evidence before changing a resource.
-- **Plan changes slowly.** Turn creates, updates, deletes, publishes, sends, permission changes, data movement, and spend changes into a dry-run plan first.
-- **Keep a record.** Save redacted plans, receipts, summaries, and run logs so the next person can see what was planned, what ran, and what still needs checking.
+## Install
 
-## Example requests
-
-- "Check which AWS account, role, and region this workspace is using, then stop."
-- "List IAM users and access keys and tell me which ones deserve a human access review."
-- "Show EC2 instances in this region, including state and instance type, and point out obvious cost risk."
-- "Review S3 buckets and bucket policies for public access or risky sharing."
-- "Check CloudTrail for recent events related to this instance, user, role, bucket, or security group."
-- "Look at CloudWatch alarms and logs that may explain this production issue."
-- "Show billing, budget, Cost Explorer, or quota information that could explain a spend or capacity problem."
-- "Prepare a dry-run plan to create a limited IAM user named `reporting-bot`, but do not apply it."
-- "Prepare a plan to stop one EC2 instance and explain the approval flags it would need."
-- "Tell me whether this AWS request touches identity, secrets, spend, public access, messaging, data movement, or a hard-to-undo action."
-
-## What access it needs
-
-- Local AWS credentials from the normal AWS credential chain, or an `AWS_PROFILE` that points to the intended role.
-- A region in `AWS_DEFAULT_REGION`.
-- Optional account and region allowlists in `AWS_ALLOWED_ACCOUNTS` and `AWS_ALLOWED_REGIONS` so the tool refuses the wrong target.
-- Permission to call STS `GetCallerIdentity`; this is the first identity check.
-- Permission for the specific AWS read or change you ask for.
-- No AWS access keys, secret keys, or session tokens pasted into chat.
-
-## Install and first run
-
-Install slug: `aws`
-
-Ask your agent to install the skill from `Qwayk/safe-agent-skills`.
-
-If auto-install is not available, run:
+Ask your agent to install `aws` from `Qwayk/safe-agent-skills`, or run:
 
 ```bash
 npx skills add Qwayk/safe-agent-skills@aws -g -y
 ```
 
-Then:
+If you already have the CLI files, install with Python 3.12 or later from the tool folder:
 
-1. Run `qwayk-aws-safe-agent-cli --output json --version`.
-2. Run `qwayk-aws-safe-agent-cli onboarding`.
-3. Run `qwayk-aws-safe-agent-cli --output json auth check`.
-4. Ask for one read-only AWS review, such as IAM users, EC2 instances, S3 bucket settings, CloudTrail events, billing/quota data, or the pinned inventory summary.
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -e .
+```
 
-## How this skill stays safe
+Connect with a local AWS profile, single sign-on or a role. Keep access keys and session tokens on your machine. [Set up access](docs/onboarding.md) · [Run a first read](docs/quickstart.md)
 
-- It checks STS identity before non-STS AWS service calls.
-- It can refuse a call when the account or region is outside your allowlists.
-- Reads can run without apply flags.
-- Writes start as dry-run plans.
-- Live writes need a reviewed `--plan-in` file, `--apply`, and `--yes`.
-- Generated AWS writes usually need `--ack-no-snapshot` because the generic Botocore model path cannot save a reliable before-state or infer a safe read-back for every operation.
-- Delete-like or otherwise hard-to-undo operations need `--ack-irreversible`.
-- Plans, receipts, logs, and run-history files are redacted.
-- Binary or sensitive payloads must go to a file instead of being printed to stdout.
+## Coverage and checks
 
-## What it covers today
-
-- `onboarding`
-- `auth check`
-- `inventory summary`
-- `runs list`
-- `runs show`
-- 428 pinned Botocore services from Boto3/Botocore 1.43.36
-- 18,727 generated named AWS operation commands from the packaged Botocore service models
-- Read operations, dry-run write plans, and reviewed live writes for those named operations
-
-## What happens before live changes
-
-- The tool builds a dry-run plan first.
-- The plan names the AWS service, operation, region, profile, allowlists, risk categories, and input.
-- The apply path refuses if the current service, operation, region, or input no longer matches the reviewed plan.
-- `--plan-in`, `--apply`, and `--yes` are required for live writes.
-- `--ack-no-snapshot` is required when no useful before-state or generic read-back is available. For generated AWS writes, this is the normal case today.
-- `--ack-irreversible` is required for delete-like or other hard-to-undo actions.
-- `--output-file` is required when an AWS operation returns binary data.
-
-## What proof it leaves behind
-
-- `plan.json` in the local run folder for dry-run writes.
-- `receipt.json` after live apply, including verification checks and any read-back limit.
-- `summary.md` with a plain record of the run.
-- `audit.jsonl` with redacted events.
-- `.state/runs/index.jsonl` for local run history.
-- Redacted examples in `docs/examples/`.
-
-## Limits
-
-- AWS live account behavior remains live-unverified unless you run the tool with real AWS credentials.
-- Local validation did not run live AWS writes. Tests cover mocked apply, refusal behavior, plan and receipt shape, redaction, and coverage.
-- Generic generated AWS writes do not currently save operation-specific before-state. Receipts say `limited` when verification only proves that the reviewed plan matched and the AWS SDK returned a captured response.
-- The coverage boundary is the pinned Boto3/Botocore 1.43.36 package shipped with this tool. It does not load extra service models from `~/.aws/models` or `AWS_DATA_PATH`.
-- The CLI exposes named commands generated from the pinned models. It is not a raw AWS call-anything bridge.
-- AWS permissions still decide what the caller can see or change. If the account denies a read, the agent should say what was blocked instead of guessing from missing data.
-
-## Helpful docs
-
-- [Browse the AWS docs hub](docs/README.md)
-- [Run the first safe AWS checks](docs/quickstart.md)
-- [Use the command guide](docs/command_reference.md)
-- [Understand safety and approvals](docs/safety_model.md)
-- [Check the pinned coverage boundary](docs/api_coverage.md)
-- [Review proof and examples](docs/proof.md)
-- [Set up AWS authentication](docs/authentication.md)
-- [Choose useful AWS tasks](docs/use_cases.md)
+The inventory lists 428 services and 18,727 operations from Boto3 and Botocore 1.43.36. The CLI can call 18,722 of them when AWS permissions allow. Five need two-way streaming that this SDK cannot run. The install and safety checks have been tested with simulated AWS replies. A real AWS account check is separate. [API coverage](docs/api_coverage.md) · [Test results](docs/proof.md) · [All guides](docs/README.md)

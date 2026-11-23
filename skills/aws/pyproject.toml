@@ -30,6 +30,9 @@ package-dir = {"" = "src"}
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+aws_safe_agent_cli = ["aws_botocore_inventory.json"]
+
 [tool.ruff]
 target-version = "py312"
 line-length = 100

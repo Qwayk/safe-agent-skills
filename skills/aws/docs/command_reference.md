@@ -1,8 +1,6 @@
 # Command reference
 
-Use this technical page after you know the AWS account, region, service, and operation you want. For choosing what to inspect first, start with the use cases and quickstart.
-
-For the guided path, start with [Choose useful AWS tasks](use_cases.md), [Set up AWS access locally](onboarding.md), and [Understand safety and approvals](safety_model.md).
+Find the operation you need in [API coverage](api_coverage.md). For a first read, follow [the quickstart](quickstart.md).
 
 ## Local commands
 
@@ -37,10 +35,10 @@ Other useful first reads depend on your permissions:
 - Logging review: CloudTrail, CloudWatch, Config, Health, or GuardDuty read operations
 - Spend review: billing, budgets, Cost Explorer, service quota, or capacity-related read operations
 
-Example dry-run write plan:
+To save a plan for review, use:
 
 ```bash
-qwayk-aws-safe-agent-cli iam create-user --input-json '{"UserName":"reporting-bot"}' --plan-out plan.json
+qwayk-aws-safe-agent-cli iam create-user --input-json '{"UserName":"reporting-bot"}' --bind-aws --plan-out plan.json
 ```
 
 The tool validates `--input-json` against the pinned Botocore model for that service operation. You can pass JSON text or a path to a JSON file.
@@ -48,9 +46,11 @@ The tool validates `--input-json` against the pinned Botocore model for that ser
 ## Safety flags
 
 - Reads run without `--apply`.
-- Dry-run writes omit `--apply` and can use `--plan-out <path>`.
+- Leave out `--apply` for a preview. Use `--bind-aws --plan-out <path>` to save a plan tied to the AWS account and role.
 - Live writes need `--apply --plan-in <path> --yes`.
-- Add `--ack-no-snapshot` when the write cannot capture a reliable before-state or generic read-back. This is normally required for generated AWS writes.
+- Add `--ack-no-snapshot` when the tool cannot save the previous state. The generated AWS writes require it.
+- Use the same input when applying the plan.
+- Add `--ack-spend-money` after approval for covered changes that can add charges.
 - Add `--ack-irreversible` for delete-like or other hard-to-undo changes.
 - Use `--receipt-out <path>` to save the live apply receipt.
 - Use `--log-file <path>` if you want a second redacted audit log.
@@ -58,7 +58,8 @@ The tool validates `--input-json` against the pinned Botocore model for that ser
 
 ## Shared flags
 
-- `--env-file <path>`: local AWS settings file, default `.env`
+- `--env-file <path>` picks a local AWS settings file. The default is `.env`.
+- `--timeout-s <seconds>` overrides the timeout for this command.
 - `--config <path>`: optional project defaults JSON
 - `--project-dir <path>`: project root for local config
 - `--run-id <id>`: use a specific local run id
@@ -68,7 +69,7 @@ The tool validates `--input-json` against the pinned Botocore model for that ser
 
 ## How to find operations
 
-Use `inventory summary` to confirm the pinned coverage counts, then use service help for the command family you need:
+Run `inventory summary` to check coverage. Use help for the service you need:
 
 ```bash
 qwayk-aws-safe-agent-cli iam --help

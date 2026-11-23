@@ -1,16 +1,12 @@
 # Architecture
 
-Read this page when you want to check how the AWS skill is built. Normal users should start with the quickstart and use cases; this page is for people reviewing the code path behind the promises.
-
-The AWS skill is built as a small command-line tool around Boto3, the official AWS Python SDK. It loads a pinned Botocore model inventory, turns AWS operations into named commands, checks identity with STS, validates input, classifies risk, creates dry-run plans for writes, and saves redacted receipts after live attempts. This matters when an agent is using the skill for real work.
-
-A good architecture check is: trace one command from `cli.py` into `aws_runtime.py`, confirm STS identity and allowlists run before AWS service calls, and verify that write commands produce plans and receipts.
+The CLI uses Boto3, the AWS Python SDK, to run named operations from the packaged Botocore model list. One runtime checks input, looks up the AWS account and role, and saves plans and receipts.
 
 ## Runtime
 
 - `cli.py`: the entrypoint that calls the AWS runtime.
 - `aws_runtime.py`: argument parsing, generated service commands, risk classification, dry-run plans, live apply gates, receipt verification, and output handling.
-- `generated_registry.py`: reads `docs/_generated/aws_botocore_inventory.json` and turns the pinned inventory into service and operation lookups.
+- `generated_registry.py`: reads `src/aws_safe_agent_cli/aws_botocore_inventory.json` and turns the pinned inventory into service and operation lookups.
 - `model_loader.py`: loads operation models from the pinned Botocore package for input validation.
 - `validation.py`: checks `--input-json` against the Botocore operation model before a command runs.
 - `commands/auth.py`, `commands/inventory.py`, and `commands/onboarding.py`: the small local command handlers.
@@ -23,7 +19,7 @@ A good architecture check is: trace one command from `cli.py` into `aws_runtime.
 
 The coverage boundary comes from the packaged Botocore data in the pinned Boto3/Botocore wheel. The generator writes two files together:
 
-- `docs/_generated/aws_botocore_inventory.json`
+- `src/aws_safe_agent_cli/aws_botocore_inventory.json`
 - `docs/api_coverage.md`
 
 If the pinned SDK version changes, regenerate both files and rerun the full AWS test suite.
@@ -34,11 +30,11 @@ The runtime does not load service models from `~/.aws/models` or `AWS_DATA_PATH`
 
 1. Load `.env` and project settings.
 2. Load the generated registry and the Botocore operation model.
-3. Check the AWS identity with STS before non-STS service calls.
-4. Validate the input JSON against the pinned operation model.
-5. Classify the operation as read, write, no-snapshot, unknown mutating, irreversible, or another documented risk category.
-6. For reads, call the named Boto3 client operation.
-7. For writes, create a dry-run plan first. Live apply requires a reviewed plan, `--apply`, and `--yes`; higher-risk writes require the extra acknowledgement flags.
+3. Validate the input and check the operation’s approval requirements.
+4. For a read, check the account and region before calling the AWS operation.
+5. For a write, preview offline or use `--bind-aws` to save a plan tied to the AWS connection.
+6. Apply only after the current account, role, region, endpoint and request match the reviewed plan. Use one AWS SDK session for the identity check and service request.
+7. Record AWS’s response or the reason the result is still unclear.
 8. Save redacted run proof under `.state/runs/` unless the caller disables artifacts.
 
 ## Verification boundary

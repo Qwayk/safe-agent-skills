@@ -7,7 +7,10 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
+
+from botocore.exceptions import ReadTimeoutError
 
 from aws_safe_agent_cli.aws_runtime import _operation_policy, build_parser, main
 from aws_safe_agent_cli.config import load_config
@@ -34,9 +37,14 @@ class TestAwsConfigAndRedaction(unittest.TestCase):
                 + "\n",
                 encoding="utf-8",
             )
-            with patch.dict(os.environ, {}, clear=True):
+            profiles = Path(td) / "config"
+            profiles.write_text("[profile demo-profile]\nregion = eu-west-1\n")
+            with patch.dict(os.environ, {"AWS_CONFIG_FILE": str(profiles)}, clear=True):
                 cfg = load_config(str(env_path))
-        self.assertEqual(cfg.region_name, "us-east-1")
+                with patch.dict(os.environ, {"AWS_DEFAULT_REGION": "us-west-2"}):
+                    override = load_config(str(env_path))
+        self.assertEqual(cfg.region_name, "eu-west-1")
+        self.assertEqual(override.region_name, "us-west-2")
         self.assertEqual(cfg.profile_name, "demo-profile")
         self.assertEqual(cfg.allowed_accounts, ("111111111111", "222222222222"))
         self.assertEqual(cfg.allowed_regions, ("us-east-1", "eu-west-1"))
@@ -194,6 +202,8 @@ class TestAwsCommands(unittest.TestCase):
     @patch("aws_safe_agent_cli.aws_runtime.fetch_caller_identity")
     def test_live_write_without_read_back_records_limited_verification(self, mock_fetch, mock_session) -> None:
         class FakeIamClient:
+            meta = SimpleNamespace(endpoint_url="https://iam.amazonaws.com")
+
             def create_user(self, **kwargs):
                 self.last_kwargs = kwargs
                 return {
@@ -229,20 +239,12 @@ class TestAwsCommands(unittest.TestCase):
                 encoding="utf-8",
             )
             plan_path = root / "plan.json"
-            plan_path.write_text(
-                json.dumps(
-                    {
-                        "service": "iam",
-                        "operation": "create-user",
-                        "region": "us-east-1",
-                        "input": {"UserName": "demo"},
-                    },
-                    indent=2,
-                    sort_keys=True,
-                )
-                + "\n",
-                encoding="utf-8",
-            )
+            code, preview = self._run_main([
+                "--env-file", str(env_path), "--bind-aws", "--plan-out", str(plan_path),
+                "iam", "create-user", "--input-json", '{"UserName":"demo"}',
+            ])
+            self.assertEqual(code, 0)
+            self.assertTrue(preview["approval_ready"])
             receipt_path = root / "receipt.json"
 
             rc, payload = self._run_main(
@@ -347,3 +349,109 @@ class TestAwsCommands(unittest.TestCase):
         terminate = _operation_policy("ec2", "TerminateInstances")
         self.assertTrue(terminate["requires_ack_irreversible"])
         self.assertTrue(terminate["requires_ack_no_snapshot"])
+
+
+class TestSavedAwsPlans(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.settings = self.root / "test.env"
+        self.settings.write_text("AWS_DEFAULT_REGION=us-east-1\n")
+        self.plan = self.root / "plan.json"
+        self.receipt = self.root / "receipt.json"
+        self.command = ["ec2", "start-instances", "--input-json", '{"InstanceIds":["i-example"]}']
+        self.flags = ["--apply", "--yes", "--ack-no-snapshot", "--plan-in", str(self.plan)]
+        self.client = patch("aws_safe_agent_cli.aws_runtime.make_client").start().return_value
+        self.client.meta.endpoint_url = "https://ec2.us-east-1.amazonaws.com"
+        self.session = patch("aws_safe_agent_cli.aws_runtime.make_session").start()
+        self.sts = patch("aws_safe_agent_cli.aws_runtime.fetch_caller_identity").start()
+        self.sts.return_value = self.identity()
+        self.addCleanup(patch.stopall)
+
+    @staticmethod
+    def identity(account="123456789012", role="TestRole", session="first", role_id="AROAFIXTURE"):
+        return CallerIdentity(account, f"arn:aws:sts::{account}:assumed-role/{role}/{session}", f"{role_id}:{session}")
+
+    def run_cli(self, *args):
+        output = io.StringIO()
+        with redirect_stdout(output):
+            code = main(["--env-file", str(self.settings), "--no-artifacts", *args])
+        return code, json.loads(output.getvalue())
+
+    def save(self, *, bind=True):
+        flags = ["--bind-aws"] if bind else []
+        code, payload = self.run_cli(*flags, "--plan-out", str(self.plan), *self.command)
+        self.assertEqual(0, code)
+        self.assertIs(payload["approval_ready"], bind)
+        return payload
+
+    def test_offline_plan_needs_an_aws_check_before_apply(self):
+        self.save(bind=False)
+        _, refused = self.run_cli(*self.flags, *self.command, "--ack-spend-money")
+        self.assertIn("--bind-aws", refused["reasons"][0])
+        self.session.assert_not_called()
+
+    def test_plan_refuses_changed_account_role_region_and_endpoint(self):
+        self.save()
+        for identity in (self.identity(account="210987654321"), self.identity(role="OtherRole"),
+                         self.identity(role_id="AROAOTHER")):
+            self.sts.return_value = identity
+            _, refused = self.run_cli(*self.flags, *self.command, "--ack-spend-money")
+            self.assertIn("AWS account, role or endpoint", refused["reasons"][0])
+        self.sts.return_value = self.identity()
+        self.settings.write_text("AWS_DEFAULT_REGION=us-west-2\n")
+        _, refused = self.run_cli(*self.flags, *self.command, "--ack-spend-money")
+        self.assertIn("region", refused["reasons"][0])
+        self.settings.write_text("AWS_DEFAULT_REGION=us-east-1\n")
+        self.client.meta.endpoint_url = "https://alternate.example.invalid"
+        _, refused = self.run_cli(*self.flags, *self.command, "--ack-spend-money")
+        self.assertIn("endpoint", refused["reasons"][0])
+        self.client.start_instances.assert_not_called()
+
+    def test_exact_input_is_checked_when_its_display_is_masked(self):
+        self.command = [
+            "iam", "create-login-profile", "--input-json",
+            '{"UserName":"example","Password":"fixture-one"}',
+        ]
+        preview = self.save()
+        self.assertEqual(REDACTED, preview["plan"]["input"]["Password"])
+        self.assertNotIn("fixture-one", self.plan.read_text())
+        altered = [*self.command[:-1], self.command[-1].replace("fixture-one", "fixture-two")]
+        _, refused = self.run_cli(*self.flags, *altered)
+        self.assertIn("input", refused["reasons"][0])
+        self.client.create_login_profile.assert_not_called()
+
+    def test_spending_approval_and_pending_result(self):
+        self.save()
+        _, refused = self.run_cli(*self.flags, *self.command)
+        self.assertIn("--ack-spend-money", refused["reasons"][0])
+        self.client.start_instances.assert_not_called()
+        self.sts.return_value = self.identity(session="second")
+        self.client.start_instances.return_value = {
+            "StartingInstances": [{"CurrentState": {"Name": "pending"}}],
+            "ResponseMetadata": {"HTTPStatusCode": 200},
+        }
+        code, payload = self.run_cli(*self.flags, *self.command, "--ack-spend-money", "--receipt-out", str(self.receipt))
+        self.assertEqual(0, code)
+        self.client.start_instances.assert_called_once_with(InstanceIds=["i-example"])
+        self.assertIsNone(payload["applied"])
+        self.assertEqual("pending", json.loads(self.receipt.read_text())["verification"]["status"])
+        self.assertFalse(payload["receipt"]["verification"]["read_back"]["attempted"])
+
+    def test_lost_reply_records_uncertain_result_once(self):
+        self.save()
+        self.client.start_instances.side_effect = ReadTimeoutError(endpoint_url=self.client.meta.endpoint_url)
+        code, payload = self.run_cli(*self.flags, *self.command, "--ack-spend-money", "--receipt-out", str(self.receipt))
+        self.assertEqual(1, code)
+        self.client.start_instances.assert_called_once()
+        self.assertIsNone(payload["applied"])
+        verification = json.loads(self.receipt.read_text())["verification"]
+        self.assertEqual("outcome_unknown", verification["status"])
+        self.assertIn("before retrying", verification["next_step"])
+
+    def test_unavailable_streaming_operation_stops_before_aws_sign_in(self):
+        _, result = self.run_cli("polly", "start-speech-synthesis-stream")
+        self.assertTrue(result["refused"])
+        self.assertIn("two-way event stream", result["reasons"][0])
+        self.session.assert_not_called()

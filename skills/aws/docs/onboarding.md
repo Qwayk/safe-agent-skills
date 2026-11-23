@@ -1,70 +1,47 @@
-# Connect your AWS account
+# Set up AWS access
 
-Connect the AWS account the same careful way you would start a cloud review: choose the local profile or role, confirm the region, prove who AWS thinks you are, then run a small read before any change.
+Choose the AWS account, role and region you want to inspect, then run one small read you can check. Use a role that already has permission to read that resource.
 
-Keep the setup files private. Do not paste AWS access keys, secret keys, session tokens, local profile files, or `.env` values into chat.
+## Connect your AWS account
 
-## Before you start
+The tool uses the sign-in that Boto3 finds on your machine. You can use a named AWS profile, AWS IAM Identity Center (single sign-on), or an AWS role. If your team uses single sign-on, sign in locally before running the tool. Keep access keys, secret keys, session tokens and AWS profile files on your machine. [AWS sign-in options](https://docs.aws.amazon.com/boto3/latest/guide/credentials.html)
 
-- You need a local AWS profile, SSO login, assumed role, or credential setup that already works on this machine.
-- You need to know which region you want the first check to use.
-- If this machine can reach more than one AWS account, use allowlists before planning any write.
-- The local `.env` file is only for this tool's private settings. It is not for chat and it is not for Git.
+## Choose a settings file
 
-## Step 1: choose the AWS identity
-
-Decide which local AWS profile or role the tool should use. If you use named profiles, choose the profile that already has the right permissions for the account you want to inspect.
-
-The tool follows the normal AWS credential chain through Boto3. It does not need secret values in chat.
-
-Good choices:
-
-- a read-only or audit role for first review work
-- a named profile that points at the intended account
-- a short-lived SSO or assumed-role session when your team uses AWS SSO
-
-Avoid starting from a broad admin profile unless you truly need it for the job.
-
-## Step 2: add local settings
-
-In the tool folder:
-
-1. Copy `.env.example` to `.env`.
-2. Keep `.env` private.
-3. Set `AWS_DEFAULT_REGION`.
-4. Add `AWS_PROFILE` if you use a named profile.
-5. Add `AWS_ALLOWED_ACCOUNTS` when the tool should refuse every other AWS account.
-6. Add `AWS_ALLOWED_REGIONS` when the tool should refuse every other region.
-
-## Step 3: run the setup helper
+The setup helper can create a private file for optional settings. It keeps an existing file and shows the next command with the path you chose. Add `--no-write-env` to see the instructions without creating a file.
 
 ```bash
 qwayk-aws-safe-agent-cli onboarding
+qwayk-aws-safe-agent-cli --env-file "aws settings.env" onboarding
 ```
 
-Add `--no-write-env` if you only want instructions and do not want the helper to create `.env`.
+| Setting | What it does |
+| --- | --- |
+| `AWS_PROFILE` | Picks a named AWS profile. Leave it blank to use the usual AWS sign-in on this machine. |
+| `AWS_DEFAULT_REGION` | Overrides the profile’s region. If both are blank, the tool uses `us-east-1`. |
+| `AWS_ALLOWED_ACCOUNTS` | Limits the tool to these AWS account IDs when set. |
+| `AWS_ALLOWED_REGIONS` | Limits the tool to these AWS regions when set. |
+| `AWS_TIMEOUT_S` | Sets the connection and response timeout in seconds. The default is 30. |
 
-## Step 4: confirm the connection
+Use commas between entries in the account and region lists. Environment variables take priority over values in the settings file. Keep private settings and `.state/runs/` out of Git and chat.
+
+## Confirm the account, role and region
 
 ```bash
 qwayk-aws-safe-agent-cli --output json auth check
 ```
 
-A good result shows the AWS account, ARN, user id, region, and allowlist status.
+AWS STS reports the account and ARN, which identifies the signed-in user or role. Check that account, the region and the `auth.allowlists.allowed` field. Then [run one small read](quickstart.md) to confirm that the role can use the service you picked. The identity check can succeed even if the role lacks service permissions. [AWS identity check](https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html)
 
-## What success looks like
+## Fix a problem
 
-Setup is complete when `auth check` succeeds and your agent can name the AWS identity, confirm the region, explain whether allowlists passed, and suggest one safe read without changing anything.
+| What you see | What to check |
+| --- | --- |
+| Missing credentials, expired session or profile error | Check the profile name and sign in again if needed. |
+| Wrong account or region | Compare the sign-in and the selected region with the expected target. If a configured list blocked the call, confirm the target before changing the list. |
+| Access denied on a read | Check whether that role has permission for the exact service and resource. Use another small read if it would answer the same question. |
+| Invalid JSON or missing fields | Check the command’s input fields in [the command guide](command_reference.md). |
+| The command needs an output file | Set `--output-file` to a private location for the binary result. |
+| An apply flag or receipt status is unclear | Use [the review and receipt steps](safety_model.md). |
 
-If `auth check` fails on a clean machine, the usual causes are missing credentials, an expired login, a wrong profile name, a missing region, or an allowlist that correctly blocked the target.
-
-After setup, a good first review is IAM users, EC2 instances, or S3 buckets. If those are not allowed, ask the agent to explain which permission is missing and choose another safe read.
-
-## What to ask your AI agent (examples)
-
-- "Check which AWS account and region this workspace is using, then stop."
-- "Show me what AWS resources you can review safely before any write."
-- "List IAM users and access keys we should review first."
-- "Check EC2 instances in this region and point out likely cost risk."
-- "Review S3 bucket settings before any policy change."
-- "Prepare a dry-run plan for this AWS change, but do not apply it."
+Start with the exact error. Use `--debug` only when you need the Python stack trace. Keep private values out of anything you share.

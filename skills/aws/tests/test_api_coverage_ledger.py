@@ -3,21 +3,16 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
+from aws_safe_agent_cli.generated_registry import load_generated_registry
+
 
 class TestApiCoverageLedger(unittest.TestCase):
-    def test_coverage_doc_has_boundary_summary_and_ledger(self) -> None:
+    def test_coverage_totals_match_the_packaged_inventory(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "api_coverage.md").read_text(encoding="utf-8")
-
-        self.assertIn("## Boundary", text)
-        self.assertIn("## Inventory summary", text)
-        self.assertIn("## Generated per-operation evidence", text)
-        self.assertIn("## Safety and risk coverage", text)
-        self.assertIn("## Exceptions ledger", text)
-        self.assertIn("Packaged Boto3/Botocore 1.43.36 data only", text)
-        self.assertIn("Botocore is the AWS SDK data layer", text)
-        self.assertIn("official aws surfaces outside packaged botocore were not claimed", text.lower())
-        self.assertIn("generated_named_command", text)
-        self.assertNotIn("catch-all", text.lower())
-        self.assertNotIn("raw bridge", text.lower())
-        self.assertNotIn("call-anything", text.lower())
+        coverage = (root / "docs" / "api_coverage.md").read_text(encoding="utf-8")
+        summary = load_generated_registry().summary
+        self.assertIn(summary.botocore_version, coverage)
+        self.assertIn(f"Services: {summary.service_count}", coverage)
+        self.assertIn(f"Operations: {summary.operation_count}", coverage)
+        for status, count in summary.operation_status_counts.items():
+            self.assertIn(f"| `{status}` | {count} |", coverage)
