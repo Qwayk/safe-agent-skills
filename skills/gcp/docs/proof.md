@@ -4,7 +4,7 @@
 
 The source and local catalog copies each passed 40 tests after a fresh install. I ran the installed command outside the repo. It loaded all 175 services and 9,781 operations from the packaged inventory. The inventory matches the June 25 file byte for byte. Onboarding kept the selected settings filename, created it with private permissions and left it intact on a second run.
 
-With simulated Google replies, the tests checked that changing the identity, quota project, endpoint, input or approval requirements stops a write. They checked the spending approval for a VM start and a billing link, and confirmed that a queued operation, a failed operation and a lost reply leave receipts. I also checked the skill files. These checks ran without calling Google. This update is local.
+With simulated Google replies, the tests checked that changing the identity, quota project, endpoint, input or approval requirements stops a write. They checked the spending approval for a VM start and a billing link, and confirmed that a queued operation, a failed operation and a lost reply leave receipts. I also checked the skill files. These checks ran without calling Google.
 
 ## June 25, 2026 source checks
 
