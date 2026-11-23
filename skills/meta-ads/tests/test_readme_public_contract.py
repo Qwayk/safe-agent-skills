@@ -16,7 +16,7 @@ class TestPublicInstallGuide(unittest.TestCase):
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         commands = [shlex.split(line) for line in readme.splitlines() if line.startswith("npx skills add ")]
         self.assertEqual(len(commands), 1)
-        self.assertEqual(commands[0][3], "Qwayk/safe-agent-skills@meta-ads")
+        self.assertEqual(commands[0][3], "Qwayk/safe-agent-skills@meta-ads-api-safe-cli")
 
     def test_local_guide_links_resolve(self) -> None:
         guides = [ROOT / "README.md", ROOT / "SKILL.md", *(ROOT / "docs").rglob("*.md")]

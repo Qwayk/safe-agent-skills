@@ -8,10 +8,10 @@ If you ask the agent to post a comment or make another change, it shows you the 
 
 ## Install
 
-Ask your agent to install the `figma` skill from `Qwayk/safe-agent-skills`, or run:
+Ask your agent to install the `figma-safe-cli` skill from `Qwayk/safe-agent-skills`, or run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@figma -g -y
+npx skills add Qwayk/safe-agent-skills@figma-safe-cli -g -y
 ```
 
 If the skill does not show up, reopen the app or attach it to your workspace. For the command-line tool, use the install steps in [Quickstart](docs/quickstart.md).

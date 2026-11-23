@@ -4,10 +4,10 @@ Ask your agent to show you the latest posts from a Bluesky handle. It can read p
 
 If you ask it to publish a post, it shows you the text and the account first and waits for your approval.
 
-Install the `bluesky` skill from `Qwayk/safe-agent-skills`, or run this command.
+Install the `bluesky-safe-cli` skill from `Qwayk/safe-agent-skills`, or run this command.
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@bluesky -g -y
+npx skills add Qwayk/safe-agent-skills@bluesky-safe-cli -g -y
 ```
 
 Start with [installing the tool and reading a public feed](docs/quickstart.md). For a post or private account data, [connect your Bluesky account](docs/onboarding.md) first.

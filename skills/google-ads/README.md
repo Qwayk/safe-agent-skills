@@ -39,16 +39,16 @@ Current release: tool 0.7.3 uses Google Ads API v25, including v25.1 definitions
 
 ## Install and first run
 
-Install slug: `google-ads`
+Install slug: `google-ads-api-safe-cli`
 
-Ask your agent to install the `google-ads` skill from `Qwayk/safe-agent-skills`.
+Ask your agent to install the `google-ads-api-safe-cli` skill from `Qwayk/safe-agent-skills`.
 
 If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
 
 If your host does not let the agent install skills directly, run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@google-ads -g -y
+npx skills add Qwayk/safe-agent-skills@google-ads-api-safe-cli -g -y
 ```
 
 Then try a safe first ask like:

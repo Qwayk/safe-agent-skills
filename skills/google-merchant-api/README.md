@@ -37,16 +37,16 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 
 ## Install and first run
 
-Install slug: `google-merchant-api`
+Install slug: `google-merchant-api-safe-cli`
 
-Ask your agent to install the `google-merchant-api` skill from `Qwayk/safe-agent-skills`.
+Ask your agent to install the `google-merchant-api-safe-cli` skill from `Qwayk/safe-agent-skills`.
 
 If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
 
 If your host does not let the agent install skills directly, run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@google-merchant-api -g -y
+npx skills add Qwayk/safe-agent-skills@google-merchant-api-safe-cli -g -y
 ```
 
 Then try a safe first ask like:

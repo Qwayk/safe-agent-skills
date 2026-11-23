@@ -4,10 +4,10 @@ Ask your agent to show your latest Threads posts and replies, look up a public p
 
 The agent checks which account is connected before reading your posts. If you want to publish, it shows you the text, account and any attachments. Threads first saves a draft and then publishes it. You can review each step before it happens.
 
-Install the `threads` skill from `Qwayk/safe-agent-skills`, or run this command.
+Install the `threads-safe-cli` skill from `Qwayk/safe-agent-skills`, or run this command.
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@threads -g -y
+npx skills add Qwayk/safe-agent-skills@threads-safe-cli -g -y
 ```
 
 - [Read your first posts or review a draft](docs/quickstart.md)

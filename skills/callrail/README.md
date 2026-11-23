@@ -37,16 +37,16 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 
 ## Install and first run
 
-Install slug: `callrail`
+Install slug: `callrail-safe-agent-cli`
 
-Ask your agent to install the `callrail` skill from `Qwayk/safe-agent-skills`.
+Ask your agent to install the `callrail-safe-agent-cli` skill from `Qwayk/safe-agent-skills`.
 
 If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
 
 If your host does not let the agent install skills directly, run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@callrail -g -y
+npx skills add Qwayk/safe-agent-skills@callrail-safe-agent-cli -g -y
 ```
 
 Then try a safe first ask like:

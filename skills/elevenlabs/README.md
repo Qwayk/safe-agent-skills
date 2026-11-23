@@ -33,10 +33,10 @@ Set an ElevenLabs API key in `ELEVENLABS_API_KEY`. Some voice, dubbing, music, E
 
 ## Install and first run
 
-Install slug: `elevenlabs`
+Install slug: `elevenlabs-safe-cli`
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@elevenlabs -g -y
+npx skills add Qwayk/safe-agent-skills@elevenlabs-safe-cli -g -y
 elevenlabs-api-tool onboarding
 elevenlabs-api-tool --output json auth check
 ```

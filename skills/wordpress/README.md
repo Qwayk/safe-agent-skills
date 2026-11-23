@@ -37,16 +37,16 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 
 ## Install and first run
 
-Install slug: `wordpress`
+Install slug: `wordpress-api-safe-cli`
 
-Ask your agent to install the `wordpress` skill from `Qwayk/safe-agent-skills`.
+Ask your agent to install the `wordpress-api-safe-cli` skill from `Qwayk/safe-agent-skills`.
 
 If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
 
 If your host does not let the agent install skills directly, run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@wordpress -g -y
+npx skills add Qwayk/safe-agent-skills@wordpress-api-safe-cli -g -y
 ```
 
 Then try a safe first ask like:

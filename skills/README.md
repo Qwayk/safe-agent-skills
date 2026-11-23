@@ -33,9 +33,9 @@ Start here if you want reporting, tracking, search visibility, incidents, or acc
 | [**Google Analytics 4**](google-analytics/README.md)<br><sub>Install slug: <code>google-analytics</code></sub> | Review GA4 properties, reports, metadata, and admin surfaces | Google account | Reads + careful changes |
 | [**Google Search Console**](google-search-console/README.md)<br><sub>Install slug: <code>google-search-console</code></sub> | Review Search Console sites, sitemaps, URL inspection, and search analytics | Google account | Reads + careful changes |
 | [**Google Tag Manager**](google-tag-manager/README.md)<br><sub>Install slug: <code>google-tag-manager</code></sub> | Review GTM containers, workspaces, tags, triggers, variables, and versions | Google account | Reads + careful changes |
-| [**Plausible Analytics**](plausible/README.md)<br><sub>Install slug: <code>plausible</code></sub> | Check traffic, top pages, sources, and goals. Preview site or event changes for approval. | Plausible account | Reads + careful changes |
-| [**Contentsquare**](contentsquare/README.md)<br><sub>Install slug: <code>contentsquare</code></sub> | Check visitor metrics and speed reports. Download exports or preview changes for approval. | Contentsquare account | Reads + careful changes |
-| [**CallRail**](callrail/README.md)<br><sub>Install slug: <code>callrail</code></sub> | Review CallRail accounts, calls, forms, companies, trackers, integrations, and webhooks | CallRail account | Reads + careful changes |
+| [**Plausible Analytics**](plausible/README.md)<br><sub>Install slug: <code>plausible-api-safe-cli</code></sub> | Check traffic, top pages, sources, and goals. Preview site or event changes for approval. | Plausible account | Reads + careful changes |
+| [**Contentsquare**](contentsquare/README.md)<br><sub>Install slug: <code>contentsquare-safe-cli</code></sub> | Check visitor metrics and speed reports. Download exports or preview changes for approval. | Contentsquare account | Reads + careful changes |
+| [**CallRail**](callrail/README.md)<br><sub>Install slug: <code>callrail-safe-agent-cli</code></sub> | Review CallRail accounts, calls, forms, companies, trackers, integrations, and webhooks | CallRail account | Reads + careful changes |
 | [**Statuspage**](statuspage/README.md)<br><sub>Install slug: <code>statuspage</code></sub> | Check public status, incidents, maintenance, and components | Public status page URL | Read-only |
 
 ## Project and team work
@@ -53,12 +53,12 @@ Start here if you want campaign work, ad-account review, or local business surfa
 
 | Product | What it helps with | What you connect | Mode |
 | --- | --- | --- | --- |
-| [**Google Ads**](google-ads/README.md)<br><sub>Install slug: <code>google-ads</code></sub> | Review Google Ads accounts and make careful campaign changes | Google Ads account | Reads + careful changes |
+| [**Google Ads**](google-ads/README.md)<br><sub>Install slug: <code>google-ads-api-safe-cli</code></sub> | Review Google Ads accounts and make careful campaign changes | Google Ads account | Reads + careful changes |
 | [**OpenAI Ads**](openai-ads/README.md)<br><sub>Install slug: <code>openai-ads</code></sub> | Check ChatGPT Ads results, find setup problems, prepare campaign and ad changes, review audiences, and check conversion tracking | OpenAI Ads Manager account | Reads + careful changes |
-| [**Meta Ads**](meta-ads/README.md)<br><sub>Install slug: <code>meta-ads</code></sub> | Review Meta Ads accounts, campaigns, ads, creatives, and insights | Meta Ads account | Read-only |
+| [**Meta Ads**](meta-ads/README.md)<br><sub>Install slug: <code>meta-ads-api-safe-cli</code></sub> | Review Meta Ads accounts, campaigns, ads, creatives, and insights | Meta Ads account | Read-only |
 | [**Microsoft Advertising**](microsoft-ads/README.md)<br><sub>Install slug: <code>microsoft-ads</code></sub> | Review and plan Microsoft Ads account work | Microsoft Advertising account | Reads + careful changes |
-| [**LinkedIn Ads**](linkedin-ads/README.md)<br><sub>Install slug: <code>linkedin-ads</code></sub> | Review and plan LinkedIn Ads account work | LinkedIn Ads account | Reads + careful changes |
-| [**TikTok Marketing API**](tiktok-marketing/README.md)<br><sub>Install slug: <code>tiktok-marketing</code></sub> | Review and plan TikTok Marketing API work | TikTok Ads account | Reads + careful changes |
+| [**LinkedIn Ads**](linkedin-ads/README.md)<br><sub>Install slug: <code>linkedin-ads-safe-cli</code></sub> | Review and plan LinkedIn Ads account work | LinkedIn Ads account | Reads + careful changes |
+| [**TikTok Marketing API**](tiktok-marketing/README.md)<br><sub>Install slug: <code>tiktok-marketing-safe-cli</code></sub> | Review and plan TikTok Marketing API work | TikTok Ads account | Reads + careful changes |
 | [**Google Business Profile**](google-business-profile/README.md)<br><sub>Install slug: <code>google-business-profile</code></sub> | Review and plan Google Business Profile location, review, media, and insight work | Google Business Profile account | Reads + careful changes |
 
 ## CRM, outreach, support, and email
@@ -71,8 +71,8 @@ Start here if you want lead, pipeline, support, outreach, or lifecycle work.
 | [**Jobber**](jobber/README.md)<br><sub>Install slug: <code>jobber</code></sub> | Review and plan Jobber client, request, quote, job, visit, invoice, payment, property, and webhook work | Jobber account | Reads + careful changes |
 | [**Pipedrive**](pipedrive/README.md)<br><sub>Install slug: <code>pipedrive</code></sub> | Review Pipedrive CRM data and build sales reports | Pipedrive account | Read-only |
 | [**Salesforce**](salesforce-platform/README.md)<br><sub>Install slug: <code>salesforce-platform</code></sub> | Review and plan Salesforce platform object, data, and metadata work | Salesforce account | Reads + careful changes |
-| [**Instantly**](instantly/README.md)<br><sub>Install slug: <code>instantly</code></sub> | Check campaign status, replies, and sending results. Preview campaign and lead changes before applying. | Instantly account | Reads + careful changes |
-| [**Klaviyo**](klaviyo/README.md)<br><sub>Install slug: <code>klaviyo</code></sub> | Review Klaviyo accounts, profiles, lists, campaigns, flows, forms, events, catalogs, and tags | Klaviyo account | Reads + careful changes |
+| [**Instantly**](instantly/README.md)<br><sub>Install slug: <code>instantly-api-safe-cli</code></sub> | Check campaign status, replies, and sending results. Preview campaign and lead changes before applying. | Instantly account | Reads + careful changes |
+| [**Klaviyo**](klaviyo/README.md)<br><sub>Install slug: <code>klaviyo-safe-cli</code></sub> | Review Klaviyo accounts, profiles, lists, campaigns, flows, forms, events, catalogs, and tags | Klaviyo account | Reads + careful changes |
 | [**Twilio**](twilio/README.md)<br><sub>Install slug: <code>twilio</code></sub> | Review and safely prepare supported Twilio work, including calls, messaging, ConversationRelay, local TwiML, WebSocket, and webhook checks | Twilio account | Reads + careful changes |
 | [**Zendesk**](zendesk/README.md)<br><sub>Install slug: <code>zendesk</code></sub> | Review Zendesk support data and make careful ticketing changes | Zendesk account | Reads + careful changes |
 
@@ -94,12 +94,12 @@ Start here if you want store, order, product, merchant-feed, or payment-system w
 | --- | --- | --- | --- |
 | [**Shopify**](shopify-admin/README.md)<br><sub>Install slug: <code>shopify-admin</code></sub> | Review Shopify store data and plan Admin API changes | Shopify store | Reads + careful changes |
 | [**WooCommerce**](woocommerce/README.md)<br><sub>Install slug: <code>woocommerce</code></sub> | Review and plan WooCommerce product, order, customer, coupon, and report work | WooCommerce store | Reads + careful changes |
-| [**Google Merchant Center**](google-merchant-api/README.md)<br><sub>Install slug: <code>google-merchant-api</code></sub> | Review and plan Google Merchant product, account, report, and promotion work | Google Merchant Center account | Reads + careful changes |
+| [**Google Merchant Center**](google-merchant-api/README.md)<br><sub>Install slug: <code>google-merchant-api-safe-cli</code></sub> | Review and plan Google Merchant product, account, report, and promotion work | Google Merchant Center account | Reads + careful changes |
 | [**Stripe**](stripe/README.md)<br><sub>Install slug: <code>stripe</code></sub> | Review Stripe account data and make careful payment-system changes | Stripe account | Reads + careful changes |
 | [**PayPal**](paypal/README.md)<br><sub>Install slug: <code>paypal</code></sub> | Review and plan PayPal order, payment, payout, and dispute work | PayPal business account | Reads + careful changes |
 | [**Fortnox**](fortnox/README.md)<br><sub>Install slug: <code>fortnox</code></sub> | Review Fortnox invoices, supplier bills, bookkeeping, payroll, stock, and plan careful changes | Fortnox account | Reads + careful changes |
 | [**Xero**](xero/README.md)<br><sub>Install slug: <code>xero</code></sub> | Review Xero accounting, invoices, contacts, reports, files, projects, payroll, and prepare careful changes | Xero organisation | Reads + careful changes |
-| [**Mercury**](mercury/README.md)<br><sub>Install slug: <code>mercury</code></sub> | Check Mercury accounts and download statements, invoices, exports, and attachments | Mercury account | Read-only |
+| [**Mercury**](mercury/README.md)<br><sub>Install slug: <code>mercury-api-safe-cli</code></sub> | Check Mercury accounts and download statements, invoices, exports, and attachments | Mercury account | Read-only |
 
 ## Affiliate, partnerships, and publisher revenue
 
@@ -107,7 +107,7 @@ Start here if you want affiliate product research, creator catalogs, or partner-
 
 | Product | What it helps with | What you connect | Mode |
 | --- | --- | --- | --- |
-| [**Amazon Product Advertising API**](amazon-paapi-v5/README.md)<br><sub>Install slug: <code>amazon-paapi-v5</code></sub> | Search Amazon product data, resolve products, and build affiliate-ready product research | Amazon Associates account | Read-only |
+| [**Amazon Product Advertising API**](amazon-paapi-v5/README.md)<br><sub>Install slug: <code>amazon-pa-api-safe-cli</code></sub> | Search Amazon product data, resolve products, and build affiliate-ready product research | Amazon Associates account | Read-only |
 | [**Amazon Creators**](amazon-creators/README.md)<br><sub>Install slug: <code>amazon-creators</code></sub> | Find Amazon products, compare versions, and look up categories | Amazon Creators credentials and an Associates tracking tag | Catalog reads and local setup |
 | [**Awin Publisher**](awin-publisher/README.md)<br><sub>Install slug: <code>awin-publisher-safe-cli</code></sub> | Review Awin publisher accounts, programs, offers, transactions, reports, feeds, linkbuilder work, and proof-of-purchase uploads | Awin publisher account | Reads + careful changes |
 | [**Sovrn**](sovrn/README.md)<br><sub>Install slug: <code>sovrn</code></sub> | Review Sovrn Commerce data, affiliate link checks, product suggestions, and advertising reports | Sovrn account | Read-only |
@@ -120,15 +120,15 @@ Start here if you want website publishing, content updates, or social account wo
 
 | Product | What it helps with | What you connect | Mode |
 | --- | --- | --- | --- |
-| [**WordPress**](wordpress/README.md)<br><sub>Install slug: <code>wordpress</code></sub> | Review WordPress content and make careful content changes | WordPress site | Reads + careful changes |
-| [**Ghost**](ghost/README.md)<br><sub>Install slug: <code>ghost</code></sub> | Review Ghost content and make careful publishing changes | Ghost site | Reads + careful changes |
+| [**WordPress**](wordpress/README.md)<br><sub>Install slug: <code>wordpress-api-safe-cli</code></sub> | Review WordPress content and make careful content changes | WordPress site | Reads + careful changes |
+| [**Ghost**](ghost/README.md)<br><sub>Install slug: <code>ghost-api-safe-cli</code></sub> | Review Ghost content and make careful publishing changes | Ghost site | Reads + careful changes |
 | [**Wix**](wix/README.md)<br><sub>Install slug: <code>wix</code></sub> | Find Wix sites and check products, bookings, and contacts. Review product edits and site publishes before applying. | Wix account or site app | Reads + careful changes |
-| [**Pinterest**](pinterest/README.md)<br><sub>Install slug: <code>pinterest</code></sub> | Read boards, pins, analytics, and catalogs. Review board and pin changes before applying. | Pinterest account | Reads + careful changes |
-| [**Bluesky**](bluesky/README.md)<br><sub>Install slug: <code>bluesky</code></sub> | Read public profiles and feeds. Review posts before publishing. | Sign in for private data or changes | Reads + careful changes |
-| [**Instagram**](instagram/README.md)<br><sub>Install slug: <code>instagram</code></sub> | Read recent posts, comments, and insights. Review media before publishing. | Instagram professional account | Reads + careful changes |
-| [**Threads**](threads/README.md)<br><sub>Install slug: <code>threads</code></sub> | Read recent posts, replies, and insights. Review a draft before publishing. | Threads account | Reads + careful changes |
+| [**Pinterest**](pinterest/README.md)<br><sub>Install slug: <code>pinterest-api-safe-cli</code></sub> | Read boards, pins, analytics, and catalogs. Review board and pin changes before applying. | Pinterest account | Reads + careful changes |
+| [**Bluesky**](bluesky/README.md)<br><sub>Install slug: <code>bluesky-safe-cli</code></sub> | Read public profiles and feeds. Review posts before publishing. | Sign in for private data or changes | Reads + careful changes |
+| [**Instagram**](instagram/README.md)<br><sub>Install slug: <code>instagram-safe-cli</code></sub> | Read recent posts, comments, and insights. Review media before publishing. | Instagram professional account | Reads + careful changes |
+| [**Threads**](threads/README.md)<br><sub>Install slug: <code>threads-safe-cli</code></sub> | Read recent posts, replies, and insights. Review a draft before publishing. | Threads account | Reads + careful changes |
 | [**X**](x/README.md)<br><sub>Install slug: <code>x</code></sub> | Find posts and mentions, check the connected account, and preview posts and direct messages for approval. | X account | Reads + careful changes |
-| [**YouTube**](youtube/README.md)<br><sub>Install slug: <code>youtube</code></sub> | Review and plan YouTube channel, video, upload, and data workflows | YouTube channel | Reads + careful changes |
+| [**YouTube**](youtube/README.md)<br><sub>Install slug: <code>youtube-api-safe-cli</code></sub> | Review and plan YouTube channel, video, upload, and data workflows | YouTube channel | Reads + careful changes |
 
 ## Creative and media tools
 
@@ -136,11 +136,11 @@ Start here if you want assets, folders, uploads, voice tools, or design-platform
 
 | Product | What it helps with | What you connect | Mode |
 | --- | --- | --- | --- |
-| [**Figma**](figma/README.md)<br><sub>Install slug: <code>figma</code></sub> | Review and plan Figma files, comments, components, and team workflows | Figma account | Reads + careful changes |
+| [**Figma**](figma/README.md)<br><sub>Install slug: <code>figma-safe-cli</code></sub> | Review and plan Figma files, comments, components, and team workflows | Figma account | Reads + careful changes |
 | [**Cloudinary**](cloudinary/README.md)<br><sub>Install slug: <code>cloudinary</code></sub> | Review Cloudinary assets, folders, uploads, and delivery settings | Cloudinary account | Reads + careful changes |
-| [**ElevenLabs**](elevenlabs/README.md)<br><sub>Install slug: <code>elevenlabs</code></sub> | Manage voice and audio, ElevenAgents, conversations, testing, and Twilio calling | ElevenLabs account | Reads + careful changes |
-| [**Freepik**](freepik/README.md)<br><sub>Install slug: <code>freepik</code></sub> | Find stock photos, review previews, and download approved assets with a license record. | Freepik account | Reads + licensed downloads |
-| [**Unsplash**](unsplash/README.md)<br><sub>Install slug: <code>unsplash</code></sub> | Find photos, review collections, and record approved downloads. | Unsplash API Access Key | Reads + download tracking |
+| [**ElevenLabs**](elevenlabs/README.md)<br><sub>Install slug: <code>elevenlabs-safe-cli</code></sub> | Manage voice and audio, ElevenAgents, conversations, testing, and Twilio calling | ElevenLabs account | Reads + careful changes |
+| [**Freepik**](freepik/README.md)<br><sub>Install slug: <code>freepik-api-safe-cli</code></sub> | Find stock photos, review previews, and download approved assets with a license record. | Freepik account | Reads + licensed downloads |
+| [**Unsplash**](unsplash/README.md)<br><sub>Install slug: <code>unsplash-api-safe-cli</code></sub> | Find photos, review collections, and record approved downloads. | Unsplash API Access Key | Reads + download tracking |
 
 ## Cloud, domains, and AI platforms
 
@@ -153,7 +153,7 @@ Start here if you want infrastructure, domain, account, or AI-platform work.
 | [**Azure**](azure/README.md)<br><sub>Install slug: <code>azure</code></sub> | Check Azure resources, access, networking, and costs. Review changes before making them. | Azure account | Reads + careful changes |
 | [**Cloudflare**](cloudflare/README.md)<br><sub>Install slug: <code>cloudflare-api-safe-cli</code></sub> | Check DNS, Workers, Pages, and who can reach an app. Review changes before applying them. | Cloudflare account | Reads + careful changes |
 | [**GiantPanda**](giantpanda/README.md)<br><sub>Install slug: <code>giantpanda</code></sub> | Check traffic and earnings for parked domains. Review a list of domains before adding them. | GiantPanda account | Reads + careful changes |
-| [**Dynadot**](dynadot/README.md)<br><sub>Install slug: <code>dynadot</code></sub> | Check domain availability, prices, DNS, nameservers, transfers, auctions, and account details. Review purchases and changes before approving them. | Dynadot account | Reads + careful changes |
+| [**Dynadot**](dynadot/README.md)<br><sub>Install slug: <code>dynadot-api-safe-cli</code></sub> | Check domain availability, prices, DNS, nameservers, transfers, auctions, and account details. Review purchases and changes before approving them. | Dynadot account | Reads + careful changes |
 | [**Porkbun**](porkbun/README.md)<br><sub>Install slug: <code>porkbun</code></sub> | Check domains, prices, DNS, SSL, email, marketplace listings, account settings, and webhooks. Review purchases and other changes before approving them. | Porkbun account | Reads + careful changes |
 | [**SAV**](sav/README.md)<br><sub>Install slug: <code>sav</code></sub> | List active domains, check prices and recent sales, and review domain changes before approving them. | SAV account | Reads + careful changes |
 | [**NameBright**](namebright/README.md)<br><sub>Install slug: <code>namebright</code></sub> | Check domains, DNS, and renewal dates. Review purchases, renewals, and account moves before approving them. | NameBright account | Reads + careful changes |

@@ -8,10 +8,10 @@ When you choose a photo, ask for a saved download preview. Review the photo and 
 
 ## Install
 
-Ask your agent to install `unsplash` from `Qwayk/safe-agent-skills`, or run the command below.
+Ask your agent to install `unsplash-api-safe-cli` from `Qwayk/safe-agent-skills`, or run the command below.
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@unsplash -g -y
+npx skills add Qwayk/safe-agent-skills@unsplash-api-safe-cli -g -y
 ```
 
 - [Connect your Unsplash Access Key](docs/onboarding.md)

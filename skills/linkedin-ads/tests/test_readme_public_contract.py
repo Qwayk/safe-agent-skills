@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class TestReadmePublicContract(unittest.TestCase):
     def test_install_command_uses_published_slug(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertIn("npx skills add Qwayk/safe-agent-skills@linkedin-ads -g -y", readme)
+        self.assertIn("npx skills add Qwayk/safe-agent-skills@linkedin-ads-safe-cli -g -y", readme)
 
     def test_public_skill_and_starting_guide_links_resolve(self) -> None:
         for name in ("README.md", "SKILL.md", "docs/quickstart.md"):

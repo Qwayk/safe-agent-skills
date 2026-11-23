@@ -6,10 +6,10 @@ A good first request is “Show me visits and pageviews for the last seven days,
 
 ## Install
 
-Ask your agent to install the `plausible` skill from `Qwayk/safe-agent-skills`, or run:
+Ask your agent to install the `plausible-api-safe-cli` skill from `Qwayk/safe-agent-skills`, or run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@plausible -g -y
+npx skills add Qwayk/safe-agent-skills@plausible-api-safe-cli -g -y
 ```
 
 Use the [quickstart](docs/quickstart.md) to connect a Stats API key and run your first traffic query. Plausible works with the hosted service and with self-hosted instances that expose the required API.

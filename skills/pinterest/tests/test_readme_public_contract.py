@@ -9,7 +9,7 @@ class TestReadmePublicContract(unittest.TestCase):
     def test_install_command_uses_the_catalog_slug(self) -> None:
         skill = Path(__file__).resolve().parents[1]
         readme = (skill / "README.md").read_text(encoding="utf-8")
-        self.assertIn("npx skills add Qwayk/safe-agent-skills@pinterest -g -y", readme.splitlines())
+        self.assertIn("npx skills add Qwayk/safe-agent-skills@pinterest-api-safe-cli -g -y", readme.splitlines())
 
     def test_readme_and_quickstart_links_point_to_existing_files(self) -> None:
         skill = Path(__file__).resolve().parents[1]

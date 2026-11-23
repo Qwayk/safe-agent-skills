@@ -28,10 +28,10 @@ For the account check, you need a TikTok for Business app ID, app secret, and ac
 
 ## Install and first run
 
-Ask your agent to install `tiktok-marketing` from `Qwayk/safe-agent-skills`, or run:
+Ask your agent to install `tiktok-marketing-safe-cli` from `Qwayk/safe-agent-skills`, or run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@tiktok-marketing -g -y
+npx skills add Qwayk/safe-agent-skills@tiktok-marketing-safe-cli -g -y
 ```
 
 Follow the [quickstart](docs/quickstart.md) to install the CLI, connect it, and read a report.

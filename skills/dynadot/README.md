@@ -8,10 +8,10 @@ If you want to register, renew, or move a domain, or change its nameservers, you
 
 ## Install
 
-Ask your agent to install the `dynadot` skill from the Qwayk catalog, or run:
+Ask your agent to install the `dynadot-api-safe-cli` skill from the Qwayk catalog, or run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@dynadot -g -y
+npx skills add Qwayk/safe-agent-skills@dynadot-api-safe-cli -g -y
 ```
 
 Use [Onboarding](docs/onboarding.md) to connect your account. Try [Quickstart](docs/quickstart.md) for domain checks and a nameserver plan.

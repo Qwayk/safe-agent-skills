@@ -6,10 +6,10 @@ A good first request is “Show me my active campaigns and flag anything I shoul
 
 ## Install
 
-Ask your agent to install the `instantly` skill from `Qwayk/safe-agent-skills`, or run:
+Ask your agent to install the `instantly-api-safe-cli` skill from `Qwayk/safe-agent-skills`, or run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@instantly -g -y
+npx skills add Qwayk/safe-agent-skills@instantly-api-safe-cli -g -y
 ```
 
 Follow the [quickstart](docs/quickstart.md) to check the CLI, connect with an Instantly API key and list your campaigns. Use a key with only the access the job needs.

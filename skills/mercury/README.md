@@ -34,16 +34,16 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 
 ## Install and first run
 
-Install slug: `mercury`
+Install slug: `mercury-api-safe-cli`
 
-Ask your agent to install the `mercury` skill from `Qwayk/safe-agent-skills`.
+Ask your agent to install the `mercury-api-safe-cli` skill from `Qwayk/safe-agent-skills`.
 
 If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
 
 If your host does not let the agent install skills directly, run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@mercury -g -y
+npx skills add Qwayk/safe-agent-skills@mercury-api-safe-cli -g -y
 ```
 
 Then try a safe first ask like:

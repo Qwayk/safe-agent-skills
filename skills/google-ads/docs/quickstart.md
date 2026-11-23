@@ -17,11 +17,12 @@ A good first ask is:
 
 ## 1. Install or open the tool
 
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+If `google-ads-api-tool` already runs, go to step 2. Otherwise, open the Google Ads tool folder and use Python 3.11 or newer. Run the following commands, then keep using the same terminal for the rest of this guide.
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e '.[dev]'
+. .venv/bin/activate
+python -m pip install .
 ```
 
 ## 2. Check setup
@@ -60,9 +61,11 @@ google-ads-api-tool snapshot export --preset optimization_pack_v1 --customer-id 
 
 The export command above previews the plan. Add `--apply --yes` to fetch account data and write the local pack; this does not change Google Ads. Then ask the agent to summarize the report and name anything missing, empty, or blocked.
 
-## 4. Stop before anything risky
+## 4. Before changing the account
 
-Ask for a reviewed plan before budget, bid, campaign, audience, keyword, asset, upload, or account setting changes.
+Run a preview and save it with `--plan-out PATH.json`. For a budget change, read the budget and currency in the confirmed account. Show the user the customer ID, the campaign or shared budget, and the current and proposed amounts in that currency. Ask them to approve that exact change and its effect on spending.
+
+The [safety guide](safety_model.md) explains when the tool needs the matching saved plan and extra approval, and how to check what Google changed. See the [command reference](command_reference.md) for the exact options.
 
 ## What a useful first result includes
 

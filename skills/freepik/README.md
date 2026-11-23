@@ -1,11 +1,11 @@
 # Freepik
 
-Find stock photos, review previews, and download the exact assets you approve. The tool keeps a CSV with the license link and a record of each file it saves. Freepik is now called Magnific. The skill still installs as `freepik`, and the command is still `freepik-api-tool`.
+Find stock photos, review previews, and download the exact assets you approve. The tool keeps a CSV with the license link and a record of each file it saves. Freepik is now called Magnific. The skill still installs as `freepik-api-safe-cli`, and the command is still `freepik-api-tool`.
 
-Ask your agent to install `freepik` from `Qwayk/safe-agent-skills`, or run the command below.
+Ask your agent to install `freepik-api-safe-cli` from `Qwayk/safe-agent-skills`, or run the command below.
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@freepik -g -y
+npx skills add Qwayk/safe-agent-skills@freepik-api-safe-cli -g -y
 ```
 
 Then [connect your account](docs/onboarding.md) and try this request.

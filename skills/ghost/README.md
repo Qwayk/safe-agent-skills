@@ -38,16 +38,16 @@ If you already want exact commands, jump straight to [Quickstart](docs/quickstar
 
 ## Install and first run
 
-Install slug: `ghost`
+Install slug: `ghost-api-safe-cli`
 
-Ask your agent to install the `ghost` skill from `Qwayk/safe-agent-skills`.
+Ask your agent to install the `ghost-api-safe-cli` skill from `Qwayk/safe-agent-skills`.
 
 If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
 
 If your host does not let the agent install skills directly, run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@ghost -g -y
+npx skills add Qwayk/safe-agent-skills@ghost-api-safe-cli -g -y
 ```
 
 Then try a safe first ask like:

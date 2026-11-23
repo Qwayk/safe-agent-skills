@@ -14,7 +14,7 @@ class TestReadmePublicContract(unittest.TestCase):
 
     def test_install_command_uses_the_public_slug(self) -> None:
         readme = (self.root / "README.md").read_text(encoding="utf-8")
-        self.assertIn("npx skills add Qwayk/safe-agent-skills@contentsquare", readme)
+        self.assertIn("npx skills add Qwayk/safe-agent-skills@contentsquare-safe-cli -g -y", readme.splitlines())
         self.assertTrue((self.root / "SKILL.md").is_file())
 
     def test_quickstart_commands_are_available(self) -> None:

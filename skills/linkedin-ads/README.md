@@ -28,10 +28,10 @@ Use an access token from your approved LinkedIn app. Your LinkedIn member accoun
 
 ## Install and first run
 
-Ask your agent to install `linkedin-ads` from `Qwayk/safe-agent-skills`, or run:
+Ask your agent to install `linkedin-ads-safe-cli` from `Qwayk/safe-agent-skills`, or run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@linkedin-ads -g -y
+npx skills add Qwayk/safe-agent-skills@linkedin-ads-safe-cli -g -y
 ```
 
 Once installed, ask your agent to set up the CLI and check which ad accounts you can access. Keep the token on your computer. The [first report guide](docs/quickstart.md) shows how to install the CLI and run the commands yourself.

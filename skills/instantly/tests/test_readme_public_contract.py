@@ -14,7 +14,7 @@ class TestReadmePublicContract(unittest.TestCase):
     def test_install_command_uses_public_slug(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         install_commands = re.findall(r"^npx skills add (\S+)", readme, re.MULTILINE)
-        self.assertEqual(install_commands, ["Qwayk/safe-agent-skills@instantly"])
+        self.assertEqual(install_commands, ["Qwayk/safe-agent-skills@instantly-api-safe-cli"])
 
     def test_readme_guide_links_open(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")

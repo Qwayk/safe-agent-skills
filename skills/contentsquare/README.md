@@ -12,10 +12,10 @@ You’ll need a Contentsquare account with server-to-server OAuth credentials fo
 
 ## Install
 
-Install name: `contentsquare`
+Install name: `contentsquare-safe-cli`
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@contentsquare -g -y
+npx skills add Qwayk/safe-agent-skills@contentsquare-safe-cli -g -y
 ```
 
 For a local copy of the source, use Python 3.12 or newer and run these commands from the Contentsquare folder:

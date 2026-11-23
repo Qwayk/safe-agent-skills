@@ -5,7 +5,7 @@ Check what your Meta ads spent, which campaigns changed, and which ads are worth
 ## Install and try it
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@meta-ads -g -y
+npx skills add Qwayk/safe-agent-skills@meta-ads-api-safe-cli -g -y
 ```
 
 > Show me which Meta ad accounts I can read. Then check one week of spend, impressions, and clicks by campaign for the account I choose.
