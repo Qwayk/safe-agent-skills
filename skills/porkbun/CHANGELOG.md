@@ -7,11 +7,19 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ## [Unreleased]
 
+### November 23, 2026
+- Saved plans now require the same Porkbun key pair at apply time. Create a new plan if you have one from before this change.
+- Before editing or deleting DNS records, the tool checks that the reviewed records still match. After applying, it checks that Porkbun returned the expected result.
+- Domain registration, renewal and transfer stop when a fresh preview cannot confirm the purchase, even if the price matches.
+- DNS edits by record ID now accept just the fields you want to change. Onboarding shows which env file to fill in and how to check that connection.
+- Combined the setup, command and approval guides so each step is explained in one place.
+
+## Earlier unreleased work
 ### Added
 - Complete Porkbun API v3.9 boundary: 53 paths, 66 explicit commands, and 10 families.
 - Deterministic inventory and coverage generation from the pinned official specification.
 - Review-first runtime for 27 writes, including saved plans, acknowledgements, readback, and receipts.
-- Porkbun-specific public docs, tracked `skills/porkbun/SKILL.md`, and redacted examples.
+- Porkbun-specific public docs, the tracked Porkbun skill, and redacted examples.
 
 ### Changed
 - Restricted production requests to Porkbun's two official v3 hosts.

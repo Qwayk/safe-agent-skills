@@ -1,6 +1,6 @@
 # Command reference
 
-The shipped CLI maps Porkbun’s 53 documented API paths to 66 fixed provider commands: 39 reads and 27 writes. It does not accept arbitrary methods, paths, URLs, or raw requests.
+The tool ships 66 named commands from the pinned Porkbun API spec. See the [coverage table](api_coverage.md) for paths and the [approval guide](safety_model.md) for writes.
 
 ## Global options
 
@@ -13,22 +13,7 @@ porkbun [--env-file <path>] [--output {json,text}] [--verbose] [--debug]
       [--ack-secret] [--ack-send] [--ack-no-snapshot]
 ```
 
-- Use `--output json` for structured output.
-- `--plan-out`, `--plan-in`, `--receipt-out`, and `--secret-out` are used for review, apply, and audit flow.
-- `--apply` is passed on a command, not globally.
-- `--yes` is required for apply and stronger apply gates.
-
-Write-capable commands always need an explicit review path first.
-
-## Local files and request safety
-
-- A saved plan is authenticated with HMAC-SHA256 using the local owner-only `.state/plan-signing.key`. Plan and apply must share that same local key and `.state`; apply refuses a changed plan, a missing key, or a different key.
-- The first process to initialize the signing key wins without overwriting an existing key. Concurrent first-plan commands then read and use that same validated 32-byte `0600` key.
-- Plans, receipts, secret results, and onboarding `.env` files are written atomically with `0600` permissions. Tool-created `.state`, `.state/plans`, and `.state/receipts` directories use `0700`. The signing key uses `0600`.
-- Active plan, receipt, and secret output paths must be distinct from one another and from `--env-file`, `--input`, and `--plan-in`. This applies to default and explicit paths, including relative/absolute, `..`, symbolic-link, and existing-file aliases. A collision stops before a provider request or file replacement.
-- A secret-bearing command requires `--ack-secret` and `--secret-out`. The CLI checks and reserves the destination before any provider call. An unsafe, invalid, or unwritable destination means no request is sent.
-- Redirect following is disabled. Every HTTP `3xx` response fails and cannot produce a successful write receipt.
-- `PORKBUN_API_HOST=default` selects `https://api.porkbun.com/api/json/v3`; `PORKBUN_API_HOST=ipv4` selects `https://api-ipv4.porkbun.com/api/json/v3`. No other production host is accepted.
+Use `--output json` to get one JSON object. Give `--input` the path to a JSON object file. For a write, run the command with `--plan-out` first. After approval, use `--plan-in`, `--yes` and the requested approval flags. Put `--apply` after the operation name.
 
 ## Account and onboarding
 
@@ -97,6 +82,8 @@ Write-capable commands always need an explicit review path first.
 - `porkbun dns dns-retrieve-by-id --domain DOMAIN --id ID [--input INPUT]`
 - `porkbun dns dns-retrieve-by-name-type --domain DOMAIN [--subdomain SUBDOMAIN] --type TYPE [--input INPUT]`
 
+`dns dns-edit` can change only the fields you supply. Use the record ID and include at least one DNS field in the input, such as `{"ttl": 900}`. To move a record to the root of the domain, pass `"name": ""`. `dns dns-edit-by-name-type` affects all matches for that name and type and still requires `content`.
+
 ## SSL
 
 - `porkbun ssl get-ssl-retrieve --domain DOMAIN`
@@ -124,7 +111,7 @@ For `get-account-invite-status`, `INPUT` must be a JSON file containing the toke
 {"token":"INVITE_TOKEN"}
 ```
 
-The token is file-only. Never pass it with `--token`; the CLI rejects that form before any provider call.
+Pass the private file with `--input`. The CLI rejects `--token` before calling Porkbun.
 
 ## Webhooks
 
@@ -140,15 +127,10 @@ The token is file-only. Never pass it with `--token`; the CLI rejects that form 
 - `porkbun webhooks webhook-test [--input INPUT] [--apply]`
 - `porkbun webhooks webhook-update [--input INPUT] [--apply]`
 
-## Read/write split
+## Where to make source changes
 
-- The fixed 66-command surface contains 39 read commands and 27 write commands across 53 provider paths.
-- The 27 writes are all in this explicit list:
-  - `api-key apikey-request`, `api-key apikey-retrieve`
-  - `domain domain-add-url-forward`, `domain domain-create`, `domain domain-create-glue`, `domain domain-delete-glue`, `domain domain-delete-url-forward`, `domain domain-renew`, `domain transfer-domain`, `domain domain-update-auto-renew`, `domain domain-update-glue`, `domain domain-update-ns`
-  - `dns dns-create`, `dns dns-create-dnssec-record`, `dns dns-delete`, `dns dns-delete-by-name-type`, `dns dns-delete-dnssec-record`, `dns dns-edit`, `dns dns-edit-by-name-type`
-  - `email-hosting email-set-password`
-  - `account create-account-invite`
-  - `webhooks webhook-create`, `webhooks webhook-delete`, `webhooks webhook-resend`, `webhooks webhook-rotate-secret`, `webhooks webhook-test`, `webhooks webhook-update`
+- `src/qwayk_porkbun_safe_agent_cli/cli.py` handles commands, plans, requests and receipts. `config.py`, `http.py`, `privacy.py` and `secure_files.py` handle settings, transport, redaction and private files.
+- `scripts/generate_inventory.py` and `scripts/porkbun_inventory_policy.json` generate the command map and coverage.
+- `tests/test_cli.py` and `tests/test_http.py` check runtime behavior. `tests/test_api_inventory.py` checks command coverage and packaged data.
 
-Repository verification did not use a live Porkbun account and made no live provider calls. These checks prove the local command, validation, privacy, file-safety, redirect, and refusal behavior; they do not prove live-account responses.
+To change a named command, check its source in the pinned spec and update the relevant policy, runtime and tests. For writes, check the plan, approval flags, before-state handling and receipt with the same command a user would run. See [offline checks](proof.md).

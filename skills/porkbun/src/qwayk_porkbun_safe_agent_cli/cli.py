@@ -6,6 +6,7 @@ import hmac
 import json
 import re
 import secrets
+import shlex
 import stat
 from collections.abc import Callable
 from copy import deepcopy
@@ -38,6 +39,8 @@ SPEC_RESOURCE = "resources/porkbun-openapi-v3.9.json"
 PLAN_SIGNING_KEY_PATH = Path(".state/plan-signing.key")
 PLAN_SIGNING_KEY_BYTES = 32
 PLAN_SIGNATURE_PREFIX = "hmac-sha256:"
+DNS_RECORD_CHANGES = {"dnsEdit", "dnsEditByNameType", "dnsDelete", "dnsDeleteByNameType"}
+DNS_RECORD_FIELDS = ("id", "name", "type", "content", "ttl", "prio", "notes")
 
 
 class _ToolArgumentParser(argparse.ArgumentParser):
@@ -174,7 +177,7 @@ def _sign_plan(plan: dict[str, Any], key: bytes) -> None:
     plan["plan_signature"] = PLAN_SIGNATURE_PREFIX + signature
 
 
-def _verify_plan_signature(plan: dict[str, Any]) -> None:
+def _verify_plan_signature(plan: dict[str, Any]) -> bytes:
     signature = plan.get("plan_signature")
     if not isinstance(signature, str) or not re.fullmatch(
         rf"{re.escape(PLAN_SIGNATURE_PREFIX)}[0-9a-f]{{64}}",
@@ -195,6 +198,12 @@ def _verify_plan_signature(plan: dict[str, Any]) -> None:
         raise SafetyError("Plan hash is missing or invalid")
     if not hmac.compare_digest(plan_hash, _sha256_text(_canonical_plan(plan, for_hash=True))):
         raise SafetyError("Plan hash is invalid")
+    return key
+
+
+def _credential_binding(cfg: Config, key: bytes) -> str:
+    pair = json.dumps([cfg.api_key, cfg.secret_api_key]).encode("utf-8")
+    return hmac.new(key, b"porkbun-plan-credentials\0" + pair, hashlib.sha256).hexdigest()
 
 
 def _load_resource_json(relative_path: str) -> dict[str, Any]:
@@ -308,6 +317,13 @@ def _resolve_request_schema(operation: OperationMeta) -> dict[str, Any] | None:
         properties = schema_copy.setdefault("properties", {})
         if isinstance(properties, dict):
             properties.setdefault("dryRun", {"type": "boolean"})
+
+    # Porkbun v3.109 documents partial updates by record ID. Keep the pinned
+    # v3.9 snapshot intact for the rest of the tool.
+    if operation.operation_id == "dnsEdit" and isinstance(schema_copy.get("required"), list):
+        schema_copy["required"] = [
+            field for field in schema_copy["required"] if field not in {"type", "content"}
+        ]
 
     if operation.operation_id == "domainCreate":
         req = schema_copy.get("required")
@@ -485,6 +501,10 @@ def _validate_body(operation: OperationMeta, payload: dict[str, Any]) -> dict[st
     if operation.operation_id == "domainCreate" and str(payload.get("agreeToTerms")) not in {"yes", "1"}:
         raise ValidationError("domainCreate requires agreeToTerms set to 'yes' or '1'")
 
+    if operation.operation_id == "dnsEdit" and not any(
+        field in payload for field in DNS_RECORD_FIELDS if field != "id"
+    ):
+        raise ValidationError("Supply at least one DNS record field to change, such as ttl.")
     if "apikey" in payload or "secretapikey" in payload:
         raise ValidationError("apikey and secretapikey cannot be sent in --input")
 
@@ -806,6 +826,100 @@ def _execute_api_call(
     return data, meta
 
 
+def _dns_records(result: Any) -> list[dict[str, str | None]] | None:
+    if not isinstance(result, dict) or result.get("status") != "SUCCESS":
+        return None
+    records = result.get("records")
+    if not isinstance(records, list):
+        return None
+    normalized: list[dict[str, str | None]] = []
+    seen_ids: set[str] = set()
+    for record in records:
+        if not isinstance(record, dict) or any(
+            not isinstance(record.get(field), str) for field in ("name", "type", "content")
+        ):
+            return None
+        record_id = str(record.get("id"))
+        if not record_id.isdecimal() or record_id in seen_ids or not record["type"]:
+            return None
+        seen_ids.add(record_id)
+        normalized.append({
+            field: str(record[field]) if record.get(field) is not None else None
+            for field in DNS_RECORD_FIELDS
+        })
+    return normalized
+
+
+def _dns_name(name: str, domain: str) -> str:
+    name = name.lower().rstrip(".")
+    domain = domain.lower().rstrip(".")
+    if name in {"", "@"}:
+        return domain
+    return name if name == domain or name.endswith("." + domain) else f"{name}.{domain}"
+
+
+def _dns_record_matches(
+    operation: OperationMeta,
+    path_params: dict[str, Any],
+    record: dict[str, str | None],
+) -> bool:
+    if operation.operation_id in {"dnsEdit", "dnsDelete"}:
+        return record["id"] == str(path_params["id"])
+    domain = str(path_params["domain"])
+    name = _dns_name(str(path_params.get("subdomain") or ""), domain)
+    return _dns_name(str(record["name"]), domain) == name and record["type"] == path_params["type"]
+
+
+def _dns_snapshot(
+    operation: OperationMeta, path_params: dict[str, Any], result: Any
+) -> list[dict[str, str | None]]:
+    records = _dns_records(result)
+    matching = [
+        record for record in (records or []) if _dns_record_matches(operation, path_params, record)
+    ]
+    if not matching:
+        raise SafetyError("Porkbun did not return the DNS records to review. Save a new plan after checking the records.")
+    return matching
+
+
+def _dns_snapshot_digest(records: list[dict[str, str | None]]) -> str:
+    return _sha256_text(
+        json.dumps(sorted(json.dumps(record, sort_keys=True) for record in records))
+    )
+
+
+def _verify_dns_result(
+    operation: OperationMeta,
+    path_params: dict[str, Any],
+    payload: dict[str, Any],
+    before: list[dict[str, str | None]],
+    result: Any,
+) -> bool:
+    records = _dns_records(result)
+    if records is None:
+        return False
+    matching = [record for record in records if _dns_record_matches(operation, path_params, record)]
+    if operation.operation_id in {"dnsDelete", "dnsDeleteByNameType"}:
+        return not matching
+
+    domain = str(path_params["domain"])
+    changes: dict[str, str | None] = {
+        field: str(payload[field])
+        for field in DNS_RECORD_FIELDS if field in payload and field != "id"
+    }
+    if changes.get("name") is not None:
+        changes["name"] = _dns_name(str(changes["name"]), domain)
+
+    def comparable(record: dict[str, str | None]) -> str:
+        values = {**record, "name": _dns_name(str(record["name"]), domain)}
+        if operation.operation_id == "dnsEditByNameType":
+            values.pop("id")
+        return json.dumps(values, sort_keys=True)
+
+    expected = sorted(comparable(record | changes) for record in before)
+    return expected == sorted(comparable(record) for record in matching)
+
+
 def _create_plan(
     *,
     operation: OperationMeta,
@@ -859,6 +973,10 @@ def _create_plan(
         elif bool(operation.snapshot_plan.get("requires_no_snapshot_ack")):
             snapshot["no_snapshot_warning"] = "No documented before-state for this operation"
 
+        if operation.operation_id in DNS_RECORD_CHANGES:
+            dns_before = _dns_snapshot(operation, path_params, snapshot_result)
+            snapshot["dns_records_sha256"] = _dns_snapshot_digest(dns_before)
+
         dry_run_result = None
         dry_run_signature = None
         if operation.native_dry_run:
@@ -876,6 +994,7 @@ def _create_plan(
         plan_obj: dict[str, Any] = {
             "schema_version": 2,
             "plan_id": plan_id,
+            "credential_binding": _credential_binding(cfg, signing_key),
             "operation_id": operation.operation_id,
             "command": operation.command,
             "target": target,
@@ -936,8 +1055,14 @@ def _compare_plan(
     query_params: dict[str, Any],
     payload: dict[str, Any],
     args: argparse.Namespace,
+    cfg: Config,
 ) -> None:
-    _verify_plan_signature(plan)
+    signing_key = _verify_plan_signature(plan)
+    binding = plan.get("credential_binding")
+    if not isinstance(binding, str):
+        raise SafetyError("This saved plan predates the account check. Save and review a new plan.")
+    if not hmac.compare_digest(binding, _credential_binding(cfg, signing_key)):
+        raise SafetyError("The Porkbun keys changed. Save and review a new plan with the intended account.")
     if plan.get("operation_id") != operation.operation_id:
         raise SafetyError("Plan operation_id does not match this command")
     if plan.get("command") != operation.command:
@@ -1000,6 +1125,7 @@ def _apply_from_plan(
         query_params,
         payload,
         args,
+        cfg,
     )
     if operation.secret_bearing_result and not args.secret_out:
         raise SafetyError("Secret-bearing results require --secret-out")
@@ -1035,6 +1161,7 @@ def _apply_from_plan(
     sensitive_values = _request_sensitive_values(cfg, path_params, query_params, payload)
     secret_reservation: AtomicFileReservation | None = None
     receipt_reservation: AtomicFileReservation | None = None
+    dns_before: list[dict[str, str | None]] | None = None
     try:
         receipt_destination = _receipt_path(args, plan)
         _validate_output_file_roles(
@@ -1065,6 +1192,32 @@ def _apply_from_plan(
                 raise SafetyError("Fresh billable cost signature is missing or invalid")
             if not hmac.compare_digest(str(planned_cost_signature), fresh_signature):
                 raise SafetyError("Billable write drift detected: cost signature changed")
+            if (
+                not isinstance(dry_run_result, dict)
+                or dry_run_result.get("dryRun") is not True
+                or dry_run_result.get("wouldSucceed") is not True
+            ):
+                raise SafetyError("Porkbun's fresh preview did not confirm the purchase can succeed.")
+
+        if operation.operation_id in DNS_RECORD_CHANGES:
+            before_op = _OPERATION_MAP[str(operation.snapshot_plan["before_state_operation_id"])]
+            before_path, before_query = _derive_operation_args(
+                operation=before_op,
+                parsed_path=path_params,
+                parsed_query=query_params,
+                payload=payload,
+            )
+            records, _ = _execute_api_call(
+                operation=before_op,
+                cfg=cfg,
+                path_params=before_path,
+                query_params=before_query,
+                payload={},
+                transport=transport,
+            )
+            dns_before = _dns_snapshot(operation, path_params, records)
+            if _dns_snapshot_digest(dns_before) != plan["snapshot"].get("dns_records_sha256"):
+                raise SafetyError("The DNS records changed since the plan was saved. Save and review a new plan.")
 
         response, meta = _execute_api_call(
             operation=operation,
@@ -1106,11 +1259,21 @@ def _apply_from_plan(
                         payload={},
                         transport=transport,
                     )
+                    verified = (
+                        dns_before is not None
+                        and _verify_dns_result(operation, path_params, payload, dns_before, rb_payload)
+                    )
+                    if dns_before is None:
+                        verification_note = "Porkbun returned the current state for review."
+                    elif verified:
+                        verification_note = "Porkbun returned the DNS records expected after the change."
+                    else:
+                        verification_note = "Porkbun's readback did not confirm the intended DNS records."
                     verification = {
                         "performed": True,
-                        "confirmed": False,
+                        "confirmed": verified,
                         "details": sanitize(rb_payload, sensitive_values),
-                        "note": "Readback was captured but not semantically compared; review it before claiming the intended state.",
+                        "note": verification_note,
                     }
                 except ToolError as exc:  # noqa: BLE001
                     verification = {
@@ -1295,8 +1458,8 @@ def _cmd_onboarding(args: argparse.Namespace, cfg: Config | None, out: Output, t
                 "env_file": str(env_file),
                 "env_created": created,
                 "next_steps": [
-                    "Fill PORKBUN_API_KEY and PORKBUN_SECRET_API_KEY in .env",
-                    "Run: porkbun auth check",
+                    f"Fill PORKBUN_API_KEY and PORKBUN_SECRET_API_KEY in {env_file}.",
+                    "Run " + shlex.join(["porkbun", "--env-file", str(env_file), "auth", "check"]),
                 ],
             },
         }

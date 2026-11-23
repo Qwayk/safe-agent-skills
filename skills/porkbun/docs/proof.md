@@ -1,56 +1,41 @@
-# Proof and verification
+# What we tested
 
-Proof is split into two parts: what is proven from code and what is intentionally not live-checked.
+The offline checks use sample Porkbun replies. They check what the CLI sends, what it refuses and what it records. Live account permissions, real charges and real DNS changes need separate verification.
 
-- Provider boundary: official v3.9, pinned SHA-256 `f4788709c27e0365e8a502180e0427bbcf7bd7558f3d7032bf34cf0a25dedd77`
-- Coverage: `docs/api_coverage.md`
-- Command surface: `docs/command_reference.md`
-- Wrapper: `skills/porkbun/SKILL.md`
+## November 23, 2026 local checks
 
-## What this tool can prove in this repository
+Fresh installs from the source and local catalog copy each loaded all 66 commands and passed 56 tests with the network blocked. Both passed the lint, type and skill checks. Regenerating the inventory produced the same files and checksum.
 
-- deterministic command inventory and coverage file generation
-- command parsing and argument shape
-- safety path for explicit write commands
-- authenticated plan integrity, metadata-based acknowledgement gates, and strict billable cost drift checks
-- private atomic local files, role-aware path-collision refusal, concurrency-safe signing-key initialization, and provider-call preflight for secret destinations
-- redirect refusal and output/error secret scrubbing
-- package and type checks for source
-- no placeholder template names in public/docs flow
+The tests checked that a saved plan stops if either key changes or if the plan is too old to carry the account check. For DNS, they checked that the tool stops before a write if the records changed or cannot be confirmed, and that the receipt only confirms the expected result. They also checked a cache-time-only edit, a failed purchase preview with the same price, and onboarding with a chosen file that has spaces in its path.
 
-## What it does not prove
+## July 31, 2026
 
-- No live Porkbun account behavior is authorized in this build track.
-- No real registration, DNS change, payment, or password update was performed.
-- No credential or secret was ever used.
-- Mocked transports prove local behavior only. They do not prove Porkbun account permissions, provider response details, or live write/readback behavior.
+The source checks covered version `0.1.0` and the pinned v3.9 spec, with 53 paths and 66 commands. See the [spec and checksum](references.md).
 
-## Last verified
+- Replaced the starter docs and examples with Porkbun setup, commands and approval rules.
+- Checked that edited or unsigned plans stop, including changes to expiry, before-state and idempotency fields. Checked that acknowledgement requirements come from the current command and that missing or changed cost stops a billable write.
+- Checked file permissions, atomic replacement and private destinations. Tested collisions between outputs and inputs through relative paths, `..`, links and existing files. Concurrent first plans shared one signing key.
+- Checked both allowed provider URLs, redirect refusal, and redaction of keys and sensitive values in results and errors. Kept invite tokens in JSON input files.
+- Checked source packaging, types and repeatable inventory generation. No live Porkbun account or real keys were used.
 
-- Date (UTC): `2026-07-31`
-- Scope: source tool package
-- Tool version: `0.1.0`
-- Provider API version: `3.9`
-- Verified base URL(s): `https://api.porkbun.com/api/json/v3`, `https://api-ipv4.porkbun.com/api/json/v3`
+## Run the source checks
 
-## Suggested checks
+In a clean environment with the project installed, run:
 
-Run inside the source folder with a clean `.venv`:
+```bash
+python -m unittest discover -s tests -q
+ruff check .
+mypy src
+python scripts/generate_inventory.py
+```
 
-1. `python3 -m venv .venv`
-2. `.venv/bin/python -m pip install -e '.[dev]'`
-3. `.venv/bin/python -m unittest -q`
-4. `.venv/bin/ruff check .`
-5. `.venv/bin/mypy src`
-6. `.venv/bin/python scripts/generate_inventory.py` (or compare with committed files)
+Check that generating the inventory leaves the tracked files unchanged when the command list stays the same.
 
-The safety tests include recomputed-hash plan forgery, dynamic snapshot and expiry/idempotency tampering, invalid signing keys and signatures, absent or changed billable cost, unsafe secret destinations with zero provider calls, output/control path aliases with zero provider calls or replacement, concurrent first-use signing-key creation, private modes under a permissive umask, atomic replacement, redirect refusal, and secret sentinels across JSON and text error paths.
+## Sample output
 
-## Example proof artifacts
+The redacted examples show the earlier output format. Create a fresh plan with the installed tool.
 
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check.json`
-- `docs/examples/plan.example.json`
-- `docs/examples/receipt.example.json`
-
-These are redacted examples to show output shape only.
+- [Version](examples/outputs/version.json)
+- [Connection check](examples/outputs/auth_check.json)
+- [Plan](examples/plan.example.json)
+- [Receipt](examples/receipt.example.json)

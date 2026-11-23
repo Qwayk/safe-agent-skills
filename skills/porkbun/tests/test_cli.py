@@ -413,68 +413,159 @@ class TestPorkbunRuntime(TestCase):
             self.assertEqual(payload["reasons"], ["Plan input hash does not match this command input"])
 
     def test_billable_apply_reruns_dry_run(self) -> None:
-        with TemporaryDirectory() as td:
-            env = Path(_env_file(Path(td) / ".env"))
-            body = Path(td) / "payload.json"
-            body.write_text('{"cost": 1000}', encoding="utf-8")
-            plan = Path(td) / "plan.json"
-
-            transport = FakeTransport(
-                [
-                    _json_response({"status": "SUCCESS", "domain": "example.com"}),
-                    _json_response({"status": "SUCCESS", "cost": 10}),
-                    _json_response({"status": "SUCCESS", "cost": 10}),
-                ]
-            )
-            code, _ = _run_cli(
-                [
-                    "--env-file",
-                    str(env),
-                    "domain",
-                    "domain-renew",
-                    "--domain",
-                    "example.com",
-                    "--input",
-                    str(body),
-                    "--plan-out",
-                    str(plan),
-                ],
-                transport=transport,
-            )
+        with TemporaryDirectory() as td, _working_directory(Path(td)):
+            env = _env_file(Path(".env"))
+            Path("payload.json").write_text('{"cost": 1000}', encoding="utf-8")
+            command = [
+                "--env-file", env, "domain", "domain-renew",
+                "--domain", "example.com", "--input", "payload.json",
+            ]
+            success = {"status": "SUCCESS", "cost": 1000, "dryRun": True, "wouldSucceed": True}
+            domain = _json_response({"status": "SUCCESS", "domain": "example.com"})
+            plan_transport = FakeTransport([domain, _json_response(success)])
+            code, result = _run_cli(command + ["--plan-out", "plan.json"], plan_transport)
             self.assertEqual(code, 0)
+            self.assertIn("plan", result)
+            self.assertEqual(plan_transport.calls[1]["json_body"]["dryRun"], True)
 
-            apply_transport = FakeTransport(
-                [
-                    _json_response({"status": "SUCCESS", "cost": 10}),
-                    _json_response({"status": "SUCCESS", "cost": 10}),
-                    _json_response({"status": "SUCCESS", "domain": "example.com"}),
-                ]
-            )
-            code, payload = _run_cli(
-                [
-                    "--env-file",
-                    str(env),
-                    "domain",
-                    "domain-renew",
-                    "--domain",
-                    "example.com",
-                    "--input",
-                    str(body),
-                    "--plan-in",
-                    str(plan),
-                    "--apply",
-                    "--ack-spend",
-                    "--yes",
-                ],
-                transport=apply_transport,
-            )
+            apply = command + ["--plan-in", "plan.json", "--apply", "--ack-spend", "--yes"]
+            for result_fields in ({"wouldSucceed": False}, {"wouldSucceed": "true"}, {}):
+                with self.subTest(result_fields=result_fields):
+                    preview = {"status": "SUCCESS", "cost": 1000, "dryRun": True, **result_fields}
+                    transport = FakeTransport([_json_response(preview)])
+                    code, result = _run_cli(apply, transport)
+                    self.assertEqual(code, 0)
+                    self.assertTrue(result["refused"])
+                    self.assertIn("preview did not confirm", result["reasons"][0])
+                    self.assertEqual(len(transport.calls), 1)
+                    self.assertIs(transport.calls[0]["json_body"]["dryRun"], True)
+
+            transport = FakeTransport([_json_response(success), _json_response({"status": "SUCCESS"}), domain])
+            code, result = _run_cli(apply, transport)
             self.assertEqual(code, 0)
-            self.assertEqual(payload["ok"], True)
-            self.assertTrue(apply_transport.calls[0]["json_body"].get("dryRun"))
+            self.assertTrue(result["receipt"]["changed"])
+            self.assertEqual(len(transport.calls), 3)
+            self.assertIs(transport.calls[0]["json_body"]["dryRun"], True)
+            self.assertEqual(transport.calls[1]["json_body"], {"cost": 1000})
 
-            # plan should not be considered tampered when target/input unchanged
-            plan_data = json.loads(plan.read_text(encoding="utf-8"))
-            self.assertEqual(plan_data["plan_hash"], plan_data["plan_hash"])
+    def test_saved_plan_requires_the_same_porkbun_keys(self) -> None:
+        with TemporaryDirectory() as td, _working_directory(Path(td)):
+            env = _env_file(Path(".env"), api_key="FIRST-KEY", secret="FIRST-SECRET")
+            Path("payload.json").write_text('{"url":"https://example.com/callback"}', encoding="utf-8")
+            command = ["--env-file", env, "webhooks", "webhook-create", "--input", "payload.json"]
+            code, result = _run_cli(command + ["--plan-out", "plan.json"], FakeTransport())
+            self.assertEqual(code, 0)
+            self.assertIn("plan", result)
+            plan_text = Path("plan.json").read_text(encoding="utf-8")
+            self.assertNotIn("FIRST-KEY", plan_text)
+            self.assertNotIn("FIRST-SECRET", plan_text)
+
+            args = command + ["--plan-in", "plan.json", "--apply", "--yes"]
+            for key, secret in (("SECOND-KEY", "FIRST-SECRET"), ("FIRST-KEY", "SECOND-SECRET")):
+                with self.subTest(key=key, secret=secret):
+                    _env_file(Path(env), api_key=key, secret=secret)
+                    transport = FakeTransport()
+                    code, result = _run_cli(args, transport)
+                    self.assertEqual(code, 0)
+                    self.assertTrue(result["refused"])
+                    self.assertIn("Porkbun keys changed", result["reasons"][0])
+                    self.assertEqual(transport.calls, [])
+
+            _env_file(Path(env), api_key="FIRST-KEY", secret="FIRST-SECRET")
+            old_plan = json.loads(plan_text)
+            old_plan.pop("credential_binding")
+            cli._sign_plan(old_plan, cli._load_plan_signing_key(create=False))
+            Path("plan.json").write_text(json.dumps(old_plan), encoding="utf-8")
+            transport = FakeTransport()
+            code, result = _run_cli(args, transport)
+            self.assertEqual(code, 0)
+            self.assertTrue(result["refused"])
+            self.assertIn("predates the account check", result["reasons"][0])
+            self.assertEqual(transport.calls, [])
+
+    def test_dns_edit_by_id_rechecks_record_and_confirms_ttl_only(self) -> None:
+        with TemporaryDirectory() as td, _working_directory(Path(td)):
+            env = _env_file(Path(".env"))
+            Path("payload.json").write_text('{"ttl": 900}', encoding="utf-8")
+            command = [
+                "--env-file", env, "dns", "dns-edit",
+                "--domain", "example.com", "--id", "42", "--input", "payload.json",
+            ]
+            record = {"id": "42", "name": "www.example.com", "type": "A", "content": "192.0.2.1", "ttl": "600"}
+            status = _json_response({"status": "SUCCESS", "dryRun": True, "wouldSucceed": True})
+            before = _json_response({"status": "SUCCESS", "records": [record]})
+            transport = FakeTransport([before, status])
+            code, result = _run_cli(command + ["--plan-out", "plan.json"], transport)
+            self.assertEqual(code, 0)
+            self.assertIn("plan", result)
+            self.assertEqual(transport.calls[1]["json_body"], {"ttl": 900, "dryRun": True})
+
+            apply = command + ["--plan-in", "plan.json", "--apply", "--yes", "--ack-no-snapshot"]
+            for records in ([record | {"content": "192.0.2.2"}], [], [{"id": "42"}]):
+                with self.subTest(records=records):
+                    transport = FakeTransport([_json_response({"status": "SUCCESS", "records": records})])
+                    code, result = _run_cli(apply, transport)
+                    self.assertEqual(code, 0)
+                    self.assertTrue(result["refused"])
+                    self.assertEqual(len(transport.calls), 1)
+                    self.assertIn("/retrieve/", transport.calls[0]["url"])
+
+            for content, confirmed in (("192.0.2.1", True), ("192.0.2.2", False)):
+                with self.subTest(content=content):
+                    after = _json_response({
+                        "status": "SUCCESS", "records": [record | {"ttl": "900", "content": content}],
+                    })
+                    transport = FakeTransport([before, _json_response({"status": "SUCCESS"}), after])
+                    code, result = _run_cli(apply, transport)
+                    self.assertEqual(code, 0)
+                    self.assertIs(result["receipt"]["verification"]["confirmed"], confirmed)
+                    self.assertEqual([call["method"] for call in transport.calls], ["GET", "POST", "GET"])
+                    self.assertEqual(transport.calls[1]["json_body"], {"ttl": 900})
+
+            Path("payload.json").write_text("{}", encoding="utf-8")
+            transport = FakeTransport()
+            code, result = _run_cli(command, transport)
+            self.assertEqual(code, 1)
+            self.assertIn("field to change", result["error"])
+            self.assertEqual(transport.calls, [])
+
+    def test_dns_delete_by_name_type_checks_every_matching_record(self) -> None:
+        with TemporaryDirectory() as td, _working_directory(Path(td)):
+            env = _env_file(Path(".env"))
+            command = [
+                "--env-file", env, "dns", "dns-delete-by-name-type",
+                "--domain", "example.com", "--subdomain", "www", "--type", "A",
+            ]
+            record = {"id": "42", "name": "www.example.com", "type": "A", "content": "192.0.2.1", "ttl": "600"}
+            records = [record, record | {"id": "43", "content": "192.0.2.2"}]
+            unrelated = record | {"id": "44", "type": "AAAA", "content": "2001:db8::1"}
+            before = _json_response({"status": "SUCCESS", "records": records})
+            status = _json_response({"status": "SUCCESS"})
+            code, result = _run_cli(command + ["--plan-out", "plan.json"], FakeTransport([before, status]))
+            self.assertEqual(code, 0)
+            self.assertIn("plan", result)
+
+            apply = command + ["--plan-in", "plan.json", "--apply", "--yes", "--ack-destructive"]
+            added = record | {"id": "45", "content": "192.0.2.3"}
+            transport = FakeTransport([_json_response({"status": "SUCCESS", "records": [*records, added]})])
+            code, result = _run_cli(apply, transport)
+            self.assertEqual(code, 0)
+            self.assertTrue(result["refused"])
+            self.assertEqual(len(transport.calls), 1)
+            self.assertIn("records changed", result["reasons"][0])
+
+            reordered = _json_response({"status": "SUCCESS", "records": records[::-1]})
+            for response, confirmed in (
+                ({"status": "SUCCESS", "records": [unrelated]}, True),
+                ({"status": "SUCCESS", "records": [record, unrelated]}, False),
+                ({"records": []}, False),
+            ):
+                with self.subTest(response=response):
+                    transport = FakeTransport([reordered, status, _json_response(response)])
+                    code, result = _run_cli(apply, transport)
+                    self.assertEqual(code, 0)
+                    self.assertIs(result["receipt"]["verification"]["confirmed"], confirmed)
+                    self.assertEqual(len(transport.calls), 3)
 
     def test_plan_is_hmac_signed_with_private_state_from_creation(self) -> None:
         with TemporaryDirectory() as td:
@@ -2028,7 +2119,7 @@ class TestPorkbunRuntime(TestCase):
 
     def test_onboarding_creates_placeholder_env(self) -> None:
         with TemporaryDirectory() as td:
-            env = Path(td) / ".env"
+            env = Path(td) / "chosen Porkbun.env"
             old_umask = os.umask(0)
             try:
                 code, payload = _run_cli(
@@ -2039,11 +2130,13 @@ class TestPorkbunRuntime(TestCase):
                 os.umask(old_umask)
             self.assertEqual(code, 0)
             self.assertEqual(payload["onboarding"]["env_created"], True)
+            self.assertIn(str(env), payload["onboarding"]["next_steps"][0])
+            self.assertIn(f"--env-file '{env}' auth check", payload["onboarding"]["next_steps"][1])
             body = env.read_text(encoding="utf-8")
             self.assertIn("PORKBUN_API_KEY=", body)
             self.assertIn("PORKBUN_SECRET_API_KEY=", body)
             self.assertEqual(stat.S_IMODE(env.stat().st_mode), 0o600)
-            self.assertEqual(list(env.parent.glob("..env.*.tmp")), [])
+            self.assertEqual(list(env.parent.glob(f".{env.name}.*.tmp")), [])
 
     def test_provider_output_is_single_json(self) -> None:
         with TemporaryDirectory() as td:

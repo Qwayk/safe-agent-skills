@@ -1,6 +1,6 @@
 include README.md
 include CHANGELOG.md
-include TEMPLATE_GUIDE.md
+include SKILL.md
 include .env.example
 include pyproject.toml
 

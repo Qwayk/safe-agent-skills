@@ -1,58 +1,23 @@
-# Onboarding
+# Connect your Porkbun account
 
-Set up Porkbun access first, then do one safe read before any live write.
-
-## Step 1: Create `.env`
-
-1. Run `porkbun onboarding --env-file .env`, or copy `.env.example` to `.env`.
-2. Fill:
-   - `PORKBUN_API_KEY`
-   - `PORKBUN_SECRET_API_KEY`
-   - `PORKBUN_API_HOST` (`default` or `ipv4`)
-   - `PORKBUN_TIMEOUT_S` (optional)
-
-The onboarding command creates the env file atomically with `0600` permissions. It refuses directory and symbolic-link targets.
-
-## Step 2: Validate the local install
+Set up a private env file, then run a read to check your connection.
 
 ```bash
-cd api-tools/qwayk-porkbun-safe-agent-cli
 porkbun --version
+porkbun --output json --env-file porkbun.env onboarding
 ```
 
-## Step 3: Check the connection
+Open `porkbun.env` and fill in `PORKBUN_API_KEY` and `PORKBUN_SECRET_API_KEY`. Use the same `--env-file` path on later commands. By default, the tool looks for `.env`. You can also start from [the example env file](../.env.example). Keep the file out of Git and the keys out of chat and shell arguments. Environment variables with the same names take priority over the file.
+
+Onboarding creates a file only you can read and write (`0600`). It stops if the path points to a directory or symbolic link. The tool uses Porkbun's key pair and does not need an OAuth token.
 
 ```bash
-porkbun --output json auth check
+porkbun --output json --env-file porkbun.env auth check
+porkbun --output json --env-file porkbun.env domain get-domains
 ```
 
-This call is read-only. With configured keys, it asks Porkbun whether the pair is valid. Without keys, it reports `authenticated: false` without making a provider request.
+The first command checks whether Porkbun accepts the keys. Without keys it reports `authenticated: false` without contacting Porkbun. If you get a permission error, check that the key pair is correct and you enabled API access for the domain you want to manage. Use IP restrictions in Porkbun if they fit your setup. [Porkbun's API setup guide](https://kb.porkbun.com/article/307-getting-started-porkbun-api)
 
-## Step 4: Start with one real read
+The default timeout is 30 seconds. Set `PORKBUN_TIMEOUT_S` or pass `--timeout-s` if needed. `PORKBUN_API_HOST` accepts `default` (`https://api.porkbun.com/api/json/v3`) or `ipv4` (`https://api-ipv4.porkbun.com/api/json/v3`).
 
-```bash
-porkbun --output json domain get-domains
-```
-
-## Step 5: Ask the first live-capable command only after a plan
-
-For any write command:
-- review the plan
-- confirm intent
-- run with `--apply` and required acknowledgement flags
-
-## Host and safety limits
-
-- Default host: `https://api.porkbun.com/api/json/v3`
-- IPv4 host: `https://api-ipv4.porkbun.com/api/json/v3`
-- Redirects are not followed; any `3xx` response fails.
-- No raw endpoint calls, no dashboard automation, no webhook receiver hosting.
-- Source and package checks use no credentials and make no live Porkbun request.
-
-## Common onboarding mistakes
-
-- wrong key pair for environment
-- missing or stale `.env`
-- `PORKBUN_API_HOST` set to anything other than `default` or `ipv4`
-
-If you want to continue after setup, open [Quickstart](quickstart.md).
+For your first commands, see [Quickstart](quickstart.md).
