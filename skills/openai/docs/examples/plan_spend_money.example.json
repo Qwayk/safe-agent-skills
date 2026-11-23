@@ -1,77 +1,86 @@
 {
-  "tool": "openai-api-tool",
-  "version": "0.1.0",
-  "dry_run": true,
-  "env_fingerprint": "https://api.openai.com/v1",
-  "operation": {
-    "operation_command": "createModeration",
-    "method": "POST",
-    "path_template": "/moderations",
-    "path_filled": "/moderations",
-    "url": "https://api.openai.com/v1/moderations",
-    "doc_url": "https://developers.openai.com/api/reference/resources/moderations/methods/create",
-    "missing_path_params": []
+  "account": {
+    "organization": null,
+    "project": "proj_example"
   },
-  "inputs": {
-    "path": {},
-    "query": {},
-    "body": {
-      "input": "Example text to moderate"
-    },
-    "files": {}
-  },
-  "requirements": {
-    "missing_required": []
-  },
-  "metadata": {
-    "tags": [
-      "Moderations"
-    ],
-    "beta_header": null
+  "account_bound": true,
+  "approval_id": "6d05669a2ad7926b92590ccf3783c8a5",
+  "before_state": {
+    "approval_required": "--ack-no-snapshot",
+    "operation": "createResponse",
+    "provider_backup_id": null,
+    "reason": "No useful before-state snapshot is captured for this OpenAI write. The write may still run after the reviewed plan and explicit no-snapshot approval.",
+    "required": true,
+    "saved_path": null,
+    "status": "no_snapshot_available",
+    "supported": false,
+    "target": "https://api.openai.com/v1/responses"
   },
   "classification": {
-    "method": "POST",
-    "is_read": false,
-    "is_write": true,
-    "spend_money": true,
-    "irreversible": false,
-    "tags": [
-      "Moderations"
-    ],
     "gates": {
+      "ack_irreversible": false,
+      "ack_spend_money": true,
       "apply": true,
       "live": true,
       "plan_in": true,
-      "yes": true,
-      "ack_spend_money": true,
-      "ack_irreversible": false
-    }
+      "yes": true
+    },
+    "irreversible": false,
+    "is_read": false,
+    "is_write": true,
+    "method": "POST",
+    "spend_money": true,
+    "tags": [
+      "Responses"
+    ]
+  },
+  "dry_run": true,
+  "env_fingerprint": "https://api.openai.com/v1",
+  "inputs": {
+    "body": {
+      "input": "Say hello",
+      "model": "example-model"
+    },
+    "files": {},
+    "path": {},
+    "query": {}
+  },
+  "metadata": {
+    "beta_header": null,
+    "tags": [
+      "Responses"
+    ]
+  },
+  "operation": {
+    "doc_url": "https://developers.openai.com/api/reference/resources/responses/methods/create",
+    "method": "POST",
+    "missing_path_params": [],
+    "operation_command": "createResponse",
+    "path_filled": "/responses",
+    "path_template": "/responses",
+    "url": "https://api.openai.com/v1/responses"
+  },
+  "plan_hash": "feab1813b38f7d3464471e08f4662c1e24f51894e76e7cbdacaf4aa2f9c65e4c",
+  "post_apply_verification_plan": {
+    "notes": "After explicit no-snapshot approval, apply the write and verify with a read-back or documented idempotence check when available.",
+    "type": "read-back"
   },
   "recovery": {
     "automatic_rollback": false,
     "backups": [],
-    "snapshots": [],
+    "restore_note": "No built-in rollback, snapshots, or provider restore are available in this CLI. Check the affected resource before deciding whether a separate fix is possible.",
     "rollback_plan": null,
-    "restore_note": "No built-in rollback, snapshots, or provider restore are available in this CLI. If rollback is needed, run a separate explicit restore action through API calls."
+    "snapshots": []
   },
-  "before_state": {
-    "required": true,
-    "supported": false,
-    "status": "blocked",
-    "operation": "createModeration",
-    "target": "https://api.openai.com/v1/moderations",
-    "saved_path": null,
-    "provider_backup_id": null,
-    "reason": "This write family does not yet capture the live OpenAI state before apply. The safe action is to stop before any provider write."
+  "requirements": {
+    "missing_required": []
   },
+  "tool": "openai-api-tool",
   "verification_plan": {
-    "type": "no-snapshot-approval",
-    "status": "blocked-before-provider-write",
-    "notes": "Apply must require explicit no-snapshot approval before OpenAI API key use or HTTP until command-specific saved snapshot support is available."
+    "notes": "Apply can run after explicit no-snapshot approval, then records provider response and best-effort read-back when available.",
+    "requires_no_snapshot_approval": true,
+    "status": "requires-no-snapshot-approval",
+    "type": "best_effort_after_apply"
   },
-  "post_apply_verification_plan": {
-    "type": "read-back",
-    "notes": "Future behavior after before-state support: apply the write and verify with a read-back or documented idempotence check."
-  },
-  "plan_hash": "9cfc29e4386b302f0b6b14659065f9d94db499640dde6dc50ace1c6f425b1091"
+  "version": "0.1.0"
 }

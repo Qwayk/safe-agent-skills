@@ -6,15 +6,14 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
-from typing import Any
 from types import SimpleNamespace
+from typing import Any
 from unittest.mock import patch
 
 from openai_api_tool.api_dispatch import load_operations_from_pinned_snapshot, operations_by_command
 from openai_api_tool.audit_log import AuditLogger
+from openai_api_tool.cli import main
 from openai_api_tool.commands.api import (
-    STREAM_MAX_BYTES,
-    STREAM_STOP_TOKEN,
     _classify_operation,
     cmd_api_call,
 )
@@ -263,82 +262,13 @@ class TestApiCommands(unittest.TestCase):
             self.assertFalse(receipt_path.exists())
             mock_request.assert_not_called()
 
-    def test_create_moderation_enforces_spend_money_flags(self) -> None:
-        args = self._args("createModeration", body_json='{"input": "test"}')
-        with tempfile.TemporaryDirectory() as tmpd:
-            plan_path = Path(tmpd) / "plan.json"
-            receipt_path = Path(tmpd) / "receipt.json"
-
-            ctx_plan = self._ctx(apply=False, plan_out=str(plan_path))
-            buf_plan = io.StringIO()
-            with redirect_stdout(buf_plan):
-                rc_plan = cmd_api_call(args, ctx_plan)
-            self.assertEqual(rc_plan, 0)
-            payload_plan = json.loads(buf_plan.getvalue())
-            classification = payload_plan["plan"]["classification"]
-            gates = classification["gates"]
-            self.assertTrue(classification["spend_money"])
-            self.assertTrue(gates["plan_in"])
-            self.assertTrue(gates["yes"])
-            self.assertTrue(gates["ack_spend_money"])
-            self.assertIn("recovery", payload_plan["plan"])
-            self._assert_no_recovery_contract(payload_plan["plan"]["recovery"])
-            self._assert_blocked_before_state(payload_plan["plan"])
-
-            ctx_ack = self._ctx(
-                apply=True,
-                live=True,
-                yes=True,
-                ack_spend_money=False,
-                plan_in=str(plan_path),
-                receipt_out=str(receipt_path),
-            )
-            buf_ack = io.StringIO()
-            with patch("openai_api_tool.commands.api.HttpClient.request") as mock_request:
-                mock_request.side_effect = AssertionError("HttpClient.request should not run when gates fail")
-                with redirect_stdout(buf_ack):
-                    rc_ack = cmd_api_call(args, ctx_ack)
-            self.assertEqual(rc_ack, 0)
-            payload_ack = json.loads(buf_ack.getvalue())
-            self.assertTrue(payload_ack.get("refused"))
-            self.assertTrue(any("--ack-spend-money" in reason for reason in payload_ack.get("reasons", [])))
-            mock_request.assert_not_called()
-
-            ctx_yes = self._ctx(
-                apply=True,
-                live=True,
-                yes=False,
-                ack_spend_money=True,
-                plan_in=str(plan_path),
-                receipt_out=str(receipt_path),
-            )
-            buf_yes = io.StringIO()
-            with patch("openai_api_tool.commands.api.HttpClient.request") as mock_request_yes:
-                mock_request_yes.side_effect = AssertionError("HttpClient.request should not run when --yes missing")
-                with redirect_stdout(buf_yes):
-                    rc_yes = cmd_api_call(args, ctx_yes)
-            self.assertEqual(rc_yes, 0)
-            payload_yes = json.loads(buf_yes.getvalue())
-            self.assertTrue(payload_yes.get("refused"))
-            self.assertTrue(any("--yes" in reason for reason in payload_yes.get("reasons", [])))
-            mock_request_yes.assert_not_called()
-
-            ctx_plan_missing = self._ctx(
-                apply=True,
-                live=True,
-                yes=True,
-                ack_spend_money=True,
-                receipt_out=str(receipt_path),
-            )
-            buf_plan_missing = io.StringIO()
-            with patch("openai_api_tool.commands.api.HttpClient.request") as mock_request_plan:
-                mock_request_plan.side_effect = AssertionError("HttpClient.request should not run when plan-in missing")
-                with redirect_stdout(buf_plan_missing):
-                    rc_plan_missing = cmd_api_call(args, ctx_plan_missing)
-            self.assertEqual(rc_plan_missing, 0)
-            payload_plan_missing = json.loads(buf_plan_missing.getvalue())
-            self.assertTrue(payload_plan_missing.get("refused"))
-            self.assertTrue(any("--plan-in" in reason for reason in payload_plan_missing.get("reasons", [])))
+    def test_free_moderation_and_reads_do_not_require_spend_approval(self) -> None:
+        ops = operations_by_command(load_operations_from_pinned_snapshot())
+        for name in ("createModeration", "getResponse", "cancelResponse"):
+            with self.subTest(name=name):
+                classification = _classify_operation(ops[name])
+                self.assertFalse(classification["spend_money"])
+                self.assertFalse(classification["gates"]["ack_spend_money"])
 
     def test_ordinary_write_apply_requires_plan_in(self) -> None:
         args = self._args("CreateContainer", body_json='{"name": "demo"}')
@@ -532,6 +462,145 @@ class TestApiCommands(unittest.TestCase):
             self.assertFalse(receipt_path.exists())
             mock_request.assert_not_called()
 
+    def _run_cli(self, args: list[str]) -> tuple[int, dict[str, Any]]:
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            code = main(args)
+        return code, json.loads(buf.getvalue())
+
+    def _prepare_response(self, folder: Path, *, body: str = '{"model":"test","input":"Hello"}'):
+        env = folder / "account.env"
+        env.write_text("OPENAI_API_KEY=sk-local-test\\nOPENAI_PROJECT_ID=proj_reviewed\\n")
+        args = ["api", "createResponse", "--body-json", body]
+        flags = ["--env-file", str(env)]
+        plan = folder / "plan.json"
+        with patch.dict("os.environ", {}, clear=True):
+            rc, preview = self._run_cli([*flags, "--plan-out", str(plan), *args])
+        self.assertEqual(rc, 0)
+        apply = [
+            *flags, "--live", "--apply", "--plan-in", str(plan), "--yes",
+            "--ack-spend-money", "--ack-no-snapshot", *args,
+        ]
+        return env, preview, apply
+
+    def test_apply_rejects_another_key_project_or_settings_folder(self) -> None:
+        with tempfile.TemporaryDirectory() as td, patch.dict("os.environ", {}, clear=True):
+            folder = Path(td)
+            env, _, apply = self._prepare_response(folder)
+            with patch("openai_api_tool.commands.api.HttpClient.request") as request:
+                env.write_text("OPENAI_API_KEY=sk-other-test\\nOPENAI_PROJECT_ID=proj_reviewed\\n")
+                self.assertTrue(self._run_cli(apply)[1]["refused"])
+                env.write_text("OPENAI_API_KEY=sk-local-test\\nOPENAI_PROJECT_ID=proj_other\\n")
+                self.assertTrue(self._run_cli(apply)[1]["refused"])
+                other = folder / "other"
+                other.mkdir()
+                settings = other / "account.env"
+                settings.write_text("OPENAI_API_KEY=sk-local-test\\nOPENAI_PROJECT_ID=proj_reviewed\\n")
+                self.assertTrue(self._run_cli([apply[0], str(settings), *apply[2:]])[1]["refused"])
+                request.assert_not_called()
+
+    def test_apply_rejects_a_changed_upload(self) -> None:
+        with tempfile.TemporaryDirectory() as td, patch.dict("os.environ", {}, clear=True):
+            folder = Path(td)
+            settings = folder / "account.env"
+            settings.write_text("OPENAI_API_KEY=sk-local-test\\n")
+            file = folder / "notes.txt"
+            file.write_text("Reviewed file")
+            plan = folder / "upload-plan.json"
+            request_args = ["api", "createFile", "--body-json", '{"purpose":"user_data"}', "--file", f"file={file}"]
+            flags = ["--env-file", str(settings)]
+            rc, _ = self._run_cli([*flags, "--plan-out", str(plan), *request_args])
+            self.assertEqual(rc, 0)
+            file.write_text("Changed file")
+            with patch("openai_api_tool.commands.api.HttpClient.request") as request:
+                _, refused = self._run_cli([*flags, "--live", "--apply", "--ack-no-snapshot", "--plan-in", str(plan), *request_args])
+                self.assertTrue(refused["refused"])
+                request.assert_not_called()
+
+    def test_lost_reply_keeps_one_receipt_and_blocks_the_same_approval(self) -> None:
+        with tempfile.TemporaryDirectory() as td, patch.dict("os.environ", {}, clear=True):
+            folder = Path(td)
+            _, preview, apply = self._prepare_response(folder)
+            receipt = folder / ".state" / "receipts" / (preview["plan"]["plan_hash"] + ".json")
+
+            def lost_reply(**kwargs: Any) -> None:
+                self.assertEqual(kwargs["method"], "POST")
+                self.assertEqual(json.loads(receipt.read_text())["status"], "pending")
+                raise RuntimeError("Lost reply for simulated request")
+
+            with patch("openai_api_tool.commands.api.HttpClient.request", side_effect=lost_reply) as request:
+                rc, payload = self._run_cli(apply)
+                self.assertEqual(rc, 1)
+                self.assertEqual(Path(payload["receipt_out"]), receipt.resolve())
+                self.assertTrue(self._run_cli(apply)[1]["refused"])
+                request.assert_called_once()
+            self.assertEqual(json.loads(receipt.read_text())["status"], "needs_check")
+            self.assertEqual(receipt.stat().st_mode & 0o777, 0o600)
+
+    def test_apply_reads_the_specific_created_resource_and_hides_prompt_in_logs(self) -> None:
+        with tempfile.TemporaryDirectory() as td, patch.dict("os.environ", {}, clear=True):
+            folder = Path(td)
+            prompt = "private input from test"
+            _, _, apply = self._prepare_response(folder, body=json.dumps({"model": "test", "input": prompt}))
+
+            def reply(**kwargs: Any) -> HttpResponse:
+                return HttpResponse(
+                    200, {"content-type": "application/json"}, b'{"id":"resp_example","status":"completed"}',
+                    kwargs["url"],
+                )
+
+            with patch("openai_api_tool.commands.api.HttpClient.request", side_effect=reply) as request:
+                rc, payload = self._run_cli(apply)
+                self.assertEqual(rc, 0)
+                self.assertEqual(payload["receipt"]["verification"]["status"], "passed")
+                self.assertEqual([c.kwargs["method"] for c in request.call_args_list], ["POST", "GET"])
+                self.assertTrue(request.call_args.kwargs["url"].endswith("/responses/resp_example"))
+                request.reset_mock()
+                self.assertTrue(self._run_cli(apply)[1]["refused"])
+                request.assert_not_called()
+            for name in ("audit.jsonl", "index.jsonl", "summary.md"):
+                for f in (folder / ".state" / "runs").rglob(name):
+                    self.assertNotIn(prompt, f.read_text())
+
+    def test_free_moderation_uses_post_without_a_spend_ack_or_unrelated_get(self) -> None:
+        with tempfile.TemporaryDirectory() as td, patch.dict("os.environ", {}, clear=True):
+            folder = Path(td)
+            settings = folder / "account.env"
+            settings.write_text("OPENAI_API_KEY=sk-local-test\\n")
+            flags = ["--env-file", str(settings)]
+            plan = folder / "moderation-plan.json"
+            request_args = ["api", "createModeration", "--body-json", '{"input":"Test"}']
+            self.assertEqual(self._run_cli([*flags, "--plan-out", str(plan), *request_args])[0], 0)
+            reply = HttpResponse(200, {"content-type": "application/json"}, b'{}', "https://api.openai.com/v1/moderations")
+            with patch("openai_api_tool.commands.api.HttpClient.request", return_value=reply) as request:
+                rc, payload = self._run_cli([*flags, "--live", "--apply", "--plan-in", str(plan), "--ack-no-snapshot", *request_args])
+                self.assertEqual(rc, 0)
+                self.assertEqual(payload["receipt"]["verification"]["status"], "response_only")
+                request.assert_called_once()
+
+    def test_receipt_must_be_writable_before_sending(self) -> None:
+        with tempfile.TemporaryDirectory() as td, patch.dict("os.environ", {}, clear=True):
+            folder = Path(td)
+            _, _, apply = self._prepare_response(folder)
+            reserved = folder / ".state" / "receipts"
+            reserved.write_text("path is occupied by a file")
+            with patch("openai_api_tool.commands.api.HttpClient.request") as request:
+                _, payload = self._run_cli(apply)
+                self.assertTrue(payload["refused"])
+                request.assert_not_called()
+
+    def test_retired_commands_refuse_locally_and_are_absent_from_the_list(self) -> None:
+        with patch("openai_api_tool.commands.api.HttpClient.request") as request:
+            rc, retired = self._run_cli(["--no-artifacts", "--live", "api", "listAssistants"])
+            self.assertEqual(rc, 1)
+            self.assertEqual(retired["error_type"], "RetiredOperation")
+            rc, active = self._run_cli(["api", "ops", "list"])
+            self.assertEqual(rc, 0)
+            self.assertEqual(active["count"], 250)
+            self.assertEqual(active["retired_count"], 23)
+            self.assertNotIn("listAssistants", {item["operation_command"] for item in active["ops"]})
+            request.assert_not_called()
+
     def test_major_operations_plan_and_refuse_apply_without_before_state(self) -> None:
         ops = operations_by_command(load_operations_from_pinned_snapshot())
         required_ops = [
@@ -544,7 +613,6 @@ class TestApiCommands(unittest.TestCase):
             "createFineTuningJob",
             "createBatch",
             "createVectorStore",
-            "createAssistant",
             "create-realtime-client-secret",
             "admin-api-keys-create",
         ]

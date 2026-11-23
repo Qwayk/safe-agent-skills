@@ -1,23 +1,10 @@
-# API coverage
+# OpenAI API coverage
 
-OpenAI coverage shows exactly what the shipped commands can do with models, files, batches, fine-tuning, vector stores, assistants, usage, projects, and generated API calls. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+The June 29, 2026 OpenAPI snapshot has 273 named operations. The tool lists 250 for use and keeps 23 retired Assistants commands as local refusals. ChatKit and Conversations are separate commands. The table shows the June routes, including the retired rows.
 
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+A live request requires `--live`. Writes follow the [approval rules](safety_model.md). For setup, see [the first commands](../README.md#get-started). For dates and the exact snapshot, see [the reference files](references.md).
 
-A good first coverage check is: "Check whether the shipped commands can list models, inspect files or batches, and show which OpenAI operations are covered."
-
-## Coverage notes
-
-Last audited (UTC): 2026-06-29
-Last verified (UTC): 2026-06-29
-Definition of “100% coverage” for this tool: every operation in `docs/official_operations_v1_2026-06-29.txt` is available as an explicit CLI command.
-Current write safety: every non-GET/HEAD operation can create a plan, but write apply requires explicit no-snapshot approval before OpenAI API key use or HTTP until command-specific saved snapshot support is available. Live reads still require `--live`.
-Primary CLI mapping rule:
-- `openai-api-tool api <operation_command>`
-Pinned operations count: 273
-Official source: documented OpenAI OpenAPI spec version `2.3.0`, fetched 2026-06-29.
-
-## Coverage
+## Commands
 
 | operation_command | METHOD | PATH | doc_url | tags | beta_header | primary_cli |
 |---|---:|---|---|---|---|---|
@@ -77,7 +64,7 @@ Official source: documented OpenAI OpenAPI spec version `2.3.0`, fetched 2026-06
 | `cancelEvalRun` | `POST` | `/evals/{eval_id}/runs/{run_id}` | `https://developers.openai.com/api/reference/resources/evals/subresources/runs/methods/cancel` | `Evals` | `` | `openai-api-tool api cancelEvalRun` |
 | `cancelFineTuningJob` | `POST` | `/fine_tuning/jobs/{fine_tuning_job_id}/cancel` | `https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/methods/cancel` | `Fine-tuning` | `` | `openai-api-tool api cancelFineTuningJob` |
 | `cancelResponse` | `POST` | `/responses/{response_id}/cancel` | `https://developers.openai.com/api/reference/resources/responses/methods/cancel` | `Responses` | `` | `openai-api-tool api cancelResponse` |
-| `cancelRun` | `POST` | `/threads/{thread_id}/runs/{run_id}/cancel` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api cancelRun` |
+| `cancelRun` | `POST` | `/threads/{thread_id}/runs/{run_id}/cancel` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `cancelUpload` | `POST` | `/uploads/{upload_id}/cancel` | `https://developers.openai.com/api/reference/resources/uploads/methods/cancel` | `Uploads` | `` | `openai-api-tool api cancelUpload` |
 | `cancelVectorStoreFileBatch` | `POST` | `/vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel` | `https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/cancel` | `Vector stores` | `assistants=v2` | `openai-api-tool api cancelVectorStoreFileBatch` |
 | `completeUpload` | `POST` | `/uploads/{upload_id}/complete` | `https://developers.openai.com/api/reference/resources/uploads/methods/complete` | `Uploads` | `` | `openai-api-tool api completeUpload` |
@@ -94,7 +81,7 @@ Official source: documented OpenAI OpenAPI spec version `2.3.0`, fetched 2026-06
 | `create-realtime-transcription-session` | `POST` | `/realtime/transcription_sessions` | `https://developers.openai.com/api/reference/resources/realtime/subresources/transcription_sessions/methods/create` | `Realtime` | `` | `openai-api-tool api create-realtime-transcription-session` |
 | `create-realtime-translation-client-secret` | `POST` | `/realtime/translations/client_secrets` | `https://developers.openai.com/api/reference/resources/realtime/subresources/translations/subresources/client_secrets/methods/create` | `Realtime` | `` | `openai-api-tool api create-realtime-translation-client-secret` |
 | `create-role` | `POST` | `/organization/roles` | `https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/roles/methods/create` | `Roles` | `` | `openai-api-tool api create-role` |
-| `createAssistant` | `POST` | `/assistants` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `` | `openai-api-tool api createAssistant` |
+| `createAssistant` | `POST` | `/assistants` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `` | Retired. See the Assistants migration guide. |
 | `createBatch` | `POST` | `/batches` | `https://developers.openai.com/api/reference/resources/batches/methods/create` | `Batch` | `` | `openai-api-tool api createBatch` |
 | `createChatCompletion` | `POST` | `/chat/completions` | `https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create` | `Chat` | `` | `openai-api-tool api createChatCompletion` |
 | `createCompletion` | `POST` | `/completions` | `https://developers.openai.com/api/reference/resources/completions/methods/create` | `Completions` | `` | `openai-api-tool api createCompletion` |
@@ -109,13 +96,13 @@ Official source: documented OpenAI OpenAPI spec version `2.3.0`, fetched 2026-06
 | `createImage` | `POST` | `/images/generations` | `https://developers.openai.com/api/reference/overview` | `Images` | `` | `openai-api-tool api createImage` |
 | `createImageEdit` | `POST` | `/images/edits` | `https://developers.openai.com/api/reference/overview` | `Images` | `` | `openai-api-tool api createImageEdit` |
 | `createImageVariation` | `POST` | `/images/variations` | `https://developers.openai.com/api/reference/overview` | `Images` | `` | `openai-api-tool api createImageVariation` |
-| `createMessage` | `POST` | `/threads/{thread_id}/messages` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api createMessage` |
+| `createMessage` | `POST` | `/threads/{thread_id}/messages` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `createModeration` | `POST` | `/moderations` | `https://developers.openai.com/api/reference/resources/moderations/methods/create` | `Moderations` | `` | `openai-api-tool api createModeration` |
 | `createResponse` | `POST` | `/responses` | `https://developers.openai.com/api/reference/resources/responses/methods/create` | `Responses` | `` | `openai-api-tool api createResponse` |
-| `createRun` | `POST` | `/threads/{thread_id}/runs` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `` | `openai-api-tool api createRun` |
+| `createRun` | `POST` | `/threads/{thread_id}/runs` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `` | Retired. See the Assistants migration guide. |
 | `createSpeech` | `POST` | `/audio/speech` | `https://developers.openai.com/api/reference/resources/audio/subresources/speech/methods/create` | `Audio` | `` | `openai-api-tool api createSpeech` |
-| `createThread` | `POST` | `/threads` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `` | `openai-api-tool api createThread` |
-| `createThreadAndRun` | `POST` | `/threads/runs` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `` | `openai-api-tool api createThreadAndRun` |
+| `createThread` | `POST` | `/threads` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `` | Retired. See the Assistants migration guide. |
+| `createThreadAndRun` | `POST` | `/threads/runs` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `` | Retired. See the Assistants migration guide. |
 | `createTranscription` | `POST` | `/audio/transcriptions` | `https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create` | `Audio` | `` | `openai-api-tool api createTranscription` |
 | `createTranslation` | `POST` | `/audio/translations` | `https://developers.openai.com/api/reference/resources/audio/subresources/translations/methods/create` | `Audio` | `` | `openai-api-tool api createTranslation` |
 | `createUpload` | `POST` | `/uploads` | `https://developers.openai.com/api/reference/resources/uploads/methods/create` | `Uploads` | `` | `openai-api-tool api createUpload` |
@@ -138,7 +125,7 @@ Official source: documented OpenAI OpenAPI spec version `2.3.0`, fetched 2026-06
 | `delete-project-user` | `DELETE` | `/organization/projects/{project_id}/users/{user_id}` | `https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/users/methods/delete` | `Projects` | `` | `openai-api-tool api delete-project-user` |
 | `delete-role` | `DELETE` | `/organization/roles/{role_id}` | `https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/roles/methods/delete` | `Roles` | `` | `openai-api-tool api delete-role` |
 | `delete-user` | `DELETE` | `/organization/users/{user_id}` | `https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/users/methods/delete` | `Users` | `` | `openai-api-tool api delete-user` |
-| `deleteAssistant` | `DELETE` | `/assistants/{assistant_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api deleteAssistant` |
+| `deleteAssistant` | `DELETE` | `/assistants/{assistant_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `deleteCertificate` | `DELETE` | `/organization/certificates/{certificate_id}` | `https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/certificates/methods/delete` | `Certificates` | `` | `openai-api-tool api deleteCertificate` |
 | `deleteChatCompletion` | `DELETE` | `/chat/completions/{completion_id}` | `https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/delete` | `Chat` | `` | `openai-api-tool api deleteChatCompletion` |
 | `deleteConversation` | `DELETE` | `/conversations/{conversation_id}` | `https://developers.openai.com/api/reference/resources/conversations/methods/delete` | `Conversations` | `` | `openai-api-tool api deleteConversation` |
@@ -147,15 +134,15 @@ Official source: documented OpenAI OpenAPI spec version `2.3.0`, fetched 2026-06
 | `deleteEvalRun` | `DELETE` | `/evals/{eval_id}/runs/{run_id}` | `https://developers.openai.com/api/reference/resources/evals/subresources/runs/methods/delete` | `Evals` | `` | `openai-api-tool api deleteEvalRun` |
 | `deleteFile` | `DELETE` | `/files/{file_id}` | `https://developers.openai.com/api/reference/resources/files/methods/delete` | `Files` | `` | `openai-api-tool api deleteFile` |
 | `deleteFineTuningCheckpointPermission` | `DELETE` | `/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}` | `https://developers.openai.com/api/reference/resources/fine_tuning/subresources/checkpoints/subresources/permissions/methods/delete` | `Fine-tuning` | `` | `openai-api-tool api deleteFineTuningCheckpointPermission` |
-| `deleteMessage` | `DELETE` | `/threads/{thread_id}/messages/{message_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api deleteMessage` |
+| `deleteMessage` | `DELETE` | `/threads/{thread_id}/messages/{message_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `deleteModel` | `DELETE` | `/models/{model}` | `https://developers.openai.com/api/reference/resources/models/methods/delete` | `Models` | `` | `openai-api-tool api deleteModel` |
 | `deleteResponse` | `DELETE` | `/responses/{response_id}` | `https://developers.openai.com/api/reference/resources/responses/methods/delete` | `Responses` | `` | `openai-api-tool api deleteResponse` |
-| `deleteThread` | `DELETE` | `/threads/{thread_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api deleteThread` |
+| `deleteThread` | `DELETE` | `/threads/{thread_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `deleteVectorStore` | `DELETE` | `/vector_stores/{vector_store_id}` | `https://developers.openai.com/api/reference/resources/vector_stores/methods/delete` | `Vector stores` | `assistants=v2` | `openai-api-tool api deleteVectorStore` |
 | `deleteVectorStoreFile` | `DELETE` | `/vector_stores/{vector_store_id}/files/{file_id}` | `https://developers.openai.com/api/reference/resources/vector_stores/subresources/files/methods/delete` | `Vector stores` | `assistants=v2` | `openai-api-tool api deleteVectorStoreFile` |
 | `deleteVoiceConsent` | `DELETE` | `/audio/voice_consents/{consent_id}` | `https://developers.openai.com/api/reference/resources/audio/subresources/voice_consents/methods/delete` | `Audio` | `` | `openai-api-tool api deleteVoiceConsent` |
 | `downloadFile` | `GET` | `/files/{file_id}/content` | `https://developers.openai.com/api/reference/overview` | `Files` | `` | `openai-api-tool api downloadFile` |
-| `getAssistant` | `GET` | `/assistants/{assistant_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api getAssistant` |
+| `getAssistant` | `GET` | `/assistants/{assistant_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `getCertificate` | `GET` | `/organization/certificates/{certificate_id}` | `https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/certificates/methods/retrieve` | `Certificates` | `` | `openai-api-tool api getCertificate` |
 | `getChatCompletion` | `GET` | `/chat/completions/{completion_id}` | `https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/retrieve` | `Chat` | `` | `openai-api-tool api getChatCompletion` |
 | `getChatCompletionMessages` | `GET` | `/chat/completions/{completion_id}/messages` | `https://developers.openai.com/api/reference/overview` | `Chat` | `` | `openai-api-tool api getChatCompletionMessages` |
@@ -166,11 +153,11 @@ Official source: documented OpenAI OpenAPI spec version `2.3.0`, fetched 2026-06
 | `getEvalRunOutputItem` | `GET` | `/evals/{eval_id}/runs/{run_id}/output_items/{output_item_id}` | `https://developers.openai.com/api/reference/resources/evals/subresources/runs/subresources/output_items/methods/retrieve` | `Evals` | `` | `openai-api-tool api getEvalRunOutputItem` |
 | `getEvalRunOutputItems` | `GET` | `/evals/{eval_id}/runs/{run_id}/output_items` | `https://developers.openai.com/api/reference/resources/evals/subresources/runs/subresources/output_items/methods/retrieve` | `Evals` | `` | `openai-api-tool api getEvalRunOutputItems` |
 | `getEvalRuns` | `GET` | `/evals/{eval_id}/runs` | `https://developers.openai.com/api/reference/overview` | `Evals` | `` | `openai-api-tool api getEvalRuns` |
-| `getMessage` | `GET` | `/threads/{thread_id}/messages/{message_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api getMessage` |
+| `getMessage` | `GET` | `/threads/{thread_id}/messages/{message_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `getResponse` | `GET` | `/responses/{response_id}` | `https://developers.openai.com/api/reference/resources/responses/methods/retrieve` | `Responses` | `` | `openai-api-tool api getResponse` |
-| `getRun` | `GET` | `/threads/{thread_id}/runs/{run_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api getRun` |
-| `getRunStep` | `GET` | `/threads/{thread_id}/runs/{run_id}/steps/{step_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api getRunStep` |
-| `getThread` | `GET` | `/threads/{thread_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api getThread` |
+| `getRun` | `GET` | `/threads/{thread_id}/runs/{run_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
+| `getRunStep` | `GET` | `/threads/{thread_id}/runs/{run_id}/steps/{step_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
+| `getThread` | `GET` | `/threads/{thread_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `getVectorStore` | `GET` | `/vector_stores/{vector_store_id}` | `https://developers.openai.com/api/reference/resources/vector_stores/methods/retrieve` | `Vector stores` | `assistants=v2` | `openai-api-tool api getVectorStore` |
 | `getVectorStoreFile` | `GET` | `/vector_stores/{vector_store_id}/files/{file_id}` | `https://developers.openai.com/api/reference/resources/vector_stores/subresources/files/methods/retrieve` | `Vector stores` | `assistants=v2` | `openai-api-tool api getVectorStoreFile` |
 | `getVectorStoreFileBatch` | `GET` | `/vector_stores/{vector_store_id}/file_batches/{batch_id}` | `https://developers.openai.com/api/reference/resources/vector_stores/subresources/file_batches/methods/retrieve` | `Vector stores` | `assistants=v2` | `openai-api-tool api getVectorStoreFileBatch` |
@@ -196,7 +183,7 @@ Official source: documented OpenAI OpenAPI spec version `2.3.0`, fetched 2026-06
 | `list-roles` | `GET` | `/organization/roles` | `https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/roles/methods/list` | `Roles` | `` | `openai-api-tool api list-roles` |
 | `list-user-role-assignments` | `GET` | `/organization/users/{user_id}/roles` | `https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/users/subresources/roles/methods/list` | `User organization role assignments` | `` | `openai-api-tool api list-user-role-assignments` |
 | `list-users` | `GET` | `/organization/users` | `https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/users/methods/list` | `Users` | `` | `openai-api-tool api list-users` |
-| `listAssistants` | `GET` | `/assistants` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api listAssistants` |
+| `listAssistants` | `GET` | `/assistants` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `listBatches` | `GET` | `/batches` | `https://developers.openai.com/api/reference/resources/batches/methods/list` | `Batch` | `` | `openai-api-tool api listBatches` |
 | `listChatCompletions` | `GET` | `/chat/completions` | `https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/list` | `Chat` | `` | `openai-api-tool api listChatCompletions` |
 | `listConversationItems` | `GET` | `/conversations/{conversation_id}/items` | `https://developers.openai.com/api/reference/overview` | `Conversations` | `` | `openai-api-tool api listConversationItems` |
@@ -207,24 +194,24 @@ Official source: documented OpenAI OpenAPI spec version `2.3.0`, fetched 2026-06
 | `listFineTuningEvents` | `GET` | `/fine_tuning/jobs/{fine_tuning_job_id}/events` | `https://developers.openai.com/api/reference/overview` | `Fine-tuning` | `` | `openai-api-tool api listFineTuningEvents` |
 | `listFineTuningJobCheckpoints` | `GET` | `/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints` | `https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/subresources/checkpoints/methods/list` | `Fine-tuning` | `` | `openai-api-tool api listFineTuningJobCheckpoints` |
 | `listInputItems` | `GET` | `/responses/{response_id}/input_items` | `https://developers.openai.com/api/reference/resources/responses/subresources/input_items/methods/list` | `Responses` | `` | `openai-api-tool api listInputItems` |
-| `listMessages` | `GET` | `/threads/{thread_id}/messages` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api listMessages` |
+| `listMessages` | `GET` | `/threads/{thread_id}/messages` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `listModels` | `GET` | `/models` | `https://developers.openai.com/api/reference/resources/models/methods/list` | `Models` | `` | `openai-api-tool api listModels` |
 | `listOrganizationCertificates` | `GET` | `/organization/certificates` | `https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/certificates/methods/list` | `Certificates` | `` | `openai-api-tool api listOrganizationCertificates` |
 | `listPaginatedFineTuningJobs` | `GET` | `/fine_tuning/jobs` | `https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/methods/list` | `Fine-tuning` | `` | `openai-api-tool api listPaginatedFineTuningJobs` |
 | `listProjectCertificates` | `GET` | `/organization/projects/{project_id}/certificates` | `https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/projects/subresources/certificates/methods/list` | `Certificates` | `` | `openai-api-tool api listProjectCertificates` |
-| `listRunSteps` | `GET` | `/threads/{thread_id}/runs/{run_id}/steps` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api listRunSteps` |
-| `listRuns` | `GET` | `/threads/{thread_id}/runs` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api listRuns` |
+| `listRunSteps` | `GET` | `/threads/{thread_id}/runs/{run_id}/steps` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
+| `listRuns` | `GET` | `/threads/{thread_id}/runs` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `listVectorStoreFiles` | `GET` | `/vector_stores/{vector_store_id}/files` | `https://developers.openai.com/api/reference/resources/vector_stores/subresources/files/methods/list` | `Vector stores` | `assistants=v2` | `openai-api-tool api listVectorStoreFiles` |
 | `listVectorStores` | `GET` | `/vector_stores` | `https://developers.openai.com/api/reference/resources/vector_stores/methods/list` | `Vector stores` | `assistants=v2` | `openai-api-tool api listVectorStores` |
 | `listVoiceConsents` | `GET` | `/audio/voice_consents` | `https://developers.openai.com/api/reference/resources/audio/subresources/voice_consents/methods/list` | `Audio` | `` | `openai-api-tool api listVoiceConsents` |
 | `modify-project` | `POST` | `/organization/projects/{project_id}` | `https://developers.openai.com/api/reference/overview` | `Projects` | `` | `openai-api-tool api modify-project` |
 | `modify-project-user` | `POST` | `/organization/projects/{project_id}/users/{user_id}` | `https://developers.openai.com/api/reference/overview` | `Projects` | `` | `openai-api-tool api modify-project-user` |
 | `modify-user` | `POST` | `/organization/users/{user_id}` | `https://developers.openai.com/api/reference/overview` | `Users` | `` | `openai-api-tool api modify-user` |
-| `modifyAssistant` | `POST` | `/assistants/{assistant_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api modifyAssistant` |
+| `modifyAssistant` | `POST` | `/assistants/{assistant_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `modifyCertificate` | `POST` | `/organization/certificates/{certificate_id}` | `https://developers.openai.com/api/reference/overview` | `Certificates` | `` | `openai-api-tool api modifyCertificate` |
-| `modifyMessage` | `POST` | `/threads/{thread_id}/messages/{message_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api modifyMessage` |
-| `modifyRun` | `POST` | `/threads/{thread_id}/runs/{run_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api modifyRun` |
-| `modifyThread` | `POST` | `/threads/{thread_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | `openai-api-tool api modifyThread` |
+| `modifyMessage` | `POST` | `/threads/{thread_id}/messages/{message_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
+| `modifyRun` | `POST` | `/threads/{thread_id}/runs/{run_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
+| `modifyThread` | `POST` | `/threads/{thread_id}` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `assistants=v2` | Retired. See the Assistants migration guide. |
 | `modifyVectorStore` | `POST` | `/vector_stores/{vector_store_id}` | `https://developers.openai.com/api/reference/overview` | `Vector stores` | `assistants=v2` | `openai-api-tool api modifyVectorStore` |
 | `pauseFineTuningJob` | `POST` | `/fine_tuning/jobs/{fine_tuning_job_id}/pause` | `https://developers.openai.com/api/reference/resources/fine_tuning/subresources/jobs/methods/pause` | `Fine-tuning` | `` | `openai-api-tool api pauseFineTuningJob` |
 | `refer-realtime-call` | `POST` | `/realtime/calls/{call_id}/refer` | `https://developers.openai.com/api/reference/resources/realtime/subresources/calls/methods/refer` | `Realtime` | `` | `openai-api-tool api refer-realtime-call` |
@@ -260,7 +247,7 @@ Official source: documented OpenAI OpenAPI spec version `2.3.0`, fetched 2026-06
 | `retrieveVectorStoreFileContent` | `GET` | `/vector_stores/{vector_store_id}/files/{file_id}/content` | `https://developers.openai.com/api/reference/overview` | `Vector stores` | `` | `openai-api-tool api retrieveVectorStoreFileContent` |
 | `runGrader` | `POST` | `/fine_tuning/alpha/graders/run` | `https://developers.openai.com/api/reference/overview` | `Fine-tuning` | `` | `openai-api-tool api runGrader` |
 | `searchVectorStore` | `POST` | `/vector_stores/{vector_store_id}/search` | `https://developers.openai.com/api/reference/resources/vector_stores/methods/search` | `Vector stores` | `` | `openai-api-tool api searchVectorStore` |
-| `submitToolOuputsToRun` | `POST` | `/threads/{thread_id}/runs/{run_id}/submit_tool_outputs` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `` | `openai-api-tool api submitToolOuputsToRun` |
+| `submitToolOuputsToRun` | `POST` | `/threads/{thread_id}/runs/{run_id}/submit_tool_outputs` | `https://developers.openai.com/api/reference/overview` | `Assistants` | `` | Retired. See the Assistants migration guide. |
 | `unassign-group-role` | `DELETE` | `/organization/groups/{group_id}/roles/{role_id}` | `https://developers.openai.com/api/reference/overview` | `Group organization role assignments` | `` | `openai-api-tool api unassign-group-role` |
 | `unassign-project-group-role` | `DELETE` | `/projects/{project_id}/groups/{group_id}/roles/{role_id}` | `https://developers.openai.com/api/reference/overview` | `Project group role assignments` | `` | `openai-api-tool api unassign-project-group-role` |
 | `unassign-project-user-role` | `DELETE` | `/projects/{project_id}/users/{user_id}/roles/{role_id}` | `https://developers.openai.com/api/reference/overview` | `Project user role assignments` | `` | `openai-api-tool api unassign-project-user-role` |

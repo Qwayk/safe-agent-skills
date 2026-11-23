@@ -4,22 +4,22 @@ import json
 import re
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from .errors import ValidationError
 from .official_inventory import OperationSpec, load_official_operations_file
 
 
-def tool_root_path() -> Path:
-    # .../src/openai_api_tool/api_dispatch.py -> tool root is 3 levels up
-    return Path(__file__).resolve().parents[2]
-
-
 def pinned_official_operations_path() -> Path:
-    docs = tool_root_path() / "docs"
-    candidates = sorted(docs.glob("official_operations_v1_*.txt"))
+    package = Path(__file__).resolve().parent
+    candidates = sorted(package.glob("official_operations_v1_*.txt"))
     if not candidates:
-        raise RuntimeError(f"Missing pinned official operations list under {docs}")
+        raise RuntimeError("The OpenAI command list is missing from this install")
     return candidates[-1]
+
+
+def is_retired(op: OperationSpec) -> bool:
+    return op.path.split("/", 2)[1] in {"assistants", "threads"}
 
 
 def load_operations_from_pinned_snapshot() -> list[OperationSpec]:
@@ -45,7 +45,7 @@ def substitute_path_params(path_template: str, values: dict[str, str]) -> tuple[
     def repl(m: re.Match[str]) -> str:
         name = m.group(1)
         if name in values:
-            return str(values[name])
+            return quote(str(values[name]), safe='')
         missing.append(name)
         return "{" + name + "}"
 

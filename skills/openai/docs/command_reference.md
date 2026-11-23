@@ -1,60 +1,44 @@
-# Command reference
+# OpenAI Platform commands
 
-These commands cover OpenAI account checks, files, batches, models, generated API operations, and cost-bearing write gates. Start with operation inventory before uploads or batch work.
+Put shared options such as `--env-file`, `--live`, and `--plan-in` before `api`, `auth`, or another command. Put the operation’s inputs after its name.
 
-For the guided path, start with [What you can do with OpenAI](use_cases.md), [Connect your OpenAI access](onboarding.md), and [Quickstart](quickstart.md).
+## Check setup and find a command
 
-## Onboarding
+```bash
+openai-api-tool --version
+openai-api-tool onboarding
+openai-api-tool --live auth check
+openai-api-tool api ops list --tag Models
+openai-api-tool --live api listModels
+```
 
-- `openai-api-tool onboarding [--no-write-env]`
+`onboarding --no-write-env` prints the steps without creating a file. Use `--output text` for text or `--output json` for JSON. `--timeout-s` changes the wait for this call. `--verbose` shows the HTTP method and status. [Settings help](onboarding.md)
 
-## Auth
+## Review and send a request
 
-- `openai-api-tool --output json --version`
-- `openai-api-tool auth check`
-- `openai-api-tool --output json auth check` (plan-only; add `--live` to call `/models` and emit `live_checked`, `live_ok`, and `live_status_code` for proof-of-key).
+Save this example as `request.json` with a model available to your project.
 
-## API operations
+```json
+{"model":"your-model","input":"Say hello"}
+```
 
-- `openai-api-tool api ops list [--tag TAG]`
-- `openai-api-tool api <operation_command> [--path-json PATH_JSON] [--query-json QUERY_JSON] [--body-json BODY_JSON] [--path field=value ...] [--query field=value ...] [--file field=/path]`
+```bash
+openai-api-tool --plan-out plan.json api createResponse --body-json request.json
+openai-api-tool --live --apply --plan-in plan.json --yes \
+  --ack-spend-money --ack-no-snapshot api createResponse --body-json request.json
+```
 
-  Shared flags:
+Use the second command after the plan is approved. Flags depend on the action. See [what each approval covers](safety_model.md).
 
-  - `--live`: allow real HTTP calls (all commands are plan-only by default)
-  - `--apply`: attempt a write after review; writes require explicit no-snapshot approval before OpenAI HTTP when no saved snapshot is available
-  - `--plan-out <file>` / `--plan-in <file>`: store or re-use deterministic plans; every write apply requires `--plan-in`
-  - `--yes`: additional confirmation for high-risk/batch writes; spend-money operations need `--yes` plus `--plan-in`
-  - `--receipt-out <file>`: capture a receipt when an approved supported command really runs; refusals for missing approval or failed safety checks do not create write receipts
-  - `--ack-spend-money`: required for inference, embeddings, images/audio generation, fine-tunes, batches, moderations, etc.; spend-money operations demand `--live --apply --plan-in <plan.json> --yes --ack-spend-money`
-  - `--ack-irreversible`: required for delete-like operations (combined with `--live --apply --plan-in <plan.json> --yes`)
-  - `before_state` in current write plans is explicit: `required: true`, `supported: false`, `status: no_snapshot_available`.
-  - `recovery` in write plans is explicit: `automatic_rollback: false`, `backups: []`, `snapshots: []`, `rollback_plan: null` (no automatic rollback).
+For a named resource, use `--path key=value` or `--path-json <file>`. For filters or pagination, use `--query key=value` or `--query-json <file>`. Use `--file field=path` for a multipart upload. Path, query, and file flags can be repeated. The JSON options accept inline JSON or a file.
 
-Plans, read receipts, and refusal outputs are sanitized before they hit stdout or disk so Authorization headers, API keys, and tokens never leak, while plan hashes still let you detect drift.
+## Run history
 
-## Jobs
+```bash
+openai-api-tool runs list --limit 20
+openai-api-tool runs show --run-id <run-id>
+```
 
-- `openai-api-tool jobs run --file jobs.csv [--limit N] [--plan-out plan.json]`
-- `openai-api-tool --apply --yes --plan-in plan.json jobs run --file jobs.csv` (currently requires explicit no-snapshot approval before write rows execute)
+Run files go under `.state/runs/` next to the settings file. Use `--run-id` or `--artifacts-dir` to select a run or folder. `--no-artifacts` skips optional run files. A live write still saves its approval receipt. `--receipt-out` lets you save an extra copy and `--log-file` selects an extra audit log.
 
-## Runs (history)
-
-Write-capable commands automatically save proof artifacts under `.state/runs/` and append an index row to `.state/runs/index.jsonl`.
-
-These live next to your `--env-file` (usually next to your `.env` file), so they’re easy to find.
-
-Optional flags:
-
-- `--run-id <id>`: set a specific run id (otherwise the tool generates one)
-- `--artifacts-dir <path>`: override where artifacts are written for this run
-- `--no-artifacts`: disable writing run artifacts (advanced)
-
-- `openai-api-tool runs list [--limit 20]`
-- `openai-api-tool runs show --run-id 2026-01-19T104512Z_a3f91c`
-
-## Demo
-
-- `openai-api-tool demo read`
-- `openai-api-tool demo write --selector demo-resource [--plan-out plan.json]`
-- `openai-api-tool --apply --plan-in plan.json --receipt-out receipt.json demo write --selector demo-resource` (currently requires explicit no-snapshot approval before stub receipt output)
+`demo` and `jobs run` show the local workflow with sample actions. For an actual OpenAI batch, use the [Batch API commands](jobs_and_batches.md).

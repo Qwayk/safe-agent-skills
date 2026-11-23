@@ -26,6 +26,12 @@ openai-api-tool = "openai_api_tool.__main__:main"
 [tool.setuptools]
 package-dir = {"" = "src"}
 
+[tool.setuptools.package-data]
+openai_api_tool = ["official_operations_v1_*.txt"]
+
+[tool.setuptools.data-files]
+"share/openai-api-tool/skills/openai" = ["SKILL.md"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

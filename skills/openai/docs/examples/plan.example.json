@@ -1,45 +1,49 @@
 {
-  "tool": "openai-api-tool",
-  "version": "0.1.0",
-  "dry_run": true,
-  "env_fingerprint": "https://api.openai.com/v1",
-  "operation": {
-    "operation_command": "ListContainers",
-    "method": "GET",
-    "path_template": "/containers",
-    "path_filled": "/containers",
-    "url": "https://api.openai.com/v1/containers",
-    "doc_url": "https://developers.openai.com/api/reference/resources/containers/methods/list",
-    "missing_path_params": []
-  },
-  "inputs": {
-    "path": {},
-    "query": {},
-    "body": null,
-    "files": {}
-  },
-  "requirements": {
-    "missing_required": []
-  },
-  "metadata": {
-    "tags": [],
-    "beta_header": null
-  },
   "classification": {
-    "method": "GET",
-    "is_read": true,
-    "is_write": false,
-    "spend_money": false,
-    "irreversible": false,
-    "tags": [],
     "gates": {
+      "ack_irreversible": false,
+      "ack_spend_money": false,
       "apply": false,
       "live": false,
       "plan_in": false,
-      "yes": false,
-      "ack_spend_money": false,
-      "ack_irreversible": false
-    }
+      "yes": false
+    },
+    "irreversible": false,
+    "is_read": true,
+    "is_write": false,
+    "method": "GET",
+    "spend_money": false,
+    "tags": [
+      "Models"
+    ]
   },
-  "plan_hash": "a6f1c7a7f2d85cf3e8af830057c08d74651b81e6152f1a17aac7021b69fabb93"
+  "dry_run": true,
+  "env_fingerprint": "https://api.openai.com/v1",
+  "inputs": {
+    "body": null,
+    "files": {},
+    "path": {},
+    "query": {}
+  },
+  "metadata": {
+    "beta_header": null,
+    "tags": [
+      "Models"
+    ]
+  },
+  "operation": {
+    "doc_url": "https://developers.openai.com/api/reference/resources/models/methods/list",
+    "method": "GET",
+    "missing_path_params": [],
+    "operation_command": "listModels",
+    "path_filled": "/models",
+    "path_template": "/models",
+    "url": "https://api.openai.com/v1/models"
+  },
+  "plan_hash": "4da85f7b4b14636ef3a1adb7c0f7da190e369e3abe0e960961d381ad668853b3",
+  "requirements": {
+    "missing_required": []
+  },
+  "tool": "openai-api-tool",
+  "version": "0.1.0"
 }

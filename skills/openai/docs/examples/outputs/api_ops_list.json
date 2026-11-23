@@ -1,8 +1,5 @@
 {
-  "artifacts_dir": null,
-  "audit_log": null,
-  "audit_log_global": null,
-  "count": 273,
+  "count": 250,
   "ok": true,
   "ops": [
     {
@@ -727,21 +724,6 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "POST",
-      "operation_command": "cancelRun",
-      "path": "/threads/{thread_id}/runs/{run_id}/cancel",
-      "required_path_params": [
-        "run_id",
-        "thread_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
       "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/resources/uploads/methods/cancel",
       "method": "POST",
@@ -950,18 +932,6 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "POST",
-      "operation_command": "createAssistant",
-      "path": "/assistants",
-      "required_path_params": [],
-      "required_request_body": true,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
-      "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/resources/batches/methods/create",
       "method": "POST",
       "operation_command": "createBatch",
@@ -1135,20 +1105,6 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "POST",
-      "operation_command": "createMessage",
-      "path": "/threads/{thread_id}/messages",
-      "required_path_params": [
-        "thread_id"
-      ],
-      "required_request_body": true,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
       "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/resources/moderations/methods/create",
       "method": "POST",
@@ -1174,20 +1130,6 @@
     },
     {
       "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "POST",
-      "operation_command": "createRun",
-      "path": "/threads/{thread_id}/runs",
-      "required_path_params": [
-        "thread_id"
-      ],
-      "required_request_body": true,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
-      "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/resources/audio/subresources/speech/methods/create",
       "method": "POST",
       "operation_command": "createSpeech",
@@ -1196,30 +1138,6 @@
       "required_request_body": true,
       "tags": [
         "Audio"
-      ]
-    },
-    {
-      "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "POST",
-      "operation_command": "createThread",
-      "path": "/threads",
-      "required_path_params": [],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
-      "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "POST",
-      "operation_command": "createThreadAndRun",
-      "path": "/threads/runs",
-      "required_path_params": [],
-      "required_request_body": true,
-      "tags": [
-        "Assistants"
       ]
     },
     {
@@ -1520,20 +1438,6 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "DELETE",
-      "operation_command": "deleteAssistant",
-      "path": "/assistants/{assistant_id}",
-      "required_path_params": [
-        "assistant_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
       "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/certificates/methods/delete",
       "method": "DELETE",
@@ -1649,21 +1553,6 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "DELETE",
-      "operation_command": "deleteMessage",
-      "path": "/threads/{thread_id}/messages/{message_id}",
-      "required_path_params": [
-        "message_id",
-        "thread_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
       "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/resources/models/methods/delete",
       "method": "DELETE",
@@ -1689,20 +1578,6 @@
       "required_request_body": false,
       "tags": [
         "Responses"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "DELETE",
-      "operation_command": "deleteThread",
-      "path": "/threads/{thread_id}",
-      "required_path_params": [
-        "thread_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
       ]
     },
     {
@@ -1760,20 +1635,6 @@
       "required_request_body": false,
       "tags": [
         "Files"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "GET",
-      "operation_command": "getAssistant",
-      "path": "/assistants/{assistant_id}",
-      "required_path_params": [
-        "assistant_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
       ]
     },
     {
@@ -1922,21 +1783,6 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "GET",
-      "operation_command": "getMessage",
-      "path": "/threads/{thread_id}/messages/{message_id}",
-      "required_path_params": [
-        "message_id",
-        "thread_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
       "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/resources/responses/methods/retrieve",
       "method": "GET",
@@ -1948,51 +1794,6 @@
       "required_request_body": false,
       "tags": [
         "Responses"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "GET",
-      "operation_command": "getRun",
-      "path": "/threads/{thread_id}/runs/{run_id}",
-      "required_path_params": [
-        "run_id",
-        "thread_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "GET",
-      "operation_command": "getRunStep",
-      "path": "/threads/{thread_id}/runs/{run_id}/steps/{step_id}",
-      "required_path_params": [
-        "run_id",
-        "step_id",
-        "thread_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "GET",
-      "operation_command": "getThread",
-      "path": "/threads/{thread_id}",
-      "required_path_params": [
-        "thread_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
       ]
     },
     {
@@ -2334,18 +2135,6 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "GET",
-      "operation_command": "listAssistants",
-      "path": "/assistants",
-      "required_path_params": [],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
       "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/resources/batches/methods/list",
       "method": "GET",
@@ -2479,20 +2268,6 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "GET",
-      "operation_command": "listMessages",
-      "path": "/threads/{thread_id}/messages",
-      "required_path_params": [
-        "thread_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
       "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/resources/models/methods/list",
       "method": "GET",
@@ -2540,35 +2315,6 @@
       "required_request_body": false,
       "tags": [
         "Certificates"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "GET",
-      "operation_command": "listRunSteps",
-      "path": "/threads/{thread_id}/runs/{run_id}/steps",
-      "required_path_params": [
-        "run_id",
-        "thread_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "GET",
-      "operation_command": "listRuns",
-      "path": "/threads/{thread_id}/runs",
-      "required_path_params": [
-        "thread_id"
-      ],
-      "required_request_body": false,
-      "tags": [
-        "Assistants"
       ]
     },
     {
@@ -2653,20 +2399,6 @@
       ]
     },
     {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "POST",
-      "operation_command": "modifyAssistant",
-      "path": "/assistants/{assistant_id}",
-      "required_path_params": [
-        "assistant_id"
-      ],
-      "required_request_body": true,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
       "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "POST",
@@ -2678,50 +2410,6 @@
       "required_request_body": true,
       "tags": [
         "Certificates"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "POST",
-      "operation_command": "modifyMessage",
-      "path": "/threads/{thread_id}/messages/{message_id}",
-      "required_path_params": [
-        "message_id",
-        "thread_id"
-      ],
-      "required_request_body": true,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "POST",
-      "operation_command": "modifyRun",
-      "path": "/threads/{thread_id}/runs/{run_id}",
-      "required_path_params": [
-        "run_id",
-        "thread_id"
-      ],
-      "required_request_body": true,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
-      "beta_header": "assistants=v2",
-      "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "POST",
-      "operation_command": "modifyThread",
-      "path": "/threads/{thread_id}",
-      "required_path_params": [
-        "thread_id"
-      ],
-      "required_request_body": true,
-      "tags": [
-        "Assistants"
       ]
     },
     {
@@ -3229,21 +2917,6 @@
     {
       "beta_header": null,
       "doc_url": "https://developers.openai.com/api/reference/overview",
-      "method": "POST",
-      "operation_command": "submitToolOuputsToRun",
-      "path": "/threads/{thread_id}/runs/{run_id}/submit_tool_outputs",
-      "required_path_params": [
-        "run_id",
-        "thread_id"
-      ],
-      "required_request_body": true,
-      "tags": [
-        "Assistants"
-      ]
-    },
-    {
-      "beta_header": null,
-      "doc_url": "https://developers.openai.com/api/reference/overview",
       "method": "DELETE",
       "operation_command": "unassign-group-role",
       "path": "/organization/groups/{group_id}/roles/{role_id}",
@@ -3686,5 +3359,6 @@
         "Fine-tuning"
       ]
     }
-  ]
+  ],
+  "retired_count": 23
 }

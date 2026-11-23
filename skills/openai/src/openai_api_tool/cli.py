@@ -13,19 +13,19 @@ from .commands import demo as demo_cmd
 from .commands import jobs as jobs_cmd
 from .commands import onboarding as onboarding_cmd
 from .config import load_config
-from .project_config import load_project_config
 from .errors import SafetyError, ToolError, ValidationError
 from .output import Output
+from .project_config import load_project_config
 from .runs import (
     RunContext,
+    append_index_row,
     build_deterministic_summary,
+    find_run,
     init_run_context,
     list_runs,
-    find_run,
-    write_summary_md,
-    append_index_row,
     runs_index_path_for_env_file,
- )
+    write_summary_md,
+)
 
 
 class _ToolArgumentParser(argparse.ArgumentParser):
@@ -214,7 +214,7 @@ def build_parser() -> argparse.ArgumentParser:
     api_ops_list.add_argument("--tag", default=None, help="Filter by tag (exact match)")
     api_ops_list.set_defaults(func=api_cmd.cmd_api_ops_list, write_capable=False)
 
-    from .api_dispatch import load_operations_from_pinned_snapshot
+    from .api_dispatch import is_retired, load_operations_from_pinned_snapshot
 
     ops = load_operations_from_pinned_snapshot()
     reserved = {"ops"}
@@ -231,7 +231,8 @@ def build_parser() -> argparse.ArgumentParser:
         p2.add_argument("--file", action="append", default=None, help="Multipart file as field=/path/to/file (repeatable)")
 
     for op in sorted(ops, key=lambda o: (o.operation_command, o.method, o.path)):
-        api_op = api_sub.add_parser(op.operation_command, help=f"{op.method} {op.path}")
+        state = "Retired. " if is_retired(op) else ""
+        api_op = api_sub.add_parser(op.operation_command, help=f"{state}{op.method} {op.path}")
         _add_api_op_shared_args(api_op)
         api_op.set_defaults(func=api_cmd.cmd_api_call, write_capable=True, op=op.operation_command)
 
@@ -279,6 +280,14 @@ def main(argv: list[str]) -> int:
             return int(e.code or 0)
         except Exception:
             return 0
+    command_str = " ".join(
+        part for part in (
+            "openai-api-tool", args.cmd,
+            getattr(args, "api_cmd", None), getattr(args, "api_ops_cmd", None),
+            getattr(args, "auth_cmd", None), getattr(args, "runs_cmd", None),
+            getattr(args, "jobs_cmd", None), getattr(args, "demo_cmd", None),
+        ) if part
+    )
     write_capable = bool(getattr(args, "write_capable", False))
     run_ctx: RunContext = init_run_context(
         env_file=str(args.env_file),
@@ -337,7 +346,6 @@ def main(argv: list[str]) -> int:
         if not getattr(args, "cmd", None):
             parser.error("Missing command. Use --help to see available commands.")
 
-        command_str = "openai-api-tool " + " ".join(argv)
         audit.bind_context(
             {
                 "tool": "openai-api-tool",
@@ -452,13 +460,13 @@ def main(argv: list[str]) -> int:
         return 130
     except SafetyError as e:
         # Safety refusals are "safe no-ops" (not errors).
-        audit.write("refused", {"reason": str(e)})
+        audit.write("refused", {"refusal_type": "SafetyError"})
         out.emit({"ok": True, "refused": True, "reasons": [str(e)], "refusal_type": "SafetyError"})
         _finalize_run_artifacts(
             run_ctx=run_ctx,
             tool="openai-api-tool",
             version=__version__,
-            command="openai-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -468,13 +476,13 @@ def main(argv: list[str]) -> int:
         )
         return 0
     except ToolError as e:
-        audit.write("error", {"error": str(e), "error_type": type(e).__name__})
+        audit.write("error", {"error_type": type(e).__name__})
         out.emit({"ok": False, "error": str(e), "error_type": type(e).__name__})
         _finalize_run_artifacts(
             run_ctx=run_ctx,
             tool="openai-api-tool",
             version=__version__,
-            command="openai-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -486,13 +494,13 @@ def main(argv: list[str]) -> int:
     except Exception as e:  # noqa: BLE001
         if bool(args.debug):
             raise
-        audit.write("error", {"error": str(e), "error_type": type(e).__name__})
+        audit.write("error", {"error_type": type(e).__name__})
         out.emit({"ok": False, "error": str(e), "error_type": type(e).__name__})
         _finalize_run_artifacts(
             run_ctx=run_ctx,
             tool="openai-api-tool",
             version=__version__,
-            command="openai-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,

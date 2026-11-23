@@ -158,7 +158,7 @@ Start here if you want infrastructure, domain, account, or AI-platform work.
 | [**SAV**](sav/README.md)<br><sub>Install slug: <code>sav</code></sub> | List active domains, check prices and recent sales, and review domain changes before approving them. | SAV account | Reads + careful changes |
 | [**NameBright**](namebright/README.md)<br><sub>Install slug: <code>namebright</code></sub> | Check domains, DNS, and renewal dates. Review purchases, renewals, and account moves before approving them. | NameBright account | Reads + careful changes |
 | [**Spaceship**](spaceship/README.md)<br><sub>Install slug: <code>spaceship</code></sub> | Check domains, prices, DNS, and sales. Review renewals, transfers, and SafePay deals before approving them. | Spaceship account | Reads + careful changes |
-| [**OpenAI Platform**](openai/README.md)<br><sub>Install slug: <code>openai</code></sub> | Review and plan OpenAI API operations through a safer local workflow | OpenAI account | Reads + careful changes |
+| [**OpenAI Platform**](openai/README.md)<br><sub>Install slug: <code>openai</code></sub> | Check models, files, and usage. Review uploads, batches, and paid requests before sending them. | OpenAI account | Reads + careful changes |
 | [**Gemini API**](gemini/README.md)<br><sub>Install slug: <code>gemini</code></sub> | Review Gemini models, token counts, generation calls, files, cached context, batches, and file-search stores | Gemini API key | Reads + careful changes |
 | [**Qdrant Cloud**](qdrant-cloud/README.md)<br><sub>Install slug: <code>qdrant-cloud</code></sub> | Review Qdrant Cloud resources and use provider backup or restore workflows where supported | Qdrant Cloud account | Reads + careful changes |
 

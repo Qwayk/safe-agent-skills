@@ -1,66 +1,21 @@
-# Proof and verification
+# What we tested
 
-OpenAI proof should answer a simple question: what has actually been checked for models, files, batches, fine-tuning, vector stores, assistants, and generated API calls, and what still needs live credentials, permissions, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Both fresh installs passed 48 offline tests and listed 250 commands from the June list. The 23 retired Assistants commands stop on the machine with a link to OpenAI’s migration guide. Setup created a private settings file in a new folder and printed the check for that file. A simulated model read used the installed package.
 
-If you only check one thing, check read examples, generated API plans, and write refusals before trusting OpenAI account work.
+Offline tests checked a changed key, project, settings folder, and upload. They also checked that the receipt exists before sending, the same approval cannot send twice, and a missing reply leaves a record to inspect. A response creation checked its specific ID. A free moderation call used the ordinary approval without the spending flag and skipped an unrelated read. The routine run summary and log contain the operation name without the prompt.
 
-## Last verified
+The wheel and source archive include the skill and command list. The source archive also includes the dated references. All six JSON examples worked. The source has 36 working local links and the catalog copy has 31. I checked that the four March files in GitHub history match the originals byte for byte. All OpenAI API checks used simulated replies.
 
-- Date (UTC): 2026-06-29
-- Verified by: Codex builder refresh
-- Tool version: 0.1.0
-- Provider API version (if applicable): documented OpenAI OpenAPI spec `2.3.0`, refreshed 2026-06-29
-- Environment: plan-only / base URL: https://api.openai.com/v1
-- Tests: local unit suite passed (`41 tests, OK`); coverage and saved example output both matched the 273-operation pinned inventory. Live OpenAI behavior remains unverified without a real API key.
+Ruff passed for the edited Python files. The full type check reported the same 15 findings before and after this change.
 
-## Smoke checks
+## June 29, 2026 checks
 
-Run inside the tool folder:
+The June refresh matched 273 operation rows in the pinned list, coverage, and saved example. The builder ran `python3 src/openai_api_tool/scripts/refresh_official_inventory.py --date 2026-06-29` and `.venv/bin/python -m unittest -q`. All 41 tests passed on the source and the public copy. The review also confirmed that ordinary API writes required `--plan-in`. [June GitHub release](https://github.com/Qwayk/safe-agent-skills/commit/337a6c5620c708deea2ce43d9af187074e811651)
 
-1) Create venv + install:
-- `python3 -m venv .venv`
-- `.venv/bin/python -m pip install -e .`
+## March 2026 checks
 
-2) Version (no `.env` required):
-- `openai-api-tool --output json --version`
+The March 14 release fixed missing docs and catalog links. The March 15 pass added local files for streaming and binary replies, redaction for JSON previews, and checks for changes to saved plan inputs. It kept those checks local because the tool did not have a documented provider guarantee against repeat sends.
 
-3) Auth/config check (read-only):
-- `openai-api-tool --output json auth check`
-
-4) One representative read query:
-- `openai-api-tool --output json api ListContainers`
-
-## 2026-06-29 refresh checks
-
-- `python3 src/openai_api_tool/scripts/refresh_official_inventory.py --date 2026-06-29` produced 273 operation rows from the documented OpenAI OpenAPI spec.
-- `.venv/bin/python -m unittest -q` passed with 41 tests.
-- Ordinary API writes now have a direct safety test proving `--plan-in` is required before apply.
-- `docs/api_coverage.md` has 273 operation rows and matches `docs/official_operations_v1_2026-06-29.txt`.
-- `docs/examples/outputs/api_ops_list.json` reports `count: 273` and matches the pinned inventory.
-- Representative changed doc links were spot-checked; rows without a proved method-page link fall back to the official API reference overview.
-
-## Example outputs (redacted)
-
-These files are committed (unlike `.state/`):
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check.json`
-- `docs/examples/outputs/api_ops_list.json` (273 pinned operations from the 2026-06-29 documented OpenAPI refresh)
-- `docs/examples/plan.example.json`
-- `docs/examples/plan_spend_money.example.json` (spend-money plan with `classification.gates.plan_in/yes/ack_spend_money = true`; ordinary writes also require `plan_in`)
-- `docs/examples/receipt.example.json`
-
-## What can go wrong
-
-- **Invalid API key / wrong scopes** → rerun `openai-api-tool --output json auth check --live` so the tool actually calls `/models` and surfaces `ok=false` plus the error details; the offline-only run simply reports which fields are populated.
-- **Rate limiting** → verify the CLI surfaces a non-secret retry/backoff hint; confirm it does not loop/retry-storm.
-- **Pagination surprises** → verify results include paging metadata or clear “next page” hints in JSON/text mode.
-- **Write safety drift** → verify writes require `--plan-in`, then require explicit no-snapshot approval before OpenAI API key use or HTTP when no saved snapshot is available.
-- **Write recovery contract**: write plans include `before_state.status: no_snapshot_available` and `recovery` with `automatic_rollback: false`, empty `backups/snapshots`, and `rollback_plan: null` so no-restore behavior is explicit.
-
-## Links
-
-- Sources used: `docs/references.md`
-- Coverage main reference: `docs/api_coverage.md`
-- Debug history: `docs/engineering_notes.md`
+[June and March source files](references.md) · [Local examples](examples/)

@@ -1,30 +1,16 @@
 # Changelog
 
-All notable changes to this project are documented in this file.
+## November 23, 2026
 
-This format is based on Keep a Changelog, and this project follows Semantic Versioning.
-Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking changes.
+- Fresh installs include the command list and skill instructions. Setup creates private settings and prints the check for the same file.
+- Saved approvals bind the account and input files. The tool saves a private receipt before sending and stops a second use of that approval.
+- Receipts check the specific result when a read is available. Routine logs keep command names without the original input.
+- The 23 retired Assistants commands stop locally. Extra spending approval applies to actions that can add charges.
 
-## [Unreleased]
+## June 29, 2026
 
-### Added
-- More inventory refresh utilities and safety tests.
-- OpenAI write plans now include a `no_snapshot_available` `before_state` contract and an explicit no-snapshot approval verification plan.
-- 2026-06-29 documented OpenAI OpenAPI snapshot plus 273-operation pinned inventory.
+The tool pinned the documented OpenAI OpenAPI snapshot with 273 operations. All API writes required a saved plan, and writes without a saved before-state required explicit approval of that limit. [June checks](docs/proof.md#june-29-2026-checks)
 
-### Changed
-- Inventory refresh now uses the official documented OpenAPI spec as the operation boundary instead of inferring method/path from API reference page examples.
-- API writes, demo writes, and jobs with write rows now require explicit no-snapshot approval before OpenAI API key use, OpenAI HTTP, or stub receipt output when command-specific before-state support is not available.
-- Existing spend-money, irreversible, `--live`, `--yes`, and `--plan-in` gates still run before the broader explicit no-snapshot approval.
+## March 15, 2026
 
-### Fixed
-- CLI template: ensure argument/usage errors in `--output json` mode emit exactly one JSON error object (no argparse usage text).
-
-### Removed
-
-## [0.1.0] - 2026-03-15
-
-### Added
-- pinned OpenAI operations inventory with explicit `api <operation>` commands tied to the official reference,
-- deterministic plan/live/apply/verify/receipt gates plus spend-money and irreversible acknowledgements,
-- explicit configuration, onboarding, agent extension, and safety docs tailored to OpenAI plus the first skills wrapper.
+Version `0.1.0` introduced the named commands, local plans, approval flags, and receipts.

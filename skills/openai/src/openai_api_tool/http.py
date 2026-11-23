@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -38,6 +39,7 @@ class HttpClient:
         self._timeout_s = timeout_s
         self._verbose = verbose
         self._session = requests.Session()
+        self._session.auth = lambda request: request
         self._session.headers["User-Agent"] = user_agent
 
     def _read_stream_response(
@@ -54,7 +56,8 @@ class HttpClient:
         truncated = False
         last_chunk = b""
         try:
-            with stream_to.open("wb") as fh:
+            fd = os.open(stream_to, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(fd, "wb") as fh:
                 for chunk in resp.iter_content(chunk_size=STREAM_CHUNK_SIZE):
                     if not chunk:
                         continue
@@ -87,15 +90,6 @@ class HttpClient:
             artifact_truncated=truncated,
         )
 
-    @staticmethod
-    def _format_url(url: str, params: dict[str, Any] | None) -> str:
-        if not params:
-            return url
-        try:
-            return requests.Request("GET", url, params=params).prepare().url or url
-        except Exception:
-            return url
-
     def request(
         self,
         method: str,
@@ -113,12 +107,11 @@ class HttpClient:
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),
     ) -> HttpResponse:
         attempt = 0
-        display_url = self._format_url(url, params)
         while True:
             attempt += 1
             start = time.time()
             if self._verbose:
-                print(f"[http] {method} {display_url} (start)", file=sys.stderr)
+                print(f"[http] {method} (start)", file=sys.stderr)
             try:
                 resp = self._session.request(
                     method=method,
@@ -130,22 +123,23 @@ class HttpClient:
                     files=files,
                     timeout=self._timeout_s,
                     stream=bool(stream_to),
+                    allow_redirects=False,
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
                 if self._verbose:
                     print(
-                        f"[http] {method} {display_url} -> EXCEPTION ({ms}ms): {type(e).__name__}: {e}",
+                        f"[http] {method} failed ({ms}ms): {type(e).__name__}",
                         file=sys.stderr,
                     )
                 raise RuntimeError(
-                    f"Request failed for {method} {display_url}: {type(e).__name__}: {e}"
+                    f"OpenAI request failed ({type(e).__name__})"
                 ) from e
             ms = int((time.time() - start) * 1000)
             if self._verbose:
-                print(f"[http] {method} {resp.url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
+                print(f"[http] {method} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
-            if resp.status_code < 400:
+            if 200 <= resp.status_code < 300:
                 if stream_to:
                     return self._read_stream_response(
                         resp=resp,
@@ -160,8 +154,9 @@ class HttpClient:
                     url=resp.url,
                 )
 
-            if attempt <= retries and resp.status_code in retry_on:
+            resp.close()
+            if method in {"GET", "HEAD"} and attempt <= retries and resp.status_code in retry_on:
                 time.sleep(min(2**attempt, 10))
                 continue
 
-            raise RuntimeError(f"HTTP {resp.status_code} for {method} {resp.url}\n{resp.text}")
+            raise RuntimeError(f"HTTP {resp.status_code} for {method}")

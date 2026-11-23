@@ -1,83 +1,55 @@
 from __future__ import annotations
 
+import os
+import shlex
 from pathlib import Path
+from typing import Any
+
+from ..config import load_config
+from ..errors import ValidationError
+
+_SETTINGS = """OPENAI_API_BASE_URL=https://api.openai.com/v1
+OPENAI_API_KEY=
+OPENAI_ORGANIZATION_ID=
+OPENAI_PROJECT_ID=
+OPENAI_TIMEOUT_S=30
+"""
 
 
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
+def cmd_onboarding(args: Any, ctx: dict[str, Any]) -> int:
+    env_file = Path(args.env_file).absolute()
+    created = False
+    if not args.no_write_env:
+        try:
+            env_file.parent.mkdir(parents=True, exist_ok=True)
+            fd = os.open(env_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                handle.write(_SETTINGS)
+            created = True
+        except FileExistsError:
+            pass
+        except OSError as exc:
+            raise ValidationError("Could not create the private settings file") from exc
 
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
-
-
-def cmd_onboarding(args: object, ctx: dict) -> int:
-    out = ctx["out"]
-    env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
-
-    env_path = Path(env_file)
-    env_created = False
-
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
-        else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
-
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "OPENAI_API_KEY"):
-        missing.append("OPENAI_API_KEY")
-
-    steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Open .env and fill the required values:",
-        "  - OPENAI_API_KEY=<your OpenAI API key>",
-        "Optional (only if needed):",
-        "  - OPENAI_ORGANIZATION_ID=<org id>",
-        "  - OPENAI_PROJECT_ID=<project id>",
-        "Run: openai-api-tool --output json auth check",
-    ]
-
-    payload = {
-        "ok": True,
-        "onboarding": {
-            "env_file": env_file,
-            "env_created": env_created,
-            "missing": missing,
-            "next_command": "openai-api-tool --output json auth check",
-            "steps": steps,
-        },
-    }
-
-    if str(getattr(args, "output", "json")) == "json":
-        out.emit(payload)
+    missing = [] if load_config(str(env_file)).api_key else ["OPENAI_API_KEY"]
+    next_command = shlex.join(
+        ["openai-api-tool", "--env-file", str(env_file), "--output", "json", "auth", "check"]
+    )
+    steps = ["Set OPENAI_API_KEY in the selected settings file."] if missing else []
+    if args.output == "json":
+        ctx["out"].emit({
+            "ok": True,
+            "onboarding": {
+                "env_file": str(env_file),
+                "env_created": created,
+                "missing": missing,
+                "next_command": next_command,
+                "steps": steps,
+            },
+        })
     else:
-        print("To connect this tool to your API, do this once:")
-        for i, s in enumerate(steps, start=1):
-            print(f"{i}. {s}")
-        if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        print("")
-        print("Next: openai-api-tool --output json auth check")
+        for message in steps:
+            print(message)
+        print(f"Settings file {env_file}")
+        print(f"Next command {next_command}")
     return 0

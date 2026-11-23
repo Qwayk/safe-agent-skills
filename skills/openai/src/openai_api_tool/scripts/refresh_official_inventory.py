@@ -11,7 +11,6 @@ from typing import Any
 
 import yaml
 
-
 DOCS_OVERVIEW_URL = "https://developers.openai.com/api/reference/overview"
 DOCS_ROOT = "https://developers.openai.com"
 OPENAPI_YAML_URL = "https://app.stainless.com/api/spec/documented/openai/openapi.documented.yml"
@@ -54,7 +53,7 @@ def _write_text(path: Path, text: str) -> None:
 
 def _parse_overview_method_links(html: str) -> set[str]:
     links = set(re.findall(r'href="(/api/reference/[^"]+)"', html or ""))
-    return {l for l in links if "/methods/" in l}
+    return {link for link in links if "/methods/" in link}
 
 
 def _resource_key(value: str) -> str:
@@ -267,7 +266,7 @@ def _required_body(op_obj: dict[str, Any]) -> bool:
 def main() -> int:
     ap = argparse.ArgumentParser(prog="refresh_official_inventory")
     ap.add_argument("--date", default=_utc_date(), help="UTC date for snapshot file names (YYYY-MM-DD)")
-    ap.add_argument("--out-dir", default="docs", help="Output docs directory (tool-relative)")
+    ap.add_argument("--out-dir", default="docs", help="Output docs directory (tool-relative). The default writes the runtime list into the package.")
     args = ap.parse_args()
 
     tool_root = _tool_root()
@@ -278,7 +277,7 @@ def main() -> int:
     openapi_obj = yaml.safe_load(openapi_yaml_text)
     if not isinstance(openapi_obj, dict):
         raise RuntimeError("OpenAPI YAML did not parse as an object")
-    version = str(((openapi_obj.get("info") or {}).get("version") or "")).strip() or "unknown"
+    version = str((openapi_obj.get("info") or {}).get("version") or "").strip() or "unknown"
 
     openapi_yml_path = out_dir / f"official_openapi_documented_v{version}_{args.date}.yml"
     _write_text(openapi_yml_path, openapi_yaml_text)
@@ -370,7 +369,8 @@ def main() -> int:
         line = "\t".join([r["operation_command"], r["method"], r["path"], r["doc_url"], *extras])
         lines.append(line)
 
-    ops_path = out_dir / f"official_operations_v1_{args.date}.txt"
+    inventory_dir = Path(__file__).resolve().parents[1] if args.out_dir == "docs" else out_dir
+    ops_path = inventory_dir / f"official_operations_v1_{args.date}.txt"
     _write_text(ops_path, "\n".join(lines) + "\n")
 
     print(

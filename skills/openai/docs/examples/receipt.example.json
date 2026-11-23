@@ -1,51 +1,81 @@
 {
-  "plan_hash": "a6f1c7a7f2d85cf3e8af830057c08d74651b81e6152f1a17aac7021b69fabb93",
-  "operation": {
-    "operation_command": "ListContainers",
-    "method": "GET",
-    "path_template": "/containers",
-    "path_filled": "/containers",
-    "url": "https://api.openai.com/v1/containers",
-    "doc_url": "https://developers.openai.com/api/reference/resources/containers/methods/list",
-    "missing_path_params": []
+  "before_state": {
+    "approval_required": "--ack-no-snapshot",
+    "operation": "createResponse",
+    "provider_backup_id": null,
+    "reason": "No useful before-state snapshot is captured for this OpenAI write. The write may still run after the reviewed plan and explicit no-snapshot approval.",
+    "required": true,
+    "saved_path": null,
+    "status": "no_snapshot_available",
+    "supported": false,
+    "target": "https://api.openai.com/v1/responses"
   },
   "classification": {
-    "method": "GET",
-    "is_read": true,
-    "is_write": false,
-    "spend_money": false,
-    "irreversible": false,
-    "tags": [],
     "gates": {
-      "apply": false,
-      "live": false,
-      "plan_in": false,
-      "yes": false,
-      "ack_spend_money": false,
-      "ack_irreversible": false
-    }
+      "ack_irreversible": false,
+      "ack_spend_money": true,
+      "apply": true,
+      "live": true,
+      "plan_in": true,
+      "yes": true
+    },
+    "irreversible": false,
+    "is_read": false,
+    "is_write": true,
+    "method": "POST",
+    "spend_money": true,
+    "tags": [
+      "Responses"
+    ]
+  },
+  "no_snapshot_approval": {
+    "approved": true,
+    "flag": "--ack-no-snapshot"
+  },
+  "operation": {
+    "doc_url": "https://developers.openai.com/api/reference/resources/responses/methods/create",
+    "method": "POST",
+    "missing_path_params": [],
+    "operation_command": "createResponse",
+    "path_filled": "/responses",
+    "path_template": "/responses",
+    "url": "https://api.openai.com/v1/responses"
+  },
+  "plan_hash": "feab1813b38f7d3464471e08f4662c1e24f51894e76e7cbdacaf4aa2f9c65e4c",
+  "recovery": {
+    "automatic_rollback": false,
+    "backups": [],
+    "restore_note": "No built-in rollback, snapshots, or provider restore are available in this CLI. Check the affected resource before deciding whether a separate fix is possible.",
+    "rollback_plan": null,
+    "snapshots": []
   },
   "request": {
-    "method": "GET",
-    "url": "https://api.openai.com/v1/containers",
+    "body": {
+      "input": "Say hello",
+      "model": "example-model"
+    },
+    "files": [],
+    "method": "POST",
     "query": {},
-    "body": null,
-    "files": []
+    "url": "https://api.openai.com/v1/responses"
   },
   "response": {
-    "status": 200,
-    "url": "https://api.openai.com/v1/containers",
+    "body": {
+      "preview": "{\"id\": \"resp_example\", \"status\": \"completed\"}",
+      "size_bytes": 42,
+      "type": "json"
+    },
     "headers": {
       "content-type": "application/json"
     },
-    "body": {
-      "type": "json",
-      "preview": "{}",
-      "size_bytes": 2
-    }
+    "status": 200,
+    "url": "https://api.openai.com/v1/responses"
   },
+  "status": "response_received",
   "verification": {
-    "status": "skipped",
-    "details": "No verification target for read-only operation"
+    "details": "Read back the same resource ID",
+    "resource_id": "resp_example",
+    "resource_status": "completed",
+    "status": "passed"
   }
 }

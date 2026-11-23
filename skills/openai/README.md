@@ -1,111 +1,28 @@
-# OpenAI
+# OpenAI Platform
 
-**Capability:** Reads + careful changes
+Use this tool to see which models and files your OpenAI API key can access, or to check projects and usage when the key allows it. It can also prepare a file upload, response, batch, or other change for your approval.
 
-OpenAI account work can affect models, files, assistants, threads, vector stores, usage, projects, and sometimes real spend. This skill helps an agent inspect what is available, choose the right shipped operation, and prepare risky API changes as reviewed plans before anything reaches OpenAI.
+## Get started
 
-It is useful for questions like "Which models or files are available?", "What usage or project access should we review?", "Which operation fits this API job?", or "What approvals are needed before a batch, fine-tune, upload, delete, or spend-money action?"
-
-No network call happens without `--live`, even for reads. Write-capable operations start as dry-run plans, spend-money actions need stronger approval, and live writes need explicit no-snapshot approval when the tool cannot save useful before-state first.
-
-A good first ask is: "Check the OpenAI skill is configured, list the available operations, and show me the safest live read or review steps before we plan any changes."
-
-## Start here first
-
-- Want ideas for real OpenAI work? [What you can do with OpenAI](docs/use_cases.md)
-- Need setup? [Connect your OpenAI access](docs/onboarding.md)
-- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
-
-If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
-
-## What this skill helps with
-
-- Check local OpenAI API setup and confirm live access safely.
-- Review the current pinned OpenAI operation catalog before making a live call.
-- Inspect models, files, assistants, threads, vector stores, usage, projects, and other OpenAI resources.
-- Plan careful write actions across the shipped OpenAI command surface.
-- Review spend-money and delete-like actions before the request runs.
-
-## What access this skill needs
-
-- Local OpenAI settings in `.env`.
-- A valid OpenAI API key.
-- Optional organization or project IDs if your account needs them.
-- `--live` for real OpenAI network calls, even for reads.
-- Billing permission for spend-money actions.
-- Extra approval for spend-money, irreversible, or no-snapshot write actions.
-
-## Install and first run
-
-Install slug: `openai`
-
-Ask your agent to install the `openai` skill from `Qwayk/safe-agent-skills`.
-
-If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
-
-If your host does not let the agent install skills directly, run:
+Install the skill for your agent.
 
 ```bash
 npx skills add Qwayk/safe-agent-skills@openai -g -y
 ```
 
-Then try a safe first ask like:
+The command-line tool needs Python 3.12 or newer. From the downloaded tool folder, run `python -m pip install .` in your Python environment. Then set up your key in a [private settings file](docs/onboarding.md).
 
-```text
-Connect the OpenAI skill, list the available operations, and show me a safe live read or review path before we plan any changes.
+```bash
+openai-api-tool onboarding
+openai-api-tool auth check
+openai-api-tool api ops list
+openai-api-tool --live api listModels
 ```
 
-## How this skill stays safe
+The first three commands stay on your machine. Use the last command when you want to see which models are available to your key. Try asking “Check which OpenAI models this project can use.”
 
-- No network call happens without `--live`, even for reads.
-- Write-capable operations start as dry-run plans first and require `--plan-in` before apply.
-- Spend-money actions also require `--yes` and `--ack-spend-money`.
-- Delete-like or irreversible actions can also require `--ack-irreversible`.
-- When no saved before-state exists, live writes also need `--ack-no-snapshot`.
-- Approved live-write receipts can record the no-snapshot approval and recovery limit.
-- Plans, receipts, logs, and run artifacts stay sanitized so keys and tokens do not leak.
-- The docs, tests, coverage notes, and source code are all here in one place.
+## Review a change
 
-## What it covers today
+Ask the agent to save a plan before it uploads data, starts a batch, deletes a file, or makes a request that can cost money. Review the project, exact request, and any cost or recovery limits. Then follow the [approval steps](docs/safety_model.md).
 
-This skill covers:
-
-- the pinned OpenAI operation catalog shipped in this repo
-- 273 documented OpenAI API operations from the 2026-06-29 documented OpenAPI refresh
-- local onboarding, auth checks, operation discovery, and jobs
-- explicit OpenAI API commands for reads and writes across the documented surface
-- local run history and proof files for review
-
-## What happens before live changes
-
-- The agent should show the dry-run plan first.
-- You review the operation, inputs, target, and recovery limits.
-- Real network reads still need `--live`.
-- Write-capable actions need `--live --apply --plan-in <plan.json>`.
-- Spend-money actions also require `--yes` and `--ack-spend-money`.
-- Delete-like actions can also require `--ack-irreversible`.
-- Writes without saved before-state also need `--ack-no-snapshot`.
-
-## What proof it leaves behind
-
-- Dry-run plans can be saved with `--plan-out`.
-- Approved applies can save receipts with `--receipt-out`.
-- Local run history can be reviewed with `runs list` and `runs show`.
-- Receipts can also record no-snapshot approval when a live write had no saved before-state.
-- Read receipts, plans, refusals, and summaries stay under local run history when artifacts are enabled.
-- The docs, tests, examples, and API coverage ledger are all in this repo.
-
-## Limits
-
-- Many live writes still do not have saved before-state or a built-in undo path.
-- The shipped surface follows the 2026-06-29 pinned OpenAI operation list in this repo. If OpenAI changes the documented API later, refresh the inventory before claiming new coverage.
-- Spend-money operations are intentionally slower because they need stronger approval.
-- You still need valid OpenAI access, scopes, and billing permissions for real account work.
-
-## Helpful docs
-
-- [Browse all OpenAI docs](docs/README.md)
-- [Quickstart](docs/quickstart.md)
-- [Command guide](docs/command_reference.md)
-- [Proof and verification](docs/proof.md)
-- [API coverage](docs/api_coverage.md)
+The command list comes from a dated [OpenAI API inventory](docs/api_coverage.md). The old Assistants API commands stop locally and point to Responses and Conversations. See [all guides](docs/README.md) or [what we tested](docs/proof.md).

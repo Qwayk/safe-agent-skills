@@ -1,54 +1,15 @@
-# Jobs and batches
+# Run an OpenAI batch
 
-Batch operations are run from a CSV file:
+A live batch sends a file of API requests to OpenAI for later processing. Prepare the file in the format OpenAI expects. Review the file and requested models before uploading it, then review the cost and the batch plan before starting the batch. [OpenAI Batch guide](https://developers.openai.com/api/docs/guides/batch)
 
-```bash
-openai-api-tool jobs run --file jobs.csv
-```
+Use `api createFile` with a multipart file and the purpose `batch` for the upload. Use the returned file ID in the request for `api createBatch`. Both actions use the normal [plan and approval commands](command_reference.md#review-and-send-a-request).
 
-## Safety rules
-
-- Jobs are strict by default.
-- Without `--apply`, jobs run in dry-run mode and include a plan for write rows.
-- Any write action still requires `--apply --yes`, but write rows require explicit no-snapshot approval when no saved snapshot is available; missing approval refuses before execution.
-- The runner stops on the first error and exits non-zero.
-- Output is exactly one JSON summary object.
-
-## Plan files (recommended for risky jobs)
-
-If a jobs run includes writes, prefer:
-
-1) Create a plan file (dry-run):
+After the batch starts, check its status.
 
 ```bash
-openai-api-tool jobs run --file jobs.csv --plan-out plan.json
+openai-api-tool --live api retrieveBatch --path batch_id=your_batch_id
 ```
 
-2) Review the plan (human/Codex), then attempt apply from the saved plan:
+Use the output file ID to find the results once the batch finishes. A reply that gives a batch ID confirms the request was received. The later status tells you whether the work finished.
 
-```bash
-openai-api-tool --apply --yes --plan-in plan.json jobs run --file jobs.csv
-```
-
-Note: when applying from `--plan-in`, this template requires the original `--file` so it can verify `job_file_sha256` and refuse if the job file changed since plan creation. If the job includes write rows, the approved apply records explicit no-snapshot approval and recovery limits and a refusal file when approval is missing.
-
-## CSV format
-
-The CSV must include an `action` column.
-
-This template includes demo actions:
-- `read.ping` (safe; does not require `--apply`)
-- `write.ping` (plans only; apply attempts require `--apply --yes` and then require explicit no-snapshot approval before execution)
-
-Example:
-
-```csv
-action
-read.ping
-```
-
-If you want to include a write action, first create and review a plan. An apply attempt currently refuses safely:
-
-```bash
-openai-api-tool --apply --yes jobs run --file examples/jobs_with_write.csv
-```
+For a local practice run, `openai-api-tool jobs run --file examples/jobs.csv` uses sample CSV actions. The CSV needs an `action` column with `read.ping` or `write.ping`. The demo actions stay on your machine.

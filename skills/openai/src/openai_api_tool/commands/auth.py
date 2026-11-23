@@ -100,6 +100,6 @@ def cmd_auth_check(args: Any, ctx: dict[str, Any]) -> int:
         if details:
             out["error_details"] = details
 
-    ctx["audit"].write("auth.check", out)
+    ctx["audit"].write("auth.check", {key: value for key, value in out.items() if key != "error_details"})
     ctx["out"].emit(out)
     return 0

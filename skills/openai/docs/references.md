@@ -1,29 +1,13 @@
-# References (sources)
+# OpenAI API references
 
-Purpose:
-- Record what sources the tool implementation relies on (so behavior is auditable and reproducible).
-- Prefer official provider docs; use other sources only when needed and note why.
+- [OpenAI API reference](https://developers.openai.com/api/reference/overview)
+- [Documented OpenAPI source](https://app.stainless.com/api/spec/documented/openai/openapi.documented.yml)
+- [Assistants migration guide](https://developers.openai.com/api/docs/assistants/migration)
+- [Pricing](https://developers.openai.com/api/docs/pricing) and [free moderation endpoint](https://developers.openai.com/api/docs/guides/moderation)
 
-Rules:
-- Never include secrets (tokens, client secrets) in this file.
-- When a capability depends on a specific documented behavior (rate limits, required headers, download tracking), link the exact doc page.
-- Update this file whenever you add/change an endpoint or behavior based on new research.
+The June 29, 2026 [OpenAPI snapshot](official_openapi_documented_v2.3.0_2026-06-29.yml) and [packaged command list](../src/openai_api_tool/official_operations_v1_2026-06-29.txt) preserve what the tool was built against. The snapshot SHA-256 is `865969d6c30ddba1d0002c7d97a398f0a070f83e274e2fe8d58c1ef099aea9d7`. The list SHA-256 is `e0d3b12ba63a87d29972c79a95e4e18fc25e368831fb450ec982d723407c54e7`. See [API coverage](api_coverage.md) for the current command status.
 
-## Provider docs (official)
+## March snapshots in Git history
 
-- Provider: OpenAI
-- API reference overview (navigation main reference for ops list): `https://developers.openai.com/api/reference/overview`
-- OpenAPI spec (documented; referenced by OpenAI’s `openai/openai-openapi` README): `https://app.stainless.com/api/spec/documented/openai/openapi.documented.yml`
-- Last audited (UTC): 2026-06-29
-- Last verified (UTC): 2026-06-29
-
-Pinned snapshots (committed in this tool repo):
-- `docs/official_openapi_documented_v2.3.0_2026-06-29.yml` sha256: `865969d6c30ddba1d0002c7d97a398f0a070f83e274e2fe8d58c1ef099aea9d7`
-- `docs/official_operations_v1_2026-06-29.txt` sha256: `e0d3b12ba63a87d29972c79a95e4e18fc25e368831fb450ec982d723407c54e7`
-- `docs/official_openapi_documented_v2.3.0_2026-03-17.yml` sha256: `52e344bdd29e39529ce2e45e481d7848a6a088a873f32ef438bed20be14aa4fa`
-- `docs/official_operations_v1_2026-03-17.txt` sha256: `14e490cf0669bfc48c77530f14d6a4583d1fdfd4b024f29e15aadb54b672e622`
-- Prior snapshot (still committed for audit history): `docs/official_openapi_documented_v2.3.0_2026-03-14.yml` sha256: `15ee0962f540a02a0bbc243e037ce76f47bfa00e332f91f9bb2b6299be5cc0ce`
-
-## Other sources (only if needed)
-
-None.
+- March 14, 2026. [OpenAPI file](https://github.com/Qwayk/safe-agent-skills/blob/337a6c5620c708deea2ce43d9af187074e811651/skills/openai/docs/official_openapi_documented_v2.3.0_2026-03-14.yml) · [Command list](https://github.com/Qwayk/safe-agent-skills/blob/337a6c5620c708deea2ce43d9af187074e811651/skills/openai/docs/official_operations_v1_2026-03-14.txt)
+- March 17, 2026. [OpenAPI file](https://github.com/Qwayk/safe-agent-skills/blob/337a6c5620c708deea2ce43d9af187074e811651/skills/openai/docs/official_openapi_documented_v2.3.0_2026-03-17.yml) · [Command list](https://github.com/Qwayk/safe-agent-skills/blob/337a6c5620c708deea2ce43d9af187074e811651/skills/openai/docs/official_operations_v1_2026-03-17.txt)

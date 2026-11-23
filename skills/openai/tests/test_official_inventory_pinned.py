@@ -5,20 +5,13 @@ import hashlib
 import unittest
 from pathlib import Path
 
+from openai_api_tool.api_dispatch import pinned_official_operations_path
 from openai_api_tool.cli import build_parser
 from openai_api_tool.official_inventory import load_official_operations_file
 
 
 def _tool_root() -> Path:
     return Path(__file__).resolve().parents[1]
-
-
-def _latest_official_ops_file() -> Path:
-    docs = _tool_root() / "docs"
-    candidates = sorted(docs.glob("official_operations_v1_*.txt"))
-    if not candidates:
-        raise AssertionError("Missing docs/official_operations_v1_*.txt")
-    return candidates[-1]
 
 
 def _get_subparser_choices(p: argparse.ArgumentParser, name: str) -> argparse.ArgumentParser:
@@ -38,7 +31,7 @@ def _get_subcommand_names(p: argparse.ArgumentParser) -> set[str]:
 
 class TestOfficialInventoryPinned(unittest.TestCase):
     def test_pinned_operations_are_unique(self) -> None:
-        ops_path = _latest_official_ops_file()
+        ops_path = pinned_official_operations_path()
         ops = load_official_operations_file(ops_path)
         self.assertTrue(ops, "Expected at least one operation in pinned inventory")
 
@@ -54,7 +47,7 @@ class TestOfficialInventoryPinned(unittest.TestCase):
             seen_cmd.add(op.operation_command)
 
     def test_every_pinned_operation_is_a_cli_subcommand(self) -> None:
-        ops_path = _latest_official_ops_file()
+        ops_path = pinned_official_operations_path()
         ops = load_official_operations_file(ops_path)
         parser = build_parser()
 
@@ -89,12 +82,12 @@ class TestOfficialInventoryPinned(unittest.TestCase):
             if op_cmd:
                 got.append(op_cmd)
 
-        ops = load_official_operations_file(_latest_official_ops_file())
+        ops = load_official_operations_file(pinned_official_operations_path())
         expected = [o.operation_command for o in ops]
         self.assertEqual(got, expected)
 
     def test_official_ops_header_references_snapshot_sha(self) -> None:
-        ops_path = _latest_official_ops_file()
+        ops_path = pinned_official_operations_path()
         lines = ops_path.read_text(encoding="utf-8").splitlines()
         header = next((line for line in lines if line.startswith("# OpenAPI snapshot:")), None)
         self.assertIsNotNone(header, "Missing OpenAPI snapshot header")
