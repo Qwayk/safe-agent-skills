@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import re
+import shlex
+import tomllib
 import unittest
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 from awin_publisher_safe_agent_cli.cli import build_parser
 
@@ -12,48 +16,29 @@ class TestDocsStandard(unittest.TestCase):
         self.root = Path(__file__).resolve().parents[1]
         self.docs = self.root / "docs"
 
-    def test_required_repo_standard_docs_exist(self) -> None:
-        required = [
-            self.docs / "use_cases.md",
-            self.docs / "safety_model.md",
-            self.docs / "quickstart.md",
-        ]
-        for path in required:
-            with self.subTest(path=path.name):
-                self.assertTrue(path.exists(), f"Missing required docs file: {path.name}")
+    def test_install_command_matches_the_skill_name(self) -> None:
+        wrapper = self.root / "SKILL.md"
+        if not wrapper.is_file():
+            wrapper = self.root / "skills/awin-publisher-safe-cli/SKILL.md"
+        _, fields, _ = wrapper.read_text(encoding="utf-8").split("---", 2)
+        name, = (line.partition(":")[2].strip() for line in fields.splitlines() if line.startswith("name:"))
+        readme = (self.root / "README.md").read_text(encoding="utf-8")
+        command, = (shlex.split(line) for line in readme.splitlines() if line.startswith("npx skills add "))
+        self.assertEqual(name, "awin-publisher-safe-cli")
+        self.assertEqual(command[:4], ["npx", "skills", "add", f"Qwayk/safe-agent-skills@{name}"])
+        project = tomllib.loads((self.root / "pyproject.toml").read_text(encoding="utf-8"))
+        self.assertEqual(project["project"]["scripts"][name], "awin_publisher_safe_agent_cli.__main__:main")
 
-    def test_readme_is_non_technical_first(self) -> None:
-        text = (self.root / "README.md").read_text(encoding="utf-8")
-        self.assertIn("## Start here first", text)
-        self.assertIn("## Install and first run", text)
-        self.assertIn("## Helpful docs", text)
-        self.assertIn("[What you can do with Awin Publisher](docs/use_cases.md)", text)
-        self.assertIn("[Connect your Awin publisher account](docs/onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
-
-    def test_docs_readme_lists_required_order(self) -> None:
-        text = (self.docs / "README.md").read_text(encoding="utf-8")
-        use_cases_idx = text.index("[What you can do with Awin Publisher](use_cases.md)")
-        onboarding_idx = text.index("[Connect your Awin publisher account](onboarding.md)")
-        safety_idx = text.index("[How this skill stays safe](safety_model.md)")
-        quickstart_idx = text.index("[Quickstart](quickstart.md)")
-        command_idx = text.index("[Command reference](command_reference.md)")
-        self.assertLess(use_cases_idx, onboarding_idx)
-        self.assertLess(onboarding_idx, safety_idx)
-        self.assertLess(safety_idx, quickstart_idx)
-        self.assertLess(quickstart_idx, command_idx)
-
-    def test_onboarding_and_technical_labels_exist(self) -> None:
-        onboarding = (self.docs / "onboarding.md").read_text(encoding="utf-8")
-        quickstart = (self.docs / "quickstart.md").read_text(encoding="utf-8")
-        command_reference = (self.docs / "command_reference.md").read_text(encoding="utf-8")
-        proof = (self.docs / "proof.md").read_text(encoding="utf-8")
-
-        self.assertIn("## What to ask your agent", onboarding)
-        self.assertIn("[What you can do with Awin Publisher](use_cases.md)", quickstart)
-        self.assertIn("[Connect your Awin publisher account](onboarding.md)", quickstart)
-        self.assertIn("[What you can do with Awin Publisher](use_cases.md)", command_reference)
-        self.assertIn("You do not need to run these commands yourself", proof)
+    def test_local_guide_links_work(self) -> None:
+        for page in self.root.rglob("*.md"):
+            if any(part.startswith(".") for part in page.relative_to(self.root).parts):
+                continue
+            for link in re.findall(r"\]\(([^)\s]+)\)", page.read_text(encoding="utf-8")):
+                destination = urlsplit(link)
+                if destination.scheme or destination.netloc or not destination.path:
+                    continue
+                with self.subTest(page=page.name, link=link):
+                    self.assertTrue((page.parent / unquote(destination.path)).exists())
 
     def test_api_coverage_lists_all_provider_backed_commands(self) -> None:
         parser = build_parser()

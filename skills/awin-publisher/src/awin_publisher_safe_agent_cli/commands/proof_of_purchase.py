@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import time
 from pathlib import Path
 from typing import Any
@@ -8,11 +9,11 @@ from .common import (
     load_json_file,
     normalize_optional_str,
     require_proof_of_purchase_api_key,
-    request_json,
-    sha256_of_file,
+    sha256_of_bytes,
     write_json_file,
 )
 from ..errors import SafetyError, ValidationError
+from ..http import HttpStatusError
 
 
 _ORDERS_CREATE_PATH = "/publishers/{publisher_id}/advertiser/{advertiser_id}/orders"
@@ -23,8 +24,17 @@ def _utc_now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
-def _load_orders_payload(path_raw: str | None) -> tuple[dict[str, Any], Path]:
-    payload, source_path = load_json_file(path_raw, label="--orders-file")
+def _load_orders_payload(path_raw: str | None) -> tuple[dict[str, Any], Path, str]:
+    if not path_raw or not path_raw.strip():
+        raise ValidationError("Missing --orders-file")
+    source_path = Path(path_raw).expanduser()
+    if not source_path.is_file():
+        raise ValidationError(f"Orders file not found: {source_path}")
+    data = source_path.read_bytes()
+    try:
+        payload = json.loads(data)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise ValidationError(f"Orders file is not valid JSON: {source_path}") from None
     if isinstance(payload, list):
         normalized = {"orders": payload}
     elif isinstance(payload, dict):
@@ -49,10 +59,11 @@ def _load_orders_payload(path_raw: str | None) -> tuple[dict[str, Any], Path]:
         customer_acquisition = normalize_optional_str(order.get("customerAcquisition"))
         if customer_acquisition and customer_acquisition not in _CUSTOMER_ACQUISITION_VALUES:
             raise ValidationError(f"Order #{idx} has invalid customerAcquisition. Use NEW or RETURNING")
-    return normalized, source_path
+    return normalized, source_path, sha256_of_bytes(data)
 
 
-def _build_plan(*, ctx: dict[str, Any], publisher_id: str, advertiser_id: str, orders_path: Path, order_count: int) -> dict[str, Any]:
+def _build_plan(*, ctx: dict[str, Any], publisher_id: str, advertiser_id: str, orders_path: Path, order_count: int,
+                orders_hash: str, connection: str) -> dict[str, Any]:
     return {
         "tool": ctx.get("tool"),
         "version": ctx.get("tool_version"),
@@ -68,7 +79,8 @@ def _build_plan(*, ctx: dict[str, Any], publisher_id: str, advertiser_id: str, o
         "baseline": {
             "env_fingerprint": ctx["cfg"].api_host,
             "orders_file": str(orders_path),
-            "orders_file_sha256": sha256_of_file(orders_path),
+            "orders_file_sha256": orders_hash,
+            "connection_fingerprint": connection,
         },
         "proposed_changes": [
             {
@@ -81,7 +93,7 @@ def _build_plan(*, ctx: dict[str, Any], publisher_id: str, advertiser_id: str, o
         ],
         "verification_plan": {
             "type": "provider-acceptance",
-            "notes": "Verify the API accepted the batch and review the returned payload for order-level errors.",
+            "notes": "Check Awin’s reply for errors, then check the pending orders in Awin before calling them verified.",
         },
         "rollback": {
             "supported": False,
@@ -90,7 +102,8 @@ def _build_plan(*, ctx: dict[str, Any], publisher_id: str, advertiser_id: str, o
     }
 
 
-def _validate_plan(plan_obj: object, *, ctx: dict[str, Any], publisher_id: str, advertiser_id: str, orders_path: Path) -> None:
+def _validate_plan(plan_obj: object, *, ctx: dict[str, Any], publisher_id: str, advertiser_id: str,
+                   orders_hash: str, connection: str) -> None:
     if not isinstance(plan_obj, dict):
         raise ValidationError("--plan-in must contain a JSON object")
     baseline = plan_obj.get("baseline")
@@ -98,6 +111,8 @@ def _validate_plan(plan_obj: object, *, ctx: dict[str, Any], publisher_id: str, 
         raise ValidationError("--plan-in is missing the baseline object")
     if str(baseline.get("env_fingerprint") or "") != str(ctx["cfg"].api_host):
         raise SafetyError("Refused: --plan-in env_fingerprint does not match the current environment")
+    if baseline.get("connection_fingerprint") != connection:
+        raise SafetyError("Refused: the order submission key differs from the saved plan. Save a new plan and review it first.")
 
     selector = plan_obj.get("selector")
     if not isinstance(selector, dict):
@@ -105,10 +120,20 @@ def _validate_plan(plan_obj: object, *, ctx: dict[str, Any], publisher_id: str, 
     if str(selector.get("publisher_id") or "") != publisher_id or str(selector.get("advertiser_id") or "") != advertiser_id:
         raise SafetyError("Refused: --plan-in does not match the requested publisher/advertiser ids")
 
-    expected_sha = str(baseline.get("orders_file_sha256") or "")
-    actual_sha = sha256_of_file(orders_path)
-    if not expected_sha or expected_sha != actual_sha:
+    if baseline.get("orders_file_sha256") != orders_hash:
         raise SafetyError("Refused: orders file changed since the plan was created")
+
+
+def _reports_order_error(result: Any) -> bool:
+    if isinstance(result, list):
+        return any(_reports_order_error(item) for item in result)
+    if not isinstance(result, dict):
+        return False
+    if result.get("error") or result.get("errors") or result.get("success") is False or result.get("accepted") is False:
+        return True
+    if str(result.get("status", "")).lower() in {"error", "failed", "rejected"}:
+        return True
+    return any(_reports_order_error(result.get(key)) for key in ("orders", "results", "result"))
 
 
 def cmd_proof_of_purchase_orders_create(args, ctx) -> int:
@@ -123,14 +148,17 @@ def cmd_proof_of_purchase_orders_create(args, ctx) -> int:
     if not advertiser_id:
         raise ValidationError("Missing --advertiser-id")
 
-    payload, orders_path = _load_orders_payload(getattr(args, "orders_file", None))
+    payload, orders_path, orders_hash = _load_orders_payload(getattr(args, "orders_file", None))
     order_count = len(payload["orders"])
+    connection = sha256_of_bytes(f"{cfg.api_host}\0{api_key}".encode("utf-8"))
     plan = _build_plan(
         ctx=ctx,
         publisher_id=publisher_id,
         advertiser_id=advertiser_id,
         orders_path=orders_path,
         order_count=order_count,
+        orders_hash=orders_hash,
+        connection=connection,
     )
 
     if not bool(ctx.get("apply")):
@@ -165,21 +193,43 @@ def cmd_proof_of_purchase_orders_create(args, ctx) -> int:
         ctx=ctx,
         publisher_id=publisher_id,
         advertiser_id=advertiser_id,
-        orders_path=orders_path,
+        orders_hash=orders_hash,
+        connection=connection,
     )
 
     headers = {
         "x-api-key": api_key,
         "content-type": "application/json",
     }
-    result, status_code = request_json(
-        http,
-        method="POST",
-        url=f"{cfg.api_host}{_ORDERS_CREATE_PATH.format(publisher_id=publisher_id, advertiser_id=advertiser_id)}",
-        headers=headers,
-        json_body=payload,
-        label="proof of purchase orders create",
-    )
+    result = None
+    status_code = None
+    outcome = "outcome_unknown"
+    try:
+        response = http.request(
+            "POST",
+            f"{cfg.api_host}{_ORDERS_CREATE_PATH.format(publisher_id=publisher_id, advertiser_id=advertiser_id)}",
+            headers=headers,
+            json_body=payload,
+        )
+        status_code = response.status
+        result = response.json() if response.body.strip() else None
+        if _reports_order_error(result):
+            outcome = "provider_reported_errors"
+        elif status_code == 200:
+            outcome = "accepted_pending"
+    except HttpStatusError as error:
+        if error.status < 500:
+            raise
+        status_code = error.status
+    except (RuntimeError, UnicodeDecodeError, json.JSONDecodeError):
+        pass
+
+    accepted = outcome == "accepted_pending"
+    outcome_message = {
+        "accepted_pending": "Awin accepted the submission. Check the pending orders in Awin before reporting them as verified.",
+        "provider_reported_errors": "Awin reported an error. Check which orders reached Awin before sending any again.",
+        "outcome_unknown": "Awin did not confirm the submission. Check the orders in Awin before sending them again.",
+    }[outcome]
 
     receipt = {
         "tool": ctx.get("tool"),
@@ -191,37 +241,42 @@ def cmd_proof_of_purchase_orders_create(args, ctx) -> int:
             "publisher_id": publisher_id,
             "advertiser_id": advertiser_id,
         },
-        "changed": True,
+        "changed": True if accepted else None,
         "verification": {
-            "ok": status_code == 200,
+            "ok": False,
+            "status": outcome,
             "details": {
                 "response_status": status_code,
                 "orders_count": order_count,
-                "orders_file_sha256": sha256_of_file(orders_path),
+                "orders_file_sha256": orders_hash,
+                "next_check": outcome_message,
             },
         },
         "diff_applied": [
             {
                 "resource": "awin-proof-of-purchase-orders",
-                "action": "created",
+                "action": "submitted",
                 "publisher_id": publisher_id,
                 "advertiser_id": advertiser_id,
                 "orders_count": order_count,
             }
-        ],
+        ] if accepted else [],
         "backups": [],
         "rollback_plan": None,
     }
     receipt_out = write_json_file(ctx.get("receipt_out"), receipt)
 
     out = {
-        "ok": True,
+        "ok": accepted,
         "dry_run": False,
         "operation": "proof-of-purchase.orders.create",
-        "result": result,
+        "result": result if accepted else None,
         "receipt": receipt,
         "receipt_out": receipt_out,
     }
-    ctx["audit"].write("proof-of-purchase.orders.create.apply", out)
+    if not accepted:
+        out["error"] = outcome_message
+        out["error_type"] = "OrderSubmissionUnconfirmed"
+    ctx["audit"].write("proof-of-purchase.orders.create.apply", {"receipt": receipt, "receipt_out": receipt_out})
     ctx["out"].emit(out)
-    return 0
+    return 0 if accepted else 1

@@ -1,29 +1,19 @@
-# Safety model
+# Approve Awin order submissions
 
-Awin Publisher can touch publisher reporting, link building, feeds, and proof-of-purchase workflows, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Start by checking the publisher account and advertiser program. Most commands read Awin data. Feed downloads save to the file you choose with `--out`. An enhanced feed replaces an existing file only when you allow overwriting and the download passes the file checks.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## Review the plan
 
-A good safety ask is: "Start with a small report or link-builder check, then review the plan before any proof-of-purchase upload."
+The order command is the one command that sends a live change to Awin. Awin must enable the publisher, and the advertiser must enable the program for that publisher. [Awin’s requirements](https://help.awin.com/apidocs/proof-of-purchase-publisher-transaction-api)
 
-## Read and file safety
+Save the plan with `--plan-out`. Before approval, check the publisher ID, advertiser ID, order file, and how you’ll check for duplicate orders. Keep the plan and order data local. The plan records a fingerprint of the selected key without storing the key. The tool checks the key, account IDs, and order file again before sending. Save a new plan if you change the key or order file, or if the plan was saved before key checking was added.
 
-- Accounts, programs, offers, transactions, transaction queries, reports, and linkbuilder commands are read-only.
-- Feed commands only write local files when you give an explicit `--out` path.
-- Reads stay explicit. There is no raw request bridge.
-- The tool never prints secrets.
-- `proof-of-purchase orders create` is the only remote write command.
+## Submit and check the receipt
 
-## Proof-of-purchase safety
+Run the approved action with `--apply --yes --plan-in`. Choose `--receipt-out` to keep the receipt. [Exact commands](command_reference.md#proof-of-purchase)
 
-- Default behavior is dry-run.
-- Use `--plan-out` to save a reviewable plan.
-- Live submission requires `--apply --yes --plan-in`.
-- `--plan-in` checks that the reviewed plan still matches the current environment plus the requested publisher and advertiser ids.
-- `--receipt-out` can save the apply receipt.
-- Official live use also depends on Awin publisher enablement and advertiser CLO enablement.
+- `accepted_pending` means Awin accepted the submission. Check the pending orders in Awin before reporting them as verified.
+- `provider_reported_errors` means Awin returned an error in the reply. Check which orders reached Awin before trying again.
+- `outcome_unknown` means the reply did not confirm what happened. Check the orders in Awin before resending.
 
-## Local proof
-
-- Read commands can log to a JSONL audit file when you ask for it.
-- Write commands can also create local run proof under `.state/runs/`.
+Awin’s docs give no way to undo an order submission through this API. Check what happened with the publisher or advertiser before making another change.

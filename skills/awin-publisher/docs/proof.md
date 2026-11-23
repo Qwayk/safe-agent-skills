@@ -1,19 +1,21 @@
-# Proof and verification
+# Awin Publisher test results
 
-Awin Publisher proof should answer a simple question: what has actually been checked for publisher reporting, link building, feeds, and proof-of-purchase workflows, and what still needs live credentials, permissions, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Fresh installs from the source and local release folders each passed 38 tests with network access blocked. The enhanced feed checks kept the previous file after an Awin error, an empty response, a partial response, or invalid JSONL. An unavailable feed returned the publisher, advertiser, locale, and a link to Awin’s current feed list.
 
-If you only check one thing, check the report/link examples first, then inspect proof-of-purchase plan evidence before upload work.
+Both installs created a private settings file and used that file for the first connection check. With simulated replies, the order tests refused changed keys and changed orders, recorded an accepted submission as pending, and kept the receipt when Awin reported an order error or the submission was unclear.
 
-## Last verified
+The local skill installed under its existing name, `awin-publisher-safe-cli`. These checks used simulated Awin replies. The saved example outputs below show earlier versions of the tool.
+
+## June 11, 2026 earlier checks
 
 - Date (UTC): 2026-06-11
 - Tool version: 0.1.0
 - Version check passed: `.venv/bin/awin-publisher-safe-cli --output json --version`
 - Validation command passed: `python3 -m venv .venv && .venv/bin/python -m pip install -e . && .venv/bin/python -m unittest -q`
-- This validation command was rerun after the README UX rebuild and docs contract test pass, and it passed.
-- Live Awin credential proof has not been run yet.
+- This validation command was rerun after the README UX rebuild and manual docs review, and it passed.
+- The June checks did not use live Awin credentials.
 - Proof-of-purchase live proof is still blocked here until Awin enables the publisher and the advertiser enables CLO for that program.
 - Environment: local build env
 

@@ -6,7 +6,7 @@ For the guided path, start with [What you can do with Awin Publisher](use_cases.
 
 ## Global flags
 
-- `--env-file <path>`: env file for config (default `.env`)
+- `--env-file <path>`: selected settings file (default `.env`). A named file supplies its own Awin settings
 - `--output json|text`: output mode
 - `--timeout-s <seconds>`: request timeout override
 - `--verbose`: show request logs to stderr
@@ -15,7 +15,7 @@ For the guided path, start with [What you can do with Awin Publisher](use_cases.
 - `--yes`: extra confirmation for risky or batch writes
 - `--plan-out <path>`: write a dry-run plan JSON
 - `--plan-in <path>`: validate an existing plan before apply; required for `proof-of-purchase orders create` live apply
-- `--receipt-out <path>`: write an apply receipt JSON after a successful apply
+- `--receipt-out <path>`: save the apply result and what still needs checking
 - `--run-id`, `--artifacts-dir`, `--no-artifacts`: run-history helpers
 
 ## Onboarding
@@ -64,6 +64,9 @@ For the guided path, start with [What you can do with Awin Publisher](use_cases.
 ## Feeds
 
 - `awin-publisher-safe-cli --output json feeds enhanced-download --publisher-id <publisher_id> --advertiser-id <advertiser_id> --locale en_GB [--vertical retail] --out enhanced-feed.jsonl [--overwrite]`
+
+The enhanced downloader checks each JSONL record before saving the file. It keeps the previous copy if the download is empty, incomplete, or contains an error from Awin. If the feed is unavailable, check the publisher, advertiser, and locale in [Awin’s current feed list](https://help.awin.com/developers/docs/downloading-a-list-of-your-product-feeds).
+
 - `awin-publisher-safe-cli --output json feeds legacy-list --out legacy-feed-list.csv [--overwrite]`
 - `awin-publisher-safe-cli --output json feeds legacy-download (--feed-id <feed_id> | --download-url <url>) --out legacy-feed.csv [--overwrite]`
 

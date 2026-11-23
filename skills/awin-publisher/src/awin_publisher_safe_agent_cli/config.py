@@ -4,12 +4,16 @@ import dataclasses
 import os
 from pathlib import Path
 
+from .errors import ValidationError
+
 
 CORE_API_HOST = "https://api.awin.com"
 LEGACY_FEED_HOST = "https://productdata.awin.com"
 
 
-def _parse_env_file(path: Path) -> dict[str, str]:
+def _parse_env_file(path: Path, *, required: bool) -> dict[str, str]:
+    if (required or path.exists()) and not path.is_file():
+        raise ValidationError(f"Settings file must be an existing regular file: {path}")
     if not path.exists():
         return {}
     out: dict[str, str] = {}
@@ -27,10 +31,6 @@ def _parse_env_file(path: Path) -> dict[str, str]:
         if k:
             out[k] = v
     return out
-
-
-def _get(env: dict[str, str], key: str) -> str:
-    return (os.environ.get(key) if key in os.environ else env.get(key) or "").strip()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -52,14 +52,16 @@ class Config:
         return self.proof_of_purchase_api_key or self.token
 
 
-def load_config(env_file: str | None) -> Config:
-    env = _parse_env_file(Path(env_file or ".env"))
+def load_config(env_file: str | None, *, file_only: bool = False, require_file: bool = False) -> Config:
+    env = _parse_env_file(Path(env_file or ".env").expanduser(), required=require_file)
+    if not file_only:
+        env.update({key: value.strip() for key, value in os.environ.items() if key.startswith("AWIN_")})
 
-    token = _get(env, "AWIN_API_TOKEN") or None
-    proof_of_purchase_api_key = _get(env, "AWIN_PROOF_OF_PURCHASE_API_KEY") or None
-    feed_api_key = _get(env, "AWIN_FEED_API_KEY") or None
+    token = env.get("AWIN_API_TOKEN") or None
+    proof_of_purchase_api_key = env.get("AWIN_PROOF_OF_PURCHASE_API_KEY") or None
+    feed_api_key = env.get("AWIN_FEED_API_KEY") or None
 
-    timeout_s_raw = _get(env, "AWIN_TIMEOUT_S") or "30"
+    timeout_s_raw = env.get("AWIN_TIMEOUT_S") or "30"
     try:
         timeout_s = float(timeout_s_raw)
     except Exception:

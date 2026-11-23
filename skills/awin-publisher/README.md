@@ -1,115 +1,31 @@
 # Awin Publisher
 
-**Capability:** Reads + careful changes
+See which advertiser programs you’ve joined, which offers you can use, and where your transactions came from. The tool can also generate tracking links and download an advertiser’s product feed to a file.
 
-Awin Publisher is where an affiliate publisher checks the programs they joined, the offers they can use, the transactions they earned, and the tracking links or feeds behind that work. This skill helps an agent review publisher accounts, programs, offers, transactions, reports, linkbuilder tasks, feeds, and proof-of-purchase uploads from one careful workflow.
+> List the publisher accounts my token can access. Then show me the programs I’ve joined in the account I choose.
 
-It is useful for jobs like checking joined or pending programs, reviewing recent transactions, grouping results by advertiser or campaign, generating tracking links, downloading feeds to local files, and preparing proof-of-purchase uploads for review.
+Your agent checks the connection and confirms the publisher account first. It prepares a plan and waits for approval before submitting proof-of-purchase orders to Awin.
 
-Most publisher work stays read-only or download-only. The one remote write path, `proof-of-purchase orders create`, starts as a dry-run plan and only goes live after explicit approval with the reviewed plan file. There is no unreviewed direct API passthrough.
+## Install and start
 
-A good first ask is: "Check the Awin Publisher skill is configured, list the publisher accounts this token can use, show recent transactions by advertiser, and stop before any live proof-of-purchase upload."
-
-## Start here first
-
-- Want ideas for real Awin publisher work? [What you can do with Awin Publisher](docs/use_cases.md)
-- Need setup? [Connect your Awin publisher account](docs/onboarding.md)
-- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
-
-If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
-
-## What this skill helps with
-
-- Confirm that your token can reach the right publisher account before you trust any live report.
-- Check joined, pending, suspended, rejected, or hidden programs for a publisher.
-- Pull offers, transactions, and transaction queries into a repeatable workflow.
-- Review advertiser, campaign, and creative performance with explicit report commands.
-- Generate one tracking link or a prepared batch with clear input files.
-- Download enhanced or legacy feeds to local files you can inspect later.
-- Prepare a proof-of-purchase upload in dry-run mode before anyone sends it live.
-
-## What access this skill needs
-
-- `AWIN_API_TOKEN` for most publisher reads, reports, linkbuilder work, offers, transactions, and enhanced feed downloads.
-- `AWIN_FEED_API_KEY` only for legacy feed list and legacy feed download helpers.
-- `AWIN_PROOF_OF_PURCHASE_API_KEY` only for proof-of-purchase uploads.
-- A `publisher ID` for most live commands, plus an `advertiser ID` when you work with program details, reports, links, feeds, or proof-of-purchase uploads.
-- Local file paths for feed downloads and proof-of-purchase order files.
-
-## Install and first run
-
-Install slug: `awin-publisher`
-
-Ask your agent to install the `awin-publisher` skill from `Qwayk/safe-agent-skills`.
-
-If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
-
-If your host does not let the agent install skills directly, run:
+Ask your agent to install `awin-publisher-safe-cli` from `Qwayk/safe-agent-skills`, or run:
 
 ```bash
-npx skills add Qwayk/safe-agent-skills@awin-publisher -g -y
+npx skills add Qwayk/safe-agent-skills@awin-publisher-safe-cli -g -y
 ```
 
-Then try a safe first ask like:
+[Install the CLI and run your first account check](docs/quickstart.md). The main Awin token handles account reads, reports, tracking links and enhanced feeds. Add a separate key only when you use legacy feeds or submit proof-of-purchase orders. [Set up access](docs/onboarding.md)
 
-```text
-Check the Awin Publisher skill is configured, list the publisher accounts this token can use, show me the most useful recent transactions, and stop before any live proof-of-purchase upload.
-```
+## What you can ask for
 
-## How this skill stays safe
+- Check program status, offers, and transaction queries.
+- Review transactions or reports by advertiser, campaign, or creative.
+- Generate tracking links and check your link quota.
+- Download a feed to the file you choose. The enhanced feed must pass the file checks before it replaces a saved copy.
+- Prepare an order submission and review its results after approval.
 
-- Read commands do not change Awin data.
-- Feed downloads only write local files when you choose `--out`.
-- `proof-of-purchase orders create` starts as a dry-run plan by default.
-- Live proof-of-purchase uploads need `--apply --yes --plan-in`.
-- `--plan-in` rechecks the reviewed plan against the current environment and the requested publisher and advertiser ids.
-- `--receipt-out` can save the final apply receipt.
-- There is no unreviewed direct API passthrough.
+[Example requests](docs/use_cases.md) · [Commands](docs/command_reference.md) · [All guides](docs/README.md)
 
-## What it covers today
+## Before submitting orders
 
-This skill covers:
-
-- onboarding and auth checks
-- publisher account and program lookup
-- offers, transactions, and transaction queries
-- advertiser, campaign, and creative reports
-- linkbuilder generate, batch generate, and quota
-- enhanced and legacy feed downloads
-- proof-of-purchase order upload planning and apply
-
-## What happens before live changes
-
-- The agent should show the dry-run plan first for proof-of-purchase uploads.
-- You review the publisher ID, advertiser ID, order file, and target environment before apply.
-- Read commands can run immediately.
-- Feed downloads only write locally when you give an explicit `--out` path.
-- Live proof-of-purchase uploads need `--apply --yes --plan-in`.
-- After apply, the tool can write a receipt for the final result.
-
-## What proof it leaves behind
-
-- Dry-run plans can be saved with `--plan-out`.
-- Apply receipts can be saved with `--receipt-out`.
-- Read commands and write flows can log to JSONL audit files when you ask for them.
-- Local run history can keep command, result, and artifact paths under `.state/runs/`.
-- The docs, tests, examples, and API coverage ledger all live in this repo.
-
-## Limits
-
-- `proof-of-purchase orders create` is the only remote write command in this tool today.
-- Live proof-of-purchase use still needs both Awin-side publisher enablement and advertiser-side CLO enablement.
-- Live Awin credential proof is not stored in this repo because no real credentials are committed here.
-- Different Awin command families use different auth flows, so the tool keeps those splits explicit instead of pretending one key works everywhere.
-- There is no unreviewed direct API passthrough.
-
-## Helpful docs
-
-- [Browse all Awin Publisher docs](docs/README.md)
-- [Quickstart](docs/quickstart.md)
-- [Command guide](docs/command_reference.md)
-- [Authentication details](docs/authentication.md)
-- [Configuration](docs/configuration.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Proof and verification](docs/proof.md)
-- [API coverage](docs/api_coverage.md)
+For proof of purchase, Awin must enable the publisher and the advertiser must enable that program for the publisher. Show the publisher, advertiser, and exact orders before asking for approval. After a submission, check what Awin received and which orders are still pending. [Approval steps](docs/safety_model.md) · [Test results](docs/proof.md) · [API coverage](docs/api_coverage.md)

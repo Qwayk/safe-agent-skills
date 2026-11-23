@@ -7,6 +7,13 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ## [Unreleased]
 
+### November 23, 2026
+
+- Check the entire enhanced feed before replacing its saved copy. Explain how to check Awin’s current list when the feed is unavailable.
+- Create private settings files and use the selected file in the next command.
+- Check the key and exact order data against the saved plan. Separate an accepted submission from orders that still need checking.
+- Use the published skill name in the install command. Fold overlapping guides into setup, approvals, and engineering notes.
+
 ### Added
 - Added the explicit publisher command surface for:
   - `accounts list`
@@ -29,7 +36,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Added plan and receipt handling for the proof-of-purchase write flow.
 - Added download-to-file helpers for enhanced and legacy feed commands.
 - Added example outputs and updated proof references for the shipped command surface.
-- Added `tests/test_readme_public_contract.py` and `tests/test_docs_standard.py` so the publish-ready README and user-doc contract stays enforced in source.
+- Added `manual README review` and `tests/test_docs_standard.py` so the publish-ready README and user-doc contract stays enforced in source.
 
 ### Changed
 - Updated README, command reference, coverage ledger, references, skill wrapper docs, and tool AGENTS to match the shipped surface.

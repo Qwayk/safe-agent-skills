@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from io import BytesIO
+
 from .api_helpers import build_bearer_headers
 from .common import (
     normalize_optional_str,
@@ -12,10 +15,12 @@ from .common import (
     write_download_file,
 )
 from ..errors import ValidationError
+from ..http import HttpStatusError
 
 
 _ENHANCED_DOWNLOAD_PATH = "/publishers/{publisher_id}/awinfeeds/download/{advertiser_id}-{vertical}-{locale}.jsonl"
 _LEGACY_LIST_PATH = "/datafeed/list/apikey/{api_key}"
+_FEED_LIST_GUIDE = "https://help.awin.com/developers/docs/downloading-a-list-of-your-product-feeds"
 
 
 def _decode_text(data: bytes) -> str:
@@ -29,6 +34,27 @@ def _find_row_value(row: dict[str, str], *candidates: str) -> str | None:
         if value:
             return value
     return None
+
+
+def _check_enhanced_feed(data: bytes) -> int:
+    records = 0
+    for line_number, raw in enumerate(BytesIO(data), start=1):
+        encoding = "utf-8-sig" if line_number == 1 else "utf-8"
+        try:
+            line = raw.decode(encoding)
+            if not line.strip():
+                continue
+            record = json.loads(line)
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            raise ValidationError(f"Awin returned an incomplete or invalid feed at line {line_number}.") from None
+        if not isinstance(record, dict):
+            raise ValidationError(f"Expected a JSON object in the Awin feed at line {line_number}.")
+        if record.get("error") or record.get("errors"):
+            raise ValidationError(f"Awin reported an error in the feed at line {line_number}. The download was incomplete.")
+        records += 1
+    if not records:
+        raise ValidationError("Awin returned an empty feed. Check the current feed list before replacing a saved file.")
+    return records
 
 
 def cmd_feeds_enhanced_download(args, ctx) -> int:
@@ -50,16 +76,29 @@ def cmd_feeds_enhanced_download(args, ctx) -> int:
     if vertical != "retail":
         raise ValidationError("Invalid --vertical. The official enhanced feed endpoint currently supports only retail")
 
-    out_path = resolve_out_path(getattr(args, "out", None), overwrite=bool(getattr(args, "overwrite", False)))
+    overwrite = bool(getattr(args, "overwrite", False))
+    out_path = resolve_out_path(getattr(args, "out", None), overwrite=overwrite)
     headers = build_bearer_headers(token)
-    data, status_code, response_headers = request_bytes(
-        http,
-        method="GET",
-        url=f"{cfg.api_host}{_ENHANCED_DOWNLOAD_PATH.format(publisher_id=publisher_id, advertiser_id=advertiser_id, vertical=vertical, locale=locale)}",
-        headers=headers,
-        label="feeds enhanced download",
-    )
-    file_info = write_download_file(out_path=out_path, data=data, content_type=response_headers.get("content-type"))
+    try:
+        data, status_code, response_headers = request_bytes(
+            http,
+            method="GET",
+            url=f"{cfg.api_host}{_ENHANCED_DOWNLOAD_PATH.format(publisher_id=publisher_id, advertiser_id=advertiser_id, vertical=vertical, locale=locale)}",
+            headers=headers,
+            label="feeds enhanced download",
+        )
+    except HttpStatusError as exc:
+        if exc.status != 404:
+            raise
+        raise ValidationError(
+            f"Feed not available for advertiser {advertiser_id} and locale {locale}. "
+            f"Check the current feed list for publisher {publisher_id} before retrying. {_FEED_LIST_GUIDE}"
+        ) from None
+
+    if status_code != 200:
+        raise ValidationError(f"Awin did not return a complete feed (HTTP {status_code}).")
+    records = _check_enhanced_feed(data)
+    file_info = write_download_file(out_path=out_path, data=data, content_type=response_headers.get("content-type"), overwrite=overwrite)
 
     out = {
         "ok": True,
@@ -76,6 +115,7 @@ def cmd_feeds_enhanced_download(args, ctx) -> int:
             "auth_mode": "bearer",
             "locale": locale,
             "vertical": vertical,
+            "records": records,
         },
     }
     ctx["audit"].write("feeds.enhanced-download", out)
@@ -88,14 +128,15 @@ def cmd_feeds_legacy_list(args, ctx) -> int:
     http = ctx["http_client"]
     api_key = require_feed_api_key(cfg)
 
-    out_path = resolve_out_path(getattr(args, "out", None), overwrite=bool(getattr(args, "overwrite", False)))
+    overwrite = bool(getattr(args, "overwrite", False))
+    out_path = resolve_out_path(getattr(args, "out", None), overwrite=overwrite)
     data, status_code, response_headers = request_bytes(
         http,
         method="GET",
         url=f"{cfg.legacy_feed_host}{_LEGACY_LIST_PATH.format(api_key=api_key)}",
         label="feeds legacy list",
     )
-    file_info = write_download_file(out_path=out_path, data=data, content_type=response_headers.get("content-type"))
+    file_info = write_download_file(out_path=out_path, data=data, content_type=response_headers.get("content-type"), overwrite=overwrite)
 
     out = {
         "ok": True,
@@ -124,7 +165,8 @@ def cmd_feeds_legacy_download(args, ctx) -> int:
     if bool(download_url) == bool(feed_id):
         raise ValidationError("Provide exactly one of --download-url or --feed-id")
 
-    out_path = resolve_out_path(getattr(args, "out", None), overwrite=bool(getattr(args, "overwrite", False)))
+    overwrite = bool(getattr(args, "overwrite", False))
+    out_path = resolve_out_path(getattr(args, "out", None), overwrite=overwrite)
     selector: dict[str, object]
 
     if feed_id:
@@ -156,7 +198,7 @@ def cmd_feeds_legacy_download(args, ctx) -> int:
         url=download_url,
         label="feeds legacy download",
     )
-    file_info = write_download_file(out_path=out_path, data=data, content_type=response_headers.get("content-type"))
+    file_info = write_download_file(out_path=out_path, data=data, content_type=response_headers.get("content-type"), overwrite=overwrite)
 
     out = {
         "ok": True,

@@ -1,74 +1,60 @@
 from __future__ import annotations
 
+import io
+import json
+import shlex
+import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
+
+import requests
+
+from awin_publisher_safe_agent_cli.cli import main
 
 
-class TestReadmePublicContract(unittest.TestCase):
-    def test_public_readme_opening_stays_user_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
+ROOT = Path(__file__).resolve().parents[1]
 
-        self.assertTrue(text.startswith("# Awin Publisher\n"))
-        self.assertNotIn("## Simplicity lock", text)
-        self.assertNotIn("# qwayk-awin-publisher-safe-agent-cli", text)
-        self.assertIn("**Capability:** Reads + careful changes", text)
 
-        required_sections = [
-            "## Start here first",
-            "## What this skill helps with",
-            "## Install and first run",
-            "## How this skill stays safe",
-            "## What happens before live changes",
-            "## Helpful docs",
+class TestPublishedQuickstart(unittest.TestCase):
+    def setUp(self) -> None:
+        self.quickstart = (ROOT / "docs/quickstart.md").read_text(encoding="utf-8")
+
+    def test_quickstart_checks_the_installed_cli_version(self) -> None:
+        command, = (
+            shlex.split(line) for line in self.quickstart.splitlines()
+            if line.startswith("awin-publisher-safe-cli --version")
+        )
+        executable, *args = command
+        with redirect_stdout(stdout := io.StringIO()):
+            self.assertEqual(main(args), 0)
+        self.assertEqual(json.loads(stdout.getvalue())["tool"], executable)
+
+    def test_quickstart_lists_only_publisher_accounts_using_the_selected_file(self) -> None:
+        command, = (
+            shlex.split(line) for line in self.quickstart.splitlines()
+            if line.startswith("awin-publisher-safe-cli ") and line.endswith(" accounts list")
+        )
+        _, *args = command
+        accounts = [
+            {"id": 100, "name": "Example publisher", "type": "publisher"},
+            {"id": 200, "name": "Example advertiser", "type": "advertiser"},
         ]
-        for section in required_sections:
-            self.assertIn(section, text)
+        response = requests.Response()
+        response.status_code = 200
+        response.url = "https://api.awin.com/accounts"
+        response._content = json.dumps(accounts).encode("utf-8")
+        response._content_consumed = True
 
-    def test_start_here_section_stays_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do with Awin Publisher](docs/use_cases.md)", text)
-        self.assertIn("[Connect your Awin publisher account](docs/onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
-        self.assertIn("[Quickstart](docs/quickstart.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-
-    def test_opening_rejects_template_voice(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-        opening = text.split("## Start here first", 1)[0]
-
-        banned = [
-            "Use this skill when",
-            "You can hand your agent jobs like",
-            "without guessing from raw docs",
-            "Read work stays simple",
-            "Riskier work slows down on purpose",
-        ]
-        for phrase in banned:
-            self.assertNotIn(phrase, opening)
-
-    def test_helpful_docs_stay_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("[Browse all Awin Publisher docs](docs/README.md)", text)
-        self.assertIn("[Authentication details](docs/authentication.md)", text)
-        self.assertIn("[Configuration](docs/configuration.md)", text)
-        self.assertIn("[Troubleshooting](docs/troubleshooting.md)", text)
-        self.assertIn("[Proof and verification](docs/proof.md)", text)
-        self.assertIn("[API coverage](docs/api_coverage.md)", text)
-        self.assertNotIn("- `docs/use_cases.md`", text)
-        self.assertNotIn("- `docs/onboarding.md`", text)
-
-    def test_quickstart_opens_with_human_links(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "quickstart.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do with Awin Publisher](use_cases.md)", text)
-        self.assertIn("[Connect your Awin publisher account](onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](safety_model.md)", text)
-        self.assertNotIn("`docs/use_cases.md`", text)
-        self.assertNotIn("`docs/onboarding.md`", text)
+        with tempfile.TemporaryDirectory() as directory:
+            env_file = Path(directory) / args[args.index("--env-file") + 1]
+            env_file.write_text("AWIN_API_TOKEN=fixture-quickstart-token\n", encoding="utf-8")
+            args[args.index("--env-file") + 1] = str(env_file)
+            with patch("requests.Session.request", return_value=response) as send, redirect_stdout(stdout := io.StringIO()):
+                self.assertEqual(main(args), 0)
+        result = json.loads(stdout.getvalue())
+        self.assertEqual([account["id"] for account in result["accounts"]], [100])
+        send.assert_called_once()
+        self.assertEqual(send.call_args.kwargs["method"], "GET")
+        self.assertEqual(send.call_args.kwargs["url"], "https://api.awin.com/accounts")

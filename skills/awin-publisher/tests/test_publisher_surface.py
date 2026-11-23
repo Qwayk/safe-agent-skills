@@ -593,10 +593,57 @@ class TestPublisherSurface(unittest.TestCase):
             self.assertEqual(rc, 0)
             self.assertFalse(applied["dry_run"])
             self.assertTrue(receipt_exists)
+            self.assertEqual(applied["receipt"]["verification"]["status"], "accepted_pending")
+            self.assertFalse(applied["receipt"]["verification"]["ok"])
             self.assertEqual(requests_seen[0]["method"], "POST")
             self.assertTrue(requests_seen[0]["url"].endswith("/publishers/777/advertiser/55/orders"))
             self.assertEqual(requests_seen[0]["headers"]["x-api-key"], "POPKEY")
             self.assertEqual(requests_seen[0]["json"]["orders"][0]["orderReference"], "ORD-1")
+
+    def test_proof_of_purchase_checks_the_saved_key_and_records_provider_errors(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            env_file = Path(_write_env(directory, "AWIN_PROOF_OF_PURCHASE_API_KEY=fixture-first-key"))
+            plan, receipt, orders = (root / name for name in ("plan.json", "receipt.json", "orders.json"))
+            payload = {"orders": [{"orderReference": "fixture", "amount": 1, "currency": "EUR", "transactionTime": 1762859931}]}
+            orders.write_text(json.dumps(payload), encoding="utf-8")
+            args = ["--env-file", str(env_file), "--no-artifacts", "proof-of-purchase", "orders", "create",
+                    "--publisher-id", "777", "--advertiser-id", "55", "--orders-file", str(orders)]
+            apply = ["--apply", "--yes", "--plan-in", str(plan), "--receipt-out", str(receipt)]
+            with patch("requests.Session.request") as request:
+                with redirect_stdout(io.StringIO()):
+                    self.assertEqual(main(["--plan-out", str(plan), *args]), 0)
+                self.assertNotIn("fixture-first-key", plan.read_text())
+                env_file.write_text("AWIN_PROOF_OF_PURCHASE_API_KEY=fixture-other-key\n", encoding="utf-8")
+                with redirect_stdout(stdout := io.StringIO()):
+                    self.assertEqual(main([*apply, *args]), 0)
+                self.assertTrue(json.loads(stdout.getvalue())["refused"])
+                request.assert_not_called()
+
+                env_file.write_text("AWIN_PROOF_OF_PURCHASE_API_KEY=fixture-first-key\n", encoding="utf-8")
+                payload["orders"][0]["amount"] = 2
+                orders.write_text(json.dumps(payload), encoding="utf-8")
+                with redirect_stdout(stdout := io.StringIO()):
+                    self.assertEqual(main([*apply, *args]), 0)
+                self.assertTrue(json.loads(stdout.getvalue())["refused"])
+                request.assert_not_called()
+
+                payload["orders"][0]["amount"] = 1
+                orders.write_text(json.dumps(payload), encoding="utf-8")
+                for status,response,outcome in (
+                    (200, {"orders": [{"status": "rejected"}]}, "provider_reported_errors"),
+                    (503, None, "outcome_unknown"),
+                ):
+                    with self.subTest(status=status):
+                        request.reset_mock()
+                        request.return_value = _json_response("POST", "https://api.awin.com/", {}, response, status=status)
+                        with redirect_stdout(io.StringIO()):
+                            self.assertEqual(main([*apply, *args]), 1)
+                        request.assert_called_once()
+                        saved = json.loads(receipt.read_text())
+                        self.assertIsNone(saved["changed"])
+                        self.assertFalse(saved["verification"]["ok"])
+                        self.assertEqual(saved["verification"]["status"], outcome)
 
     def test_proof_of_purchase_apply_refuses_without_plan_in(self) -> None:
         with patch("awin_publisher_safe_agent_cli.http.requests.Session.request") as mocked_request:

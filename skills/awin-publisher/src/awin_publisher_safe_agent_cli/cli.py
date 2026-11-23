@@ -20,7 +20,7 @@ from .commands import transaction_queries as transaction_queries_cmd
 from .commands import transactions as transactions_cmd
 from .config import load_config
 from .errors import SafetyError, ToolError, ValidationError
-from .http import HttpClient
+from .http import HttpClient, HttpStatusError
 from .output import Output
 from .runs import RunContext, build_deterministic_summary, init_run_context, find_run, list_runs, runs_index_path_for_env_file, write_summary_md, append_index_row
 
@@ -149,7 +149,7 @@ def _output_mode_from_argv(argv: list[str]) -> str:
 def build_parser() -> argparse.ArgumentParser:
     p = _ToolArgumentParser(prog=_TOOL)
     p.add_argument("--version", action="store_true", help="Print version and exit")
-    p.add_argument("--env-file", default=".env", help="Optional .env file path (default: .env)")
+    p.add_argument("--env-file", help="Use this settings file (default: .env)")
     p.add_argument("--timeout-s", type=float, default=None, help="Override timeout seconds")
     p.add_argument("--verbose", action="store_true", help="Verbose HTTP logging to stderr")
     p.add_argument("--debug", action="store_true", help="Show stack traces on errors")
@@ -392,6 +392,8 @@ def main(argv: list[str]) -> int:
         )
         return 1
 
+    env_file_explicit = args.env_file is not None
+    args.env_file = str(Path(args.env_file or ".env").expanduser())
     write_capable = bool(getattr(args, "write_capable", False))
     command_str = f"{_TOOL} {' '.join(argv)}"
     run_ctx: RunContext = init_run_context(
@@ -461,7 +463,7 @@ def main(argv: list[str]) -> int:
             )
             return rc
 
-        cfg = load_config(args.env_file)
+        cfg = load_config(args.env_file, file_only=env_file_explicit, require_file=env_file_explicit)
         timeout_s = float(args.timeout_s) if args.timeout_s is not None else cfg.timeout_s
         if timeout_s <= 0:
             raise ValidationError("--timeout-s must be > 0")
@@ -537,8 +539,9 @@ def main(argv: list[str]) -> int:
     except Exception as e:  # noqa: BLE001
         if bool(args.debug):
             raise
-        audit.write("error", {"error": str(e), "error_type": type(e).__name__})
-        out.emit({"ok": False, "error": str(e), "error_type": type(e).__name__})
+        error_type = "RuntimeError" if isinstance(e, HttpStatusError) else type(e).__name__
+        audit.write("error", {"error": str(e), "error_type": error_type})
+        out.emit({"ok": False, "error": str(e), "error_type": error_type})
         return 1
     finally:
         audit.close()

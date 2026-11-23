@@ -121,6 +121,12 @@ class HttpResponse:
         return self.body.decode("utf-8", errors="replace")
 
 
+class HttpStatusError(RuntimeError):
+    def __init__(self, status: int, message: str) -> None:
+        super().__init__(message)
+        self.status = status
+
+
 class HttpClient:
     def __init__(self, *, timeout_s: float, verbose: bool, user_agent: str):
         self._timeout_s = timeout_s
@@ -200,7 +206,8 @@ class HttpClient:
                 time.sleep(min(2**attempt, 10))
                 continue
 
-            raise RuntimeError(
+            raise HttpStatusError(
+                resp.status_code,
                 f"HTTP {resp.status_code} for {method} {redact_url(resp.url)} "
                 f"headers={redact_headers(headers)} "
                 f"response_body=<suppressed {len(resp.content)} bytes>"

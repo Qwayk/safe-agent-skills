@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 import unittest
 from pathlib import Path
@@ -31,27 +32,8 @@ class TestDocsFormatting(unittest.TestCase):
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
 
-    def test_use_cases_stays_human_and_specific(self) -> None:
+    def test_saved_output_examples_parse(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
-
-        required = [
-            "Awin Publisher is useful when an affiliate publisher wants to know",
-            "## Good questions to ask",
-            "## Everyday work this helps with",
-            "## What the agent should show you",
-            "## Good first path",
-            "Which programs are joined, pending, suspended, rejected, or hidden?",
-        ]
-        for phrase in required:
-            self.assertIn(phrase, text)
-
-        stale_phrases = [
-            "Awin Publisher work usually starts with earning questions",
-            "Good jobs for this skill",
-            "Good requests to hand your agent",
-            "Use this page when you want practical",
-            "dry-run plan",
-        ]
-        for phrase in stale_phrases:
-            self.assertNotIn(phrase, text)
+        for example in (root / "docs/examples").rglob("*.json"):
+            with self.subTest(example=example.name):
+                self.assertIsInstance(json.loads(example.read_text(encoding="utf-8")), dict)

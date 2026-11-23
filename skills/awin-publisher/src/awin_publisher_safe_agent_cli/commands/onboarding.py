@@ -1,84 +1,32 @@
 from __future__ import annotations
 
+import shlex
 from pathlib import Path
 
-
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
-
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+from ..config import load_config
+from .common import write_private_file
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
-    out = ctx["out"]
-    env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
+    env_file = Path(ctx["env_file"])
+    created = not env_file.exists() and not bool(getattr(args, "no_write_env", False))
+    if created:
+        example = env_file.with_name(".env.example")
+        template = example.read_bytes() if example.is_file() else (
+            b"AWIN_API_TOKEN=\n# AWIN_FEED_API_KEY=\n# AWIN_PROOF_OF_PURCHASE_API_KEY=\n"
+        )
+        write_private_file(env_file, template, overwrite=False)
 
-    env_path = Path(env_file)
-    env_created = False
-
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
-        else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
-
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "AWIN_API_TOKEN"):
-        missing.append("AWIN_API_TOKEN")
-
-    steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Open .env and fill this required value:",
-        "  - AWIN_API_TOKEN=<your token>",
-        "Optional values:",
-        "  - AWIN_PROOF_OF_PURCHASE_API_KEY=<optional>",
-        "  - AWIN_FEED_API_KEY=<optional>",
-        "  - AWIN_TIMEOUT_S=30",
-        "Run: awin-publisher-safe-cli --output json auth check",
-    ]
-
-    payload = {
-        "ok": True,
-        "onboarding": {
-            "env_file": env_file,
-            "env_created": env_created,
-            "missing": missing,
-            "next_command": "awin-publisher-safe-cli --output json auth check",
-            "steps": steps,
-        },
-    }
+    config = load_config(str(env_file), file_only=True)
+    missing = [] if config.token else ["AWIN_API_TOKEN"]
+    command = shlex.join(["awin-publisher-safe-cli", "--env-file", str(env_file), "--output", "json", "auth", "check"])
+    steps = [f"Put your Awin API token in {env_file}.", f"Run {command}"]
 
     if str(getattr(args, "output", "json")) == "json":
-        out.emit(payload)
+        ctx["out"].emit({"ok": True, "onboarding": {
+            "env_file": str(env_file), "env_created": created, "missing": missing,
+            "next_command": command, "steps": steps,
+        }})
     else:
-        print("To connect this tool to Awin, do this once:")
-        for i, s in enumerate(steps, start=1):
-            print(f"{i}. {s}")
-        if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        print("")
-        print("Next: awin-publisher-safe-cli --output json auth check")
+        print("\n".join(steps))
     return 0

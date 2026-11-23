@@ -3,6 +3,8 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import os
+import tempfile
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
@@ -215,9 +217,27 @@ def write_json_file(path_raw: str | None, payload: dict[str, Any]) -> str | None
     if not path_str:
         return None
     path = Path(path_str).expanduser().resolve()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    data = (json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    write_private_file(path, data, overwrite=True)
     return str(path)
+
+
+def write_private_file(path: Path, data: bytes, *, overwrite: bool) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as handle:
+            temporary = Path(handle.name)
+            handle.write(data)
+        if overwrite:
+            temporary.replace(path)
+        else:
+            os.link(temporary, path)
+    except FileExistsError:
+        raise ValidationError(f"Output file already exists: {path}") from None
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def require_apply_and_yes(ctx: dict[str, Any], *, reason: str) -> None:
@@ -257,8 +277,9 @@ def write_download_file(
     out_path: Path,
     data: bytes,
     content_type: str | None,
+    overwrite: bool,
 ) -> dict[str, Any]:
-    out_path.write_bytes(data)
+    write_private_file(out_path, data, overwrite=overwrite)
     return {
         "path": str(out_path),
         "bytes_written": len(data),
