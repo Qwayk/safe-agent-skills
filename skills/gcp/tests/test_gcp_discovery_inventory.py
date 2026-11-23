@@ -102,7 +102,7 @@ class TestGcpDiscoveryInventory(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            generated_dir = root / "docs" / "_generated"
+            generated_dir = root / "src" / "gcp_safe_agent_cli"
             generated_dir.mkdir(parents=True)
             payload = {
                 "summary": {"included_service_count": 1, "included_operation_count": 1},
@@ -136,7 +136,7 @@ class TestGcpDiscoveryInventory(unittest.TestCase):
         self.assertTrue(registry.has_operation("compute", "instances-list"))
 
     def test_checked_in_inventory_includes_known_gcp_boundary_repairs(self) -> None:
-        payload = json.loads((self.root / "docs" / "_generated" / "gcp_discovery_inventory.json").read_text(encoding="utf-8"))
+        payload = json.loads((self.root / "src" / "gcp_safe_agent_cli" / "gcp_discovery_inventory.json").read_text(encoding="utf-8"))
         services = {service["api_id"]: service for service in payload["services"]}
         self.assertIn("cloudtasks", services)
         self.assertEqual(services["cloudtasks"]["version"], "v2")

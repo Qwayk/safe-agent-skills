@@ -9,10 +9,10 @@ from typing import Any
 from urllib.parse import quote
 
 from .config import Config
-from .google_auth import load_adc_credentials
+from .google_auth import AdcState, credential_identity, load_adc_credentials
 from .generated_registry import DiscoveryRegistry, load_inventory, load_registry
 from .errors import SafetyError, ValidationError
-from .http import HttpClient
+from .http import HttpClient, HttpStatusError
 from .json_files import read_json_file, write_json_file
 from .redaction import (
     iter_scalar_strings,
@@ -23,7 +23,39 @@ from .redaction import (
 )
 
 _READ_METHODS = {"GET", "HEAD"}
-_REPO_ROOT = Path(__file__).resolve().parents[2]
+_SPEND_OPERATIONS = {
+    "aiplatform.projects.locations.endpoints.deployModel",
+    "bigquery.jobs.insert",
+    "compute.disks.insert",
+    "compute.instances.bulkInsert",
+    "compute.instances.insert",
+    "compute.instances.setMachineType",
+    "compute.instances.start",
+    "container.projects.locations.clusters.create",
+    "dataflow.projects.locations.templates.launch",
+    "run.projects.locations.services.create",
+    "run.projects.locations.services.patch",
+    "sql.instances.insert",
+    "sql.instances.patch",
+}
+_RESOURCE_LISTS = {
+    "projects": ("project", "GCP_ALLOWED_PROJECTS"),
+    "folders": ("folder", "GCP_ALLOWED_FOLDERS"),
+    "organizations": ("organization", "GCP_ALLOWED_ORGANIZATIONS"),
+    "billingaccounts": ("billing_account", "GCP_ALLOWED_BILLING_ACCOUNTS"),
+}
+_RESOURCE_ID_FIELDS = {
+    "project": "projects", "projectid": "projects", "projectsid": "projects", "projectnumber": "projects",
+    "folder": "folders", "folderid": "folders", "foldersid": "folders",
+    "organization": "organizations", "organizationid": "organizations", "organizationsid": "organizations",
+    "org": "organizations", "orgid": "organizations",
+    "billingaccount": "billingaccounts", "billingaccountid": "billingaccounts",
+    "billingaccountname": "billingaccounts", "billingaccountsid": "billingaccounts",
+}
+_RESOURCE_NAME_FIELDS = {
+    "name", "parent", "resource", "resourcename", "resourcenames", "source", "target", "destination",
+}
+_USER_METADATA_FIELDS = {"labels", "userlabels", "annotations", "metadata", "tags", "environmentvariables", "env"}
 
 
 @dataclass(frozen=True)
@@ -48,12 +80,8 @@ def _sha256_json(obj: Any) -> str:
     return hashlib.sha256(_canonical_json(obj).encode("utf-8")).hexdigest()
 
 
-def _inventory_path() -> Path:
-    return _REPO_ROOT / "docs" / "_generated" / "gcp_discovery_inventory.json"
-
-
 def inventory_summary() -> dict[str, Any]:
-    data = load_inventory(_REPO_ROOT)
+    data = load_inventory()
     return {
         "ok": True,
         "generated_at": data.get("generated_at"),
@@ -264,30 +292,68 @@ def _region_candidates(path_values: dict[str, Any]) -> list[tuple[str, str]]:
     return deduped
 
 
-def _validate_allowlists(cfg: Config | None, path_values: dict[str, Any]) -> None:
+def _request_fields(value: Any, field: str = ""):
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if str(key).lower().replace("_", "") not in _USER_METADATA_FIELDS:
+                yield from _request_fields(item, str(key))
+    elif isinstance(value, list):
+        for item in value:
+            yield from _request_fields(item, field)
+    elif isinstance(value, str) and value.strip():
+        yield field, value.strip()
+
+
+def _check_resource_lists(cfg: Config, key: str, value: str, *, path_value: bool) -> None:
+    field = key.lower().replace("_", "")
+    kind = _RESOURCE_ID_FIELDS.get(field)
+    if not (path_value or kind or field in _RESOURCE_NAME_FIELDS):
+        return
+    resource = re.sub(r"^https?://[^/]+/", "", value).lstrip("/")
+    parts = resource.split("/")
+    candidates = [
+        (part.lower(), following)
+        for part, following in zip(parts, parts[1:])
+        if part.lower() in _RESOURCE_LISTS and following
+    ]
+    if kind and len(parts) == 1:
+        candidates.append((kind, resource))
+    for resource_type, identifier in candidates:
+        attr, setting = _RESOURCE_LISTS[resource_type]
+        allowed = getattr(cfg, f"allowed_{attr}s")
+        if allowed and identifier not in allowed:
+            raise SafetyError(f"Refused: target is outside {setting}")
+
+
+def _validate_allowlists(
+    cfg: Config | None,
+    path_values: dict[str, Any],
+    query: dict[str, Any] | None = None,
+    body: Any = None,
+) -> None:
     if cfg is None:
         return
-    checks: list[tuple[str, tuple[str, ...], str]] = [
-        ("project", cfg.allowed_projects, "GCP_ALLOWED_PROJECTS"),
-        ("folder", cfg.allowed_folders, "GCP_ALLOWED_FOLDERS"),
-        ("organization", cfg.allowed_organizations, "GCP_ALLOWED_ORGANIZATIONS"),
-        ("org", cfg.allowed_organizations, "GCP_ALLOWED_ORGANIZATIONS"),
-        ("billingaccount", cfg.allowed_billing_accounts, "GCP_ALLOWED_BILLING_ACCOUNTS"),
-        ("billing_account", cfg.allowed_billing_accounts, "GCP_ALLOWED_BILLING_ACCOUNTS"),
-    ]
-    for key, allowed, label in checks:
-        if not allowed:
-            continue
-        for path_key, raw_value in path_values.items():
-            lowered = str(path_key).lower()
-            if key not in lowered:
-                continue
-            if str(raw_value) not in allowed:
-                raise SafetyError(f"Refused: {path_key}={raw_value} is not in {label}")
+    for key, value in path_values.items():
+        _check_resource_lists(cfg, str(key), str(value).strip(), path_value=True)
+    fields = list(_request_fields([query, body]))
+    for key, value in fields:
+        _check_resource_lists(cfg, key, value, path_value=False)
     if cfg.allowed_regions:
-        for source, candidate in _region_candidates(path_values):
+        candidates = _region_candidates(path_values)
+        for key, value in fields:
+            field = key.lower().replace("_", "")
+            if field in _RESOURCE_NAME_FIELDS or re.fullmatch(r"(regions?|locations?|zones?)(id)?", field):
+                candidates.extend(_region_candidates({field: value}))
+        for source, candidate in candidates:
             if candidate not in cfg.allowed_regions:
                 raise SafetyError(f"Refused: {source} resolves to {candidate}, which is not in GCP_ALLOWED_REGIONS")
+
+
+def _requires_spend_approval(operation_id: str, body: Any) -> bool:
+    if operation_id == "cloudbilling.projects.updateBillingInfo":
+        request = _coerce_mapping(body)
+        return bool(request.get("billingAccountName") or request.get("billing_account_name"))
+    return operation_id in _SPEND_OPERATIONS
 
 
 def _fingerprint_source(
@@ -320,6 +386,7 @@ def _build_plan(
     resolved_input: ResolvedInput,
     quota_project: str | None,
     command_str: str | None,
+    connection: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     service_id = str(service.get("api_id") or "")
     operation_name = str(operation.get("operation_name") or "")
@@ -354,6 +421,8 @@ def _build_plan(
         "request_preview": request_preview,
         "risk_categories": sorted(set(operation.get("risk_categories") or [])),
         "quota_project": quota_project or "",
+        "connection": connection,
+        "requires_spend_approval": _requires_spend_approval(operation_id, resolved_input.body),
     }
     quota_project_fingerprint = _sha256_json({"quota_project": quota_project or ""})
     return {
@@ -372,6 +441,8 @@ def _build_plan(
         "risk_categories": sorted(set(operation.get("risk_categories") or [])),
         "quota_project": quota_project or "",
         "quota_project_fingerprint": quota_project_fingerprint,
+        "connection": connection,
+        "requires_spend_approval": plan_source["requires_spend_approval"],
         "request_preview": request_preview,
         "input": resolved_input.fingerprint_input,
         "input_fingerprint": input_fingerprint,
@@ -386,36 +457,87 @@ def _load_plan(plan_path: str) -> dict[str, Any]:
     return plan
 
 
-def _validate_plan_matches(plan: dict[str, Any], *, service_id: str, operation_name: str, current_input_fingerprint: str, quota_project: str | None) -> None:
-    if str(plan.get("service_id") or "") != service_id:
-        raise SafetyError("Refused: plan service does not match current args")
-    if str(plan.get("operation_name") or "") != operation_name:
-        raise SafetyError("Refused: plan operation does not match current args")
-    if str(plan.get("input_fingerprint") or "") != current_input_fingerprint:
-        raise SafetyError("Refused: plan input does not match current args")
-    plan_quota_project = str(plan.get("quota_project") or "")
-    current_quota_project = quota_project or ""
-    plan_quota_fingerprint = str(plan.get("quota_project_fingerprint") or "")
-    current_quota_fingerprint = _sha256_json({"quota_project": current_quota_project})
-    if plan_quota_project not in {current_quota_project, "***REDACTED***"} and plan_quota_fingerprint != current_quota_fingerprint:
-        raise SafetyError("Refused: plan quota project does not match current args")
-    if plan_quota_project == "***REDACTED***" and plan_quota_fingerprint != current_quota_fingerprint:
-        raise SafetyError("Refused: plan quota project does not match current args")
+def _safe_plan(plan: dict[str, Any], values: list[str]) -> dict[str, Any]:
+    result = dict(plan)
+    for field in ("command", "request_preview", "input", "quota_project"):
+        result[field] = redact_jsonish_with_values(redact_jsonish(plan[field]), values)
+    return result
+
+
+def _validate_plan_request(plan: dict[str, Any], expected: dict[str, Any]) -> None:
+    for key in (
+        "service_id", "operation_name", "operation_id", "classification", "risk_categories",
+        "http_method", "path_template", "input_fingerprint", "requires_spend_approval",
+    ):
+        if plan.get(key) != expected[key]:
+            raise SafetyError("Refused: the request or operation rules changed. Review a new plan.")
+    if not isinstance(plan.get("connection"), dict):
+        raise SafetyError("Refused: this is an offline preview. Make and review a new plan with --bind-adc.")
+
+
+def _validate_plan_connection(plan: dict[str, Any], expected: dict[str, Any]) -> None:
+    if (
+        plan["connection"] != expected["connection"]
+        or plan.get("quota_project_fingerprint") != expected["quota_project_fingerprint"]
+        or plan.get("plan_fingerprint") != expected["plan_fingerprint"]
+    ):
+        raise SafetyError("Refused: the Google identity, quota project, endpoint, or plan changed. Review a new plan.")
+    if plan.get("request_preview") != expected["request_preview"] or plan.get("input") != expected["input"]:
+        raise SafetyError("Refused: the saved request preview changed. Review a new plan.")
 
 
 def _validate_apply_gates(*, plan: dict[str, Any], args: Any) -> None:
-    if not str(getattr(args, "plan_in", "") or "").strip():
-        raise SafetyError("Refused: live writes require --plan-in")
-    if not bool(getattr(args, "apply", False)):
-        raise SafetyError("Refused: live writes require --apply")
     if not bool(getattr(args, "yes", False)):
         raise SafetyError("Refused: live writes require --apply --yes")
-    risk_categories = {str(item) for item in (plan.get("risk_categories") or [])}
+    risk_categories = set(plan["risk_categories"])
     classification = str(plan.get("classification") or "")
     if ("no_snapshot" in risk_categories or "high" in classification.lower()) and not bool(getattr(args, "ack_no_snapshot", False)):
         raise SafetyError("Refused: high-risk or no_snapshot writes require --ack-no-snapshot")
     if "irreversible" in risk_categories and not bool(getattr(args, "ack_irreversible", False)):
         raise SafetyError("Refused: irreversible writes require --ack-irreversible")
+    if plan["requires_spend_approval"] and not bool(getattr(args, "ack_spend_money", False)):
+        raise SafetyError("Refused: this change can add charges. Get approval and use --ack-spend-money.")
+
+
+def _resolve_connection(
+    service: dict[str, Any], *, timeout_s: float, quota_project: str | None,
+) -> tuple[AdcState, str, dict[str, str]]:
+    base_url = _base_url_from_discovery_doc(load_discovery_document(service, timeout_s=timeout_s))
+    adc = load_adc_credentials(quota_project_id=quota_project)
+    label, identity = credential_identity(adc)
+    return adc, base_url, {"identity": label, "identity_fingerprint": identity, "endpoint": base_url}
+
+
+def _provider_outcome(response: Any) -> str:
+    if int(getattr(response, "status", getattr(response, "status_code", 0)) or 0) == 202:
+        return "pending"
+    try:
+        data = response.json()
+    except (AttributeError, ValueError):
+        return "limited_verification"
+    if not isinstance(data, dict):
+        return "limited_verification"
+    name = str(data.get("name") or "")
+    if str(data.get("kind") or "").endswith("#operation"):
+        if data.get("status") != "DONE":
+            return "pending"
+        if data.get("error") or data.get("httpErrorStatusCode"):
+            return "operation_failed"
+    elif name.startswith("operations/") or "/operations/" in name:
+        if data.get("done") is not True:
+            return "pending"
+        if data.get("error"):
+            return "operation_failed"
+    elif data.get("kind") == "bigquery#job":
+        status = data.get("status")
+        if isinstance(status, dict):
+            if status.get("state") in {"PENDING", "RUNNING"}:
+                return "pending"
+            if status.get("errorResult"):
+                return "operation_failed"
+    elif data.get("status") == "PENDING":
+        return "pending"
+    return "limited_verification"
 
 
 def _json_safe_response(response: Any, *, redaction_values: list[str]) -> Any:
@@ -454,7 +576,7 @@ def _display_path(path: str | None, *, env_file: str | None) -> str | None:
 
 
 def execute_generated_operation(args: Any, ctx: dict[str, Any]) -> int:
-    registry = load_registry(_REPO_ROOT)
+    registry = load_registry()
     service_id = str(getattr(args, "cmd", "") or "").strip()
     operation_name = str(getattr(args, "operation", "") or "").strip()
     try:
@@ -465,26 +587,37 @@ def execute_generated_operation(args: Any, ctx: dict[str, Any]) -> int:
         http_method = str(operation.get("http_method") or "").upper()
         path_template = str(operation.get("path") or "")
         resolved_input = _normalize_input(input_obj, path_template=path_template, http_method=http_method)
-        _validate_allowlists(cfg, resolved_input.path_values)
+        _validate_allowlists(cfg, resolved_input.path_values, resolved_input.query_params, resolved_input.body)
         version = str(ctx.get("tool_version") or "")
         command_str = str(ctx.get("command_str") or "")
-        plan = _build_plan(
-            tool=str(ctx.get("tool") or "qwayk-gcp-safe-agent-cli"),
-            version=version,
-            service=service,
-            operation=operation,
-            resolved_input=resolved_input,
-            quota_project=quota_project,
-            command_str=command_str,
-        )
+        is_read = str(operation.get("classification") or "") == "read"
+        plan_args = {
+            "tool": str(ctx.get("tool") or "qwayk-gcp-safe-agent-cli"),
+            "version": version,
+            "service": service,
+            "operation": operation,
+            "resolved_input": resolved_input,
+            "command_str": command_str,
+        }
+        timeout_s = float(ctx.get("timeout_s") or 30.0)
+        connection = None
+        if not is_read and not getattr(args, "apply", False) and getattr(args, "bind_adc", False):
+            try:
+                planning_adc, _, connection = _resolve_connection(service, timeout_s=timeout_s, quota_project=quota_project)
+            except Exception as exc:
+                private_values = _redaction_values(cfg, input_obj)
+                if quota_project:
+                    private_values.append(quota_project)
+                raise RuntimeError(sanitize_error_message(exc, private_values)) from None
+            quota_project = planning_adc.quota_project_id
+        plan = _build_plan(**plan_args, quota_project=quota_project, connection=connection)
         output_redaction_values = list(cfg.redaction_values()) if cfg is not None else []
         if quota_project:
             output_redaction_values.append(quota_project)
         error_redaction_values = _redaction_values(cfg, input_obj, plan)
-        plan_safe = redact_jsonish_with_values(redact_jsonish(plan), output_redaction_values)
+        plan_safe = _safe_plan(plan, output_redaction_values)
         plan_file_redaction_values = [*output_redaction_values, *iter_scalar_strings(input_obj)]
-        plan_file_safe = redact_jsonish_with_values(redact_jsonish(plan), plan_file_redaction_values)
-        is_read = str(operation.get("classification") or "") == "read"
+        plan_file_safe = _safe_plan(plan, plan_file_redaction_values)
         plan_out = str(getattr(args, "plan_out", "") or "").strip() or str(ctx.get("plan_out") or "").strip()
         output_file = str(getattr(args, "output_file", "") or "").strip() or str(ctx.get("output_file") or "").strip()
         if not bool(getattr(args, "apply", False)) and not is_read:
@@ -492,6 +625,7 @@ def execute_generated_operation(args: Any, ctx: dict[str, Any]) -> int:
             payload = {
                 "ok": True,
                 "dry_run": True,
+                "approval_ready": connection is not None,
                 "service_id": service_id,
                 "operation_name": operation_name,
                 "classification": operation.get("classification"),
@@ -500,6 +634,8 @@ def execute_generated_operation(args: Any, ctx: dict[str, Any]) -> int:
                 "plan_out": plan_path,
                 "request": plan_safe["request_preview"],
             }
+            if connection is None:
+                payload["next_step"] = "Use --bind-adc to prepare a plan for approval."
             output_path = _write_output_file(output_file, payload)
             if output_path:
                 payload["output_file"] = _display_path(output_path, env_file=str(ctx.get("env_file") or ".env"))
@@ -571,64 +707,36 @@ def execute_generated_operation(args: Any, ctx: dict[str, Any]) -> int:
         if not bool(getattr(args, "yes", False)):
             raise SafetyError("Refused: live writes require --apply --yes")
 
-        current_input_fingerprint = _sha256_json(
-            _fingerprint_source(
-                service_id=service_id,
-                operation_name=operation_name,
-                operation_id=str(operation.get("operation_id") or ""),
-                http_method=http_method,
-                path_template=path_template,
-                resolved_input=resolved_input,
-                quota_project=quota_project,
-            )["input"]
-        )
-        plan = _load_plan(plan_in)
-        _validate_plan_matches(
-            plan,
-            service_id=service_id,
-            operation_name=operation_name,
-            current_input_fingerprint=current_input_fingerprint,
-            quota_project=quota_project,
-        )
+        saved_plan = _load_plan(plan_in)
+        _validate_plan_request(saved_plan, plan)
         _validate_apply_gates(plan=plan, args=args)
 
         try:
-            discovery_doc = load_discovery_document(service, timeout_s=float(ctx.get("timeout_s") or 30.0))
+            adc, base_url, connection = _resolve_connection(service, timeout_s=timeout_s, quota_project=quota_project)
         except Exception as exc:  # noqa: BLE001
             raise RuntimeError(sanitize_error_message(exc, error_redaction_values)) from None
-        base_url = _base_url_from_discovery_doc(discovery_doc)
+        effective_plan = _build_plan(**plan_args, quota_project=adc.quota_project_id, connection=connection)
+        effective_redaction_values = list(cfg.redaction_values()) if cfg is not None else []
+        if adc.quota_project_id:
+            effective_redaction_values.append(adc.quota_project_id)
+        _validate_plan_connection(
+            saved_plan, _safe_plan(effective_plan, [*effective_redaction_values, *iter_scalar_strings(input_obj)]),
+        )
         url = _build_url(base_url=base_url, path_template=path_template, path_values=resolved_input.path_values)
-        try:
-            adc = load_adc_credentials(quota_project_id=quota_project)
-        except Exception as exc:  # noqa: BLE001
-            raise RuntimeError(sanitize_error_message(exc, error_redaction_values)) from None
-        headers = _request_headers(token=str(getattr(adc.credentials, "token", "") or ""), quota_project=adc.quota_project_id)
+        token = str(getattr(adc.credentials, "token", "") or "")
+        headers = _request_headers(token=token, quota_project=adc.quota_project_id)
+        if token:
+            error_redaction_values.append(token)
+        if adc.quota_project_id:
+            output_redaction_values.append(adc.quota_project_id)
         client = HttpClient(
             timeout_s=float(ctx.get("timeout_s") or 30.0),
             verbose=bool(ctx.get("verbose", False)),
             user_agent=f"{ctx.get('tool') or 'qwayk-gcp-safe-agent-cli'}/{ctx.get('tool_version') or ''}".strip("/"),
             redaction_values=[*output_redaction_values, *iter_scalar_strings(input_obj)],
         )
-        try:
-            response = client.request(
-                http_method,
-                url,
-                headers=headers,
-                params=resolved_input.query_params or None,
-                json_body=resolved_input.body if isinstance(resolved_input.body, (dict, list)) else resolved_input.body,
-            )
-        except Exception as exc:  # noqa: BLE001
-            raise RuntimeError(sanitize_error_message(exc, error_redaction_values)) from None
-        response_payload = _response_payload(
-            request={
-                "method": http_method,
-                "url": url,
-                "params": resolved_input.query_params,
-                "body": resolved_input.body,
-            },
-            response=response,
-            redaction_values=[*output_redaction_values, *iter_scalar_strings(input_obj)],
-        )
+        request = {"method": http_method, "url": url, "params": resolved_input.query_params, "body": resolved_input.body}
+        safe_values = [*output_redaction_values, *iter_scalar_strings(input_obj), token]
         receipt = {
             "tool": ctx.get("tool") or "qwayk-gcp-safe-agent-cli",
             "version": version,
@@ -638,24 +746,69 @@ def execute_generated_operation(args: Any, ctx: dict[str, Any]) -> int:
             "operation_id": str(operation.get("operation_id") or ""),
             "classification": operation.get("classification"),
             "risk_categories": sorted(set(operation.get("risk_categories") or [])),
-            "plan_fingerprint": str(plan.get("plan_fingerprint") or ""),
+            "requires_spend_approval": effective_plan["requires_spend_approval"],
+            "plan_fingerprint": effective_plan["plan_fingerprint"],
             "plan_check": {
                 "matches": True,
                 "service_id": service_id,
                 "operation_name": operation_name,
-                "input_fingerprint": current_input_fingerprint,
+                "input_fingerprint": effective_plan["input_fingerprint"],
+                "identity_fingerprint": connection["identity_fingerprint"],
+                "quota_project_fingerprint": effective_plan["quota_project_fingerprint"],
             },
             "read_back_verified": False,
-            "verification_status": "limited_verification",
-            "verification_note": "limited verification: successful provider response only; no read-back check ran.",
-            **response_payload,
         }
+        try:
+            response = client.request(
+                http_method,
+                url,
+                headers=headers,
+                params=resolved_input.query_params or None,
+                json_body=resolved_input.body,
+            )
+        except RuntimeError as exc:
+            status = exc.status if isinstance(exc, HttpStatusError) else None
+            if status is not None and 400 <= status < 500:
+                outcome = "rejected"
+                applied = False
+            else:
+                outcome = "outcome_unknown"
+                applied = None
+            response_payload = {
+                "request": redact_jsonish_with_values(redact_jsonish(request), safe_values),
+                "response_status": status,
+                "response": None,
+            }
+            receipt.update(
+                error=sanitize_error_message(exc, error_redaction_values),
+                verification_status=outcome,
+                verification_note="Check the target or Google operation history before trying the write again.",
+                **response_payload,
+            )
+            ok = False
+        else:
+            response_payload = _response_payload(request=request, response=response, redaction_values=safe_values)
+            outcome = _provider_outcome(response)
+            applied = None if outcome == "pending" else outcome != "operation_failed"
+            receipt.update(
+                verification_status=outcome,
+                verification_note=(
+                    "Google accepted the request. Check the operation or target before reporting completion or retrying."
+                    if outcome == "pending"
+                    else "Google reported that the operation failed. Check the operation or target before retrying."
+                    if outcome == "operation_failed"
+                    else "limited verification: successful provider response only; no read-back check ran."
+                ),
+                **response_payload,
+            )
+            ok = outcome != "operation_failed"
+        receipt["applied"] = applied
         receipt_out = str(getattr(args, "receipt_out", "") or "").strip() or str(ctx.get("receipt_out") or "").strip()
         receipt_path = _write_output_file(receipt_out, receipt)
         payload = {
-            "ok": True,
+            "ok": ok,
             "dry_run": False,
-            "applied": True,
+            "applied": applied,
             "service_id": service_id,
             "operation_name": operation_name,
             "classification": operation.get("classification"),
@@ -670,6 +823,6 @@ def execute_generated_operation(args: Any, ctx: dict[str, Any]) -> int:
         if receipt_path:
             payload["receipt_out"] = _display_path(receipt_path, env_file=str(ctx.get("env_file") or ".env"))
         ctx["out"].emit(payload)
-        return 0
+        return 0 if ok else 1
     except Exception:
         raise

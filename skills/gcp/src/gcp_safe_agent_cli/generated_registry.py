@@ -6,13 +6,9 @@ from pathlib import Path
 from typing import Any
 
 
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[2]
-
-
 def _inventory_path(root: Path | None = None) -> Path:
-    base = root or _repo_root()
-    return base / "docs" / "_generated" / "gcp_discovery_inventory.json"
+    package = root / "src" / "gcp_safe_agent_cli" if root is not None else Path(__file__).resolve().parent
+    return package / "gcp_discovery_inventory.json"
 
 
 def _slugify(value: str) -> str:

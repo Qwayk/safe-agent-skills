@@ -12,17 +12,20 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Public-ready source docs for Google Cloud reads, dry-run plans, and reviewed apply gates.
 
 ### Changed
+- Added a Google identity, quota project and endpoint check to saved write plans. Added a spending approval flag for covered changes and receipts for pending writes and lost replies.
+- Combined the connection, settings and troubleshooting guides. Moved plan and receipt review into the safety guide and generator notes into the engineering guide.
 - Replaced the generic starter copy with GCP-specific README and docs that match the current runtime.
 - Rewrote the GCP front-door docs again around normal customer asks, safer first reads, honest source-ready status, and clearer live-verification limits.
-- Reworked the GCP first-reader docs and docs-contract tests around a clearer project-first Google Cloud review path.
+- Updated the guides and their tests to start with the Google Cloud project.
 - Updated the README, docs hub, and skill wrapper wording for public `gcp` install while keeping live Google Cloud account behavior marked unverified.
-- Tightened the README opening and README contract test so the first screen leads with the user's cloud-admin job instead of a Google Cloud inventory list.
+- Changed the README and its tests to start with what users do in Google Cloud.
 - Updated `.env.example`, `.env`, and onboarding output to use Google Application Default Credentials, optional quota projects, and optional allowlists.
 - Regenerated the GCP boundary to include Cloud Tasks, Analytics Hub, and Data Labeling through an official googleapis proto fallback.
 - Regenerated the GCP boundary to include Application Integration v1 and v2 through Google's official REST reference after the live Discovery URL returned 404.
 - Tightened region allowlists so zones and common `locations/...` resource names are checked against `GCP_ALLOWED_REGIONS`.
 
 ### Fixed
+- Included the Google Cloud inventory in fresh Python installs. Onboarding now keeps the settings path you choose.
 - CLI template: ensure argument/usage errors in `--output json` mode emit exactly one JSON error object (no argparse usage text).
 - The onboarding command now matches the GCP ADC runtime instead of asking for a fake base URL and token.
 - Receipts now label generated writes as limited verification unless a real read-back check ran.

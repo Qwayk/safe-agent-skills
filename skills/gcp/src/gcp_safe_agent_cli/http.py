@@ -25,6 +25,12 @@ class HttpResponse:
         return self.body.decode("utf-8", errors="replace")
 
 
+class HttpStatusError(RuntimeError):
+    def __init__(self, status: int, message: str) -> None:
+        super().__init__(message)
+        self.status = status
+
+
 class HttpClient:
     def __init__(self, *, timeout_s: float, verbose: bool, user_agent: str, redaction_values: list[str] | None = None):
         self._timeout_s = timeout_s
@@ -73,6 +79,7 @@ class HttpClient:
                     json=json_body,
                     data=data,
                     timeout=self._timeout_s,
+                    allow_redirects=method.upper() in {"GET", "HEAD"},
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
@@ -88,7 +95,7 @@ class HttpClient:
             if self._verbose:
                 print(f"[http] {method} {self._safe_url(resp.url)} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
-            if resp.status_code < 400:
+            if 200 <= resp.status_code < 300:
                 return HttpResponse(
                     status=resp.status_code,
                     headers={k.lower(): v for k, v in resp.headers.items()},
@@ -100,4 +107,4 @@ class HttpClient:
                 time.sleep(min(2**attempt, 10))
                 continue
 
-            raise RuntimeError(f"HTTP {resp.status_code} for {method} {self._safe_url(resp.url)}\n{resp.text}")
+            raise HttpStatusError(resp.status_code, f"HTTP {resp.status_code} for {method} {self._safe_url(resp.url)}\n{resp.text}")

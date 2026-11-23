@@ -8,13 +8,17 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
+from google.oauth2.credentials import Credentials
+from requests.exceptions import ReadTimeout
+
 from gcp_safe_agent_cli.cli import main
 from gcp_safe_agent_cli.config import load_config
-from gcp_safe_agent_cli.google_auth import AdcState, load_adc_credentials
+from gcp_safe_agent_cli.google_auth import AdcState, credential_identity, load_adc_credentials
 
 
 class _StubCredentials:
-    def __init__(self, token: str | None, valid: bool) -> None:
+    def __init__(self, token: str | None, valid: bool, identity: str = "test-agent@example.invalid") -> None:
+        self.service_account_email = identity
         self.token = token
         self.valid = valid
         self.expired = not valid
@@ -571,6 +575,7 @@ class TestGeneratedRuntime(unittest.TestCase):
                             "instances-delete",
                             "--input-json",
                             str(input_path),
+                            "--bind-adc",
                             "--plan-out",
                             str(plan_out),
                         ]
@@ -645,6 +650,7 @@ class TestGeneratedRuntime(unittest.TestCase):
                             "instances-delete",
                             "--input-json",
                             str(input_path),
+                            "--bind-adc",
                             "--plan-out",
                             str(plan_out),
                         ]
@@ -724,3 +730,175 @@ class TestGeneratedRuntime(unittest.TestCase):
         self.assertFalse(payload["ok"])
         self.assertNotIn("secret-quota-project", payload["error"])
         self.assertNotIn("secret-project", payload["error"])
+
+
+class TestConnectedWritePlans(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.plan = self.root / "plan.json"
+        self.receipt = self.root / "receipt.json"
+        self.request = self.root / "request.json"
+        self.settings = self.root / "settings.env"
+        self.request.write_text(json.dumps({"path": {
+            "project": "example-project", "zone": "us-central1-a", "instance": "demo-instance",
+        }}))
+        self.command = ["compute", "instances-start", "--input-json", str(self.request)]
+        self.flags = ["--plan-in", str(self.plan), "--apply", "--yes", "--ack-no-snapshot"]
+        self.discovery = patch(
+            "gcp_safe_agent_cli.generated_runtime.load_discovery_document",
+            return_value={"baseUrl": "https://compute.googleapis.com/compute/v1/"},
+        ).start()
+        self.addCleanup(patch.stopall)
+        self.adc = patch(
+            "gcp_safe_agent_cli.generated_runtime.load_adc_credentials",
+            return_value=self.credentials(),
+        ).start()
+        self.send = patch("gcp_safe_agent_cli.http.requests.Session.request").start()
+
+    @staticmethod
+    def credentials(identity="owner@example.invalid", quota="quota-a", token="fake-token"):
+        return AdcState(_StubCredentials(token, True, identity), "test-adc-project", quota, False)
+
+    def run_cli(self, *args):
+        output = io.StringIO()
+        with redirect_stdout(output):
+            rc = main([
+                "--output", "json", "--no-artifacts", "--env-file", str(self.settings), *args,
+            ])
+        return rc, json.loads(output.getvalue())
+
+    def save_plan(self, *, bind=True):
+        options = ["--bind-adc"] if bind else []
+        code, result = self.run_cli(*options, "--plan-out", str(self.plan), *self.command)
+        self.assertEqual(0, code)
+        self.assertTrue(result["dry_run"])
+        self.assertEqual(bind, result["approval_ready"])
+        return result
+
+    def test_offline_preview_stays_offline_and_cannot_be_applied(self):
+        self.save_plan(bind=False)
+        _, refusal = self.run_cli(*self.flags, "--ack-spend-money", *self.command)
+        self.assertIn("--bind-adc", refusal["reasons"][0])
+        self.adc.assert_not_called()
+        self.discovery.assert_not_called()
+        self.send.assert_not_called()
+
+    def test_user_adc_tracks_the_account_across_access_token_refresh(self):
+        def identity(access_token, refresh_token):
+            credentials = Credentials(access_token, refresh_token=refresh_token)
+            return credential_identity(AdcState(credentials, None, None, False))
+
+        label, fingerprint = identity("first-token", "fixture-user-1")
+        self.assertEqual("Google user credentials on this machine", label)
+        self.assertEqual(fingerprint, identity("second-token", "fixture-user-1")[1])
+        self.assertNotEqual(fingerprint, identity("first-token", "fixture-user-2")[1])
+
+    def test_changes_to_identity_quota_target_and_rules_stop_a_saved_plan(self):
+        self.save_plan()
+        saved = self.plan.read_text()
+        for adc in (
+            self.credentials(identity="different@example.invalid"),
+            self.credentials(quota="quota-b"),
+        ):
+            self.adc.return_value = adc
+            _, refusal = self.run_cli(*self.flags, "--ack-spend-money", *self.command)
+            self.assertIn("identity, quota project", refusal["reasons"][0])
+        self.adc.return_value = self.credentials()
+        self.discovery.return_value = {"baseUrl": "https://compute.googleapis.com/different/"}
+        _, refusal = self.run_cli(*self.flags, "--ack-spend-money", *self.command)
+        self.assertIn("endpoint", refusal["reasons"][0])
+        self.discovery.return_value = {"baseUrl": "https://compute.googleapis.com/compute/v1/"}
+        request = self.request.read_text()
+        self.request.write_text(request.replace("example-project", "other-project"))
+        _, refusal = self.run_cli(*self.flags, "--ack-spend-money", *self.command)
+        self.assertIn("request or operation rules", refusal["reasons"][0])
+        self.request.write_text(request)
+
+        amended = json.loads(saved)
+        amended["requires_spend_approval"] = False
+        self.plan.write_text(json.dumps(amended))
+        _, refusal = self.run_cli(*self.flags, *self.command)
+        self.assertTrue(refusal["refused"])
+        self.send.assert_not_called()
+
+    def test_spending_approval_and_a_pending_operation(self):
+        self.save_plan()
+        _, refusal = self.run_cli(*self.flags, *self.command)
+        self.assertIn("--ack-spend-money", refusal["reasons"][0])
+        self.send.assert_not_called()
+        self.adc.return_value = self.credentials(token="refreshed-fixture")
+        self.send.return_value = _FakeResponse(
+            status_code=200,
+            payload={"kind": "compute#operation", "name": "operation-123", "status": "PENDING"},
+            url="https://compute.googleapis.com/compute/v1/test",
+        )
+        code, result = self.run_cli(*self.flags, "--ack-spend-money", "--receipt-out", str(self.receipt), *self.command)
+        self.assertEqual(0, code)
+        self.send.assert_called_once()
+        self.assertEqual("quota-a", self.send.call_args.kwargs["headers"]["x-goog-user-project"])
+        self.assertIsNone(result["applied"])
+        self.assertEqual("pending", result["receipt"]["verification_status"])
+        self.assertEqual("operation-123", result["receipt"]["response"]["name"])
+        self.assertNotIn("refreshed-fixture", self.receipt.read_text())
+
+    def test_lost_reply_creates_receipt_without_resending(self):
+        self.save_plan()
+        self.send.side_effect = ReadTimeout("lost reply")
+        code, result = self.run_cli(*self.flags, "--ack-spend-money", "--receipt-out", str(self.receipt), *self.command)
+        self.assertEqual(1, code)
+        self.send.assert_called_once()
+        self.assertIsNone(result["applied"])
+        self.assertEqual("outcome_unknown", json.loads(self.receipt.read_text())["verification_status"])
+
+    def test_completed_operation_can_report_failure(self):
+        self.save_plan()
+        self.send.return_value = _FakeResponse(
+            status_code=200,
+            payload={"kind": "compute#operation", "name": "op-123", "status": "DONE",
+                     "error": {"errors": [{"code": "ZONE_RESOURCE_POOL_EXHAUSTED"}]}},
+            url="https://compute.googleapis.com/compute/v1/test",
+        )
+        code, result = self.run_cli(*self.flags, "--ack-spend-money", "--receipt-out", str(self.receipt), *self.command)
+        self.assertEqual(1, code)
+        self.send.assert_called_once()
+        self.assertFalse(result["applied"])
+        receipt = json.loads(self.receipt.read_text())
+        self.assertEqual("operation_failed", receipt["verification_status"])
+        self.assertFalse(receipt["read_back_verified"])
+
+    def test_full_resource_names_and_billing_fields_obey_lists(self):
+        self.settings.write_text("GCP_ALLOWED_PROJECTS=allowed-project\nGCP_ALLOWED_BILLING_ACCOUNTS=allowed-billing\n")
+        self.request.write_text(json.dumps({"path": {"name": "projects/other-project/secrets/example"}}))
+        _, refusal = self.run_cli("secretmanager", "projects-secrets-get", "--input-json", str(self.request))
+        self.assertIn("GCP_ALLOWED_PROJECTS", refusal["reasons"][0])
+
+        self.request.write_text(json.dumps({"body": {"resourceNames": ["projects/other-project"]}}))
+        _, refusal = self.run_cli("logging", "entries-list", "--input-json", str(self.request))
+        self.assertIn("GCP_ALLOWED_PROJECTS", refusal["reasons"][0])
+
+        self.request.write_text(json.dumps({
+            "path": {"name": "projects/allowed-project"},
+            "body": {"billingAccountName": "billingAccounts/other-billing"},
+        }))
+        command = ["cloudbilling", "projects-update-billing-info", "--input-json", str(self.request)]
+        _, refusal = self.run_cli(*command)
+        self.assertIn("GCP_ALLOWED_BILLING_ACCOUNTS", refusal["reasons"][0])
+        self.discovery.assert_not_called()
+        self.send.assert_not_called()
+
+        self.request.write_text(self.request.read_text().replace("other-billing", "allowed-billing"))
+        _, preview = self.run_cli(*command)
+        self.assertTrue(preview["plan"]["requires_spend_approval"])
+        self.request.write_text(self.request.read_text().replace("billingAccounts/allowed-billing", ""))
+        _, preview = self.run_cli(*command)
+        self.assertFalse(preview["plan"]["requires_spend_approval"])
+        self.request.write_text(json.dumps({
+            "path": {"project": "allowed-project", "zone": "us-central1-a"},
+            "body": {"labels": {"project": "display-label"}},
+        }))
+        code, preview = self.run_cli("compute", "instances-insert", "--input-json", str(self.request))
+        self.assertEqual(0, code, preview)
+        self.assertTrue(preview["plan"]["requires_spend_approval"])
+        self.send.assert_not_called()

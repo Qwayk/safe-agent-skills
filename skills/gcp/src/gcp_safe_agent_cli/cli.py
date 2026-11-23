@@ -207,6 +207,14 @@ def _register_generated_services(sub: argparse._SubParsersAction[argparse.Argume
             help="Override the quota/billing project used for requests",
         )
         service_parser.add_argument(
+            "--bind-adc", action="store_true", default=argparse.SUPPRESS,
+            help="Check Google credentials and the endpoint to prepare a reviewable write plan",
+        )
+        service_parser.add_argument(
+            "--ack-spend-money", action="store_true", default=argparse.SUPPRESS,
+            help="Confirm approval for a change that can add charges",
+        )
+        service_parser.add_argument(
             "--output-file",
             default=argparse.SUPPRESS,
             help="Write the safe command result JSON to a file",
@@ -312,6 +320,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="Extra acknowledgement for irreversible actions",
     )
     p.add_argument("--quota-project", default=None, help="Override the quota/billing project used for requests")
+    p.add_argument("--bind-adc", action="store_true", help="Prepare a write plan tied to your Google account")
+    p.add_argument("--ack-spend-money", action="store_true", help="Confirm approval for a change that can add charges")
     p.add_argument("--run-id", default=None, help="Optional run id (for run history/audit)")
     p.add_argument("--artifacts-dir", default=None, help="Optional artifacts directory for this run")
     p.add_argument("--no-artifacts", action="store_true", help="Disable writing local run artifacts")

@@ -31,7 +31,7 @@ Guidelines:
 
 ## Local source inputs
 
-- Generated inventory: `docs/_generated/gcp_discovery_inventory.json`
+- Generated inventory: `src/gcp_safe_agent_cli/gcp_discovery_inventory.json`
 - Generated from the official Google Discovery directory on `2026-06-25`
 - Coverage summary: `docs/api_coverage.md`
 

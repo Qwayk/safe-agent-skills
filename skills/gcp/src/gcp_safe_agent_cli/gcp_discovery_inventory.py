@@ -989,7 +989,7 @@ def generate_inventory(
 
 def _default_paths() -> tuple[Path, Path]:
     repo_root = Path(__file__).resolve().parents[2]
-    return repo_root / "docs" / "_generated", repo_root / "docs" / DEFAULT_COVERAGE_FILENAME
+    return Path(__file__).resolve().parent, repo_root / "docs" / DEFAULT_COVERAGE_FILENAME
 
 
 def build_parser() -> argparse.ArgumentParser:

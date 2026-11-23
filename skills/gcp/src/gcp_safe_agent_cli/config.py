@@ -61,7 +61,7 @@ class Config:
 
 
 def load_config(env_file: str | None) -> Config:
-    env = _parse_env_file(Path(env_file or ".env"))
+    env = _parse_env_file(Path(env_file or ".env").expanduser())
 
     quota_project = _get(env, "GCP_QUOTA_PROJECT") or None
     allowed_projects = _split_csv(_get(env, "GCP_ALLOWED_PROJECTS"))

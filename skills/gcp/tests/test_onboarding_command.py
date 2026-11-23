@@ -2,33 +2,33 @@ from __future__ import annotations
 
 import io
 import json
-import os
+import shlex
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from pathlib import Path
 
 from gcp_safe_agent_cli.cli import main
 
 
 class TestOnboardingCommand(unittest.TestCase):
-    def test_onboarding_creates_env_from_example(self) -> None:
+    def test_onboarding_keeps_the_selected_settings_path(self) -> None:
         with tempfile.TemporaryDirectory() as td:
-            env_path = os.path.join(td, ".env")
-            example_path = os.path.join(td, ".env.example")
-            with open(example_path, "w", encoding="utf-8") as f:
-                f.write("GCP_QUOTA_PROJECT=quota-proj\n")
-                f.write("GCP_ALLOWED_PROJECTS=proj-a,proj-b\n")
-                f.write("GCP_ALLOWED_FOLDERS=folder-a\n")
-                f.write("GCP_ALLOWED_ORGANIZATIONS=org-a\n")
-                f.write("GCP_ALLOWED_BILLING_ACCOUNTS=BA-1\n")
-                f.write("GCP_ALLOWED_REGIONS=us-central1\n")
+            path = Path(td) / "settings folder" / "chosen.env"
+            args = ["--output", "json", "--env-file", str(path), "onboarding"]
 
-            buf = io.StringIO()
-            with redirect_stdout(buf):
-                rc = main(["--output", "json", "--env-file", env_path, "onboarding"])
-            self.assertEqual(rc, 0)
-            payload = json.loads(buf.getvalue())
-            self.assertTrue(payload["ok"])
-            self.assertTrue(payload["onboarding"]["env_created"])
-            self.assertTrue(os.path.exists(env_path))
-            self.assertEqual(payload["onboarding"]["missing"], [])
+            out = io.StringIO()
+            with redirect_stdout(out):
+                self.assertEqual(0, main(args))
+            result = json.loads(out.getvalue())["onboarding"]
+            self.assertTrue(result["env_created"])
+            self.assertEqual([], result["missing"])
+            self.assertEqual(0o600, path.stat().st_mode & 0o777)
+            self.assertEqual(
+                ["--output", "json", "--env-file", str(path), "auth", "check"],
+                shlex.split(result["next_command"])[1:],
+            )
+            original = path.read_text()
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(0, main(args))
+            self.assertEqual(original, path.read_text())

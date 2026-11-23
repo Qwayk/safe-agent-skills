@@ -1,75 +1,30 @@
-# Safety model
+# Review and approve Google Cloud changes
 
-Google Cloud mistakes can break apps, expose buckets, change IAM, delete resources, or create spend. This tool is built around a simple rule: look first, plan second, change last.
+Start with a read so you can see what’s there. Before changing anything, show the user the exact resource, what will change, and how you’ll check the result. Changes to access, networking, billing and running services can affect people who use the project.
 
-Safe use should feel calm. The agent checks the target, explains what it found, shows a plan before risky work, and leaves a record after live work. Secrets stay local.
+## Make a plan the user can approve
 
-A good safety ask is: "Check the project, resource, risk, and approval step before any Google Cloud change, then tell me whether verification will be full read-back or limited provider-response verification."
+A write command previews the request by default. For a preview without connecting to Google, leave out `--bind-adc`. That preview says `approval_ready: false`. To save a plan you can apply later, run the same command with `--bind-adc --plan-out plan.json`. That checks Google credentials and the API endpoint without sending the change. If you have an older plan, generate a new one with those flags.
 
-## What safe use looks like
+Review the original input alongside the saved plan because the plan hides private values. Confirm the project and resource, Google identity, quota project, operation, exact changes and risk. Include the rollback or restore option if Google supports one for this change. If recovery would be manual or unavailable, say so before asking for approval. Show the exact apply command and wait for the user’s approval.
 
-- Read-only checks happen before change requests.
-- The agent names the project, region, zone, service, and operation it is touching.
-- Vague or dangerous requests turn into a plan, not an immediate live change.
-- Bigger changes wait for a stronger approval step.
-- Receipts say what happened and whether verification was full or limited.
-- Live Google Cloud behavior is treated as unverified until a real safe-target read succeeds.
+## Apply the approved request
 
-## Why Google Cloud needs extra care
+Use `--input-json` with the same input and pass `--plan-in plan.json --apply --yes`. The tool checks the current operation and safety requirements against the saved plan. It stops if the target, input, identity, quota project or endpoint changed. If anything changed, prepare a new plan for review. Any project, folder, organization, billing account or region limits configured on the machine still apply.
 
-Some Google Cloud work is low-risk, like listing enabled services or checking which project the account can see. Other work can affect IAM access, billing, public IPs, networks, databases, storage, logs, service enablement, or running workloads.
+- `--ack-no-snapshot` is required for higher-risk changes that may have no snapshot.
+- `--ack-irreversible` is required for changes the tool classifies as irreversible.
+- `--ack-spend-money` is required for covered actions that can add charges, such as starting a Compute Engine VM, creating a disk or linking a billing account. Review the expected cost of any proposed change, including ones that carry no spending flag.
 
-The tool should not treat those actions the same way. A small read can run quickly. A delete, IAM update, public exposure change, database change, quota change, or cost-sensitive action should slow down.
+## Check what happened
 
-## Normal change flow
+The receipt records the operation, whether it matched the reviewed plan, and what Google reported. Run records normally live under `.state/runs/`. Use `--receipt-out receipt.json` for a specific file. Keep those files private.
 
-1. Generate a dry-run plan.
-2. Review the target, input, service, operation, and risk.
-3. Apply only from the reviewed saved plan.
-4. Verify with a safe read-back when the provider supports it.
-5. Save a receipt that says what happened.
+| Receipt status | What to do |
+|---|---|
+| `limited_verification` | Google returned a successful reply. Read the affected resource to confirm the exact change. |
+| `pending` | Google accepted the request. Check the operation or resource until you know what finished. |
+| `outcome_unknown` | The reply was lost or Google returned a server error. Check the operation history or resource before sending the request again. |
+| `operation_failed` or `rejected` | Google reported an error. Read it and check the resource before deciding what to do next. |
 
-## What plans and receipts are for
-
-A plan shows what the tool wants to change before it acts. It should name the target, proposed input, risk, required approvals, and expected verification.
-
-A receipt shows what happened after live work. It should say whether the tool changed anything and whether verification was read-back verification or only a limited provider-response check.
-
-Plans and receipts must not include secrets.
-
-## Approval rules
-
-- Reads do not need apply flags.
-- Writes start as dry-run plans.
-- Live writes require `--plan-in`, `--apply`, and `--yes`.
-- Higher-risk or no-snapshot writes can require `--ack-no-snapshot`.
-- Delete-like or hard-to-undo actions can require `--ack-irreversible`.
-- The tool can refuse work outside configured project, folder, organization, billing account, or region allowlists.
-
-## First safe setup check
-
-For a new Google Cloud setup, start with:
-
-```bash
-qwayk-gcp-safe-agent-cli --output json auth check
-```
-
-That check tells you whether the local Google credential path is available. The next safe step is one small read against a known project, zone, or service that your IAM permissions allow.
-
-## Run history
-
-For commands that can change Google Cloud, the tool can write local run records under `.state/runs/`. Those records help answer questions later, such as what changed last time, which plan was reviewed, and whether verification passed.
-
-Local run records are not public proof. Keep them private and never include secrets.
-
-## If the target changes after planning
-
-When applying from a saved plan, the tool should refuse if the reviewed target no longer matches. Examples include a different project, region, zone, billing account, resource name, operation, input file, or provider version marker when Google gives one.
-
-If the target changed, make a new plan.
-
-## Recovery and follow-up
-
-Do not assume a Google Cloud change can be undone. Some Google Cloud operations have provider restore actions, some have partial follow-up actions, and some are hard to put back.
-
-If verification fails and a safe follow-up action exists, create a new plan and require approval. If no safe follow-up exists, the tool should say that plainly before the user approves the risky work.
+Compare what you find with the approved request, including any fields that changed unexpectedly and any before-state or snapshot you saved. The receipt shows `read_back_verified: false` until there is a real read-back check. If you need to repair or reverse a change, make a new plan and ask for approval. [Test results and live checks still needed](proof.md)

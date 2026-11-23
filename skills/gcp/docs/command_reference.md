@@ -1,8 +1,6 @@
 # Command reference
 
-Use the command reference when you already know the Google Cloud job and need the exact service, operation, input file shape, and safety flags.
-
-For the guided path, start with [Useful Google Cloud asks](use_cases.md), [Set up your Google Cloud access](onboarding.md), and [See how this skill stays safe](safety_model.md).
+Find the exact operation in [API coverage](api_coverage.md). For a first read, follow [the quickstart](quickstart.md).
 
 ## Global flags
 
@@ -20,12 +18,15 @@ These flags apply across the CLI:
 - `--run-id RUN_ID`
 - `--artifacts-dir ARTIFACTS_DIR`
 - `--no-artifacts`
+- `--bind-adc`
 - `--plan-out plan.json`
 - `--plan-in plan.json`
 - `--apply`
 - `--yes`
 - `--ack-no-snapshot`
 - `--ack-irreversible`
+- `--ack-spend-money`
+- `--receipt-out receipt.json`
 - `--output-file result.json`
 - `--log-file audit.jsonl`
 
@@ -64,7 +65,7 @@ Use this flow when you know the cloud job but not the command yet:
 2. Search [API coverage](api_coverage.md) for the service or resource name, such as `instances-list`, `services-list`, `buckets-list`, `projects-locations-services-list`, `entries-list`, or `billing-accounts-list`.
 3. Copy the exact operation name from the coverage table.
 4. Create `input.json` with the path values the operation needs, plus any query or body fields.
-5. Start with a read. For writes, save a dry-run plan first and review it before apply.
+5. Start with a read. For a change, save a plan with `--bind-adc` and get approval before applying it.
 
 Common first checks:
 
@@ -104,19 +105,24 @@ The input JSON usually carries `path`, `query`, and `body` values. For example:
 }
 ```
 
-Reads can run without `--apply`. Writes default to dry-run and only go live after a reviewed plan.
+Reads run without apply flags. Write commands show a preview by default.
 
 ## Plan and apply
 
-Write-capable commands always start with a plan.
+For this delete example, set `project`, `zone` and `instance` in the `path` object in `input.json`. Save the plan:
 
-- Dry-run: `qwayk-gcp-safe-agent-cli compute instances-delete --input-json input.json --plan-out plan.json`
-- Apply: `qwayk-gcp-safe-agent-cli --apply --yes --plan-in plan.json --ack-no-snapshot --ack-irreversible compute instances-delete --input-json input.json`
+```bash
+qwayk-gcp-safe-agent-cli compute instances-delete --input-json input.json --bind-adc --plan-out plan.json
+```
 
-Use `--ack-no-snapshot` for high-risk or no-snapshot writes and `--ack-irreversible` when the operation cannot be undone safely.
+After the user approves the exact delete, run:
 
-## Batch work
+```bash
+qwayk-gcp-safe-agent-cli --apply --yes --plan-in plan.json --ack-no-snapshot --ack-irreversible compute instances-delete --input-json input.json
+```
 
-This source build does not ship a separate CSV batch runner yet.
+The CLI also requires `--ack-spend-money` for covered changes that can add charges. See [the approval rules](safety_model.md) for each flag and how to read the receipt.
 
-For repeated work, prepare one reviewed generated command plan at a time, or add a future batch runner that expands into explicit generated `service operation` commands instead of one unsafe catch-all command.
+## Repeat work
+
+Use [one reviewed command at a time](jobs_and_batches.md).

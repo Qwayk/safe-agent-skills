@@ -149,7 +149,7 @@ Start here if you want infrastructure, domain, account, or AI-platform work.
 | Product | What it helps with | What you connect | Mode |
 | --- | --- | --- | --- |
 | [**AWS**](aws/README.md)<br><sub>Install slug: <code>aws</code></sub> | Review AWS identity, services, resources, access, spend, and prepare careful infrastructure changes | AWS account | Reads + careful changes |
-| [**Google Cloud Platform**](gcp/README.md)<br><sub>Install slug: <code>gcp</code></sub> | Review Google Cloud projects, access, running resources, cost-sensitive areas, logs, and prepare careful infrastructure changes | Google Cloud account | Reads + careful changes |
+| [**Google Cloud**](gcp/README.md)<br><sub>Install slug: <code>gcp</code></sub> | Check what’s running, who has access, and what may be adding to your bill. Plan changes for approval. | Google Cloud account | Reads + careful changes |
 | [**Azure**](azure/README.md)<br><sub>Install slug: <code>azure</code></sub> | Review Azure subscriptions, resources, access, cost-sensitive areas, networking, secrets, and prepare careful infrastructure changes | Azure account | Reads + careful changes |
 | [**Cloudflare**](cloudflare/README.md)<br><sub>Install slug: <code>cloudflare</code></sub> | Review Cloudflare zones, DNS, Workers, Pages, security, storage, and account settings | Cloudflare account | Reads + careful changes |
 | [**GiantPanda**](giantpanda/README.md)<br><sub>Install slug: <code>giantpanda</code></sub> | Check traffic and earnings for parked domains. Review a list of domains before adding them. | GiantPanda account | Reads + careful changes |

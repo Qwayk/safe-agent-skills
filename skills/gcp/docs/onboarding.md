@@ -1,90 +1,63 @@
-# Connect your Google Cloud account
+# Set up Google Cloud access
 
-Start the same way you would start a careful cloud review: choose the Google identity, confirm the project or quota context, run one small read, then stop before any change.
+Choose the Google account or service account you want to use, then test it with one small read in a project you recognize. For that first read, use an account that already has permission to view the resource.
 
-You do not need to learn every command first. Google Cloud setup has two parts: local Application Default Credentials, and enough IAM permission for the resource you want the agent to inspect. IAM is Google Cloud's permission system.
+## Connect your account
 
-Keep the setup files private. Do not paste `.env`, service account JSON, OAuth files, tokens, or keys into chat.
-
-## Before you start
-
-- You need the Google Cloud CLI, called `gcloud`, or a service account file that is already stored safely on this machine.
-- You need a Google Cloud project for the first read.
-- You may need a quota project, which is the project Google uses for billing and quota checks.
-- You need IAM permission for the service you want to inspect.
-- If this machine can reach many projects, use allowlists before planning writes.
-
-## Step 1: choose the Google identity
-
-If you are using your own Google account on a workstation, run:
+Google client libraries look for Application Default Credentials (ADC) on your machine. This CLI asks for the `cloud-platform` scope. If you’re using your own account, run:
 
 ```bash
 gcloud auth application-default login
 ```
 
-If your environment uses a service account file, keep `GOOGLE_APPLICATION_CREDENTIALS` set to that local file path before running the tool.
+If you already use a local service account file, set `GOOGLE_APPLICATION_CREDENTIALS` to its path. Keep service account files, OAuth files, tokens, keys and private settings on your machine. [Google’s ADC guide](https://docs.cloud.google.com/docs/authentication/application-default-credentials)
 
-Avoid starting with a broad admin identity unless the job truly needs it. A read-only or audit-focused identity is better for the first review.
-
-## Step 2: set the quota project if needed
-
-If Google should bill or count quota against a specific project, run:
+A quota project is where Google counts certain API requests for quota and billing. It can differ from the project that holds your resource. If you need to set the quota project on your Google credentials, run:
 
 ```bash
 gcloud auth application-default set-quota-project QUOTA_PROJECT_ID
 ```
 
-You can also use `GCP_QUOTA_PROJECT` in `.env` or pass `--quota-project` on a command.
+Use a project you expect to pay for those requests. You can also set `GCP_QUOTA_PROJECT` in your settings or pass `--quota-project QUOTA_PROJECT_ID` for one command. [Google’s quota project guide](https://docs.cloud.google.com/docs/quotas/set-quota-project)
 
-## Step 3: add local guardrails
+## Set limits for this tool
 
-In the tool folder:
-
-1. Copy `.env.example` to `.env` if you want local defaults or allowlists.
-2. Keep `.env` private.
-3. Add the quota project if needed.
-4. Add allowed projects, folders, organizations, billing accounts, or regions when the tool should refuse every other target.
-
-The `.env` file is for local settings only. It is not for chat and it is not for Git.
-
-## Step 4: run the setup helper
+Use `.env` for optional settings or pick a different file with `--env-file`. The setup helper can create the file for you. It keeps any file that already exists and shows the next command with the same settings path. Add `--no-write-env` to see the instructions without creating a file.
 
 ```bash
 qwayk-gcp-safe-agent-cli onboarding
+qwayk-gcp-safe-agent-cli --env-file "google cloud.env" onboarding
 ```
 
-Add `--no-write-env` if you only want instructions and do not want the helper to create `.env`.
+| Setting | What it does |
+|---|---|
+| `GCP_QUOTA_PROJECT` | Picks the quota project for requests. |
+| `GCP_ALLOWED_PROJECTS` | Lists the project IDs this tool may touch. |
+| `GCP_ALLOWED_FOLDERS` | Lists the folder IDs this tool may touch. |
+| `GCP_ALLOWED_ORGANIZATIONS` | Lists the organization IDs this tool may touch. |
+| `GCP_ALLOWED_BILLING_ACCOUNTS` | Lists the billing account IDs this tool may touch. |
+| `GCP_ALLOWED_REGIONS` | Lists allowed regions. The tool checks a zone like `europe-west1-b` as `europe-west1` and checks common `locations/...` resource names. |
+| `GCP_TIMEOUT_S` | Sets the request timeout in seconds. The default is 30. |
 
-## Step 5: confirm the connection
+Use commas between entries, leave optional values blank, and keep the settings file out of Git. Environment variables take priority over values in the file. Keep local run records under `.state/runs/` private too.
+
+## Check access
 
 ```bash
 qwayk-gcp-safe-agent-cli --output json auth check
 ```
 
-A good result confirms that Application Default Credentials are available and shows the project or quota context the tool can see. This is still only a setup check. The first live Google Cloud proof is one safe read against a project and service you recognize.
+This checks Google credentials and shows the project or quota project Google returned, when available. Then follow [the quickstart](quickstart.md) to check whether that account can read the service and resource you picked. Google IAM controls those permissions. Before asking anyone to approve a change, follow [the write approval steps](safety_model.md).
 
-## What to ask your AI agent
+## Fix a connection problem
 
-- "Check that Google Cloud access is connected and tell me which project or quota context you can see."
-- "Show me one safe read we can run before changing anything."
-- "List enabled services in this project and explain what looks worth reviewing."
-- "Review IAM access and stop before any change."
-- "Prepare a careful plan for this change and wait for my approval."
+| What you see | What to check |
+|---|---|
+| `gcloud: command not found` | Install Google Cloud CLI or check that it is on your `PATH`. Run `gcloud --version`. If this machine uses a service account file, check its local path instead. |
+| `DefaultCredentialsError` | Run the ADC sign-in again or check where `GOOGLE_APPLICATION_CREDENTIALS` points. |
+| Quota or billing error | Check the quota project, its billing setup and whether your Google identity can use it. |
+| Permission error on a read | Check the exact target, whether the API is enabled and whether your account has the read permission for that resource. |
+| The tool refuses the target | Check the project, folder, organization, billing account or region in the input against your settings. |
+| The tool cannot prepare a write plan for this identity | Use an ADC sign-in with a stable Google user credential or a named service account, then make a new plan. |
 
-## What success looks like
-
-Setup is working when the agent can:
-
-- confirm Application Default Credentials are available
-- name the project or quota project it will use
-- explain whether allowlists are active
-- run one read-only request that your IAM permissions allow
-- stop before any live change
-
-If auth works but a real service read fails, setup is only partly working. The usual missing piece is the target project, quota project, enabled API, IAM permission, or allowlist.
-
-## If something fails
-
-Start with [Troubleshooting](troubleshooting.md). Most failures mean the machine is missing Google credentials, the target project is wrong, the quota project is not accepted, the API is not enabled, IAM is too narrow, or an allowlist refused the target.
-
-Local setup and tests do not prove live Google Cloud behavior. Treat the first successful read in your own account as the live check.
+Start with the exact error and the same small read. Use `--verbose` for request timing or `--debug` for a Python stack trace when investigating the code. Keep any private values out of shared output. [Google’s ADC troubleshooting guide](https://docs.cloud.google.com/docs/authentication/troubleshoot-adc)
