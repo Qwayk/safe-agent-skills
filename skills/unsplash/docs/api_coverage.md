@@ -1,18 +1,14 @@
 # API coverage
 
-Unsplash coverage shows exactly what this skill can do with photo search, collections, tracked downloads, and local image files. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
-
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can search photos, fetch one result, and show which Unsplash download or collection workflows are included."
+This tool uses an Unsplash Access Key for public photo research and approved download tracking. The table lists the API calls made by the current commands.
 
 ## Coverage notes
 
 - Provider: Unsplash
 - API base URL: https://api.unsplash.com
 - Auth method: Access Key via `Authorization: Client-ID ...` (no OAuth in this tool)
-- Last audited (UTC): 2026-06-04
-- This tool sends `Accept-Version: v1` on all API requests.
+- Earlier coverage audit: June 4, 2026. Download and collection behavior checked offline on November 23, 2026.
+- The API client sends `Accept-Version: v1`.
 - `GET /me` is not supported because it requires a Bearer token (OAuth), which is out of scope.
 - Pagination: Unsplash docs state list endpoints are paginated with a default of 10 items, up to a maximum of 30 per page. This tool enforces `--per-page <= 30` consistently.
 
@@ -25,7 +21,7 @@ A good first coverage check is: "Check whether this skill can search photos, fet
 | `GET /photos/random` | Random photo(s) | `unsplash-api-tool photos random` | read-only | `tests/test_unsplash_commands.py` | Supports `count`, `query`, `username`, `orientation`, `content_filter` | https://unsplash.com/documentation#get-a-random-photo |
 | `GET /search/photos` | Search photos | `unsplash-api-tool photos search`<br>`unsplash-api-tool search photos`<br>`unsplash-api-tool export photos-search` | read-only API; local write: export writes JSON to `--out` (multi-page requires `--yes`) | `tests/test_unsplash_commands.py` | Supports `query`, `page`, `per_page` (max 30), optional `order_by` | https://unsplash.com/documentation#search-photos |
 | `GET /photos/:id/statistics` | Photo stats | `unsplash-api-tool photos stats --id ...` | read-only | `tests/test_unsplash_commands.py` | Supports `resolution`, `quantity` | https://unsplash.com/documentation#get-a-photos-statistics |
-| `GET /photos/:id/download` | Track a photo download (compliance) | `unsplash-api-tool photos download --id ...` | planned only; current apply requires explicit no-snapshot approval before this endpoint | `tests/test_unsplash_commands.py` + `docs/examples/*` | Optional local file write is also blocked in current apply | https://unsplash.com/documentation#track-a-photo-download |
+| `GET /photos/:id/download` | Track a photo download (compliance) | `unsplash-api-tool photos download --id ...` | Matching saved preview, explicit apply and no-snapshot approval | `tests/test_unsplash_commands.py` | Preserves the tracking URL and query from the photo details. An optional local copy uses the full-size image URL. | https://unsplash.com/documentation#track-a-photo-download |
 | `GET /collections` | List collections | `unsplash-api-tool collections list` | read-only | `tests/test_unsplash_commands.py` | Supports `page`, `per_page` (max 30) | https://unsplash.com/documentation#list-collections |
 | `GET /collections/:id` | Get a collection | `unsplash-api-tool collections get --id ...` | read-only | `tests/test_unsplash_commands.py` |  | https://unsplash.com/documentation#get-a-collection |
 | `GET /collections/:id/photos` | List photos in a collection | `unsplash-api-tool collections photos --id ...`<br>`unsplash-api-tool export collections-photos --id ...` | read-only API; local write: export writes JSON to `--out` (multi-page requires `--yes`) | `tests/test_unsplash_commands.py` | Supports `page`, `per_page` (max 30), `orientation` | https://unsplash.com/documentation#get-a-collections-photos |
@@ -45,5 +41,5 @@ A good first coverage check is: "Check whether this skill can search photos, fet
 
 ## Known gaps (explicit)
 
-- `GET /me` — requires OAuth Bearer token per official docs (out of scope for this issue).
+- `GET /me` — requires OAuth, outside the Access Key tool.
 - `POST /photos/:id/like` and `DELETE /photos/:id/like` — require OAuth Bearer token per official docs (out of scope).

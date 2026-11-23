@@ -17,7 +17,7 @@ class TestAuditLog(unittest.TestCase):
                 {
                     "tool": "unsplash-api-tool",
                     "version": "0.0.0",
-                    "command": "unsplash-api-tool demo read",
+                    "command": "unsplash-api-tool photos list",
                     "apply": False,
                     "yes": False,
                     "env_fingerprint": "http://example.invalid",

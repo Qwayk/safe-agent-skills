@@ -27,7 +27,7 @@ def _parse_env_file(path: Path) -> dict[str, str]:
 
 def _get(env: dict[str, str], key: str) -> str:
     # OS env overrides env-file.
-    return (os.environ.get(key) if key in os.environ else env.get(key) or "").strip()
+    return os.environ.get(key, env.get(key, "")).strip()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -38,9 +38,9 @@ class Config:
 
 
 def load_config(env_file: str | None) -> Config:
-    env = _parse_env_file(Path(env_file or ".env"))
+    env = _parse_env_file(Path(env_file or ".env").expanduser())
 
-    base_url = _get(env, "UNSPLASH_API_BASE_URL").rstrip("/")
+    base_url = _get(env, "UNSPLASH_API_BASE_URL").rstrip("/") or "https://api.unsplash.com"
     access_key = _get(env, "UNSPLASH_ACCESS_KEY") or None
 
     timeout_s_raw = _get(env, "UNSPLASH_TIMEOUT_S") or "30"
@@ -49,8 +49,6 @@ def load_config(env_file: str | None) -> Config:
     except Exception:
         raise RuntimeError("UNSPLASH_TIMEOUT_S must be a number (seconds)") from None
 
-    if not base_url:
-        raise RuntimeError("Missing UNSPLASH_API_BASE_URL")
     if timeout_s <= 0:
         raise RuntimeError("UNSPLASH_TIMEOUT_S must be > 0")
 

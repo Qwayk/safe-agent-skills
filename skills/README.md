@@ -140,7 +140,7 @@ Start here if you want assets, folders, uploads, voice tools, or design-platform
 | [**Cloudinary**](cloudinary/README.md)<br><sub>Install slug: <code>cloudinary</code></sub> | Review Cloudinary assets, folders, uploads, and delivery settings | Cloudinary account | Reads + careful changes |
 | [**ElevenLabs**](elevenlabs/README.md)<br><sub>Install slug: <code>elevenlabs</code></sub> | Manage voice and audio, ElevenAgents, conversations, testing, and Twilio calling | ElevenLabs account | Reads + careful changes |
 | [**Freepik**](freepik/README.md)<br><sub>Install slug: <code>freepik</code></sub> | Find stock photos, review previews, and download approved assets with a license record. | Freepik account | Reads + licensed downloads |
-| [**Unsplash**](unsplash/README.md)<br><sub>Install slug: <code>unsplash</code></sub> | Search, review, and download Unsplash assets through a safer local workflow | Unsplash account | Reads + local changes only |
+| [**Unsplash**](unsplash/README.md)<br><sub>Install slug: <code>unsplash</code></sub> | Find photos, review collections, and record approved downloads. | Unsplash API Access Key | Reads + download tracking |
 
 ## Cloud, domains, and AI platforms
 

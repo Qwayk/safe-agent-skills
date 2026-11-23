@@ -1,60 +1,24 @@
-# Safety model
+# Download approvals and errors
 
-Unsplash can touch photo search, collections, tracked downloads, and local image files, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Search, preview, and compare photos before choosing one to use. Saving a download preview reads the photo details from Unsplash and writes a local plan. The download count changes only when Unsplash receives and accepts the approved tracking request.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## Before a download
 
-A good safety ask is: "Search first, confirm the photo and destination, then review the plan before a tracked download or local file write."
+1. Use `--plan-out` to save a preview. Review the photo, the connection, the destination, and any replacement of an existing file.
+2. After approval, run the same command with `--plan-in`, `--apply` and `--ack-no-snapshot`. The last flag confirms that the tool cannot restore the old download count. Applying an overwrite also needs `--yes`.
+3. If you change the photo, Access Key, API host, destination or overwrite choice, save a new preview. Old previews also need to be saved again.
 
-## Core safety rules
+The preview can include the photographer and the links for showing the image. On apply, the tool checks the destination and sends the tracking link from the preview once. For a local copy, it fetches the full-size image from the photo details and checks the transfer before putting the file at the destination.
 
-Most Unsplash work here is read-only research. The riskier path is `photos download`, because a real apply can trigger Unsplash download tracking and can also write a file to your machine.
+## Check the result
 
-## What stays simple
+- **`not_sent`** means the tracking request did not run. Read and fix the refusal before applying again.
+- **`recorded`** means Unsplash accepted tracking. Check separately whether the file was saved. A completed file result includes its length and SHA-256 hash. If an overwrite was interrupted before the file was saved, the original stays in place.
+- **`failed`** means Unsplash declined the tracking request.
+- **`unknown`** means the tool did not get a reply it could use to confirm tracking. Check before trying again so you do not count the same download twice.
 
-- photo, collection, topic, user, search, and stats reads
-- export planning
-- dry-run download plans
+When a receipt is saved, it records tracking, the photo links and photographer details, and any file saved. Read the JSON result if the receipt could not be written. Use `runs list` or `runs show` to find saved run details. The tool cannot undo a count already recorded by Unsplash.
 
-Those steps do not trigger download tracking or write a local file unless you move into apply.
+## Files outside the download flow
 
-## What needs extra care
-
-This tool has two kinds of writes:
-
-- tracked write flows like `photos download`, `jobs run` with write rows, and `demo write`
-- local immediate writes like `export ... --out ...`, `auth key set`, and `onboarding`
-
-That means:
-
-- tracked write flows start with a dry-run plan
-- apply needs explicit approval first
-- overwrite needs extra confirmation when a local file already exists
-- writes without useful saved before-state also need explicit no-snapshot approval before tracking or local file writes
-
-## What this skill does not promise
-
-- no OAuth-only endpoint support
-- no hidden download tracking in dry-run mode
-- no automatic undo for download tracking or local file writes
-- no saved before-state for the current tracked download path
-
-The tool should say those limits plainly before any real tracked download is allowed.
-
-## Local proof and run history
-
-This skill can save:
-
-- dry-run plans with `--plan-out`
-- local run history under `.state/runs`
-- refusal output that proves download tracking or local file writes stopped before apply
-
-Those artifacts are meant to help review what happened later. They must not contain secrets.
-
-## Recommended workflow with an AI agent
-
-1. Run `auth check` first.
-2. Do the photo research or shortlist work before you plan downloads.
-3. Build the dry-run download plan first.
-4. Review the photo IDs, destination path, and overwrite risk.
-5. Attempt tracked downloads only after explicit approval and no-snapshot acceptance when needed.
+`onboarding` can create a settings file. `auth key set` saves a private key. An `export` saves local JSON and `--plan-out` saves a preview. Check the path before asking the agent to save any of these files.

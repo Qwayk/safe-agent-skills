@@ -3,8 +3,11 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import json
+import os
 import sys
+import tempfile
 import time
+from pathlib import Path
 from typing import Any
 
 import requests
@@ -22,6 +25,11 @@ class HttpResponse:
 
     def text(self) -> str:
         return self.body.decode("utf-8", errors="replace")
+
+class HttpStatusError(RuntimeError):
+    def __init__(self, status: int, message: str):
+        super().__init__(message)
+        self.status = status
 
 
 class HttpClient:
@@ -49,6 +57,7 @@ class HttpClient:
         params: dict[str, Any] | None = None,
         json_body: dict[str, Any] | None = None,
         data: dict[str, Any] | None = None,
+        allow_redirects: bool = True,
         retries: int = 0,
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),
     ) -> HttpResponse:
@@ -68,6 +77,7 @@ class HttpClient:
                     json=json_body,
                     data=data,
                     timeout=self._timeout_s,
+                    allow_redirects=allow_redirects,
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
@@ -95,7 +105,7 @@ class HttpClient:
                 time.sleep(min(2**attempt, 10))
                 continue
 
-            raise RuntimeError(f"HTTP {resp.status_code} for {method} {resp.url}\n{resp.text}")
+            raise HttpStatusError(resp.status_code, f"HTTP {resp.status_code} for {method} {resp.url}\n{resp.text}")
 
     def download_to_file(
         self,
@@ -106,45 +116,44 @@ class HttpClient:
         overwrite: bool = False,
         chunk_size: int = 1024 * 128,
     ) -> dict[str, Any]:
-        from pathlib import Path
-
         dest = Path(dest_path)
         if dest.exists() and not overwrite:
             raise RuntimeError(f"Refused to overwrite existing file: {dest}")
 
-        start = time.time()
         if self._verbose:
             print(f"[http] GET {url} (download start)", file=sys.stderr)
 
-        resp = self._session.request(
-            method="GET",
-            url=url,
-            headers=headers,
-            stream=True,
-            timeout=self._timeout_s,
-            allow_redirects=True,
-        )
-        ms = int((time.time() - start) * 1000)
-        if self._verbose:
-            print(f"[http] GET {resp.url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
-
-        if resp.status_code >= 400:
-            raise RuntimeError(f"HTTP {resp.status_code} for GET {resp.url}")
-
         h = hashlib.sha256()
         written = 0
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        with dest.open("wb") as f:
-            for chunk in resp.iter_content(chunk_size=chunk_size):
-                if not chunk:
-                    continue
-                f.write(chunk)
-                h.update(chunk)
-                written += len(chunk)
+        temporary: Path | None = None
+        try:
+            with self._session.request(
+                method="GET", url=url, headers=headers, stream=True,
+                timeout=self._timeout_s, allow_redirects=True,
+            ) as resp:
+                if resp.status_code != 200:
+                    raise HttpStatusError(resp.status_code, f"Image server replied with HTTP {resp.status_code}.")
+                final_url, status = resp.url, resp.status_code
+                with tempfile.NamedTemporaryFile(dir=dest.parent, suffix=".part", delete=False) as f:
+                    temporary = Path(f.name)
+                    for chunk in resp.iter_content(chunk_size=chunk_size):
+                        if chunk:
+                            f.write(chunk)
+                            h.update(chunk)
+                            written += len(chunk)
+                if not written:
+                    raise RuntimeError("The image server returned an empty file.")
+                length = resp.headers.get("Content-Length", "")
+                encoding = resp.headers.get("Content-Encoding", "identity").lower()
+                if encoding == "identity" and length.isdecimal() and int(length) != written:
+                    raise RuntimeError("The image server returned only part of the file.")
 
-        return {
-            "url": resp.url,
-            "status": resp.status_code,
-            "bytes_written": written,
-            "sha256": h.hexdigest(),
-        }
+            if overwrite:
+                temporary.replace(dest)
+            else:
+                os.link(temporary, dest)
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+
+        return {"url": final_url, "status": status, "bytes_written": written, "sha256": h.hexdigest()}

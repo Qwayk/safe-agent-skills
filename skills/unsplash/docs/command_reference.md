@@ -1,27 +1,26 @@
 # Command reference
 
-These commands cover Unsplash search, photos, users, collections, downloads, and local file outputs. Use preview results before saving images or choosing final assets.
+Put shared flags before the command name. JSON is the default output.
 
-For the guided path, start with [What you can do with Unsplash](use_cases.md), [Connect your Unsplash access key](onboarding.md), and [Quickstart](quickstart.md).
+| Flag | What it does |
+| --- | --- |
+| `--env-file PATH` | Choose the private settings file. The default is `.env`. |
+| `--output json\|text` | Choose how the result is printed. |
+| `--timeout-s SECONDS` | Set the timeout for this run. |
+| `--config PATH`, `--project-dir DIR` | Choose a JSON project settings file or project folder. |
+| `--log-file PATH`, `--verbose`, `--debug` | Set the audit log, show request lines, or show a Python traceback. |
+| `--plan-out PATH`, `--plan-in PATH`, `--receipt-out PATH` | Save a preview, apply from it, or choose where the receipt goes. |
+| `--apply`, `--ack-no-snapshot`, `--yes` | Apply an approved download, confirm it has no restore point, or confirm a replacement or larger export. |
 
-## Onboarding and local state writes
-
-- `unsplash-api-tool onboarding [--no-write-env]`
-- `unsplash-api-tool auth key set --file auth.json`
-
-## Auth
+## Setup
 
 - `unsplash-api-tool --output json --version`
+- `unsplash-api-tool onboarding [--no-write-env]`
 - `unsplash-api-tool auth check`
+- `unsplash-api-tool auth key set --file auth.json`
 - `unsplash-api-tool auth key status`
 
-## Tracked write flows (plan/apply; irreversible in this CLI)
-
-These commands are write-capable and do not apply changes unless:
-- `--apply` is passed (and `--yes` for risky actions)
-- you accept the plan flow output from a dry-run plan.
-
-Tracked write flows do not offer automatic restore/rollback. Approved apply requires explicit no-snapshot approval and must emit a receipt that records the recovery limit.
+See [setup and common errors](onboarding.md).
 
 ## Photos
 
@@ -30,13 +29,14 @@ Tracked write flows do not offer automatic restore/rollback. Approved apply requ
 - `unsplash-api-tool photos random [--count 1..30] [--query ...] [--username ...] [--orientation ...] [--content-filter low|high]`
 - `unsplash-api-tool photos search --query <q> [--page N] [--per-page N] [--order-by relevant|latest]`
 - `unsplash-api-tool photos stats --id <photo_id> [--resolution ...] [--quantity ...]`
-- `unsplash-api-tool photos download --id <photo_id> [--dest path] [--plan-out plan.json]`
-- `unsplash-api-tool --apply photos download --id <photo_id> [--dest path]`
-- `unsplash-api-tool --apply --yes photos download --id <photo_id> --dest path --overwrite`
+- `unsplash-api-tool --plan-out plan.json photos download --id PHOTO_ID [--dest PATH] [--overwrite]`
+- `unsplash-api-tool --apply --ack-no-snapshot --plan-in plan.json photos download --id PHOTO_ID [--dest PATH]`
 
-Current `photos download --apply` requires explicit no-snapshot approval before `GET /photos/:id/download` and before optional local file writes when no saved snapshot is available.
+To replace an existing file, preview it with `--overwrite` and apply with `--yes` and the same `--overwrite` choice. Omit `--dest` in both commands for tracking only. See [download approvals](safety_model.md).
 
 ## Collections
+
+Collection IDs may contain letters, numbers, hyphens, or underscores.
 
 - `unsplash-api-tool collections list [--page N] [--per-page N]`
 - `unsplash-api-tool collections get --id <collection_id>`
@@ -63,18 +63,16 @@ Current `photos download --apply` requires explicit no-snapshot approval before 
 - `unsplash-api-tool search collections --query <q> [--page N] [--per-page N]`
 - `unsplash-api-tool search users --query <q> [--page N] [--per-page N]`
 
-## Stats (global)
+## Unsplash statistics
 
 - `unsplash-api-tool stats total`
 - `unsplash-api-tool stats month`
 
-## Export (deterministic pagination → local JSON file)
+## Export result data
 
-Notes:
-- `--per-page` is capped at 30 (per official Unsplash docs pagination maximum).
-- Multi-page exports require `--yes` when `--max-pages > 1`.
+An export writes local JSON without recording any photo downloads. Use the shared `--yes` flag when asking for more than one page.
 
-Common flags:
+These flags work with each export command.
 - `--out <path>` (required)
 - `--start-page N` (default 1)
 - `--max-pages N` (default 1)
@@ -87,30 +85,9 @@ Common flags:
 - `unsplash-api-tool export topics-photos --id <topic_slug_or_id> [--orientation ...] --out export.json [--start-page N] [--max-pages N] [--per-page N] [--sleep-ms N]`
 - `unsplash-api-tool export users-photos --username <username> [--order-by ...] [--orientation ...] --out export.json [--start-page N] [--max-pages N] [--per-page N] [--sleep-ms N]`
 
-## Jobs
+## Run history
 
-- `unsplash-api-tool jobs run --file jobs.csv [--limit N] [--plan-out plan.json]`
-- `unsplash-api-tool --apply --yes --plan-in plan.json jobs run --file jobs.csv`
-
-Current jobs with write rows require explicit no-snapshot approval before per-row write actions or stub receipts.
-
-## Local immediate writes (manual cleanup only)
-
-These commands write local files/state without a tracked plan/apply flow. No automatic rollback is possible.
-
-- `unsplash-api-tool export photos-search --query <q> [--order-by relevant|latest] --out export.json [--start-page N] [--max-pages N] [--per-page N] [--sleep-ms N]`
-- `unsplash-api-tool export photos-list [--order-by latest|oldest|popular] --out export.json [--start-page N] [--max-pages N] [--per-page N] [--sleep-ms N]`
-- `unsplash-api-tool export collections-photos --id <collection_id> [--orientation ...] --out export.json [--start-page N] [--max-pages N] [--per-page N] [--sleep-ms N]`
-- `unsplash-api-tool export topics-photos --id <topic_slug_or_id> [--orientation ...] --out export.json [--start-page N] [--max-pages N] [--per-page N] [--sleep-ms N]`
-- `unsplash-api-tool export users-photos --username <username> [--order-by ...] [--orientation ...] --out export.json [--start-page N] [--max-pages N] [--per-page N] [--sleep-ms N]`
-
-## Runs (history)
-
-Write-capable commands automatically save proof artifacts under `.state/runs/` and append an index row to `.state/runs/index.jsonl`.
-
-These live next to your `--env-file` (usually next to your `.env` file), so they’re easy to find.
-
-Optional flags:
+Commands that can write files or track downloads can save plans, receipts, and a run summary under `.state/runs/` beside the settings file. Use these options to choose where the files go.
 - `--run-id <id>`: set a specific run id (otherwise the tool generates one)
 - `--artifacts-dir <path>`: override where artifacts are written for this run
 - `--no-artifacts`: disable writing run artifacts (advanced)
@@ -118,10 +95,6 @@ Optional flags:
 - `unsplash-api-tool runs list [--limit 20]`
 - `unsplash-api-tool runs show --run-id 2026-01-19T104512Z_a3f91c`
 
-## Demo (plan/refusal workflow examples)
+## Where the code lives
 
-- `unsplash-api-tool demo read`
-- `unsplash-api-tool demo write --selector demo-resource [--plan-out plan.json]`
-- `unsplash-api-tool --apply --plan-in plan.json demo write --selector demo-resource`
-
-Current demo write apply requires explicit no-snapshot approval before stub receipt output.
+In `src/unsplash_api_tool/`, `cli.py` wires the commands and `config.py` reads settings. The handlers live in `commands/`. `unsplash_client.py` prepares API calls, and `http.py` sends them and saves photo files. `json_files.py`, `runs.py`, and `audit_log.py` handle local records. `output.py` prints one JSON result per command. See [what was tested](proof.md) before changing the download flow.

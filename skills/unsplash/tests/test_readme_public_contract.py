@@ -1,73 +1,45 @@
 from __future__ import annotations
 
+import re
+import shlex
 import unittest
 from pathlib import Path
 
+from unsplash_api_tool.cli import build_parser
 
-class TestReadmePublicContract(unittest.TestCase):
-    def test_public_readme_opening_stays_user_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
+ROOT = Path(__file__).resolve().parents[1]
 
-        self.assertTrue(text.startswith("# Unsplash\n"))
-        self.assertNotIn("## Simplicity lock", text)
-        self.assertNotIn("# unsplash-api-tool", text)
-        self.assertIn("**Capability:** Reads + careful changes", text)
 
-        required_sections = [
-            "## Start here first",
-            "## What this skill helps with",
-            "## Install and first run",
-            "## How this skill stays safe",
-            "## What happens before live changes",
-            "## Helpful docs",
-        ]
-        for section in required_sections:
-            self.assertIn(section, text)
+class TestPublicGuides(unittest.TestCase):
+    def test_guide_links_resolve(self) -> None:
+        for guide in [ROOT / "README.md", ROOT / "SKILL.md", *(ROOT / "docs").glob("*.md")]:
+            for destination in re.findall(r"\]\(([^)]+)\)", guide.read_text(encoding="utf-8")):
+                path, _, anchor = destination.partition("#")
+                if "://" in path:
+                    continue
+                with self.subTest(guide=guide.name, link=destination):
+                    target = guide.parent / path if path else guide
+                    self.assertTrue(target.exists())
+                    if anchor:
+                        headings = re.findall(r"^#+ (.+)$", target.read_text(), re.MULTILINE)
+                        slugs = {re.sub(r"[^a-z0-9 -]", "", title.lower()).replace(" ", "-") for title in headings}
+                        self.assertIn(anchor, slugs)
 
-    def test_start_here_section_stays_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do with Unsplash](docs/use_cases.md)", text)
-        self.assertIn("[Connect your Unsplash access key](docs/onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
-        self.assertIn("[Quickstart](docs/quickstart.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-
-    def test_opening_rejects_template_voice(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-        opening = text.split("## Start here first", 1)[0]
-
-        banned = [
-            "Use this skill when",
-            "You can hand your agent jobs like",
-            "without guessing from raw docs",
-            "Most work stays simple",
-            "read public data safely",
-        ]
-        for phrase in banned:
-            self.assertNotIn(phrase, opening)
-
-    def test_helpful_docs_stay_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("[Browse all Unsplash docs](docs/README.md)", text)
-        self.assertIn("[Jobs and batch guide](docs/jobs_and_batches.md)", text)
-        self.assertIn("[Authentication details](docs/authentication.md)", text)
-        self.assertIn("[Proof and verification](docs/proof.md)", text)
-        self.assertIn("[API coverage](docs/api_coverage.md)", text)
-        self.assertNotIn("- `docs/use_cases.md`", text)
-        self.assertNotIn("- `docs/onboarding.md`", text)
-
-    def test_quickstart_opens_with_human_links(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "quickstart.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do with Unsplash](use_cases.md)", text)
-        self.assertIn("[Connect your Unsplash access key](onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](safety_model.md)", text)
-        self.assertNotIn("`use_cases.md`", text)
-        self.assertNotIn("`onboarding.md`", text)
+    def test_setup_and_quickstart_commands_match_the_cli(self) -> None:
+        parser = build_parser()
+        download_examples = set()
+        for name in ("onboarding.md", "quickstart.md"):
+            for line in (ROOT / "docs" / name).read_text(encoding="utf-8").splitlines():
+                if not line.startswith("unsplash-api-tool "):
+                    continue
+                with self.subTest(command=line):
+                    args = parser.parse_args(shlex.split(line)[1:])
+                    self.assertTrue(callable(args.func))
+                    if args.cmd == "photos" and args.photos_cmd == "download":
+                        download_examples.add(args.apply)
+                        if args.apply:
+                            self.assertTrue(args.plan_in)
+                            self.assertTrue(args.ack_no_snapshot)
+                        else:
+                            self.assertTrue(args.plan_out)
+        self.assertEqual(download_examples, {False, True})

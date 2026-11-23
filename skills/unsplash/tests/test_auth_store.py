@@ -40,5 +40,5 @@ class TestAuthStore(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             env = Path(d) / "prod.env"
             p = auth_path_for_env_file(str(env))
-            self.assertEqual(p, Path(d) / ".state" / "auth.json")
+            self.assertEqual(p, Path(d).resolve() / ".state" / "auth.json")
 

@@ -7,6 +7,15 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ## [Unreleased]
 
+### November 23, 2026
+
+- Setup keeps the chosen settings file and defaults to the official API address. Collection commands accept IDs with letters.
+- Photo downloads require a matching saved preview. The tracking request preserves the link Unsplash returned and the receipt keeps photo and photographer details.
+- The tool checks the destination before tracking and saves the full image before replacing a file. The result reports tracking and saving separately.
+- Removed the `demo` and `jobs run` template commands and their CSV samples. Shortened the setup, download and agent guides.
+
+### Earlier changes
+
 ### Added
 - Initial Unsplash Photos API tool with safe-by-default CLI, mocked unit tests, and proof/docs pack.
 - Public read endpoints: user collections (`GET /users/:username/collections`), user statistics (`GET /users/:username/statistics`), and global stats (`GET /stats/total`, `GET /stats/month`).

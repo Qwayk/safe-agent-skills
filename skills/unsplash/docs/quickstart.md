@@ -1,76 +1,47 @@
-# Quickstart
+# Find and review Unsplash photos
 
-Start with a small Unsplash read: checking photo options, creators, licenses, and download choices before you use an image.
-
-Need more ideas? See [What you can do with Unsplash](use_cases.md). Need setup help? See [Connect your Unsplash access key](onboarding.md).
-
-A good first ask is:
-
-> Can you find 20 photos for this topic and shortlist the best options?
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account or connection before asking for real work.
-3. Run one small read and make sure the result matches the real service.
-4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+Use [the setup guide](onboarding.md) to connect your Access Key. If you are installing the command from a local copy, use Python 3.11 or newer and run these commands from the package folder.
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e .
+. .venv/bin/activate
+pip install .
 ```
+
+## Search for photos
 
 ```bash
-.venv/bin/python -m pip install -e '.[dev]'
+unsplash-api-tool auth check
+unsplash-api-tool search photos --query "minimal home office" --per-page 10
+unsplash-api-tool photos get --id PHOTO_ID
 ```
 
-## 2. Check setup
+Replace `PHOTO_ID` with a result you want to check. For a shortlist, ask the agent to show the photo links, photographer credits, and why each option fits. You can also ask it to find a set of images in one style, compare two collections, or look up a photographer's other work.
 
-If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
+Use the image links Unsplash returns when showing previews. Credit the photographer and Unsplash as required for API displays. [Unsplash API guidelines](references.md)
+
+## Save search results for review
 
 ```bash
-unsplash-api-tool --output json onboarding
+unsplash-api-tool export photos-search --query "minimal home office" --out photos.json
 ```
+
+An export saves result data on your machine. It does not record a download for the photos in the list. For more than one page, choose `--max-pages` and add the shared `--yes` flag before `export`.
+
+## Download an approved photo
+
+Save a preview with the photo and its destination.
 
 ```bash
-unsplash-api-tool --output json --version
-unsplash-api-tool --output json auth check
-unsplash-api-tool --output json photos search --query "minimal home office" --per-page 3
-unsplash-api-tool --output json stats total
+unsplash-api-tool --plan-out photo-plan.json photos download --id PHOTO_ID --dest downloads/photo.jpg
 ```
 
-## 3. Run one small first read
-
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
+Review the photo, connection, destination, and whether the file will replace an existing one. The tool cannot undo the record Unsplash makes. After approval, apply with the same settings.
 
 ```bash
-unsplash-api-tool --output json --yes export photos-list --out export.json --start-page 1 --max-pages 2 --per-page 10
+unsplash-api-tool --apply --ack-no-snapshot --plan-in photo-plan.json photos download --id PHOTO_ID --dest downloads/photo.jpg
 ```
 
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
+To mark a photo as used without saving a local copy, leave out `--dest` in both commands. For an intentional replacement, use `--overwrite` in the preview and apply, and add `--yes` when applying.
 
-## 4. Stop before anything risky
-
-Ask for a reviewed plan before downloads, saved files, collection changes, tracked download actions, or publishing image choices.
-
-## What a useful first result includes
-
-A good first result should make these things clear:
-
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
-
-## Where to go next
-
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your Unsplash access key](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+See [what to check after a download](safety_model.md#check-the-result) and [all command options](command_reference.md).

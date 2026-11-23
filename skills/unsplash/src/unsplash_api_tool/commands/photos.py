@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 import time
+from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
-from ..errors import SafetyError, ValidationError
+import requests
+
+from ..errors import SafetyError, ToolError, ValidationError
+from ..http import HttpStatusError
 from ..json_files import read_json_file, write_json_file
 from ..pagination import validate_page, validate_per_page
 from ..unsplash_client import (
@@ -14,14 +19,7 @@ from ..unsplash_client import (
 from .write_safety import (
     before_state_contract,
     before_state_refusal_output,
-    before_state_refusal_verification_plan,
     no_inverse_recovery_contract,
-)
-
-
-PHOTO_DOWNLOAD_REFUSAL_REASON = (
-    "Refused: this Unsplash photo download has no reliable before-state snapshot. "
-    "Review the dry-run plan, then rerun with --ack-no-snapshot if you approve applying without a snapshot."
 )
 
 
@@ -129,168 +127,207 @@ def cmd_photos_stats(args: Any, ctx: dict[str, Any]) -> int:
     return 0
 
 
-def _build_download_plan(*, photo_id: str, dest: str | None, overwrite: bool, ctx: dict[str, Any]) -> dict[str, Any]:
-    env_fingerprint = ctx["cfg"].base_url
-    selector = {"kind": "photo", "value": photo_id}
-    restore_note = (
-        "Unsplash download tracking cannot be rolled back by this CLI. "
-        "If the optional file download ran, delete the local destination file manually."
-    )
-    proposed_changes: list[dict[str, Any]] = [
-        {"action": "GET /photos/:id/download", "notes": "Unsplash download tracking endpoint (required for compliance)"},
-    ]
-    risk_reasons = ["Triggers Unsplash download tracking endpoint"]
-    if dest:
-        proposed_changes.append(
-            {
-                "action": "write file",
-                "path": dest,
-                "overwrite": overwrite,
-                "notes": "Download the binary file from the returned `url` and write it to disk.",
-            }
-        )
-        risk_reasons.append("May write a file to disk")
+def _download_target(dest: Path | None, overwrite: bool) -> None:
+    if dest is None:
+        return
+    if dest.exists() and not dest.is_file():
+        raise SafetyError("Choose a file path for --dest.")
+    if dest.exists() and not overwrite:
+        raise SafetyError("The destination already exists. Choose a new path or preview an overwrite.")
+    for parent in dest.parents:
+        if parent.exists():
+            if not parent.is_dir():
+                raise SafetyError(f"Choose a destination inside a folder. {parent} is not a folder.")
+            break
+
+
+def _photo_links(client: UnsplashClient, photo_id: str) -> dict[str, Any]:
+    photo = client.get(f"/photos/{photo_id}")
+    if not isinstance(photo, dict) or photo.get("id") != photo_id:
+        raise ValidationError("Unsplash did not return the requested photo.")
+    links = photo.get("links")
+    if not isinstance(links, dict):
+        raise ValidationError("Unsplash did not return links for this photo.")
+    location = links.get("download_location")
+    if not isinstance(location, str) or not location:
+        raise ValidationError("Unsplash did not return a download tracking link.")
+    user = photo.get("user")
+    if not isinstance(user, dict):
+        user = {}
+    profile = user.get("links")
+    if not isinstance(profile, dict):
+        profile = {}
     return {
-        "tool": ctx.get("tool") or "unsplash-api-tool",
-        "version": ctx.get("tool_version") or None,
-        "generated_at_utc": _utc_now(),
-        "env_fingerprint": env_fingerprint,
-        "command": ctx.get("command_str") or None,
-        "selector": selector,
-        "risk_level": "medium",
-        "risk_reasons": risk_reasons,
-        "preconditions": ["env_fingerprint must match", "photo id must match"],
-        "baseline": {"env_fingerprint": env_fingerprint, "photo_id": photo_id, "dest": dest, "overwrite": overwrite},
-        "proposed_changes": proposed_changes,
-        "before_state": before_state_contract(
-            reason=(
-                "Unsplash download tracking is a provider-side write-like event. "
-                "This source tool has no reliable before-state snapshot for that endpoint."
-            ),
-            provider_write={
-                "method": "GET",
-                "endpoint": f"/photos/{photo_id}/download",
-                "tracks_download": True,
-            },
-            local_state={"dest": dest, "overwrite": overwrite},
-        ),
-        "verification_plan": before_state_refusal_verification_plan(),
-        "recovery": no_inverse_recovery_contract(restore_note=restore_note),
+        "tracking_url": client.validate_tracking_url(photo_id, location),
+        "urls": photo.get("urls") if isinstance(photo.get("urls"), dict) else {},
+        "photo_url": links.get("html"),
+        "photographer": {"name": user.get("name"), "profile_url": profile.get("html")},
     }
 
 
-def _ensure_download_safety_contract(
-    plan: dict[str, Any],
-    *,
-    photo_id: str,
-    dest: str | None,
-    overwrite: bool,
-) -> dict[str, Any]:
-    restore_note = (
-        "Unsplash download tracking cannot be rolled back by this CLI. "
-        "If the optional file download ran, delete the local destination file manually."
-    )
-    plan["before_state"] = before_state_contract(
-        reason=(
-            "Unsplash download tracking is a provider-side write-like event. "
-            "This source tool has no reliable before-state snapshot for that endpoint."
+def _full_image_url(photo: dict[str, Any]) -> str:
+    urls = photo.get("urls")
+    full = urls.get("full") if isinstance(urls, dict) else None
+    if isinstance(full, str):
+        parsed = urlsplit(full)
+        if parsed.scheme == "https" and parsed.hostname and parsed.username is None:
+            return full
+    raise ValidationError("Unsplash did not return a usable full-size image URL.")
+
+
+def _build_download_plan(request: dict[str, Any], photo: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any]:
+    photo_id, dest, overwrite = request["photo_id"], request["dest"], request["overwrite"]
+    return {
+        "kind": "unsplash-photo-download",
+        "tool": ctx["tool"],
+        "version": ctx["tool_version"],
+        "generated_at_utc": _utc_now(),
+        "env_fingerprint": request["connection"],
+        "command": ctx["command_str"],
+        "selector": {"kind": "photo", "value": photo_id},
+        "risk_level": "medium",
+        "risk_reasons": ["Unsplash records the download when you apply this preview."],
+        "preconditions": ["The photo, connection, destination, and overwrite choice must match."],
+        "baseline": request,
+        "photo": photo,
+        "proposed_changes": [
+            {"action": "record a download", "endpoint": photo["tracking_url"]},
+            *([{"action": "save a file", "path": dest, "overwrite": overwrite}] if dest else []),
+        ],
+        "before_state": before_state_contract(
+            reason="The tool cannot save or restore Unsplash's earlier download count.",
+            provider_write={"method": "GET", "endpoint": f"/photos/{photo_id}/download", "tracks_download": True},
+            local_state={"dest": dest, "overwrite": overwrite},
         ),
-        provider_write={"method": "GET", "endpoint": f"/photos/{photo_id}/download", "tracks_download": True},
-        local_state={"dest": dest, "overwrite": overwrite},
+        "verification_plan": {
+            "steps": ["Record the tracking result. If a file is requested, check its size and record its hash."],
+            "approval_required": "--ack-no-snapshot",
+        },
+        "recovery": no_inverse_recovery_contract(
+            restore_note="The tool cannot undo Unsplash's download count. Remove an unwanted local copy manually."
+        ),
+    }
+
+
+def _refuse_download(ctx: dict[str, Any], reason: str, plan: dict[str, Any] | None = None) -> int:
+    out = (
+        before_state_refusal_output(plan, reason=reason)
+        if plan is not None
+        else {"dry_run": False, "refused": True, "reasons": [reason], "refusal_type": "SafetyError"}
     )
-    plan["verification_plan"] = before_state_refusal_verification_plan()
-    plan["recovery"] = no_inverse_recovery_contract(restore_note=restore_note)
-    return plan
-
-
-def _validate_plan_for_apply(plan: dict[str, Any], *, photo_id: str, dest: str | None, overwrite: bool, ctx: dict[str, Any]) -> None:
-    baseline = plan.get("baseline")
-    if not isinstance(baseline, dict):
-        raise ValidationError("Plan missing baseline dict")
-    if str(baseline.get("env_fingerprint") or "") != str(ctx["cfg"].base_url):
-        raise SafetyError("Refused: plan env_fingerprint does not match current environment")
-    if str(baseline.get("photo_id") or "") != str(photo_id):
-        raise SafetyError("Refused: plan photo_id does not match current selector")
-    if (baseline.get("dest") if baseline.get("dest") is not None else None) != dest:
-        raise SafetyError("Refused: plan baseline dest does not match current --dest")
-    if bool(baseline.get("overwrite")) != bool(overwrite):
-        raise SafetyError("Refused: plan baseline overwrite does not match current --overwrite")
+    out.update(ok=False, tracking_status="not_sent")
+    ctx["audit"].write("photos.download.refused", out)
+    ctx["out"].emit(out)
+    return 1
 
 
 def cmd_photos_download(args: Any, ctx: dict[str, Any]) -> int:
-    photo_id = validate_photo_id(str(getattr(args, "id", "") or ""))
-    dest = str(getattr(args, "dest", "") or "").strip() or None
-    overwrite = bool(getattr(args, "overwrite", False))
-    if overwrite and not (bool(ctx.get("apply")) and bool(ctx.get("yes"))):
-        raise SafetyError("Refused: --overwrite requires --apply --yes")
-
-    if ctx.get("plan_in"):
-        plan_obj = read_json_file(ctx["plan_in"])
-        if not isinstance(plan_obj, dict):
-            raise ValidationError("Plan file must be a JSON object")
-        plan = plan_obj
-    else:
-        plan = _build_download_plan(photo_id=photo_id, dest=dest, overwrite=overwrite, ctx=ctx)
-    plan = _ensure_download_safety_contract(plan, photo_id=photo_id, dest=dest, overwrite=overwrite)
-
-    plan_out = ctx.get("plan_out")
-    plan_path = write_json_file(plan_out, plan) if plan_out and not bool(ctx.get("apply")) else None
-
-    if not bool(ctx.get("apply")):
-        out = {"ok": True, "dry_run": True, "plan": plan, "plan_out": plan_path}
-        ctx["audit"].write("photos.download.plan", {"id": photo_id, "dest": dest, "plan_out": plan_path})
-        ctx["out"].emit(out)
-        return 0
-
+    photo_id = validate_photo_id(args.id)
+    dest = Path(args.dest).expanduser().resolve() if args.dest else None
+    overwrite = args.overwrite
+    apply = bool(ctx.get("apply"))
+    plan_in = str(ctx.get("plan_in") or "")
+    receipt_out = ctx.get("receipt_out")
+    if apply and not plan_in:
+        return _refuse_download(ctx, "Save and review a preview with --plan-out, then apply it with --plan-in.")
+    if apply and overwrite and not ctx.get("yes"):
+        return _refuse_download(ctx, "Applying an overwrite also needs --yes.")
+    if overwrite and dest is None:
+        return _refuse_download(ctx, "Choose a --dest before asking to overwrite a file.")
+    if dest is not None and any(
+        name and Path(name).expanduser().resolve() == dest
+        for name in (plan_in, ctx.get("plan_out"), receipt_out)
+    ):
+        return _refuse_download(ctx, "Choose separate paths for the photo, preview, and receipt.")
+    if plan_in and receipt_out and Path(plan_in).expanduser().resolve() == Path(receipt_out).expanduser().resolve():
+        return _refuse_download(ctx, "Choose a receipt path different from the saved preview.")
     try:
-        _validate_plan_for_apply(plan, photo_id=photo_id, dest=dest, overwrite=overwrite, ctx=ctx)
-    except SafetyError as e:
-        out = {"ok": True, "dry_run": False, "refused": True, "reasons": [str(e)], "refusal_type": "SafetyError"}
-        ctx["audit"].write("photos.download.refused", out)
-        ctx["out"].emit(out)
-        return 0
-
-    if not bool(ctx.get("ack_no_snapshot")):
-        out = before_state_refusal_output(plan, reason=PHOTO_DOWNLOAD_REFUSAL_REASON)
-        ctx["audit"].write("photos.download.refused", out)
-        ctx["out"].emit(out)
-        return 0
+        _download_target(dest, overwrite)
+    except SafetyError as exc:
+        return _refuse_download(ctx, str(exc))
 
     client: UnsplashClient = ctx["client"]
-    tracking = client.download_tracking(photo_id)
-    file_info = None
+    request = {
+        "connection": client.connection_fingerprint(), "photo_id": photo_id,
+        "dest": str(dest) if dest else None, "overwrite": overwrite,
+    }
+    if not apply:
+        photo = _photo_links(client, photo_id)
+        if dest:
+            _full_image_url(photo)
+        plan = _build_download_plan(request, photo, ctx)
+        plan_out = ctx.get("plan_out")
+        plan_path = write_json_file(plan_out, plan) if plan_out else None
+        ctx["audit"].write("photos.download.plan", {"id": photo_id, "dest": request["dest"], "plan_out": plan_path})
+        ctx["out"].emit({"ok": True, "dry_run": True, "tracking_status": "not_sent", "plan": plan, "plan_out": plan_path})
+        return 0
+
+    saved = read_json_file(Path(plan_in).expanduser())
+    if (
+        not isinstance(saved, dict) or saved.get("kind") != "unsplash-photo-download"
+        or saved.get("baseline") != request or not isinstance(saved.get("photo"), dict)
+    ):
+        return _refuse_download(ctx, "The saved preview does not match this download. Save and review a new one.")
+    photo = saved["photo"]
+    tracking_url = photo.get("tracking_url")
+    if not isinstance(tracking_url, str):
+        return _refuse_download(ctx, "The saved preview has no tracking link. Save a new preview.")
+    client.validate_tracking_url(photo_id, tracking_url)
+    image_url = _full_image_url(photo) if dest else None
+    plan = _build_download_plan(request, photo, ctx)
+    if not ctx.get("ack_no_snapshot"):
+        return _refuse_download(ctx, "Approve recording the download without a restore point with --ack-no-snapshot.", plan)
     if dest:
-        download_url = str(tracking.get("url") or "").strip()
-        if not download_url:
-            raise SafetyError("Refused: Unsplash download tracking response did not include a file URL")
-        file_info = client.download_file(download_url, dest=Path(dest), overwrite=overwrite)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+
+    tracking = None
+    file_info = None
+    tracking_status = "unknown"
+    error = None
+    try:
+        tracking = client.download_tracking(photo_id, tracking_url)
+        tracking_status = "recorded"
+    except HttpStatusError as exc:
+        if 400 <= exc.status < 500 and exc.status != 408:
+            tracking_status = "failed"
+            error = f"Unsplash declined the tracking request (HTTP {exc.status})."
+        else:
+            error = f"Unsplash replied with HTTP {exc.status}. The download count may have changed."
+    except (RuntimeError, ToolError, ValueError):
+        error = "The tracking outcome is unclear. Check before recording the download again."
+
+    if tracking_status == "recorded" and dest and image_url:
+        try:
+            file_info = client.download_file(image_url, dest=dest, overwrite=overwrite)
+        except (OSError, RuntimeError, ToolError, requests.RequestException):
+            error = "Unsplash recorded the download, but the photo could not be saved. The destination was not replaced."
 
     receipt = {
-        "tool": ctx.get("tool") or "unsplash-api-tool",
-        "version": ctx.get("tool_version") or None,
-        "applied_at_utc": _utc_now(),
-        "env_fingerprint": ctx["cfg"].base_url,
-        "command": ctx.get("command_str") or None,
-        "selector": {"kind": "photo", "value": photo_id},
-        "before_state": plan.get("before_state"),
-        "no_snapshot_approval": {
-            "acknowledged": True,
-            "flag": "--ack-no-snapshot",
-            "reason": "No reliable before-state snapshot is available for Unsplash download tracking.",
-        },
-        "changed": True,
-        "provider_response": tracking,
-        "file": file_info,
+        "tool": ctx["tool"], "version": ctx["tool_version"], "applied_at_utc": _utc_now(),
+        "env_fingerprint": request["connection"], "command": ctx["command_str"],
+        "selector": plan["selector"], "before_state": plan["before_state"],
+        "no_snapshot_approval": {"acknowledged": True, "flag": "--ack-no-snapshot"},
+        "tracking_status": tracking_status, "changed": {"recorded": True, "failed": False}.get(tracking_status),
+        "photo": photo, "provider_response": tracking, "file": file_info,
         "verification": {
-            "ok": True,
-            "mode": "provider-response-and-optional-file",
-            "details": {"download_tracking_response": bool(tracking), "file_written": file_info is not None},
+            "ok": error is None, "mode": "provider-response-and-optional-file",
+            "details": {"download_tracking_response": tracking is not None, "file_written": file_info is not None},
         },
-        "recovery": plan.get("recovery"),
+        "recovery": plan["recovery"],
     }
-    receipt_out = ctx.get("receipt_out")
-    receipt_path = write_json_file(receipt_out, receipt) if receipt_out else None
-    out = {"ok": True, "dry_run": False, "receipt": receipt, "receipt_out": receipt_path}
-    ctx["audit"].write("photos.download.apply", {"id": photo_id, "dest": dest, "receipt_out": receipt_path})
+    receipt_path = None
+    if receipt_out:
+        try:
+            receipt_path = write_json_file(receipt_out, receipt)
+        except OSError:
+            error = (error + " " if error else "") + "The local receipt could not be saved. Use the result shown here."
+
+    try:
+        ctx["audit"].write("photos.download.apply", {"id": photo_id, "tracking_status": tracking_status, "file": file_info, "receipt_out": receipt_path})
+    except OSError:
+        error = (error + " " if error else "") + "The audit log could not be saved. Use the result shown here."
+    out = {"ok": error is None, "dry_run": False, "tracking_status": tracking_status, "receipt": receipt, "receipt_out": receipt_path}
+    if error:
+        out["error"] = error
     ctx["out"].emit(out)
-    return 0
+    return int(error is not None)

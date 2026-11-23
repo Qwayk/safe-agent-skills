@@ -6,12 +6,15 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 from unsplash_api_tool.cli import main
 
+PHOTO = {"tracking_url": "http://example.invalid/photos/x/download"}
+
 
 class TestRunArtifacts(unittest.TestCase):
-    def test_demo_write_creates_run_folder_and_index(self) -> None:
+    def test_photo_plan_creates_run_folder_and_index(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             env_path = root / ".env"
@@ -19,7 +22,7 @@ class TestRunArtifacts(unittest.TestCase):
                 "\n".join(
                     [
                         "UNSPLASH_API_BASE_URL=http://example.invalid",
-                        "UNSPLASH_TIMEOUT_S=30",
+                        "UNSPLASH_ACCESS_KEY=TESTKEY",
                     ]
                 )
                 + "\n",
@@ -29,8 +32,8 @@ class TestRunArtifacts(unittest.TestCase):
             run_id = "2026-01-19T120000Z_deadbe"
 
             buf = io.StringIO()
-            with redirect_stdout(buf):
-                rc = main(["--env-file", str(env_path), "--run-id", run_id, "demo", "write", "--selector", "x"])
+            with redirect_stdout(buf), patch("unsplash_api_tool.commands.photos._photo_links", return_value=PHOTO):
+                rc = main(["--env-file", str(env_path), "--run-id", run_id, "photos", "download", "--id", "x"])
             self.assertEqual(rc, 0)
 
             payload = json.loads(buf.getvalue())
@@ -53,12 +56,12 @@ class TestRunArtifacts(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             env_path = root / ".env"
-            env_path.write_text("UNSPLASH_API_BASE_URL=http://example.invalid\nUNSPLASH_TIMEOUT_S=30\n", encoding="utf-8")
+            env_path.write_text("UNSPLASH_API_BASE_URL=http://example.invalid\nUNSPLASH_ACCESS_KEY=TESTKEY\n", encoding="utf-8")
 
             run_id = "2026-01-19T120500Z_c0ffee"
             buf = io.StringIO()
-            with redirect_stdout(buf):
-                _ = main(["--env-file", str(env_path), "--run-id", run_id, "demo", "write", "--selector", "x"])
+            with redirect_stdout(buf), patch("unsplash_api_tool.commands.photos._photo_links", return_value=PHOTO):
+                _ = main(["--env-file", str(env_path), "--run-id", run_id, "photos", "download", "--id", "x"])
 
             buf2 = io.StringIO()
             with redirect_stdout(buf2):
@@ -81,10 +84,7 @@ class TestRunArtifacts(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             env_path = root / ".env"
-            env_path.write_text("UNSPLASH_API_BASE_URL=http://example.invalid\nUNSPLASH_TIMEOUT_S=30\n", encoding="utf-8")
-
-            job_csv = root / "jobs.csv"
-            job_csv.write_text("action\nwrite.ping\n", encoding="utf-8")
+            env_path.write_text("UNSPLASH_API_BASE_URL=http://example.invalid\nUNSPLASH_ACCESS_KEY=TESTKEY\n", encoding="utf-8")
 
             run_id = "2026-01-19T121000Z_refuse1"
             buf = io.StringIO()
@@ -96,15 +96,15 @@ class TestRunArtifacts(unittest.TestCase):
                         "--run-id",
                         run_id,
                         "--apply",
-                        "jobs",
-                        "run",
-                        "--file",
-                        str(job_csv),
+                        "photos",
+                        "download",
+                        "--id",
+                        "x",
                     ]
                 )
-            self.assertEqual(rc, 0)
+            self.assertEqual(rc, 1)
             payload = json.loads(buf.getvalue())
-            self.assertTrue(payload["ok"])
+            self.assertFalse(payload["ok"])
             self.assertTrue(payload["refused"])
 
             artifacts_dir = Path(payload["artifacts_dir"])

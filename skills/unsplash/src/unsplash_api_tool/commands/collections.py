@@ -4,7 +4,7 @@ from typing import Any
 
 from ..errors import ValidationError
 from ..pagination import validate_page, validate_per_page
-from ..unsplash_client import UnsplashClient, validate_positive_int
+from ..unsplash_client import UnsplashClient, validate_collection_id
 
 
 def cmd_collections_list(args: Any, ctx: dict[str, Any]) -> int:
@@ -19,7 +19,7 @@ def cmd_collections_list(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_collections_get(args: Any, ctx: dict[str, Any]) -> int:
-    collection_id = validate_positive_int(getattr(args, "id", None), field="--id")
+    collection_id = validate_collection_id(getattr(args, "id", None), field="--id")
     client: UnsplashClient = ctx["client"]
     data = client.get(f"/collections/{collection_id}")
     out = {"ok": True, "endpoint": "GET /collections/:id", "id": collection_id, "data": data}
@@ -29,7 +29,7 @@ def cmd_collections_get(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_collections_photos(args: Any, ctx: dict[str, Any]) -> int:
-    collection_id = validate_positive_int(getattr(args, "id", None), field="--id")
+    collection_id = validate_collection_id(getattr(args, "id", None), field="--id")
     page = validate_page(getattr(args, "page", None), field="--page")
     per_page = validate_per_page(getattr(args, "per_page", None), field="--per-page")
     orientation = str(getattr(args, "orientation", "") or "").strip() or None
@@ -54,7 +54,7 @@ def cmd_collections_photos(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_collections_related(args: Any, ctx: dict[str, Any]) -> int:
-    collection_id = validate_positive_int(getattr(args, "id", None), field="--id")
+    collection_id = validate_collection_id(getattr(args, "id", None), field="--id")
     client: UnsplashClient = ctx["client"]
     data = client.get(f"/collections/{collection_id}/related")
     out = {"ok": True, "endpoint": "GET /collections/:id/related", "id": collection_id, "data": data}

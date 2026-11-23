@@ -1,52 +1,41 @@
-# Connect your Unsplash account
+# Connect your Unsplash Access Key
 
-Unsplash needs a local access key before an agent can search photos, inspect creators, review license data, or prepare downloads.
-
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
-
-After setup, start with a photo search and preview links before saving files or choosing final images.
-
-## What you need
-
-- `UNSPLASH_ACCESS_KEY`
-- the default Unsplash API base URL unless you intentionally changed it
-- a local output path only when you want exports or downloads written to your machine
-
-## Step 1. Create the local `.env` file
-
-The easiest path is one of these:
-
-1. run `unsplash-api-tool --output json onboarding`
-2. or copy `.env.example` to `.env`
-
-Then fill:
-
-- `UNSPLASH_API_BASE_URL=https://api.unsplash.com`
-- `UNSPLASH_ACCESS_KEY`
-
-## Step 2. Run the first safe checks
-
-These are the best first commands:
+Use an Access Key for your Unsplash API application. Keep the key in a private settings file on your machine.
 
 ```bash
-unsplash-api-tool --output json --version
-unsplash-api-tool --output json auth check
-unsplash-api-tool --output json photos search --query "minimal home office" --per-page 3
-unsplash-api-tool --output json stats total
+unsplash-api-tool --env-file unsplash.env onboarding
 ```
 
-## What to ask your agent next
+Open the file the command names and put your key after `UNSPLASH_ACCESS_KEY=`. Then run the connection check it prints.
 
-- "Can you confirm the Unsplash skill is connected and build a shortlist for my topic?"
-- "Can you show me the safest first export or research pull before we plan any downloads?"
-- "Can you plan downloading these approved photo IDs without applying yet?"
+```bash
+unsplash-api-tool --env-file unsplash.env auth check
+```
 
-## If something fails
+The connection check reads one photo record. Use the same `--env-file` on the commands that follow. The default file is `.env`. Use `onboarding --no-write-env` to check what is missing without creating a file.
 
-The most common causes are:
+## Other ways to set the key
 
-- missing or invalid Access Key
-- rate limits
-- a search or filter that does not match real Unsplash data
+You can also pass the key in the `UNSPLASH_ACCESS_KEY` environment variable or import a local JSON file containing an `access_key` field.
 
-Use [Troubleshooting](troubleshooting.md) if the auth check or the first search fails.
+```bash
+unsplash-api-tool --env-file unsplash.env auth key set --file auth.json
+unsplash-api-tool --env-file unsplash.env auth key status
+```
+
+The import saves the key in `.state/auth.json` beside your settings file. A key set in the environment or settings file takes priority. Keep private settings and key files out of chat and Git.
+
+## Optional settings
+
+| Setting | Default |
+| --- | --- |
+| `UNSPLASH_API_BASE_URL` | `https://api.unsplash.com` |
+| `UNSPLASH_TIMEOUT_S` | 30 seconds |
+
+The tool sends the Access Key with `Authorization: Client-ID …` and uses API version 1. It supports photo and other public reads through that key. OAuth and private account actions are outside this tool's scope.
+
+## When the connection fails
+
+- For a missing key or HTTP 401, check the selected settings file and the key for your API application.
+- For HTTP 429, check your API request limit before continuing. [Unsplash rate limits](https://unsplash.com/documentation#rate-limiting)
+- Use `--verbose` for request lines or `--debug` for a Python traceback while debugging. Keep private settings out of shared logs.

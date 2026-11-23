@@ -1,12 +1,18 @@
 from __future__ import annotations
 
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from ..errors import SafetyError, ValidationError
 from ..json_files import write_json_file
 from ..pagination import PER_PAGE_MAX_DEFAULT, validate_page, validate_per_page
-from ..unsplash_client import UnsplashClient, validate_positive_int, validate_username
+from ..unsplash_client import (
+    UnsplashClient,
+    validate_collection_id,
+    validate_positive_int,
+    validate_username,
+)
 
 
 def _validate_sleep_ms(value: Any, *, field: str = "--sleep-ms") -> int:
@@ -159,7 +165,7 @@ def cmd_export_photos_list(args: Any, ctx: dict[str, Any]) -> int:
 
 
 def cmd_export_collections_photos(args: Any, ctx: dict[str, Any]) -> int:
-    collection_id = validate_positive_int(getattr(args, "id", None), field="--id")
+    collection_id = validate_collection_id(getattr(args, "id", None), field="--id")
     orientation = str(getattr(args, "orientation", "") or "").strip() or None
     if orientation not in {None, "landscape", "portrait", "squarish"}:
         raise ValidationError("--orientation must be one of: landscape, portrait, squarish")

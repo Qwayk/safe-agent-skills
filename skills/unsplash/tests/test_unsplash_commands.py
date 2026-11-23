@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import io
 import json
 import os
@@ -10,6 +11,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
+
+import requests
 
 from unsplash_api_tool.cli import main
 
@@ -199,79 +202,6 @@ class TestUnsplashCommands(unittest.TestCase):
             self.assertEqual(headers["Accept-Version"], "v1")
             self.assertTrue(headers["Authorization"].startswith("Client-ID "))
 
-    def test_download_dry_run_makes_no_http_calls(self) -> None:
-        with tempfile.TemporaryDirectory() as td:
-            env_path = _write_env(td)
-            with patch("requests.Session.request") as req:
-                buf = io.StringIO()
-                with redirect_stdout(buf):
-                    rc = main(["--output", "json", "--env-file", env_path, "photos", "download", "--id", "Dwu85P9SOIk"])
-                self.assertEqual(rc, 0)
-                payload = json.loads(buf.getvalue())
-                self.assertTrue(payload["ok"])
-                self.assertTrue(payload["dry_run"])
-                self.assertEqual(payload["plan"]["before_state"]["status"], "no_snapshot_available")
-                self.assertFalse(payload["plan"]["before_state"]["supported"])
-                self.assertTrue(payload["plan"]["recovery"]["rollback_ready"] is False)
-                self.assertFalse(payload["plan"]["recovery"]["automatic_rollback"])
-                self.assertEqual(payload["plan"]["recovery"]["strategy"], "no_inverse")
-                self.assertEqual(payload["plan"]["recovery"]["end_state"], "irreversible_and_clearly_labeled")
-                self.assertEqual(payload["plan"]["recovery"]["restore_note"], "Unsplash download tracking cannot be rolled back by this CLI. If the optional file download ran, delete the local destination file manually.")
-                req.assert_not_called()
-
-    def test_photos_download_apply_refuses_before_tracking_or_file_write(self) -> None:
-        with tempfile.TemporaryDirectory() as td:
-            env_path = _write_env(td)
-            calls: list[dict[str, Any]] = []
-            dest_path = os.path.join(td, "photo.jpg")
-
-            def fake_request(self, method: str, url: str, **kwargs):  # noqa: ANN001
-                calls.append({"method": method, "url": url, "kwargs": kwargs})
-                if url.endswith("/photos/Dwu85P9SOIk/download"):
-                    return _FakeResp(
-                        status_code=200,
-                        url=url,
-                        headers={"content-type": "application/json"},
-                        content=b'{"url":"https://images.example.invalid/file.jpg"}',
-                        text='{"url":"https://images.example.invalid/file.jpg"}',
-                    )
-                return _FakeResp(
-                    status_code=200,
-                    url=url,
-                    headers={"content-type": "image/jpeg"},
-                    content=b"abc",
-                    text="",
-                )
-
-            with patch("requests.Session.request", new=fake_request):
-                buf = io.StringIO()
-                with redirect_stdout(buf):
-                    rc = main(
-                        [
-                            "--output",
-                            "json",
-                            "--env-file",
-                            env_path,
-                            "--apply",
-                            "photos",
-                            "download",
-                            "--id",
-                            "Dwu85P9SOIk",
-                            "--dest",
-                            dest_path,
-                        ]
-                    )
-                self.assertEqual(rc, 0)
-                payload = json.loads(buf.getvalue())
-                self.assertTrue(payload["ok"])
-                self.assertFalse(payload["dry_run"])
-                self.assertTrue(payload["refused"])
-                self.assertIn("before-state", payload["reasons"][0])
-                self.assertEqual(payload["plan"]["before_state"]["status"], "no_snapshot_available")
-                self.assertEqual(payload["verification_plan"]["status"], "best_effort_after_apply")
-            self.assertEqual(calls, [])
-            self.assertFalse(Path(dest_path).exists())
-
     def test_auth_key_set_writes_state_immediately(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             env_path = _write_env(td)
@@ -305,235 +235,18 @@ class TestUnsplashCommands(unittest.TestCase):
                 self.assertIn("note", stored)
                 req.assert_not_called()
 
-    def test_download_apply_refuses_before_tracking_endpoint(self) -> None:
-        with tempfile.TemporaryDirectory() as td:
-            env_path = _write_env(td)
-            calls: list[dict[str, Any]] = []
-
-            def fake_request(self, method: str, url: str, **kwargs):  # noqa: ANN001
-                calls.append({"method": method, "url": url, "kwargs": kwargs})
-                if url.endswith("/photos/Dwu85P9SOIk/download"):
-                    return _FakeResp(
-                        status_code=200,
-                        url=url,
-                        headers={"content-type": "application/json"},
-                        content=b'{"url":"https://images.example.invalid/file.jpg"}',
-                        text='{"url":"https://images.example.invalid/file.jpg"}',
-                    )
-                raise AssertionError(f"Unexpected URL: {url}")
-
-            with patch("requests.Session.request", new=fake_request):
-                buf = io.StringIO()
-                with redirect_stdout(buf):
-                    rc = main(
-                        [
-                            "--output",
-                            "json",
-                            "--env-file",
-                            env_path,
-                            "--apply",
-                            "photos",
-                            "download",
-                            "--id",
-                            "Dwu85P9SOIk",
-                        ]
-                    )
-                self.assertEqual(rc, 0)
-                payload = json.loads(buf.getvalue())
-                self.assertTrue(payload["ok"])
-                self.assertFalse(payload["dry_run"])
-                self.assertTrue(payload["refused"])
-                self.assertIn("ack-no-snapshot", payload["reasons"][0])
-                self.assertEqual(payload["plan"]["before_state"]["provider_write"]["endpoint"], "/photos/Dwu85P9SOIk/download")
-
-            self.assertEqual(calls, [])
-
-    def test_download_apply_with_file_refuses_before_file_write(self) -> None:
-        with tempfile.TemporaryDirectory() as td:
-            env_path = _write_env(td)
-            dest_path = os.path.join(td, "photo.jpg")
-
-            def fake_request(self, method: str, url: str, **kwargs):  # noqa: ANN001
-                if url.endswith("/photos/Dwu85P9SOIk/download"):
-                    return _FakeResp(
-                        status_code=200,
-                        url=url,
-                        headers={"content-type": "application/json"},
-                        content=b'{"url":"https://images.example.invalid/file.jpg"}',
-                        text='{"url":"https://images.example.invalid/file.jpg"}',
-                    )
-                if url == "https://images.example.invalid/file.jpg":
-                    return _FakeResp(
-                        status_code=200,
-                        url=url,
-                        headers={"content-type": "image/jpeg"},
-                        content=b"abc",
-                        text="",
-                    )
-                raise AssertionError(f"Unexpected URL: {url}")
-
-            with patch("requests.Session.request", new=fake_request):
-                buf = io.StringIO()
-                with redirect_stdout(buf):
-                    rc = main(
-                        [
-                            "--output",
-                            "json",
-                            "--env-file",
-                            env_path,
-                            "--apply",
-                            "photos",
-                            "download",
-                            "--id",
-                            "Dwu85P9SOIk",
-                            "--dest",
-                            dest_path,
-                        ]
-                    )
-                self.assertEqual(rc, 0)
-                payload = json.loads(buf.getvalue())
-                self.assertTrue(payload["ok"])
-                self.assertFalse(payload["dry_run"])
-                self.assertTrue(payload["refused"])
-
-            self.assertFalse(Path(dest_path).exists())
-
-    def test_download_apply_plan_in_dest_mismatch_refuses(self) -> None:
-        with tempfile.TemporaryDirectory() as td:
-            env_path = _write_env(td)
-            plan_path = os.path.join(td, "plan.json")
-            dest_path = os.path.join(td, "photo.jpg")
-            with open(plan_path, "w", encoding="utf-8") as f:
-                json.dump(
-                    {
-                        "baseline": {
-                            "env_fingerprint": "https://api.unsplash.com",
-                            "photo_id": "Dwu85P9SOIk",
-                            "dest": None,
-                            "overwrite": False,
-                        }
-                    },
-                    f,
-                )
-
-            with patch("requests.Session.request") as req:
-                buf = io.StringIO()
-                with redirect_stdout(buf):
-                    rc = main(
-                        [
-                            "--output",
-                            "json",
-                            "--env-file",
-                            env_path,
-                            "--apply",
-                            "--plan-in",
-                            plan_path,
-                            "photos",
-                            "download",
-                            "--id",
-                            "Dwu85P9SOIk",
-                            "--dest",
-                            dest_path,
-                        ]
-                    )
-                self.assertEqual(rc, 0)
-                payload = json.loads(buf.getvalue())
-                self.assertTrue(payload["ok"])
-                self.assertTrue(payload["refused"])
-                self.assertIn("plan baseline dest does not match", payload["reasons"][0])
-                req.assert_not_called()
-
-    def test_download_overwrite_requires_apply_yes(self) -> None:
-        with tempfile.TemporaryDirectory() as td:
-            env_path = _write_env(td)
-            dest_path = os.path.join(td, "photo.jpg")
-
-            with patch("requests.Session.request") as req:
-                buf = io.StringIO()
-                with redirect_stdout(buf):
-                    rc = main(
-                        [
-                            "--output",
-                            "json",
-                            "--env-file",
-                            env_path,
-                            "--apply",
-                            "photos",
-                            "download",
-                            "--id",
-                            "Dwu85P9SOIk",
-                            "--dest",
-                            dest_path,
-                            "--overwrite",
-                        ]
-                    )
-                self.assertEqual(rc, 0)
-                payload = json.loads(buf.getvalue())
-                self.assertTrue(payload["ok"])
-                self.assertTrue(payload["refused"])
-                self.assertIn("--overwrite requires --apply --yes", payload["reasons"][0])
-                req.assert_not_called()
-
-    def test_demo_write_plan_and_receipt_include_no_inverse_recovery(self) -> None:
-        with tempfile.TemporaryDirectory() as td:
-            env_path = _write_env(td)
-            plan_path = os.path.join(td, "plan.json")
-            receipt_path = os.path.join(td, "receipt.json")
-
-            with patch("requests.Session.request") as req:
-                buf = io.StringIO()
-                with redirect_stdout(buf):
-                    rc = main(
-                        [
-                            "--output",
-                            "json",
-                            "--env-file",
-                            env_path,
-                            "--plan-out",
-                            plan_path,
-                            "demo",
-                            "write",
-                            "--selector",
-                            "demo-resource",
-                        ]
-                    )
-                self.assertEqual(rc, 0)
-                payload = json.loads(buf.getvalue())
-                self.assertTrue(payload["ok"])
-                self.assertTrue(payload["dry_run"])
-                self.assertEqual(payload["plan"]["recovery"]["strategy"], "no_inverse")
-                self.assertEqual(payload["plan"]["recovery"]["end_state"], "irreversible_and_clearly_labeled")
-                self.assertFalse(payload["plan"]["recovery"]["rollback_ready"])
-                self.assertFalse(payload["plan"]["recovery"]["automatic_rollback"])
-                self.assertEqual(payload["plan"]["before_state"]["status"], "no_snapshot_available")
-                self.assertTrue(Path(plan_path).exists())
-                req.assert_not_called()
-
-            buf2 = io.StringIO()
-            with redirect_stdout(buf2):
-                rc2 = main(
-                    [
-                        "--output",
-                        "json",
-                        "--env-file",
-                        env_path,
-                        "--apply",
-                        "--plan-in",
-                        plan_path,
-                        "--receipt-out",
-                        receipt_path,
-                        "demo",
-                        "write",
-                        "--selector",
-                        "demo-resource",
-                    ]
-                )
-            self.assertEqual(rc2, 0)
-            payload2 = json.loads(buf2.getvalue())
-            self.assertTrue(payload2["refused"])
-            self.assertIn("template-only", payload2["reasons"][0])
-            self.assertEqual(payload2["plan"]["before_state"]["status"], "no_snapshot_available")
-            self.assertFalse(Path(receipt_path).exists())
+    def test_collection_export_accepts_an_id_with_letters(self) -> None:
+        with tempfile.TemporaryDirectory() as folder:
+            env = _write_env(folder)
+            target = Path(folder) / "photos.json"
+            url = "https://api.unsplash.com/collections/nvYdtNLrrRQ/photos"
+            response = _FakeResp(status_code=200, url=url, headers={}, content=b"[]")
+            out = io.StringIO()
+            with redirect_stdout(out), patch("requests.Session.request", return_value=response) as request:
+                rc = main(["--env-file", env, "export", "collections-photos", "--id", "nvYdtNLrrRQ", "--out", str(target)])
+            self.assertEqual(rc, 0, out.getvalue())
+            self.assertEqual(request.call_args.kwargs["url"], url)
+            self.assertTrue(target.is_file())
 
     def test_search_users_hits_expected_endpoint(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -569,8 +282,9 @@ class TestUnsplashCommands(unittest.TestCase):
             (["photos", "stats", "--id", "Dwu85P9SOIk"], "/photos/Dwu85P9SOIk/statistics"),
             (["collections", "list"], "/collections"),
             (["collections", "get", "--id", "123"], "/collections/123"),
-            (["collections", "photos", "--id", "123"], "/collections/123/photos"),
-            (["collections", "related", "--id", "123"], "/collections/123/related"),
+            (["collections", "get", "--id", "nvYdtNLrrRQ"], "/collections/nvYdtNLrrRQ"),
+            (["collections", "photos", "--id", "nvYdtNLrrRQ"], "/collections/nvYdtNLrrRQ/photos"),
+            (["collections", "related", "--id", "nvYdtNLrrRQ"], "/collections/nvYdtNLrrRQ/related"),
             (["topics", "list"], "/topics"),
             (["topics", "get", "--id", "nature"], "/topics/nature"),
             (["topics", "photos", "--id", "nature"], "/topics/nature/photos"),
@@ -590,10 +304,10 @@ class TestUnsplashCommands(unittest.TestCase):
                 with self.subTest(argv=argv):
                     urls: list[str] = []
 
-                    def fake_request(self, method: str, url: str, **kwargs):  # noqa: ANN001
+                    def fake_request(self, method: str, url: str, *, calls=urls, **kwargs):  # noqa: ANN001
                         _ = method
                         _ = kwargs
-                        urls.append(url)
+                        calls.append(url)
                         return _FakeResp(
                             status_code=200,
                             url=url,
@@ -609,3 +323,193 @@ class TestUnsplashCommands(unittest.TestCase):
                         self.assertEqual(rc, 0)
                         self.assertEqual(len(urls), 1)
                         self.assertIn(expected_path, urls[0])
+
+
+class TestReviewedDownload(unittest.TestCase):
+    photo_id = "Dwu85P9SOIk"
+    photo_detail = f"https://api.unsplash.com/photos/{photo_id}"
+    tracking_url = f"{photo_detail}/download?ixid=original%2Fcontext&ref=search"
+    image_url = "https://images.unsplash.com/example?ixid=original%2Fcontext"
+    photo_bytes = b"\xff\xd8\xffexample"
+
+    def setUp(self) -> None:
+        folder = tempfile.TemporaryDirectory()
+        self.addCleanup(folder.cleanup)
+        self.root = Path(folder.name)
+        self.env = _write_env(folder.name)
+        self.plan = self.root / "plan.json"
+        self.receipt = self.root / "receipt.json"
+        self.photo_path = self.root / "images" / "photo.jpg"
+        self.tracking_reply: int | str = 200
+        self.image_interrupted = False
+        self.include_image_link = True
+        self.calls = []
+        patcher = patch.object(requests.Session, "request", side_effect=self.provider)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def provider(self, *, method, url, **kwargs):
+        self.calls.append((url, kwargs))
+        self.assertEqual(method, "GET")
+        reply = requests.Response()
+        reply.url = url
+        reply.status_code = 200
+        reply._content_consumed = True
+        if url == self.photo_detail:
+            reply._content = json.dumps({
+                "id": self.photo_id, "urls": {"full": self.image_url} if self.include_image_link else {},
+                "links": {"download_location": self.tracking_url, "html": "https://unsplash.com/photos/example"},
+                "user": {"name": "Example", "links": {"html": "https://unsplash.com/@example"}},
+            }).encode()
+        elif url == self.tracking_url:
+            self.assertFalse(kwargs["allow_redirects"])
+            self.assertEqual(kwargs["headers"]["Authorization"], "Client-ID TESTKEY")
+            if self.tracking_reply == "timeout":
+                raise requests.Timeout("No reply")
+            reply.status_code = int(self.tracking_reply)
+            reply._content = b'{"url":"https://images.unsplash.com/another-url"}'
+        elif url == self.image_url:
+            self.assertIsNone(kwargs.get("headers"))
+            reply._content = self.photo_bytes
+            if self.image_interrupted:
+                def interrupted(**kwargs):
+                    yield b"partial"
+                    raise requests.ConnectionError("Transfer stopped")
+                reply.iter_content = interrupted
+        else:
+            self.fail(f"Unexpected URL {url}")
+        return reply
+
+    def cli(self, flags, args):
+        self.calls.clear()
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            rc = main(["--no-artifacts", "--env-file", self.env, *flags, *args])
+        return rc, json.loads(stdout.getvalue())
+
+    def command(self, *args):
+        return ["photos", "download", "--id", self.photo_id, *args]
+
+    def preview(self, args):
+        rc, result = self.cli(["--plan-out", str(self.plan)], args)
+        self.assertEqual(rc, 0, result)
+        self.assertEqual(result["tracking_status"], "not_sent")
+        self.assertEqual([url for url, _ in self.calls], [self.photo_detail])
+        self.assertEqual(result["plan"]["before_state"]["status"], "no_snapshot_available")
+        self.assertEqual(result["plan"]["recovery"]["strategy"], "no_inverse")
+        self.assertNotIn("TESTKEY", self.plan.read_text())
+        return result
+
+    def apply(self, args, *extra):
+        return self.cli(
+            ["--apply", "--ack-no-snapshot", "--plan-in", str(self.plan), "--receipt-out", str(self.receipt), *extra],
+            args,
+        )
+
+    def test_saved_plan_uses_exact_tracking_url_and_preserves_credit(self):
+        command = self.command("--dest", str(self.photo_path))
+        self.preview(command)
+        rc, result = self.apply(command)
+        self.assertEqual(rc, 0, result)
+        self.assertEqual([url for url, _ in self.calls], [self.tracking_url, self.image_url])
+        self.assertEqual(result["tracking_status"], "recorded")
+        saved = json.loads(self.receipt.read_text())
+        self.assertEqual(saved["photo"]["urls"]["full"], self.image_url)
+        self.assertEqual(saved["photo"]["photographer"]["profile_url"], "https://unsplash.com/@example")
+        self.assertTrue(saved["no_snapshot_approval"]["acknowledged"])
+        self.assertEqual(saved["file"]["sha256"], hashlib.sha256(self.photo_bytes).hexdigest())
+        self.assertEqual(self.photo_path.read_bytes(), self.photo_bytes)
+
+    def test_tracking_without_a_destination_needs_no_file_transfer(self):
+        self.include_image_link = False
+        command = self.command()
+        self.preview(command)
+        rc, result = self.apply(command)
+        self.assertEqual(rc, 0, result)
+        self.assertEqual([url for url, _ in self.calls], [self.tracking_url])
+        self.assertIsNone(result["receipt"]["file"])
+
+    def test_missing_plan_or_no_snapshot_approval_refuses_before_tracking(self):
+        command = self.command()
+        rc, result = self.cli(["--apply", "--ack-no-snapshot"], command)
+        self.assertEqual(rc, 1)
+        self.assertTrue(result["refused"])
+        self.assertFalse(self.calls)
+        self.preview(command)
+        rc, result = self.cli(["--apply", "--plan-in", str(self.plan)], command)
+        self.assertEqual(rc, 1)
+        self.assertEqual(result["plan"]["before_state"]["status"], "no_snapshot_available")
+        self.assertFalse(result["ok"])
+        self.assertTrue(result["refused"])
+        self.assertFalse(self.calls)
+        self.assertFalse(self.receipt.exists())
+
+    def test_changed_target_connection_or_old_plan_refuses_before_tracking(self):
+        command = self.command()
+        self.preview(command)
+        rc, result = self.apply(self.command("--dest", str(self.photo_path)))
+        self.assertEqual(rc, 1)
+        self.assertTrue(result["refused"])
+        self.assertFalse(self.calls)
+        rc, result = self.apply(["photos", "download", "--id", "another"])
+        self.assertEqual(rc, 1)
+        self.assertTrue(result["refused"])
+        self.assertFalse(self.calls)
+        Path(self.env).write_text("UNSPLASH_ACCESS_KEY=OTHERKEY\n")
+        rc, result = self.apply(command)
+        self.assertEqual(rc, 1)
+        self.assertTrue(result["refused"])
+        self.assertFalse(self.calls)
+        self.plan.write_text('{"baseline":{"photo_id":"Dwu85P9SOIk"}}')
+        self.assertEqual(self.apply(command)[0], 1)
+        self.assertFalse(self.calls)
+
+    def test_existing_target_stops_before_tracking(self):
+        command = self.command("--dest", str(self.photo_path))
+        self.preview(command)
+        self.photo_path.parent.mkdir()
+        self.photo_path.write_bytes(b"original")
+        rc, result = self.apply(command)
+        self.assertEqual(rc, 1)
+        self.assertTrue(result["refused"])
+        self.assertFalse(self.calls)
+        self.assertEqual(self.photo_path.read_bytes(), b"original")
+
+    def test_overwrite_can_be_previewed_and_interruption_keeps_the_old_photo(self):
+        self.photo_path.parent.mkdir()
+        self.photo_path.write_bytes(b"original")
+        command = self.command("--dest", str(self.photo_path), "--overwrite")
+        self.preview(command)
+        self.assertEqual(self.apply(command)[0], 1)
+        self.assertFalse(self.calls)
+
+        self.image_interrupted = True
+        rc, result = self.apply(command, "--yes")
+        self.assertEqual(rc, 1, result)
+        self.assertEqual(result["tracking_status"], "recorded")
+        self.assertIsNone(result["receipt"]["file"])
+        self.assertEqual(self.photo_path.read_bytes(), b"original")
+        self.assertEqual(list(self.photo_path.parent.iterdir()), [self.photo_path])
+        self.assertEqual([url for url, _ in self.calls], [self.tracking_url, self.image_url])
+
+    def test_approved_overwrite_replaces_file_after_transfer(self):
+        self.photo_path.parent.mkdir()
+        self.photo_path.write_bytes(b"original")
+        command = self.command("--dest", str(self.photo_path), "--overwrite")
+        self.preview(command)
+        rc, result = self.apply(command, "--yes")
+        self.assertEqual(rc, 0, result)
+        self.assertEqual(self.photo_path.read_bytes(), self.photo_bytes)
+
+    def test_lost_tracking_reply_never_repeats_and_preserves_the_receipt(self):
+        command = self.command("--dest", str(self.photo_path))
+        self.preview(command)
+        for failure, expected in (("timeout", "unknown"), (503, "unknown"), (403, "failed")):
+            with self.subTest(failure=failure):
+                self.tracking_reply = failure
+                rc, result = self.apply(command)
+                self.assertEqual(rc, 1)
+                self.assertEqual(result["tracking_status"], expected)
+                self.assertEqual([url for url, _ in self.calls], [self.tracking_url])
+                self.assertFalse(self.photo_path.exists())
+                self.assertEqual(json.loads(self.receipt.read_text())["tracking_status"], expected)

@@ -9,9 +9,7 @@ from . import __version__
 from .audit_log import AuditLogger, CompositeAuditLogger
 from .commands import auth as auth_cmd
 from .commands import collections as collections_cmd
-from .commands import demo as demo_cmd
 from .commands import export as export_cmd
-from .commands import jobs as jobs_cmd
 from .commands import onboarding as onboarding_cmd
 from .commands import photos as photos_cmd
 from .commands import search as search_cmd
@@ -25,14 +23,14 @@ from .output import Output
 from .project_config import load_project_config
 from .runs import (
     RunContext,
+    append_index_row,
     build_deterministic_summary,
+    find_run,
     init_run_context,
     list_runs,
-    find_run,
-    write_summary_md,
-    append_index_row,
     runs_index_path_for_env_file,
- )
+    write_summary_md,
+)
 from .unsplash_client import UnsplashClient
 
 
@@ -172,7 +170,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Acknowledge that this approved write may run without a saved before-state snapshot",
     )
     p.add_argument("--plan-out", default=None, help="Write a dry-run plan JSON to a file")
-    p.add_argument("--plan-in", default=None, help="Apply from an existing plan JSON file (high-risk writes)")
+    p.add_argument("--plan-in", default=None, help="Use a saved photo download preview")
     p.add_argument("--receipt-out", default=None, help="Write an apply receipt JSON to a file")
     p.add_argument(
         "--ack-irreversible",
@@ -215,21 +213,6 @@ def build_parser() -> argparse.ArgumentParser:
     key_status = key_sub.add_parser("status", help="Show auth status (never prints secret values)")
     key_status.set_defaults(func=auth_cmd.cmd_auth_key_status, write_capable=False)
 
-    jobs = sub.add_parser("jobs", help="Batch operations from job files")
-    jobs_sub = jobs.add_subparsers(dest="jobs_cmd", required=True, parser_class=_ToolArgumentParser)
-    jobs_run = jobs_sub.add_parser("run", help="Run a CSV job file (demo actions)")
-    jobs_run.add_argument("--file", required=False, help="Job CSV file (must include action column)")
-    jobs_run.add_argument("--limit", type=int, default=None, help="Max number of rows to process")
-    jobs_run.set_defaults(func=jobs_cmd.cmd_jobs_run, write_capable=True)
-
-    demo = sub.add_parser("demo", help="Demo commands that show the v2 plan/receipt workflow")
-    demo_sub = demo.add_subparsers(dest="demo_cmd", required=True, parser_class=_ToolArgumentParser)
-    demo_read = demo_sub.add_parser("read", help="Safe read (demo)")
-    demo_read.set_defaults(func=demo_cmd.cmd_demo_read, write_capable=False)
-    demo_write = demo_sub.add_parser("write", help="Write with plan/receipt (demo)")
-    demo_write.add_argument("--selector", default="demo-resource", help="Target selector (demo)")
-    demo_write.set_defaults(func=demo_cmd.cmd_demo_write, write_capable=True)
-
     photos = sub.add_parser("photos", help="Photos endpoints")
     photos_sub = photos.add_subparsers(dest="photos_cmd", required=True, parser_class=_ToolArgumentParser)
     photos_list = photos_sub.add_parser("list", help="List photos")
@@ -261,7 +244,7 @@ def build_parser() -> argparse.ArgumentParser:
     photos_download = photos_sub.add_parser("download", help="Download tracking + optional file download (write-capable)")
     photos_download.add_argument("--id", required=True)
     photos_download.add_argument("--dest", default=None, help="Optional file path to write")
-    photos_download.add_argument("--overwrite", action="store_true", help="Allow overwriting dest file (requires --apply --yes)")
+    photos_download.add_argument("--overwrite", action="store_true", help="Plan to replace a file. Applying also requires --yes.")
     photos_download.set_defaults(func=photos_cmd.cmd_photos_download, write_capable=True)
 
     collections = sub.add_parser("collections", help="Collections endpoints")
@@ -271,16 +254,16 @@ def build_parser() -> argparse.ArgumentParser:
     collections_list.add_argument("--per-page", type=int, default=10)
     collections_list.set_defaults(func=collections_cmd.cmd_collections_list, write_capable=False)
     collections_get = collections_sub.add_parser("get", help="Get a collection")
-    collections_get.add_argument("--id", type=int, required=True)
+    collections_get.add_argument("--id", required=True)
     collections_get.set_defaults(func=collections_cmd.cmd_collections_get, write_capable=False)
     collections_photos = collections_sub.add_parser("photos", help="List photos in a collection")
-    collections_photos.add_argument("--id", type=int, required=True)
+    collections_photos.add_argument("--id", required=True)
     collections_photos.add_argument("--page", type=int, default=1)
     collections_photos.add_argument("--per-page", type=int, default=10)
     collections_photos.add_argument("--orientation", default=None, help="landscape|portrait|squarish")
     collections_photos.set_defaults(func=collections_cmd.cmd_collections_photos, write_capable=False)
     collections_related = collections_sub.add_parser("related", help="Get related collections")
-    collections_related.add_argument("--id", type=int, required=True)
+    collections_related.add_argument("--id", required=True)
     collections_related.set_defaults(func=collections_cmd.cmd_collections_related, write_capable=False)
 
     topics = sub.add_parser("topics", help="Topics endpoints")
@@ -372,7 +355,7 @@ def build_parser() -> argparse.ArgumentParser:
     export_photos_list.set_defaults(func=export_cmd.cmd_export_photos_list, write_capable=True)
 
     export_collections_photos = export_sub.add_parser("collections-photos", help="Export /collections/:id/photos")
-    export_collections_photos.add_argument("--id", type=int, required=True)
+    export_collections_photos.add_argument("--id", required=True)
     export_collections_photos.add_argument("--orientation", default=None, help="landscape|portrait|squarish")
     _add_export_paging_flags(export_collections_photos)
     export_collections_photos.set_defaults(func=export_cmd.cmd_export_collections_photos, write_capable=True)

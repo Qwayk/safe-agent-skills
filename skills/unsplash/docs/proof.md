@@ -1,35 +1,22 @@
-# Proof and verification
+# What was tested
 
-Unsplash proof should answer a simple question: what has actually been checked for photo search, collections, tracked downloads, and local image files, and what still needs live credentials, permissions, or reviewer judgment?
+## November 23, 2026
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+The audit installed the source and GitHub copies and used simulated Unsplash replies. Search and connection checks worked. The old download path recorded tracking before it reached the missing import. A separate test of the file-writing step showed that an interrupted overwrite left a partial file in place of the original.
 
-If you only check one thing, check search proof, download-plan evidence, and local file handling before trusting image work.
+The updated tests cover matching previews, old previews, changed settings, refusal before tracking, tracking without a local copy, and saving approved files with their hash and photographer details. A simulated lost reply sends one tracking request and leaves the outcome marked unclear. An interrupted transfer keeps the original file. Collection lookups and exports accept IDs with letters.
 
-## Current proof summary
+Both local copies passed 33 offline tests. I built a wheel from each copy, installed it in a clean Python environment, and ran 10 checks against the installed command code. Setup created the selected settings file and kept its path in the next command. Both skill files passed validation and the Python source passed the type check. The tests used simulated replies.
 
-This repo does not rely on live Unsplash credentials for normal proof. The evidence here comes from the local suite, the committed redacted examples, and the explicit download-planning and no-snapshot behavior.
+## Earlier checks
 
-## What is already proved
+The local test and proof baseline is from June 4, 2026. The docs and example results were checked again on June 11, 2026. That June cleanup also removed a leftover `TEMPLATE_GUIDE.md`. The earlier evidence covers Access Key reads, pagination limits, the one-object JSON output, and the original no-snapshot approval.
 
-- The shipped Unsplash read surface works through explicit named commands.
-- The tool uses Access Key auth and keeps OAuth-only endpoints out of scope.
-- `photos download` stays dry-run first and does not trigger download tracking in plan mode.
-- Current tracked download applies still require explicit no-snapshot approval when useful saved before-state is missing.
-- Export safeguards, overwrite checks, and run-history behavior are covered locally.
+The saved [plan](examples/plan.example.json), [refusal example](examples/receipt.example.json), and [command outputs](examples/outputs/) show earlier formats. Save a new preview with `--plan-out` before applying a download. The older plan example predates the matching connection check.
 
-## Last checked
+## Repeat the checks
 
-- Local docs and contract alignment rechecked: **2026-06-11 UTC**
-- Local suite and proof baseline: **2026-06-04 UTC**
-- Tool version: `0.1.0`
-- Auth mode: Access Key only
-
-No live Unsplash credentials are stored here, so this proof pack stays local-first and redacted on purpose.
-
-## Core validation
-
-From the tool folder:
+Use these commands from the package folder.
 
 ```bash
 python3 -m venv .venv
@@ -39,45 +26,4 @@ python3 -m venv .venv
 .venv/bin/unsplash-api-tool --output json onboarding --no-write-env
 ```
 
-## Example live reads
-
-These are real command examples for customer review. They are not claims that live credentials were stored or used in this repo run:
-
-```bash
-unsplash-api-tool --output json users collections --username "example_user" --per-page 10
-unsplash-api-tool --output json users statistics --username "example_user"
-unsplash-api-tool --output json users likes --username "example_user" --per-page 10
-unsplash-api-tool --output json search collections --query "minimal" --per-page 5
-unsplash-api-tool --output json topics list --per-page 5 --order-by latest
-unsplash-api-tool --output json collections list --per-page 5
-unsplash-api-tool --output json stats total
-unsplash-api-tool --output json stats month
-```
-
-## What can still go wrong
-
-- missing or wrong Access Key
-- rate limits
-- download plans that target the wrong photo IDs or local path
-- tracked download applies that still have no saved before-state
-- local exports or downloads that point to the wrong destination
-
-## How to verify the risky parts
-
-- If auth fails, check the Access Key and the `.env` file first.
-- If the photo research output looks wrong, recheck the query, page size, and search filters before you pull more data.
-- If a tracked download refuses, confirm it stopped before download tracking or a local file write.
-- If a future approved download succeeds, confirm the receipt records the no-snapshot approval and the recovery limit.
-
-## Committed examples
-
-- Plans/refusals: `docs/examples/plan.example.json`, `docs/examples/receipt.example.json`
-- Outputs: `docs/examples/outputs/version.json`, `docs/examples/outputs/auth_check.json`
-
-## Intentional limits
-
-Not covered on purpose:
-
-- OAuth-only endpoints like `/me` or like/unlike flows
-- automatic undo for download tracking or local file writes
-- fake proof of live Unsplash access when real credentials are missing
+Use a valid Access Key for an authorized live `auth check`. The offline tests use simulated replies, including success, decline, lost replies and file errors.
