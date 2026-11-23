@@ -3,17 +3,33 @@ from __future__ import annotations
 from pathlib import Path
 
 from . import __version__
-from .api_helpers import get_json
+from .api_helpers import get_json, is_record_key
 from .config import Config
-from .errors import ValidationError
+from .errors import ToolError, ValidationError
 
 
 _TOOL = "qwayk-open-library-safe-agent-cli"
 
 
-def _run_get(*, cfg: Config, ctx: dict, endpoint: str, params: dict[str, object] | None) -> int:
+def _run_get(
+    *,
+    cfg: Config,
+    ctx: dict,
+    endpoint: str,
+    params: dict[str, object] | None,
+    list_field: str | None = None,
+    record_collection: str | None = None,
+) -> int:
     client = ctx["http_client"]
     payload = get_json(client=client, base_url=cfg.base_url, endpoint=endpoint, params=params)
+    if not isinstance(payload, dict):
+        raise ToolError(f"Open Library did not return a result object for {endpoint}.")
+    if list_field is not None:
+        rows = payload.get(list_field)
+        if not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows):
+            raise ToolError(f"Open Library did not return the expected list for {endpoint}.")
+    if record_collection is not None and not is_record_key(payload.get("key"), collection=record_collection):
+        raise ToolError(f"Open Library did not return the expected record for {endpoint}.")
     out = {
         "ok": True,
         "tool": _TOOL,
@@ -89,7 +105,7 @@ def cmd_search_books(args, ctx) -> int:
         params["page"] = args.page
     if args.offset is not None:
         params["offset"] = args.offset
-    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint="search.json", params=params)
+    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint="search.json", params=params, list_field="docs")
 
 
 def cmd_search_authors(args, ctx) -> int:
@@ -98,14 +114,14 @@ def cmd_search_authors(args, ctx) -> int:
         params["limit"] = args.limit
     if args.offset is not None:
         params["offset"] = args.offset
-    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint="search/authors.json", params=params)
+    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint="search/authors.json", params=params, list_field="docs")
 
 
 def cmd_works_get(args, ctx) -> int:
     work_id = str(args.work_id).strip()
     if not work_id:
         raise ValidationError("work_id is required")
-    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint=f"works/{work_id}.json", params=None)
+    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint=f"works/{work_id}.json", params=None, record_collection="works")
 
 
 def cmd_works_editions_list(args, ctx) -> int:
@@ -117,28 +133,33 @@ def cmd_works_editions_list(args, ctx) -> int:
         params["limit"] = args.limit
     if args.offset is not None:
         params["offset"] = args.offset
-    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint=f"works/{work_id}/editions.json", params=params or None)
+    return _run_get(
+        cfg=ctx["cfg"], ctx=ctx, endpoint=f"works/{work_id}/editions.json", params=params or None,
+        list_field="entries",
+    )
 
 
 def cmd_editions_get(args, ctx) -> int:
     edition_id = str(args.edition_id).strip()
     if not edition_id:
         raise ValidationError("edition_id is required")
-    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint=f"books/{edition_id}.json", params=None)
+    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint=f"books/{edition_id}.json", params=None, record_collection="books")
 
 
 def cmd_isbn_lookup(args, ctx) -> int:
     isbn = str(args.isbn).strip()
     if not isbn:
         raise ValidationError("isbn is required")
-    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint=f"isbn/{isbn}.json", params=None)
+    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint=f"isbn/{isbn}.json", params=None, record_collection="books")
 
 
 def cmd_authors_get(args, ctx) -> int:
     author_id = str(args.author_id).strip()
     if not author_id:
         raise ValidationError("author_id is required")
-    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint=f"authors/{author_id}.json", params=None)
+    return _run_get(
+        cfg=ctx["cfg"], ctx=ctx, endpoint=f"authors/{author_id}.json", params=None, record_collection="authors",
+    )
 
 
 def cmd_authors_works_list(args, ctx) -> int:
@@ -150,7 +171,10 @@ def cmd_authors_works_list(args, ctx) -> int:
         params["limit"] = args.limit
     if args.offset is not None:
         params["offset"] = args.offset
-    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint=f"authors/{author_id}/works.json", params=params or None)
+    return _run_get(
+        cfg=ctx["cfg"], ctx=ctx, endpoint=f"authors/{author_id}/works.json", params=params or None,
+        list_field="entries",
+    )
 
 
 def cmd_subjects_get(args, ctx) -> int:
@@ -168,4 +192,7 @@ def cmd_subjects_get(args, ctx) -> int:
         params["limit"] = args.limit
     if args.offset is not None:
         params["offset"] = args.offset
-    return _run_get(cfg=ctx["cfg"], ctx=ctx, endpoint=f"subjects/{subject}.json", params=params or None)
+    return _run_get(
+        cfg=ctx["cfg"], ctx=ctx, endpoint=f"subjects/{subject}.json", params=params or None,
+        list_field="works",
+    )

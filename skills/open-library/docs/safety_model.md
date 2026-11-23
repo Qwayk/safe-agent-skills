@@ -1,24 +1,7 @@
-# Safety model
+# What the Open Library tool can read
 
-Open Library is safest when you treat the agent as a focused reader for public books, authors, editions, subjects, and ISBN data. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+The tool reads public catalog records. You can search for books or authors, check an edition or ISBN, or try a small subject lookup. Editing records and account actions are outside this tool.
 
-The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+Open Library groups editions under a work. Use the work to confirm the title and author. Use the edition to check details such as the publisher, year or ISBN. Catalog records can be incomplete or refer to the same book more than once.
 
-A good safety ask is: "Look up one book, author, or ISBN first, then summarize only from the returned record."
-
-## Core safety rules
-
-This tool is intentionally read-only.
-
-- No auth commands.
-- No write, no raw request, no batch apply workflow.
-- No destructive actions.
-- Every run uses a single, validated endpoint and emits one JSON result.
-
-Use it as a review-first helper:
-
-- Query only what you need.
-- Use `--limit` and `--offset` for list calls.
-- Keep volume low to stay within public endpoint behavior.
-
-`subjects` is experimental. Test carefully before relying on it in scripts.
+Use the public API for small lookups. Open Library provides separate downloads if you need the catalog in bulk. [Usage guidelines](https://openlibrary.org/developers/api#usage-guidelines) · [Commands and request limits](command_reference.md)

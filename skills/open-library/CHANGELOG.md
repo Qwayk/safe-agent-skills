@@ -17,3 +17,5 @@ This project follows Keep a Changelog and semantic versioning.
 
 ### Fixed
 - Replaced template names and write-only command references in shipped documentation.
+- Made the first search work straight from the quickstart without a settings file.
+- Added checks for unexpected replies and wrong record IDs. The timeout flag now takes priority over an invalid saved timeout.

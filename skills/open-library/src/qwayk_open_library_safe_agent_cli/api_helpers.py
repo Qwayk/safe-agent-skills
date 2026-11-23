@@ -1,37 +1,50 @@
 from __future__ import annotations
 
-from urllib.parse import quote
+import re
+from urllib.parse import quote, urlsplit
 
 from .errors import ValidationError
 from .http import HttpClient
 
 
+_RECORD_IDS = {
+    "works": ("work", "W"),
+    "books": ("edition", "M"),
+    "authors": ("author", "A"),
+}
+
+
+def _matches_record_id(record_id: str, suffix: str) -> bool:
+    return re.fullmatch(rf"OL[0-9]+{suffix}", record_id) is not None
+
+
+def is_record_key(key: object, *, collection: str) -> bool:
+    prefix = f"/{collection}/"
+    return (
+        isinstance(key, str)
+        and key.startswith(prefix)
+        and _matches_record_id(key[len(prefix) :], _RECORD_IDS[collection][1])
+    )
+
+
 def normalize_ol_id(raw: str, *, expected_prefix: str) -> str:
-    value = (raw or "").strip()
-    if not value:
-        raise ValidationError(f"{expected_prefix} id is required")
-
-    low = value.lower()
-    if low.startswith("http://") or low.startswith("https://"):
-        marker = "openlibrary.org/"
-        idx = low.find(marker)
-        if idx >= 0:
-            value = value[idx + len(marker) :]
-        else:
-            value = value.split("/")[-1]
-
-    value = value.strip().strip("/")
-    if value.endswith(".json"):
-        value = value[: -len(".json")]
-
-    parts = [p for p in value.split("/") if p]
-    if not parts:
-        raise ValidationError(f"{expected_prefix} id is required")
-    if parts[0] == expected_prefix:
-        if len(parts) < 2:
-            raise ValidationError(f"Invalid {expected_prefix} id")
-        return parts[1]
-    return parts[-1]
+    kind, suffix = _RECORD_IDS[expected_prefix]
+    message = f"Use an Open Library {kind} ID ending in {suffix}, or a link to that record."
+    try:
+        path = urlsplit(raw.strip()).path
+    except ValueError:
+        raise ValidationError(message) from None
+    parts = path.strip("/").split("/")
+    if len(parts) == 1:
+        record_id = parts[0]
+    elif parts[0] == expected_prefix:
+        record_id = parts[1]
+    else:
+        raise ValidationError(message)
+    record_id = record_id.removesuffix(".json").upper()
+    if not _matches_record_id(record_id, suffix):
+        raise ValidationError(message)
+    return record_id
 
 
 def normalize_isbn(raw: str) -> str:

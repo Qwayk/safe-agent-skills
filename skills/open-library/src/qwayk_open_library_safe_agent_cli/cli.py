@@ -64,7 +64,7 @@ def build_parser() -> argparse.ArgumentParser:
     books.add_argument("--q", required=True, help="Search query")
     books.add_argument("--fields", default=None, help="Fields to return")
     books.add_argument("--sort", default=None, help="Sort order")
-    books.add_argument("--lang", default=None, help="Language filter")
+    books.add_argument("--lang", default=None, help="Preferred language (two-letter code)")
     books.add_argument("--limit", type=int, default=None)
     books.add_argument("--page", type=int, default=None)
     books.add_argument("--offset", type=int, default=None)
@@ -203,16 +203,10 @@ def main(argv: list[str]) -> int:
             audit.write("command_ok", {"exit_code": rc, "output": out.last})
             return rc
 
-        cfg = load_config(str(getattr(args, "env_file", ".env")), config_file=getattr(args, "config", None))
-        timeout = args.timeout_s if args.timeout_s is not None else cfg.timeout_s
-        if timeout <= 0:
-            raise ValidationError("--timeout-s must be > 0")
-
-        cfg = cfg.__class__(
-            base_url=cfg.base_url,
-            timeout_s=timeout,
-            user_agent_app=cfg.user_agent_app,
-            contact=cfg.contact,
+        cfg = load_config(
+            args.env_file,
+            config_file=args.config,
+            timeout_override=args.timeout_s,
         )
         user_agent = cfg.user_agent_app
         if cfg.contact:

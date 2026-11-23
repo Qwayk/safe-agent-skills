@@ -1,25 +1,10 @@
 ---
 name: open-library
-description: "Find books, authors and editions through the read-only Open Library CLI. Use for public catalog lookups, not account or write operations."
+description: Find books, authors, editions and ISBNs in the public Open Library catalog.
 ---
 
-# Open Library
+Use `qwayk-open-library-safe-agent-cli --output json` for public catalog reads. If the command is missing, follow the [quickstart](docs/quickstart.md).
 
-This page is the agent-facing rule sheet for the public Open Library skill.
-If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+Start with the user's book, author or ISBN. For a title search, run `qwayk-open-library-safe-agent-cli --output json search books --q "dune" --limit 3` with the title the user asked for. Use a matching work or edition ID to check details before reporting them. [See all nine commands](docs/command_reference.md).
 
-Use this skill for safe Open Library reads.
-
-- Call only these commands:
-  - `search books`
-  - `search authors`
-  - `works get`
-  - `works editions list`
-  - `editions get`
-  - `isbn lookup`
-  - `authors get`
-  - `authors works list`
-  - `subjects get`
-- Do not call auth, jobs, runs, or write commands.
-- Pass `--output json` and keep requests low-volume.
-- Prefer explicit examples with query terms and bounded `--limit`.
+Keep searches small and follow [Open Library's usage guidelines](https://openlibrary.org/developers/api#usage-guidelines). For requests to edit records or use an account, explain that the tool reads public data.

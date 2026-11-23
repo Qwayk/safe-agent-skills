@@ -1,34 +1,16 @@
-# Proof and verification
+# Open Library test results
 
-Open Library proof should answer a simple question: what has actually been checked for public books, authors, editions, subjects, and ISBN data, and what can still fail because of public API limits, changed upstream data, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Both local copies passed 14 offline tests after a fresh install. With saved or simulated replies, I used the installed tool from an empty folder to search for Dune, open the matching work, handle an empty result, and reject invalid replies. A wrong kind of record ID failed before sending a request. The `--timeout-s` flag worked with an invalid timeout in the settings file.
 
-If you only check one thing, check the saved book, author, edition, ISBN, and subject examples before trusting library research.
+A fresh local Codex install matched all 41 files under `open-library`. Before these changes, a live search from the published install found *Dune*, *Dune Messiah*, and *Children of Dune* without a settings file.
 
-## Last verified
+## May 21, 2026 checks
 
-- Date (UTC): 2026-05-21
-- Verified by: Codex
-- Tool version: 0.1.0
-- API model: Open Library public endpoints
-- Base URL: https://openlibrary.org
+Codex checked version `0.1.0` with the public API at `https://openlibrary.org`. Ten offline tests passed.
 
-## Blessed local validation
-
-Run inside the tool folder:
-
-```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install -e .
-.venv/bin/python -m unittest -q
-```
-
-Result on 2026-05-21:
-
-- `.venv/bin/python -m unittest -q` -> `OK` with 10 tests
-
-## Smoke checks
+### Commands used in the original checks
 
 - `qwayk-open-library-safe-agent-cli --output json --version`
 - `qwayk-open-library-safe-agent-cli --output json onboarding`
@@ -41,29 +23,28 @@ Result on 2026-05-21:
 - `qwayk-open-library-safe-agent-cli --output json authors works list OL34184A --limit 1`
 - `qwayk-open-library-safe-agent-cli --output json subjects get foxes --limit 1`
 
-## Committed example outputs
+## Saved replies
 
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/onboarding.json`
-- `docs/examples/outputs/search_books.json`
-- `docs/examples/outputs/search_authors.json`
-- `docs/examples/outputs/works_get.json`
-- `docs/examples/outputs/works_editions_list.json`
-- `docs/examples/outputs/editions_get.json`
-- `docs/examples/outputs/isbn_lookup.json`
-- `docs/examples/outputs/authors_get.json`
-- `docs/examples/outputs/authors_works_list.json`
-- `docs/examples/outputs/subjects_get.json`
+- [version](examples/outputs/version.json)
+- [onboarding](examples/outputs/onboarding.json)
+- [search books](examples/outputs/search_books.json)
+- [search authors](examples/outputs/search_authors.json)
+- [works get](examples/outputs/works_get.json)
+- [works editions list](examples/outputs/works_editions_list.json)
+- [editions get](examples/outputs/editions_get.json)
+- [isbn lookup](examples/outputs/isbn_lookup.json)
+- [authors get](examples/outputs/authors_get.json)
+- [authors works list](examples/outputs/authors_works_list.json)
+- [subjects get](examples/outputs/subjects_get.json)
 
-## What can go wrong
+## Run the tests
 
-- No-auth public endpoints can still enforce network-level blocking or strict rate behavior.
-- Invalid OLIDs or ISBNs will fail fast before the request is sent.
-- `subjects` is experimental and can change without warning.
-- Avoid large `--limit` values, broad queries, and bulk-style repeated lookups.
+Run these commands inside the tool folder.
 
-## Links
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e .
+.venv/bin/python -m unittest -q
+```
 
-- `docs/references.md`
-- `docs/api_coverage.md`
-- `docs/engineering_notes.md`
+See the [command guide](command_reference.md) for setup and errors, and [API coverage](api_coverage.md) for the available reads.

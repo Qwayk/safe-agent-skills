@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import math
 import os
 from pathlib import Path
 from typing import Any
+
+from .errors import ValidationError
 
 
 def _parse_env_file(path: Path) -> dict[str, str]:
@@ -51,7 +54,12 @@ class Config:
     contact: str | None
 
 
-def load_config(env_file: str | None, config_file: str | None = None) -> Config:
+def load_config(
+    env_file: str | None,
+    config_file: str | None = None,
+    *,
+    timeout_override: float | None = None,
+) -> Config:
     env = _parse_env_file(Path(env_file or ".env"))
     cfg = _parse_config_file(Path(config_file) if config_file else None)
 
@@ -61,17 +69,22 @@ def load_config(env_file: str | None, config_file: str | None = None) -> Config:
         else _get(env, "OPEN_LIBRARY_BASE_URL").rstrip("/") or "https://openlibrary.org"
     )
 
-    timeout_s_raw = cfg.get("timeout_s") if cfg.get("timeout_s") is not None else _get(env, "OPEN_LIBRARY_TIMEOUT_S")
-    if timeout_s_raw == "":
-        timeout_s_raw = "30"
-    timeout_s: float
-    try:
-        timeout_s = float(timeout_s_raw)
-    except Exception:
-        raise RuntimeError("OPEN_LIBRARY_TIMEOUT_S (or config timeout_s) must be a number (seconds)") from None
-
-    if timeout_s <= 0:
-        raise RuntimeError("OPEN_LIBRARY_TIMEOUT_S (or config timeout_s) must be > 0")
+    if timeout_override is not None:
+        timeout_s = timeout_override
+        if not math.isfinite(timeout_s) or timeout_s <= 0:
+            raise ValidationError("--timeout-s must be a positive, finite number of seconds")
+    else:
+        timeout_value = cfg.get("timeout_s")
+        if timeout_value is None:
+            timeout_value = _get(env, "OPEN_LIBRARY_TIMEOUT_S")
+        if timeout_value == "":
+            timeout_value = "30"
+        try:
+            timeout_s = float(timeout_value)
+        except (TypeError, ValueError, OverflowError):
+            raise RuntimeError("OPEN_LIBRARY_TIMEOUT_S (or config timeout_s) must be a number of seconds") from None
+        if not math.isfinite(timeout_s) or timeout_s <= 0:
+            raise RuntimeError("OPEN_LIBRARY_TIMEOUT_S (or config timeout_s) must be a positive, finite number of seconds")
 
     user_agent_app = (
         str(cfg.get("user_agent_app")).strip()

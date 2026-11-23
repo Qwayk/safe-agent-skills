@@ -14,9 +14,27 @@ from qwayk_open_library_safe_agent_cli.cli import main
 from qwayk_open_library_safe_agent_cli.http import HttpClient, HttpResponse
 
 
+EXAMPLE_OUTPUTS = Path(__file__).resolve().parents[1] / "docs" / "examples" / "outputs"
+EXAMPLES_BY_PATH = {
+    "/search.json": "search_books",
+    "/search/authors.json": "search_authors",
+    "/works/OL123W.json": "works_get",
+    "/works/OL123W/editions.json": "works_editions_list",
+    "/books/OL987M.json": "editions_get",
+    "/isbn/9780140328721.json": "isbn_lookup",
+    "/isbn/0306406152.json": "isbn_lookup",
+    "/authors/OL555A.json": "authors_get",
+    "/authors/OL555A/works.json": "authors_works_list",
+    "/subjects/Fantasy.json": "subjects_get",
+    "/subjects/Science%20Fiction.json": "subjects_get",
+}
+
+
 class TestApiContracts(unittest.TestCase):
     def _capture_call(self, command_args: list[str], expected_path: str, expected_params: dict[str, str] | None) -> None:
         calls: list[tuple[str, str]] = []
+        sample_file = EXAMPLE_OUTPUTS / f"{EXAMPLES_BY_PATH[expected_path]}.json"
+        sample_data = json.loads(sample_file.read_text(encoding="utf-8"))["data"]
 
         def fake_request(self, method, url, **kwargs: Any) -> HttpResponse:  # type: ignore[override]
             final_url = str(url)
@@ -28,7 +46,7 @@ class TestApiContracts(unittest.TestCase):
                 status=200,
                 headers={},
                 url=final_url,
-                body=json.dumps({"ok": True}).encode("utf-8"),
+                body=json.dumps(sample_data).encode("utf-8"),
             )
 
         with tempfile.TemporaryDirectory() as td:
@@ -43,6 +61,7 @@ class TestApiContracts(unittest.TestCase):
         payload = json.loads(buf.getvalue())
         self.assertEqual(rc, 0)
         self.assertTrue(payload.get("ok"))
+        self.assertEqual(payload["data"], sample_data)
 
         self.assertEqual(len(calls), 1)
         method, url = calls[0]
@@ -69,6 +88,7 @@ class TestApiContracts(unittest.TestCase):
             (["subjects", "get", "Fantasy"], "/subjects/Fantasy.json", {}),
             (["subjects", "get", "Science Fiction", "--details", "--ebooks", "--published-in", "2022", "--limit", "15", "--offset", "7"], "/subjects/Science%20Fiction.json", {"details": "true", "ebooks": "true", "published_in": "2022", "limit": "15", "offset": "7"}),
             (["works", "get", "works/OL123W"], "/works/OL123W.json", {}),
+            (["works", "get", "https://openlibrary.org/works/OL123W/Dune?ref=example"], "/works/OL123W.json", {}),
             (["isbn", "lookup", "0-306-40615-2"], "/isbn/0306406152.json", {}),
             (["subjects", "get", "Science Fiction"], "/subjects/Science%20Fiction.json", {}),
         ]
@@ -118,7 +138,7 @@ class TestApiContracts(unittest.TestCase):
                 status=200,
                 headers={},
                 url=final_url,
-                body=json.dumps({"ok": True}).encode("utf-8"),
+                body=b'{"docs":[]}',
             )
 
         with tempfile.TemporaryDirectory() as td:
@@ -159,3 +179,70 @@ class TestApiContracts(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertEqual(len(calls), 1)
         self.assertTrue(calls[0].startswith("https://config.example/search.json?"))
+
+    def test_wrong_record_ids_fail_before_request(self) -> None:
+        commands = [
+            ["works", "get", "OL123M"],
+            ["works", "editions", "list", "/books/OL123M"],
+            ["editions", "get", "/works/OL123W"],
+            ["authors", "get", "OL123W"],
+            ["authors", "works", "list", "/works/OL123W"],
+            ["works", "get", "not-an-id"],
+        ]
+        for argv in commands:
+            buf = io.StringIO()
+            with self.subTest(argv=argv), patch.object(HttpClient, "request") as request, redirect_stdout(buf):
+                rc = main(["--output", "json", *argv])
+                request.assert_not_called()
+                self.assertEqual(rc, 1)
+                result = json.loads(buf.getvalue())
+                self.assertEqual(result["error_type"], "ValidationError")
+
+    def test_bad_replies_are_errors_and_empty_results_are_valid(self) -> None:
+        cases = [
+            (["search", "books", "--q", "dune"], {"error": "unexpected reply"}, 1),
+            (["search", "books", "--q", "dune"], None, 1),
+            (["search", "books", "--q", "dune"], {"docs": [], "numFound": 0}, 0),
+            (["search", "authors", "--q", "asimov"], {"docs": ["unexpected reply"]}, 1),
+            (["works", "get", "OL123W"], {"key": "/books/OL123M"}, 1),
+            (["works", "get", "OL123W"], {"key": "/works/OL456W", "extra": True}, 0),
+            (["works", "editions", "list", "OL123W"], {"entries": None}, 1),
+            (["editions", "get", "OL123M"], {"key": "/books/OLnot-a-record"}, 1),
+            (["isbn", "lookup", "9780140328721"], {"key": "/works/OL123W"}, 1),
+            (["authors", "get", "OL123A"], {}, 1),
+            (["authors", "works", "list", "OL123A"], {"entries": []}, 0),
+            (["subjects", "get", "foxes"], {"works": []}, 0),
+        ]
+        for argv, data, expected in cases:
+            reply = HttpResponse(200, {}, json.dumps(data).encode("utf-8"), "https://openlibrary.org")
+            buf = io.StringIO()
+            with self.subTest(argv=argv, data=data), patch.object(
+                HttpClient, "request", return_value=reply
+            ), redirect_stdout(buf):
+                rc = main(["--output", "json", *argv])
+                result = json.loads(buf.getvalue())
+                self.assertEqual(rc, expected)
+                self.assertEqual(result["ok"], expected == 0)
+                if expected:
+                    self.assertEqual(result["error_type"], "ToolError")
+                    self.assertNotIn("data", result)
+                else:
+                    self.assertEqual(result["data"], data)
+
+    def test_timeout_flag_overrides_bad_saved_timeout(self) -> None:
+        reply = HttpResponse(200, {}, b'{"docs":[]}', "https://openlibrary.org/search.json")
+        with tempfile.TemporaryDirectory() as td:
+            env_file = Path(td) / ".env"
+            env_file.write_text("OPEN_LIBRARY_TIMEOUT_S=bad\n", encoding="utf-8")
+            config_file = Path(td) / "settings.json"
+            config_file.write_text('{"timeout_s":"also bad"}', encoding="utf-8")
+            for flags in ([], ["--config", str(config_file)]):
+                with self.subTest(flags=flags), patch.object(HttpClient, "request", return_value=reply), patch.object(
+                    HttpClient, "__init__", return_value=None
+                ) as init, redirect_stdout(io.StringIO()):
+                    rc = main([
+                        "--env-file", str(env_file), *flags, "--timeout-s", "5",
+                        "search", "books", "--q", "dune",
+                    ])
+                    self.assertEqual(rc, 0)
+                    self.assertEqual(init.call_args.kwargs["timeout_s"], 5.0)

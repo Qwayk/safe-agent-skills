@@ -1,15 +1,10 @@
-# References
+# Open Library references
 
-Official Open Library references:
+- [API usage and request limits](https://openlibrary.org/developers/api)
+- [Book search](https://openlibrary.org/dev/docs/api/search)
+- [Works, editions and ISBNs](https://openlibrary.org/dev/docs/api/books)
+- [Author lookups and works](https://openlibrary.org/dev/docs/api/authors)
+- [Subject lookup](https://openlibrary.org/dev/docs/api/subjects)
+- [Privacy](https://openlibrary.org/help/faq/privacy)
 
-- https://openlibrary.org/developers/api
-- https://openlibrary.org/dev/docs/api/search
-- https://openlibrary.org/dev/docs/api/books
-- https://openlibrary.org/dev/docs/api/subjects
-- https://openlibrary.org/help/faq/privacy
-
-Notes for this tool (2026-05-21):
-
-- This tool uses public, low-volume read endpoints.
-- No authentication is required.
-- Keep list-style calls limited (`--limit`, `--offset`) and avoid bulk harvests.
+The original source review was on May 21, 2026. The [coverage table](api_coverage.md) lists the nine reads available in the tool.
