@@ -311,6 +311,6 @@
     "count": 18,
     "snapshot_last_verified_utc": "2026-02-18T07:22:02+00:00",
     "snapshot_openapi_json_sha256": "73b3b8e9c0bca1cf59f22dd6e212eeaa433ea6b33370e7320af10b435d991824",
-    "source_csv": "docs/cloudflare-api-docs/extracts/endpoints_all.csv"
+    "historical_source_csv": "endpoints_all.csv"
   }
 }

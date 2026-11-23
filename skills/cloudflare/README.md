@@ -1,109 +1,57 @@
 # Cloudflare
 
-**Capability:** Reads + careful changes
+Use the Cloudflare CLI to check which DNS records point to a website, which Worker receives its traffic, or who can reach an app protected by Zero Trust. It can also help you find the logs you need when a request fails.
 
-Cloudflare is where a small mistake can affect DNS, security rules, Workers, Pages, access policies, or production traffic. This skill helps an agent look through the account carefully before anyone changes something important.
+Try asking your agent, “Find the Cloudflare zone for my website and show me where its DNS records point.” Or ask it to check a Worker route and show you what would change before it updates the route.
 
-Use it for jobs like "What zones and DNS records do we have?", "Is this Worker route pointing where we think?", "What Zero Trust policies are active?", or "Can we plan this DNS change and show the risk before it goes live?"
-
-Read work can run as normal account review. Riskier work starts as a dry-run plan, sensitive results go to local files instead of chat, destructive actions need extra approval, and some write families need explicit no-snapshot approval when the tool cannot save useful before-state first.
-
-A good first ask is: "Check the Cloudflare skill is connected, list my accounts and zones, and run zone-create-check before we plan any onboarding."
+Your agent starts by checking the connection and finding the right account and zone. For a live change, it shows you what it plans to change and waits for your approval. Private results such as logs and Worker code go to a local file.
 
 ## Start here first
 
-- Want ideas for real Cloudflare work? [What you can do with Cloudflare](docs/use_cases.md)
-- Need setup? [Connect your Cloudflare account](docs/onboarding.md)
-- Want the safety story first? [How this skill stays safe](docs/safety_model.md)
+[Connect your Cloudflare account](docs/onboarding.md), then follow the [quickstart](docs/quickstart.md) to list accounts and find the right zone.
 
-If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
+## What your agent can do
 
-## What this skill helps with
+- Check domains, DNS records, DNSSEC and zone settings.
+- Find Workers routes, scripts and deployments, or look up an error in stored Worker logs.
+- Review Pages projects and prepare a deployment plan.
+- Check Zero Trust policies, access rules and account permissions.
+- Check storage and databases, or use Browser Run to save a screenshot or page text to a local file.
 
-- Review accounts, zones, DNS records, DNSSEC, and zone settings.
-- Plan careful DNS, Workers route, Pages, and other Cloudflare changes before they go live.
-- Check Workers scripts, routes, KV metadata, deployments, builds, pipelines, and Browser Run results.
-- Review Zero Trust, Gateway, Access, and DLP configuration.
-- Review organization members, API tokens, and account access settings.
-- Use named helpers for common jobs and the broader allowlisted operations surface when a documented Cloudflare task does not have the best named front door yet.
-
-## What access this skill needs
-
-- A Cloudflare API token.
-- Your account ID or zone ID for many jobs.
-- Extra token scopes only for the surfaces you actually want to use.
-- Browser Run, D1, and other special surfaces may need extra Cloudflare permissions.
-
-For most people, a read-only inventory token is the safest place to start.
-
-## Install and first run
-
-Install slug: `cloudflare`
-
-Ask your agent to install the `cloudflare` skill from `Qwayk/safe-agent-skills`.
-
-If new skills do not appear automatically, reopen the app or attach the skill to the current workspace if your host needs that.
-
-If your host does not let the agent install skills directly, run:
-
-```bash
-npx skills add Qwayk/safe-agent-skills@cloudflare -g -y
-```
-
-Then try a safe first ask like:
-
-```text
-Check the Cloudflare skill is connected, list my accounts and zones, and run zone-create-check before we plan any onboarding.
-```
-
-## How this skill stays safe
-
-- It does not expose a generic raw-call bridge.
-- Writes are dry-run first and need `--apply --yes`.
-- Sensitive reads and secret-bearing results are file-only and never printed to stdout.
-- Destructive or one-time secret actions need extra acknowledgement and output files.
-- Some write families can save before-state first; where that is not practical, live apply requires explicit no-snapshot approval.
-- `auth zone-create-check` is a safe preflight before bulk zone onboarding or zone-creation work.
-
-## What it covers today
-
-This skill covers:
-
-- onboarding, auth, accounts, zones, DNS, Workers, Pages, observability, storage, and Browser Run
-- Zero Trust, Gateway, Access, and DLP review
-- organization members, API tokens, and account access review
-- named helper commands for common Cloudflare jobs
-- broader official Cloudflare coverage through explicit allowlisted `operations` commands when a named helper is not the best fit
+See [example requests](docs/use_cases.md) for more ways to start.
 
 ## What happens before live changes
 
-- The agent should show the dry-run plan first.
-- You review the account, zone, script, or policy target before apply.
-- Safe reads can run immediately.
-- Writes need `--apply --yes`.
-- Destructive or one-time secret actions may also need `--ack-irreversible` and file output.
-- Some live writes also need explicit no-snapshot approval when the tool cannot save useful before-state first.
+Review the exact account, resource and change before giving approval. The agent should tell you what it can save before the change and how it will check the result afterward. Some changes require separate approval to continue without a saved copy of the old settings. Some destructive changes and operations that return a secret need an extra confirmation. [Approval and file-output rules](docs/safety_model.md)
 
-## What proof it leaves behind
+Before onboarding domains in bulk, ask the agent to run `auth zone-create-check` for the chosen account.
 
-- Dry-run plans can be saved with `--plan-out`.
-- Apply receipts can be saved with `--receipt-out`.
-- Before-state is captured when the write family can safely read it first.
-- Sensitive reads write to local files instead of stdout.
-- The docs, tests, and coverage ledgers are all in this repo, including the live official coverage ledger.
+## What access this tool needs
+
+Start with a Cloudflare API token that has read access for your task. Some commands need an account ID or zone ID. Features such as Browser Run and D1 need their own Cloudflare permissions. [Token setup and checks](docs/onboarding.md)
+
+## Install and first run
+
+Ask your agent to install the `cloudflare-api-safe-cli` skill from `Qwayk/safe-agent-skills`. If the skill does not appear, reopen the app or attach it to the workspace.
+
+You can also install the skill from a terminal:
+
+```bash
+npx skills add Qwayk/safe-agent-skills@cloudflare-api-safe-cli -g -y
+```
+
+For a local checkout, see the [CLI install steps](docs/quickstart.md#install-the-cli). First ask the agent to check the connection, list your accounts and find the zone that matches your website.
+
+## What it covers today
+
+Use named commands for regular jobs. When a job has no named helper, use `operations list` to find a supported Cloudflare operation. The [coverage list](docs/api_coverage.md) shows what this copy of the tool includes and when that list was checked.
 
 ## Limits
 
-- Broad `operations` coverage does not mean every write has a built-in undo path.
-- Some Cloudflare surfaces still need extra permissions beyond a basic read-only token.
-- Sensitive reads like script content and KV values stay file-only.
-- When Cloudflare does not expose a clean prior state, the skill can still work, but only after explicit no-snapshot approval.
+Some operations need more access than a read-only token provides. A successful connection check only proves the token can make that check. When Cloudflare cannot confirm the result of a change, the receipt should say what it could verify. Review how you would recover before approving a change that has no saved copy of the old settings.
 
 ## Helpful docs
 
-- [Browse all Cloudflare docs](docs/README.md)
-- [Quickstart](docs/quickstart.md)
+- [All Cloudflare docs](docs/README.md)
 - [Command guide](docs/command_reference.md)
-- [Proof and verification](docs/proof.md)
-- [API coverage](docs/api_coverage.md)
-- [Live official coverage ledger](docs/api_coverage_live_official.md)
+- [What has been verified](docs/proof.md)

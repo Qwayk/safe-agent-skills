@@ -3,9 +3,12 @@ from __future__ import annotations
 import io
 import json
 import os
+import shlex
+import stat
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from pathlib import Path
 
 from cloudflare_api_tool.cli import main
 
@@ -27,3 +30,16 @@ class TestOnboardingCommand(unittest.TestCase):
             self.assertTrue(payload["ok"])
             self.assertTrue(payload["onboarding"]["env_created"])
             self.assertTrue(os.path.exists(env_path))
+
+    def test_installed_setup_uses_a_private_file_and_keeps_the_selected_path(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            for command in (["config", "init"], ["onboarding"]):
+                selected = Path(td) / command[0] / "team settings.env"
+                with self.subTest(command=command), redirect_stdout(output := io.StringIO()):
+                    self.assertEqual(main(["--output", "json", "--env-file", str(selected), *command]), 0)
+                self.assertEqual(stat.S_IMODE(selected.stat().st_mode), 0o600)
+                self.assertIn("CLOUDFLARE_API_TOKEN=", selected.read_text())
+                if command == ["onboarding"]:
+                    setup = json.loads(output.getvalue())["onboarding"]
+                    self.assertEqual(shlex.split(setup["next_command"])[1:3], ["--env-file", str(selected)])
+                    self.assertEqual(setup["missing"], ["CLOUDFLARE_API_TOKEN"])

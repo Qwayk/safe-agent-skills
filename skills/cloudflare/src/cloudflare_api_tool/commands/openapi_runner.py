@@ -184,10 +184,42 @@ def _load_body(
                 }
             )
 
-        meta = {"body_kind": "multipart", "fields_keys": sorted([str(k) for k in (fields or {}).keys()]), "files": meta_files, "source": str(multipart_spec_file)}
+        fields_payload = json.dumps(fields, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode("utf-8")
+        meta = {
+            "body_kind": "multipart", "fields_keys": sorted(str(k) for k in fields),
+            "fields_sha256": sha256_of_bytes(fields_payload), "files": meta_files, "source": str(multipart_spec_file),
+        }
         return ("multipart", None, None, {"fields": fields, "files": req_files}, meta)
 
     return ("none", None, None, None, {"body_kind": "none"})
+
+
+def _check_worker_deployment(ctx: dict, path: str, request_body: Any, reply: Any) -> dict[str, Any]:
+    deployment_id = str(reply.get("id") or "") if isinstance(reply, dict) else ""
+    expected_versions = request_body.get("versions") if isinstance(request_body, dict) else None
+    actual = None
+    if deployment_id and "/" not in deployment_id:
+        try:
+            actual = ctx["cf"].get_json(f"{path}/{deployment_id}").result
+        except ToolError:
+            pass
+    actual_versions = actual.get("versions") if isinstance(actual, dict) else None
+
+    def allocation(versions: Any) -> dict[str, Any] | None:
+        if not isinstance(versions, list) or not versions:
+            return None
+        if not all(isinstance(version, dict) and version.get("version_id") and "percentage" in version for version in versions):
+            return None
+        result = {str(version["version_id"]): version["percentage"] for version in versions}
+        return result if len(result) == len(versions) else None
+
+    expected = allocation(expected_versions)
+    return {
+        "ok": expected is not None and isinstance(actual, dict) and actual.get("id") == deployment_id
+        and allocation(actual_versions) == expected,
+        "method": "read_back_worker_traffic_split",
+        "details": {"deployment_id": deployment_id or None},
+    }
 
 
 def _best_effort_verify(
@@ -727,6 +759,9 @@ def cmd_openapi_call(args, ctx) -> int:
         ],
         "notes": [],
     }
+    if is_state_write:
+        plan["connection"] = ctx["env_fingerprint"]
+        plan["approval_request"] = {"query": query, "body": body_meta, "content_type": content_type}
     before_state = None
     before_state_path = None
     requires_saved_before_state = _requires_saved_before_state(
@@ -902,7 +937,9 @@ def cmd_openapi_call(args, ctx) -> int:
         else:
             response_result = ctx["cf"].request_json(method, resolved_path, params=query or None, headers=headers or None, retries=3).result
 
-    if sensitivity in {"sensitive_read", "sensitive_write_result"}:
+    if method == "POST" and path_template == "/accounts/{account_id}/workers/scripts/{script_name}/deployments":
+        verification = _check_worker_deployment(ctx, resolved_path, json_body, response_result)
+    elif sensitivity in {"sensitive_read", "sensitive_write_result"}:
         if is_state_write:
             if is_account_write_op:
                 verification = _best_effort_verify_redacted(

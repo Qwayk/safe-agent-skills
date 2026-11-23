@@ -8,6 +8,9 @@ from typing import Any
 from .errors import ToolError
 
 
+LIVE_INVENTORY_PATH = Path(__file__).resolve().parent / "_data" / "live_official_api_inventory.json"
+
+
 @dataclass(frozen=True)
 class OperationSpec:
     area: str
@@ -980,12 +983,11 @@ def _load_specs_from_coverage_ledgers(*, include_dns: bool) -> list[OperationSpe
 
 
 def _load_specs_from_live_inventory_json(*, include_dns: bool) -> list[OperationSpec]:
-    inventory_path = _tool_root() / "docs" / "_generated" / "live_official_api_inventory.json"
-    raw = inventory_path.read_text(encoding="utf-8")
+    raw = LIVE_INVENTORY_PATH.read_text(encoding="utf-8")
     payload = dict() if not raw else json.loads(raw)
     rows = payload.get("operations")
     if not isinstance(rows, list):
-        raise ToolError(f"Live inventory JSON is missing an operations list: {inventory_path}")
+        raise ToolError(f"Live inventory JSON is missing an operations list: {LIVE_INVENTORY_PATH}")
 
     seen_method_path: set[tuple[str, str]] = set()
     specs: list[OperationSpec] = []
@@ -1030,8 +1032,7 @@ def load_allowlisted_operation_index(*, include_dns: bool = True) -> OperationIn
     Fallback remains the historical markdown coverage ledgers so local development can regenerate the
     live inventory without a bootstrap problem.
     """
-    live_inventory = _tool_root() / "docs" / "_generated" / "live_official_api_inventory.json"
-    if live_inventory.exists():
+    if LIVE_INVENTORY_PATH.is_file():
         specs = _load_specs_from_live_inventory_json(include_dns=include_dns)
     else:
         specs = _load_specs_from_coverage_ledgers(include_dns=include_dns)

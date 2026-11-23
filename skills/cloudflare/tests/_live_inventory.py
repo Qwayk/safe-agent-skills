@@ -1,16 +1,12 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
-
-def _tool_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+from cloudflare_api_tool.openapi_index import LIVE_INVENTORY_PATH
 
 
 def load_live_inventory_payload() -> dict[str, object]:
-    path = _tool_root() / "docs" / "_generated" / "live_official_api_inventory.json"
-    return json.loads(path.read_text(encoding="utf-8"))
+    return json.loads(LIVE_INVENTORY_PATH.read_text(encoding="utf-8"))
 
 
 def load_live_inventory_rows() -> list[dict[str, object]]:

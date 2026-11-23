@@ -1,8 +1,6 @@
 # References
 
-Purpose:
-- Record the exact sources behind the live coverage claim.
-- Keep official Cloudflare docs ahead of vendored snapshots.
+These are the sources used to check coverage on April 27, 2026.
 
 ## Official Cloudflare docs used for the live audit
 
@@ -11,6 +9,8 @@ Purpose:
 - Official method pages: `https://developers.cloudflare.com/api/resources/.../methods/.../`
 - Make API calls: `https://developers.cloudflare.com/fundamentals/api/how-to/make-api-calls/`
 - Create API tokens: `https://developers.cloudflare.com/fundamentals/api/get-started/create-token/`
+- Account API tokens: `https://developers.cloudflare.com/fundamentals/api/get-started/account-owned-tokens/`
+- Token formats and the `cfat_` account-token prefix: `https://developers.cloudflare.com/fundamentals/api/get-started/token-formats/`
 - Restrict API tokens: `https://developers.cloudflare.com/fundamentals/api/how-to/restrict-tokens/`
 - API limits: `https://developers.cloudflare.com/fundamentals/api/reference/limits/`
 - Browser Rendering / Browser Run overview: `https://developers.cloudflare.com/browser-rendering/`
@@ -18,14 +18,15 @@ Purpose:
 
 ## Generated from those official docs
 
-- Live runtime allowlist: `docs/_generated/live_official_api_inventory.json`
-- Live human ledger: `docs/api_coverage_live_official.md`
-- Live coverage ledger: `docs/api_coverage_live_official.md`
+- [Saved API inventory used by the installed CLI](../src/cloudflare_api_tool/_data/live_official_api_inventory.json)
+- [Operation list](api_coverage_live_official.md)
 
-## Historical inputs still kept in the repo
+## Write and deployment checks
 
-- `docs/cloudflare-api-docs/openapi.json`
-- `docs/cloudflare-api-docs/extracts/`
+- [DNS record updates](https://developers.cloudflare.com/dns/manage-dns-records/how-to/batch-record-changes/) explains how a partial update keeps fields you leave out.
+- [Worker deployments](https://developers.cloudflare.com/workers/versions-and-deployments/deployment-management/) explains how versions receive traffic.
+- [Pages direct uploads](https://developers.cloudflare.com/pages/get-started/direct-upload/) explains production and preview uploads.
 
-These historical files are retained for old phase ledgers and audit history only.
-They are not the active reference for the current live coverage claim.
+## Historical coverage
+
+The per-area coverage records document earlier tool releases. Use the [current coverage ledger](api_coverage_live_official.md) for the operations available in this tool.

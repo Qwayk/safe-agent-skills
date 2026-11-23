@@ -7,10 +7,16 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ## [Unreleased]
 
+### November 23, 2026
+
+- Setup creates a private settings file and gives you the next command for that file.
+- Compare saved requests before applying. Check DNS fields, Worker traffic split, and Pages branches and files. Keep a receipt when the result of a request is unclear.
+- The local release copy now ships the same command list and account checks as the source.
+
 ### Added
 - `auth zone-create-check` for a safe bulk-onboarding preflight. It tests zone-create permission with an intentionally invalid payload, so it catches token-scope problems before a real zone-create batch.
 - First-class `browser-run` command family for common Cloudflare Browser Rendering quick actions: `markdown`, `links`, `scrape`, `screenshot`, `crawl`, and `crawl-result`. The wrapper keeps the existing file-only account-write safety gates but removes raw `operations` names and manual body JSON files for common probes.
-- Live official Cloudflare API inventory generator: `scripts/generate_live_official_api_inventory.py`, plus committed outputs `docs/_generated/live_official_api_inventory.json`, `docs/api_coverage_live_official.md`, and `docs/live_api_drift_2026-04-27.md`.
+- The April 27 Cloudflare API refresh produced the [saved inventory](src/cloudflare_api_tool/_data/live_official_api_inventory.json) and the [operation list](docs/api_coverage_live_official.md).
 - First-class Cloudflare Observatory read helpers: `observability speed availabilities`, `observability speed pages list`, `observability speed page latest`, `observability speed page trend`, and `observability speed page history`, with normal-URL input and built-in summaries.
 - `observability web-analytics status` to bundle zone RUM state, matching Web Analytics site state, and ruleset lookup status in one read-only command.
 - `observability audit` to combine Web Analytics status, Observatory coverage, homepage/page performance summaries, and Cloudflare log-surface access checks for one zone.
@@ -36,6 +42,10 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Phase 27 (Top-level User/Org/System): offline subset extracts + generated coverage ledgers for remaining top-level endpoints (for example `/user/*`, `/organizations/*`, `/memberships/*`, `/tenants/*`, `/system/*`, `/certificates`, `/telemetry/*`, and `/accounts`/`/zones` list endpoints); allowlisting for `operations <area> <op_key>`; conservative sensitivity (file-only output; hidden from `operations list` unless `--include-sensitive`); destructive operations require `--ack-irreversible`. (No live Cloudflare credentials used.)
 
 ### Changed
+- Retired the per-area coverage generators. The official API inventory and existing coverage records remain the sources for coverage updates.
+- `auth check` now detects `cfat_` account tokens, or unprefixed account tokens identified by `CLOUDFLARE_ACCOUNT_ID`, and verifies them with `accounts list`; `auth probe` and `auth doctor` skip the user-only token endpoint for account-owned credentials.
+- `auth check` now returns `ok=false` for a user token whose reported status is not `active`, for an empty account result, or when the configured account is not reachable.
+- An explicitly supplied `--env-file` must exist as a regular file and is the only source for Cloudflare values in that command; process-environment credentials cannot override it.
 - `runs list` and `runs show` now filter to Cloudflare tool rows only, even when the local run index contains mixed tools.
 - Cloudflare Pages proof/docs/front doors now reflect the first-class direct-upload deploy flow and `0.7.6`.
 - Breaking: removed the generic `openapi` CLI command family and introduced explicit per-operation `operations <area> <op_key>` commands for full allowlisted coverage; docs/examples/tests updated and drift guards added. (Issue #375)
@@ -43,6 +53,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Pages deploy: switched the first-class `pages deploy` wrapper from a mocked zip upload shape to Cloudflare's real direct-upload asset flow (upload token, missing-hash check, asset upload, hash upsert, manifest deployment), added `--branch` for preview deployments, and added read-back verification of the created deployment. (Issue #408)
 
 ### Fixed
+- Include the saved API inventory in the installed package so the CLI starts outside the checkout. Keep Cloudflare links in the generated operation list pointed at their original pages.
 - Cloudflare auth-scheme failures such as `Method not allowed for this authentication scheme` now include a clearer plain-English hint instead of only the raw vendor message.
 - `observability web-analytics status` now also matches Cloudflare site entries that identify the zone only inside nested `ruleset.zone_name` / `ruleset.zone_tag`, which showed up in the live PB Services account.
 - Workers: `workers tails stream` now requests the expected WebSocket subprotocol and disables compression to avoid handshake errors (for example HTTP 406); errors include a safe exception summary.

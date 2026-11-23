@@ -1,18 +1,8 @@
 # API coverage
 
-Cloudflare coverage shows exactly what this skill can do with zones, DNS, Workers, routes, security settings, logs, and infrastructure. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+Find supported operations in the [operation list](api_coverage_live_official.md). The list reflects the April 27, 2026 check. Use the [command guide](command_reference.md) for the named commands and required flags.
 
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can inspect this zone, DNS records, and Worker routes, then show which change paths require a reviewed plan."
-
-## Coverage notes
-
-- Make the Cloudflare API coverage claim exact and auditable.
-- Keep one active runtime allowlist reference.
-- Separate live coverage from historical phase ledgers.
-
-## Current truth
+## What the April 27 check found
 
 - Provider: Cloudflare
 - API base URL: `https://api.cloudflare.com/client/v4/`
@@ -24,9 +14,8 @@ A good first coverage check is: "Check whether this skill can inspect this zone,
 
 ## Active coverage sources
 
-- Runtime allowlist JSON: `docs/_generated/live_official_api_inventory.json`
-- Human ledger: `docs/api_coverage_live_official.md`
-- Live official coverage ledger: `docs/api_coverage_live_official.md`
+- [Saved API inventory used by the installed CLI](../src/cloudflare_api_tool/_data/live_official_api_inventory.json)
+- [Operation list used for review](api_coverage_live_official.md)
 
 ## What changed in the live audit
 
@@ -38,7 +27,7 @@ The per-operation evidence is summarized in the generated coverage ledgers.
 
 - Every live operation is exposed through an explicit allowlisted command only: `cloudflare-api-tool operations <area> <op_key>`.
 - Named front doors can sit on top of those allowlisted operations for common workflows (for example `browser-run ...` for Browser Rendering quick actions).
-- There is no raw request bridge.
+- There is no unreviewed direct API passthrough.
 - Sensitive reads and sensitive write results stay file-only.
 - State-changing writes stay plan-first and require `--apply --yes`.
 - Secret-bearing or destructive operations require `--ack-irreversible`.
@@ -47,4 +36,4 @@ The per-operation evidence is summarized in the generated coverage ledgers.
 ## Historical ledgers
 
 Historical `docs/api_coverage_*.md` ledgers are kept for older proof references.
-They are no longer the active runtime allowlist reference.
+The tool reads the saved JSON inventory first. It can use the older lists when that inventory is missing, so keep them with the source for regeneration.

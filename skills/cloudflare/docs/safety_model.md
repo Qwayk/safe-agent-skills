@@ -1,124 +1,32 @@
-# Safety model
+# Approvals and private results
 
-Cloudflare can touch zones, DNS, Workers, routes, security settings, logs, and other infrastructure, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Start by finding the right Cloudflare account, zone or resource. Ordinary reads can run within the task you approved. A command that changes Cloudflare starts with a plan. Review the plan and approve the exact change before the agent sends it.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## Review the plan before a change
 
-A good safety ask is: "Read the target zone or resource first, save any sensitive output to a file, and review the plan before production changes."
+Check the target and the settings the agent will change. Ask it to show what the tool can save before the change and how it will check the result afterward. If the target, connection, or saved request changes after review, ask for a fresh plan. Keep tokens and private result files out of the review message.
 
-## Core safety rules
+- To save a plan for review, use `--plan-out <FILE>`. Use `--plan-in <FILE>` for commands that support applying a saved plan.
+- Cloudflare writes require `--apply --yes`. Where the CLI can read and save the old settings safely, review the saved copy. The plan or receipt can refer to it in `before_state` or `before_state_path`.
+- If the command cannot save the old settings and offers `--ack-no-snapshot`, explain what would have to be recovered by hand. Use the flag only when the user explicitly approves continuing without that saved copy. A failed safety check or unclear target still stops the work.
+- Actions that cannot be undone and certain operations that return a secret need `--ack-irreversible`. Applied `operations` writes under `/accounts` also require a file path with `--out`. Deletes under `/accounts` require the extra acknowledgement. The [command guide](command_reference.md) lists the flags for each command.
 
-- Cloudflare API writes are **dry-run by default** (no writes unless `--apply --yes`).
-- Destructive/batch actions require `--apply --yes` (and `--ack-irreversible` for irreversible actions).
-- Sensitive reads (code/KV values/PII-like outputs) require `--apply` and explicit file output; the tool never prints sensitive content to stdout.
-- Some Cloudflare APIs use **non-GET** methods for **read-like** operations (example: KV bulk get, Queues pull). These are treated as sensitive file-only reads: apply requires `--apply` + `--out`, and they do **not** require `--yes`.
-- Browser Run named wrappers are read-like file-output commands: `browser-run markdown|links|scrape|screenshot|crawl|crawl-result` require `--apply --out`; `--yes` is accepted but not required.
-- Dangerous writes should save live before-state before apply when practical. If this tool cannot save useful before-state for a supported write family, apply requires explicit no-snapshot approval; unsupported, ambiguous, or failed safety-check cases still stop.
-- `auth zone-create-check` is a safe auth preflight. It sends an intentionally invalid create-zone payload so Cloudflare can prove or refuse the permission without creating a zone.
+For DNS, check the existing record and the new values. The tool reads the record again after applying. For a Worker deployment, show each version and its share of traffic. The tool checks those values in the deployment Cloudflare returns.
 
-- Read-only by default; refuse when unsure; do not guess.
-- Never log secrets.
+For Pages, check the project’s production branch first. Pass it with `--production-branch` when it differs from `main`. The saved plan records the branch and files, including changes to headers and redirects. Apply checks the actual production branch before uploading. A deployment without saved old state requires `--ack-no-snapshot`. Use `--out` to save the private result.
 
-## How to review risky work
+Save a new plan for a DNS, Worker, Pages, or `operations` write if the saved plan predates these checks. Before onboarding domains in bulk, run `auth zone-create-check` for the intended account.
 
-There are two kinds of safety:
+## Keep private results in files
 
-1. What the tool checks
-- After a write, the tool verifies the API state.
-- When verification is not possible, the tool should label it as best-effort and explain.
+For private reads such as Worker code, KV values, logs, account member details and Email Routing results, use `--apply --out <FILE>`. Put the file under `--project-dir`. The agent should summarize what matters and tell you where it saved the file. Keep the contents out of chat and Git. For Worker tails, keep the secret WebSocket URL in memory and save only the events to the file.
 
-2. What a reviewer checks
-- A reviewer checks that the planned change matches the goal and context.
-- This is best done by a human or a smart agent (we recommend Codex).
+Some reads send a POST request. Browser Run quick actions, KV bulk get and Queue pull use `--apply --out <FILE>` for this reason. Browser Run accepts `--yes` as well, but it is optional. Follow the [command guide](command_reference.md) for commands with additional requirements.
 
-The tool can check gates and outputs, but a person or reviewing agent still needs to check whether the change is the right change.
+## Check the result and keep the receipt
 
-## Plan/apply
+Compare the receipt with the approved plan. Check which settings changed, which checks passed and which results are still uncertain. Where Cloudflare supplies a matching read, the tool can check the result by reading the resource again. A successful API response on its own does not verify the setting you wanted.
 
-The CLI already reserves `--apply/--yes/--plan-out/--receipt-out` flags to match the API Tool Standard v2,
-and it implements plan/apply/verify/receipt workflows for:
-- the standard, human-friendly command families (example: `workers routes ensure`)
-- the Browser Run quick-action family (`browser-run markdown|links|scrape|screenshot|crawl|crawl-result`)
-- the explicit per-operation `operations <area> <op_key>` command surface, which can execute any allowlisted operation derived from the in-repo snapshot extracts.
+Use `--receipt-out <FILE>` for commands that support it. Run records usually live under `.state/runs/` beside the selected env file. Use `runs list` or `runs show` to find the earlier run. Keep these records private.
 
-Named remote-write helpers are currently dry-run-only unless they are local-only or read-like file-output commands. The generic `operations` surface is the supported live-write path when it can save before-state when possible.
-
-### Advanced: per-operation commands (full allowlisted coverage)
-
-`cloudflare-api-tool operations <area> <op_key>` is designed for “full coverage” and agent-led work:
-- For **writes**, it is dry-run by default and emits a deterministic plan.
-- For dangerous writes with a matching read path, that dry-run plan also reads and saves the current live state first in `before_state` / `before_state_path`.
-- For **read-only (GET)** operations, it executes immediately (no `--apply` needed).
-- Writes require `--apply --yes`.
-- Writes that cannot save before-state when possible require explicit no-snapshot approval for live apply.
-- Sensitive outputs (tokens, script code, KV values, temporary upload JWTs, PII-like outputs) are written to a local file via `--out` (never printed).
-- Some operations may return a secret/token only once; these require `--ack-irreversible` and `--out`.
-- Read-like non-GET operations that return sensitive bodies require `--apply` + `--out` but do not require `--yes`; receipts report `changed=false`.
-- Verification is best-effort: when a matching GET exists in the snapshot, the tool attempts a read-back; otherwise it records API response success and documents the limitation in the receipt.
-
-## Plans and receipts
-
-For write-capable commands, treat the dry-run output as a **plan**:
-- what will change
-- what must be true to apply safely (preconditions)
-- how verification will happen
-- where the saved old state lives when the write family can read it safely first
-
-After apply, output a **receipt**:
-- what actually changed
-- what verification ran and whether it passed
-- the same saved old-state reference when it was captured before apply
-
-Plans/receipts must never include secrets.
-
-### Plan/receipt files (recommended v2 flags)
-
-If a command supports writes, it should also support file outputs:
-- `--plan-out <path>`: write the dry-run plan JSON to a file (for review)
-- `--plan-in <path>`: apply from a saved plan file (for high-risk/batch)
-- `--receipt-out <path>`: write the post-apply receipt JSON to a file (for audit)
-
-This makes the workflow repeatable in CI and easier to review.
-
-## Run history (local proof)
-
-Local-write commands (example: saving a default account id) can write a run folder under:
-- `.state/runs/<run_id>/` (gitignored; next to your `--env-file`)
-
-It also appends a simple history row to:
-- `.state/runs/index.jsonl`
-
-These live next to your `--env-file` (usually next to your `.env` file), so you can always find them.
-
-This makes later review easier:
-- You can ask your agent “what happened last time?” and it can use `runs list/show`.
-- You don’t need to manually browse folders.
-
-Keep these local files private:
-- These artifacts must never include secrets.
-- Plans/receipts/audit logs are proof of what happened and how it was verified.
-
-## Risk levels (guideline)
-
-- Low: read-only inventory (GET) and local-only bookkeeping (example: saving a default account id).
-- Medium: single-resource, reversible configuration updates (future phases; example: update a Workers route for a non-production zone).
-- High: production-impacting changes or bulk edits (future phases; example: upload and deploy a new Worker script version, change production routes, or batch-delete KV keys).
-- Irreversible: actions that cannot realistically be undone (future phases; example: delete a Worker, delete a route/zone resource, or purge data in a way that cannot be reconstructed).
-
-High/irreversible actions should require an explicit plan + confirmation (when write commands are added).
-
-Irreversible actions should require `--ack-irreversible`.
-
-## Drift detection (recommended for plan apply)
-
-If you support applying from a saved plan file, refuse if the target changed since the plan was created.
-Examples:
-- `updated_at` / `modified_gmt`
-- a content hash
-
-## Rollback and recovery
-
-- Do not auto-rollback silently.
-- For the broad `operations` write surface, this tool can now save live old-state before many writes, but it still does not provide automatic rollback or restore.
-- If a command emits a `rollback_plan` in its receipt, use it as a **manual** guide for next steps; it is not automatic rollback.
-- If there is no rollback path, label the action as irreversible and ask for manual recovery planning.
+If Cloudflare returns a server error or the reply is lost, the tool keeps a receipt marked `outcome_unknown`. Check the resource or deployment before trying again. The general `operations` commands provide no automatic undo. If a receipt includes `rollback_plan`, it describes a recovery you can review and carry out manually. Ask for approval before changing anything to recover.

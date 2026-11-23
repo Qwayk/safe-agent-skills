@@ -1,15 +1,8 @@
-# Examples (committed, redacted)
+# Example plans, receipts and outputs
 
-These examples are committed to the repo (unlike `.state/`), so they can be used for:
-- quick audits (“does the output shape look right?”)
-- docs/proof packs
-- reviewer alignment (what “safe refusal” looks like)
+Use these examples to see what a plan, a receipt or a refused command looks like. Files ending in `.synthetic.json` use made-up values with the same fields as the tool’s output. Keep real account IDs, tokens and authorization headers out of examples.
 
-Rules:
-- No secrets, no Authorization headers, no real account IDs.
-- Files with `.synthetic.json` are representative examples (shape-accurate, values redacted).
-
-See also:
-- `docs/proof.md`
-- `docs/safety_model.md`
-
+- [Example plan](plan.example.json)
+- [Example receipt](receipt.example.json)
+- [What has been verified](../proof.md)
+- [Approval and file-output rules](../safety_model.md)

@@ -1,13 +1,9 @@
 # Email Routing endpoint coverage (detailed)
 This file is generated from Cloudflare's OpenAPI snapshot extracts.
 - Snapshot (sha256): 73b3b8e9c0bca1cf59f22dd6e212eeaa433ea6b33370e7320af10b435d991824
-- Source CSV: docs/cloudflare-api-docs/extracts/endpoints_all.csv
 - Subset intent: Email Routing (destination addresses, settings, DNS, and routing rules).
 
-Regenerate:
-```bash
-python3 scripts/generate_email_routing_coverage.py
-```
+See the [current API coverage](api_coverage_live_official.md) for the operations available in this tool.
 
 Legend:
 - Implemented: command exists in this tool today

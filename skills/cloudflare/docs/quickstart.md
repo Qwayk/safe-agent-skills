@@ -1,71 +1,44 @@
 # Quickstart
 
-Start with a small Cloudflare read: checking zones, DNS, security, and account access before you touch live traffic.
+Find the Cloudflare zone for your website and see where its DNS records point. If you’re working with an agent, ask it to find your zone and show the records for your website.
 
-Need more ideas? See [What you can do with Cloudflare](use_cases.md). Need setup help? See [Connect your account](onboarding.md).
+## Install the CLI
 
-A good first ask is:
-
-> List my Cloudflare accounts and zones, then tell me which zone looks like the one for this website.
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account or connection before asking for real work.
-3. Run one small read and make sure the result matches the real service.
-4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+Use Python 3.11 or later and run these commands in the Cloudflare tool folder. If `cloudflare-api-tool --version` already works, go straight to setup.
 
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
-pip install -e .
+python -m pip install .
+cloudflare-api-tool --version
 ```
 
-## 2. Check setup
+## Check setup
 
-If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
+Follow the [setup guide](onboarding.md) to create a token that can read your account, zone, and DNS records. Run `cloudflare-api-tool --env-file .env onboarding` to create a private settings file, then fill in `CLOUDFLARE_API_TOKEN`. The same command works after installing outside the checkout. Keep the token, settings file, and private results out of prompts and Git.
 
 ```bash
-cloudflare-api-tool --output json onboarding
+cloudflare-api-tool --env-file .env --output json config check
 ```
+
+## Find your account and zone
+
+Replace `example.com` with your website's domain. If your project uses a different settings file, pass its path on every command.
 
 ```bash
-cloudflare-api-tool --output json config init
-cloudflare-api-tool --output json config check
+cloudflare-api-tool --env-file .env --output json auth check
+cloudflare-api-tool --env-file .env --output json accounts list
+cloudflare-api-tool --env-file .env --output json zones resolve --name example.com
 ```
 
-## 3. Run one small first read
+Check the account name and `zone.name` in the replies. If more than one zone matches, run `zones resolve` again with `--account-id` set to the account you mean to use.
 
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
+## See where the DNS records point
+
+Copy the `zone.id` from the zone reply and replace `ZONE_ID` in this command.
 
 ```bash
-cloudflare-api-tool accounts list [--page N] [--per-page N]
+cloudflare-api-tool --env-file .env --output json dns records list --zone-id ZONE_ID
 ```
 
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
-
-## 4. Stop before anything risky
-
-Ask for a reviewed plan before DNS, cache, firewall, worker, zone, or account changes. A small mistake here can affect a live site.
-
-## What a useful first result includes
-
-A good first result should make these things clear:
-
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
-
-## Where to go next
-
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your account](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+Look at each record's name, type, and content to see where it points. To focus on one name, add `--name www.example.com`. If you want to change a record, review the exact change before approving it. [DNS commands](command_reference.md#dns-records--scans) · [Approvals](safety_model.md)

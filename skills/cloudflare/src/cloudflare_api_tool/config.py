@@ -7,7 +7,9 @@ from pathlib import Path
 DEFAULT_BASE_URL = "https://api.cloudflare.com/client/v4/"
 
 
-def _parse_env_file(path: Path) -> dict[str, str]:
+def _parse_env_file(path: Path, *, required: bool = False) -> dict[str, str]:
+    if required and not path.is_file():
+        raise RuntimeError(f"Explicit env file must exist and be a regular file: {path}")
     if not path.exists():
         return {}
     out: dict[str, str] = {}
@@ -27,8 +29,10 @@ def _parse_env_file(path: Path) -> dict[str, str]:
     return out
 
 
-def _get(env: dict[str, str], key: str) -> str:
-    # OS env overrides env-file.
+def _get(env: dict[str, str], key: str, *, env_file_only: bool = False) -> str:
+    if env_file_only:
+        return (env.get(key) or "").strip()
+    # OS env overrides the default env file when no explicit path was selected.
     return (os.environ.get(key) if key in os.environ else env.get(key) or "").strip()
 
 
@@ -36,8 +40,20 @@ def _get(env: dict[str, str], key: str) -> str:
 class Config:
     base_url: str
     token: str | None
+    account_id: str | None
     connect_timeout_s: float
     read_timeout_s: float
+
+    @property
+    def token_owner(self) -> str:
+        token = str(self.token or "").lower()
+        if token.startswith("cfat_"):
+            return "account"
+        if token.startswith("cfut_"):
+            return "user"
+        if self.account_id:
+            return "account"
+        return "unknown"
 
     @property
     def token_fingerprint(self) -> str:
@@ -54,13 +70,19 @@ class Config:
         return h[:12]
 
 
-def load_config(env_file: str | None) -> Config:
-    env = _parse_env_file(Path(env_file or ".env"))
+def load_config(
+    env_file: str | None,
+    *,
+    require_env_file: bool = False,
+    env_file_only: bool = False,
+) -> Config:
+    env = _parse_env_file(Path(env_file or ".env"), required=require_env_file)
 
-    base_url = (_get(env, "CLOUDFLARE_API_BASE_URL") or DEFAULT_BASE_URL).rstrip("/")
-    token = _get(env, "CLOUDFLARE_API_TOKEN") or None
+    base_url = (_get(env, "CLOUDFLARE_API_BASE_URL", env_file_only=env_file_only) or DEFAULT_BASE_URL).rstrip("/")
+    token = _get(env, "CLOUDFLARE_API_TOKEN", env_file_only=env_file_only) or None
+    account_id = _get(env, "CLOUDFLARE_ACCOUNT_ID", env_file_only=env_file_only) or None
 
-    timeout_s_raw = _get(env, "CLOUDFLARE_TIMEOUT_S") or "30"
+    timeout_s_raw = _get(env, "CLOUDFLARE_TIMEOUT_S", env_file_only=env_file_only) or "30"
     try:
         timeout_s = float(timeout_s_raw)
     except Exception:
@@ -71,8 +93,8 @@ def load_config(env_file: str | None) -> Config:
     if timeout_s <= 0:
         raise RuntimeError("CLOUDFLARE_TIMEOUT_S must be > 0")
 
-    connect_raw = _get(env, "CLOUDFLARE_CONNECT_TIMEOUT_S") or ""
-    read_raw = _get(env, "CLOUDFLARE_READ_TIMEOUT_S") or ""
+    connect_raw = _get(env, "CLOUDFLARE_CONNECT_TIMEOUT_S", env_file_only=env_file_only) or ""
+    read_raw = _get(env, "CLOUDFLARE_READ_TIMEOUT_S", env_file_only=env_file_only) or ""
 
     def _maybe_float(s: str) -> float | None:
         s = str(s or "").strip()
@@ -91,4 +113,10 @@ def load_config(env_file: str | None) -> Config:
     if read_timeout_s <= 0:
         raise RuntimeError("CLOUDFLARE_READ_TIMEOUT_S must be > 0")
 
-    return Config(base_url=base_url, token=token, connect_timeout_s=connect_timeout_s, read_timeout_s=read_timeout_s)
+    return Config(
+        base_url=base_url,
+        token=token,
+        account_id=account_id,
+        connect_timeout_s=connect_timeout_s,
+        read_timeout_s=read_timeout_s,
+    )

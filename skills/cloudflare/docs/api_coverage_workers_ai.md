@@ -1,12 +1,8 @@
 # Workers AI (model runs + discovery + finetunes) (Phase 14) endpoint coverage (detailed)
 This file is generated from Cloudflare's OpenAPI snapshot extracts.
 - Snapshot (sha256): 73b3b8e9c0bca1cf59f22dd6e212eeaa433ea6b33370e7320af10b435d991824
-- Source CSV: docs/cloudflare-api-docs/extracts/endpoints_workers_ai.csv
 
-Regenerate:
-```bash
-python3 scripts/generate_workers_ai_coverage.py
-```
+See the [current API coverage](api_coverage_live_official.md) for the operations available in this tool.
 
 Legend:
 - Implemented: runnable via explicit per-operation `cloudflare-api-tool operations <area> <op_key>` commands (safe-by-default).

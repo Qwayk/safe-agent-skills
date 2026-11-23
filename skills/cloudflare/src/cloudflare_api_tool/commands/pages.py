@@ -8,8 +8,8 @@ from typing import Any
 
 from blake3 import blake3
 
-from ..errors import ToolError
-from ..errors import ValidationError
+from ..errors import SafetyError, ToolError, ValidationError
+from ..plan_and_receipt import resolve_safe_out_path, sha256_of_bytes
 from ._storage_db_common import (
     base_plan,
     base_receipt,
@@ -58,8 +58,7 @@ def _max_file_count_from_jwt(token: str) -> int:
     return MAX_ASSET_COUNT_DEFAULT
 
 
-def _asset_hash(path: Path) -> str:
-    raw = path.read_bytes()
+def _asset_hash(path: Path, raw: bytes) -> str:
     encoded = base64.b64encode(raw).decode("ascii")
     ext = path.suffix[1:]
     return blake3((encoded + ext).encode("utf-8")).hexdigest()[:32]
@@ -74,7 +73,7 @@ def _should_skip_asset(relative_path: Path) -> bool:
     return parts[-1] in IGNORE_FILE_NAMES
 
 
-def _collect_assets(source_dir: Path, *, file_count_limit: int) -> list[dict[str, Any]]:
+def _collect_assets(source_dir: Path) -> list[dict[str, Any]]:
     if not source_dir.exists() or not source_dir.is_dir():
         raise ValidationError(f"Source directory not found: {source_dir}")
 
@@ -94,14 +93,10 @@ def _collect_assets(source_dir: Path, *, file_count_limit: int) -> list[dict[str
                 "rel_path": rel.as_posix(),
                 "size_bytes": size_bytes,
                 "content_type": _guess_content_type(path),
-                "hash": _asset_hash(path),
+                "hash": _asset_hash(path, path.read_bytes()),
             }
         )
 
-    if len(assets) > int(file_count_limit):
-        raise ValidationError(
-            f"Pages only supports up to {file_count_limit} files in a deployment for this upload token."
-        )
     return assets
 
 
@@ -195,6 +190,16 @@ def cmd_pages_deploy(args, ctx) -> int:
         "sensitivity": "sensitive_write_result",
         "out": out_arg,
     }
+    assets = _collect_assets(source_dir)
+    headers_text = _optional_text_file(source_dir, "_headers")
+    redirects_text = _optional_text_file(source_dir, "_redirects")
+    manifest = {f"/{asset['rel_path']}": asset["hash"] for asset in assets}
+    plan["connection"] = ctx["env_fingerprint"]
+    plan["approval_request"] = {
+        "files": manifest,
+        "headers_sha256": sha256_of_bytes(headers_text.encode("utf-8")) if headers_text is not None else None,
+        "redirects_sha256": sha256_of_bytes(redirects_text.encode("utf-8")) if redirects_text is not None else None,
+    }
     plan["proposed_changes"] = [
         {
             "resource": "pages_project",
@@ -229,8 +234,14 @@ def cmd_pages_deploy(args, ctx) -> int:
     require_apply(ctx)
     require_yes(ctx)
     verify_and_require_plan(ctx, plan=plan)
+    resolve_safe_out_path(project_dir=Path(ctx["project_dir"]), out_path=out_arg, allow_overwrite=bool(getattr(args, "overwrite", False)))
 
     project_info, project_exists = _maybe_get_project_info(ctx, project_path)
+    actual_branch = str((project_info or {}).get("production_branch") or "").strip()
+    if project_exists and not actual_branch:
+        raise SafetyError("Cloudflare did not confirm the Pages production branch. Check the project before deploying.")
+    if actual_branch and actual_branch != production_branch and (branch or ctx.get("plan_in")):
+        raise SafetyError("The Pages production branch differs from the plan. Check the project and review a new plan with the correct production branch.")
     project_created = False
     if not project_exists:
         created = ctx["cf"].request_json(
@@ -256,10 +267,8 @@ def cmd_pages_deploy(args, ctx) -> int:
         raise ValidationError("Cloudflare Pages upload-token response did not include a JWT.")
 
     file_count_limit = _max_file_count_from_jwt(upload_jwt)
-    assets = _collect_assets(source_dir, file_count_limit=file_count_limit)
-    headers_text = _optional_text_file(source_dir, "_headers")
-    redirects_text = _optional_text_file(source_dir, "_redirects")
-    manifest = {f"/{asset['rel_path']}": asset["hash"] for asset in assets}
+    if len(assets) > file_count_limit:
+        raise ValidationError(f"This upload token allows up to {file_count_limit} files per Pages deployment.")
     all_hashes = [str(asset["hash"]) for asset in assets]
 
     missing_hashes: list[str]
@@ -281,7 +290,10 @@ def cmd_pages_deploy(args, ctx) -> int:
     for bucket in _bucket_assets(missing_assets):
         payload = []
         for asset in bucket:
-            raw = Path(asset["abs_path"]).read_bytes()
+            asset_path = Path(asset["abs_path"])
+            raw = asset_path.read_bytes()
+            if _asset_hash(asset_path, raw) != asset["hash"]:
+                raise SafetyError(f"A Pages file changed during upload: {asset['rel_path']}. Review a fresh plan.")
             payload.append(
                 {
                     "key": asset["hash"],
@@ -339,7 +351,7 @@ def cmd_pages_deploy(args, ctx) -> int:
     created_environment = str(deployment_result.get("environment") or "").strip() or None
 
     verification: dict[str, Any] = {
-        "ok": bool(deployment_id),
+        "ok": False,
         "method": "response_contains_deployment_id",
         "details": {
             "out_file": wrote["out_rel"],
@@ -347,16 +359,22 @@ def cmd_pages_deploy(args, ctx) -> int:
         },
     }
     if deployment_id:
-        read_back = ctx["cf"].get_json(f"{project_path}/deployments/{deployment_id}")
-        verify_result = read_back.result if isinstance(read_back.result, dict) else {}
+        try:
+            read_back = ctx["cf"].get_json(f"{project_path}/deployments/{deployment_id}")
+            verify_result = read_back.result if isinstance(read_back.result, dict) else {}
+        except ToolError:
+            verify_result = {}
+        stage = verify_result.get("latest_stage")
         verification = {
-            "ok": str(verify_result.get("id") or "").strip() == deployment_id,
+            "ok": str(verify_result.get("id") or "").strip() == deployment_id
+            and verify_result.get("environment") == target_environment
+            and isinstance(stage, dict) and stage.get("status") == "success",
             "method": "read_back_get_pages_deployment",
             "details": {
                 "out_file": wrote["out_rel"],
                 "deployment_id": deployment_id,
                 "environment": verify_result.get("environment"),
-                "latest_stage": ((verify_result.get("latest_stage") or {}) if isinstance(verify_result.get("latest_stage"), dict) else {}),
+                "latest_stage": stage if isinstance(stage, dict) else {},
             },
         }
 

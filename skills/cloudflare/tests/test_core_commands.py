@@ -43,6 +43,209 @@ def _write_env(root: Path, *, token: str) -> Path:
 
 
 class TestCoreCommands(unittest.TestCase):
+    def test_auth_check_uses_accounts_for_account_owned_token(self) -> None:
+        calls: list[dict[str, Any]] = []
+
+        def fake_request(self, method, url, **kwargs):  # noqa: ANN001
+            calls.append(
+                {
+                    "method": method,
+                    "url": url,
+                    "params": kwargs.get("params"),
+                    "headers": kwargs.get("headers") or {},
+                }
+            )
+            return _DummyResponse(
+                status=200,
+                url=url,
+                obj={
+                    "success": True,
+                    "errors": [],
+                    "messages": [],
+                    "result": [{"id": "account-from-file", "name": "Example"}],
+                    "result_info": {},
+                },
+            )
+
+        with tempfile.TemporaryDirectory() as d, patch("requests.Session.request", new=fake_request):
+            env_path = _write_env(Path(d), token="cfat_account_token")
+            with env_path.open("a", encoding="utf-8") as f:
+                f.write("CLOUDFLARE_ACCOUNT_ID=account-from-file\n")
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                rc = main(["--env-file", str(env_path), "auth", "check"])
+
+        self.assertEqual(rc, 0)
+        payload = json.loads(buf.getvalue())
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["token_owner"], "account")
+        self.assertEqual(payload["verification"], "accounts_list")
+        self.assertTrue(payload["result"]["configured_account_match"])
+        self.assertEqual([call["url"] for call in calls], ["http://example.invalid/client/v4/accounts"])
+
+    def test_auth_check_uses_account_id_for_unprefixed_account_token(self) -> None:
+        calls: list[str] = []
+
+        def fake_request(self, method, url, **kwargs):  # noqa: ANN001
+            _ = (self, method, kwargs)
+            calls.append(str(url))
+            return _DummyResponse(
+                status=200,
+                url=url,
+                obj={
+                    "success": True,
+                    "errors": [],
+                    "messages": [],
+                    "result": [{"id": "legacy-account", "name": "Example"}],
+                    "result_info": {},
+                },
+            )
+
+        with tempfile.TemporaryDirectory() as d, patch("requests.Session.request", new=fake_request):
+            env_path = _write_env(Path(d), token="legacy_account_token")
+            with env_path.open("a", encoding="utf-8") as f:
+                f.write("CLOUDFLARE_ACCOUNT_ID=legacy-account\n")
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                rc = main(["--env-file", str(env_path), "auth", "check"])
+
+        self.assertEqual(rc, 0)
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(payload["token_owner"], "account")
+        self.assertEqual(payload["verification"], "accounts_list")
+        self.assertTrue(payload["result"]["configured_account_match"])
+        self.assertEqual(calls, ["http://example.invalid/client/v4/accounts"])
+
+    def test_auth_check_fails_for_non_active_user_token(self) -> None:
+        def fake_request(self, method, url, **kwargs):  # noqa: ANN001
+            _ = (self, method, kwargs)
+            return _DummyResponse(
+                status=200,
+                url=url,
+                obj={
+                    "success": True,
+                    "errors": [],
+                    "messages": [],
+                    "result": {"status": "expired"},
+                },
+            )
+
+        with tempfile.TemporaryDirectory() as d, patch("requests.Session.request", new=fake_request):
+            env_path = _write_env(Path(d), token="cfut_expired_token")
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                rc = main(["--env-file", str(env_path), "auth", "check"])
+
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(rc, 1)
+        self.assertFalse(payload["ok"])
+        self.assertEqual(payload["result"]["status"], "expired")
+
+    def test_auth_check_fails_for_configured_account_mismatch(self) -> None:
+        def fake_request(self, method, url, **kwargs):  # noqa: ANN001
+            _ = (self, method, kwargs)
+            return _DummyResponse(
+                status=200,
+                url=url,
+                obj={
+                    "success": True,
+                    "errors": [],
+                    "messages": [],
+                    "result": [{"id": "different-account", "name": "Different"}],
+                    "result_info": {},
+                },
+            )
+
+        with tempfile.TemporaryDirectory() as d, patch("requests.Session.request", new=fake_request):
+            env_path = _write_env(Path(d), token="cfat_account_token")
+            with env_path.open("a", encoding="utf-8") as f:
+                f.write("CLOUDFLARE_ACCOUNT_ID=expected-account\n")
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                rc = main(["--env-file", str(env_path), "auth", "check"])
+
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(rc, 1)
+        self.assertFalse(payload["ok"])
+        self.assertFalse(payload["result"]["configured_account_match"])
+
+    def test_explicit_env_file_overrides_process_environment_token(self) -> None:
+        authorization_headers: list[str] = []
+
+        def fake_request(self, method, url, **kwargs):  # noqa: ANN001
+            _ = (self, method, url)
+            authorization_headers.append(str((kwargs.get("headers") or {}).get("authorization") or ""))
+            return _DummyResponse(
+                status=200,
+                url=url,
+                obj={"success": True, "errors": [], "messages": [], "result": {"status": "active"}},
+            )
+
+        process_env = {"CLOUDFLARE_API_TOKEN": "cfut_process_token"}
+        with tempfile.TemporaryDirectory() as d, patch("requests.Session.request", new=fake_request):
+            env_path = _write_env(Path(d), token="cfut_file_token")
+            buf = io.StringIO()
+            with patch.dict("os.environ", process_env):
+                with redirect_stdout(buf):
+                    rc = main(["--env-file", str(env_path), "auth", "check"])
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(authorization_headers, ["Bearer cfut_file_token"])
+
+    def test_explicit_missing_env_file_stops_before_http(self) -> None:
+        calls: list[str] = []
+
+        def fake_request(self, method, url, **kwargs):  # noqa: ANN001
+            _ = (self, method, kwargs)
+            calls.append(str(url))
+            return _DummyResponse(
+                status=200,
+                url=url,
+                obj={"success": True, "errors": [], "messages": [], "result": {"status": "active"}},
+            )
+
+        with tempfile.TemporaryDirectory() as d, patch("requests.Session.request", new=fake_request):
+            missing_path = Path(d) / "missing.env"
+            buf = io.StringIO()
+            with patch.dict("os.environ", {"CLOUDFLARE_API_TOKEN": "cfut_process_token"}):
+                with redirect_stdout(buf):
+                    rc = main(["--env-file", str(missing_path), "auth", "check"])
+
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(rc, 1)
+        self.assertFalse(payload["ok"])
+        self.assertIn("regular file", payload["error"])
+        self.assertEqual(calls, [])
+
+    def test_auth_probe_skips_user_verify_for_account_owned_token(self) -> None:
+        calls: list[str] = []
+
+        def fake_request(self, method, url, **kwargs):  # noqa: ANN001
+            _ = (self, method, kwargs)
+            calls.append(str(url))
+            if url.endswith("/accounts"):
+                result: Any = [{"id": "a1"}]
+            else:
+                result = []
+            return _DummyResponse(
+                status=200,
+                url=url,
+                obj={"success": True, "errors": [], "messages": [], "result": result, "result_info": {}},
+            )
+
+        with tempfile.TemporaryDirectory() as d, patch("requests.Session.request", new=fake_request):
+            env_path = _write_env(Path(d), token="cfat_account_token")
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                rc = main(["--env-file", str(env_path), "--output", "json", "auth", "probe", "--account-id", "a1"])
+
+        self.assertEqual(rc, 0)
+        payload = json.loads(buf.getvalue())
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["token_owner"], "account")
+        self.assertTrue(payload["checks"]["token_verify"]["skipped"])
+        self.assertNotIn("http://example.invalid/client/v4/user/tokens/verify", calls)
+
     def test_auth_check_calls_verify_endpoint(self) -> None:
         calls: list[dict[str, Any]] = []
 

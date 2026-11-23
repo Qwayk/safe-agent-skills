@@ -41,6 +41,39 @@ def _ok(obj: Any) -> dict[str, Any]:
 
 
 class TestAuthDoctorCommand(unittest.TestCase):
+    def test_auth_doctor_skips_user_verify_for_account_owned_token(self) -> None:
+        called: list[str] = []
+
+        def fake_request(self, method, url, **kwargs):  # noqa: ANN001
+            _ = (self, kwargs)
+            called.append(str(url))
+            if method == "GET" and str(url).endswith("/accounts?page=1&per_page=1"):
+                return _DummyResponse(status=200, url=url, obj=_ok([{"id": "acc1"}]))
+            if method == "GET" and str(url).endswith("/accounts/acc1/workers/scripts"):
+                return _DummyResponse(status=200, url=url, obj=_ok([]))
+            if method == "GET" and str(url).endswith("/accounts/acc1/cfd_tunnel"):
+                return _DummyResponse(status=200, url=url, obj=_ok([]))
+            if method == "GET" and str(url).endswith("/accounts/acc1/access/apps"):
+                return _DummyResponse(status=200, url=url, obj=_ok([]))
+            raise AssertionError(f"unexpected call: {method} {url}")
+
+        with tempfile.TemporaryDirectory() as d, patch("requests.Session.request", new=fake_request):
+            env_path = _write_env(Path(d))
+            env_path.write_text(
+                env_path.read_text(encoding="utf-8").replace("CLOUDFLARE_API_TOKEN=T", "CLOUDFLARE_API_TOKEN=cfat_account_token"),
+                encoding="utf-8",
+            )
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                rc = main(["--env-file", str(env_path), "auth", "doctor", "--account-id", "acc1"])
+
+        self.assertEqual(rc, 0)
+        payload = json.loads(buf.getvalue())
+        self.assertEqual(payload["token_owner"], "account")
+        token_result = next(result for result in payload["results"] if result["name"] == "token_verify")
+        self.assertTrue(token_result["skipped"])
+        self.assertNotIn("http://example.invalid/client/v4/user/tokens/verify", called)
+
     def test_auth_doctor_calls_expected_endpoints(self) -> None:
         called: list[str] = []
 

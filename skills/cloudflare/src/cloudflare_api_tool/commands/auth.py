@@ -27,9 +27,14 @@ def _run_check(fn, *, error_hint: str | None = None) -> dict[str, Any]:
 
 def _resolve_account_id(args, ctx) -> tuple[str | None, str | None]:
     requested_account_id = str(getattr(args, "account_id", "") or "").strip() or None
+    configured_account_id = str(getattr(ctx.get("cfg"), "account_id", "") or "").strip() or None
     default_account_id = get_default_account_id(ctx["env_file"], fingerprint=ctx.get("env_fingerprint")) or None
-    account_id = requested_account_id or (default_account_id.strip() if default_account_id else None)
-    account_id_source = "arg" if requested_account_id else ("default" if default_account_id else None)
+    account_id = requested_account_id or configured_account_id or (default_account_id.strip() if default_account_id else None)
+    account_id_source = (
+        "arg"
+        if requested_account_id
+        else ("env" if configured_account_id else ("default" if default_account_id else None))
+    )
     if account_id:
         return account_id, account_id_source
     try:
@@ -149,11 +154,43 @@ def cmd_auth_check(args, ctx) -> int:
     if not cfg.token:
         raise ValidationError("Missing CLOUDFLARE_API_TOKEN")
 
-    res = ctx["cf"].get_json("/user/tokens/verify")
-    out = {"ok": True, "command": "auth.check", "base_url": cfg.base_url, "token_present": True, "result": res.result}
+    token_owner = str(getattr(cfg, "token_owner", "unknown") or "unknown")
+    if token_owner == "account":
+        res = ctx["cf"].get_json("/accounts", params={"page": 1, "per_page": 50})
+        accounts = res.result if isinstance(res.result, list) else []
+        configured_account_id = str(getattr(cfg, "account_id", "") or "").strip() or None
+        configured_account_match = None
+        if configured_account_id:
+            configured_account_match = any(
+                isinstance(item, dict) and str(item.get("id") or "") == configured_account_id
+                for item in accounts
+            )
+        result = {
+            "account_count": len(accounts),
+            "configured_account_present": bool(configured_account_id),
+            "configured_account_match": configured_account_match,
+        }
+        verification = "accounts_list"
+        credential_ok = bool(accounts) and configured_account_match is not False
+    else:
+        res = ctx["cf"].get_json("/user/tokens/verify")
+        result = res.result
+        verification = "user_token_verify"
+        status = str(result.get("status") or "").strip().lower() if isinstance(result, dict) else ""
+        credential_ok = status == "active"
+
+    out = {
+        "ok": credential_ok,
+        "command": "auth.check",
+        "base_url": cfg.base_url,
+        "token_present": True,
+        "token_owner": token_owner,
+        "verification": verification,
+        "result": result,
+    }
     ctx["audit"].write("auth.check", out)
     ctx["out"].emit(out)
-    return 0
+    return 0 if credential_ok else 1
 
 
 def cmd_auth_explain(args, ctx) -> int:
@@ -205,6 +242,7 @@ def cmd_auth_probe(args, ctx) -> int:
         raise ValidationError("Missing CLOUDFLARE_API_TOKEN")
 
     account_id, _account_id_source = _resolve_account_id(args, ctx)
+    token_owner = str(getattr(cfg, "token_owner", "unknown") or "unknown")
 
     checks: dict[str, Any] = {}
 
@@ -214,7 +252,14 @@ def cmd_auth_probe(args, ctx) -> int:
             return {"status": res.result.get("status"), "id": res.result.get("id")}
         return res.result
 
-    checks["token_verify"] = _run_check(token_verify)
+    if token_owner == "account":
+        checks["token_verify"] = {
+            "ok": True,
+            "skipped": True,
+            "reason": "Account-owned tokens are verified with account-scoped reads, not /user/tokens/verify.",
+        }
+    else:
+        checks["token_verify"] = _run_check(token_verify)
 
     def accounts_list():
         res = ctx["cf"].get_json("/accounts", params={"page": 1, "per_page": 50})
@@ -263,6 +308,7 @@ def cmd_auth_probe(args, ctx) -> int:
         "ok": True,
         "command": "auth.probe",
         "base_url": cfg.base_url,
+        "token_owner": token_owner,
         "account_id": account_id,
         "checks": checks,
     }
@@ -352,9 +398,8 @@ def cmd_auth_doctor(args, ctx) -> int:
     if not cfg.token:
         raise ValidationError("Missing CLOUDFLARE_API_TOKEN")
 
-    requested_account_id = str(getattr(args, "account_id", "") or "").strip() or None
-    default_account_id = get_default_account_id(ctx["env_file"], fingerprint=ctx.get("env_fingerprint")) or None
-    account_id, auto_account_source = _resolve_account_id(args, ctx)
+    token_owner = str(getattr(cfg, "token_owner", "unknown") or "unknown")
+    account_id, account_id_source = _resolve_account_id(args, ctx)
 
     def make_client() -> CloudflareClient:
         return CloudflareClient(
@@ -369,9 +414,23 @@ def cmd_auth_doctor(args, ctx) -> int:
         )
 
     probes: list[dict[str, Any]] = [
-        {"name": "token_verify", "method": "GET", "path": "/user/tokens/verify", "params": None, "cacheable": False},
         {"name": "accounts_list", "method": "GET", "path": "/accounts", "params": {"page": 1, "per_page": 1}, "cacheable": False},
     ]
+    skipped_results: list[dict[str, Any]] = []
+    if token_owner == "account":
+        skipped_results.append(
+            {
+                "name": "token_verify",
+                "ok": True,
+                "skipped": True,
+                "reason": "Account-owned tokens are verified with account-scoped reads, not /user/tokens/verify.",
+            }
+        )
+    else:
+        probes.insert(
+            0,
+            {"name": "token_verify", "method": "GET", "path": "/user/tokens/verify", "params": None, "cacheable": False},
+        )
     if account_id:
         probes.extend(
             [
@@ -407,9 +466,9 @@ def cmd_auth_doctor(args, ctx) -> int:
             elapsed_ms = int((time.time() - start) * 1000)
             return {"name": name, "ok": False, "error": str(e), "duration_ms": elapsed_ms}
 
-    results: list[dict[str, Any]] = []
+    results: list[dict[str, Any]] = list(skipped_results)
     if parallel == 1 or len(probes) <= 1:
-        results = [run_probe(p) for p in probes]
+        results.extend(run_probe(p) for p in probes)
     else:
         with concurrent.futures.ThreadPoolExecutor(max_workers=parallel) as ex:
             futs = [ex.submit(run_probe, p) for p in probes]
@@ -441,8 +500,9 @@ def cmd_auth_doctor(args, ctx) -> int:
         "ok": True,
         "command": "auth.doctor",
         "base_url": cfg.base_url,
+        "token_owner": token_owner,
         "account_id": account_id,
-        "account_id_source": ("arg" if requested_account_id else ("default" if default_account_id else auto_account_source)),
+        "account_id_source": account_id_source,
         "parallel": parallel,
         "connect_timeout_s": float(ctx.get("connect_timeout_s") or 30.0),
         "read_timeout_s": read_timeout_s,

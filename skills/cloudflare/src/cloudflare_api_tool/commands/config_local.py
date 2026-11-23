@@ -2,10 +2,32 @@ from __future__ import annotations
 
 import os
 import stat
+import tempfile
 from pathlib import Path
 
 from ..config import load_config
 from ..errors import ValidationError
+
+
+def write_settings_file(env_file: Path, example: Path, *, overwrite: bool = False) -> None:
+    template = example.read_text(encoding="utf-8") if example.is_file() else (
+        "# Paste your Cloudflare API token below.\n"
+        "CLOUDFLARE_API_TOKEN=\n"
+        "# CLOUDFLARE_ACCOUNT_ID=\n"
+    )
+    env_file.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=env_file.parent, delete=False) as draft:
+        temporary = Path(draft.name)
+        draft.write(template)
+    try:
+        if overwrite:
+            temporary.replace(env_file)
+        else:
+            os.link(temporary, env_file)
+    except FileExistsError:
+        raise ValidationError(f"Settings file already exists: {env_file}") from None
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def _is_git_repo(path: Path) -> bool:
@@ -62,6 +84,8 @@ def cmd_config_init(args, ctx) -> int:
     if not example_str:
         example = env_file.parent / ".env.example"
 
+    if env_file.exists() and not env_file.is_file():
+        raise ValidationError(f"Settings must be a regular file: {env_file}")
     if env_file.exists() and not force:
         _chmod_0600_best_effort(env_file)
         ctx["out"].emit(
@@ -75,19 +99,17 @@ def cmd_config_init(args, ctx) -> int:
         )
         return 0
 
-    if not example.exists():
+    if example_str and not example.is_file():
         raise ValidationError(f"Missing env example file: {example}")
 
-    env_file.parent.mkdir(parents=True, exist_ok=True)
-    env_file.write_text(example.read_text(encoding="utf-8"), encoding="utf-8")
-    _chmod_0600_best_effort(env_file)
+    write_settings_file(env_file, example, overwrite=force)
     ctx["out"].emit(
         {
             "ok": True,
             "command": "config.init",
             "changed": True,
             "env_file": str(env_file),
-            "seeded_from": str(example),
+            "seeded_from": str(example) if example.is_file() else None,
             "note": "Wrote placeholders only. Paste your Cloudflare API token into the env file locally (never into chat).",
         }
     )
@@ -138,7 +160,7 @@ def cmd_config_check(args, ctx) -> int:
 
     # Parse config (does not call the API)
     try:
-        cfg = load_config(str(env_file))
+        cfg = load_config(str(env_file), require_env_file=True, env_file_only=bool(ctx.get("env_file_explicit")))
         checks.append({"name": "env_parse", "ok": True})
     except Exception as e:  # noqa: BLE001
         ctx["out"].emit(

@@ -69,6 +69,10 @@ def require_plan_matches(*, expected_plan: dict, provided_plan: dict) -> None:
     if expected_changes != provided_changes:
         raise SafetyError("Refusing to apply: plan proposed_changes do not match current state (drift or wrong plan file).")
 
+    for key, label in (("connection", "Cloudflare connection"), ("approval_request", "request"), ("approved_state", "current resource")):
+        if key in expected_plan and expected_plan[key] != provided_plan.get(key):
+            raise SafetyError(f"The {label} differs from the saved plan. Save and review a new plan before applying.")
+
 
 @dataclass(frozen=True)
 class SafeOutPath:

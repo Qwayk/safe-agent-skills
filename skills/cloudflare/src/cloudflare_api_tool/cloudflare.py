@@ -130,6 +130,8 @@ class CloudflareClient:
             files=files,
             retries=int(retries),
         )
+        if resp.status >= 400 and not resp.body:
+            raise ToolError(f"Cloudflare API error for {method} {path}: HTTP {resp.status}")
         if resp.status == 204 or not resp.body:
             return CloudflareResult(
                 result=None,

@@ -1,12 +1,8 @@
 # Accounts (writes) (delta) endpoint coverage (detailed)
 This file is generated from Cloudflare's OpenAPI snapshot extracts.
 - Snapshot (sha256): 0dbf95a292b802ba95622a31fe82e0a069c53c0cddeaf9d3ccbc9d2ac9918aff
-- Source CSV: docs/cloudflare-api-docs/extracts/endpoints_all.csv
 
-Regenerate:
-```bash
-python3 scripts/generate_accounts_writes_coverage.py
-```
+See the [current API coverage](api_coverage_live_official.md) for the operations available in this tool.
 
 Legend:
 - Implemented: runnable via explicit per-operation `cloudflare-api-tool operations accounts_writes <op_key>` commands (safe-by-default).

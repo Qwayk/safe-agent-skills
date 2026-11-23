@@ -1,45 +1,30 @@
 from __future__ import annotations
 
+import shlex
+import tomllib
 import unittest
 from pathlib import Path
 
 
-class TestReadmePublicContract(unittest.TestCase):
-    def test_public_readme_opening_stays_user_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
+ROOT = Path(__file__).resolve().parents[1]
 
-        self.assertTrue(text.startswith("# Cloudflare\n"))
-        self.assertNotIn("# cloudflare-api-tool", text)
-        self.assertIn("**Capability:** Reads + careful changes", text)
 
-        required_sections = [
-            "## Start here first",
-            "## What this skill helps with",
-            "## Install and first run",
-            "## How this skill stays safe",
-            "## What happens before live changes",
-            "## Helpful docs",
-        ]
-        for section in required_sections:
-            self.assertIn(section, text)
+class TestPublishedInstall(unittest.TestCase):
+    def test_readme_installs_the_published_skill_name(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        command, = (shlex.split(line) for line in readme.splitlines() if line.startswith("npx skills add "))
+        skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+        _, front_matter, _ = skill.split("---", 2)
+        name, = (line.partition(":")[2].strip() for line in front_matter.splitlines() if line.startswith("name:"))
+        self.assertEqual(name, "cloudflare-api-safe-cli")
+        self.assertEqual(command[:4], ["npx", "skills", "add", f"Qwayk/safe-agent-skills@{name}"])
 
-    def test_start_here_section_stays_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("[What you can do with Cloudflare](docs/use_cases.md)", text)
-        self.assertIn("[Connect your Cloudflare account](docs/onboarding.md)", text)
-        self.assertIn("[How this skill stays safe](docs/safety_model.md)", text)
-        self.assertIn("[Quickstart](docs/quickstart.md)", text)
-        self.assertIn("[Command guide](docs/command_reference.md)", text)
-
-    def test_helpful_docs_stay_human_facing(self) -> None:
-        root = Path(__file__).resolve().parents[1]
-        text = (root / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("[Browse all Cloudflare docs](docs/README.md)", text)
-        self.assertIn("[Proof and verification](docs/proof.md)", text)
-        self.assertIn("[Live official coverage ledger](docs/api_coverage_live_official.md)", text)
-        self.assertNotIn("- `docs/onboarding.md`", text)
-        self.assertNotIn("- `docs/proof.md`", text)
+    def test_quickstart_uses_the_installed_cli_and_ships_the_command_list(self) -> None:
+        quickstart = (ROOT / "docs/quickstart.md").read_text(encoding="utf-8")
+        command, = (shlex.split(line) for line in quickstart.splitlines() if line.startswith("cloudflare-api-tool --version"))
+        project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+        self.assertEqual(project["project"]["scripts"][command[0]], "cloudflare_api_tool.__main__:main")
+        package = project["tool"]["setuptools"]["package-data"]["cloudflare_api_tool"]
+        inventory = "_data/live_official_api_inventory.json"
+        self.assertIn(inventory, package)
+        self.assertTrue((ROOT / "src/cloudflare_api_tool" / inventory).is_file())

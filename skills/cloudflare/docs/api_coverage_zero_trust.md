@@ -1,13 +1,9 @@
 # Zero Trust endpoint coverage (detailed)
 This file is generated from Cloudflare's OpenAPI snapshot extracts.
 - Generated (UTC): 2026-02-18T07:22:31+00:00
-- Source CSV: docs/cloudflare-api-docs/extracts/endpoints_zero_trust.csv
 - Subset intent: match Cloudflare API Zero Trust resources (includes DLP; excludes AI Gateway).
 
-Regenerate:
-```bash
-python3 scripts/generate_zero_trust_coverage.py
-```
+See the [current API coverage](api_coverage_live_official.md) for the operations available in this tool.
 
 Legend:
 - Implemented: command exists in this tool today

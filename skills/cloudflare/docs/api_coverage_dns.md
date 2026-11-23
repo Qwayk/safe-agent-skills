@@ -1,13 +1,9 @@
 # DNS endpoint coverage (detailed)
 This file is generated from Cloudflare's OpenAPI snapshot extracts.
 - Generated (UTC): 2026-02-18T07:22:30+00:00
-- Source CSV: docs/cloudflare-api-docs/extracts/endpoints_dns.csv
 - Subset intent: match Cloudflare API DNS resources (records/settings/dnssec/secondary DNS; excludes DNS Firewall/Radar/Passive DNS intel/email routing DNS).
 
-Regenerate:
-```bash
-python3 scripts/generate_dns_coverage.py
-```
+See the [current API coverage](api_coverage_live_official.md) for the operations available in this tool.
 
 Legend:
 - Implemented: command exists in this tool today

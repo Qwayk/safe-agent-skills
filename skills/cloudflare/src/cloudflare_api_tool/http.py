@@ -9,7 +9,7 @@ from typing import Any
 
 import requests
 
-from .errors import ToolError
+from .errors import RequestOutcomeUnknown, ToolError
 
 
 @dataclasses.dataclass(frozen=True)
@@ -70,9 +70,10 @@ class HttpClient:
     ) -> HttpResponse:
         attempt = 0
         display_url = self._format_url(url, params)
+        read_only = method.upper() in {"GET", "HEAD"}
 
         def _should_retry_exception(e: requests.RequestException) -> bool:
-            if method.upper() != "GET":
+            if not read_only:
                 return False
             return isinstance(
                 e,
@@ -132,13 +133,20 @@ class HttpClient:
                     sleep_s = min(2**attempt, 10)
                     time.sleep(max(0.0, min(float(sleep_s), 60.0)))
                     continue
+                if not read_only:
+                    raise RequestOutcomeUnknown(
+                        f"No usable reply to {method} ({type(e).__name__}). Check Cloudflare before retrying."
+                    ) from None
                 raise ToolError(f"Request failed for {method} {display_url}: {type(e).__name__}: {e}") from None
             ms = int((time.time() - start) * 1000)
             done.set()
             if self._verbose:
                 print(f"[http] {method} {resp.url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
-            if resp.status_code >= 400 and attempt <= retries and resp.status_code in retry_on:
+            if not read_only and resp.status_code >= 500:
+                raise RequestOutcomeUnknown(f"Cloudflare returned HTTP {resp.status_code} for {method}. Check the result before retrying.")
+
+            if read_only and resp.status_code >= 400 and attempt <= retries and resp.status_code in retry_on:
                 retry_after = str(resp.headers.get("Retry-After") or resp.headers.get("retry-after") or "").strip()
                 sleep_s: float | None = None
                 if retry_after:

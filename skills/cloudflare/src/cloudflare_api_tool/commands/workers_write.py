@@ -50,6 +50,7 @@ def _base_plan(ctx: dict, *, selector: dict[str, Any], risk_level: str, risk_rea
         "version": str(ctx.get("tool_version") or ""),
         "generated_at_utc": utc_now(),
         "env_fingerprint": str(base_url) if base_url else None,
+        "connection": ctx.get("env_fingerprint"),
         "command": str(ctx.get("command_str") or ""),
         "selector": selector,
         "risk_level": risk_level,

@@ -1,64 +1,61 @@
 # Connect your Cloudflare account
 
-Cloudflare needs a local API token before an agent can review zones, DNS, cache, security, or account settings.
+Create a Cloudflare API token with the access you need, save it in a private file on your machine, then check that the CLI reaches the right account.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## Create a token
 
-After setup, start by listing the account and zone you want, because the wrong zone can affect a live site.
+Start with read access for the work you want. You can add permissions for a specific task later. Use Cloudflare’s [token setup guide](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/) and [guide to limiting token access](https://developers.cloudflare.com/fundamentals/api/how-to/restrict-tokens/).
 
-## Step 1: Create the local `.env` file (on your machine)
+For account and zone discovery, start with a token that can read those lists. For Workers inventory, give it access to the script, dispatch, KV metadata, builds or pipelines you need. D1 commands need access to D1. Browser Run needs the account permission `Browser Rendering - Edit`. The [approval guide](safety_model.md) explains which results must stay in local files.
 
-In the tool folder:
+## Save your settings
 
-1. Copy `.env.example` to `.env`.
-   - Alternatively: run `cloudflare-api-tool config init` to create the placeholder file.
-2. Open `.env` in a text editor.
-3. Fill the required fields:
-   - `CLOUDFLARE_API_TOKEN=...`
-   - (optional) `CLOUDFLARE_API_BASE_URL=https://api.cloudflare.com/client/v4`
-   - (optional) `CLOUDFLARE_TIMEOUT_S=30`
-   - (optional) split timeouts:
-     - `CLOUDFLARE_CONNECT_TIMEOUT_S=10`
-     - `CLOUDFLARE_READ_TIMEOUT_S=240`
+Run this from the folder where you want to keep your settings. The tool creates a private file:
 
-## Step 2: Create a Cloudflare API Token (in the Cloudflare dashboard)
+```bash
+cloudflare-api-tool --env-file .env onboarding
+```
 
-Cloudflare recommends API Tokens (least privilege). Use Cloudflare’s official guide:
-- Create token: `https://developers.cloudflare.com/fundamentals/api/get-started/create-token/`
-- Restrict tokens (least privilege): `https://developers.cloudflare.com/fundamentals/api/how-to/restrict-tokens/`
+You can use `config init` for the same file setup without the follow-up command.
 
-When choosing permissions, only grant what you need for the commands you plan to run. Most users start with read-only inventory:
-- Accounts and Zones discovery
-- Workers platform inventory (including scripts/dispatch/KV metadata/builds/pipelines)
-- KV metadata only (never KV values)
+Fill in `CLOUDFLARE_API_TOKEN`. Set `CLOUDFLARE_ACCOUNT_ID` if you want the connection check to confirm the intended account. An older account-owned token without the `cfat_` prefix needs this setting so the CLI can tell it belongs to an account.
 
-If you plan to deploy a Workers app that uses **D1** and **KV** (common for small SaaS apps), your token also needs the D1 database permission (Cloudflare labels it as a D1 permission in the token UI).
+The CLI sends the token as a Bearer token. Keep the value in the private file and out of Git, chat and logs.
 
-If you plan to test Cloudflare Browser Run from this CLI, add the account permission:
-- `Browser Rendering - Edit`
+For a project with its own file, pass that file on every command. An explicit `--env-file` must point to an existing regular file. The CLI reads its Cloudflare settings from that file alone. With the default `.env` and no explicit flag, environment variables can override values in the file. This is useful in CI and containers.
 
-This tool also includes (optional) write workflows and sensitive reads, but they are **gated**:
-- Writes are preview-first and require explicit approval before anything changes.
-- Sensitive reads (code/KV values) require extra confirmation and only write to an explicit local output file (never printed to the screen).
+### Optional settings
 
-If your token is least-privilege for read-only inventory, some write/sensitive commands may fail with a permissions error.
-That’s expected: add only the minimum additional permissions needed for the specific command you want to run.
+| Setting | When to use it |
+| --- | --- |
+| `CLOUDFLARE_API_BASE_URL` | Set a different API address. The default is `https://api.cloudflare.com/client/v4`. |
+| `CLOUDFLARE_TIMEOUT_S` | Set the request timeout in seconds. The default is 30. |
+| `CLOUDFLARE_CONNECT_TIMEOUT_S` | Set how long to wait for the connection. It defaults to the request timeout. |
+| `CLOUDFLARE_READ_TIMEOUT_S` | Set how long to wait for the response. It defaults to the request timeout. |
 
-## Step 3: What to ask your AI agent (examples)
+For a slow endpoint, try `--timeout-profile slow` or set `--read-timeout-s`. Use `--progress` to see waiting messages. The CLI briefly caches some safe GET requests. Use `--no-cache` when you need a fresh result or `--cache-ttl-s` to set how long those results can be reused.
 
-Ask your agent to start with a read-only connection check and then shortlist IDs safely.
+Private state defaults to `.state/` next to the selected file. `--project-dir` sets where commands can save protected output. Read the [command guide](command_reference.md#global-flags-selected) for the other options.
 
-- “Confirm the tool is connected, then list my Cloudflare accounts.”
-- “Confirm the tool is connected, then run zone-create-check for my account before we onboard domains.”
-- “Set my default account, then list Workers scripts and KV namespaces.”
-- “Run an auth probe and tell me which permissions are missing for D1.”
-- “Resolve the zone id for my domain, then list Worker routes for that zone.”
+## Check the connection
 
-## Step 4: If something fails
+```bash
+cloudflare-api-tool --env-file .env --output json auth check
+cloudflare-api-tool --env-file .env --output json accounts list
+```
 
-The most common issues are:
-- Missing or incorrect values in `.env`
-- Token missing permissions for the endpoint you called
-- Network or permission restrictions in the connected account
+Start the account work when the check returns `ok=true` and you can identify the right account.
 
-See `docs/troubleshooting.md` and ask your agent to run a connection check first.
+- An account-owned token starts with `cfat_` or is an older unprefixed token identified by the account ID in the selected file. The CLI checks it with `GET /accounts` and reports `verification=accounts_list`. When you set an account ID, confirm that `configured_account_match=true`.
+- A `cfut_` user token, or an unprefixed token without an account ID, uses `GET /user/tokens/verify`. The token status must be `active`. An inactive token, empty account list or configured account mismatch returns `ok=false` and a nonzero exit code.
+- When the task needs a particular Cloudflare feature, `auth probe --account-id <ACCOUNT_ID>` shows which common areas the token can reach. `auth probe` and `auth doctor` skip the user-token endpoint for account-owned tokens.
+
+Use an explicit account ID for the current task. `accounts set-default` changes the saved local default. Before onboarding domains in bulk, run `auth zone-create-check` for the account.
+
+## If a command stops
+
+- **The file is missing, is a directory or has the wrong token.** Check the selected path and the values in that file. `config check` checks the local setup without calling Cloudflare. An invalid explicit path stops before the CLI calls Cloudflare.
+- **`auth check` gets a 401 from `/user/tokens/verify`.** With an older account-owned token, check that the selected file names the intended account. If an account check also fails, read the exact error to see whether the token is invalid or lacks access.
+- **The connection works but a product command fails.** Run the account-specific probe. For example, a D1 command can return an authentication error when the token works but is missing the D1 permission.
+- **The command is slow or gets HTTP 429.** Use `auth doctor` to check how long the reads take. `--verbose` shows request start and end messages. If Cloudflare returns 429, reduce how often you make requests. Use `--debug` for a Python stack trace when debugging the CLI itself.
+- **A write or file-only read was refused.** Keep the JSON error and check the target, approval, flags and output path. Review what happened before trying a write again. See [how approvals and saved results work](safety_model.md).

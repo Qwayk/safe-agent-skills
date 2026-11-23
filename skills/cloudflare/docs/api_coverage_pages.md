@@ -1,12 +1,8 @@
 # Pages (Projects, Deployments, Domains, Build cache) endpoint coverage (detailed)
 This file is generated from Cloudflare's OpenAPI snapshot extracts.
 - Snapshot (sha256): 73b3b8e9c0bca1cf59f22dd6e212eeaa433ea6b33370e7320af10b435d991824
-- Source CSV: docs/cloudflare-api-docs/extracts/endpoints_pages.csv
 
-Regenerate:
-```bash
-python3 scripts/generate_pages_coverage.py
-```
+See the [current API coverage](api_coverage_live_official.md) for the operations available in this tool.
 
 Note: The new `cloudflare-api-tool pages deploy` command keeps dry-runs local, ensures the Pages project exists on apply (creating it when needed), then uses Cloudflare's direct-upload asset flow for static sites: upload token, missing-hash check, asset upload, hash upsert, then `POST /accounts/{account_id}/pages/projects/{project_name}/deployments` with a manifest. Applies require `--apply --yes --out`; `--branch` targets a preview deployment and `--production-branch` controls project creation when needed.
 

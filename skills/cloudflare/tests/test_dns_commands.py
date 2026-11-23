@@ -44,6 +44,24 @@ def _ok(obj: Any) -> dict[str, Any]:
 
 
 class TestDnsCommands(unittest.TestCase):
+    def test_create_checks_all_requested_dns_values(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            replies = [
+                _DummyResponse(status=200, url="http://example.invalid", obj=_ok([])),
+                _DummyResponse(status=200, url="http://example.invalid", obj=_ok({"id": "r1"})),
+                _DummyResponse(status=200, url="http://example.invalid", obj=_ok({
+                    "id": "r1", "name": "www.example.com", "type": "A", "content": "192.0.2.31",
+                })),
+            ]
+            with patch("requests.Session.request", side_effect=replies) as send, redirect_stdout(output := io.StringIO()):
+                code = main(["--env-file", str(_write_env(root)), "--apply", "--yes", "--ack-no-snapshot",
+                             "dns", "records", "ensure", "--zone-id", "z1", "--name", "www.example.com",
+                             "--type", "A", "--content", "192.0.2.30"])
+            self.assertEqual(code, 0)
+            self.assertFalse(json.loads(output.getvalue())["receipt"]["verification"]["ok"])
+            self.assertEqual([call.kwargs["method"] for call in send.call_args_list], ["GET", "POST", "GET"])
+
     def test_dns_records_ensure_refuses_on_ambiguous_match(self) -> None:
         def fake_request(_session, method, url, **kwargs):  # noqa: ANN001
             if method == "GET" and "/zones/z1/dns_records" in str(url):

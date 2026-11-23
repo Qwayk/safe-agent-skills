@@ -64,6 +64,7 @@ class TestOperationsCoverageDrift(unittest.TestCase):
         col_index = {name: idx for idx, name in enumerate(header_cols)}
         self.assertIn("Method", col_index, msg=f"missing Method column: {md_path}")
         self.assertIn("Path", col_index, msg=f"missing Path column: {md_path}")
+        self.assertIn("Summary", col_index, msg=f"missing Summary column: {md_path}")
         self.assertIn("CLI command(s)", col_index, msg=f"missing CLI command(s) column: {md_path}")
 
         method_i = int(col_index["Method"])
@@ -78,6 +79,7 @@ class TestOperationsCoverageDrift(unittest.TestCase):
             cols = _split_md_row(line)
             if len(cols) < len(header_cols):
                 continue
+            self.assertNotRegex(cols[col_index["Summary"]], r"\]\((?:/|#)")
             method = str(cols[method_i] or "").strip().upper()
             path = _strip_ticks(str(cols[path_i] or ""))
             if not method or not path:

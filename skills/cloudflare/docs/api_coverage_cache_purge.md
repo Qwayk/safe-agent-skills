@@ -1,13 +1,9 @@
 # Cache purge endpoint coverage (detailed)
 This file is generated from Cloudflare's OpenAPI snapshot extracts.
 - Snapshot (sha256): `73b3b8e9c0bca1cf59f22dd6e212eeaa433ea6b33370e7320af10b435d991824`
-- Source CSV: docs/cloudflare-api-docs/extracts/endpoints_cache_purge.csv
 - Subset intent: zone cache purge.
 
-Regenerate:
-```bash
-python3 scripts/generate_cache_purge_coverage.py
-```
+See the [current API coverage](api_coverage_live_official.md) for the operations available in this tool.
 
 | Status | Method | Path | OperationId | Summary | Tags | API token groups | CLI command(s) | Notes |
 |---|---|---|---|---|---|---|---|---|

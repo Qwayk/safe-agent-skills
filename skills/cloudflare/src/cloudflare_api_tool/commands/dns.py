@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from ..errors import SafetyError, ValidationError
+from ..errors import SafetyError, ToolError, ValidationError
 from ..json_files import read_json_file
 from ..plan_and_receipt import (
     load_plan_in,
@@ -190,6 +190,20 @@ def _pick_unique_record(items: Any, *, name: str, rtype: str, content: str | Non
     return matches[0]
 
 
+def _check_record(ctx: dict, *, zone_id: str, record_id: str, desired: dict[str, Any]) -> dict[str, Any]:
+    result = None
+    if record_id:
+        try:
+            result = ctx["cf"].get_json(f"/zones/{zone_id}/dns_records/{record_id}").result
+        except ToolError:
+            pass
+    return {
+        "ok": isinstance(result, dict) and all(result.get(key) == value for key, value in desired.items()),
+        "method": "read_back_get_by_id",
+        "details": {"record_id": record_id},
+    }
+
+
 def cmd_dns_records_ensure(args, ctx) -> int:
     _require_token(ctx)
     zone_id = str(getattr(args, "zone_id", "") or "").strip()
@@ -242,9 +256,11 @@ def cmd_dns_records_ensure(args, ctx) -> int:
         risk_level="high",
         risk_reasons=["DNS record changes can affect production traffic."],
     )
+    plan["connection"] = ctx["env_fingerprint"]
+    plan["approved_state"] = existing
     if action == "create":
         plan["proposed_changes"] = [{"resource": "dns_record", "action": "create", "zone_id": zone_id, "record": desired}]
-        plan["verification_plan"] = ["Re-list records with the same name/type/content and confirm exactly one exists."]
+        plan["verification_plan"] = ["Read the new record by ID and compare the requested fields."]
     elif action == "update":
         if not record_id:
             raise SafetyError("DNS record match is missing an id; refusing to update.")
@@ -276,22 +292,14 @@ def cmd_dns_records_ensure(args, ctx) -> int:
         diff.append({"resource": "dns_record", "action": "created", "zone_id": zone_id, "record_id": (created or {}).get("id"), "record": desired})
         changed = True
         rid = str((created or {}).get("id") or "").strip()
-        verification_ok = False
-        verify_obj = None
-        if rid:
-            verify_obj = ctx["cf"].get_json(f"/zones/{zone_id}/dns_records/{rid}").result
-            if isinstance(verify_obj, dict) and str(verify_obj.get("name") or "") == name and str(verify_obj.get("type") or "") == rtype:
-                verification_ok = True
-        verification = {"ok": bool(verification_ok), "method": "read_back_get_by_id", "details": {"record_id": rid}}
+        verification = _check_record(ctx, zone_id=zone_id, record_id=rid, desired=desired)
     elif action == "update":
         assert record_id
         ctx["audit"].write("apply", {"action": "dns_record_update", "zone_id": zone_id, "record_id": record_id})
-        _ = ctx["cf"].put_json(f"/zones/{zone_id}/dns_records/{record_id}", json_body=desired).result
+        _ = ctx["cf"].request_json("PATCH", f"/zones/{zone_id}/dns_records/{record_id}", json_body=desired).result
         diff.append({"resource": "dns_record", "action": "updated", "zone_id": zone_id, "record_id": record_id, "record": desired})
         changed = True
-        verify_obj = ctx["cf"].get_json(f"/zones/{zone_id}/dns_records/{record_id}").result
-        verification_ok = isinstance(verify_obj, dict) and all(verify_obj.get(k) == v for k, v in desired.items())
-        verification = {"ok": bool(verification_ok), "method": "read_back_get_by_id", "details": {"record_id": record_id}}
+        verification = _check_record(ctx, zone_id=zone_id, record_id=record_id, desired=desired)
     else:
         verification = {"ok": True, "method": "no_op", "details": {}}
 
@@ -311,7 +319,13 @@ def cmd_dns_records_ensure_absent(args, ctx) -> int:
     if not zone_id:
         raise ValidationError("Missing --zone-id")
     if record_id:
-        target_id = record_id
+        try:
+            existing = ctx["cf"].get_json(f"/zones/{zone_id}/dns_records/{record_id}").result
+        except ToolError as exc:
+            if "HTTP 404" not in str(exc):
+                raise
+            existing = None
+        target_id = record_id if existing else ""
     else:
         if not name:
             raise ValidationError("Missing --name (or provide --record-id)")
@@ -331,6 +345,8 @@ def cmd_dns_records_ensure_absent(args, ctx) -> int:
         risk_level="high",
         risk_reasons=["Deleting DNS records can affect production traffic."],
     )
+    plan["connection"] = ctx["env_fingerprint"]
+    plan["approved_state"] = existing
     if target_id:
         plan["proposed_changes"] = [{"resource": "dns_record", "action": "delete", "zone_id": zone_id, "record_id": target_id}]
         plan["verification_plan"] = ["Attempt to fetch the record by id; expect missing/not found."]
@@ -358,8 +374,11 @@ def cmd_dns_records_ensure_absent(args, ctx) -> int:
         changed = True
         diff.append({"resource": "dns_record", "action": "deleted", "zone_id": zone_id, "record_id": target_id})
         # Best-effort verify (may 404).
-        resp = ctx["cf"].request_raw_allow_errors("GET", f"/zones/{zone_id}/dns_records/{target_id}")
-        verification = {"ok": int(resp.status) >= 400, "method": "read_back_get_expected_missing", "http_status": int(resp.status)}
+        try:
+            status = ctx["cf"].request_raw_allow_errors("GET", f"/zones/{zone_id}/dns_records/{target_id}").status
+        except ToolError:
+            status = None
+        verification = {"ok": status == 404, "method": "read_back_get_expected_missing", "http_status": status}
     else:
         verification = {"ok": True, "method": "no_op", "details": {}}
 

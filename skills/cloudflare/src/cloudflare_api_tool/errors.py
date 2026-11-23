@@ -13,6 +13,10 @@ class ValidationError(ToolError):
     """
 
 
+class RequestOutcomeUnknown(ToolError):
+    """Cloudflare may have processed a request whose result could not be confirmed."""
+
+
 class SafetyError(ToolError):
     """
     Refused operation due to safety gates (missing --apply/--yes/ack, drift detected, etc.).

@@ -4,6 +4,7 @@ import argparse
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 from . import __version__
 from .audit_log import AuditLogger, CompositeAuditLogger
@@ -41,7 +42,8 @@ from .commands import tunnels as tunnels_cmd
 from .commands import config_local as config_cmd
 from .config import load_config
 from .project_config import load_project_config
-from .errors import SafetyError, ToolError, ValidationError
+from .errors import RequestOutcomeUnknown, SafetyError, ToolError, ValidationError
+from .plan_and_receipt import write_receipt_if_requested
 from .output import Output
 from .secrets import redact_secrets
 from .state import cache_dir_for_env_file
@@ -1999,7 +2001,7 @@ def build_parser() -> argparse.ArgumentParser:
     pages_deploy.add_argument("--account-id", default=None, help="Account id (or use accounts set-default)")
     pages_deploy.add_argument("--project-name", required=True, help="Pages project name")
     pages_deploy.add_argument("--source-dir", required=True, help="Local directory containing the built static assets")
-    pages_deploy.add_argument("--production-branch", default="main", help="Production branch to use if the Pages project must be created during apply (default: main)")
+    pages_deploy.add_argument("--production-branch", default="main", help="Expected production branch. Also used to create a missing Pages project (default: main)")
     pages_deploy.add_argument("--branch", default=None, help="Optional Pages branch name (use a non-production branch for preview deployments)")
     pages_deploy.add_argument("--skip-caching", action="store_true", help="Upload all files instead of checking the Pages asset cache first")
     pages_deploy.add_argument("--out", default=None, help="Output file path (relative to --project-dir)")
@@ -2640,6 +2642,29 @@ def main(argv: list[str]) -> int:
             return int(e.code or 0)
         except Exception:
             return 0
+    command_name = str(getattr(args, "cmd", "") or "")
+    env_file_explicit = any(
+        item == "--env-file" or item.startswith("--env-file=") for item in argv
+    )
+    cfg = None
+    if not bool(args.version) and command_name and command_name not in {"runs", "onboarding", "config"}:
+        try:
+            cfg = load_config(
+                args.env_file,
+                require_env_file=env_file_explicit,
+                env_file_only=env_file_explicit,
+            )
+        except Exception as e:  # noqa: BLE001
+            if bool(args.debug):
+                raise
+            out.emit(
+                {
+                    "ok": False,
+                    "error": redact_secrets(str(e), redaction_secrets),
+                    "error_type": type(e).__name__,
+                }
+            )
+            return 1
     if getattr(args, "cmd", None) == "pages":
         if getattr(args, "pages_apply", False):
             args.apply = True
@@ -2728,6 +2753,7 @@ def main(argv: list[str]) -> int:
                 "project_cfg": project_cfg,
                 "project_dir": project_dir,
                 "env_file": str(args.env_file),
+                "env_file_explicit": env_file_explicit,
                 "timeout_s": None,
                 "connect_timeout_s": None,
                 "read_timeout_s": None,
@@ -2754,7 +2780,7 @@ def main(argv: list[str]) -> int:
             rc = int(args.func(args, ctx))
             return rc
 
-        cfg = load_config(args.env_file)
+        assert cfg is not None
         redaction_secrets.clear()
         if cfg.token:
             redaction_secrets.append(cfg.token)
@@ -2899,7 +2925,18 @@ def main(argv: list[str]) -> int:
     except ToolError as e:
         msg = redact_secrets(str(e), redaction_secrets)
         audit.write("error", {"error": msg, "error_type": type(e).__name__})
-        out.emit({"ok": False, "error": msg, "error_type": type(e).__name__})
+        result: dict[str, Any] = {"ok": False, "error": msg, "error_type": type(e).__name__}
+        if isinstance(e, RequestOutcomeUnknown) and bool(args.apply):
+            receipt = {
+                "command": command_str,
+                "run_id": run_ctx.run_id,
+                "changed": None,
+                "verification": {"ok": False, "method": "outcome_unknown"},
+                "notes": [msg],
+            }
+            result["receipt"] = receipt
+            write_receipt_if_requested(ctx, receipt)
+        out.emit(result)
         _finalize_run_artifacts(
             run_ctx=run_ctx,
             tool="cloudflare-api-tool",

@@ -63,6 +63,46 @@ def _ops_argv_for_method_path(*, method: str, path_template: str) -> list[str]:
 
 
 class TestOperationsCommands(unittest.TestCase):
+    def test_worker_plan_checks_the_request_and_keeps_an_uncertain_deployment_receipt(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            plan, body, receipt = (root / name for name in ("plan.json", "request.json", "receipt.json"))
+            approved = {"strategy": "percentage", "versions": [{"version_id": "fixture-version", "percentage": 100}]}
+            body.write_text(json.dumps(approved))
+            args = ["--env-file", str(_write_env(root)), "--project-dir", str(root),
+                    *_ops_argv_for_operation_id("worker-deployments-create-deployment"),
+                    "--path-param", "account_id=acc1", "--path-param", "script_name=fixture-worker",
+                    "--body-json-file", str(body), "--out", "deployment.json"]
+            unavailable = _DummyResponse(status=503, url="http://example.invalid", obj=None)
+            initial = _DummyResponse(status=200, url="http://example.invalid", obj=_ok([]))
+            with patch("requests.Session.request", return_value=initial) as send:
+                with redirect_stdout(io.StringIO()):
+                    self.assertEqual(main(["--plan-out", str(plan), *args]), 0)
+                send.reset_mock()
+                send.return_value = unavailable
+                body.write_text(json.dumps({**approved, "versions": [{"version_id": "another-version", "percentage": 100}]}))
+                apply = ["--apply", "--yes", "--ack-no-snapshot", "--plan-in", str(plan), "--receipt-out", str(receipt)]
+                with redirect_stdout(output := io.StringIO()):
+                    self.assertEqual(main([*apply, *args]), 0)
+                self.assertTrue(json.loads(output.getvalue())["refused"])
+                send.assert_not_called()
+
+                body.write_text(json.dumps(approved))
+                with redirect_stdout(output := io.StringIO()):
+                    self.assertEqual(main([*apply, *args]), 1)
+                send.assert_called_once()
+                self.assertIsNone(json.loads(output.getvalue())["receipt"]["changed"])
+                self.assertEqual(json.loads(receipt.read_text())["verification"]["method"], "outcome_unknown")
+
+            created = _DummyResponse(status=200, url="http://example.invalid", obj=_ok({"id": "fixture-deployment"}))
+            live = _DummyResponse(status=200, url="http://example.invalid", obj=_ok({
+                "id": "fixture-deployment", "versions": [{"version_id": "fixture-version", "percentage": 25}],
+            }))
+            with patch("requests.Session.request", side_effect=[created, live]) as send, redirect_stdout(output := io.StringIO()):
+                self.assertEqual(main([*apply, *args]), 0)
+            self.assertFalse(json.loads(output.getvalue())["receipt"]["verification"]["ok"])
+            self.assertEqual([call.kwargs["method"] for call in send.call_args_list], ["POST", "GET"])
+
     def test_operations_list_returns_results(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             env_path = _write_env(Path(d))

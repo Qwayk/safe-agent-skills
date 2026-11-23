@@ -1,16 +1,13 @@
 # What you can do with Cloudflare
 
-Cloudflare work usually starts when something important depends on the edge: DNS must point to the right place, a Worker route may affect production traffic, a security rule needs review, or a Zero Trust policy may decide who can reach an internal app.
-If you need setup first, start with [Connect your account](onboarding.md). If you need exact commands, use [Quickstart](quickstart.md) and [Command reference](command_reference.md).
-
-This skill helps an agent inspect the account, explain what it found, and prepare careful plans before anything changes DNS, Workers, Pages, Zero Trust, account access, logs, or sensitive files.
+Ask your agent to trace where a domain points, check a Worker route or find who can reach an internal app. If you are new to the tool, see [how to connect your account](onboarding.md) and [run your first read](quickstart.md). The [command guide](command_reference.md) has the exact options.
 
 ## Good jobs to give the agent
 
 ### Account, zone, and DNS review
 
 - "List my Cloudflare accounts and zones, then tell me which zone looks like the one for this website."
-- "Show all DNS records for this zone and flag anything that looks stale, duplicated, proxied unexpectedly, or pointed at an old host."
+- "Show all DNS records for this zone and flag anything that looks stale, duplicated, proxied unexpectedly or pointed at an old host."
 - "Check DNSSEC and important zone settings before we change anything."
 - "Export the zone DNS records to a local file so we have a review copy."
 - "Run zone-create-check before we plan onboarding a new domain."
@@ -23,11 +20,11 @@ This skill helps an agent inspect the account, explain what it found, and prepar
 - "Download one Worker script to a local file for review without printing the code in chat."
 - "Prepare a plan for a Worker route change and explain the risk before any apply step."
 
-### Zero Trust, access, and security posture
+### Zero Trust and account access
 
 - "List Access apps and policies so I can see who can reach this internal tool."
 - "Review Gateway rules, lists, logging settings, and DLP profiles."
-- "Show account members, roles, API tokens, and organizations in a file-safe way."
+- "Show account members, roles, API tokens, and organizations and save private results to a local file."
 - "Find Cloudflare audit events or Error ID logs and save the details locally."
 - "Tell me what extra token scope or role is missing if a security surface cannot be read."
 
@@ -35,7 +32,7 @@ This skill helps an agent inspect the account, explain what it found, and prepar
 
 - "Prepare a DNS record update plan, but do not change the zone until I approve the exact target."
 - "Plan a Logpush, Pages, Worker route, or Zero Trust policy update and show the approval needed."
-- "Use the broader allowlisted operations surface only when a named command is not the right fit."
+- "If there’s no named command for this job, show me which supported operation fits."
 - "For anything destructive or secret-bearing, save results to a local file and explain what cannot be undone automatically."
 
 ## What the agent should show you
@@ -49,4 +46,4 @@ This skill helps an agent inspect the account, explain what it found, and prepar
 
 ## Good first Cloudflare path
 
-Start by checking auth, listing accounts and zones, choosing one zone, exporting DNS records, and running `auth zone-create-check` before planning any onboarding or live DNS work.
+Start by checking auth, listing accounts and zones, choosing one zone, exporting DNS records, and running `auth zone-create-check` when planning to onboard domains in bulk.

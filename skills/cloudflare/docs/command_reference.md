@@ -1,12 +1,12 @@
 # Command reference
 
-These commands cover Cloudflare inventory, DNS, Workers, KV, D1, cache, and other account work. Resolve the account and zone first; the wrong target can affect a live site.
+Find the command for your task and confirm the account or zone before running it.
 
 For the guided path, start with [What you can do with Cloudflare](use_cases.md), [Connect your Cloudflare account](onboarding.md), and [Quickstart](quickstart.md).
 
 ## Global flags (selected)
 
-- `--env-file <path>`: which `.env` file to read (default: `.env`)
+- `--env-file <path>`: choose an existing regular `.env` file; when explicitly supplied, that file is the only source for Cloudflare values and cannot be overridden by a token already loaded in the shell
 - `--project-dir <path>`: base directory for safe file outputs (used by sensitive reads)
 - `--output json|text`: output mode (default: `json`)
 - `--verbose`: log request URLs to stderr (never headers)
@@ -22,16 +22,13 @@ For the guided path, start with [What you can do with Cloudflare](use_cases.md),
 ## Operations coverage source
 
 - `cloudflare-api-tool operations <area> <op_key>` is generated from the committed live official Cloudflare API inventory.
-- Active runtime allowlist: `docs/_generated/live_official_api_inventory.json`
+- [Saved API inventory used by the installed CLI](../src/cloudflare_api_tool/_data/live_official_api_inventory.json)
 - Human ledger: `docs/api_coverage_live_official.md`
 - No generic raw-call bridge exists in this tool.
 
-## Current before-state rule
+## Before applying a change
 
-- Dangerous `operations <area> <op_key>` writes now save live before-state when possible when a safe read path exists.
-- `operations` writes that cannot save before-state require explicit no-snapshot approval for live apply.
-- Named remote-write helpers below are currently dry-run-only unless they are local-only or read-like file-output commands. If a named write helper below shows an `--apply --yes` example, the command requires explicit no-snapshot approval until that helper gets saved before-state support.
-- Read-like file-output helpers still apply with `--apply --out`, for example Browser Run, audit/log reads, D1 export, Queue pull, Workers code/KV/log reads, and request tracer.
+Read the [approval guide](safety_model.md). A write needs `--apply --yes` after approval. When a supported change has no saved copy of the old settings, the tool also requires `--ack-no-snapshot`. This applies to named write helpers such as Pages deploy. Private reads such as Browser Run, D1 export and stored Worker logs use `--apply --out`. Check the individual command for any extra flags.
 
 ## Config (local-only)
 
@@ -45,10 +42,10 @@ For the guided path, start with [What you can do with Cloudflare](use_cases.md),
 ## Auth
 
 - `cloudflare-api-tool --output json --version`
-- `cloudflare-api-tool auth check`
-- `cloudflare-api-tool auth probe [--account-id <ACCOUNT_ID>]`
+- `cloudflare-api-tool auth check` (automatically uses `accounts list` for `cfat_` account tokens or unprefixed tokens identified by `CLOUDFLARE_ACCOUNT_ID`; otherwise uses user-token verification; returns `ok=false` for inactive user status, no accessible account, or a configured account mismatch)
+- `cloudflare-api-tool auth probe [--account-id <ACCOUNT_ID>]` (account-owned tokens skip the user-only token check and run the account-scoped checks)
 - `cloudflare-api-tool auth zone-create-check [--account-id <ACCOUNT_ID>]`
-- `cloudflare-api-tool auth doctor [--account-id <ACCOUNT_ID>]`
+- `cloudflare-api-tool auth doctor [--account-id <ACCOUNT_ID>]` (account-owned tokens skip the user-only token check)
 - `cloudflare-api-tool auth explain --for observability speed page trend`
 
 ## Browser Run
@@ -794,36 +791,7 @@ Tip: Zero Trust endpoints can be slow in some accounts. If a command feels "hung
 
 ## Advanced: operations (all allowlisted ledgers)
 
-This is the “full coverage” surface that can call any allowlisted endpoint **listed in the tool’s ledgers**:
-- `docs/api_coverage_accounts_get.md`
-- `docs/api_coverage_accounts_writes.md`
-- `docs/api_coverage_workers_platform.md`
-- `docs/api_coverage_workers_ai.md`
-- `docs/api_coverage_vectorize.md`
-- `docs/api_coverage_pages.md`
-- `docs/api_coverage_images.md`
-- `docs/api_coverage_ai_gateway.md`
-- `docs/api_coverage_autorag.md`
-- `docs/api_coverage_ai_search.md`
-- `docs/api_coverage_workflows.md`
-- `docs/api_coverage_zero_trust.md`
-- `docs/api_coverage_dns.md`
-- `docs/api_coverage_d1.md`
-- `docs/api_coverage_hyperdrive.md`
-- `docs/api_coverage_queues.md`
-- `docs/api_coverage_r2.md`
-- `docs/api_coverage_r2_catalog.md`
-- `docs/api_coverage_secrets_store.md`
-- `docs/api_coverage_pipelines.md`
-- `docs/api_coverage_waiting_room.md`
-- `docs/api_coverage_zones_get.md`
-- `docs/api_coverage_zones_writes.md`
-
-Full ledger index: `docs/api_coverage.md`.
-
-In this monorepo, those ledgers are generated from the local Cloudflare docs snapshot under `docs/cloudflare-api-docs/`.
-
-It refuses unknown endpoints (no guessing): only operations present in the tool’s ledgers are callable.
+Use the [operation list](api_coverage_live_official.md) for all 2,350 operations in the [saved inventory](../src/cloudflare_api_tool/_data/live_official_api_inventory.json). Older per-area lists are part of the [coverage record](api_coverage.md#historical-ledgers) and support the fallback used when regenerating the inventory.
 
 Search/inspect operations:
 - `cloudflare-api-tool operations list [--contains "<TEXT>"] [--tag "<TAG>"] [--method GET] [--area "<AREA>"] [--limit N] [--include-sensitive] [--include-deprecated]`
@@ -935,7 +903,7 @@ Pages deploy:
 - `cloudflare-api-tool pages deploy --account-id <ACCOUNT_ID> --project-name <PROJECT_NAME> --source-dir <DIR> --out <FILE>`
   - Dry-run is local only: the command builds the deployment plan without calling Cloudflare.
   - Live apply requires `--apply --yes --ack-no-snapshot --out <FILE>` when no saved before-state is available for the Pages project/deployment flow.
-  - Use `--branch <NAME>` to target a preview branch in the plan. Use `--production-branch <NAME>` to control the branch used if the project must be created. Use `--skip-caching` to force-upload all files in the plan. Use `--overwrite` to replace `<FILE>` if it already exists once apply support is restored.
+  - Use `--branch <NAME>` to target a preview branch in the plan. Use `--production-branch <NAME>` to control the branch used if the project must be created. Use `--skip-caching` to force-upload all files in the plan. Use `--overwrite` to replace `<FILE>` if it already exists.
 
 Images notes:
 - Images blob/direct_upload/signing keys operations are classified as sensitive file-only output: `operations list` hides them unless you pass `--include-sensitive`.
@@ -948,7 +916,7 @@ AI Gateway notes:
 - AI Gateway logs/datasets/evals/provider configs are classified as sensitive file-only output: `operations list` hides them unless you pass `--include-sensitive`.
 - Sensitive AI Gateway reads (GET) require `--apply --out <FILE>` (never printed).
 - Provider config writes (POST/PUT/DELETE) require `--apply --yes --ack-irreversible --out <FILE>` (never printed).
-- Endpoint reference: this tool follows the vendored OpenAPI snapshot in `docs/cloudflare-api-docs/` (the website may not show every method on every resource).
+- For callable AI Gateway operations, use the [current API coverage](api_coverage_live_official.md).
 
 AI Gateway examples:
 - Find AI Gateway operations:
@@ -996,22 +964,17 @@ AI Search examples:
 
 ## Jobs (batch; CSV)
 
-Run a batch file (dry-run by default):
-- `cloudflare-api-tool jobs run --file jobs.csv`
-- Apply: read-only and read-like rows can run with `--apply`; write rows need saved before-state per changed resource or explicit no-snapshot approval.
+Run `cloudflare-api-tool jobs run --file jobs.csv` to review the plan. Use `operations list` to find operation IDs. Apply reads with `--apply`. A batch containing writes needs approval to proceed without saved old settings for each row, then `--apply --yes --ack-no-snapshot`. Operations with a secret result also need `--ack-irreversible`. Save sensitive results to a file under `--project-dir`.
 
-Optional:
-- `--include-results` includes full JSON results for non-sensitive steps in the output receipt (can be large).
+The runner stops on the first failed row. Earlier rows may already have run. It returns one JSON summary. Use `--include-results` to include full non-sensitive results in that summary.
 
-CSV columns (recommended headers):
-- `operation_id` (preferred when present)
-- or `method` + `path` (when `operation_id` is missing)
-- `path_params_json` (JSON object string)
-- `query_json` (JSON object string)
-- `body_json_file` / `body_bytes_file` / `multipart_spec_file` (mutually exclusive)
-- `content_type` (optional)
-- `out` + `overwrite` (required for sensitive steps)
+| CSV column | What to enter |
+| --- | --- |
+| `operation_id` or `method` and `path` | Prefer the operation ID when it is available. |
+| `path_params_json` | JSON object with values for fields such as `{account_id}` in the path. |
+| `query_json` | Optional JSON object with query settings. |
+| `body_json_file`, `body_bytes_file` or `multipart_spec_file` | Use one if the request needs a body. |
+| `content_type` | Optional type for the request body. |
+| `out` and `overwrite` | Give a file path for each sensitive row. Set `overwrite` if it may replace an existing file. |
 
-Zone onboarding tip:
-- Before a zone-create batch, run `cloudflare-api-tool auth zone-create-check --account-id <ACCOUNT_ID>`
-- For a batch create, use `jobs run` with `operation_id=zones-post` and one row per domain.
+Before a zone-create batch, run `cloudflare-api-tool auth zone-create-check --account-id <ACCOUNT_ID>`. Use `operation_id=zones-post` and one row per domain for the batch.

@@ -1,17 +1,9 @@
-# Workers for Platforms walkthrough (safe, end-to-end)
+# Workers for Platforms
 
-This walkthrough is written for non-technical users and the AI agent helping them.
+Use this guide to review and manage customer Workers. Start by finding the dispatch namespace, which groups those Workers, and the exact script you want to inspect or change. Review a plan before applying any change, then check the result.
 
-Goal: manage **Workers for Platforms** (your “customer Workers”) safely:
-- preview (dry-run plan)
-- explicit approval before any write
-- verify after apply
-- never print sensitive outputs (tokens/code) to the terminal
-
-If you want the full endpoint list, see:
-- `docs/api_coverage_workers_platform.md` (search for “Workers for Platforms”)
-
-## What you need (non-secret)
+See [the Workers commands](command_reference.md#workers-platform-inventory--safe-writes--sensitive-reads) and [the operation list](api_coverage_live_official.md).
+## What you need
 
 Your agent will usually ask for these (or discover them safely):
 - Your Cloudflare `account_id`
@@ -20,7 +12,7 @@ Your agent will usually ask for these (or discover them safely):
 
 You do **not** need to share your API token in chat. Keep it in your local `.env`.
 
-## Safety rules you should expect
+## When to ask for approval
 
 - The agent should **plan first** for any change (no writes by default).
 - The agent should only apply after you explicitly approve (you’ll see `--apply --yes` in details mode).
@@ -30,7 +22,7 @@ You do **not** need to share your API token in chat. Keep it in your local `.env
 - Some operations can return a temporary upload token (JWT). Those require an extra confirmation:
   - `--ack-irreversible`
 
-## Common outcomes you can ask for (plain English)
+## What you can ask your agent to do
 
 - “Create a dispatch namespace for customer Workers.”
 - “List customer Workers in my dispatch namespace.”
@@ -40,7 +32,7 @@ You do **not** need to share your API token in chat. Keep it in your local `.env
 - “Start an assets upload session and save the temporary upload token to a file (never show it).”
 - “Delete a customer Worker (after showing me a dry-run plan).”
 
-## Step-by-step: typical setup flow
+## Set up a customer Worker
 
 ### Step 1: confirm what exists (read-only)
 
@@ -84,7 +76,7 @@ Your agent must:
 - never print it to the terminal
 - require your explicit approval (`--apply --yes`) plus the extra confirmation (`--ack-irreversible`)
 
-## Details mode: the exact operations your agent will use
+## Find the exact operation
 
 This tool supports all Workers for Platforms operations via `cloudflare-api-tool operations <area> <op_key>`.
 

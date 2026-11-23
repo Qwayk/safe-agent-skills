@@ -169,6 +169,37 @@ class TestPagesDeployCommand(unittest.TestCase):
             self.assertIn("/accounts/acc1/pages/projects/site/upload-token", get_json_calls)
             self.assertTrue(any(path == "/accounts/acc1/pages/projects/site/deployments" for _, path, _ in request_raw_calls))
 
+    def test_reviewed_pages_plan_checks_files_and_actual_production_branch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            env = _write_env(root)
+            static_dir = self._create_static_dir(root)
+            plan = root / "plan.json"
+            args = self._base_args(root, env) + ["--branch", "preview-proof", "--out", str(root / "deploy.json")]
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(main(["--plan-out", str(plan), *args]), 0)
+
+            apply = ["--apply", "--yes", "--ack-no-snapshot", "--plan-in", str(plan), *args]
+            with (
+                patch("cloudflare_api_tool.cloudflare.CloudflareClient.get_json") as get,
+                patch("cloudflare_api_tool.cloudflare.CloudflareClient.request_raw") as send,
+                patch("cloudflare_api_tool.cloudflare.CloudflareClient.request_json") as send_json,
+            ):
+                (static_dir / "index.html").write_text("changed after review", encoding="utf-8")
+                with redirect_stdout(output := io.StringIO()):
+                    self.assertEqual(main(apply), 0)
+                self.assertTrue(json.loads(output.getvalue())["refused"])
+                get.assert_not_called()
+
+                (static_dir / "index.html").write_text("hello", encoding="utf-8")
+                get.return_value = CloudflareResult(result={"production_branch": "preview-proof"}, result_info=None)
+                with redirect_stdout(output := io.StringIO()):
+                    self.assertEqual(main(apply), 0)
+                self.assertIn("production branch", json.loads(output.getvalue())["reasons"][0])
+                get.assert_called_once_with("/accounts/acc1/pages/projects/site")
+                send.assert_not_called()
+                send_json.assert_not_called()
+
     def test_apply_creates_project_when_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
