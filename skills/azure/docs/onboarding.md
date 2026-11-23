@@ -1,74 +1,54 @@
-# Connect your Azure account
+# Set up Azure access
 
-Set up the account connection first, then ask the agent for one safe check before any live change.
+Pick the Azure subscription you want to inspect. Sign in on your machine and check the tenant and subscription before making a service request.
 
-Keep the setup files private. Do not paste Azure bearer tokens, local `.env` values, token JSON files, or subscription secrets into chat.
-
-Before you start, decide which Azure subscription or resource group the first check should inspect. If this machine can reach more than one subscription, use the allowlist settings so the tool refuses the wrong target.
-
-## Step 1: Prepare environment file
-
-1. In the tool folder, create `.env`.
-2. Keep `.env` private and never paste token values in chat.
-3. Fill required values:
-
-- `AZURE_API_TOKEN`
-- `AZURE_MANAGEMENT_ENDPOINT` (default is `https://management.azure.com`)
-
-## Step 2: Confirm data-plane readiness if needed
-
-If your planned work is data-plane command, also set:
-
-- `AZURE_DATA_PLANE_ENDPOINT`
-
-Without this, data-plane commands return:
-`Missing AZURE_DATA_PLANE_ENDPOINT for data-plane command`.
-
-## Step 3: What to ask your AI agent (examples)
-
-- "Check which Azure subscription this token can read and stop before any change."
-- "List resource groups and flag public or expensive resources."
-- "Prepare a plan for this change, but do not apply it."
-
-## Step 4: Optional scoping controls
-
-Set any of these to limit where the CLI can run:
-
-- `AZURE_ALLOWED_TENANTS`
-- `AZURE_ALLOWED_SUBSCRIPTIONS`
-- `AZURE_ALLOWED_RESOURCE_GROUPS`
-- `AZURE_ALLOWED_LOCATIONS`
-- `AZURE_ALLOWED_SERVICES`
-
-## Step 5: Check the tool can start
-
-Run:
+## Connect with Azure CLI
 
 ```bash
-qwayk-azure-safe-agent-cli onboarding
-qwayk-azure-safe-agent-cli auth check
+az login
+az account show --subscription SUBSCRIPTION_ID
+qwayk-azure-safe-agent-cli --output json auth check
 ```
 
-The tool writes no Azure changes for this step. It confirms the local config shape and token presence.
+Set `AZURE_SUBSCRIPTION_ID` in your local settings if you want the tool to use that subscription by default. A command that names an exact subscription uses that value within the configured limits. In the absence of either selection, the tool can use the subscription Azure CLI shows as current. The tool checks the Azure CLI sign-in and requests an access token for the selected service. It does not change the Azure CLI default subscription. [Azure CLI account commands](https://learn.microsoft.com/cli/azure/account)
 
-## Step 6: Try read-only discovery
+For a setup that already uses tokens, keep `AZURE_API_TOKEN` in private settings or import a local JSON file. The import supports the `access_token` and `accessToken` fields. Settings tokens take priority over the imported token in `.state/token.json` next to the settings file. If there is no local token, the tool uses Azure CLI.
 
 ```bash
-qwayk-azure-safe-agent-cli inventory summary
+qwayk-azure-safe-agent-cli auth token set --file token.json
+qwayk-azure-safe-agent-cli auth token status
 ```
 
-If this works, you can start with safe read commands for your target service.
+Keep access tokens, refresh tokens, and settings files out of Git and chat. Replace an expired local token or sign in again. [Azure authentication](https://learn.microsoft.com/cli/azure/authenticate-azure-cli)
 
-## What success looks like
+## Choose a settings file
 
-You are ready when:
+The setup helper can create a private file for optional settings. It keeps a file that already exists and shows the next command with the same path. Add `--no-write-env` for instructions without creating a file.
 
-- `auth check` returns a structured result.
-- `inventory summary` shows the pinned Azure scope.
-- You can run at least one read command with your `--input-json` payload.
+```bash
+qwayk-azure-safe-agent-cli --env-file "azure settings.env" onboarding
+```
 
-## If something fails first
+| Setting | What it does |
+|---|---|
+| `AZURE_MANAGEMENT_ENDPOINT` | Sets the Resource Manager endpoint. The default is `https://management.azure.com`. Match it to your Azure cloud. |
+| `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID` | Pick a default subscription and check the expected tenant. |
+| `AZURE_DATA_PLANE_ENDPOINT` | Names the HTTPS service endpoint for direct service requests, such as a particular Key Vault. |
+| `AZURE_DATA_PLANE_RESOURCE` | Names the Microsoft Entra token resource when Azure CLI needs a token for a service. The tool knows the standard Key Vault and Storage resources. |
+| `AZURE_ALLOWED_TENANTS`, `AZURE_ALLOWED_SUBSCRIPTIONS`, `AZURE_ALLOWED_RESOURCE_GROUPS`, `AZURE_ALLOWED_LOCATIONS`, `AZURE_ALLOWED_SERVICES` | Limit the targets or service commands you want this tool to use. Use commas between entries. |
+| `AZURE_TIMEOUT_S` | Sets the request timeout in seconds. The default is 30. |
 
-- Confirm `.env` values and no extra quotes around tokens.
-- Confirm `AZURE_MANAGEMENT_ENDPOINT` and, if needed, `AZURE_DATA_PLANE_ENDPOINT` are correct.
-- Run `qwayk-azure-safe-agent-cli auth check`, then open [troubleshooting](troubleshooting.md) for common refusal messages.
+Environment variables take priority over values in the file. A direct service request needs a token for that service. For example, Key Vault uses `https://vault.azure.net`, while Resource Manager has its own token resource. [Key Vault authentication](https://learn.microsoft.com/azure/key-vault/authentication-requests-and-responses)
+
+## Check access and fix problems
+
+Read the connection result from `auth check`. Check the tenant and subscription shown when available, then [read one resource you recognize](quickstart.md). The resource read tells you whether that account can use the service you selected.
+
+| What you see | What to check |
+|---|---|
+| Azure CLI sign-in or subscription error | Run `az login`, then check the intended subscription with `az account show`. |
+| Wrong tenant or subscription | Check the active account, the exact resource ID and the local settings. |
+| Access denied | Check the role’s permission for that service and resource. |
+| A service token or endpoint error | Check which HTTPS endpoint the command uses and which service the token is for. |
+| A target is outside a configured list | Confirm the subscription, resource group, location and service before changing your settings. |
+| A write was refused or its result is unclear | Follow [the approval and receipt steps](safety_model.md). |

@@ -1,99 +1,41 @@
 # Azure
 
-**Capability:** Reads + careful changes
+See what’s running in an Azure subscription, who can access it, and which resources may add to your bill. Start with one read in a subscription you recognize. The agent confirms the target and explains what it found before suggesting a change.
 
-Azure is where permissions, networks, storage, compute, and spend can all affect production. This skill gives an agent a controlled way to inspect an Azure subscription, explain what looks risky, and prepare changes without jumping straight to live API calls.
+> Check which Azure tenant and subscription you’re using. List the resource groups in that subscription and tell me what is worth checking next. Wait before changing anything.
 
-Ask it to show what is running, find public exposure, review broad role assignments, check storage or network risk, flag cost-sensitive resources, or prepare a change plan you can read first.
+## What you can ask for
 
-A good first ask is: Check this Azure subscription for public exposure, broad access, and spend risk, then stop before any live change.
+- List resource groups, virtual machines, storage accounts or networks.
+- Review role assignments and flag broad access that deserves a closer look.
+- Check storage or network settings that could expose data.
+- Find resources that may be adding to your bill.
+- Prepare a change plan and show what needs approval.
 
-## Start here first
+[More examples](docs/use_cases.md) · [Commands and input files](docs/command_reference.md)
 
-- Want ideas for real work? [What this skill can help you do](docs/use_cases.md)
-- Need setup? [Set up your account step by step](docs/onboarding.md)
-- Want the safety story first? [See how this skill keeps changes safe](docs/safety_model.md)
+## Before changing anything
 
-If you already want exact commands, jump straight to [Quickstart](docs/quickstart.md) and the [Command guide](docs/command_reference.md).
+A write starts with an offline preview. Use `--bind-azure` to save a plan tied to the current sign-in and target. If the identity, subscription, endpoint or request changes, make a new plan for approval. Covered changes such as starting a VM need permission to spend. The receipt says what Azure reported and what still needs checking. [Approval and receipt steps](docs/safety_model.md)
 
-## What this skill helps with
+## Install
 
-- See what is running in a subscription before you decide what to touch.
-- Find public exposure in storage, networking, and reachable resources.
-- Review role assignments and spot broad access that should be checked.
-- Flag cost-sensitive resources and cleanup candidates.
-- Prepare Azure change plans that stop for review before anything live changes.
-- Keep local plans, receipts, and run history so the work can be checked later.
-
-## Why this skill is different
-
-Many Azure API helpers make it easy for an agent to call endpoints. That is not enough when the account contains production resources, customer data, identity rules, or spend controls.
-
-This safe skill keeps the agent inside named commands generated from the official Azure REST API boundary. It starts with reads, shows plans before writes, asks for stronger approval on risky actions, redacts secrets from normal output, and leaves receipts so you can check what happened later.
-
-That makes it better for real Azure account work than a generic API shortcut, especially when you want useful help from an agent but still need control over live infrastructure.
-
-## What access this skill needs
-
-- A Microsoft Entra bearer token for the Azure tenant and subscription you want to inspect.
-- The normal Azure management endpoint, which defaults to `https://management.azure.com`.
-- A data-plane endpoint only when you ask for a data-plane command.
-- Optional allowlists for tenants, subscriptions, resource groups, locations, and service commands.
-
-## Install and first run
-
-Install slug: `azure`
-
-Ask your agent to install the `azure` skill from `Qwayk/safe-agent-skills`.
-
-If your host does not let the agent install skills directly, run:
+Ask your agent to install `azure` from `Qwayk/safe-agent-skills`, or run:
 
 ```bash
 npx skills add Qwayk/safe-agent-skills@azure -g -y
 ```
 
-Then try:
+If you have the CLI files, install from that folder with Python 3.12 or later:
 
-```text
-Connect this skill to my Azure account and run the first safe inventory check. Do not apply any change.
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -e .
 ```
 
-## How this skill stays safe
+Use your local Azure CLI sign-in or a token kept on your machine. [Set up access](docs/onboarding.md) · [Run a first read](docs/quickstart.md)
 
-- Safe checks can run without a live write approval.
-- Live changes start as a dry-run plan.
-- Riskier Azure changes need a reviewed plan and clear approval.
-- High-risk or no-snapshot changes need an extra acknowledgement.
-- Irreversible changes need one more acknowledgement.
-- Secrets and tokens are redacted from normal output.
+## Coverage and checks
 
-## What it covers today
-
-- 340 service commands.
-- 26,337 selected operations from 214,231 candidates.
-- Inventory source pinned at `ada8601c3b75c15f06f21e50f9368d9476229305`.
-- Coverage scope is official Azure `resource-manager` and `data-plane` specs only.
-- Non-Azure Microsoft products are excluded, including Graph, Microsoft 365, Azure DevOps, GitHub, Xbox, Dynamics, and Power Platform.
-
-## What happens before live changes
-
-- The agent creates a plan first.
-- You review the target, operation, input, and risk.
-- The live command must use the saved plan.
-- The tool records a receipt after the provider responds.
-- Generated Azure writes are marked live-unverified until real credentials and safe targets are available.
-
-## Limits
-
-- This is for Azure cloud REST APIs only.
-- It does not cover Microsoft Graph, Microsoft 365, Microsoft Ads, Azure DevOps, GitHub, Dynamics, Power Platform, or other separate Microsoft products.
-- Data-plane commands need the right service endpoint.
-- Live Azure account behavior remains unverified until safe credentials and targets are available.
-
-## Helpful docs
-
-- [Browse all docs](docs/README.md)
-- [Quickstart](docs/quickstart.md)
-- [Command guide](docs/command_reference.md)
-- [Proof and verification](docs/proof.md)
-- [API coverage](docs/api_coverage.md)
+The package has 339 service commands and 26,337 operations selected from 214,231 official Azure REST specification entries. It covers Azure Resource Manager and Azure service APIs, including selected preview operations. Microsoft Graph, Microsoft 365, Azure DevOps and other separate products sit outside that inventory. Azure permissions and each service’s connection settings still apply. The install and approval steps were checked offline. A real account check is separate. [API coverage](docs/api_coverage.md) · [Test results](docs/proof.md) · [All guides](docs/README.md)

@@ -1,32 +1,16 @@
 ---
 name: azure
-description: Inspect Azure subscriptions, resources, access, exposure, and reviewed change plans with tenant and subscription guardrails.
+description: Use when the user wants to check Azure subscriptions, resources, access or costs, or plan and apply an approved Azure change.
 ---
 
-# Skill: Azure
+# Azure
 
-Use this skill when the user wants help with Azure subscriptions, resources, role assignments, storage or network exposure, cost-sensitive areas, or a careful Azure change plan.
+1. Check the install with `qwayk-azure-safe-agent-cli --output json --version`. Run `qwayk-azure-safe-agent-cli --output json auth check`. Confirm the target tenant and subscription. Use the local Azure CLI sign-in or the user’s private token settings.
+2. Run one read the user can check, such as listing resource groups in the intended subscription. Use the named commands for Azure access, networks, resources and services. Leave tokens, private settings and secret values out of chat.
+3. For a change, use `--bind-azure --plan-out plan.json`. Show the exact resource, changes, risks, likely costs and how you’ll confirm the result. Wait for approval.
+4. Apply with the same input and `--plan-in plan.json --apply --yes`. Add `--ack-no-snapshot`, `--ack-irreversible` or `--ack-spend-money` where required and covered by the approval.
+5. Read the receipt and confirm the resource when you can. If Azure is still working or a reply was lost, check the operation or resource before retrying.
 
-The value is that the agent does not improvise Azure API calls. It works through explicit commands, reads first, plans before writes, asks before risky actions, redacts secrets, and leaves receipts the user can check.
+Stop if the target or sign-in is unclear, Azure refuses access, or the target falls outside the configured lists. An offline preview and a simulated reply show how the tool works. A real Azure read checks account access.
 
-Start with a safe read. A good first move is to confirm the tenant and subscription, list a small area the user can recognize, explain the result in normal words, and stop before any live change.
-
-## Core Rules
-
-- Never ask the user to paste Azure tokens, client secrets, tenant secrets, or `.env` contents into chat.
-- Confirm the tenant and subscription before reading broad resources or planning changes.
-- Prefer narrow reads first: resource groups, role assignments, storage exposure, network exposure, or cost-sensitive resources.
-- Writes must start as reviewed plans and require the tool's approval flags before any live change.
-- Use receipts, saved plans, and run history when the user needs proof of what happened.
-
-## Good First Ask
-
-```text
-Show me what is running in this Azure subscription, flag public exposure and spend risks, and stop before any live change.
-```
-
-## Useful Follow-Ups
-
-- "Check role assignments and tell me who has broad access."
-- "Review storage accounts and public exposure risk."
-- "Prepare a change plan for this resource and wait for approval."
+[Setup](docs/onboarding.md) · [Commands](docs/command_reference.md) · [Approval steps](docs/safety_model.md) · [Test results](docs/proof.md)

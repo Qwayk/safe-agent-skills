@@ -1,13 +1,14 @@
 # API coverage
 
-Azure coverage shows exactly what the shipped commands can do from the pinned official Azure REST API spec snapshot. If an endpoint or workflow is not listed here, do not assume the skill supports it. A good first coverage check is: ask the agent to name the service command, operation name, plane, lifecycle, and whether the operation is read, sensitive read, or write before it prepares a request. The coverage boundary is Azure REST API specs only; Microsoft Graph, Microsoft 365, Microsoft Ads, Azure DevOps, GitHub, and other separate Microsoft products are outside this skill.
+Use this list to find the Azure service command. Before preparing a request, check the exact operation name, whether it uses Azure Resource Manager or a service endpoint, whether it is stable or in preview, and whether it reads or writes.
 
 ## Source summary
 
 - Source repository: `https://github.com/Azure/azure-rest-api-specs`
 - Pinned commit: `ada8601c3b75c15f06f21e50f9368d9476229305`
 - Generated at: `2026-06-28T08:19:50Z`
-- Services: `340`
+- Service entries: `340`
+- Service commands with operations: `339`
 - Source spec files: `15332`
 - Operation candidates across versions: `214231`
 - Selected generated operations: `26337`
@@ -24,7 +25,7 @@ Azure coverage shows exactly what the shipped commands can do from the pinned of
 - Included: official Azure REST API specs under `resource-manager` and `data-plane` stable or preview folders.
 - Excluded: examples, shared common types, repo plumbing, sample/test specs such as Contoso WidgetManager and Widget demo specs, Microsoft Graph, Microsoft 365, Microsoft Ads, Azure DevOps, GitHub, and other separate Microsoft products.
 - Preview APIs are included only because they are official Azure specs; the lifecycle column keeps that visible.
-- Secret/token/key/password/credential-like reads stay implemented but are marked `sensitive_read` in `docs/official_inventory.json`; their response values are redacted by default.
+- Secret/token/key/password/credential-like reads stay implemented but are marked `sensitive_read` in `src/azure_safe_agent_cli/official_inventory.json`; their response values are redacted by default.
 
 ## Generated command coverage
 
@@ -200,7 +201,7 @@ Azure coverage shows exactly what the shipped commands can do from the pinned of
 | `iotoperationsdataprocessor-management` | management | preview | 17 | implemented | Generated named operations from pinned official specs. |
 | `iotoperationsmq-management` | management | preview | 62 | implemented | Generated named operations from pinned official specs. |
 | `iotoperationsorchestrator-management` | management | preview | 19 | implemented | Generated named operations from pinned official specs. |
-| `iotspaces-management` | management | preview | 0 | implemented | Generated named operations from pinned official specs. |
+| `iotspaces-management` | management | preview | 0 | No command | The pinned specs contain no operations for this entry. |
 | `keyvault-data-plane` | data_plane | preview, stable | 115 | implemented | Generated named operations from pinned official specs. |
 | `keyvault-management` | management | preview, stable | 50 | implemented | Generated named operations from pinned official specs. |
 | `kubernetesconfiguration-management` | management | preview, stable | 48 | implemented | Generated named operations from pinned official specs. |
@@ -373,4 +374,4 @@ Azure coverage shows exactly what the shipped commands can do from the pinned of
 
 ## Operation-level detail
 
-Operation-level detail lives in `docs/official_inventory.json` so the full ledger stays machine-readable and does not turn this page into a giant table.
+Find the exact operation names in [the package inventory](../src/azure_safe_agent_cli/official_inventory.json).

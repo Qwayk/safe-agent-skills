@@ -1,60 +1,32 @@
-# Safety model
+# Review and approve Azure changes
 
-Safe Azure work should feel like look first, think second, and change last. Azure can control identity, networking, compute, storage, databases, secrets, quotas, and billing, so this skill treats reading and changing as separate jobs. The agent should first show what it found, then prepare a plan for any change, then wait for approval before applying it.
+Before changing anything, show the user the tenant, subscription and exact resource, what will change, what it could cost, and how you’ll check the result. Read the target first when you have permission.
 
-A good safety ask is:
+## Save a plan the user can approve
 
-```text
-Use the Azure skill to inspect this subscription, point out anything that could affect access, spend, public exposure, or secrets, and stop before making any change.
-```
+A write command shows an offline preview by default. It says `approval_ready: false`. To save a plan you can apply, use `--bind-azure --plan-out plan.json`. This checks the current connection and records the endpoint and exact request without sending the change. Save older previews again with those flags before asking for approval.
 
-## What safe use looks like
+Review the original input alongside the saved plan, which hides private values. Check the exact target and what the change could affect, including access, public networking, costs and data. If Azure offers a snapshot or a way to undo this change, explain it. Say when recovery would need a manual step or is unavailable. Show the exact command and wait for approval.
 
-A safe run starts with a read, names the subscription or resource group, and explains whether the result looks expected. A change should be a second step, written as a plan that can be reviewed before the tool sends anything live.
+## Apply the approved change
 
-## What it does well
+Pass `--apply --yes --plan-in plan.json` with the same input file. The tool checks the current operation and the approved identity, subscription, endpoint and request. A changed plan needs another review. When the tool uses a manually supplied token, replacing that token also requires a new plan.
 
-- Read commands stay low friction and do not need extra apply flags.
-- Write commands are always shown as planned output first.
-- Live write flow requires explicit confirmation flags.
-- Secret-like values are redacted in sensitive read results.
-- Each run leaves a local record that can be checked after the work.
+- Use `--ack-no-snapshot` when the command cannot save the previous state or the operation requires it.
+- Use `--ack-irreversible` when the tool classifies the action as hard to undo.
+- Use `--ack-spend-money` for covered actions such as starting a VM or creating a VM, disk or managed Kubernetes cluster. Review expected costs for other changes as well.
 
-## Write gate
+The configured tenant, subscription, resource group, location and service limits still apply. Azure permissions determine what the sign-in can do.
 
-A live write is refused unless all conditions are met:
+## Check the receipt
 
-- `--plan-in` points to a plan file created from dry-run output
-- `--apply` is set
-- `--yes` is set
-- classification risk check passes
-- if risk class includes `no_snapshot`, `identity_security`, `spend_quota`, or `public_exposure`, `--ack-no-snapshot` is required
-- if risk includes `irreversible`, `--ack-irreversible` is required
+Use `--receipt-out` to pick a file, or find the receipt in the local run folder. Keep plans and logs private. Status checks use the same Azure host as the approved request. If Azure asks you to wait, the receipt shows when to check again.
 
-The tool returns a structured refusal instead of running when one of those requirements is missing.
+| Status | What to do |
+|---|---|
+| `limited_verification` | Azure returned a reply. Read the resource to confirm the exact change. |
+| `pending` | Azure is still working or asked you to wait. Check the operation or resource before reporting completion. |
+| `operation_failed` or `rejected` | Azure reported a failure or rejected the request. Read the error and check the resource before deciding what to do next. |
+| `outcome_unknown` | The write or its status check lost a reply. Check Azure’s operation history or the resource before trying again. |
 
-## Read behavior
-
-- Read operations can run when `AZURE_API_TOKEN` is set.
-- `AZURE_DATA_PLANE_ENDPOINT` is required only for data-plane operations.
-- The result is returned directly and marked as not dry-run.
-- Secret/token/key/password/credential-like reads are classified as `sensitive_read`; response body values are redacted by default, including generic fields such as `value`.
-
-## Readiness and evidence
-
-Each run writes evidence fields in the output:
-- `dry_run`
-- `plan` or `receipt`
-- run history row and artifacts path
-- any refusal reason if the action is blocked
-
-## Higher-risk handling
-
-- Plan and receipt are stored and should be reviewed before a second step.
-- Azure rollback is not automatic; plans and receipts are the primary audit records.
-- Identity, public exposure, spend, quota, and irreversible actions should be reviewed with extra care.
-
-## Important caveat
-
-`auth check` and local dry-runs confirm command readiness and policy behavior.
-It does not verify full live Azure behavior until valid credentials and a live target are available.
+Compare the resulting fields with what the user approved. If a fix or rollback needs another write, prepare a fresh plan and ask for approval. [Microsoft’s guide to Azure status checks](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations)

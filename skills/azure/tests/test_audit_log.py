@@ -17,7 +17,7 @@ class TestAuditLog(unittest.TestCase):
                 {
                     "tool": "qwayk-azure-safe-agent-cli",
                     "version": "0.0.0",
-                    "command": "qwayk-azure-safe-agent-cli demo read",
+                    "command": "qwayk-azure-safe-agent-cli inventory summary",
                     "apply": False,
                     "yes": False,
                     "env_fingerprint": "http://example.invalid",

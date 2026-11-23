@@ -5,8 +5,23 @@ import json
 import sys
 import time
 from typing import Any
+from urllib.parse import urlsplit
 
 import requests
+
+
+def safe_url(url: str) -> str:
+    try:
+        parts = urlsplit(url)
+    except ValueError:
+        return "<invalid URL>"
+    return parts._replace(query="", fragment="", netloc=parts.netloc.rsplit("@", 1)[-1]).geturl()
+
+
+class HttpStatusError(RuntimeError):
+    def __init__(self, status: int, message: str):
+        super().__init__(message)
+        self.status = status
 
 
 @dataclasses.dataclass(frozen=True)
@@ -30,15 +45,6 @@ class HttpClient:
         self._session = requests.Session()
         self._session.headers["User-Agent"] = user_agent
 
-    @staticmethod
-    def _format_url(url: str, params: dict[str, Any] | None) -> str:
-        if not params:
-            return url
-        try:
-            return requests.Request("GET", url, params=params).prepare().url or url
-        except Exception:
-            return url
-
     def request(
         self,
         method: str,
@@ -46,13 +52,13 @@ class HttpClient:
         *,
         headers: dict[str, str] | None = None,
         params: dict[str, Any] | None = None,
-        json_body: dict[str, Any] | None = None,
+        json_body: Any = None,
         data: dict[str, Any] | None = None,
         retries: int = 0,
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),
     ) -> HttpResponse:
         attempt = 0
-        display_url = self._format_url(url, params)
+        display_url = safe_url(url)
         while True:
             attempt += 1
             start = time.time()
@@ -67,22 +73,23 @@ class HttpClient:
                     json=json_body,
                     data=data,
                     timeout=self._timeout_s,
+                    allow_redirects=False,
                 )
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
                 if self._verbose:
                     print(
-                        f"[http] {method} {display_url} -> EXCEPTION ({ms}ms): {type(e).__name__}: {e}",
+                        f"[http] {method} {display_url} -> {type(e).__name__} ({ms}ms)",
                         file=sys.stderr,
                     )
                 raise RuntimeError(
-                    f"Request failed for {method} {display_url}: {type(e).__name__}: {e}"
-                ) from e
+                    f"Request failed for {method} {display_url}: {type(e).__name__}"
+                ) from None
             ms = int((time.time() - start) * 1000)
             if self._verbose:
-                print(f"[http] {method} {resp.url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
+                print(f"[http] {method} {safe_url(resp.url)} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
-            if resp.status_code < 400:
+            if 200 <= resp.status_code < 300:
                 return HttpResponse(
                     status=resp.status_code,
                     headers={k.lower(): v for k, v in resp.headers.items()},
@@ -94,5 +101,5 @@ class HttpClient:
                 time.sleep(min(2**attempt, 10))
                 continue
 
-            raise RuntimeError(f"HTTP {resp.status_code} for {method} {resp.url}\n{resp.text}")
+            raise HttpStatusError(resp.status_code, f"HTTP {resp.status_code} for {method} {safe_url(resp.url)}")
 

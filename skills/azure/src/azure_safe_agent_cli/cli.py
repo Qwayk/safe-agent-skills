@@ -8,11 +8,10 @@ from pathlib import Path
 from . import __version__
 from .audit_log import AuditLogger, CompositeAuditLogger
 from .commands import auth as auth_cmd
-from .commands import demo as demo_cmd
-from .commands import jobs as jobs_cmd
 from .commands import onboarding as onboarding_cmd
 from .config import load_config
 from .generated_registry import load_registry
+from .http import safe_url
 from .generated_runtime import execute_generated_operation, inventory_summary
 from .project_config import load_project_config
 from .errors import SafetyError, ToolError, ValidationError
@@ -93,11 +92,8 @@ def _register_inventory_command(sub: argparse._SubParsersAction[argparse.Argumen
 
 
 def _register_generated_services(sub: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
-    try:
-        registry = load_registry()
-    except Exception:
-        return
-    reserved = {"auth", "demo", "inventory", "jobs", "onboarding", "runs"}
+    registry = load_registry()
+    reserved = {"auth", "inventory", "onboarding", "runs"}
     services = sorted(registry.data.get("services", []), key=lambda item: str(item.get("service_id") or ""))
     for service in services:
         service_id = str(service.get("service_id") or "").strip()
@@ -116,6 +112,10 @@ def _register_generated_services(sub: argparse._SubParsersAction[argparse.Argume
         parser.add_argument("--input-json", required=True, help="Path to operation input JSON")
         parser.add_argument("--ack-no-snapshot", action="store_true", default=argparse.SUPPRESS, help="Acknowledge no Azure snapshot is available")
         parser.add_argument("--output-file", default=argparse.SUPPRESS, help="Write safe command output JSON to a file")
+        for flag in ("--bind-azure", "--ack-spend-money", "--apply", "--yes", "--ack-irreversible"):
+            parser.add_argument(flag, action="store_true", default=argparse.SUPPRESS)
+        for flag in ("--plan-out", "--plan-in", "--receipt-out"):
+            parser.add_argument(flag, default=argparse.SUPPRESS)
         parser.set_defaults(func=execute_generated_operation, write_capable=True)
 
 
@@ -190,10 +190,14 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--output", choices=("json", "text"), default="json", help="Output format (default: json)")
     p.add_argument("--log-file", default=None, help="Optional audit log path (JSONL)")
     p.add_argument("--apply", action="store_true", help="Apply changes (default is dry-run)")
-    p.add_argument("--yes", action="store_true", help="Additional confirmation for destructive/batch actions")
+    p.add_argument("--yes", action="store_true", help="Confirm the reviewed Azure change")
+    p.add_argument("--bind-azure", action="store_true", help="Prepare an approval plan for the current Azure connection")
+    p.add_argument("--ack-spend-money", action="store_true", help="Confirm spending approval for a covered Azure change")
     p.add_argument("--plan-out", default=None, help="Write a dry-run plan JSON to a file")
     p.add_argument("--plan-in", default=None, help="Apply from an existing plan JSON file (high-risk writes)")
-    p.add_argument("--receipt-out", default=None, help="Write an apply receipt JSON to a file")
+    p.add_argument("--receipt-out", default=None, help="Write a receipt JSON to a file")
+    p.add_argument("--output-file", default=None, help="Write safe command output JSON to a file")
+    p.add_argument("--ack-no-snapshot", action="store_true", help="Confirm the change has no automatic snapshot")
     p.add_argument(
         "--ack-irreversible",
         action="store_true",
@@ -237,21 +241,6 @@ def build_parser() -> argparse.ArgumentParser:
     token_status = token_sub.add_parser("status", help="Show token status (never prints token values)")
     token_status.set_defaults(func=auth_cmd.cmd_auth_token_status, write_capable=False)
 
-    jobs = sub.add_parser("jobs", help="Local CSV job helper")
-    jobs_sub = jobs.add_subparsers(dest="jobs_cmd", required=True, parser_class=_ToolArgumentParser)
-    jobs_run = jobs_sub.add_parser("run", help="Run a CSV job file (read-only/dry-run helper)")
-    jobs_run.add_argument("--file", required=False, help="Job CSV file (must include action column)")
-    jobs_run.add_argument("--limit", type=int, default=None, help="Max number of rows to process")
-    jobs_run.set_defaults(func=jobs_cmd.cmd_jobs_run, write_capable=True)
-
-    demo = sub.add_parser("demo", help="Local demo commands")
-    demo_sub = demo.add_subparsers(dest="demo_cmd", required=True, parser_class=_ToolArgumentParser)
-    demo_read = demo_sub.add_parser("read", help="Safe read (demo)")
-    demo_read.set_defaults(func=demo_cmd.cmd_demo_read, write_capable=False)
-    demo_write = demo_sub.add_parser("write", help="Create a local dry-run demo plan")
-    demo_write.add_argument("--selector", default="demo-resource", help="Target selector (demo)")
-    demo_write.set_defaults(func=demo_cmd.cmd_demo_write, write_capable=True)
-
     _register_generated_services(sub)
 
     return p
@@ -270,10 +259,13 @@ def _output_mode_from_argv(argv: list[str]) -> str:
 
 
 def main(argv: list[str]) -> int:
-    parser = build_parser()
     out = Output(mode=_output_mode_from_argv(argv))
     try:
+        parser = build_parser()
         args = parser.parse_args(argv)
+    except OSError as exc:
+        out.emit({"ok": False, "error": f"Cannot load Azure command inventory: {exc}", "error_type": type(exc).__name__})
+        return 1
     except ValidationError as e:
         out.emit({"ok": False, "error": str(e), "error_type": type(e).__name__})
         return 1
@@ -283,6 +275,7 @@ def main(argv: list[str]) -> int:
             return int(e.code or 0)
         except Exception:
             return 0
+    args.env_file = str(Path(args.env_file).expanduser())
     write_capable = bool(getattr(args, "write_capable", False))
     run_ctx: RunContext = init_run_context(
         env_file=str(args.env_file),
@@ -379,7 +372,7 @@ def main(argv: list[str]) -> int:
             return rc
 
         cfg = load_config(args.env_file)
-        env_fingerprint = cfg.management_endpoint
+        env_fingerprint = safe_url(cfg.management_endpoint)
         timeout_s = float(args.timeout_s) if args.timeout_s is not None else cfg.timeout_s
         ctx = {
             "cfg": cfg,
@@ -420,7 +413,7 @@ def main(argv: list[str]) -> int:
                 "command": command_str,
                 "apply": bool(args.apply),
                 "yes": bool(args.yes),
-                "env_fingerprint": cfg.management_endpoint,
+                "env_fingerprint": env_fingerprint,
                 "run_id": run_ctx.run_id,
             }
         )

@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class TestAzureInventory(unittest.TestCase):
     def test_inventory_is_pinned_and_generated_from_official_boundary(self) -> None:
-        data = json.loads((ROOT / "docs" / "official_inventory.json").read_text(encoding="utf-8"))
+        data = json.loads((ROOT / "src" / "azure_safe_agent_cli" / "official_inventory.json").read_text(encoding="utf-8"))
         self.assertEqual(data["source"]["repository"], "https://github.com/Azure/azure-rest-api-specs")
         self.assertEqual(data["source"]["pinned_commit"], "ada8601c3b75c15f06f21e50f9368d9476229305")
         self.assertEqual(data["source"]["inventory_strategy"], "generated-inventory possible")
@@ -19,7 +19,7 @@ class TestAzureInventory(unittest.TestCase):
         self.assertIn("Microsoft Graph", " ".join(data["boundary"]["excluded"]))
 
     def test_operations_are_explicit_and_latest_selected(self) -> None:
-        data = json.loads((ROOT / "docs" / "official_inventory.json").read_text(encoding="utf-8"))
+        data = json.loads((ROOT / "src" / "azure_safe_agent_cli" / "official_inventory.json").read_text(encoding="utf-8"))
         services = {service["service_id"]: service for service in data["services"]}
         self.assertIn("compute-management", services)
         compute_ops = services["compute-management"]["operations"]
@@ -28,7 +28,7 @@ class TestAzureInventory(unittest.TestCase):
         self.assertTrue(all(op["version_selection"] in {"latest_stable", "latest_preview_only"} for op in compute_ops[:50]))
 
     def test_non_azure_microsoft_product_boundaries_are_excluded(self) -> None:
-        data = json.loads((ROOT / "docs" / "official_inventory.json").read_text(encoding="utf-8"))
+        data = json.loads((ROOT / "src" / "azure_safe_agent_cli" / "official_inventory.json").read_text(encoding="utf-8"))
         service_ids = [str(service["service_id"]).lower() for service in data["services"]]
         excluded_fragments = (
             "awsconnector",
@@ -45,7 +45,7 @@ class TestAzureInventory(unittest.TestCase):
             self.assertFalse(any(fragment in service_id for service_id in service_ids), fragment)
 
     def test_sample_widget_specs_are_excluded_from_customer_boundary(self) -> None:
-        data = json.loads((ROOT / "docs" / "official_inventory.json").read_text(encoding="utf-8"))
+        data = json.loads((ROOT / "src" / "azure_safe_agent_cli" / "official_inventory.json").read_text(encoding="utf-8"))
         service_ids = [str(service["service_id"]).lower() for service in data["services"]]
         for fragment in ("contoso", "widgetmanager", "widget-data-plane", "widget-management"):
             self.assertFalse(any(fragment in service_id for service_id in service_ids), fragment)
@@ -53,7 +53,7 @@ class TestAzureInventory(unittest.TestCase):
         self.assertIn("contoso widgetmanager", excluded_text)
 
     def test_secret_like_reads_are_classified(self) -> None:
-        data = json.loads((ROOT / "docs" / "official_inventory.json").read_text(encoding="utf-8"))
+        data = json.loads((ROOT / "src" / "azure_safe_agent_cli" / "official_inventory.json").read_text(encoding="utf-8"))
         sensitive_reads = [
             op
             for service in data["services"]

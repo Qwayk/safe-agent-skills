@@ -407,8 +407,11 @@ def build_inventory(spec_root: Path) -> dict[str, Any]:
 def write_inventory_docs(inventory: dict[str, Any], *, tool_root: Path) -> None:
     docs = tool_root / "docs"
     docs.mkdir(parents=True, exist_ok=True)
-    (docs / "official_inventory.json").write_text(json.dumps(inventory, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    package = tool_root / "src" / "azure_safe_agent_cli"
+    package.mkdir(parents=True, exist_ok=True)
+    (package / "official_inventory.json").write_text(json.dumps(inventory, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     summary = inventory["summary"]
+    command_count = sum(bool(service.get("operations")) for service in inventory["services"])
     rows: list[str] = [
         "# Azure REST API coverage",
         "",
@@ -419,7 +422,8 @@ def write_inventory_docs(inventory: dict[str, Any], *, tool_root: Path) -> None:
         f"- Source repository: `{inventory['source']['repository']}`",
         f"- Pinned commit: `{inventory['source']['pinned_commit']}`",
         f"- Generated at: `{inventory['generated_at_utc']}`",
-        f"- Services: `{summary['services']}`",
+        f"- Service entries: `{summary['services']}`",
+        f"- Service commands with operations: `{command_count}`",
         f"- Source spec files: `{summary['source_files']}`",
             f"- Operation candidates across versions: `{summary['operation_candidates']}`",
             f"- Selected generated operations: `{summary['selected_operations']}`",
@@ -436,7 +440,7 @@ def write_inventory_docs(inventory: dict[str, Any], *, tool_root: Path) -> None:
         "- Included: official Azure REST API specs under `resource-manager` and `data-plane` stable or preview folders.",
         "- Excluded: examples, shared common types, repo plumbing, sample/test specs such as Contoso WidgetManager and Widget demo specs, Microsoft Graph, Microsoft 365, Microsoft Ads, Azure DevOps, GitHub, and other separate Microsoft products.",
         "- Preview APIs are included only because they are official Azure specs; the lifecycle column keeps that visible.",
-        "- Secret/token/key/password/credential-like reads stay implemented but are marked `sensitive_read` in `docs/official_inventory.json`; their response values are redacted by default.",
+        "- Secret/token/key/password/credential-like reads stay implemented but are marked `sensitive_read` in `src/azure_safe_agent_cli/official_inventory.json`; their response values are redacted by default.",
         "",
         "## Generated command coverage",
         "",
@@ -445,15 +449,17 @@ def write_inventory_docs(inventory: dict[str, Any], *, tool_root: Path) -> None:
     ]
     for service in inventory["services"]:
         lifecycles = ", ".join(service.get("lifecycles") or [])
-        rows.append(
-            f"| `{service['service_id']}` | {service['plane']} | {lifecycles} | {len(service.get('operations') or [])} | implemented | Generated named operations from pinned official specs. |"
-        )
+        operation_count = len(service.get("operations") or [])
+        status = "implemented | Generated named operations from pinned official specs."
+        if not operation_count:
+            status = "No command | The pinned specs contain no operations for this entry."
+        rows.append(f"| `{service['service_id']}` | {service['plane']} | {lifecycles} | {operation_count} | {status} |")
     rows.extend(
         [
             "",
             "## Operation-level detail",
             "",
-            "Operation-level detail lives in `docs/official_inventory.json` so the full ledger stays machine-readable and does not turn this page into a giant table.",
+            "Operation-level detail lives in `src/azure_safe_agent_cli/official_inventory.json` so the full ledger stays machine-readable and does not turn this page into a giant table.",
         ]
     )
     (docs / "api_coverage.md").write_text("\n".join(rows) + "\n", encoding="utf-8")

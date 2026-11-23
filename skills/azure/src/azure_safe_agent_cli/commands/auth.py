@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from ..azure_auth import resolve_connection
+from ..errors import ToolError
+from ..http import safe_url
 from ..oauth_tokens import get_token_status, token_path_for_env_file, write_token_from_file
 
 
@@ -12,14 +15,22 @@ def cmd_auth_check(args, ctx) -> int:
     status = get_token_status(tok_path)
     out = {
         "ok": True,
-        "management_endpoint": cfg.management_endpoint,
-        "data_plane_endpoint": cfg.data_plane_endpoint,
+        "management_endpoint": safe_url(cfg.management_endpoint),
+        "data_plane_endpoint": safe_url(cfg.data_plane_endpoint) if cfg.data_plane_endpoint else None,
         "tenant_id_configured": bool(cfg.tenant_id),
         "env_token_present": bool(cfg.token),
         "oauth_token": {"exists": status.exists, "path": status.path},
         "live_verified": False,
-        "note": "This local check confirms configuration shape only; live Azure identity is unverified until a safe token and target are available.",
+        "note": "Run one read against a known resource to check its Azure permissions.",
     }
+    try:
+        connection = resolve_connection(
+            cfg, env_file=ctx["env_file"], timeout=ctx.get("timeout_s"),
+        )
+    except (ToolError, RuntimeError, ValueError) as exc:
+        out.update(connection_ready=False, connection_error=str(exc))
+    else:
+        out.update(connection_ready=True, connection=connection.review_details())
     ctx["audit"].write("auth.check", out)
     ctx["out"].emit(out)
     return 0

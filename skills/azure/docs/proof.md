@@ -1,57 +1,33 @@
-# Proof and verification
+# Azure test results
 
-Most users will never need to run these commands themselves. You don’t need to run these commands yourself. They exist so a reviewer can check what has actually been checked, what was only tested locally, and what still needs live Azure credentials before anyone treats a result as proved. If you only check one thing, check that a run left a clear plan, receipt, refusal, or example output that matches the action the agent says it performed.
+## November 23, 2026 local checks
 
-## Current proof summary
+Fresh installs from the source folder and the local release folder each passed 34 tests with network access blocked. Both installed packages loaded 339 service commands and registered all 26,337 operations in the pinned inventory. The inventory has 340 service entries. The IoT Spaces entry has no operations.
 
-- The Azure command catalog is generated from a pinned Azure REST API spec snapshot.
-- Source tests cover command docs, auth behavior, write gates, sensitive-read redaction, jobs behavior, and inventory shape.
-- Local examples are redacted and do not contain real Azure secrets.
-- Live Azure behavior is marked honestly when it has not been checked against safe credentials and a real target.
+The tests used simulated Azure replies to check sign-in and token selection, saved approvals, resource and location limits, and private values in replies. They checked that the tool keeps a receipt when a change is pending, Azure reports a failure, or a reply is lost. They also checked that the tool keeps the token on the approved host and avoids sending a write again after a lost reply. A separate install check created a private settings file and prepared an offline resource group change without sending it.
 
-## What this page proves
+Azure sign-in and service calls still need a check on a real account. Start with the [first read](quickstart.md) after you have permission to use that subscription.
 
-- The Azure CLI source shape is documented.
-- Inventory metadata is pinned and stored in `docs/official_inventory.json`.
-- Safety gates and command flow are present in command docs.
+## Repeat the offline checks
 
-## Local proof evidence
-
-Run these checks from the tool folder after dependencies are installed:
+From the tool folder, after installing it, run:
 
 ```bash
 qwayk-azure-safe-agent-cli --output json --version
 qwayk-azure-safe-agent-cli onboarding --no-write-env
-qwayk-azure-safe-agent-cli auth check
 qwayk-azure-safe-agent-cli inventory summary
+python -m unittest -q
 ```
 
-These commands can be run without changing Azure. They prove local command startup, local setup shape, auth readiness reporting, and inventory availability.
+## Earlier examples
 
-## What is still live-unverified
+The June 28, 2026 inventory still uses Azure REST spec commit `ada8601c3b75c15f06f21e50f9368d9476229305`. The [coverage guide](api_coverage.md) lists the services and [the package inventory](../src/azure_safe_agent_cli/official_inventory.json) holds the exact operation names.
 
-- `auth check` confirms local configuration state and token presence.
-- Live Azure execution is not verified in this repo snapshot without live credentials.
-- Write verification notes in receipts depend on the real target response path.
+These examples show the earlier output format. The [approval guide](safety_model.md) explains the current plan and receipt fields.
 
-## Artifact locations
+- [Version](examples/outputs/version.json)
+- [Access check](examples/outputs/auth_check.json)
+- [Plan](examples/plan.example.json)
+- [Receipt](examples/receipt.example.json)
 
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check.json`
-- `docs/examples/plan.example.json`
-- `docs/examples/receipt.example.json`
-- `.state/runs/*` when write-capable commands are run
-
-The checked-in examples are redacted, representative examples from this Azure CLI shape. They do not claim live Azure account proof.
-
-## Safety proof
-
-- Refusals are expected for these conditions:
-  - missing `AZURE_API_TOKEN`
-  - missing `AZURE_DATA_PLANE_ENDPOINT` on data-plane command
-  - write commands without `--plan-in`, `--apply`, `--yes`
-  - missing `--ack-no-snapshot` / `--ack-irreversible` where required
-  - plan drift
-  - demo or jobs write apply paths, which are local-only and do not apply Azure writes
-
-Sensitive-read proof is covered by tests that mark secret-like reads in `docs/official_inventory.json` and redact generic response fields such as `value`.
+Use `qwayk-azure-safe-agent-cli --output json auth check` to check the current connection. This may ask the local Azure CLI for a token. By default, the tool stores run records under `.state/runs/` when it writes them.

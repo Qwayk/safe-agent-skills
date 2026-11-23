@@ -2,17 +2,15 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[2]
-
-
 def _inventory_path(root: Path | None = None) -> Path:
-    base = root or _repo_root()
-    return base / "docs" / "official_inventory.json"
+    if root is not None:
+        return root / "src" / "azure_safe_agent_cli" / "official_inventory.json"
+    return Path(__file__).with_name("official_inventory.json")
 
 
 def slugify(value: str) -> str:
@@ -49,9 +47,11 @@ class AzureRegistry:
         )
 
 
+@lru_cache(maxsize=2)
 def load_inventory(root: Path | None = None) -> dict[str, Any]:
     return json.loads(_inventory_path(root).read_text(encoding="utf-8"))
 
 
+@lru_cache(maxsize=2)
 def load_registry(root: Path | None = None) -> AzureRegistry:
     return AzureRegistry(load_inventory(root))

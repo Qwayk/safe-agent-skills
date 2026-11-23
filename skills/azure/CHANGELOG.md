@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## November 23, 2026
+
+- Included the command list in the installed package.
+- Set up access with the selected Azure CLI sign-in or a private token. Onboarding keeps the settings path you choose.
+- Saved plans now check the Azure sign-in, subscription, endpoint, and exact request. Covered actions such as starting a VM require spending approval.
+- The tool keeps a receipt when a change is pending, fails, or loses a reply. It follows status links on the approved host and records when Azure asks you to wait.
+- Combined the setup and approval guides and removed the demo and sample CSV jobs.
+
 ## [0.1.0] - 2026-06-28
 
 ### Added

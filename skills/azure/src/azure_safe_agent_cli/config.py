@@ -47,6 +47,8 @@ class Config:
     allowed_resource_groups: tuple[str, ...]
     allowed_locations: tuple[str, ...]
     allowed_services: tuple[str, ...]
+    subscription_id: str | None = None
+    data_plane_resource: str | None = None
 
     @property
     def base_url(self) -> str:
@@ -69,7 +71,7 @@ class Config:
 
 
 def load_config(env_file: str | None) -> Config:
-    env = _parse_env_file(Path(env_file or ".env"))
+    env = _parse_env_file(Path(env_file or ".env").expanduser())
 
     management_endpoint = (_get(env, "AZURE_MANAGEMENT_ENDPOINT") or "https://management.azure.com").rstrip("/")
     data_plane_endpoint = _get(env, "AZURE_DATA_PLANE_ENDPOINT").rstrip("/") or None
@@ -103,4 +105,6 @@ def load_config(env_file: str | None) -> Config:
         allowed_resource_groups=allowed_resource_groups,
         allowed_locations=allowed_locations,
         allowed_services=allowed_services,
+        subscription_id=_get(env, "AZURE_SUBSCRIPTION_ID") or None,
+        data_plane_resource=_get(env, "AZURE_DATA_PLANE_RESOURCE") or None,
     )

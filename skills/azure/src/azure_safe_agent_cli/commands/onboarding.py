@@ -1,84 +1,55 @@
 from __future__ import annotations
 
+import os
+import shlex
+import sys
 from pathlib import Path
 
 
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
-
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+def _create_settings(path: Path) -> bool:
+    if path.exists():
+        return False
+    path.parent.mkdir(parents=True, exist_ok=True)
+    example = path.parent / ".env.example"
+    settings = example.read_text(encoding="utf-8") if example.is_file() else (
+        "# Optional Azure settings. Keep your Azure CLI sign-in on this machine.\n"
+        "AZURE_SUBSCRIPTION_ID=\n"
+    )
+    try:
+        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError:
+        return False
+    with os.fdopen(descriptor, "w", encoding="utf-8") as output:
+        output.write(settings)
+    return True
 
 
 def cmd_onboarding(args: object, ctx: dict) -> int:
-    out = ctx["out"]
-    env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
-
-    env_path = Path(env_file)
-    env_created = False
-
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
-        else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
-
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    if not _has_nonempty_env_value(lines, "AZURE_MANAGEMENT_ENDPOINT"):
-        missing.append("AZURE_MANAGEMENT_ENDPOINT")
-    if not _has_nonempty_env_value(lines, "AZURE_API_TOKEN"):
-        missing.append("AZURE_API_TOKEN")
-
+    path = Path(str(getattr(args, "env_file", ".env"))).expanduser()
+    created = not bool(getattr(args, "no_write_env", False)) and _create_settings(path)
+    launcher = Path(sys.argv[0])
+    executable = (
+        shlex.quote(str(launcher.absolute()))
+        if launcher.name == "qwayk-azure-safe-agent-cli"
+        else "qwayk-azure-safe-agent-cli"
+    )
+    command = f"{executable} --output json --env-file {shlex.quote(str(path))} auth check"
     steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Open .env and fill the required values:",
-        "  - AZURE_MANAGEMENT_ENDPOINT=https://management.azure.com",
-        "  - AZURE_API_TOKEN=<your token>",
-        "  - Optional allowlists: AZURE_ALLOWED_SUBSCRIPTIONS, AZURE_ALLOWED_RESOURCE_GROUPS, AZURE_ALLOWED_LOCATIONS, AZURE_ALLOWED_SERVICES",
-        "Run: qwayk-azure-safe-agent-cli --output json auth check",
+        "Sign in locally with az login, or use your existing Azure token settings.",
+        "Set AZURE_SUBSCRIPTION_ID if you want to select a subscription in this settings file.",
+        f"Check the connection with {command}",
     ]
-
-    payload = {
-        "ok": True,
-        "onboarding": {
-            "env_file": env_file,
-            "env_created": env_created,
-            "missing": missing,
-            "next_command": "qwayk-azure-safe-agent-cli --output json auth check",
-            "steps": steps,
-        },
-    }
-
     if str(getattr(args, "output", "json")) == "json":
-        out.emit(payload)
+        ctx["out"].emit({
+            "ok": True,
+            "onboarding": {
+                "env_file": str(path),
+                "env_created": created,
+                "missing": [],
+                "next_command": command,
+                "steps": steps,
+            },
+        })
     else:
-        print("To connect this tool to your API, do this once:")
-        for i, s in enumerate(steps, start=1):
-            print(f"{i}. {s}")
-        if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        print("")
-        print("Next: qwayk-azure-safe-agent-cli --output json auth check")
+        print("\n".join(steps))
     return 0
