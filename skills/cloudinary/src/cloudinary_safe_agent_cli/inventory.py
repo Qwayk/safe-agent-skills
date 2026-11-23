@@ -47,12 +47,8 @@ class OperationSpec:
 _CACHE: dict[str, Any] = {}
 
 
-def _tool_root() -> Path:
-    return Path(__file__).resolve().parents[2]
-
-
 def inventory_path() -> Path:
-    return _tool_root() / "docs" / "_generated" / "cloudinary_rest_inventory.json"
+    return Path(__file__).with_name("cloudinary_rest_inventory.json")
 
 
 def load_inventory_json() -> dict[str, Any]:
@@ -62,7 +58,7 @@ def load_inventory_json() -> dict[str, Any]:
     path = inventory_path()
     if not path.exists():
         raise ToolError(
-            "Cloudinary inventory JSON is missing. Run `python3 scripts/generate_cloudinary_rest_inventory.py`."
+            "Cloudinary command list is missing from the package. Reinstall from a complete copy."
         )
     try:
         data = json.loads(path.read_text(encoding="utf-8"))

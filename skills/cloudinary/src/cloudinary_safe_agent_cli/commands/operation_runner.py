@@ -1,17 +1,19 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import tempfile
 import time
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
-from ..errors import SafetyError, ValidationError
+from ..errors import SafetyError, ToolError, ValidationError
 from ..inventory import OperationSpec, find_by_method_path, require_operation
 from ..json_files import read_json_file, write_json_file
 from ..paths import resolve_safe_out_path
-
 
 _COLON_PARAM_RE = re.compile(r":([A-Za-z_][A-Za-z0-9_]*)")
 _BRACE_PARAM_RE = re.compile(r"\{([A-Za-z_][A-Za-z0-9_]*)\}")
@@ -196,8 +198,23 @@ def _load_multipart(spec_file: str) -> tuple[dict[str, str], dict[str, Any]]:
     return ({str(k): str(v) for k, v in fields.items()}, request_files)
 
 
-def _build_plan(*, spec: OperationSpec, ctx: dict[str, Any], path: str, query: dict[str, str], form_fields: dict[str, str], body_json: Any | None, has_multipart: bool, out_path: str | None) -> dict[str, Any]:
-    risk = "low" if not spec.is_write else ("high" if spec.method == "DELETE" else "medium")
+def _visible_fields(value: Any, cfg) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: "[REDACTED]"
+            if key.lower().endswith(("api_key", "secret", "token", "password", "signature", "authorization"))
+            else _visible_fields(item, cfg)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_visible_fields(item, cfg) for item in value]
+    return cfg.redact(value) if isinstance(value, str) else value
+
+
+def _build_plan(*, spec: OperationSpec, ctx: dict[str, Any], path: str, query: dict[str, str], form_fields: dict[str, str], body_json: Any | None, multipart_files: dict[str, tuple], out_path: str | None) -> dict[str, Any]:
+    cfg = ctx["cfg"]
+    confirm = _needs_ack(spec, form_fields)
+    risk = "low" if not spec.is_write else ("high" if confirm else "medium")
     reasons = [spec.api_group]
     if spec.beta:
         reasons.append("beta")
@@ -208,12 +225,23 @@ def _build_plan(*, spec: OperationSpec, ctx: dict[str, Any], path: str, query: d
     if spec.is_write:
         reasons.append("write-operation")
 
+    files = {
+        key: {
+            "filename": part[0],
+            "sha256": sha256(part[1]).hexdigest(),
+            "content_type": part[2] if len(part) == 3 else None,
+        }
+        for key, part in multipart_files.items()
+    }
+    request_hash = sha256(
+        json.dumps([path, query, form_fields, body_json, files], sort_keys=True).encode("utf-8")
+    ).hexdigest()
     plan = {
         "tool": ctx.get("tool"),
         "version": ctx.get("tool_version"),
         "generated_at_utc": _utc_now(),
         "env_fingerprint": ctx["cfg"].env_fingerprint(),
-        "command": ctx.get("command_str"),
+        "command": spec.command,
         "selector": {
             "area": spec.area,
             "op_key": spec.op_key,
@@ -221,21 +249,25 @@ def _build_plan(*, spec: OperationSpec, ctx: dict[str, Any], path: str, query: d
         },
         "risk_level": risk,
         "risk_reasons": reasons,
+        "requires_ack_irreversible": confirm,
         "baseline": {
             "env_fingerprint": ctx["cfg"].env_fingerprint(),
             "method": spec.method,
             "path": path,
-            "query": dict(query),
+            "query": _visible_fields(query, cfg),
             "auth_scope": spec.auth_scope,
+            "request_sha256": request_hash,
         },
         "request_plan": {
             "input_style": spec.input_style,
             "path": path,
-            "query": dict(query),
+            "query": _visible_fields(query, cfg),
             "fixed_form_fields": dict(spec.fixed_form_fields),
-            "form_fields": dict(form_fields),
+            "form_fields": _visible_fields(form_fields, cfg),
             "body_json_present": body_json is not None,
-            "multipart_present": has_multipart,
+            "body_json": _visible_fields(body_json, cfg),
+            "multipart_present": bool(files),
+            "files": _visible_fields(files, cfg),
             "out_path": out_path,
         },
         "verification_plan": {
@@ -246,103 +278,156 @@ def _build_plan(*, spec: OperationSpec, ctx: dict[str, Any], path: str, query: d
     return _attach_write_safety_contract(plan=plan, spec=spec, path=path)
 
 
-def _validate_plan_for_apply(*, plan: dict[str, Any], spec: OperationSpec, ctx: dict[str, Any], path: str, query: dict[str, str]) -> None:
+def _validate_plan_for_apply(*, plan: dict[str, Any], current: dict[str, Any]) -> None:
     baseline = plan.get("baseline")
     selector = plan.get("selector")
     if not isinstance(baseline, dict) or not isinstance(selector, dict):
         raise SafetyError("Refusing to apply: plan is missing baseline or selector metadata.")
-    if str(baseline.get("env_fingerprint") or "") != str(ctx["cfg"].env_fingerprint()):
+    expected = current["baseline"]
+    if baseline.get("env_fingerprint") != expected["env_fingerprint"]:
         raise SafetyError("Refusing to apply: plan env_fingerprint does not match the current environment.")
-    if str(selector.get("area") or "") != spec.area or str(selector.get("op_key") or "") != spec.op_key:
+    if selector != current["selector"] or baseline.get("auth_scope") != expected["auth_scope"]:
         raise SafetyError("Refusing to apply: plan target does not match the requested Cloudinary operation.")
-    if str(baseline.get("method") or "") != spec.method or str(baseline.get("path") or "") != path:
+    if baseline.get("method") != expected["method"] or baseline.get("path") != expected["path"]:
         raise SafetyError("Refusing to apply: plan method or path does not match the current request.")
-    if dict(baseline.get("query") or {}) != dict(query):
+    if baseline.get("query") != expected["query"]:
         raise SafetyError("Refusing to apply: plan query parameters do not match the current request.")
+    if not baseline.get("request_sha256"):
+        raise SafetyError("Save and review a new Cloudinary plan before applying.")
+    if baseline["request_sha256"] != expected["request_sha256"]:
+        raise SafetyError("The body, form fields, or files changed. Review and save a new plan.")
 
 
-def _needs_ack(spec: OperationSpec) -> bool:
-    if spec.method == "DELETE":
+def _is_destroy(spec: OperationSpec) -> bool:
+    return spec.area == "upload" and spec.op_key in {"destroy-by-asset-id", "destroy-by-public-id"}
+
+
+def _needs_ack(spec: OperationSpec, form_fields: dict[str, str]) -> bool:
+    if spec.method == "DELETE" or _is_destroy(spec):
         return True
     if spec.api_group == "provisioning" and "/access_keys" in spec.path_template:
         return True
-    return False
+    return (
+        spec.area == "upload"
+        and spec.op_key == "upload-signed"
+        and form_fields.get("overwrite", "false").strip().lower() not in {"false", "0"}
+    )
 
 
-def _best_effort_verify(*, spec: OperationSpec, ctx: dict[str, Any], path: str, query: dict[str, str], form_fields: dict[str, str], response_json: Any | None) -> dict[str, Any]:
-    if not spec.is_write:
-        return {"ok": True, "method": "api_response_only"}
-
-    same_get = find_by_method_path(method="GET", path_template=spec.path_template)
-    if same_get is not None and same_get.auth_scope == spec.auth_scope:
-        verify_response = ctx["http"].request_allow_error(
-            "GET",
-            ctx["base_url"] + path,
-            headers=ctx["headers"],
-            params=query or None,
+def _verify_get(
+    spec: OperationSpec,
+    ctx: dict[str, Any],
+    *,
+    url: str,
+    headers: dict[str, str],
+    query: dict[str, str] | None = None,
+    expected: dict[str, Any] | None = None,
+    expect_missing: bool = False,
+) -> dict[str, Any]:
+    try:
+        reply = ctx["http"].request_allow_error(
+            "GET", url, headers=headers, params=query, private=spec.requires_out
         )
-        if spec.method == "DELETE":
-            return {
-                "ok": verify_response.status >= 400,
-                "method": "read_back_get_same_path_expected_missing",
-                "http_status": verify_response.status,
-            }
-        body = verify_response.maybe_json()
-        return {
-            "ok": verify_response.status < 400,
-            "method": "read_back_get_same_path",
-            "http_status": verify_response.status,
-            "evidence": body if isinstance(body, dict) else None,
-        }
+    except RuntimeError:
+        return {"ok": None, "method": "follow_up_unavailable"}
+    if expect_missing and reply.status == 404:
+        return {"ok": True, "method": "target_missing", "http_status": reply.status}
+    if not 200 <= reply.status < 300:
+        return {"ok": None, "method": "follow_up_unavailable", "http_status": reply.status}
+    if expect_missing:
+        return {"ok": False, "method": "target_still_visible", "http_status": reply.status}
+    body = reply.maybe_json()
+    if expected and isinstance(body, dict) and all(
+        key in body and json.dumps(value, sort_keys=True) == json.dumps(body[key], sort_keys=True)
+        for key, value in expected.items()
+    ):
+        return {"ok": True, "method": "values_match", "http_status": reply.status}
+    return {
+        "ok": None,
+        "method": "requested_values_not_confirmed",
+        "http_status": reply.status,
+    }
 
-    if spec.auth_scope.startswith("product") and isinstance(response_json, dict):
-        asset_id = str(response_json.get("asset_id") or "").strip()
-        if asset_id and ctx["cfg"].has_product_basic_auth():
-            verify = ctx["http"].request_allow_error(
-                "GET",
-                ctx["cfg"].product_v1_base_url() + f"/resources/{asset_id}",
-                headers=ctx["cfg"].product_auth_header(),
+
+def _best_effort_verify(
+    *,
+    spec: OperationSpec,
+    ctx: dict[str, Any],
+    path: str,
+    query: dict[str, str],
+    form_fields: dict[str, str],
+    body_json: Any | None,
+    response_json: Any | None,
+) -> dict[str, Any]:
+    # An accepted request can still be unverified. Receipts only carry the
+    # outcome of the follow-up, never the contents of the provider's reply.
+    cfg = ctx["cfg"]
+    if spec.requires_out:
+        return {"ok": None, "method": "private_result_saved"}
+    response = response_json if isinstance(response_json, dict) else {}
+    if _is_destroy(spec):
+        if response.get("result") == "not found":
+            return {"ok": None, "method": "provider_reported_not_found"}
+        if response.get("result") != "ok":
+            return {"ok": None, "method": "deletion_not_confirmed"}
+        dest = None
+        asset_id = form_fields.get("asset_id")
+        public_id = form_fields.get("public_id")
+        if asset_id:
+            dest = f"/resources/{quote(asset_id, safe='')}"
+        elif public_id:
+            resource_type = path.split("/")[1]
+            delivery = quote(form_fields.get("type", "upload"), safe="")
+            dest = f"/resources/{resource_type}/{delivery}/{quote(public_id, safe='')}"
+        if dest:
+            return _verify_get(
+                spec, ctx, url=cfg.product_v1_base_url() + dest,
+                headers=cfg.product_auth_header(), expect_missing=True,
             )
-            return {
-                "ok": verify.status < 400,
-                "method": "admin_get_by_asset_id",
-                "http_status": verify.status,
-                "asset_id": asset_id,
-            }
-
-    if spec.auth_scope.startswith("product") and ctx["cfg"].has_product_basic_auth():
-        public_id = str(form_fields.get("public_id") or "").strip()
-        resource_type = str(form_fields.get("resource_type") or spec.path_defaults.get("resource_type") or "").strip()
-        delivery_type = str(form_fields.get("type") or "upload").strip()
-        if public_id and resource_type:
-            verify = ctx["http"].request_allow_error(
-                "GET",
-                ctx["cfg"].product_v1_base_url() + f"/resources/{resource_type}/{delivery_type}/{public_id}",
-                headers=ctx["cfg"].product_auth_header(),
-            )
-            if spec.method == "DELETE":
-                return {
-                    "ok": verify.status >= 400,
-                    "method": "admin_get_by_public_id_expected_missing",
-                    "http_status": verify.status,
-                    "public_id": public_id,
-                }
-            return {
-                "ok": verify.status < 400,
-                "method": "admin_get_by_public_id",
-                "http_status": verify.status,
-                "public_id": public_id,
-            }
-
-    return {"ok": True, "method": "api_response_success"}
+    same_get = find_by_method_path(method="GET", path_template=spec.path_template)
+    if same_get is not None and same_get.auth_scope == spec.auth_scope and not same_get.requires_out:
+        expected = body_json if isinstance(body_json, dict) else form_fields
+        return _verify_get(
+            spec, ctx, url=ctx["base_url"] + path, headers=ctx["headers"],
+            query=query or None, expected=expected, expect_missing=spec.method == "DELETE",
+        )
+    asset_id = response.get("asset_id")
+    version = response.get("version")
+    if (
+        spec.area == "upload" and spec.op_key in {"upload-signed", "upload-unsigned"}
+        and isinstance(asset_id, str) and asset_id and version is not None
+        and cfg.has_product_basic_auth()
+    ):
+        return _verify_get(
+            spec, ctx, url=cfg.product_v1_base_url() + f"/resources/{quote(asset_id, safe='')}",
+            headers=cfg.product_auth_header(), expected={"asset_id": asset_id, "version": version},
+        )
+    return {"ok": None, "method": "provider_reply_only"}
 
 
-def _write_out(*, ctx: dict[str, Any], out_path: str, overwrite: bool, body: bytes, maybe_json: Any | None) -> str:
-    target = resolve_safe_out_path(project_dir=Path(ctx["project_dir"]), out_path=out_path, overwrite=overwrite)
-    if maybe_json is not None:
-        target.write_text(json.dumps(maybe_json, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    else:
-        target.write_bytes(body)
+def _write_out(
+    target: Path, *, overwrite: bool, body: bytes, maybe_json: Any | None, private: bool
+) -> str:
+    payload = (
+        (json.dumps(maybe_json, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
+        if maybe_json is not None
+        else body
+    )
+    if not private:
+        with target.open("wb" if overwrite else "xb") as stream:
+            stream.write(payload)
+        return str(target)
+    with tempfile.NamedTemporaryFile(dir=target.parent, delete=False) as stream:
+        temp_path = Path(stream.name)
+        try:
+            stream.write(payload)
+            stream.close()
+            if overwrite:
+                os.replace(temp_path, target)
+            else:
+                os.link(temp_path, target)
+        finally:
+            temp_path.unlink(missing_ok=True)
     return str(target)
 
 
@@ -361,13 +446,21 @@ def cmd_operation_call(args: Any, ctx: dict[str, Any]) -> int:
         body_json = read_json_file(str(args.body_json_file))
 
     multipart_fields: dict[str, str] | None = None
-    multipart_files: dict[str, Any] | None = None
+    multipart_files: dict[str, Any] = {}
     if getattr(args, "multipart_spec_file", None):
         multipart_fields, multipart_files = _load_multipart(str(args.multipart_spec_file))
 
     if multipart_fields:
         form_fields.update(multipart_fields)
 
+    if body_json is not None and (
+        spec.input_style not in {"json", "json_or_form"} or form_fields or multipart_files
+    ):
+        raise ValidationError("Use a JSON body only with a command that accepts it, without form fields or files.")
+    if (form_fields or multipart_files) and spec.input_style not in {"form", "json_or_form", "multipart_or_form"}:
+        raise ValidationError("This command does not accept form fields or files.")
+    if multipart_files and spec.input_style != "multipart_or_form":
+        raise ValidationError("This command does not accept attached files.")
     for key, value in spec.fixed_form_fields.items():
         if key in form_fields and form_fields[key] != value:
             raise ValidationError(f"Form field {key!r} is fixed for this command and must be {value!r}.")
@@ -380,6 +473,8 @@ def cmd_operation_call(args: Any, ctx: dict[str, Any]) -> int:
 
     if spec.body_required and body_json is None and not form_fields and not multipart_files:
         raise ValidationError("This Cloudinary operation requires a request body. Supply --body-json-file, --form-field, or --multipart-spec-file.")
+    if spec.area == "upload" and spec.op_key == "upload-signed":
+        form_fields.setdefault("overwrite", "false")
 
     base_url, headers = ctx["cfg"].runtime_base_and_headers_for(spec=spec, need_credentials=False)
     ctx["base_url"] = base_url
@@ -394,7 +489,7 @@ def cmd_operation_call(args: Any, ctx: dict[str, Any]) -> int:
         query=query,
         form_fields=form_fields,
         body_json=body_json,
-        has_multipart=bool(multipart_files),
+        multipart_files=multipart_files,
         out_path=out_path,
     )
 
@@ -403,8 +498,7 @@ def cmd_operation_call(args: Any, ctx: dict[str, Any]) -> int:
         plan_obj = read_json_file(plan_in)
         if not isinstance(plan_obj, dict):
             raise ValidationError("Plan file must be a JSON object")
-        _validate_plan_for_apply(plan=plan_obj, spec=spec, ctx=ctx, path=path, query=query)
-        plan = _attach_write_safety_contract(plan=plan_obj, spec=spec, path=path)
+        _validate_plan_for_apply(plan=plan_obj, current=plan)
 
     if spec.is_write and not bool(ctx.get("apply")):
         plan_out = ctx.get("plan_out")
@@ -418,7 +512,7 @@ def cmd_operation_call(args: Any, ctx: dict[str, Any]) -> int:
             raise SafetyError("Refusing to apply: this command is dry-run by default (pass --apply).")
         if not bool(ctx.get("yes")):
             raise SafetyError("Refusing to apply: Cloudinary writes require --yes.")
-        if _needs_ack(spec) and not bool(ctx.get("ack_irreversible")):
+        if _needs_ack(spec, form_fields) and not bool(ctx.get("ack_irreversible")):
             raise SafetyError("Refusing to apply: this Cloudinary operation also needs --ack-irreversible.")
 
     if spec.requires_out and ((not spec.is_write) or bool(ctx.get("apply"))) and not out_path:
@@ -447,31 +541,44 @@ def cmd_operation_call(args: Any, ctx: dict[str, Any]) -> int:
         )
         return 0
 
-    if (not spec.is_write) or bool(ctx.get("apply")):
-        base_url, headers = ctx["cfg"].runtime_base_and_headers_for(spec=spec, need_credentials=True)
-        ctx["base_url"] = base_url
-        ctx["headers"] = headers
+    if spec.is_write and not plan_in:
+        raise SafetyError("Save and review a preview, then pass it with --plan-in before applying.")
+
+    target = (
+        resolve_safe_out_path(project_dir=Path(ctx["project_dir"]), out_path=out_path, overwrite=overwrite)
+        if out_path else None
+    )
+    base_url, headers = ctx["cfg"].runtime_base_and_headers_for(spec=spec, need_credentials=True)
+    ctx["base_url"] = base_url
+    ctx["headers"] = headers
 
     response = ctx["http"].request(
         spec.method,
         base_url + path,
         headers=headers,
         params=query or None,
-        json_body=body_json if spec.input_style == "json" else None,
+        json_body=body_json,
         data=form_fields or None,
         files=multipart_files or None,
+        allow_error=spec.requires_out,
+        private=spec.requires_out,
     )
+    if not 200 <= response.status < 300:
+        raise ToolError(f"Cloudinary returned HTTP {response.status} for {spec.command}.")
     response_json = response.maybe_json()
 
     persisted_out = None
-    if out_path:
-        persisted_out = _write_out(
-            ctx=ctx,
-            out_path=out_path,
-            overwrite=overwrite,
-            body=response.body,
-            maybe_json=response_json,
-        )
+    output_error = None
+    if target is not None:
+        try:
+            persisted_out = _write_out(
+                target, overwrite=overwrite, body=response.body, maybe_json=response_json,
+                private=spec.requires_out,
+            )
+        except OSError as exc:
+            output_error = f"Cloudinary replied, but the result could not be saved to {target}: {exc.strerror}."
+            if not spec.is_write:
+                raise ToolError(output_error) from None
 
     if not spec.is_write:
         payload: dict[str, Any] = {
@@ -482,16 +589,16 @@ def cmd_operation_call(args: Any, ctx: dict[str, Any]) -> int:
                 "op_key": spec.op_key,
                 "method": spec.method,
                 "path": path,
-                "query": query,
+                "query": _visible_fields(query, ctx["cfg"]),
             },
             "http_status": response.status,
         }
         if persisted_out:
             payload["out"] = persisted_out
         elif response_json is not None:
-            payload["response"] = response_json
+            payload["response"] = _visible_fields(response_json, ctx["cfg"])
         else:
-            payload["response_text"] = response.text()
+            payload["response_text"] = ctx["cfg"].redact(response.text())
         ctx["audit"].write("operation.read", {"operation_id": spec.operation_id, "status": response.status, "out": persisted_out})
         ctx["out"].emit(payload)
         return 0
@@ -502,7 +609,14 @@ def cmd_operation_call(args: Any, ctx: dict[str, Any]) -> int:
         path=path,
         query=query,
         form_fields=form_fields,
+        body_json=body_json,
         response_json=response_json,
+    )
+    if output_error and spec.requires_out:
+        verification = {"ok": None, "method": "private_result_not_saved"}
+    no_change = isinstance(response_json, dict) and (
+        (_is_destroy(spec) and response_json.get("result") == "not found")
+        or (spec.area == "upload" and response_json.get("existing") is True)
     )
     receipt = {
         "tool": ctx.get("tool"),
@@ -510,19 +624,28 @@ def cmd_operation_call(args: Any, ctx: dict[str, Any]) -> int:
         "applied_at_utc": _utc_now(),
         "env_fingerprint": ctx["cfg"].env_fingerprint(),
         "selector": {"area": spec.area, "op_key": spec.op_key, "operation_id": spec.operation_id},
-        "request": {"method": spec.method, "path": path, "query": query},
+        "request": {
+            "method": spec.method, "path": path, "query": plan["baseline"]["query"],
+            "request_sha256": plan["baseline"]["request_sha256"],
+        },
         "before_state": plan.get("before_state"),
         "no_snapshot_approval": {"approved": True, "flag": "--ack-no-snapshot"},
         "recovery": plan.get("recovery"),
-        "changed": True,
+        "changed": False if no_change else True if verification["ok"] is True else None,
+        "provider_replied": True,
         "verification": verification,
         "out_path": persisted_out,
     }
     receipt_out = ctx.get("receipt_out")
-    receipt_path = write_json_file(receipt_out, receipt) if receipt_out else None
+    receipt_path = None
+    if receipt_out:
+        try:
+            receipt_path = write_json_file(receipt_out, receipt)
+        except OSError as exc:
+            output_error = output_error or f"Cloudinary replied, but the receipt could not be saved: {exc.strerror}."
     ctx["audit"].write("operation.apply", {"operation_id": spec.operation_id, "status": response.status, "receipt_out": receipt_path})
     payload = {
-        "ok": True,
+        "ok": output_error is None,
         "dry_run": False,
         "operation": {"area": spec.area, "op_key": spec.op_key, "method": spec.method, "path": path},
         "http_status": response.status,
@@ -532,6 +655,8 @@ def cmd_operation_call(args: Any, ctx: dict[str, Any]) -> int:
     if persisted_out:
         payload["out"] = persisted_out
     elif response_json is not None and spec.sensitivity == "none":
-        payload["response"] = response_json
+        payload["response"] = _visible_fields(response_json, ctx["cfg"])
+    if output_error:
+        payload["error"] = output_error
     ctx["out"].emit(payload)
-    return 0
+    return 1 if output_error else 0

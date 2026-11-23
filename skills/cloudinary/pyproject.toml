@@ -25,6 +25,9 @@ cloudinary-safe-agent-cli = "cloudinary_safe_agent_cli.__main__:main"
 [tool.setuptools]
 package-dir = {"" = "src"}
 
+[tool.setuptools.package-data]
+cloudinary_safe_agent_cli = ["cloudinary_rest_inventory.json"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

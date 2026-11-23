@@ -1,51 +1,25 @@
-# Connect your Cloudinary account
+# Connect Cloudinary
 
-Cloudinary needs local cloud credentials before an agent can inspect assets, folders, tags, transformations, or media account data.
+Run `cloudinary-safe-agent-cli onboarding` from the folder where you want to keep your settings. It creates `.env` if needed. To use a different file, put `--env-file PATH` before `onboarding` and before later commands. Use `onboarding --no-write-env` to get the setup steps without creating a file.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## Pick the connection you need
 
-After setup, start with an account check or small asset search before asking for uploads, deletes, or file writes.
+| Work | Settings |
+| --- | --- |
+| Images, videos, folders, uploads, analysis, and streaming | `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` from your Cloudinary media library |
+| Product environments, users, roles, and account keys | `CLOUDINARY_ACCOUNT_ID`, `CLOUDINARY_ACCOUNT_API_KEY`, `CLOUDINARY_ACCOUNT_API_SECRET` from your Cloudinary account |
+| Unsigned uploads | `CLOUDINARY_CLOUD_NAME` and a valid unsigned upload preset in the request |
 
-## Step 1: Create or check `.env`
+Some permissions commands, such as validating a policy, are public. Use `operations show` to see which connection a command uses. Keep credentials in the local settings file or your shell environment. Shell values take priority. Keep them out of chat and Git.
 
-Run:
+The hosts default to `api.cloudinary.com`. Set `CLOUDINARY_PRODUCT_API_HOST` or `CLOUDINARY_ACCOUNT_API_HOST` if Cloudinary gave you a different host. Requests default to 30 seconds. Set `CLOUDINARY_TIMEOUT_S` or use `--timeout-s` for a different request timeout.
 
-```bash
-cloudinary-safe-agent-cli onboarding
-```
+## Check access
 
-The onboarding command will:
+Use the media read shown by onboarding. It needs your media credentials. If you want a connection report, run `cloudinary-safe-agent-cli auth check` and check `checks.product.ready` or `checks.account.ready` for the part you need. The media check calls `GET /ping`. The account check tries to list product environments when account credentials are present.
 
-- if `.env` does not exist, it copies `.env.example` to `.env`
-- checks which required Cloudinary values are still missing
-- prints the next command to run: `cloudinary-safe-agent-cli --output json auth check`
+If access fails, check the selected file, cloud name or account ID, regional host, and permission for the actual command. Use `operations show --area AREA --op COMMAND` to look up the command's parameters. Use `--verbose` for request timing and `--debug` for a stack trace when troubleshooting locally.
 
-Use `--no-write-env` if you only want the checklist:
+Set `--project-dir PATH` to choose where `--out` files may go. The optional `--config PATH` accepts non-secret JSON settings for wrappers. See [Approve and check changes](safety_model.md) for private output and run history.
 
-```bash
-cloudinary-safe-agent-cli onboarding --no-write-env
-```
-
-Fill these product values for Upload, Admin, Analyze, Video Live Streaming, Player Profiles, and Video Config:
-- `CLOUDINARY_CLOUD_NAME`
-- `CLOUDINARY_API_KEY`
-- `CLOUDINARY_API_SECRET`
-
-Fill these account values for Provisioning and most Permissions commands:
-- `CLOUDINARY_ACCOUNT_ID`
-- `CLOUDINARY_ACCOUNT_API_KEY`
-- `CLOUDINARY_ACCOUNT_API_SECRET`
-
-Change the hosts only if Cloudinary gave you a different regional host:
-- `CLOUDINARY_PRODUCT_API_HOST`
-- `CLOUDINARY_ACCOUNT_API_HOST`
-
-Then run:
-
-```bash
-cloudinary-safe-agent-cli --output json auth check
-```
-
-## First useful check
-
-After the connection works, ask the agent to run a small account check or asset search. Confirm it is looking at the right cloud before asking for uploads, deletes, or downloads.
+[Find your media credentials](https://cloudinary.com/documentation/finding_your_credentials_tutorial) · [Account API credentials](https://cloudinary.com/documentation/provisioning_api)

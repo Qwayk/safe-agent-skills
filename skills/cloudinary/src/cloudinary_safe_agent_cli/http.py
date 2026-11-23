@@ -24,7 +24,7 @@ class HttpResponse:
 
     def maybe_json(self) -> Any | None:
         content_type = str(self.headers.get("content-type") or "").lower()
-        if "json" not in content_type and not self.body[:1] in {b"{", b"["}:
+        if "json" not in content_type and self.body[:1] not in {b"{", b"["}:
             return None
         try:
             return self.json()
@@ -61,9 +61,10 @@ class HttpClient:
         retries: int = 0,
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),
         allow_error: bool = False,
+        private: bool = False,
     ) -> HttpResponse:
         attempt = 0
-        display_url = self._format_url(url, params)
+        display_url = "<private Cloudinary request>" if private else self._format_url(url, params)
         while True:
             attempt += 1
             start = time.time()
@@ -81,6 +82,8 @@ class HttpClient:
                     timeout=self._timeout_s,
                 )
             except requests.RequestException as exc:
+                if private:
+                    raise RuntimeError(f"Cloudinary request failed: {type(exc).__name__}.") from None
                 ms = int((time.time() - start) * 1000)
                 if self._verbose:
                     print(
@@ -92,7 +95,7 @@ class HttpClient:
                 ) from exc
             ms = int((time.time() - start) * 1000)
             if self._verbose:
-                print(f"[http] {method} {resp.url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
+                print(f"[http] {method} {display_url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
             wrapped = HttpResponse(
                 status=resp.status_code,
@@ -119,6 +122,7 @@ class HttpClient:
         json_body: Any | None = None,
         data: dict[str, Any] | None = None,
         files: dict[str, Any] | None = None,
+        private: bool = False,
     ) -> HttpResponse:
         return self.request(
             method,
@@ -129,4 +133,5 @@ class HttpClient:
             data=data,
             files=files,
             allow_error=True,
+            private=private,
         )

@@ -1,14 +1,16 @@
-# Proof and verification
+# Cloudinary test results
 
-Cloudinary proof should answer a simple question: what has actually been checked for assets, folders, backups, transformations, and media delivery settings, and what still needs live credentials, permissions, or reviewer judgment?
+## November 23, 2026
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Installed both local packages in fresh Python environments. Each loaded all 175 commands and passed 42 tests. With simulated Cloudinary replies, I checked the selected settings file, a video read with media credentials, and all 98 write commands with and without their saved plans.
 
-If you only check one thing, check asset reads, backup/download proof, and write refusal examples before trusting media changes.
+The upload checks covered a replaced local file and an intentional overwrite. The metadata check confirmed the tool sent the reviewed JSON and checked whether the name matched afterward. The deletion checks distinguished a missing asset from a denied or failed lookup. The access-key check kept the returned test secret in the private output file. It did not appear in the terminal output or receipt.
 
-## Current proof summary
+Live account access and changes were not part of these checks. Use the current approval steps in [Approve and check changes](safety_model.md).
 
-Last verified (UTC): 2026-06-04
+## June 4, 2026 source checks
+
+Original test date (UTC): 2026-06-04
 Tool version: `0.1.0`
 
 ## Commands run

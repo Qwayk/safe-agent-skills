@@ -1,81 +1,26 @@
-# Safety model
+# Approve and check changes
 
-Cloudinary can touch assets, folders, backups, transformations, and media delivery settings, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+Read an asset or list a folder before deciding what to change. Writes make a preview first.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## Before sending a change
 
-A good safety ask is: "Start with one asset or folder read, then review the plan before uploads, deletes, backup changes, or metadata edits."
+1. Run the write with `--plan-out PATH` to save its preview.
+2. Review the Cloudinary library or account, exact target, fields, and upload file. Signed uploads set `overwrite=false` unless you explicitly ask to replace the existing asset.
+3. Check recovery. The tool saves no copy of the previous state for a write. Approve that limit before using `--ack-no-snapshot`. Deletes, including the Upload API's destroy commands, intentional replacements, and access-key changes need `--ack-irreversible` too.
+4. After approval, run the same request with `--apply --yes --plan-in PATH` and the required acknowledgement flags. Use `--receipt-out PATH` if you want to choose where the receipt goes.
 
-## Default rule
+When the target, request fields, or upload contents change, save and review a new preview. Plans from the earlier version also need a new preview.
 
-Read commands run directly.
-Write commands return a dry-run plan unless you add `--apply`.
-When no saved snapshot is available, current write apply requires explicit no-snapshot approval before Cloudinary credentials are used for the write or Cloudinary HTTP.
+## After sending a change
 
-## Write confirmations
+Check the receipt before saying the change is done. It shows whether Cloudinary replied and whether the follow-up confirmed the requested result. A denied or failed follow-up leaves the result unconfirmed. If the outcome is unclear, check the current state before retrying.
 
-All writes need:
-- `--apply`
-- `--yes`
+Keep private results, including access keys and live stream credentials, in the file named by `--out` inside `--project-dir`. Cloudinary backup downloads also use `--out`. Use `--overwrite` only when you intend to replace that local output file.
 
-Delete-like commands and access-key commands also need:
-- `--ack-irreversible`
+Use `runs list` and `runs show --run-id ID` to find local run records. By default they are under `.state/runs/` next to the settings file. Keep plans, receipts and output files private when they contain account or media details.
 
-## Recovery boundary
+## Backups and published media
 
-There is no generic rollback or snapshot endpoint in this tool.
-Backup and restore endpoints are explicit operations, not a blanket safety layer for other writes:
-- `operations upload download-backup` is a read that downloads a backed-up version.
-- `operations admin resources-restore-resources-by-public-id` and `operations admin resources-restore-resources-by-asset-id` are writes, and they require explicit no-snapshot approval before Cloudinary HTTP when no saved snapshot is available.
-- `operations admin resources-delete-backed-up-versions-of-a-resource` is destructive, so it also requires `--ack-irreversible` plus `--ack-no-snapshot` when no saved snapshot is available.
+Download a backed-up version with `operations upload download-backup`. This is a read. Restore and delete-backup commands are separate writes and need their own reviewed plans.
 
-## Plan and apply files
-
-For writes, the safe path is:
-1. run the command without `--apply`
-2. review the returned plan
-3. attempt apply with `--apply --yes --plan-in <plan.json> --ack-no-snapshot`
-4. keep the receipt or refusal output and local run proof
-
-The plan stores:
-- target operation
-- method and resolved path
-- query
-- auth scope
-- environment fingerprint
-- `before_state.required: true`, `before_state.supported: false`, and `before_state.status: no_snapshot_available`
-- explicit `recovery` metadata showing that no backup was saved by this write path
-
-On apply, the tool first refuses if the plan target, path, query, or environment fingerprint do not match the current request. After those gates pass, supported writes can reach Cloudinary and emit a receipt. If `--ack-no-snapshot` is missing, the tool still refuses safely before the write.
-
-## Sensitive and binary output
-
-Some Cloudinary results must not print to stdout.
-These need `--out`:
-- access key reads and write results
-- live streaming reads and write results
-- archive download URL style write results
-- binary backup endpoints like `operations upload download-backup`
-
-Dry-run plans do not need `--out`.
-Real reads and apply attempts do.
-
-## Safe output paths
-
-`--out` must stay inside `--project-dir`.
-The tool refuses directory escape and accidental overwrite unless you add `--overwrite`.
-
-## Secret handling
-
-The tool redacts loaded secret values from errors and audit logs.
-It never prints secrets on purpose.
-
-## Local proof
-
-Write-capable runs create local artifacts under `.state/runs/` next to the active `--env-file`.
-That gives you:
-- `plan.json` for dry-runs
-- `receipt.json` for successful applies
-- `audit.jsonl`
-- `summary.md`
-- a shared `index.jsonl` for `runs list` and `runs show`
+A file removed from the library can still appear through a cached link. If an approved change also needs cached copies cleared, check Cloudinary's options and verify the link separately. [Cloudinary's cache guide](https://cloudinary.com/documentation/invalidate_cached_media_assets_on_the_cdn)

@@ -17,6 +17,6 @@ Last verified (UTC): 2026-05-25
 
 ## Source-of-truth files inside this tool
 
-- runtime allowlist: `docs/_generated/cloudinary_rest_inventory.json`
+- runtime allowlist: `src/cloudinary_safe_agent_cli/cloudinary_rest_inventory.json`
 - coverage report: `docs/api_coverage.md`
 - generator: `scripts/generate_cloudinary_rest_inventory.py`

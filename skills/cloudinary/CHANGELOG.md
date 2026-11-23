@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-23
+
+- Packaged the command list and made the first setup check a media read.
+- Tied every write to the saved preview, including the request fields and upload contents.
+- Protected existing assets by default and used the extra confirmation for replacements and destroy commands.
+- Sent reviewed JSON bodies, reported what follow-up reads confirmed, and kept private results in protected output files.
+- Folded overlapping guides into the existing setup, quickstart, and approval guides.
+
 ## 2026-06-04
 
 - Added blocked `before_state` and explicit no-recovery metadata to Cloudinary write plans.

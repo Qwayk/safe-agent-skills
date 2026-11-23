@@ -18,6 +18,8 @@ def resolve_safe_out_path(*, project_dir: Path, out_path: str, overwrite: bool) 
         target.relative_to(root)
     except ValueError as exc:
         raise SafetyError("Refusing to write outside --project-dir.") from exc
+    if target.is_dir():
+        raise SafetyError(f"Choose a file for --out: {target}")
     if target.exists() and not overwrite:
         raise SafetyError(f"Refusing to overwrite existing file: {target}")
     target.parent.mkdir(parents=True, exist_ok=True)

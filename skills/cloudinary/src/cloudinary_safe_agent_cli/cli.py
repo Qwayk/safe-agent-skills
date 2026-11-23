@@ -302,6 +302,10 @@ def main(argv: list[str]) -> int:
             "audit_log_global": global_audit_log_path,
         }
     )
+    if getattr(args, "operation_key", None):
+        command_str = f"cloudinary-safe-agent-cli operations {args.operation_area} {args.operation_key}"
+    else:
+        command_str = "cloudinary-safe-agent-cli " + " ".join(argv)
 
     try:
         if bool(args.version):
@@ -315,7 +319,6 @@ def main(argv: list[str]) -> int:
         if not getattr(args, "cmd", None):
             parser.error("Missing command. Use --help to see available commands.")
 
-        command_str = "cloudinary-safe-agent-cli " + " ".join(argv)
         audit.bind_context(
             {
                 "tool": "cloudinary-safe-agent-cli",
@@ -435,7 +438,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="cloudinary-safe-agent-cli",
             version=__version__,
-            command="cloudinary-safe-agent-cli " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -452,7 +455,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="cloudinary-safe-agent-cli",
             version=__version__,
-            command="cloudinary-safe-agent-cli " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -471,7 +474,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="cloudinary-safe-agent-cli",
             version=__version__,
-            command="cloudinary-safe-agent-cli " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,

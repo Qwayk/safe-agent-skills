@@ -1,204 +1,83 @@
 # Command reference
 
-These commands cover Cloudinary product and account APIs, safe file outputs, uploads, downloads, and media changes. Check the cloud name and account credentials before writing files or changing assets.
+Start with [Quickstart](quickstart.md) for a first read and [Connect Cloudinary](onboarding.md) for settings.
 
-For the guided path, start with [What you can do with Cloudinary](use_cases.md), [Connect your Cloudinary account](onboarding.md), and [Quickstart](quickstart.md).
+## Options before the command
 
-## Program name
+| Option | What it does |
+| --- | --- |
+| `--version` | Show the installed tool version. |
+| `--output json\|text` | Choose JSON or text. JSON is the default. |
+| `--env-file PATH` | Choose a settings file. |
+| `--config PATH`, `--project-dir PATH` | Load non-secret settings for wrappers or choose the root for `--out`. |
+| `--timeout-s N`, `--verbose`, `--debug` | Set the request timeout, show timing, or show a stack trace. |
+| `--log-file PATH` | Add a local audit log. |
+| `--plan-out PATH` | Save a preview. |
+| `--plan-in PATH`, `--apply`, `--yes` | Apply the matching plan after approval. |
+| `--ack-no-snapshot`, `--ack-irreversible` | Record approval to proceed without a saved copy and for commands that require extra confirmation. |
+| `--receipt-out PATH` | Pick where to save the write receipt. |
+| `--run-id ID`, `--artifacts-dir PATH`, `--no-artifacts` | Choose the run ID, storage folder, or turn off automatic run files. |
 
-```bash
-cloudinary-safe-agent-cli
-```
+## Find a command
 
-## Global flags
+- `onboarding [--no-write-env]` guides setup.
+- `auth check` checks the configured connections.
+- `runs list [--limit N]` and `runs show --run-id ID` find saved records.
+- `operations list` lists the supported commands.
+- `operations show --area AREA --op COMMAND` shows the exact options, request format, and access needed.
+- `operations <area> <op_key>` runs a named operation.
 
-- `--output {json,text}`: output mode, default `json`
-- `--env-file PATH`: choose a different `.env`
-- `--config PATH`: optional non-secret JSON config
-- `--project-dir PATH`: safe root for `--out`
-- `--timeout-s N`: override timeout
-- `--verbose`: show HTTP timing on stderr
-- `--debug`: raise stack traces instead of clean error output
-- `--log-file PATH`: extra audit log path
-- `--apply`: attempt a write after review; writes require explicit no-snapshot approval before Cloudinary HTTP when no saved snapshot is available
-- `--yes`: second confirmation for writes
-- `--plan-out PATH`: save a dry-run plan
-- `--plan-in PATH`: apply from an existing plan; approved supported writes validate the plan before applying
-- `--receipt-out PATH`: save a receipt when an approved supported command really runs; refusals for missing approval or failed safety checks do not create write receipts
-- `--ack-irreversible`: extra confirmation for delete-like actions
-- `--run-id ID`: set the local run id
-- `--artifacts-dir PATH`: choose the local artifact folder
-- `--no-artifacts`: turn off local run artifacts
-
-## Top-level commands
-
-- `--version`
-- `onboarding`
-- `auth check`
-- `runs list`
-- `runs show`
-- `operations list`
-- `operations show`
-- `operations <area> <op_key>`
-
-## `onboarding`
-
-```bash
-cloudinary-safe-agent-cli onboarding
-cloudinary-safe-agent-cli onboarding --no-write-env
-```
-
-## `auth check`
-
-```bash
-cloudinary-safe-agent-cli --output json auth check
-```
-
-## `runs`
-
-```bash
-cloudinary-safe-agent-cli --output json runs list --limit 20
-cloudinary-safe-agent-cli --output json runs show --run-id 2026-05-25T000000Z_ab12cd
-```
-
-## `operations list`
+Use `--contains`, `--tag`, `--method`, `--area`, or `--limit` to filter the list. Use `--include-deprecated` or `--include-sensitive` to include those entries. The areas are `admin`, `analyze`, `live_streaming`, `permissions`, `player_profiles`, `provisioning`, `upload`, and `video_config`.
 
 ```bash
 cloudinary-safe-agent-cli --output json operations list --area upload --limit 20
-cloudinary-safe-agent-cli --output json operations list --contains accesskey --include-sensitive
-cloudinary-safe-agent-cli --output json operations list --tag beta --include-sensitive
-```
-
-Filters:
-- `--contains TEXT`
-- `--tag TEXT`
-- `--method GET|POST|PUT|PATCH|DELETE`
-- `--area AREA`
-- `--limit N`
-- `--include-deprecated`
-- `--include-sensitive`
-
-Areas:
-- `admin`
-- `analyze`
-- `live_streaming`
-- `permissions`
-- `player_profiles`
-- `provisioning`
-- `upload`
-- `video_config`
-
-## `operations show`
-
-```bash
 cloudinary-safe-agent-cli --output json operations show --area upload --op upload-signed
 ```
 
-This returns the shipped metadata for one operation:
-- command
-- method
-- path template
-- auth scope
-- input style
-- sensitivity
-- beta or gated flags
-- fixed query and form values
+## Options after the command
 
-## `operations <area> <op_key>`
+Use the options shown for that operation. Values in the endpoint path use `--path-param key=value`. Other URL options use `--query key=value`. For a request body, follow the listed format and use `--form-field key=value`, `--body-json-file PATH`, or `--multipart-spec-file PATH`. Use one body format for each operation. A multipart upload can include files and form fields.
 
-All explicit Cloudinary commands use the same input flags:
-- `--path-param key=value`
-- `--query key=value`
-- `--form-field key=value`
-- `--body-json-file file.json`
-- `--multipart-spec-file file.json`
-- `--out relative/or/absolute/path`
-- `--overwrite`
+Put `--out PATH` after the operation to save its output inside `--project-dir`. Use `--overwrite` there only to replace that local file. Cloudinary's upload setting `overwrite` controls whether an existing asset can be replaced.
 
-Examples:
-
-Read asset details:
+## Read one asset
 
 ```bash
 cloudinary-safe-agent-cli --output json operations admin \
   resources-get-details-of-a-single-resource-by-public-id \
-  --path-param resource_type=image \
-  --path-param type=upload \
-  --path-param public_id=sample
+  --path-param resource_type=image --path-param type=upload --path-param public_id=sample
 ```
 
-Run a read-like Analyze request:
+Run an Analyze request using [the sample input](../examples/analyze-ai-vision-general.sample.json).
 
 ```bash
 cloudinary-safe-agent-cli --output json operations analyze analyze-ai-vision-general \
   --body-json-file examples/analyze-ai-vision-general.sample.json
 ```
 
-Plan a delete:
+## Restore a backed-up asset
+
+Open the asset and confirm the backup version before choosing a restore. The preview and apply use the same JSON file.
 
 ```bash
-cloudinary-safe-agent-cli --output json \
-  --plan-out plans/delete-folder.json \
-  operations admin folders-delete-folder \
-  --path-param folder=archive/old
-```
-
-Plan a backup restore:
-
-```bash
-cloudinary-safe-agent-cli --output json \
-  --plan-out plans/restore-public-id.json \
+cloudinary-safe-agent-cli --plan-out plans/restore-public-id.json \
   operations admin resources-restore-resources-by-public-id \
-  --path-param resource_type=image \
-  --path-param type=upload \
-  --path-param public_id=sample-public-id \
+  --path-param resource_type=image --path-param type=upload \
   --body-json-file examples/resources-restore-by-public-id.sample.json
 ```
 
-Attempt a backup restore:
+After approval, pass the plan with `--plan-in plans/restore-public-id.json --apply --yes --ack-no-snapshot` before the same operation and inputs. Use [the approval guide](safety_model.md) for deletes, replacements and access-key changes.
+
+To download a version without restoring, use the asset ID and version ID from the asset's backup details. [Cloudinary backup download](https://cloudinary.com/documentation/image_upload_api_reference#download_backup)
 
 ```bash
-cloudinary-safe-agent-cli --output json \
-  --apply --yes --ack-no-snapshot \
-  --plan-in plans/restore-public-id.json \
-  operations admin resources-restore-resources-by-public-id \
-  --path-param resource_type=image \
-  --path-param type=upload \
-  --path-param public_id=sample-public-id
+cloudinary-safe-agent-cli --output json operations upload download-backup \
+  --query asset_id=ASSET_ID --query version_id=VERSION_ID --out artifacts/sample-backup.bin
 ```
 
-If the reviewed plan still matches, `--ack-no-snapshot` allows the restore to reach Cloudinary and record a receipt.
-
-Download a backed-up version:
+To save a private stream result:
 
 ```bash
-cloudinary-safe-agent-cli --output json \
-  --out artifacts/sample-backup.bin \
-  --overwrite \
-  operations upload download-backup \
-  --query public_id=sample-public-id \
-  --query version_id=123 \
-  --query resource_type=image \
-  --query type=upload
-```
-
-Attempt that delete:
-
-```bash
-cloudinary-safe-agent-cli --output json \
-  --apply --yes --ack-irreversible --ack-no-snapshot \
-  --plan-in plans/delete-folder.json \
-  operations admin folders-delete-folder \
-  --path-param folder=archive/old
-```
-
-If the reviewed plan still matches, the tool can send the destructive write after both acknowledgements and then record a receipt.
-
-Save a sensitive read:
-
-```bash
-cloudinary-safe-agent-cli --output json \
-  --project-dir . \
-  operations live_streaming getlivestreams \
-  --out artifacts/live-streams.json
+cloudinary-safe-agent-cli --output json --project-dir . \
+  operations live_streaming getlivestreams --out artifacts/live-streams.json
 ```
