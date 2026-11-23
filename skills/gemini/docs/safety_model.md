@@ -1,42 +1,15 @@
-# Safety Model
+# Approvals and receipts
 
-The Gemini API can read models, generate content, count tokens, upload files, create caches, manage corpora, change permissions, and delete resources. This tool keeps those jobs separated so an agent can inspect first and change later.
+List models, files, and jobs or count tokens when that fits the task. Ask for approval before sending requests that can cost money, including generation, streaming, embeddings and predictions. Use `--ack-spend-money` once the request is approved. The flag records the approval in the command. Google sets the prices and handles billing. [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing)
 
-## Runs Directly
+## Review a change
 
-These commands do not change Gemini account state:
+Create a dry-run plan for uploads, deletes, permissions, cache changes, and changes to batches, file search or tuned models. Starting a batch generation job or an asynchronous batch embedding job also needs a plan. Review the model or resource, the request file and any media file. Check the impact, whether there is a copy you can restore, and what you’ll check afterward. Keep the request file so you can review the original text. The saved plan shows a fingerprint of the request body and upload bytes.
 
-- `models list` and `models get`
-- generation and streaming generation
-- embedding and token counting
-- operation polling
-- file, generated-file, document, corpus, cache, and file-search reads
+Once approved, use `--apply --yes --plan-in plan.json` with the same settings folder and API key. Add `--ack-no-snapshot` if Gemini has no copy to restore, `--ack-irreversible` where required, and `--ack-spend-money` for actions that can charge, such as starting a batch, creating or extending a cache, or indexing a file. Generate and review a new plan if the input changed or the plan predates these checks.
 
-The tool still redacts `GEMINI_API_KEY` from command output and receipts.
+## Check the result
 
-## Requires A Plan First
+The tool saves a receipt in the run folder or at the path you give with `--receipt-out`. Check the operation, target and what Gemini returned. Read the resource back where possible. If the reply is missing, the receipt says the outcome is unknown. Check Gemini before making a new plan. A plan can be sent once, even when the reply was lost.
 
-These commands create a dry-run plan unless `--apply` is used with a reviewed plan:
-
-- file uploads, file registration, and file deletes
-- cached content create, patch, and delete
-- corpora create/delete and permission changes
-- tuned model create, patch, delete, permission changes, and ownership transfer
-- file search store create, import, upload, document delete, and store delete
-- batch cancel, batch delete, and batch update operations
-
-## Apply Rules
-
-A live state-changing apply requires:
-
-- `--plan-in <plan.json>`
-- `--apply`
-- `--yes`
-- `--ack-no-snapshot` when Gemini has no safe before-state snapshot
-- `--ack-irreversible` for destructive, cancel, delete, or ownership-transfer operations
-
-Receipts are written when `--receipt-out` or run artifacts are enabled. The receipt records the redacted request and provider response. It does not claim rollback unless a command really has a rollback path.
-
-## Private Data
-
-Prompts, uploaded files, cached content, and generated output can contain private data. Keep request JSON files local, review them before sending, and do not paste secrets into chat.
+Keep request files, plans and receipts private if they contain account details or generated content. Routine run logs show the command name without its request text. Scope any rollback to what the service actually lets you undo and get approval before sending it.

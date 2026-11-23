@@ -3,6 +3,7 @@
   "dry_run": false,
   "ok": true,
   "operation_id": "generativelanguage.cachedContents.delete",
+  "plan_id": "00000000000000000000000000000000",
   "request": {
     "body": null,
     "headers": {
@@ -23,5 +24,5 @@
     "status_code": 200,
     "url": "https://generativelanguage.googleapis.com/v1beta/cachedContents/example"
   },
-  "verification": "Provider response captured; live read-back is operation-specific and not assumed."
+  "verification": "Gemini replied. Check the changed resource separately when possible."
 }

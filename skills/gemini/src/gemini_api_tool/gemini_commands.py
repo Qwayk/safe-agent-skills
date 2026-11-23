@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from typing import Any
 
-from .gemini_runtime import GeminiClient, execute_operation, load_json_arg
+from .gemini_runtime import GeminiClient, execute_operation, load_json_arg, may_charge, requires_plan
 from .operation_registry import OPERATIONS, OperationSpec
 
 
@@ -52,6 +52,8 @@ def _cmd_operation(args: argparse.Namespace, ctx: dict[str, Any]) -> int:
         receipt_out=ctx.get("receipt_out"),
         plan_out=ctx.get("plan_out"),
         api_version=getattr(args, "api_version", None),
+        ack_spend_money=bool(getattr(args, "ack_spend_money", False) or ctx.get("ack_spend_money")),
+        sent_plans=ctx["runs_index_path"].parent / "sent-plans",
     )
     ctx["audit"].write("gemini.operation", {"operation_id": op.operation_id, "ok": result.get("ok"), "dry_run": result.get("dry_run")})
     ctx["out"].emit(result)
@@ -98,7 +100,14 @@ def register(subparsers: argparse._SubParsersAction) -> None:
                 )
             if op.supports_media_upload:
                 method_parser.add_argument("--media-file", default=None, help="Local media file to upload")
-            if op.safety_class == "state_changing":
+            if may_charge(op):
+                method_parser.add_argument(
+                    "--ack-spend-money",
+                    action="store_true",
+                    default=argparse.SUPPRESS,
+                    help="Confirm approved Gemini spending",
+                )
+            if requires_plan(op):
                 method_parser.add_argument(
                     "--ack-no-snapshot",
                     action="store_true",
@@ -109,4 +118,4 @@ def register(subparsers: argparse._SubParsersAction) -> None:
                     action="store_true",
                     help="Acknowledge destructive or irreversible Gemini actions",
                 )
-            method_parser.set_defaults(func=_cmd_operation, operation_spec=op, write_capable=(op.safety_class == "state_changing"))
+            method_parser.set_defaults(func=_cmd_operation, operation_spec=op, write_capable=requires_plan(op))

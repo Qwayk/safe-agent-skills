@@ -1,19 +1,7 @@
-# Agent Extension Guide
+# Change the Gemini tool
 
-Use this page when changing the Gemini source tool.
+Start with [the code map](engineering_notes.md) and the [coverage list](api_coverage.md). Each operation has a named command tied to Google’s discovery files.
 
-## Where Behavior Lives
+When changing behavior, update the code and check the normal CLI path. Keep the API key and private request text out of run logs. Keep command names and approval instructions aligned with the code.
 
-- `docs/official_discovery_v1beta.json` and `docs/official_discovery_v1.json`: pinned official API source.
-- `docs/official_inventory.json`: normalized inventory.
-- `src/gemini_api_tool/operation_registry.py`: generated command registry.
-- `src/gemini_api_tool/gemini_commands.py`: parser registration for explicit command families.
-- `src/gemini_api_tool/gemini_runtime.py`: request building, redaction, dry-run plans, applies, and receipts.
-
-## Rules
-
-- Do not add raw request, generic REST, SDK-pass-through, or OpenAI-compatible bridge commands.
-- Keep command names aligned with `docs/api_coverage.md`.
-- Keep `GEMINI_API_KEY` redacted in output, logs, plans, and receipts.
-- Add tests before changing command behavior.
-- If discovery is refreshed, update pinned docs, `official_inventory.json`, `operation_registry.py`, `docs/api_coverage.md`, `docs/proof.md`, and tests together.
+When updating discovery, review both pinned API files, `official_inventory.json`, the operation registry, coverage, proof and tests together. Use named commands so an agent can see which operation it is about to call.

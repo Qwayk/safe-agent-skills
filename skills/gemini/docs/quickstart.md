@@ -1,56 +1,29 @@
-# Quickstart
+# List models and count tokens
 
-Get one safe Gemini result first: list the models your key can see, then count or send a small prompt only after the setup check passes.
-
-## 1. Install
+[Install and connect the CLI](onboarding.md). From the same folder, list the models your key can use:
 
 ```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install -e .
+.venv/bin/gemini-api-tool --output json models list
 ```
 
-## 2. Add Your Key Locally
+Choose a model from the list. Save your prompt in `request.json` in this form:
+
+```json
+{"contents":[{"parts":[{"text":"Give me a one-sentence summary of this request."}]}]}
+```
+
+Replace `models/MODEL_FROM_LIST` with the model’s name:
 
 ```bash
-cp .env.example .env
+.venv/bin/gemini-api-tool --output json models count-tokens \
+  --model models/MODEL_FROM_LIST --request-json request.json
 ```
 
-Edit `.env` and set:
-
-```dotenv
-GEMINI_API_KEY=replace-with-your-local-key
-```
-
-Do not paste the key into chat.
-
-## 3. Check Local Auth Setup
+If you want to generate an answer, check the model’s price and approve the request first:
 
 ```bash
-gemini-api-tool --output json auth check
+.venv/bin/gemini-api-tool --output json models generate-content \
+  --model models/MODEL_FROM_LIST --request-json request.json --ack-spend-money
 ```
 
-This confirms the key is present without printing it.
-
-## 4. List Models
-
-```bash
-gemini-api-tool --output json models list
-```
-
-## 5. Try a Small Prompt
-
-```bash
-gemini-api-tool --output json models generate-content \
-  --model models/gemini-3.5-flash \
-  --request-json '{"contents":[{"parts":[{"text":"Explain safe API tools in one sentence."}]}]}'
-```
-
-If you need to change Gemini state, start with a plan. For example:
-
-```bash
-gemini-api-tool --plan-out plan.json cached-contents delete \
-  --name cachedContents/example \
-  --ack-no-snapshot
-```
-
-Review the plan before any apply command.
+Keep `request.json` private if it contains customer text or other sensitive information. See [examples for account changes](command_reference.md#review-and-send-a-change).

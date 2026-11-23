@@ -128,6 +128,7 @@ def _finalize_run_artifacts(
             "apply": apply,
             "yes": yes,
             "ok": bool(output_obj.get("ok")) if isinstance(output_obj, dict) else None,
+            "status": output_obj.get("status") if isinstance(output_obj, dict) else None,
             "refused": bool(output_obj.get("refused")) if isinstance(output_obj, dict) else False,
             "plan_path": plan_path,
             "receipt_path": receipt_path,
@@ -150,6 +151,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--log-file", default=None, help="Optional audit log path (JSONL)")
     p.add_argument("--apply", action="store_true", help="Apply changes (default is dry-run)")
     p.add_argument("--yes", action="store_true", help="Additional confirmation for destructive/batch actions")
+    p.add_argument("--ack-spend-money", action="store_true", help="Confirm approved Gemini spending")
     p.add_argument("--plan-out", default=None, help="Write a dry-run plan JSON to a file")
     p.add_argument("--plan-in", default=None, help="Apply from an existing plan JSON file (high-risk writes)")
     p.add_argument("--receipt-out", default=None, help="Write an apply receipt JSON to a file")
@@ -241,6 +243,9 @@ def main(argv: list[str]) -> int:
         except Exception:
             return 0
     write_capable = bool(getattr(args, "write_capable", False))
+    operation = getattr(args, "operation_spec", None)
+    command_parts = operation.command_key if operation else argv
+    command_str = "gemini-api-tool " + " ".join(command_parts)
     run_ctx: RunContext = init_run_context(
         env_file=str(args.env_file),
         enabled=write_capable,
@@ -305,7 +310,6 @@ def main(argv: list[str]) -> int:
         if not getattr(args, "cmd", None):
             parser.error("Missing command. Use --help to see available commands.")
 
-        command_str = "gemini-api-tool " + " ".join(argv)
         audit.bind_context(
             {
                 "tool": "gemini-api-tool",
@@ -380,7 +384,8 @@ def main(argv: list[str]) -> int:
             "ack_irreversible": bool(args.ack_irreversible),
             "run_id": run_ctx.run_id,
             "artifacts_dir": run_ctx.artifacts_dir,
-            "runs_index_path": run_ctx.runs_index_path,
+            "runs_index_path": runs_index_path,
+            "ack_spend_money": bool(args.ack_spend_money),
             "audit_log_path": run_audit_log_path or global_audit_log_path,
             "audit_log_run_path": run_audit_log_path,
             "audit_log_global_path": global_audit_log_path,
@@ -428,7 +433,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="gemini-api-tool",
             version=__version__,
-            command="gemini-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -444,7 +449,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="gemini-api-tool",
             version=__version__,
-            command="gemini-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -462,7 +467,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="gemini-api-tool",
             version=__version__,
-            command="gemini-api-tool " + " ".join(argv),
+            command=command_str,
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,

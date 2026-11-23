@@ -138,6 +138,8 @@ def build_deterministic_summary(
             outcome = "dry_run"
         elif bool(output_obj.get("ok")):
             outcome = "ok"
+        elif output_obj.get("status") == "outcome_unknown":
+            outcome = "Gemini did not reply. Check the result before trying again."
         else:
             outcome = "error"
 

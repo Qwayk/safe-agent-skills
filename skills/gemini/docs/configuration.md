@@ -1,13 +1,14 @@
-# Configuration
+# Local settings
 
-Most users need only `.env`.
+[First-time setup](onboarding.md) creates the settings file. `GEMINI_API_KEY` is the only required entry. A value in your shell takes priority over the same entry in the file.
+
+The optional settings are:
 
 ```dotenv
-GEMINI_API_KEY=replace-with-your-local-key
 GEMINI_API_BASE_URL=https://generativelanguage.googleapis.com
 GEMINI_TIMEOUT_S=30
 ```
 
-`GEMINI_API_BASE_URL` should stay on Google's official host unless you are testing a local mock.
+Use Google’s default address for Gemini and a test address only with a test key. The timeout is in seconds. You can set it for one command with `--timeout-s`.
 
-Run artifacts are saved under `.state/runs/` next to the selected `--env-file` for write-capable commands.
+Plan and receipt files normally go under `.state/runs/` beside the selected settings file. The tool also records which saved plans have already been sent there.

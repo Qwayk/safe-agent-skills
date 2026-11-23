@@ -4,6 +4,8 @@ import dataclasses
 import os
 from pathlib import Path
 
+API_KEY_PLACEHOLDER = "replace-with-your-local-key"
+
 
 def _parse_env_file(path: Path) -> dict[str, str]:
     if not path.exists():
@@ -30,6 +32,11 @@ def _get(env: dict[str, str], key: str) -> str:
     return (os.environ.get(key) if key in os.environ else env.get(key) or "").strip()
 
 
+def configured_api_key(env: dict[str, str]) -> str:
+    api_key = _get(env, "GEMINI_API_KEY")
+    return "" if api_key == API_KEY_PLACEHOLDER else api_key
+
+
 @dataclasses.dataclass(frozen=True)
 class Config:
     base_url: str
@@ -38,10 +45,10 @@ class Config:
 
 
 def load_config(env_file: str | None) -> Config:
-    env = _parse_env_file(Path(env_file or ".env"))
+    env = _parse_env_file(Path(env_file or ".env").expanduser())
 
     base_url = (_get(env, "GEMINI_API_BASE_URL") or "https://generativelanguage.googleapis.com").rstrip("/")
-    api_key = _get(env, "GEMINI_API_KEY")
+    api_key = configured_api_key(env)
 
     timeout_s_raw = _get(env, "GEMINI_TIMEOUT_S") or "30"
     try:

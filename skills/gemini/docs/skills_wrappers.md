@@ -1,9 +1,3 @@
-# Skill Wrapper
+# Gemini skill
 
-Source wrapper:
-
-- `skills/gemini/SKILL.md`
-
-Use the wrapper when an agent needs the official Gemini API through safe named commands. The first move should usually be `auth check` or `models list`, then a specific read, generation, token count, or dry-run plan.
-
-The wrapper must keep the agent away from raw HTTP guesses, direct secret handling, and unreviewed state changes. It should remind the agent that writes need a plan first and that no-snapshot or irreversible applies need explicit acknowledgements.
+Start with [setup and the first model list](onboarding.md). The skill tells the agent when to use Gemini, how to start, and what to review before sending a paid request or changing the account. [Approvals and receipts](safety_model.md)

@@ -5,9 +5,13 @@ import io
 import json
 import tempfile
 import unittest
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import redirect_stdout
 from pathlib import Path
+from threading import Event
 from unittest.mock import Mock, patch
+
+from requests.exceptions import ReadTimeout
 
 from gemini_api_tool import gemini_commands
 from gemini_api_tool.cli import main
@@ -98,83 +102,43 @@ class GeminiRuntimeSafetyTests(unittest.TestCase):
         self.assertIn("--plan-in", result["error"])
 
     def test_apply_uses_reviewed_plan_and_writes_receipt(self) -> None:
-        op = OPERATION_BY_COMMAND[("cached-contents", "delete")]
-        plan = {
-            "operation_id": op.operation_id,
-            "method": "DELETE",
-            "url": "https://generativelanguage.googleapis.com/v1beta/cachedContents/abc",
-            "path_values": {"name": "cachedContents/abc"},
-            "query_values": {},
-            "body": None,
-            "warnings": ["no_snapshot_available"],
-        }
-        tmp = Path(self.id().replace(".", "_"))
-        plan_path = tmp.with_suffix(".plan.json")
-        receipt_path = tmp.with_suffix(".receipt.json")
-        plan_path.write_text(json.dumps(plan), encoding="utf-8")
-        try:
-            client = GeminiClient(api_key="secret", timeout_s=5)
-            client.send = Mock(return_value={"ok": True, "status_code": 200, "json": {"name": "cachedContents/abc"}})  # type: ignore[method-assign]
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            args = ["cached-contents", "delete", "--name", "cachedContents/example"]
+            plan = root / "plan.json"
+            receipt = root / "receipt.json"
+            code, result = self.run_cli(root, ["--plan-out", str(plan), *args])
+            self.assertEqual(0, code)
+            self.assertTrue(result["dry_run"])
 
-            result = execute_operation(
-                op,
-                client=client,
-                path_values={"name": "cachedContents/abc"},
-                query_values={},
-                body=None,
-                media_file=None,
-                apply=True,
-                yes=True,
-                ack_no_snapshot=True,
-                ack_irreversible=True,
-                plan_in=str(plan_path),
-                receipt_out=str(receipt_path),
-            )
-
-            self.assertTrue(result["ok"])
-            self.assertFalse(result["dry_run"])
-            self.assertTrue(receipt_path.exists())
-            self.assertNotIn("secret", receipt_path.read_text(encoding="utf-8"))
-        finally:
-            plan_path.unlink(missing_ok=True)
-            receipt_path.unlink(missing_ok=True)
+            apply = ["--plan-in", str(plan), "--apply", "--yes", "--receipt-out", str(receipt)]
+            with patch("gemini_api_tool.gemini_runtime.requests.request", return_value=self.fake_reply()) as send:
+                code, result = self.run_cli(root, [
+                    *apply, *args, "--ack-no-snapshot", "--ack-irreversible",
+                ])
+                send.assert_called_once()
+            self.assertEqual(0, code)
+            self.assertTrue(result["applied"])
+            self.assertEqual(result["plan_id"], json.loads(plan.read_text())["plan_id"])
+            self.assertNotIn("fake-gemini-key", receipt.read_text())
 
     def test_apply_refuses_when_body_differs_from_reviewed_plan(self) -> None:
-        op = OPERATION_BY_COMMAND[("cached-contents", "patch")]
-        plan = {
-            "operation_id": op.operation_id,
-            "method": "PATCH",
-            "url": "https://generativelanguage.googleapis.com/v1beta/cachedContents/abc",
-            "path_values": {"name": "cachedContents/abc"},
-            "query_values": {},
-            "body": {"ttl": "60s"},
-            "media_file": None,
-            "warnings": ["no_snapshot_available"],
-        }
-        tmp = Path(self.id().replace(".", "_"))
-        plan_path = tmp.with_suffix(".plan.json")
-        plan_path.write_text(json.dumps(plan), encoding="utf-8")
-        try:
-            result = execute_operation(
-                op,
-                client=GeminiClient(api_key="secret", timeout_s=5),
-                path_values={"name": "cachedContents/abc"},
-                query_values={},
-                body={"ttl": "120s"},
-                media_file=None,
-                apply=True,
-                yes=True,
-                ack_no_snapshot=True,
-                ack_irreversible=False,
-                plan_in=str(plan_path),
-                receipt_out=None,
-            )
-
-            self.assertFalse(result["ok"])
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            args = ["cached-contents", "patch", "--name", "cachedContents/example"]
+            plan = root / "plan.json"
+            with patch("gemini_api_tool.gemini_runtime.requests.request") as send:
+                code, result = self.run_cli(root, ["--plan-out", str(plan), *args, "--request-json", '{"ttl":"60s"}'])
+                self.assertEqual(0, code)
+                self.assertTrue(result["dry_run"])
+                code, result = self.run_cli(root, [
+                    "--plan-in", str(plan), "--apply", "--yes", "--ack-spend-money",
+                    *args, "--request-json", '{"ttl":"120s"}', "--ack-no-snapshot",
+                ])
+                send.assert_not_called()
+            self.assertEqual(0, code)
             self.assertTrue(result["refused"])
             self.assertIn("reviewed plan", result["error"])
-        finally:
-            plan_path.unlink(missing_ok=True)
 
     def test_media_upload_uses_official_simple_upload_path(self) -> None:
         client = GeminiClient(api_key="secret", timeout_s=5)
@@ -245,122 +209,184 @@ class GeminiRuntimeSafetyTests(unittest.TestCase):
             self.assertIn(b"Content-Type: application/json; charset=UTF-8", body)
             self.assertIn(b"Content-Type: text/plain", body)
 
-    def test_documented_irreversible_ack_after_subcommand_is_accepted_with_mocked_apply(self) -> None:
+    def run_cli(self, root: Path, args: list[str], *, key: str = "fake-gemini-key") -> tuple[int, dict]:
+        out = io.StringIO()
+        with patch.dict("os.environ", {"GEMINI_API_KEY": key}, clear=True), redirect_stdout(out):
+            code = main(["--output", "json", "--env-file", str(root / "settings.env"), *args])
+        return code, json.loads(out.getvalue())
+
+    def fake_reply(self) -> Mock:
+        reply = Mock()
+        reply.status_code = 200
+        reply.url = "https://generativelanguage.googleapis.com/v1beta/mock"
+        reply.json.return_value = {}
+        return reply
+
+    def test_paid_requests_need_approval_and_reads_still_send(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
-            env_path = root / ".env"
-            plan_path = root / "plan.json"
-            receipt_path = root / "receipt.json"
-            env_path.write_text(
-                "GEMINI_API_KEY=replace-with-your-local-key\n"
-                "GEMINI_API_BASE_URL=https://generativelanguage.googleapis.com\n",
-                encoding="utf-8",
-            )
-            plan_path.write_text(
-                json.dumps(
-                    {
-                        "operation_id": "generativelanguage.cachedContents.delete",
-                        "method": "DELETE",
-                        "url": "https://generativelanguage.googleapis.com/v1beta/cachedContents/example",
-                        "path_values": {"name": "cachedContents/example"},
-                        "query_values": {},
-                        "body": None,
-                        "media_file": None,
-                    }
-                ),
-                encoding="utf-8",
-            )
+            with patch("gemini_api_tool.gemini_runtime.requests.request", return_value=self.fake_reply()) as send:
+                for method in ("generate-content", "stream-generate-content", "embed-content", "predict"):
+                    args = ["models", method, "--model", "models/example", "--request-json", "{}"]
+                    _, denied = self.run_cli(root, args)
+                    self.assertTrue(denied["refused"])
+                    self.assertIn("--ack-spend-money", denied["error"])
+                    send.assert_not_called()
+                code, result = self.run_cli(root, ["models", "list"])
+                self.assertEqual(0, code)
+                self.assertTrue(result["ok"])
+                code, result = self.run_cli(root, [
+                    "models", "count-tokens", "--model", "models/example", "--request-json", "{}",
+                ])
+                self.assertEqual(0, code)
+                self.assertTrue(result["ok"])
+                code, result = self.run_cli(root, [
+                    "models", "generate-content", "--model", "models/example",
+                    "--request-json", "{}", "--ack-spend-money",
+                ])
+                self.assertEqual(0, code)
+                self.assertTrue(result["ok"])
+                self.assertEqual(3, send.call_count)
 
-            buf = io.StringIO()
-            fake_response = Mock()
-            fake_response.status_code = 200
-            fake_response.url = "https://generativelanguage.googleapis.com/v1beta/cachedContents/example"
-            fake_response.json.return_value = {"name": "cachedContents/example"}
-
-            with patch("gemini_api_tool.gemini_runtime.requests.request", return_value=fake_response) as request_mock:
-                with redirect_stdout(buf):
-                    rc = main(
-                        [
-                            "--output",
-                            "json",
-                            "--env-file",
-                            str(env_path),
-                            "--apply",
-                            "--yes",
-                            "--plan-in",
-                            str(plan_path),
-                            "--receipt-out",
-                            str(receipt_path),
-                            "cached-contents",
-                            "delete",
-                            "--name",
-                            "cachedContents/example",
-                            "--ack-no-snapshot",
-                            "--ack-irreversible",
-                        ]
-                    )
-
-            request_mock.assert_called_once()
-            self.assertEqual(0, rc)
-            self.assertTrue(receipt_path.exists())
-            self.assertNotIn("replace-with-your-local-key", receipt_path.read_text(encoding="utf-8"))
-            self.assertNotIn("unrecognized arguments", buf.getvalue())
-
-    def test_apply_shaped_cli_refuses_mismatched_plan_before_network(self) -> None:
+    def test_paid_batch_needs_both_a_saved_plan_and_spending_approval(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
-            env_path = root / ".env"
-            plan_path = root / "plan.json"
-            receipt_path = root / "receipt.json"
-            env_path.write_text(
-                "GEMINI_API_KEY=replace-with-your-local-key\n"
-                "GEMINI_API_BASE_URL=https://generativelanguage.googleapis.com\n",
-                encoding="utf-8",
-            )
-            plan_path.write_text(
-                json.dumps(
-                    {
-                        "operation_id": "generativelanguage.cachedContents.delete",
-                        "method": "DELETE",
-                        "url": "https://generativelanguage.googleapis.com/v1beta/cachedContents/different",
-                        "path_values": {"name": "cachedContents/different"},
-                        "query_values": {},
-                        "body": None,
-                        "media_file": None,
-                    }
-                ),
-                encoding="utf-8",
-            )
+            plan = root / "plan.json"
+            args = ["models", "batch-generate-content", "--model", "models/example", "--request-json", "{}"]
+            with patch("gemini_api_tool.gemini_runtime.requests.request", return_value=self.fake_reply()) as send:
+                _, preview = self.run_cli(root, ["--plan-out", str(plan), *args])
+                self.assertIn("can_cost_money", preview["plan"]["warnings"])
+                self.assertIn("no_snapshot_available", preview["plan"]["warnings"])
+                _, missing_plan = self.run_cli(root, ["--apply", "--yes", "--ack-spend-money", *args])
+                self.assertIn("--plan-in", missing_plan["error"])
+                apply = ["--apply", "--yes", "--plan-in", str(plan), *args, "--ack-no-snapshot"]
+                _, missing_spend = self.run_cli(root, apply)
+                self.assertIn("--ack-spend-money", missing_spend["error"])
+                send.assert_not_called()
+                _, result = self.run_cli(root, [*apply, "--ack-spend-money"])
+                self.assertTrue(result["applied"])
+                send.assert_called_once()
 
-            buf = io.StringIO()
-            with patch("gemini_api_tool.gemini_runtime.requests.request") as request_mock:
-                with redirect_stdout(buf):
-                    rc = main(
-                        [
-                            "--output",
-                            "json",
-                            "--env-file",
-                            str(env_path),
-                            "--apply",
-                            "--yes",
-                            "--plan-in",
-                            str(plan_path),
-                            "--receipt-out",
-                            str(receipt_path),
-                            "cached-contents",
-                            "delete",
-                            "--name",
-                            "cachedContents/example",
-                            "--ack-no-snapshot",
-                            "--ack-irreversible",
-                        ]
-                    )
+    def test_upload_binds_bytes_and_key_and_uses_plan_only_once(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            media = root / "sample.txt"
+            media.write_bytes(b"reviewed bytes")
+            plan = root / "plan.json"
+            args = ["media", "upload", "--media-file", str(media)]
+            apply = ["--plan-in", str(plan), "--apply", "--yes", *args, "--ack-no-snapshot"]
+            with patch("gemini_api_tool.gemini_runtime.requests.request", return_value=self.fake_reply()) as send:
+                _, preview = self.run_cli(root, ["--plan-out", str(plan), *args])
+                self.assertTrue(preview["dry_run"])
+                self.assertNotIn("reviewed bytes", plan.read_text())
 
-            request_mock.assert_not_called()
-            output = json.loads(buf.getvalue())
-            self.assertEqual(0, rc)
-            self.assertTrue(output["refused"])
-            self.assertIn("reviewed plan", output["error"])
+                _, result = self.run_cli(root, apply, key="another-key")
+                self.assertTrue(result["refused"])
+                media.write_bytes(b"changed bytes")
+                _, result = self.run_cli(root, apply)
+                self.assertTrue(result["refused"])
+                send.assert_not_called()
+
+                media.write_bytes(b"reviewed bytes")
+                _, result = self.run_cli(root, apply)
+                self.assertTrue(result["applied"])
+                self.assertEqual(b"reviewed bytes", send.call_args.kwargs["data"])
+                copied = root / "copied.json"
+                copied.write_bytes(plan.read_bytes())
+                _, result = self.run_cli(root, ["--plan-in", str(copied), *apply[2:]])
+                self.assertIn("already attempted", result["error"])
+                send.assert_called_once()
+
+    def test_apply_shaped_cli_refuses_mismatched_targets_and_old_plans(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            args = ["cached-contents", "delete", "--name", "cachedContents/example"]
+            plan = root / "plan.json"
+            with patch("gemini_api_tool.gemini_runtime.requests.request") as send:
+                self.run_cli(root, ["--plan-out", str(plan), *args])
+                apply = ["--plan-in", str(plan), "--apply", "--yes"]
+                flags = ["--ack-no-snapshot", "--ack-irreversible"]
+                _, missing_ack = self.run_cli(root, [*apply, *args, "--ack-no-snapshot"])
+                self.assertIn("--ack-irreversible", missing_ack["error"])
+                _, wrong_target = self.run_cli(root, [*apply, *args[:-1], "cachedContents/other", *flags])
+                self.assertIn("reviewed plan", wrong_target["error"])
+                plan.write_text('{"operation_id":"generativelanguage.cachedContents.delete"}')
+                _, old_plan = self.run_cli(root, [*apply, *args, *flags])
+                self.assertIn("new plan", old_plan["error"])
+                send.assert_not_called()
+
+    def test_lost_reply_leaves_receipt_and_blocks_resend(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            plan = root / "plan.json"
+            receipt = root / "receipt.json"
+            args = ["cached-contents", "delete", "--name", "cachedContents/example"]
+            apply = ["--plan-in", str(plan), "--apply", "--yes", "--receipt-out", str(receipt)]
+            with patch("gemini_api_tool.gemini_runtime.requests.request", side_effect=ReadTimeout) as send:
+                self.run_cli(root, ["--plan-out", str(plan), *args])
+                code, result = self.run_cli(root, [*apply, *args, "--ack-no-snapshot", "--ack-irreversible"])
+                self.assertEqual(1, code)
+                self.assertIsNone(result["applied"])
+                self.assertEqual("outcome_unknown", json.loads(receipt.read_text())["status"])
+                _, blocked = self.run_cli(root, [*apply, *args, "--ack-no-snapshot", "--ack-irreversible"])
+                self.assertIn("already attempted", blocked["error"])
+                send.assert_called_once()
+
+    def test_two_applies_of_the_same_plan_only_send_once(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            plan = str(Path(td) / "plan.json")
+            client = GeminiClient(api_key="fake-gemini-key", timeout_s=5)
+            op = OPERATION_BY_COMMAND[("cached-contents", "delete")]
+            args = {
+                "client": client,
+                "path_values": {"name": "cachedContents/example"},
+                "query_values": {},
+                "body": None,
+                "media_file": None,
+                "yes": True,
+                "ack_no_snapshot": True,
+                "ack_irreversible": True,
+                "receipt_out": None,
+            }
+            execute_operation(op, **args, apply=False, plan_out=plan, plan_in=None)
+            sending = Event()
+            finish = Event()
+
+            def reply(_request):
+                sending.set()
+                if not finish.wait(5):
+                    raise AssertionError("Test did not finish the first send")
+                return {"ok": True}
+
+            with patch.object(client, "send", side_effect=reply) as send, ThreadPoolExecutor() as workers:
+                first = workers.submit(execute_operation, op, **args, apply=True, plan_in=plan)
+                try:
+                    self.assertTrue(sending.wait(5))
+                    second = execute_operation(op, **args, apply=True, plan_in=plan)
+                    self.assertTrue(second["refused"])
+                    self.assertIn("already attempted", second["error"])
+                finally:
+                    finish.set()
+                self.assertTrue(first.result()["applied"])
+                send.assert_called_once()
+
+    def test_plan_and_run_logs_omit_inline_request_text(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            private_text = "example private prompt"
+            audit = root / "audit.jsonl"
+            with patch("gemini_api_tool.gemini_runtime.requests.request") as send:
+                _, result = self.run_cli(root, [
+                    "--log-file", str(audit), "cached-contents", "create",
+                    "--request-json", json.dumps({"displayName": private_text}),
+                ])
+                send.assert_not_called()
+            self.assertNotIn(private_text, json.dumps(result))
+            self.assertTrue(audit.exists())
+            self.assertTrue(Path(result["runs_index"]).exists())
+            for path in [audit, *root.joinpath(".state").rglob("*")]:
+                if path.is_file():
+                    self.assertNotIn(private_text, path.read_text())
 
     def test_public_example_outputs_do_not_include_local_paths(self) -> None:
         examples_root = Path("docs/examples")

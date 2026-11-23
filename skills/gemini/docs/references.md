@@ -1,16 +1,6 @@
-# References
+# Google’s Gemini docs
 
-Official Google sources used for this build:
+- [Gemini API guide](https://ai.google.dev/gemini-api/docs) and [API reference](https://ai.google.dev/api), checked for the June 28, 2026 build.
+- [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing), [billing](https://ai.google.dev/gemini-api/docs/billing), and [batch jobs](https://ai.google.dev/gemini-api/docs/batch-api), checked November 23, 2026.
 
-- [Gemini API docs](https://ai.google.dev/gemini-api/docs), last checked 2026-06-28.
-- [Gemini API reference](https://ai.google.dev/api), last checked 2026-06-28.
-- [Generative Language `v1beta` discovery document](https://generativelanguage.googleapis.com/$discovery/rest?version=v1beta), revision `20260626`.
-- [Generative Language `v1` discovery document](https://generativelanguage.googleapis.com/$discovery/rest?version=v1), revision `20260626`.
-
-Pinned local copies:
-
-- `docs/official_discovery_v1beta.json`
-- `docs/official_discovery_v1.json`
-- `docs/official_inventory.json`
-
-The discovery documents are the command coverage source. The human docs explain how to use the resulting safe command surface.
+The shipped commands use revision `20260626` of Google's discovery files. See the pinned [v1beta file](official_discovery_v1beta.json), [v1 file](official_discovery_v1.json) and [combined inventory](official_inventory.json). The [coverage page](api_coverage.md) records what Google added since that revision.

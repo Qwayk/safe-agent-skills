@@ -1,15 +1,16 @@
-# API coverage
+# Gemini API coverage
 
-This ledger is ordered `v1beta` first, then `v1`.
-All command names below are implemented explicit wrapper commands, not a raw HTTP bridge.
+The tool ships 82 named operations. The pinned Google discovery files from June 26, 2026 contain 79 `v1beta` operations and 32 `v1` operations, with some in both versions. See the [pinned files](references.md) and [CLI commands](command_reference.md).
 
-## Summary
+## November 23, 2026 comparison
 
-- Provider: Gemini API
-- API base URL: `https://generativelanguage.googleapis.com/`
-- Auth method: API key
-- Last audited (UTC): 2026-06-28
-- Discovery counts: `v1beta` = 79 operations; `v1` = 32 operations
+Google's November 22 discovery files report 88 `v1beta` operations and 47 `v1` operations. Together they list 92 unique operations. The 10 additional methods are outside this release. The shipped version list stays tied to the pinned files above.
+
+- Auth tokens: `auth_tokens.create`, `interactions.auth_tokens.create` and `interactions.auth_tokens.delete`.
+- Environments: `environments.create`, `environments.delete`, `environments.get` and `environments.list`.
+- Media: `environments.files.media.download`, `environments.files.media.upload` and `media.download`.
+
+[Current `v1beta` discovery file](https://generativelanguage.googleapis.com/$discovery/rest?version=v1beta) · [Current `v1` discovery file](https://generativelanguage.googleapis.com/$discovery/rest?version=v1)
 
 ## Version notes
 

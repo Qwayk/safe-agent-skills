@@ -1,39 +1,14 @@
 ---
 name: gemini
-description: Use Gemini API through safe named commands for models, generation, embeddings, token counting, files, cached content, batches, file search stores, corpora, tuned models, permissions, and operations.
+description: Help users work with the Gemini Developer API. List models, count tokens, run approved generation or embeddings, and manage files, caches and batch jobs.
 ---
 
 # Gemini API
 
-Use this skill when a user wants an agent to work with the official Gemini API from Google AI for Developers.
+Use Gemini when the user wants to choose a model, count tokens, run a request, or check Gemini files, caches, file search stores or batches. Use the Google Cloud tool for Cloud administration or Vertex AI work.
 
-Start with reads unless the user clearly asks for a change:
+Start by checking local setup with `gemini-api-tool --output json auth check`. Then run `gemini-api-tool --output json models list` to check that Google accepts the key. If the key is missing, run `onboarding` and guide the user through local setup. Keep the key out of chat and use the same `--env-file` throughout.
 
-```bash
-gemini-api-tool --output json auth check
-gemini-api-tool --output json models list
-```
+Use named Gemini commands. List resources and count tokens within the user’s request. Get spending approval before sending requests that can charge, then add `--ack-spend-money`.
 
-Use explicit commands only. Do not invent raw REST calls, use a generic HTTP bridge, or mix this with the Qwayk GCP tool. This skill is for `generativelanguage.googleapis.com`, not Google Cloud control-plane APIs.
-
-Good tasks:
-
-- list models and recommend one for a prompt, embedding, or document-review job
-- count tokens before sending a long prompt
-- generate content or embeddings from a reviewed request body
-- list files, generated files, cached contents, file search stores, documents, corpora, batches, tuned models, and operations
-- prepare a dry-run plan for uploads, deletes, cached content changes, file-search imports, permission changes, tuned model changes, batch updates, or cancellations
-
-Safety rules:
-
-- Never ask the user to paste `GEMINI_API_KEY` into chat.
-- Reads and compute calls may run directly.
-- State-changing commands must dry-run first and be applied only from a reviewed `--plan-in`.
-- Live applies need `--apply --yes`.
-- No-snapshot writes need `--ack-no-snapshot`.
-- Destructive or irreversible applies need `--ack-irreversible`.
-- Save or review receipts for live applies.
-
-Useful first ask:
-
-List available Gemini models and recommend one for long document review with structured JSON output.
+For changes or new batch jobs, make a dry-run plan and review its target and the original request or upload with the user. Once approved, use `--plan-in plan.json --apply --yes` with any required `--ack-no-snapshot`, `--ack-irreversible` or spending approval. Check Gemini’s reply and the resource where possible. If no reply comes back, check whether the action happened before making a new plan.

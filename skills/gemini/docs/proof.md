@@ -1,6 +1,6 @@
 # Proof And Verification
 
-Last verified locally on 2026-06-29.
+## June 29, 2026 build checks
 
 ## Checked
 
@@ -42,3 +42,11 @@ No live Gemini account request was sent in this builder run because no real `GEM
 ## Redaction
 
 Tests verify that the API key header is redacted from planned requests and receipts.
+
+## November 23, 2026 local checks
+
+The source and local public copy each passed 36 offline tests. Both built a wheel and source archive. I installed each wheel in a fresh environment, checked all 82 named commands, and used the CLI from outside the checkout.
+
+The installed checks created a private settings file at the chosen path, listed models with a simulated Gemini reply, blocked generation without spending approval, and sent a reviewed delete only once. The tests also covered changed upload bytes or keys, older plans, two applies at the same time, and a lost reply that left a receipt asking the agent to check the result.
+
+Both skill files passed validation. I checked the links and the 60 files prepared for GitHub. The tests used fake keys and Gemini replies. No authenticated Gemini request was sent.
