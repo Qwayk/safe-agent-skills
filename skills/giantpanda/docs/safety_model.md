@@ -1,42 +1,21 @@
-# Safety model
+# Review a domain add
 
-This tool has two modes:
+A stats request reads traffic and earnings from GiantPanda. Treat the results as private account data. Preparing a domain add saves a plan on your machine.
 
-- Read checks (`auth`, `domains stats`)
-- Write plan/apply flow (`domains add`)
+## Before sending
 
-## Reads
+Review the exact domain names with the person who can approve the add. Keep the saved plan and its ID. Run the [apply command](command_reference.md#add-domains) with the same domains, token, and settings folder. If the token changed or the plan was prepared without one, make a fresh plan and ask for approval again. The same applies to plans saved before the November update.
 
-- `auth check` is local-only and never sends a request.
-- `domains stats` is a direct read call against the fixed host with your token.
-- Redirect responses are refused rather than followed.
+GiantPanda has no documented way for this tool to save and restore the account’s earlier state. The approval command requires `--ack-no-snapshot` so this limit is clear before sending.
 
-Stats responses can still contain useful business values and are treated as private artifacts for this tool.
+## After sending
 
-## Write flow for domain add
+The tool saves a private receipt before it sends the add. It records the result in `.state/receipts/` next to the settings file. One approval can send once from that settings folder. `--receipt-out` saves a second copy for you if needed.
 
-`domains add` is local plan-first by default.
+- `created` lists the domains GiantPanda said it added.
+- `existing` lists the domains GiantPanda said were already in the account.
+- `needs_check` lists the domains the tool could not confirm. A lost reply can leave every domain in this list.
 
-1. A plain call creates a local plan only and writes a private 0600 plan file.
-2. Apply can only proceed when all gates are present:
-   - `--apply`
-   - `--plan-in <plan_path>`
-   - `--approve-plan <exact_plan_id>`
-   - `--ack-no-snapshot`
-3. The tool checks that plan operation, endpoint, host, plan id, safety metadata, and domain list match before sending.
+A receipt marked `pending` means the tool was interrupted before saving a final result. Open the GiantPanda dashboard and check the names before preparing another plan. For a confirmed rejection, fix the reason first. Ask for fresh approval for any names that still need to be added.
 
-## No snapshot / rollback
-
-There is no documented rollback, restore, or undo flow for `domains add`.
-Every apply requires `--ack-no-snapshot`, and the no-snapshot warning is included in plan and receipt metadata.
-
-## Plan and receipt integrity
-
-- Plan and receipt files are private and written with mode `0600`.
-- The plan id binds the exact normalized domain list, host, endpoint, operation, 100-domain limit, and reviewed duplicate-removal metadata.
-- Apply verifies exact host/operation/id/domain alignment and refuses drift.
-
-## Post-write parse behavior
-
-If provider output on apply is not valid JSON, the tool does not retry automatically.
-You should inspect the GiantPanda dashboard or account UI manually because this tool has no dedicated post-write readback endpoint for add verification.
+The [plan example](examples/plan.example.json) and [receipt example](examples/receipt.example.json) use made-up domains.

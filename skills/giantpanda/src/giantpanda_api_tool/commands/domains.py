@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Final
+from uuid import uuid4
 
 from .. import __version__
 from .. import config as config_mod
@@ -133,25 +135,38 @@ def _normalize_domains(raw_domains: list[str]) -> tuple[list[str], list[str]]:
     return unique_domains, removed
 
 
-def _build_add_plan(cfg, normalized_domains: list[str], *, duplicates: list[str]) -> dict[str, Any]:
+def _build_add_plan(
+    cfg: config_mod.Config,
+    normalized_domains: list[str],
+    *,
+    duplicates: list[str],
+    env_file: str,
+) -> dict[str, Any]:
     request_domains = [{"name": domain} for domain in normalized_domains]
     request_body = {"domains": request_domains}
     safety = {
         "max_domains": DOMAINS_ADD_MAX_DOMAINS,
         "duplicates_removed": sorted(set(duplicates)),
     }
+    nonce = uuid4().hex
+    token = None if config_mod.is_placeholder_token(cfg.token or "") else cfg.token
     generated_plan_id = plan_id(
         DOMAINS_ADD_OPERATION,
         cfg.host.rstrip("/"),
         DOMAINS_ADD_PATH,
         normalized_domains,
         safety=safety,
+        nonce=nonce,
+        token=token,
+        env_file=env_file,
     )
     return {
         "operation": DOMAINS_ADD_OPERATION,
         "host": cfg.host.rstrip("/"),
         "endpoint": DOMAINS_ADD_PATH,
         "plan_id": generated_plan_id,
+        "approval_nonce": nonce,
+        "account_bound": token is not None,
         "request_body": request_body,
         "apply_requirements": _requires_no_safety_bypass(),
         "snapshot_available": False,
@@ -173,7 +188,8 @@ def _validate_plan(
     *,
     host: str,
     normalized_domains: list[str],
-    plan_in: str,
+    token: str,
+    env_file: str,
 ) -> dict[str, Any]:
     if plan_obj.get("operation") != DOMAINS_ADD_OPERATION:
         raise ValidationError("Refused: plan operation does not match domains add")
@@ -226,16 +242,22 @@ def _validate_plan(
     if not all(isinstance(item, str) for item in duplicates_removed):
         raise ValidationError("Refused: plan safety.duplicates_removed has drifted or changed")
 
+    nonce = plan_obj.get("approval_nonce")
+    if plan_obj.get("account_bound") is not True or not isinstance(nonce, str):
+        raise ValidationError("Prepare a new plan with the GiantPanda token before asking for approval.")
     expected_plan_id = plan_id(
         DOMAINS_ADD_OPERATION,
         host,
         DOMAINS_ADD_PATH,
         sorted(planned_normalized),
         safety=safety,
+        nonce=nonce,
+        token=token,
+        env_file=env_file,
     )
     if plan_obj.get("plan_id") != expected_plan_id:
         raise ValidationError(
-            f"Refused: plan {plan_in} is invalid or has drifted (plan_id mismatch)"
+            "Plan ID mismatch. Use the original token and settings folder, or prepare a new plan."
         )
 
     if sorted(normalized_domains) != sorted(planned_normalized):
@@ -268,11 +290,11 @@ def cmd_domains_add(args, ctx) -> int:
         out.emit({"ok": False, "error": str(exc), "error_type": "ValidationError"})
         return 1
 
-    plan = _build_add_plan(cfg, normalized_domains, duplicates=duplicates)
-
-    if not getattr(args, "apply", False):
+    if not args.apply:
+        plan = _build_add_plan(cfg, normalized_domains, duplicates=duplicates, env_file=env_file)
         plan_out = args.plan_out or default_plan_path(plan["plan_id"], env_file=env_file)
         try:
+            _check_output_path(plan_out, env_file=env_file)
             write_private_json(plan_out, plan)
         except OSError as exc:
             out.emit(
@@ -327,12 +349,23 @@ def cmd_domains_add(args, ctx) -> int:
         out.emit({"ok": False, "error": str(exc), "error_type": "InvalidPlanError"})
         return 1
 
+    if not cfg.token or config_mod.is_placeholder_token(cfg.token):
+        out.emit(
+            {
+                "ok": False,
+                "error": "GIANTPANDA_API_TOKEN is required for domains add",
+                "error_type": "AuthenticationError",
+            }
+        )
+        return 1
+
     try:
         validated = _validate_plan(
             plan_obj,
             host=cfg.host.rstrip("/"),
             normalized_domains=normalized_domains,
-            plan_in=args.plan_in,
+            token=cfg.token,
+            env_file=env_file,
         )
     except ValidationError as exc:
         out.emit({"ok": False, "error": str(exc), "error_type": "InvalidPlanError"})
@@ -348,137 +381,153 @@ def cmd_domains_add(args, ctx) -> int:
         )
         return 1
 
-    if not cfg.token or config_mod.is_placeholder_token(cfg.token):
-        out.emit(
-            {
-                "ok": False,
-                "error": "GIANTPANDA_API_TOKEN is required for domains add",
-                "error_type": "AuthenticationError",
-            }
-        )
-        return 1
+    return _send_add(args, cfg, out, validated, env_file=env_file, domains=normalized_domains)
 
-    headers = {"Authorization": f"Token {cfg.token}", "Accept": "application/json"}
-    client = HttpClient(timeout_s=cfg.timeout_s, verbose=bool(args.verbose))
-    endpoint = cfg.host.rstrip("/") + DOMAINS_ADD_PATH
-    body = validated["request_body"]
-    try:
-        response = client.request("POST", endpoint, headers=headers, json_body=body)
-    except HttpError:
-        out.emit(
-            {
-                "ok": False,
-                "error": "Provider request failed",
-                "command": "domains add",
-                "error_type": "ProviderError",
-            }
-        )
-        return 1
 
-    receipt_out = args.receipt_out or default_receipt_path(
-        plan["plan_id"],
-        env_file=env_file,
-        unique=True,
+def _check_output_path(path: str, *, env_file: str, plan_in: str | None = None) -> None:
+    output = Path(path).resolve()
+    receipt_dir = Path(default_receipt_path("", env_file=env_file)).parent.resolve()
+    protected = {Path(env_file).resolve()}
+    if plan_in:
+        protected.add(Path(plan_in).resolve())
+    protected_file = output in protected or (
+        output.exists() and any(file.exists() and file.samefile(output) for file in protected)
     )
-    provider = {
-        "host": cfg.host.rstrip("/"),
-        "endpoint": DOMAINS_ADD_PATH,
-        "status": response.status,
-        "url": response.url,
-    }
+    reserved_folder = output.is_relative_to(receipt_dir) or (
+        receipt_dir.exists()
+        and any(parent.exists() and parent.samefile(receipt_dir) for parent in output.parents)
+    )
+    if protected_file or reserved_folder:
+        raise ValidationError("Choose an output file separate from the settings, plan, and saved receipts.")
+
+
+def _add_result(data: Any, domains: list[str]) -> dict[str, list[str]]:
+    if isinstance(data, dict):
+        created = data.get("created")
+        existing = data.get("existing")
+        if (
+            isinstance(created, list)
+            and isinstance(existing, list)
+            and all(isinstance(name, str) for name in created + existing)
+            and type(data.get("created_count")) is int
+            and type(data.get("existing_count")) is int
+            and data["created_count"] == len(created)
+            and data["existing_count"] == len(existing)
+        ):
+            reported = created + existing
+            if len(set(reported)) == len(reported) and set(reported) <= set(domains):
+                return {
+                    "created": sorted(created),
+                    "existing": sorted(existing),
+                    "needs_check": sorted(set(domains) - set(reported)),
+                }
+    return {"created": [], "existing": [], "needs_check": domains}
+
+
+def _send_add(args, cfg: config_mod.Config, out, plan, *, env_file: str, domains: list[str]) -> int:
+    plan_id_value = plan["plan_id"]
+    canonical_path = default_receipt_path(plan_id_value, env_file=env_file)
+    receipt_out = args.receipt_out or canonical_path
+    if args.receipt_out and Path(receipt_out).absolute() != Path(canonical_path):
+        _check_output_path(receipt_out, env_file=env_file, plan_in=args.plan_in)
+        if Path(receipt_out).exists():
+            raise ValidationError("Choose a new file for the receipt copy.")
     receipt = {
-        "command": "domains add",
+        "command": DOMAINS_ADD_OPERATION,
         "tool": "giantpanda",
         "version": __version__,
-        "plan_id": validated["plan_id"],
-        "request": body,
-        "provider": provider,
+        "plan_id": plan_id_value,
+        "request": plan["request_body"],
+        "provider": {"host": cfg.host, "endpoint": DOMAINS_ADD_PATH},
         "snapshot_available": False,
         "rollback_supported": False,
+        "status": "pending",
+        "verification_available": False,
+        "verification": _add_result(None, domains),
+        "applied_may_have_occurred": True,
     }
-
     try:
-        verification = response.json()
-        receipt["verification"] = verification
-        receipt["verification_available"] = True
-    except Exception:
-        receipt["verification_available"] = False
-        receipt["verification"] = {"available": False, "reason": "Provider response is not valid JSON"}
-        receipt["applied_may_have_occurred"] = True
-        failure_message = (
-            "Provider response is not valid JSON; request may have occurred, but verification is unavailable."
-        )
+        write_private_json(canonical_path, receipt, exclusive=True)
+    except FileExistsError:
+        out.emit({
+            "ok": False,
+            "error": "This approval was already used. Open the saved receipt before sending anything again.",
+            "error_type": "ApprovalAlreadyUsed",
+            "receipt_out": canonical_path,
+        })
+        return 1
+    except OSError:
+        out.emit({
+            "ok": False,
+            "error": "Could not save the receipt before sending. No request was sent.",
+            "error_type": "ReceiptWriteError",
+            "receipt_out": canonical_path,
+        })
+        return 1
+
+    client = HttpClient(timeout_s=cfg.timeout_s, verbose=bool(args.verbose))
+    endpoint = cfg.host + DOMAINS_ADD_PATH
+    headers = {"Authorization": f"Token {cfg.token}", "Accept": "application/json"}
+    error_type = None
+    error = None
+    try:
+        response = client.request("POST", endpoint, headers=headers, json_body=plan["request_body"])
+    except HttpError as exc:
+        if exc.status is not None:
+            receipt["provider"]["status"] = exc.status
+        if exc.status in {400, 401, 403}:
+            receipt["status"] = "rejected"
+            receipt["applied_may_have_occurred"] = False
+            receipt["verification"]["needs_check"] = []
+            error = f"GiantPanda refused the request (HTTP {exc.status}). Fix the cause and review a fresh plan."
+        else:
+            receipt["status"] = "needs_check"
+            error = "GiantPanda did not confirm the result. Check the domains in the dashboard before sending again."
+        error_type = "ProviderError"
+    else:
+        receipt["provider"].update(status=response.status, url=endpoint)
         try:
-            write_private_json(receipt_out, receipt)
-        except OSError as exc:
-            out.emit(
-                {
-                    "ok": False,
-                    "error": (
-                        "Provider response is not valid JSON and receipt write failed; request may "
-                        "have occurred."
-                    ),
-                    "error_type": "ResponseParseError",
-                    "command": "domains add",
-                    "applied_may_have_occurred": True,
-                    "receipt_save_error": str(exc),
-                    "provider": provider,
-                    "receipt": receipt,
-                    "receipt_out": receipt_out,
-                }
-            )
-            return 1
-        out.emit(
-            {
-                "ok": False,
-                "error": failure_message,
-                "error_type": "ResponseParseError",
-                "command": "domains add",
-                "applied_may_have_occurred": True,
-                "verification_available": False,
-                "provider": provider,
-                "receipt": receipt,
-                "receipt_out": receipt_out,
-            }
-        )
-        return 1
+            data = response.json()
+        except ValueError:
+            data = None
+            error_type = "ResponseParseError"
+        result = _add_result(data, domains) if response.status == 200 else _add_result(None, domains)
+        receipt["verification"] = result
+        confirmed = not result["needs_check"]
+        receipt["verification_available"] = confirmed
+        receipt["status"] = "confirmed" if confirmed else "needs_check"
+        receipt["applied_may_have_occurred"] = not confirmed
+        if not confirmed:
+            error = "GiantPanda did not confirm every domain. Check the remaining domains in the dashboard."
+            error_type = error_type or "UnconfirmedResult"
 
+    result_payload = {
+        "ok": error is None,
+        "command": DOMAINS_ADD_OPERATION,
+        "plan_id": plan_id_value,
+        "provider": {**receipt["provider"], "verification": receipt["verification"]},
+        "receipt": receipt,
+        "receipt_out": canonical_path,
+        "verification_available": receipt["verification_available"],
+        "applied": receipt["status"] == "confirmed",
+        "applied_may_have_occurred": receipt["applied_may_have_occurred"],
+    }
+    if error:
+        result_payload.update(error=error, error_type=error_type)
     try:
-        write_private_json(receipt_out, receipt)
-    except OSError as exc:
-        out.emit(
-            {
-                "ok": False,
-                "error": "Receipt write failed after provider success",
-                "error_type": "ReceiptWriteError",
-                "command": "domains add",
-                "applied": True,
-                "provider": {
-                    **provider,
-                    "verification": verification,
-                },
-                "verification": verification,
-                "receipt_out": receipt_out,
-                "receipt_save_error": str(exc),
-            }
+        write_private_json(canonical_path, receipt)
+        if Path(receipt_out).absolute() != Path(canonical_path):
+            write_private_json(receipt_out, receipt, exclusive=True)
+            result_payload["receipt_out"] = receipt_out
+    except OSError:
+        result_payload.update(
+            ok=False,
+            error="Could not finish saving the receipt. Use the saved receipt and check the dashboard if needed.",
+            error_type="ReceiptWriteError",
         )
-        return 1
+    out.emit(result_payload)
+    return 0 if result_payload["ok"] else 1
 
-    out.emit(
-        {
-            "ok": True,
-            "command": "domains add",
-            "plan_id": validated["plan_id"],
-            "provider": {
-                **provider,
-                "verification": verification,
-            },
-            "receipt": receipt,
-            "applied": True,
-            "receipt_out": receipt_out,
-        }
-    )
-    return 0
 
 def cmd_domains_stats(args, ctx) -> int:
     cfg = ctx["cfg"]

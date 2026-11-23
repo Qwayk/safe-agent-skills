@@ -1,18 +1,15 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import os
+import tempfile
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
-from uuid import uuid4
 
 from .errors import ValidationError
-
-
-def canonical_json_bytes(obj: Any) -> bytes:
-    return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
 def plan_id(
@@ -20,53 +17,51 @@ def plan_id(
     host: str,
     endpoint: str,
     normalized_domains: list[str],
-    safety: Mapping[str, Any] | None = None,
+    *,
+    safety: Mapping[str, Any],
+    nonce: str,
+    token: str | None,
+    env_file: str,
 ) -> str:
-    payload: dict[str, Any] = {
+    payload = {
         "operation": operation,
         "host": host,
         "endpoint": endpoint,
         "domains": normalized_domains,
+        "safety": safety,
+        "nonce": nonce,
+        "state_root": str(Path(env_file).parent.resolve()),
     }
-    if safety is not None:
-        payload["safety"] = safety
-    return hashlib.sha256(canonical_json_bytes(payload)).hexdigest()
-
-
-def _state_root(env_file: str | Path = ".env") -> Path:
-    env_path = Path(env_file or ".env")
-    if not env_path.is_absolute():
-        env_path = Path.cwd() / env_path
-    return env_path.parent
+    data = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    if token:
+        return hmac.new(token.encode("utf-8"), data, "sha256").hexdigest()
+    return hashlib.sha256(data).hexdigest()
 
 
 def default_plan_path(plan_id: str, env_file: str | Path = ".env") -> str:
-    root = _state_root(env_file)
-    return str(root / ".state" / "plans" / f"{plan_id}.json")
+    return str(Path(env_file).parent.resolve() / ".state" / "plans" / f"{plan_id}.json")
 
 
-def default_receipt_path(
-    plan_id: str,
-    env_file: str | Path = ".env",
-    *,
-    unique: bool = False,
-) -> str:
-    suffix = f"-{uuid4().hex}" if unique else ""
-    root = _state_root(env_file)
-    return str(root / ".state" / "receipts" / f"{plan_id}{suffix}.json")
+def default_receipt_path(plan_id: str, env_file: str | Path = ".env") -> str:
+    return str(Path(env_file).parent.resolve() / ".state" / "receipts" / f"{plan_id}.json")
 
 
-def write_private_json(path: str | Path, obj: Any) -> str:
-    p = Path(path)
-    p.parent.mkdir(parents=True, exist_ok=True)
+def write_private_json(path: str | Path, obj: Any, *, exclusive: bool = False) -> None:
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
     data = json.dumps(obj, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
-    fd = os.open(str(p), os.O_CREAT | os.O_TRUNC | os.O_WRONLY, 0o600)
+    fd, temp_path = tempfile.mkstemp(dir=target.parent)
     try:
-        os.write(fd, data.encode("utf-8"))
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        if exclusive:
+            os.link(temp_path, target)
+        else:
+            os.replace(temp_path, target)
     finally:
-        os.close(fd)
-    os.chmod(str(p), 0o600)
-    return str(p)
+        Path(temp_path).unlink(missing_ok=True)
 
 
 def read_json_file(path: str | Path) -> Any:
@@ -75,5 +70,5 @@ def read_json_file(path: str | Path) -> Any:
         raise ValidationError(f"JSON file not found: {p}")
     try:
         return json.loads(p.read_text(encoding="utf-8"))
-    except Exception as exc:  # noqa: BLE001
-        raise ValidationError(f"Invalid JSON in {p}: {type(exc).__name__}: {exc}") from exc
+    except (OSError, ValueError) as exc:
+        raise ValidationError(f"Could not read a JSON plan from {p}") from exc

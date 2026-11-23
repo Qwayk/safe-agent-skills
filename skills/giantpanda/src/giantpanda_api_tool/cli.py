@@ -71,7 +71,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     sub = parser.add_subparsers(dest="command", required=False, parser_class=_ToolArgumentParser)
 
-    sub.add_parser("onboarding", help="Create .env from .env.example").set_defaults(
+    sub.add_parser("onboarding", help="Create or check a private settings file").set_defaults(
         func=onboarding_cmd.cmd_onboarding, write_capable=False
     )
 
@@ -176,7 +176,7 @@ def main(argv: list[str]) -> int:
         onboarding_ctx = {"out": out}
         try:
             return int(args.func(args, onboarding_ctx))
-        except ToolError as exc:
+        except (ToolError, OSError) as exc:
             out.emit({"ok": False, "error": str(exc), "error_type": type(exc).__name__})
             return 1
 

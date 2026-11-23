@@ -1,23 +1,11 @@
 # Changelog
 
-## [Unreleased]
+## November 23, 2026
 
-### Added
+- Setup now creates a private settings file and prints the check for that file.
+- An add plan stays with the token and settings folder used to create it. The tool saves a receipt before sending and shows which names still need checking.
+- The shorter guides explain setup, stats, and approvals. The install packages include the skill instructions.
 
-- Added full public-facing docs pages in `docs/` for first-run, safety, onboarding, and command reference.
-- Added wrapper rules under `skills/giantpanda-safe-cli/`.
+## August 11, 2026
 
-### Changed
-
-- Rewrote `README.md` with product-specific first screen, approvals, and no-snapshot language.
-- Aligned onboarding, command reference, and use-case docs to exact CLI flags and fixed-host behavior.
-
-### Fixed
-
-- Removed placeholder/template-only wording from the GiantPanda front-door docs.
-- Refused HTTP redirects instead of following a token-bearing request.
-- Bound the reviewed domain-limit and duplicate-removal safety metadata into the approved plan id.
-- Fixed onboarding numbering, command reference apply semantics, and auth/read/apply parity docs.
-- Added `docs/proof.md` with completed package, linter, installed-wheel, and sanitized provider-live stats proof for this slice.
-- Added parser examples and evidence files under `docs/examples/` plus `examples/example.env` with a parse-safe placeholder layout.
-- Added focused behavior coverage test for coverage/examples/wrapper/proof alignment and hygiene checks.
+Version `0.1.0` added stats and reviewed domain adds at the fixed GiantPanda host. It refused redirects and added private plan and receipt files. [August checks](docs/proof.md#august-11-2026-checks)

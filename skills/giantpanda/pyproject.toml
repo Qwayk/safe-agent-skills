@@ -25,6 +25,9 @@ giantpanda = "giantpanda_api_tool.__main__:main"
 [tool.setuptools]
 package-dir = {"" = "src"}
 
+[tool.setuptools.data-files]
+"share/giantpanda/skills/giantpanda" = ["SKILL.md"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

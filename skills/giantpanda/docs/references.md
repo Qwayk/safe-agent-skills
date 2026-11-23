@@ -1,12 +1,8 @@
 # References
 
-## Official references used
+The [GiantPanda Parking API docs](https://account.giantpanda.com/docs/client-api/) require a GiantPanda sign-in. The August 11, 2026 review used the Authentication, Add Domain(s), and Domain Statistics sections.
 
-- Provider: GiantPanda Parking API
-- API docs home: https://account.giantpanda.com/docs/client-api/
-- Last official manual-family boundary review: 2026-08-11
+- `GET /api/v1/domains/stats/` takes a start date, an end date, and optional paging values.
+- `POST /api/v1/domains/add/` takes a list of domain names. The documented HTTP 200 reply lists the names created and already present, with a count for each list.
 
-The boundary is fixed to:
-
-- `GET https://account.giantpanda.com/api/v1/domains/stats/`
-- `POST https://account.giantpanda.com/api/v1/domains/add/`
+[Supported commands](api_coverage.md)

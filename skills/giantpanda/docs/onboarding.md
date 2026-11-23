@@ -1,31 +1,9 @@
-# Onboarding
+# Set up GiantPanda
 
-Use when local setup is missing or incomplete.
+Run `giantpanda onboarding` in the folder where you want to keep your settings. It creates a private `.env` file if the file is missing. For a different file, run `giantpanda --env-file account.env onboarding`. Existing settings stay in place.
 
-## 1) Create config
+Copy your token from the Authentication tab in the [GiantPanda API docs](https://account.giantpanda.com/docs/client-api/) and set `GIANTPANDA_API_TOKEN` in that private file. Keep the token out of chat, logs, and shared files. Run the `auth check` command printed by setup. It uses the same settings file. A token set in the shell takes priority over the file.
 
-```bash
-giantpanda onboarding
-```
+`auth check` tells you whether the tool found a token on your machine. The first stats request checks whether GiantPanda accepts it. If that request fails, check that the token is for the right account and that the account has access to stats. A redirect stops the request. Keep the token on the official GiantPanda host.
 
-This creates `.env` from `.env.example` if `.env` does not exist and reports placeholder fields.
-
-## 2) Fill required value
-
-Edit `.env` and set `GIANTPANDA_API_TOKEN`.
-
-## 3) Check local readiness
-
-```bash
-giantpanda --output json auth check
-```
-
-This command never sends a request to GiantPanda and can be used any time to confirm readiness.
-
-## 4) Run your first safe read
-
-```bash
-giantpanda --output json domains stats --start-date 2026-08-01 --end-date 2026-08-07
-```
-
-If this succeeds, ask for a plan before any domain-add apply.
+`GIANTPANDA_TIMEOUT_S` is optional and defaults to 30 seconds. Use a positive number. The [README](../README.md#get-your-first-report) shows how to ask for your first report.

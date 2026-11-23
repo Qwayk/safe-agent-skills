@@ -32,7 +32,9 @@
     "safety": {
       "max_domains": 100,
       "duplicates_removed": []
-    }
+    },
+    "approval_nonce": "0123456789abcdef0123456789abcdef",
+    "account_bound": true
   },
   "plan_out": ".state/plans/ddcc9e6bf64f9771ecb21e96cb69174344a6090e72e5e16d03be8efd1c655516.json"
 }

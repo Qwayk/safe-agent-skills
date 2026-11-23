@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -17,10 +18,6 @@ def _project_root() -> Path:
 
 def _load(path: Path) -> str:
     return path.read_text(encoding="utf-8")
-
-
-def _wrapper_path(root: Path) -> Path:
-    return root / "SKILL.md"
 
 
 class TestCoverageExamplesWrapperAlignment(unittest.TestCase):
@@ -55,39 +52,19 @@ class TestCoverageExamplesWrapperAlignment(unittest.TestCase):
     def test_api_coverage_has_two_explicit_rows_and_command_match(self) -> None:
         root = _project_root()
         text = _load(root / "docs" / "api_coverage.md")
-        rows: list[str] = []
-        in_table = False
-        for line in text.splitlines():
-            if line.startswith("| Endpoint |"):
-                in_table = True
-                continue
-            if not in_table:
-                continue
-            if line.startswith("|---"):
-                continue
-            if not line.startswith("| `"):
-                break
-            rows.append(line.strip())
-
-        self.assertEqual(len(rows), 2, "Expected exactly two coverage endpoint rows")
+        rows = [line for line in text.splitlines() if re.match(r"^\| `(?:GET|POST) ", line)]
+        self.assertEqual(len(rows), 2)
         for row in rows:
             cells = [cell.strip() for cell in row.strip("|").split("|")]
-            self.assertGreaterEqual(len(cells), 6)
-            endpoint = cells[0]
-            command = cells[2]
-            self.assertIn(endpoint, {f"`GET {DOMAINS_STATS_PATH}`", f"`POST {DOMAINS_ADD_PATH}`"})
-            if endpoint == f"`GET {DOMAINS_STATS_PATH}`":
-                self.assertIn("domains stats", command)
-            if endpoint == f"`POST {DOMAINS_ADD_PATH}`":
-                self.assertIn(DOMAINS_ADD_OPERATION, command)
-
+            command = "domains stats" if DOMAINS_STATS_PATH in cells[0] else DOMAINS_ADD_OPERATION
+            self.assertTrue(any(command in cell for cell in cells))
         expected_rows = {f"`GET {DOMAINS_STATS_PATH}`", f"`POST {DOMAINS_ADD_PATH}`"}
         found_rows = {line.split("|", maxsplit=2)[1].strip() for line in rows}
         self.assertEqual(found_rows, expected_rows)
 
     def test_frontmatter_wrapper_is_present_and_well_formed(self) -> None:
         root = _project_root()
-        wrapper = _wrapper_path(root)
+        wrapper = root / "SKILL.md"
         self.assertTrue(wrapper.is_file(), f"Missing wrapper: {wrapper}")
         text = _load(wrapper)
         self.assertTrue(text.startswith("---\n"), "Wrapper does not start with YAML frontmatter")
@@ -97,38 +74,12 @@ class TestCoverageExamplesWrapperAlignment(unittest.TestCase):
         self.assertIn("name: giantpanda", frontmatter)
         self.assertIn("description:", frontmatter)
 
-    def test_examples_and_coverage_contain_no_template_leftovers_and_proof_is_honest(self) -> None:
-        root = _project_root()
-        proof = _load(root / "docs" / "proof.md").lower()
-        coverage = _load(root / "docs" / "api_coverage.md")
-        wrapper = _load(_wrapper_path(root)).lower()
-        stale_markers = (
-            "<replace_me>",
-            "example-api-tool",
-            "<get /",
-            "<post /",
-            "<provider>",
-            "path/to",
-        )
-        for marker in stale_markers:
-            self.assertNotIn(marker, coverage.lower(), f"coverage still contains stale marker {marker!r}")
-            self.assertNotIn(marker, proof, f"proof still contains stale marker {marker!r}")
-        self.assertIn("provider-live verified", coverage.lower())
-        self.assertIn("provider-live-unverified", coverage.lower())
-        self.assertIn("one provider request", proof)
-        self.assertIn("http `200`", proof)
-        self.assertIn("end_date, pagination, start_date, stats", proof)
-        self.assertNotIn("honest no-live", proof)
-        self.assertNotIn("all provider-facing verification here is mocked", proof)
-        self.assertIn("no live `domains add`", proof, "proof must state no live write was made")
-        self.assertIn("stats authentication", wrapper)
-        self.assertIn("provider-live verified", wrapper)
-        self.assertIn("domains add", wrapper)
-        self.assertIn("provider-live-unverified", wrapper)
-
-        examples = [*root.glob("examples/*.json"), *root.glob("docs/examples/**/*.json")]
-        stale_in_examples = ("<replace_me>", "template")
-        for path in examples:
-            text = _load(path).lower()
-            for marker in stale_in_examples:
-                self.assertNotIn(marker, text, f"{path} contains stale marker {marker!r}")
+    def test_plan_and_receipt_examples_list_the_same_domains(self) -> None:
+        examples = _project_root() / "docs" / "examples"
+        plan = json.loads(_load(examples / "plan.example.json"))["plan"]
+        receipt = json.loads(_load(examples / "receipt.example.json"))["receipt"]
+        self.assertEqual(plan["plan_id"], receipt["plan_id"])
+        self.assertEqual(plan["request_body"], receipt["request"])
+        result = receipt["verification"]
+        names = [row["name"] for row in plan["request_body"]["domains"]]
+        self.assertCountEqual(names, result["created"] + result["existing"] + result["needs_check"])

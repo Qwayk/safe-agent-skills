@@ -6,13 +6,16 @@ import os
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, cast
 from unittest.mock import patch
 
+from requests.exceptions import Timeout
+
 from giantpanda_api_tool.cli import main
 from giantpanda_api_tool.commands.domains import DOMAINS_ADD_MAX_DOMAINS, DOMAINS_ADD_PATH
-from giantpanda_api_tool.safety_state import read_json_file
+from giantpanda_api_tool.safety_state import read_json_file, write_private_json
 
 
 def _mock_json_response(payload: object, status: int = 200):
@@ -28,6 +31,11 @@ def _mock_json_response(payload: object, status: int = 200):
         )
 
     return _response
+
+
+def _created(*names: str) -> dict[str, Any]:
+    created = list(names) or ["example.com"]
+    return {"created": created, "existing": [], "created_count": len(created), "existing_count": 0}
 
 
 def _mock_non_json_response():
@@ -165,6 +173,7 @@ class TestDomainsAdd(unittest.TestCase):
             self._write_env(env_path)
             with patch("giantpanda_api_tool.http.requests.Session.request"):
                 _, payload = self._run(td, ["domains", "add", "--domain", "example.com"], env_path)
+            env_dir = os.path.realpath(env_dir)
             expected_plan = os.path.join(env_dir, ".state", "plans", f"{payload['plan']['plan_id']}.json")
             self.assertEqual(payload["plan_out"], expected_plan)
             self.assertTrue(os.path.exists(payload["plan_out"]))
@@ -229,7 +238,7 @@ class TestDomainsAdd(unittest.TestCase):
 
             with patch(
                 "giantpanda_api_tool.http.requests.Session.request",
-                side_effect=_mock_json_response({"added": ["example.com", "shop.example.com"]}),
+                side_effect=_mock_json_response(_created("example.com", "shop.example.com")),
             ) as req:
                 rc_apply, apply_payload = self._run(
                     td,
@@ -254,7 +263,7 @@ class TestDomainsAdd(unittest.TestCase):
             receipt_path = self._state_receipt_path(td, apply_payload)
             self.assertEqual(os.stat(receipt_path).st_mode & 0o777, 0o600)
 
-    def test_domains_add_default_receipt_path_is_unique_per_apply(self) -> None:
+    def test_domains_add_one_send_per_approval(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             env_path = os.path.join(td, ".env")
             self._write_env(env_path, token="token_abc")
@@ -276,20 +285,18 @@ class TestDomainsAdd(unittest.TestCase):
 
             with patch(
                 "giantpanda_api_tool.http.requests.Session.request",
-                side_effect=_mock_json_response({"verification": "ok"}),
+                side_effect=_mock_json_response(_created()),
             ) as req:
-                _, first_apply = self._run(td, apply_args, env_path)
-                _, second_apply = self._run(td, apply_args, env_path)
-            self.assertEqual(req.call_count, 2)
-            self.assertNotEqual(first_apply["receipt_out"], second_apply["receipt_out"])
-            self.assertTrue(os.path.exists(self._state_receipt_path(td, first_apply)))
-            self.assertTrue(os.path.exists(self._state_receipt_path(td, second_apply)))
-            self.assertNotEqual(
-                os.stat(self._state_receipt_path(td, first_apply)).st_ino,
-                os.stat(self._state_receipt_path(td, second_apply)).st_ino,
-            )
+                rc, first = self._run(td, apply_args, env_path)
+                again, second = self._run(td, apply_args + ["--receipt-out", "another.json"], env_path)
+            self.assertEqual(rc, 0)
+            self.assertEqual(again, 1)
+            self.assertEqual(req.call_count, 1)
+            self.assertEqual(second["error_type"], "ApprovalAlreadyUsed")
+            self.assertEqual(first["receipt_out"], second["receipt_out"])
+            self.assertFalse(Path(td, "another.json").exists())
 
-    def test_domains_add_exact_plan_binding_is_deterministic(self) -> None:
+    def test_domains_add_new_plan_preserves_canonical_request_with_new_id(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             env_path = os.path.join(td, ".env")
             self._write_env(env_path)
@@ -304,7 +311,7 @@ class TestDomainsAdd(unittest.TestCase):
                     ["domains", "add", "--domain", "example.com", "--domain", "SHOP.EXAMPLE.COM"],
                     env_path,
                 )
-            self.assertEqual(payload1["plan"]["plan_id"], payload2["plan"]["plan_id"])
+            self.assertNotEqual(payload1["plan"]["plan_id"], payload2["plan"]["plan_id"])
             self.assertEqual(payload1["plan"]["request_body"]["domains"], payload2["plan"]["request_body"]["domains"])
 
     def test_domains_add_apply_gate_requirements(self) -> None:
@@ -574,7 +581,7 @@ class TestDomainsAdd(unittest.TestCase):
 
             with patch(
                 "giantpanda_api_tool.http.requests.Session.request",
-                side_effect=_mock_json_response({"verification": "ok"}),
+                side_effect=_mock_json_response(_created()),
             ) as req:
                 rc, payload = self._run(
                     td,
@@ -598,8 +605,8 @@ class TestDomainsAdd(unittest.TestCase):
             self.assertEqual(called["url"], "https://account.giantpanda.com" + DOMAINS_ADD_PATH)
             self.assertEqual(called["json"], {"domains": [{"name": "example.com"}]})
             receipt = read_json_file(self._state_receipt_path(td, payload))
-            self.assertEqual(receipt["verification"], {"verification": "ok"})
-            self.assertEqual(payload["provider"]["verification"], {"verification": "ok"})
+            self.assertEqual(receipt["verification"], {"created": ["example.com"], "existing": [], "needs_check": []})
+            self.assertEqual(payload["provider"]["verification"], receipt["verification"])
 
     def test_domains_add_apply_response_parse_failure(self) -> None:
         token = "sentinel_parse_token"
@@ -644,8 +651,14 @@ class TestDomainsAdd(unittest.TestCase):
             with patch("giantpanda_api_tool.http.requests.Session.request"):
                 _, dry_payload = self._run(td, ["domains", "add", "--domain", "example.com"], env_path)
             plan_path = self._state_plan_path(td, dry_payload)
-            response_payload = {"verification": "ok"}
-            with patch("giantpanda_api_tool.commands.domains.write_private_json", side_effect=OSError("write denied")):
+            response_payload = _created()
+            def fail_after_reservation(path, value, *, exclusive=False):
+                if exclusive:
+                    write_private_json(path, value, exclusive=True)
+                else:
+                    raise OSError("write denied")
+
+            with patch("giantpanda_api_tool.commands.domains.write_private_json", side_effect=fail_after_reservation):
                 with patch(
                     "giantpanda_api_tool.http.requests.Session.request",
                     side_effect=_mock_json_response(response_payload),
@@ -670,7 +683,9 @@ class TestDomainsAdd(unittest.TestCase):
             self.assertEqual(payload["ok"], False)
             self.assertEqual(payload["error_type"], "ReceiptWriteError")
             self.assertTrue(payload["applied"])
-            self.assertEqual(payload["provider"]["verification"], response_payload)
+            self.assertEqual(payload["provider"]["verification"]["created"], ["example.com"])
+            saved = read_json_file(payload["receipt_out"])
+            self.assertEqual(saved["status"], "pending")
             self.assertNotIn("retry", payload["error"].lower())
             self.assertNotIn(token, json.dumps(payload))
 
@@ -697,7 +712,7 @@ class TestDomainsAdd(unittest.TestCase):
 
             with patch(
                 "giantpanda_api_tool.http.requests.Session.request",
-                side_effect=_mock_json_response({"verification": "ok"}),
+                side_effect=_mock_json_response(_created("example.com", "shop.example.com")),
             ) as req:
                 rc, payload = self._run(
                     td,
@@ -747,7 +762,7 @@ class TestDomainsAdd(unittest.TestCase):
 
             with patch(
                 "giantpanda_api_tool.http.requests.Session.request",
-                side_effect=_mock_json_response({"verification": "ok"}),
+                side_effect=_mock_json_response(_created()),
             ):
                 _, apply_payload = self._run(
                     td,
@@ -770,6 +785,118 @@ class TestDomainsAdd(unittest.TestCase):
             self.assertEqual(apply_payload["receipt_out"], receipt_path)
             self.assertTrue(os.path.exists(receipt_path))
 
+    def _prepare_apply(self, td: str, env_path: str, *names: str) -> list[str]:
+        args = ["domains", "add"]
+        for name in names:
+            args.extend(["--domain", name])
+        rc, preview = self._run(td, args, env_path)
+        self.assertEqual(rc, 0)
+        return [
+            *args, "--apply", "--ack-no-snapshot", "--plan-in", preview["plan_out"],
+            "--approve-plan", preview["plan"]["plan_id"],
+        ]
+
+    def test_domains_add_refuses_changed_credentials_and_accepts_original(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            env_path = os.path.join(td, "account.env")
+            self._write_env(env_path, "first-test-token")
+            apply_args = self._prepare_apply(td, env_path, "example.com")
+            self._write_env(env_path, "second-test-token")
+            shifted = Path(td, "other", "account.env")
+            shifted.parent.mkdir()
+            self._write_env(str(shifted), "first-test-token")
+            with patch(
+                "giantpanda_api_tool.http.requests.Session.request", side_effect=_mock_json_response(_created()),
+            ) as request:
+                self.assertEqual(self._run(td, apply_args, env_path)[0], 1)
+                self.assertEqual(self._run(td, apply_args, str(shifted))[0], 1)
+                request.assert_not_called()
+                self._write_env(env_path, "first-test-token")
+                self.assertEqual(self._run(td, apply_args, env_path)[0], 0)
+                self.assertEqual(request.call_args.kwargs["headers"]["Authorization"], "Token first-test-token")
+
+    def test_domains_add_records_lost_reply_before_refusing_repeat(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            env_path = os.path.join(td, ".env")
+            self._write_env(env_path, "test-token")
+            apply_args = self._prepare_apply(td, env_path, "example.com")
+            with patch("giantpanda_api_tool.http.requests.Session.request", side_effect=Timeout) as request:
+                rc, first = self._run(td, apply_args, env_path)
+                again, second = self._run(td, apply_args, env_path)
+                self.assertEqual(request.call_count, 1)
+            self.assertEqual(rc, 1)
+            self.assertEqual(again, 1)
+            self.assertEqual(second["error_type"], "ApprovalAlreadyUsed")
+            saved = read_json_file(first["receipt_out"])
+            self.assertEqual(saved["status"], "needs_check")
+            self.assertTrue(saved["applied_may_have_occurred"])
+
+    def test_domains_add_shows_created_existing_and_unconfirmed_domains(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            env_path = os.path.join(td, ".env")
+            self._write_env(env_path, "test-token")
+            apply_args = self._prepare_apply(td, env_path, "example.com", "example.net", "example.org")
+            reply = {"created": ["example.com"], "existing": ["example.net"], "created_count": 1, "existing_count": 1}
+            with patch("giantpanda_api_tool.http.requests.Session.request", side_effect=_mock_json_response(reply)):
+                rc, payload = self._run(td, apply_args, env_path)
+            self.assertEqual(rc, 1)
+            self.assertFalse(payload["applied"])
+            self.assertEqual(payload["receipt"]["verification"], {
+                "created": ["example.com"], "existing": ["example.net"], "needs_check": ["example.org"],
+            })
+
+    def test_domains_add_checks_output_before_sending(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            env_path = os.path.join(td, ".env")
+            self._write_env(env_path, "test-token")
+            apply_args = self._prepare_apply(td, env_path, "example.com")
+            plan_path = apply_args[apply_args.index("--plan-in") + 1]
+            for protected in (env_path, plan_path):
+                with patch("giantpanda_api_tool.http.requests.Session.request") as request:
+                    rc, _ = self._run(td, [*apply_args, "--receipt-out", protected], env_path)
+                    self.assertEqual(rc, 1)
+                    request.assert_not_called()
+
+    def test_domains_add_stops_if_it_cannot_save_receipt_before_sending(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            env_path = os.path.join(td, ".env")
+            self._write_env(env_path, "test-token")
+            apply_args = self._prepare_apply(td, env_path, "example.com")
+            with (
+                patch("giantpanda_api_tool.commands.domains.write_private_json", side_effect=OSError),
+                patch("giantpanda_api_tool.http.requests.Session.request") as request,
+            ):
+                rc, payload = self._run(td, apply_args, env_path)
+            request.assert_not_called()
+            self.assertEqual(rc, 1)
+            self.assertEqual(payload["error_type"], "ReceiptWriteError")
+            self.assertFalse(Path(payload["receipt_out"]).exists())
+
+    def test_domains_add_requires_a_fresh_plan_after_an_unbound_preview_or_rejection(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            env_path = os.path.join(td, ".env")
+            self._write_env(env_path)
+            preview_args = self._prepare_apply(td, env_path, "example.com")
+            self._write_env(env_path, "test-token")
+            with patch("giantpanda_api_tool.http.requests.Session.request") as request:
+                self.assertEqual(self._run(td, preview_args, env_path)[0], 1)
+                request.assert_not_called()
+            before = self._prepare_apply(td, env_path, "example.com")
+            with patch(
+                "giantpanda_api_tool.http.requests.Session.request",
+                side_effect=_mock_json_response({"error": "Example rejection"}, status=400),
+            ):
+                rc, rejected = self._run(td, before, env_path)
+            self.assertEqual(rc, 1)
+            self.assertEqual(rejected["receipt"]["status"], "rejected")
+            self.assertFalse(rejected["applied_may_have_occurred"])
+            after = self._prepare_apply(td, env_path, "example.com")
+            with patch(
+                "giantpanda_api_tool.http.requests.Session.request", side_effect=_mock_json_response(_created()),
+            ) as request:
+                self.assertEqual(self._run(td, after, env_path)[0], 0)
+                self.assertEqual(request.call_count, 1)
+
     def test_domains_add_no_token_leak(self) -> None:
         token = "sentinel_token_123"
         with tempfile.TemporaryDirectory() as td:
@@ -781,7 +908,7 @@ class TestDomainsAdd(unittest.TestCase):
 
             with patch(
                 "giantpanda_api_tool.http.requests.Session.request",
-                side_effect=_mock_json_response({"verification": "ok"}),
+                side_effect=_mock_json_response(_created()),
             ):
                 _, apply_payload = self._run(
                     td,

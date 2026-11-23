@@ -1,0 +1,4 @@
+include .env.example CHANGELOG.md
+include SKILL.md
+recursive-include docs *.md *.json
+global-exclude AGENTS.md .env .DS_Store *.py[cod]

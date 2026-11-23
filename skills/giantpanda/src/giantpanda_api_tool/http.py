@@ -11,6 +11,10 @@ import requests
 class HttpError(RuntimeError):
     """HTTP failure from the provider."""
 
+    def __init__(self, message: str, *, status: int | None = None) -> None:
+        super().__init__(message)
+        self.status = status
+
 
 @dataclasses.dataclass(frozen=True)
 class HttpResponse:
@@ -28,6 +32,8 @@ class HttpClient:
         self._timeout_s = timeout_s
         self._verbose = verbose
         self._session = requests.Session()
+        # Keep Requests from replacing the supplied token with credentials from .netrc.
+        self._session.auth = lambda request: request
 
     @staticmethod
     def _hide_auth_headers(headers: dict[str, str] | None) -> dict[str, str]:
@@ -73,10 +79,10 @@ class HttpClient:
             print(f"[http] {method} {resp.url} status={resp.status_code}", file=sys.stderr)
 
         if 300 <= resp.status_code < 400:
-            raise HttpError(f"Redirect response refused for {method} {url}")
+            raise HttpError(f"Redirect response refused for {method} {url}", status=resp.status_code)
 
         if resp.status_code >= 400:
-            raise HttpError(f"HTTP {resp.status_code} for {method} {url}")
+            raise HttpError(f"HTTP {resp.status_code} for {method} {url}", status=resp.status_code)
 
         return HttpResponse(
             status=resp.status_code,
