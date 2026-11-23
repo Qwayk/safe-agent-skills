@@ -17,11 +17,11 @@ class TestProductContract(unittest.TestCase):
     def _root() -> Path:
         return Path(__file__).resolve().parents[1]
 
-    def test_coverage_has_40_shipped_rows_with_38_and_2_statuses(self) -> None:
+    def test_coverage_checks_shipped_commands_and_statuses(self) -> None:
         coverage = (self._root() / "docs" / "api_coverage.md").read_text(encoding="utf-8")
         rows = [line for line in coverage.splitlines() if line.startswith("|")][2:]
-        self.assertEqual(len(rows), 40)
-        self.assertEqual(sum("Implemented / live-unverified" in row for row in rows), 38)
+        self.assertEqual(len(rows), 41)
+        self.assertEqual(sum("Implemented / live-unverified" in row for row in rows), 39)
         self.assertEqual(sum("Developer preview — unavailable" in row for row in rows), 2)
 
         by_operation = {spec.operation_id: spec for spec in operations.OFFICIAL_OPERATIONS}

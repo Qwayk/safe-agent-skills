@@ -103,19 +103,22 @@ class HttpClient:
                 ms = int((time.time() - start) * 1000)
                 if self._verbose:
                     print(
-                        f"[http] {method} {display_url} -> EXCEPTION ({ms}ms): {type(e).__name__}: {e}",
+                        f"[http] {method} {display_url} -> EXCEPTION ({ms}ms): {type(e).__name__}",
                         file=sys.stderr,
                     )
                 raise RuntimeError(
-                    f"Request failed for {method} {display_url}: {type(e).__name__}: {e}"
-                ) from e
+                    f"Request failed for {method} {display_url}: {type(e).__name__}"
+                ) from None
 
             ms = int((time.time() - start) * 1000)
             if self._verbose:
                 print(f"[http] {method} {resp.url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
             retry_after = resp.headers.get("Retry-After")
-            if resp.status_code == 429 and attempt <= self._max_429_retries:
+            read_only = method.upper() == "GET" or (
+                method.upper() == "POST" and urlparse(url).path == "/api/v1/domains/available"
+            )
+            if resp.status_code == 429 and read_only and attempt <= self._max_429_retries:
                 delay = self._retry_delay(retry_after, attempt)
                 if self._verbose:
                     print(f"[http] 429 received; retrying in {delay}s (attempt {attempt})", file=sys.stderr)

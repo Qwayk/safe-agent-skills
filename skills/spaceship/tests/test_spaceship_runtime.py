@@ -160,8 +160,8 @@ class TestSpaceshipRuntime(unittest.TestCase):
 
     def test_runtime_command_count_and_stability(self) -> None:
         specs = operations.OFFICIAL_OPERATIONS
-        self.assertEqual(len(specs), 40)
-        self.assertEqual(sum(1 for s in specs if s.stable), 38)
+        self.assertEqual(len(specs), 41)
+        self.assertEqual(sum(1 for s in specs if s.stable), 39)
         self.assertEqual(sum(1 for s in specs if not s.stable), 2)
 
     def test_persisted_commands_digest_sensitive_identifiers(self) -> None:
@@ -300,8 +300,14 @@ class TestSpaceshipRuntime(unittest.TestCase):
                     tuple(query_names),
                     "requestBody" in operation,
                 )
-        self.assertEqual(set(found), {spec.operation_id for spec in operations.OFFICIAL_OPERATIONS})
+        pricing = next(spec for spec in operations.OFFICIAL_OPERATIONS if spec.operation_id == "getSingleDomainPricing")
+        self.assertEqual((pricing.method, pricing.path_template, pricing.query_params, pricing.body), (
+            "GET", "/v1/domains/{domain}/pricing", (), False,
+        ))
+        self.assertEqual(set(found), {spec.operation_id for spec in operations.OFFICIAL_OPERATIONS if spec != pricing})
         for spec in operations.OFFICIAL_OPERATIONS:
+            if spec == pricing:
+                continue
             method, path, registered_query_names, has_body = found[spec.operation_id]
             self.assertEqual(method, spec.method, spec.operation_id)
             self.assertEqual(path, spec.path_template, spec.operation_id)
@@ -340,7 +346,7 @@ class TestSpaceshipRuntime(unittest.TestCase):
         top_commands = set(top_action.choices)
         self.assertTrue({"auth", "onboarding", "runs"}.issubset(top_commands))
         self.assertFalse({"demo", "jobs", "raw", "request", "rest", "oauth", "token"} & top_commands)
-        self.assertEqual(len(operations.OFFICIAL_OPERATIONS), 40)
+        self.assertEqual(len(operations.OFFICIAL_OPERATIONS), 41)
         help_text = parser.format_help()
         self.assertNotIn("--config", help_text)
         self.assertNotIn("--project-dir", help_text)

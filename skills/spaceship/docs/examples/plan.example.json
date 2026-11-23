@@ -3,7 +3,9 @@
   "command": "qwayk-spaceship-safe-agent-cli domains renew",
   "critical_request_fields": {
     "currentExpirationDate": "2030-01-01",
-    "target": {"domain": "example.com"},
+    "target": {
+      "domain": "example.com"
+    },
     "years": 1
   },
   "dry_run": true,
@@ -12,34 +14,59 @@
     "available": false,
     "fields": null,
     "required": true,
-    "warning": "The official API exposes no reliable amount, currency, or fee recheck for this operation. Review the exact request fields and use --ack-no-snapshot before apply."
+    "warning": "Spaceship did not give a usable price for this domain and term. Check the price in Spaceship before buying.",
+    "price_quote": null
   },
   "generated_at_utc": "2026-08-01T14:02:45Z",
   "method": "POST",
-  "no_snapshot_warning": "No reliable state snapshot or required financial recheck is available; this write requires --ack-no-snapshot",
+  "no_snapshot_warning": "The plan is missing a current-state or full price check. Review the approval flags.",
   "ok": true,
   "operation_id": "domainRenew",
-  "path_params": {"domain": "example.com"},
+  "path_params": {
+    "domain": "example.com"
+  },
   "path_template": "/v1/domains/{domain}/renew",
   "plan_integrity": "e85fff1c3575c9822366f3f66d204f05c89305dbc5068503a92b3c91c0c50532",
   "plan_kind": "deterministic_only",
   "query": {},
-  "redacted_body": {"currentExpirationDate": "2030-01-01", "years": 1},
-  "required_acknowledgements": ["ack-spend", "ack-ownership", "ack-no-snapshot"],
-  "risk_categories": ["ownership", "spend"],
+  "redacted_body": {
+    "currentExpirationDate": "2030-01-01",
+    "years": 1
+  },
+  "required_acknowledgements": [
+    "ack-spend",
+    "ack-ownership",
+    "ack-no-snapshot"
+  ],
+  "risk_categories": [
+    "ownership",
+    "spend"
+  ],
   "selector": {
-    "command": ["qwayk-spaceship-safe-agent-cli", "domains", "renew"],
+    "command": [
+      "qwayk-spaceship-safe-agent-cli",
+      "domains",
+      "renew"
+    ],
     "path": {
-      "params": {"domain": "example.com"},
+      "params": {
+        "domain": "example.com"
+      },
       "template": "/v1/domains/{domain}/renew"
     },
     "query": {}
   },
   "snapshot": {
     "available": false,
-    "preflight": {"used": false},
+    "preflight": {
+      "used": false
+    },
     "preflight_financial_fields": null
   },
   "tool": "qwayk-spaceship-safe-agent-cli",
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "plan_schema_version": 2,
+  "plan_id": "example-plan",
+  "account_signature": null,
+  "apply_ready": false
 }

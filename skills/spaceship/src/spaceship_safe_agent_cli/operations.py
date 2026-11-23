@@ -287,6 +287,10 @@ OFFICIAL_OPERATIONS: list[OperationSpec] = [
         help_text="Create SellerHub listing",
     ),
     OperationSpec(
+        ("domains", "price"), "GET", "/v1/domains/{domain}/pricing",
+        "getSingleDomainPricing", "Stable", help_text="Check the prices for this domain",
+    ),
+    OperationSpec(
         ("sellerhub", "safepay", "create"),
         "POST",
         "/v1/sellerhub/safepay-transactions",

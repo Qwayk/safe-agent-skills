@@ -6,10 +6,16 @@
   "operation_id": "setDomainContacts",
   "command": "qwayk-spaceship-safe-agent-cli domains set-contacts",
   "selector": {
-    "command": ["qwayk-spaceship-safe-agent-cli", "domains", "set-contacts"],
+    "command": [
+      "qwayk-spaceship-safe-agent-cli",
+      "domains",
+      "set-contacts"
+    ],
     "path": {
       "template": "/v1/domains/{domain}/contacts",
-      "params": {"domain": "example.com"}
+      "params": {
+        "domain": "example.com"
+      }
     },
     "query": {}
   },
@@ -21,7 +27,9 @@
   },
   "preflight": {
     "operation_id": "getDomainInfo",
-    "payload_redacted": {"contacts": "***REDACTED***"},
+    "payload_redacted": {
+      "contacts": "***REDACTED***"
+    },
     "preflight_financial_fields": null
   },
   "transport": {
@@ -36,13 +44,23 @@
     "status": "verified",
     "status_code": 200,
     "selector": {
-      "command": ["qwayk-spaceship-safe-agent-cli", "domains", "get"],
+      "command": [
+        "qwayk-spaceship-safe-agent-cli",
+        "domains",
+        "get"
+      ],
       "path": {
         "template": "/v1/domains/{domain}",
-        "params": {"domain": "example.com"}
+        "params": {
+          "domain": "example.com"
+        }
       },
       "query": {}
     },
-    "payload": {"contacts": "***REDACTED***"}
-  }
+    "payload": {
+      "contacts": "***REDACTED***"
+    }
+  },
+  "receipt_written": true,
+  "price_quote": null
 }

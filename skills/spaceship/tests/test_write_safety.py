@@ -119,12 +119,29 @@ class TestWriteSafety(unittest.TestCase):
         payload = json.loads(buf.getvalue()) if buf.getvalue() else {}
         return rc, payload, transport
 
+    @staticmethod
+    def _pricing(operation: str) -> _FakeHttpResponse:
+        return _FakeHttpResponse(200, payload={
+            "domain": "example.com", "priceClass": "standard",
+            "prices": {operation: [{
+                "period": {"value": 1, "unit": "y"},
+                "priceInDefaultCurrency": {
+                    "finalPrice": {"amount": "12.00", "currency": "USD"},
+                    "regularPrice": {"amount": "13.00", "currency": "USD"},
+                },
+            }]},
+        })
+
     def _build_plan(self, spec: operations.OperationSpec, body: dict[str, Any] | None = None, **kwargs: Any) -> tuple[dict[str, Any], dict[str, Any], _FakeTransport, str]:
         plan_path = Path(tempfile.mkdtemp()) / "plan.json"
         responses = []
         preflight = _preflight_request(spec.operation_id, {p: self._path_values[p] for p in spec.path_params}, body)
         if preflight is not None:
-            responses.append(_FakeHttpResponse(200, payload={"price": 12, "currency": "USD", "status": "ok"}))
+            payload = {"result": "available"} if spec.operation_id == "domainCreate" else {"price": 12, "currency": "USD", "status": "ok"}
+            responses.append(_FakeHttpResponse(200, payload=payload))
+        actions = {"domainCreate": "register", "domainRenew": "renew", "transferRequest": "transfer"}
+        if spec.operation_id in actions:
+            responses.append(self._pricing(actions[spec.operation_id]))
         args, body_path = self._args_for_spec(spec, body=body or {}, with_body=bool(spec.body or spec.read_like), plan_out=str(plan_path))
         if body_path is None and body is not None and (spec.body or spec.read_like):
             args.body_file = self._write_body(plan_path.parent, body)
@@ -216,9 +233,7 @@ class TestWriteSafety(unittest.TestCase):
 
     def test_apply_refuses_when_snapshot_drift_detected(self) -> None:
         spec = next(spec for spec in self.write_specs if spec.operation_id == "setDomainContacts")
-        plan_obj, _, _, plan_path = self._build_plan(spec, {"contacts": {"admin": "a@x.com"}})
-        plan_obj["snapshot"]["preflight"]["snapshot_digest"] = "first"
-        Path(plan_path).write_text(json.dumps(plan_obj), encoding="utf-8")
+        _, _, _, plan_path = self._build_plan(spec, {"contacts": {"admin": "a@x.com"}})
 
         args, _ = self._args_for_spec(
             spec,
@@ -281,12 +296,12 @@ class TestWriteSafety(unittest.TestCase):
 
     def test_receipt_written_on_success_and_refusal(self) -> None:
         spec = next(spec for spec in self.write_specs if spec.operation_id == "domainRenew")
-        plan, _, _, plan_path = self._build_plan(spec, {"duration": 1})
+        plan, _, _, plan_path = self._build_plan(spec, {"years": 1, "currentExpirationDate": "2027-08-01T00:00:00Z"})
         preflight_payload = (plan.get("snapshot", {}).get("preflight", {}).get("payload_redacted") or {"price": 12, "currency": "USD"})
         good_receipt = Path(tempfile.mkdtemp()) / "receipt.json"
         args, _ = self._args_for_spec(
             spec,
-            body={"duration": 1},
+            body={"years": 1, "currentExpirationDate": "2027-08-01T00:00:00Z"},
             apply=True,
             yes=True,
             plan_in=plan_path,
@@ -297,6 +312,7 @@ class TestWriteSafety(unittest.TestCase):
         )
         responses = [
             _FakeHttpResponse(200, payload=preflight_payload),
+            self._pricing("renew"),
             _FakeHttpResponse(200, payload={"ok": True}),
             _FakeHttpResponse(200, payload={"domain": "example.com"}),
         ]
@@ -310,7 +326,7 @@ class TestWriteSafety(unittest.TestCase):
         bad_receipt = Path(tempfile.mkdtemp()) / "bad-receipt.json"
         args2, _ = self._args_for_spec(
             spec,
-            body={"duration": 1},
+            body={"years": 1, "currentExpirationDate": "2027-08-01T00:00:00Z"},
             apply=True,
             yes=True,
             plan_in=plan_path,
@@ -425,7 +441,7 @@ class TestWriteSafety(unittest.TestCase):
         body = {"authCode": "PRIVATE-CODE"}
         plan, _, plan_transport, plan_path = self._build_plan(spec, body)
         self.assertEqual(plan["snapshot"]["preflight"]["operation_id"], "getTransferInfo")
-        self.assertEqual(len(plan_transport.calls), 1)
+        self.assertEqual(len(plan_transport.calls), 2)
         self.assertTrue(plan_transport.calls[0]["url"].endswith("/v1/domains/example.com/transfer"))
 
         args, _ = self._args_for_spec(
@@ -435,6 +451,7 @@ class TestWriteSafety(unittest.TestCase):
             yes=True,
             plan_in=plan_path,
             ack_ownership=True,
+            ack_spend=True,
             ack_private_data=True,
         )
         rc, payload, transport = self._run(
@@ -492,9 +509,18 @@ class TestWriteSafety(unittest.TestCase):
             ),
             (
                 "createSafePayTransaction",
-                {"domainName": "example.com", "buyerId": "private-buyer"},
+                {
+                    "domainName": "example.com", "initiatedBy": "seller", "type": "buyNow",
+                    "basePrice": {"amount": "100.00", "currency": "USD"},
+                    "feePercentageShare": {"seller": 50, "buyer": 50},
+                },
                 {"transactionId": "private-transaction-id"},
-                {"status": "pending", "buyerId": "private-buyer"},
+                {
+                    "transactionId": "private-transaction-id", "domainName": "example.com",
+                    "initiatedBy": "seller", "type": "buyNow", "status": "pendingBuyerConfirm",
+                    "basePrice": {"amount": "100", "currency": "USD"},
+                    "feePercentageShare": {"seller": 50, "buyer": 50},
+                },
                 "/v1/sellerhub/safepay-transactions/private-transaction-id",
                 "private-transaction-id",
             ),
@@ -521,6 +547,8 @@ class TestWriteSafety(unittest.TestCase):
                     responses.append(
                         _FakeHttpResponse(200, payload=preflight["payload_redacted"])
                     )
+                if operation_id == "domainCreate":
+                    responses.append(self._pricing("register"))
                 responses.extend(
                     [
                         _FakeHttpResponse(200, payload=write_payload),

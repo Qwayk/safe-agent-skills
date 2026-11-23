@@ -1,53 +1,25 @@
-# How live changes stay under your control
+# Review a Spaceship change
 
-The tool can read stable Spaceship API data after credentials are configured. It does not turn a write request into a live change immediately.
+Check the account, domain, and exact request before approving it. Use the same credentials, settings folder, and request values when you apply with `--apply --yes --plan-in`. Make a new plan if your credentials changed or the plan uses the old format. A preview without credentials can help you prepare the request. Save and review a new plan with the intended account before you apply.
 
-## A write starts as a saved plan
+Each apply saves an attempt receipt under `.state/receipts/` beside your settings before sending the change. Keep it so the tool can stop a second attempt from the same plan. Use a new filename if you pass `--receipt-out`. Keep settings, plans, request bodies, and receipts in separate files.
 
-The plan records the exact command, target, query, request-body digest, important spend or financial fields, risk categories, required acknowledgements, and a plan-integrity digest. Private contact, transfer, checkout, and SafePay values are masked or replaced by canonical SHA-256 digests.
+## Review prices and transfers
 
-When Spaceship offers a reliable read for the target, the tool saves a redacted snapshot digest. When the API cannot provide a reliable snapshot or full financial recheck, the plan says so and requires `--ack-no-snapshot`.
+For a registration, renewal, or transfer, check the domain, the term, and the currency. The tool shows the exact-domain price from Spaceship, checks it again before sending, and stops if it changes. If Spaceship does not return a usable price for the term, check and complete the purchase in Spaceship. The price is a quote. A promotion can run out before the provider charges you. [Spaceship pricing docs](https://docs.spaceship.dev/#tag/Domain-Pricing/operation/getSingleDomainPricing)
 
-If you do not choose file paths, the plan and receipt are saved automatically under `.state/runs/<run_id>/`. A run ID must be one non-empty local path segment: absolute paths, slashes, backslashes, `.` and `..` are refused before a run folder is created. Explicit `--plan-out` and `--receipt-out` paths override the automatic plan and receipt locations.
+New transfers and SafePay deals can have no earlier record, or the key can have permission to send the request without permission to read that record. The plan shows what Spaceship returned and asks for `--ack-no-snapshot`. If the read result changes after review, save a fresh plan. Keep transfer codes, contact details, and payment information in private request files.
 
-Saved command displays keep normal domain targets useful, but replace contact IDs and SafePay transaction IDs with deterministic SHA-256 displays. Billing contact IDs are masked. If a private-data operation returns an unstructured error or a generic `detail`, `message`, response, or raw body, the tool saves only a redacted digest instead of the provider text.
+## Review a SafePay deal
 
-## Apply uses the same reviewed request
+Before approval, check the domain, amount, currency, fee split, how the purchase is paid, and the buyer or seller who will receive the invitation. If the broker is confirming a party's terms for them, review that choice too. Read the counterparty details from the private request file.
 
-A live write requires all of these:
+The receipt checks that the returned deal matches the reviewed domain and terms. It shows who still needs to confirm when Spaceship supplies that status. An active deal is waiting for purchase. [Spaceship SafePay docs](https://docs.spaceship.dev/#tag/SellerHub/operation/createSafePayTransaction)
 
-1. The same command, target, query, and body used to create the plan.
-2. `--apply --yes --plan-in <path>`.
-3. Every stronger acknowledgement listed in the plan.
-4. A matching plan-integrity digest.
-5. A fresh preflight read when the official API exposes one.
+## Read the receipt
 
-If the target, body, snapshot, exposed price or expiration fields, or plan integrity changed, the tool refuses before the write. A successful apply sends exactly one provider write.
+A reply marked `accepted_not_completed` is still processing. Use its operation ID with `async-operations status`. If the reply was lost or the result is unclear, check Spaceship before making a new plan. The tool cannot undo a provider change for you.
 
-## Stronger acknowledgements
+The plan lists the required flags. Purchases need `--ack-spend`, ownership changes need `--ack-ownership`, and changes to DNS or nameservers need `--ack-dns-risk`. Checkout and SafePay ask for `--ack-financial`. Deletions and private data use `--ack-destructive` and `--ack-private-data` where applicable. See the [commands](command_reference.md) for the exact flags.
 
-The plan selects only the flags that apply:
-
-- `--ack-spend` for registration, renewal, restoration, auto-renew, or another cost risk.
-- `--ack-ownership` for registration, transfers, listings, checkout, SafePay, or other ownership-sensitive work.
-- `--ack-dns-risk` for DNS, nameserver, and personal-nameserver changes that can interrupt websites or email.
-- `--ack-financial` for SellerHub pricing, checkout links, SafePay, and other financial obligations.
-- `--ack-destructive` for supported deletion paths.
-- `--ack-private-data` for contacts, transfer codes, and private transaction details.
-- `--ack-no-snapshot` when Spaceship does not expose a reliable snapshot or full financial recheck.
-
-## After the write
-
-The receipt records the redacted request, HTTP status, rate-limit details, async operation ID, and verification result. The tool reads back state only when it has a reliable target for that operation. Otherwise it says `unverified` instead of treating the write response as proof of the final state.
-
-Reliable readback includes a newly created domain by its reviewed domain, saved contact details or attributes when the write response returns `contactId`, a new SellerHub domain by the reviewed request `name`, and a new SafePay transaction when the response returns `transactionId`. Missing response IDs leave the receipt honestly `unverified`. Checkout-link creation has no reliable read target and remains `unverified`.
-
-HTTP 204 is a successful response with no JSON body. HTTP 202 is `accepted_not_completed`; use the saved async operation ID with `async-operations status` to check later.
-
-## Local refusals
-
-Spaceship documents two operations as under development with HTTP 501. `domains delete` and `domains personal-nameservers get-host` refuse locally, without credentials or a network request.
-
-The tool also refuses missing credentials for provider reads or applies, unsafe API hosts, changed plans, missing acknowledgements, unresolved path values, and requests outside the fixed command inventory.
-
-HTTP redirects are never followed. A 3xx response fails at the original fixed host, and the custom API key and secret headers are not resent to the redirect destination.
+Run history defaults to `.state/runs/<run_id>/`. Choose a short local name for `--run-id`. Use `runs list` and `runs show` to find recent results. Run history keeps contact and transaction identifiers masked.

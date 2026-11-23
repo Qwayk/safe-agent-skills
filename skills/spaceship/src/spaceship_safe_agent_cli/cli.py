@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
+import hmac
 import json
+import re
+import secrets
 import sys
 import time
 from dataclasses import dataclass
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -217,7 +222,7 @@ _RISK_CATEGORIES: dict[str, tuple[str, ...]] = {
     "domainRenew": ("ownership", "spend"),
     "domainRestore": ("ownership", "spend"),
     # transfer
-    "transferRequest": ("ownership", "private-data"),
+    "transferRequest": ("ownership", "spend", "private-data"),
     "updateTransferLock": ("ownership",),
     # contacts / privacy / settings
     "saveDetails": ("private-data",),
@@ -291,6 +296,70 @@ def _canonical_json_bytes(payload: Any) -> bytes:
 
 def _sha256_hex(payload: Any) -> str:
     return hashlib.sha256(_canonical_json_bytes(payload)).hexdigest()
+
+
+def _receipt_directory(args: Any, plan_path: Path | None) -> Path:
+    env_file = getattr(args, "env_file", None)
+    folder = Path(env_file).expanduser().resolve().parent if env_file else (plan_path or Path.cwd() / "plan.json").resolve().parent
+    state = folder / ".state"
+    receipts = state / "receipts"
+    if state.is_symlink() or receipts.is_symlink():
+        raise SafetyError("Choose a settings folder with a local .state/receipts directory.")
+    return receipts
+
+
+def _signature(cfg: Any, plan_hash: str, receipts: Path) -> str:
+    message = _canonical_json_bytes(["spaceship-plan-v2", cfg.api_key, str(receipts), plan_hash])
+    return hmac.new(cfg.api_secret.encode("utf-8"), message, hashlib.sha256).hexdigest()
+
+
+def _plan_hash(plan: dict[str, Any]) -> str:
+    return _sha256_hex({key: value for key, value in plan.items() if key not in {"plan_integrity", "account_signature"}})
+
+
+def _check_output_path(path: Path, args: Any, receipts: Path) -> Path:
+    resolved = path.resolve()
+    if path.is_symlink() or resolved.is_relative_to(receipts):
+        raise SafetyError("Choose an output file outside the saved receipt folder.")
+    for flag in ("env_file", "plan_in", "body_file", "log_file"):
+        name = getattr(args, flag, None)
+        if not name:
+            continue
+        source = Path(name).expanduser()
+        if resolved == source.resolve() or (path.exists() and source.exists() and path.samefile(source)):
+            raise SafetyError("Choose an output file separate from the settings, plan, request, and log files.")
+    return resolved
+
+
+def _reserve_receipt(canonical: Path, custom: Path | None, receipt: dict[str, Any]) -> None:
+    custom_reserved = False
+    try:
+        canonical.parent.parent.mkdir(mode=0o700, exist_ok=True)
+        canonical.parent.mkdir(mode=0o700, exist_ok=True)
+        if custom is not None:
+            write_json_file(custom, receipt, exclusive=True)
+            custom_reserved = True
+        write_json_file(canonical, receipt, exclusive=True)
+    except OSError as exc:
+        if custom is not None and custom_reserved:
+            with contextlib.suppress(OSError):
+                custom.unlink()
+        if canonical.exists():
+            raise SafetyError(f"This plan already has an attempt receipt at {canonical}. Check Spaceship before making a new plan.") from exc
+        raise SafetyError("Could not save the starting receipt. Choose a new writable receipt file.") from exc
+
+
+def _save_receipt(canonical: Path, custom: Path | None, receipt: dict[str, Any]) -> bool:
+    receipt["receipt_written"] = True
+    try:
+        write_json_file(canonical, _redact(receipt))
+        if custom is not None:
+            write_json_file(custom, _redact(receipt))
+    except OSError:
+        receipt["receipt_written"] = False
+        receipt["next_step"] = "The final receipt could not be saved. Check Spaceship before making a new plan."
+        return False
+    return True
 
 
 def _display_path_params(path_params: dict[str, str]) -> dict[str, str]:
@@ -565,6 +634,112 @@ def _operation_lookup(operation_id: str) -> operations.OperationSpec | None:
     return None
 
 
+_PRICED_ACTIONS = {"domainCreate": "register", "domainRenew": "renew", "transferRequest": "transfer"}
+_NO_PRICE_MESSAGE = "Spaceship did not give a usable price for this domain and term. Check the price in Spaceship before buying."
+
+
+def _price_pair(payload: Any) -> dict[str, str] | None:
+    if not isinstance(payload, dict):
+        return None
+    amount, currency = payload.get("amount"), payload.get("currency")
+    if not isinstance(amount, str) or not re.fullmatch(r"[0-9]{1,18}(?:\.[0-9]{1,2})?", amount):
+        return None
+    if not isinstance(currency, str) or not re.fullmatch(r"[A-Z]{3}", currency):
+        return None
+    return {"amount": format(Decimal(amount).normalize(), "f"), "currency": currency}
+
+
+def _same_domain(value: Any, domain: str) -> bool:
+    return isinstance(value, str) and value.rstrip(".").casefold() == domain.rstrip(".").casefold()
+
+
+def _purchase_quote(
+    transport: HttpClient, cfg: Any, headers: dict[str, str],
+    operation_id: str, domain: str, body: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    action = _PRICED_ACTIONS[operation_id]
+    years = 1 if action == "transfer" else (body or {}).get("years")
+    if type(years) is not int or years < 1:
+        return None
+    spec = _operation_lookup("getSingleDomainPricing")
+    assert spec is not None
+    try:
+        result = _call_transport(
+            transport=transport, spec=spec, url=_build_url(cfg.base_url, spec.path_template, {"domain": domain}),
+            headers=headers, params={}, body=None,
+        )
+    except RuntimeError:
+        return None
+    payload = result.payload
+    if result.status_code != 200 or not isinstance(payload, dict) or not _same_domain(payload.get("domain"), domain):
+        return None
+    prices = payload.get("prices")
+    entries = prices.get(action) if isinstance(prices, dict) else None
+    if not isinstance(entries, list):
+        return None
+    quotes = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        period = entry.get("period")
+        if period != {"value": years, "unit": "y"} and not (action == "transfer" and period is None):
+            continue
+        pair = entry.get("priceInDefaultCurrency")
+        if not isinstance(pair, dict):
+            continue
+        final = _price_pair(pair.get("finalPrice"))
+        regular = _price_pair(pair.get("regularPrice"))
+        if final is None or regular is None or final["currency"] != regular["currency"]:
+            continue
+        quotes.append({
+            "domain": domain, "operation": action, "years": years, "price_class": payload.get("priceClass"),
+            "price": final, "regular_price": regular,
+        })
+    return quotes[0] if len(quotes) == 1 else None
+
+
+def _safepay_terms_match(transaction: Any, request: dict[str, Any], transaction_id: str) -> bool:
+    if not isinstance(transaction, dict) or transaction.get("transactionId") != transaction_id:
+        return False
+    domain = request.get("domainName")
+    if not isinstance(domain, str) or not _same_domain(transaction.get("domainName"), domain):
+        return False
+    requested_price = _price_pair(request.get("basePrice"))
+    if requested_price is None or _price_pair(transaction.get("basePrice")) != requested_price:
+        return False
+    required = ("initiatedBy", "type")
+    if any(key not in request or transaction.get(key) != request[key] for key in required):
+        return False
+    approved_split = request.get("feePercentageShare")
+    returned_split = transaction.get("feePercentageShare")
+    if not isinstance(approved_split, dict) or not approved_split or not isinstance(returned_split, dict):
+        return False
+    if any(returned_split.get(party) != share for party, share in approved_split.items()):
+        return False
+    if request["type"] == "leaseToOwn":
+        expected = request.get("ltoSettings")
+        if not isinstance(expected, dict) or transaction.get("ltoSettings") != expected:
+            return False
+    requested_confirmation = request.get("confirmedBy")
+    if request["initiatedBy"] == "broker" and isinstance(requested_confirmation, dict):
+        actual = transaction.get("confirmedBy")
+        if not isinstance(actual, dict) or any(value is True and actual.get(party) is not True for party, value in requested_confirmation.items()):
+            return False
+    return True
+
+
+_SAFEPAY_STATES = {
+    "pendingSellerConfirm": "The seller still needs to confirm.",
+    "pendingBuyerConfirm": "The buyer still needs to confirm.",
+    "active": "Both sides have confirmed. The purchase is still open.",
+    "processing": "Spaceship is processing the deal.",
+    "verification": "Spaceship is checking the deal.",
+    "purchased": "Spaceship reports that the purchase went through.",
+    "deactivated": "Spaceship reports that the deal is inactive.",
+    "expired": "Spaceship reports that the deal expired.",
+}
+
+
 def _preflight_request(operation_id: str, path_params: dict[str, str], body: dict[str, Any] | None) -> tuple[operations.OperationSpec, dict[str, str], dict[str, Any], bool] | None:
     # returns (operation, path_params, query, snapshot_required)
     if operation_id in {"domainCreate"}:
@@ -619,6 +794,7 @@ def _preflight_payload(
     cfg: Any,
     request: tuple[operations.OperationSpec, dict[str, str], dict[str, Any], bool],
     headers: dict[str, str],
+    allow_missing: bool = False,
 ) -> tuple[dict[str, Any], str]:
     preflight_spec, preflight_path_params, preflight_query, _ = request
     result = _call_transport(
@@ -629,14 +805,14 @@ def _preflight_payload(
         params=preflight_query,
         body=None,
     )
+    if allow_missing and result.status_code in {403, 404}:
+        absent = {"state": "read_not_allowed" if result.status_code == 403 else "no_prior_record"}
+        return absent, _sha256_hex(absent)
     payload = _redact(result.payload)
     if result.status_code == 429:
         raise SafetyError(f"Preflight rejected by rate limit: {preflight_spec.operation_id}")
     if result.status_code not in _SUCCESS_STATUSES:
         raise SafetyError(f"Preflight failed ({preflight_spec.operation_id}): status {result.status_code}")
-    if preflight_spec.method == "GET" and result.status_code in _SUCCESS_STATUSES:
-        # capture readback payload for snapshot comparison and redaction
-        return payload, _sha256_hex(result.payload)
     return payload, _sha256_hex(result.payload)
 
 
@@ -723,6 +899,19 @@ def _readback_verification_payload(
             "selector": _build_selector(spec, verify_path, {}),
         }
     if result.status_code == 200:
+        if operation_id == "createSafePayTransaction":
+            if not _safepay_terms_match(result.payload, request_obj, transaction_id):
+                return False, {"status": "unverified", "status_code": 200, "reason": "safepay_terms_mismatch"}
+            state = result.payload.get("status")
+            state = state if isinstance(state, str) and state in _SAFEPAY_STATES else "unknown"
+            return True, {
+                "status": "verified",
+                "status_code": 200,
+                "selector": _build_selector(spec, verify_path, {}),
+                "transaction_status": state,
+                "next_step": _SAFEPAY_STATES.get(state, "Check the current deal status in Spaceship."),
+                "payload": _redact_operation_payload(spec.operation_id, result.payload),
+            }
         return True, {
             "status": "verified",
             "status_code": result.status_code,
@@ -1040,388 +1229,259 @@ def _run_operation(
         out.emit(_redact(payload))
         return 0
 
-    # write-like branch
     risk_categories = list(_risk_categories(spec.operation_id))
     preflight = _preflight_request(spec.operation_id, path_params, body)
-
-    preflight_payload: dict[str, Any] | None = None
-    preflight_digest: str | None = None
-    preflight_financial: dict[str, Any] | None = None
-    preflight_metadata: dict[str, Any] = {
-        "used": False,
+    allow_missing = spec.operation_id in {"transferRequest", "createSafePayTransaction"}
+    check_price = spec.operation_id in _PRICED_ACTIONS
+    needs_financial_recheck = "spend" in risk_categories or "financial" in risk_categories
+    no_full_financial_recheck = spec.operation_id in {
+        "domainRestore", "createCheckoutLink", "createSafePayTransaction",
     }
-
-    if preflight is not None and has_credentials and not apply:
-        preflight_spec, preflight_path_params, preflight_query, preflight_snapshot_enabled = preflight
-        preflight_metadata["used"] = True
-        preflight_metadata["operation_id"] = preflight_spec.operation_id
-        preflight_metadata["path_template"] = preflight_spec.path_template
-        preflight_metadata["path_params"] = _display_path_params(preflight_path_params)
-        preflight_metadata["query"] = preflight_query
-        if not apply:
-            try:
-                preflight_payload, preflight_digest = _preflight_payload(
-                    transport=transport,
-                    cfg=cfg,
-                    request=(preflight_spec, preflight_path_params, preflight_query, preflight_snapshot_enabled),
-                    headers=headers,
-                )
-                preflight_metadata["snapshot_digest"] = preflight_digest
-                preflight_metadata["payload_redacted"] = _redact(preflight_payload)
-                preflight_metadata["exposed_fields"] = _walk_exposed_fields(preflight_payload)
-                if any(c in risk_categories for c in ("spend", "financial")):
-                    preflight_financial = _extract_spend_fields(preflight_payload)
-            except SafetyError as e:
-                preflight_metadata["error"] = str(e)
-
-    no_snapshot = preflight is None or not bool(preflight[3] if preflight else True)
-    if not apply:
-        no_snapshot = no_snapshot or preflight_payload is None
-        if not has_credentials:
-            no_snapshot = True
-    needs_financial_recheck = any(c in risk_categories for c in ("spend", "financial"))
-    provider_cannot_recheck_full_financial_terms = spec.operation_id in {
-        "domainRenew",
-        "domainRestore",
-        "createCheckoutLink",
-        "createSafePayTransaction",
-    }
-    financial_recheck_available = (
-        bool(preflight_financial) and not provider_cannot_recheck_full_financial_terms
-        if needs_financial_recheck
-        else True
-    )
-    no_reliable_recheck = needs_financial_recheck and not financial_recheck_available
-    requires_no_snapshot_ack = no_snapshot or no_reliable_recheck
-    required_ack_flags = _required_ack_names(
-        spec.operation_id,
-        no_snapshot=requires_no_snapshot_ack,
-    )
+    source = getattr(args, "plan_in", None) if apply else effective_plan_out
+    plan_file = Path(source).expanduser() if source else None
+    receipts = _receipt_directory(args, plan_file)
+    custom: Path | None = None
+    started = False
     body_sha256 = _sha256_hex(body) if body is not None else None
-    critical_request_fields = _critical_request_fields(spec.operation_id, path_params, body)
-
-    plan_base: dict[str, Any] = {
-        "ok": True,
-        "dry_run": True,
-        "plan_kind": "deterministic_only",
-        "tool": "qwayk-spaceship-safe-agent-cli",
-        "version": __version__,
-        "operation_id": spec.operation_id,
-        "command": command_name,
-        "env_fingerprint": cfg.base_url,
-        "generated_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "method": spec.method,
-        "path_template": spec.path_template,
-        "selector": _build_selector(spec, path_params, query_params),
-        "path_params": _display_path_params(path_params),
-        "query": query_params,
-        "body_sha256": body_sha256,
-        "redacted_body": _redacted_request_body(spec.operation_id, body),
-        "critical_request_fields": critical_request_fields,
-        "risk_categories": risk_categories,
-        "required_acknowledgements": required_ack_flags,
-        "snapshot": {
-            "available": not no_snapshot,
-            "preflight": preflight_metadata,
-            "preflight_financial_fields": preflight_financial,
-        },
-        "financial_recheck": {
-            "required": needs_financial_recheck,
-            "available": financial_recheck_available,
-            "fields": preflight_financial,
-            "warning": (
-                "The official API exposes no reliable amount, currency, or fee recheck for this operation. "
-                "Review the exact request fields and use --ack-no-snapshot before apply."
-                if no_reliable_recheck
-                else None
-            ),
-        },
-        "no_snapshot_warning": (
-            "No reliable state snapshot or required financial recheck is available; this write requires --ack-no-snapshot"
-            if requires_no_snapshot_ack
-            else None
-        ),
-    }
-    plan_base["plan_integrity"] = _sha256_hex({k: v for k, v in plan_base.items() if k != "plan_integrity"})
-
-    if not apply:
-        plan_path = None
-        if effective_plan_out:
-            plan_path = write_json_file(effective_plan_out, plan_base)
-        plan_base["plan_path"] = plan_path
-        out.emit(_redact(plan_base))
-        return 0
+    selector = _build_selector(spec, path_params, query_params)
+    critical = _critical_request_fields(spec.operation_id, path_params, body)
+    target = path_params.get("domain", "")
 
     try:
-        plan_in_obj = read_json_file(args.plan_in)
-        if not isinstance(plan_in_obj, dict):
+        if not apply:
+            if plan_file is not None:
+                plan_file = _check_output_path(plan_file, args, receipts)
+            before_state: dict[str, Any] | None = None
+            meta: dict[str, Any] = {"used": False}
+            if preflight is not None and has_credentials:
+                preflight_spec, preflight_params, preflight_query, _ = preflight
+                meta.update(
+                    used=True, operation_id=preflight_spec.operation_id,
+                    path_template=preflight_spec.path_template,
+                    path_params=_display_path_params(preflight_params), query=preflight_query,
+                )
+                try:
+                    before_state, digest = _preflight_payload(
+                        transport=transport, cfg=cfg, request=preflight, headers=headers,
+                        allow_missing=allow_missing,
+                    )
+                except (SafetyError, RuntimeError) as exc:
+                    meta["error"] = str(exc) if isinstance(exc, SafetyError) else "Spaceship did not return the current state."
+                else:
+                    meta.update(
+                        snapshot_digest=digest, payload_redacted=before_state,
+                        exposed_fields=_walk_exposed_fields(before_state),
+                    )
+            financial = _extract_spend_fields(before_state) if needs_financial_recheck else None
+            price = _purchase_quote(transport, cfg, headers, spec.operation_id, target, body) if check_price and has_credentials else None
+            snapshot_available = before_state is not None and before_state.get("state") not in {
+                "no_prior_record", "read_not_allowed",
+            }
+            has_financial_recheck = price is not None if check_price else bool(financial) and not no_full_financial_recheck
+            requires_no_snapshot = not snapshot_available or (needs_financial_recheck and not has_financial_recheck)
+            financial_warning = None
+            if needs_financial_recheck and not has_financial_recheck:
+                financial_warning = _NO_PRICE_MESSAGE if check_price else (
+                    "Spaceship does not give a full price or fee check here. Review the request and acknowledge that before applying."
+                )
+            plan = {
+                "ok": True, "dry_run": True, "plan_kind": "deterministic_only",
+                "plan_schema_version": 2, "plan_id": secrets.token_hex(16),
+                "tool": "qwayk-spaceship-safe-agent-cli", "version": __version__,
+                "operation_id": spec.operation_id, "command": command_name, "env_fingerprint": cfg.base_url,
+                "generated_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "method": spec.method, "path_template": spec.path_template, "selector": selector,
+                "path_params": _display_path_params(path_params), "query": query_params,
+                "body_sha256": body_sha256, "redacted_body": _redacted_request_body(spec.operation_id, body),
+                "critical_request_fields": critical, "risk_categories": risk_categories,
+                "required_acknowledgements": _required_ack_names(spec.operation_id, no_snapshot=requires_no_snapshot),
+                "snapshot": {"available": snapshot_available, "preflight": meta, "preflight_financial_fields": financial},
+                "financial_recheck": {
+                    "required": needs_financial_recheck, "available": not needs_financial_recheck or has_financial_recheck,
+                    "fields": financial, "price_quote": price, "warning": financial_warning,
+                },
+                "apply_ready": has_credentials and (not check_price or price is not None),
+                "no_snapshot_warning": (
+                    "The plan is missing a current-state or full price check. Review the approval flags."
+                    if requires_no_snapshot else None
+                ),
+            }
+            plan_hash = _plan_hash(plan)
+            plan["plan_integrity"] = plan_hash
+            plan["account_signature"] = _signature(cfg, plan_hash, receipts) if has_credentials else None
+            if plan_file is not None:
+                write_json_file(plan_file, plan)
+            plan["plan_path"] = str(plan_file) if plan_file is not None else None
+            out.emit(_redact(plan))
+            return 0
+
+        if effective_receipt_out:
+            path = _check_output_path(Path(effective_receipt_out).expanduser(), args, receipts)
+            if path.exists():
+                raise SafetyError("Choose a new receipt filename. That file already exists.")
+            custom = path
+
+        assert plan_file is not None
+        saved = read_json_file(plan_file)
+        if not isinstance(saved, dict):
             raise ValidationError("Plan file must be a JSON object")
-
-        if plan_in_obj.get("operation_id") != spec.operation_id:
-            raise SafetyError("Refused: plan operation_id does not match current command")
-        if plan_in_obj.get("command") != command_name:
+        if saved.get("plan_schema_version") != 2:
+            raise SafetyError("This plan uses an older format. Save and review a new plan.")
+        if saved.get("operation_id") != spec.operation_id or saved.get("command") != command_name:
             raise SafetyError("Refused: plan command does not match current command")
-        if _normalize_query_values(plan_in_obj.get("query") or {}) != query_params:
-            raise SafetyError("Refused: query mismatch")
-        if plan_in_obj.get("path_params") != _display_path_params(path_params):
-            raise SafetyError("Refused: path parameter mismatch")
-        if plan_in_obj.get("body_sha256") != body_sha256:
+        if saved.get("body_sha256") != body_sha256:
             raise SafetyError("Refused: body SHA-256 mismatch")
-        if plan_in_obj.get("selector") != _build_selector(spec, path_params, query_params):
-            raise SafetyError("Refused: selector mismatch")
-        if plan_in_obj.get("critical_request_fields") != critical_request_fields:
-            raise SafetyError("Refused: critical request fields mismatch")
-
-        if isinstance(plan_in_obj.get("snapshot"), dict):
-            plan_snapshot = plan_in_obj["snapshot"]
-            if isinstance(plan_snapshot, dict):
-                no_snapshot = bool(preflight is None or not bool(preflight[3] if preflight else True) or not bool(plan_snapshot.get("available")))
-
-        plan_financial_recheck = plan_in_obj.get("financial_recheck")
-        if isinstance(plan_financial_recheck, dict):
-            no_reliable_recheck = bool(plan_financial_recheck.get("required")) and not bool(
-                plan_financial_recheck.get("available")
-            )
-        requires_no_snapshot_ack = no_snapshot or no_reliable_recheck
-
-        missing_ack = _missing_acknowledgments(
-            spec.operation_id,
-            args,
-            no_snapshot=requires_no_snapshot_ack,
-        )
-        if missing_ack:
-            raise SafetyError(f"Refused: missing required acknowledgments: {', '.join(missing_ack)}")
-
-        if preflight is not None:
-            preflight_spec, preflight_path_params, preflight_query, preflight_snapshot_enabled = preflight
-            current_preflight_payload, current_preflight_digest = _preflight_payload(
-                transport=transport,
-                cfg=cfg,
-                request=(preflight_spec, preflight_path_params, preflight_query, preflight_snapshot_enabled),
-                headers=headers,
-            )
-            preflight_payload = current_preflight_payload
-            preflight_digest = current_preflight_digest
-            snapshot_block = plan_in_obj.get("snapshot")
-            if not isinstance(snapshot_block, dict):
-                raise SafetyError("Refused: plan snapshot missing for drift check")
-            preflight_block = snapshot_block.get("preflight")
-            if not isinstance(preflight_block, dict):
-                raise SafetyError("Refused: plan preflight data missing")
-            if not no_snapshot:
-                plan_snapshot_digest = preflight_block.get("snapshot_digest")
-                if not plan_snapshot_digest:
-                    raise SafetyError("Refused: plan snapshot digest missing")
-                if str(plan_snapshot_digest) != str(current_preflight_digest):
-                    raise SafetyError("Refused: snapshot preflight digest drift detected")
-
-            previous_exposed = preflight_block.get("exposed_fields") or {}
-            current_exposed = _walk_exposed_fields(current_preflight_payload)
-            if previous_exposed and current_exposed != previous_exposed:
-                raise SafetyError("Refused: exposed preflight fields changed")
-
-            if any(c in risk_categories for c in ("spend", "financial")):
-                preflight_financial = _extract_spend_fields(current_preflight_payload)
-                previous_financial = snapshot_block.get("preflight_financial_fields") or {}
-                current_financial = _extract_spend_fields(current_preflight_payload)
-                if previous_financial and current_financial != previous_financial:
-                    raise SafetyError("Refused: spend or financial preflight values changed")
-
-        if str(plan_in_obj.get("plan_integrity") or "") != str(_sha256_hex({k: v for k, v in plan_in_obj.items() if k != "plan_integrity"})):
+        if saved.get("selector") != selector or saved.get("critical_request_fields") != critical:
+            raise SafetyError("Refused: the target or request values changed")
+        plan_hash = _plan_hash(saved)
+        if saved.get("plan_integrity") != plan_hash:
             raise SafetyError("Refused: plan integrity mismatch")
+        signature = saved.get("account_signature")
+        if not isinstance(signature, str) or not hmac.compare_digest(
+            signature.encode("utf-8"), _signature(cfg, plan_hash, receipts).encode("ascii"),
+        ):
+            raise SafetyError("Use the same Spaceship credentials and settings folder, or save and review a new plan with the intended account.")
 
-        result = _call_transport(
-            transport=transport,
-            spec=spec,
-            url=_build_url(cfg.base_url, spec.path_template, path_params),
-            headers=headers,
-            params=query_params,
-            body=body,
-        )
+        canonical = receipts / f"{plan_hash}.receipt.json"
+        if canonical.exists() or canonical.is_symlink():
+            raise SafetyError(f"This plan already has an attempt receipt at {canonical}. Check Spaceship before making a new plan.")
 
-        if result.status_code == 429:
-            payload = {
-                "ok": False,
-                "operation_id": spec.operation_id,
-                "command": command_name,
-                "method": spec.method,
-                "status_code": result.status_code,
-                "status_label": _status_label(result.status_code),
-                "async_operation_id": result.headers.get("spaceship-async-operationid"),
-                "result": _redact_operation_payload(spec.operation_id, result.payload),
-                "rate_limited": result.throttled,
-                "attempts": result.attempts,
-                "rate_retry_after_seconds": result.retry_after,
-                "error_type": "RateLimit",
-                "error": "rate_limit",
-                "dry_run": False,
-            }
-            out.emit(_redact(payload))
-            if effective_receipt_out:
-                write_json_file(
-                    effective_receipt_out,
-                    {
-                        "ok": False,
-                        "dry_run": False,
-                        "refused": False,
-                        "operation_id": spec.operation_id,
-                        "command": command_name,
-                        "status_code": result.status_code,
-                        "status_label": payload["status_label"],
-                        "applied_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                        "result": _redact_operation_payload(spec.operation_id, result.payload),
-                        "verification": {"status": "unverified", "reason": "rate_limit"},
-                    },
-                )
-            return 1
+        snapshot = saved["snapshot"]
+        price_review = saved["financial_recheck"]
+        require_ack = not snapshot["available"] or (needs_financial_recheck and not price_review["available"])
+        missing = _missing_acknowledgments(spec.operation_id, args, no_snapshot=require_ack)
+        if missing:
+            raise SafetyError(f"Refused: missing required acknowledgments: {', '.join(missing)}")
+        if check_price and price_review.get("price_quote") is None:
+            raise SafetyError(_NO_PRICE_MESSAGE)
 
-        if result.status_code not in _SUCCESS_STATUSES:
-            payload = {
-                "ok": False,
-                "operation_id": spec.operation_id,
-                "command": command_name,
-                "method": spec.method,
-                "status_code": result.status_code,
-                "status_label": _status_label(result.status_code),
-                "async_operation_id": result.headers.get("spaceship-async-operationid"),
-                "result": _redact_operation_payload(spec.operation_id, result.payload),
-                "rate_limited": result.throttled,
-                "attempts": result.attempts,
-                "rate_retry_after_seconds": result.retry_after,
-                "error_type": "RequestError",
-                "error": _redact_operation_payload(spec.operation_id, result.payload),
-                "dry_run": False,
-            }
-            out.emit(_redact(payload))
-            if effective_receipt_out:
-                write_json_file(
-                    effective_receipt_out,
-                    {
-                        "ok": False,
-                        "dry_run": False,
-                        "refused": False,
-                        "operation_id": spec.operation_id,
-                        "command": command_name,
-                        "status_code": result.status_code,
-                        "status_label": payload["status_label"],
-                        "applied_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                        "result": _redact_operation_payload(spec.operation_id, result.payload),
-                        "verification": {"status": "unverified", "reason": "write_failed"},
-                    },
-                )
-            return 1
-
-        if result.status_code == 202:
-            verification_status = "accepted_not_completed"
-            verification = {
-                "status": verification_status,
-                "status_code": result.status_code,
-                "details": "Async provider operation accepted; verification deferred",
-                "async_operation_id": result.headers.get("spaceship-async-operationid"),
-            }
-            verified = False
-        else:
-            verified, verification = _readback_verification_payload(
-                transport=transport,
-                cfg=cfg,
-                operation_id=spec.operation_id,
-                headers=headers,
-                path_params=path_params,
-                request_body=body,
-                write_response=result.payload,
+        before_state = None
+        if preflight is not None:
+            before_state, digest = _preflight_payload(
+                transport=transport, cfg=cfg, request=preflight, headers=headers,
+                allow_missing=allow_missing,
             )
-            verification_status = "verified" if verified else "unverified"
+            old_digest = snapshot["preflight"].get("snapshot_digest")
+            if old_digest is not None and digest != old_digest:
+                raise SafetyError("Refused: snapshot preflight digest drift detected. Review a new plan.")
+            if allow_missing and old_digest is None:
+                raise SafetyError("Review a new plan after Spaceship returns the current state.")
+            if spec.operation_id == "domainCreate" and before_state.get("result") != "available":
+                raise SafetyError("Spaceship did not confirm that this domain is available for registration.")
+
+        if check_price:
+            price = _purchase_quote(transport, cfg, headers, spec.operation_id, target, body)
+            if price is None:
+                raise SafetyError(_NO_PRICE_MESSAGE)
+            if price != price_review["price_quote"]:
+                raise SafetyError("Spaceship changed the price or currency. Save and review a new plan.")
 
         receipt = {
-            "ok": True,
-            "dry_run": False,
-            "refused": False,
+            "ok": False, "dry_run": False, "refused": False, "receipt_written": True,
             "applied_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "operation_id": spec.operation_id,
-            "command": command_name,
-            "selector": plan_base["selector"],
-            "plan_integrity": plan_in_obj.get("plan_integrity"),
-            "request_body_sha256": body_sha256,
+            "operation_id": spec.operation_id, "command": command_name, "selector": selector,
+            "plan_integrity": plan_hash, "request_body_sha256": body_sha256,
             "request_body": _redacted_request_body(spec.operation_id, body),
             "preflight": {
-                "operation_id": (preflight[0].operation_id if preflight else None),
-                "payload_redacted": preflight_payload,
-                "preflight_financial_fields": preflight_financial,
+                "operation_id": preflight[0].operation_id if preflight else None,
+                "payload_redacted": before_state,
+                "preflight_financial_fields": _extract_spend_fields(before_state) if needs_financial_recheck else None,
             },
-            "transport": {
-                "status_code": result.status_code,
-                "status_label": _status_label(result.status_code),
-                "attempts": result.attempts,
-                "rate_limited": result.throttled,
-                "retry_after": result.retry_after,
-                "async_operation_id": result.headers.get("spaceship-async-operationid"),
-            },
-            "verification": _redact(verification),
+            "price_quote": price_review.get("price_quote"),
+            "transport": {"status_code": None, "status_label": "unknown", "async_operation_id": None},
+            "verification": {"status": "unknown"},
+            "next_step": "Spaceship may have received the request. Check there before making a new plan.",
         }
-
-        output_payload = {
-            "ok": True,
-            "refused": False,
-            "operation_id": spec.operation_id,
-            "command": command_name,
-            "method": spec.method,
-            "status_code": result.status_code,
-            "status_label": _status_label(result.status_code),
-            "async_operation_id": result.headers.get("spaceship-async-operationid"),
-            "result": _redact_operation_payload(spec.operation_id, result.payload),
-            "rate_limited": result.throttled,
-            "attempts": result.attempts,
-            "rate_retry_after_seconds": result.retry_after,
-            "dry_run": False,
-            "verification": _redact(verification),
-            "verification_status": verification_status,
-            "receipt": receipt,
-        }
-        if effective_receipt_out:
-            write_json_file(effective_receipt_out, _redact(receipt))
-        out.emit(_redact(output_payload))
-        return 0
-    except SafetyError as e:
-        refusal = {
-            "ok": True,
-            "dry_run": False,
-            "refused": True,
-            "refusal_type": "SafetyError",
-            "reasons": [str(e)],
-            "operation_id": spec.operation_id,
-            "command": command_name,
-            "status_label": "refused",
-        }
-        if effective_receipt_out:
-            write_json_file(
-                effective_receipt_out,
-                {
-                    "ok": False,
-                    "dry_run": False,
-                    "refused": True,
-                    "reasons": [str(e)],
-                    "operation_id": spec.operation_id,
-                    "command": command_name,
-                    "refused_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                },
+        _reserve_receipt(canonical, custom, receipt)
+        started = True
+        try:
+            write_result: _ApiCallResult | None = _call_transport(
+                transport=transport, spec=spec, url=_build_url(cfg.base_url, spec.path_template, path_params),
+                headers=headers, params=query_params, body=body,
             )
-        out.emit(_redact(refusal))
-        return 0
-    except ValidationError as e:
-        refusal = {
-            "ok": False,
-            "dry_run": False,
-            "refused": True,
-            "refusal_type": "ValidationError",
-            "reasons": [str(e)],
-            "operation_id": spec.operation_id,
-            "command": command_name,
-            "status_label": "refused",
+        except RuntimeError:
+            write_result = None
+
+        if write_result is not None:
+            status = write_result.status_code
+            async_id = write_result.headers.get("spaceship-async-operationid")
+            accepted = status in _SUCCESS_STATUSES
+            label = _status_label(status)
+            if status in {408, 409} or status >= 500:
+                label = "unknown"
+            if spec.operation_id == "createSafePayTransaction" and accepted and status != 202:
+                label = "transaction_created"
+            receipt.update(ok=accepted, transport={
+                "status_code": status, "status_label": label, "async_operation_id": async_id,
+                "attempts": write_result.attempts, "rate_limited": status == 429, "retry_after": write_result.retry_after,
+            })
+            verification: dict[str, Any]
+            if status == 202:
+                verification = {"status": "accepted_not_completed", "async_operation_id": async_id}
+                receipt["next_step"] = (
+                    "Check the operation with async-operations status before trying again."
+                    if async_id else "Check the account in Spaceship before trying again."
+                )
+            elif accepted:
+                receipt["verification"] = {"status": "unverified"}
+                if _save_receipt(canonical, custom, receipt):
+                    try:
+                        _, verification = _readback_verification_payload(
+                            transport=transport, cfg=cfg, operation_id=spec.operation_id, headers=headers,
+                            path_params=path_params, request_body=body, write_response=write_result.payload,
+                        )
+                    except RuntimeError:
+                        verification = {"status": "unverified", "reason": "readback_failed"}
+                    if verification.get("next_step"):
+                        receipt["next_step"] = verification["next_step"]
+                    elif str(verification["status"]).startswith("verified"):
+                        receipt.pop("next_step")
+                    else:
+                        receipt["next_step"] = "Spaceship accepted the request. Check the current result there."
+                else:
+                    verification = receipt["verification"]
+            else:
+                verification = {"status": "unknown" if label == "unknown" else "unverified", "reason": "rate_limit" if status == 429 else "write_reply"}
+                if label == "failed":
+                    receipt["next_step"] = "Review the reply and check Spaceship before trying again."
+            receipt["verification"] = verification
+            receipt["result"] = _redact_operation_payload(spec.operation_id, write_result.payload)
+
+        saved_ok = _save_receipt(canonical, custom, receipt)
+        ok = bool(receipt["ok"]) and saved_ok
+        transport_info = receipt["transport"]
+        response = {
+            "ok": ok, "dry_run": False, "refused": False, "operation_id": spec.operation_id,
+            "command": command_name, "method": spec.method, "status_code": transport_info["status_code"],
+            "status_label": transport_info["status_label"], "async_operation_id": transport_info["async_operation_id"],
+            "result": receipt.get("result"), "rate_limited": transport_info.get("rate_limited", False),
+            "attempts": transport_info.get("attempts"), "rate_retry_after_seconds": transport_info.get("retry_after"),
+            "verification": receipt["verification"], "verification_status": receipt["verification"]["status"],
+            "receipt_out": str(custom or canonical), "receipt_written": receipt["receipt_written"], "receipt": receipt,
         }
-        if effective_receipt_out:
-            write_json_file(effective_receipt_out, _redact(refusal))
+        if write_result is None:
+            response.update(error_type="RequestError", error="Spaceship did not return a reply.")
+        elif write_result.status_code == 429:
+            response.update(error_type="RateLimit", error="rate_limit")
+        elif not receipt["ok"]:
+            response.update(error_type="RequestError", error=receipt["result"])
+        out.emit(_redact(response))
+        return 0 if ok else 1
+    except (SafetyError, ValidationError) as exc:
+        safety = isinstance(exc, SafetyError)
+        refusal = {
+            "ok": safety, "dry_run": False, "refused": True,
+            "refusal_type": type(exc).__name__, "reasons": [str(exc)],
+            "operation_id": spec.operation_id, "command": command_name, "status_label": "refused",
+        }
+        if apply and not started and custom is not None:
+            with contextlib.suppress(OSError):
+                write_json_file(
+                    custom, {**refusal, "ok": False, "refused_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())},
+                    exclusive=True,
+                )
         out.emit(_redact(refusal))
-        return 1
+        return 0 if safety else 1
 
 
 def _cmd_api_call(args: argparse.Namespace, ctx: dict[str, Any]) -> int:

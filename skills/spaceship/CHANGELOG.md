@@ -2,6 +2,13 @@
 
 All notable changes to this tool are documented here.
 
+## Unreleased
+
+- Added the exact-domain price check for registrations, renewals, and transfers.
+- Saved plans check the account. A private receipt records the attempt before sending a change.
+- New transfers and SafePay deals can proceed after review when there is no earlier record. SafePay receipts check the domain and terms and show who still needs to confirm.
+- Setup keeps the chosen settings file private. Shorter guides keep the August command list and test evidence.
+
 ## [0.1.0] - 2026-08-01
 
 ### Added

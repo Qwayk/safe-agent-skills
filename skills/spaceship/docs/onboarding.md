@@ -1,42 +1,15 @@
-# Connect Spaceship without sharing secrets
+# Connect your Spaceship account
 
-You need a Spaceship API key and API secret. Create and manage those values in Spaceship's API Manager; this tool does not create, rotate, or delete credentials.
+Create a key and secret in [Spaceship API Manager](https://www.spaceship.com/application/api-manager/). Give the key the permissions needed for your task. For example, the exact-domain price lookup needs `domains:read`, and requesting a renewal or transfer needs `domains:billing`. [Spaceship API permissions](https://docs.spaceship.dev/)
 
-## Create the local file
-
-From the tool folder:
-
-```bash
-cp .env.example .env
-```
-
-Open `.env` and fill these two values:
-
-```text
-SPACESHIP_API_KEY=<your key>
-SPACESHIP_API_SECRET=<your secret>
-```
-
-Keep `.env` local and never paste either value into chat, a plan, a receipt, or a Git commit. The production host is fixed in code to `https://spaceship.dev/api`; there is no general base-URL setting.
-
-You can also let the command create `.env` from the example:
+Run onboarding from the tool folder:
 
 ```bash
 qwayk-spaceship-safe-agent-cli --output json onboarding
 ```
 
-## Check the local setup
+Open the private settings file it creates and fill in `SPACESHIP_API_KEY` and `SPACESHIP_API_SECRET`. Keep keys out of chat and Git. If you already have a settings file, you can check or set its permissions with `chmod 600 .env`. Use your own filename if it differs.
 
-```bash
-qwayk-spaceship-safe-agent-cli --output json auth check
-```
+Run the connection command that onboarding prints. If you use `--env-file`, keep using that file on later commands. Without that flag the tool uses `.env`. Matching variables already set in your shell take priority. The timeout defaults to 30 seconds and can be set with `SPACESHIP_TIMEOUT_S` or the command flag `--timeout-s`.
 
-This checks that both values are present and reports the fixed host. It does not send a provider request or prove that the key has the required Spaceship scopes.
-
-## Run the first real read
-
-```bash
-qwayk-spaceship-safe-agent-cli --output json domains list --take 10
-```
-
-If Spaceship rejects the request, check that the credentials are active and have the permissions required for that operation. The error output must never contain the key or secret.
+`auth check` checks your local settings. To check account access and permissions, run the first read in the [quickstart](quickstart.md). If Spaceship refuses a request, check the selected file, key, and permissions. Use `--verbose` to see the request and reply status when needed.

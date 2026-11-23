@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import shlex
 from pathlib import Path
 
 
@@ -34,13 +36,15 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
     env_path = Path(env_file)
     env_created = False
 
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
+    if write_env:
+        try:
+            fd = os.open(env_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        except FileExistsError:
+            pass
         else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
+            with os.fdopen(fd, "w", encoding="utf-8") as settings:
+                settings.write("SPACESHIP_API_KEY=\nSPACESHIP_API_SECRET=\nSPACESHIP_TIMEOUT_S=30\n")
+            env_created = True
 
     lines = _read_text_lines(env_path)
 
@@ -50,13 +54,13 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
     if not _has_nonempty_env_value(lines, "SPACESHIP_API_SECRET"):
         missing.append("SPACESHIP_API_SECRET")
 
+    env_flag = f" --env-file {shlex.quote(env_file)}" if env_file != ".env" else ""
+    next_command = f"qwayk-spaceship-safe-agent-cli --output json{env_flag} auth check"
     steps = [
-        "Copy .env.example → .env (local-only; do not commit it).",
-        "Open .env and fill the required values:",
+        f"Add your Spaceship settings to {env_file}. Keep this file private.",
         "  - SPACESHIP_API_KEY=<your key>",
         "  - SPACESHIP_API_SECRET=<your secret>",
-        "The API host is fixed in the tool to https://spaceship.dev/api.",
-        "Run: qwayk-spaceship-safe-agent-cli --output json auth check",
+        f"Run {next_command}",
     ]
 
     payload = {
@@ -65,7 +69,7 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             "env_file": env_file,
             "env_created": env_created,
             "missing": missing,
-            "next_command": "qwayk-spaceship-safe-agent-cli --output json auth check",
+            "next_command": next_command,
             "steps": steps,
         },
     }
@@ -80,5 +84,5 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
             print("")
             print(f"Missing in {env_file}: " + ", ".join(missing))
         print("")
-        print("Next: qwayk-spaceship-safe-agent-cli --output json auth check")
+        print(next_command)
     return 0

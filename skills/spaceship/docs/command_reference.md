@@ -1,14 +1,14 @@
 # Command reference
 
-The executable is `qwayk-spaceship-safe-agent-cli`. It exposes 40 fixed operation commands, plus local onboarding, auth checking, version, and run-history commands. Provider work is available only through those named operations.
+Use `qwayk-spaceship-safe-agent-cli` for the named commands below. Add `--env-file` before the command when your settings file has a different name.
 
-## Meta commands
+## Check your setup
 
 - `qwayk-spaceship-safe-agent-cli --output json --version`
 - `qwayk-spaceship-safe-agent-cli onboarding [--no-write-env]`
 - `qwayk-spaceship-safe-agent-cli auth check`
 
-## Safe write flow (shared flags)
+## Plan and apply flags
 
 Write-capable commands use these global flags:
 
@@ -32,7 +32,7 @@ qwayk-spaceship-safe-agent-cli --output json --plan-out my-plan.json domains cre
 qwayk-spaceship-safe-agent-cli --output json --apply --yes --plan-in my-plan.json --ack-spend --ack-ownership domains create example.com --body-file body.json
 ```
 
-If no output path is supplied, a normal write plan is saved at `.state/runs/<run_id>/plan.json` and a successful apply receipt at `.state/runs/<run_id>/receipt.json`. Explicit paths override these defaults.
+The default output files are `.state/runs/<run_id>/plan.json` and `.state/runs/<run_id>/receipt.json`. Use a new filename with `--receipt-out`. The tool also keeps a private attempt receipt under `.state/receipts/` for each applied plan. Use the same credentials and settings folder you used to save the plan. Make a new plan if you saved it before this update.
 
 ## Run history
 
@@ -41,7 +41,7 @@ If no output path is supplied, a normal write plan is saved at `.state/runs/<run
 
 Use a short local name such as `renewal-review` for `--run-id`. It must be one non-empty path segment; absolute paths, slashes, backslashes, `.` and `..` are refused. Run history keeps normal domain targets readable but shows contact IDs and SafePay transaction IDs as deterministic SHA-256 values.
 
-## API commands by surface
+## Spaceship commands
 
 - `qwayk-spaceship-safe-agent-cli async-operations status <operationId>`
 - `qwayk-spaceship-safe-agent-cli contacts get <contact>`
@@ -56,6 +56,7 @@ Use a short local name such as `renewal-review` for `--run-id`. It must be one n
 - `qwayk-spaceship-safe-agent-cli domains delete <domain>` — local HTTP-501 refusal; no network request
 - `qwayk-spaceship-safe-agent-cli domains list [--take N] [--skip N] [--order-by expirationDate|-expirationDate]` — `take` 1–100; other official name, Unicode-name, and registration-date values are also accepted
 - `qwayk-spaceship-safe-agent-cli domains get <domain>`
+- `qwayk-spaceship-safe-agent-cli domains price <domain>`
 - `qwayk-spaceship-safe-agent-cli domains create <domain> --body-file body.json`
 - `qwayk-spaceship-safe-agent-cli domains renew <domain> --body-file body.json`
 - `qwayk-spaceship-safe-agent-cli domains restore <domain>`

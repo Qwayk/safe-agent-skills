@@ -1,5 +1,11 @@
 # Official sources
 
+## November 23, 2026
+
+The [current Spaceship guide](https://docs.spaceship.dev/) lists 58 operations, including all 40 August entries with the same methods and paths. The tool adds the [exact-domain price](https://docs.spaceship.dev/#tag/Domain-Pricing/operation/getSingleDomainPricing) and still uses the August command set for other work. The [transfer](https://docs.spaceship.dev/#tag/Domain-Transfer/operation/getTransferInfo) and [SafePay](https://docs.spaceship.dev/#tag/SellerHub/operation/createSafePayTransaction) pages define the replies used in the tests. The extracted OpenAPI snapshot used for comparison has SHA-256 `82eae9bbaf69e1e124fd69fbca4b85e2c09e4bcdff33719c21ea9faa871a86a0`.
+
+## August 1, 2026
+
 The tool boundary and behavior use these official Spaceship sources, checked on 2026-08-01:
 
 - [Spaceship External API documentation](https://docs.spaceship.dev/)
