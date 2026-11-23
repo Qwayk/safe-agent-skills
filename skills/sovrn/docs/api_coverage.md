@@ -1,23 +1,13 @@
 # API coverage
 
-Sovrn coverage shows exactly what this skill can do with publisher commerce, advertising reports, merchants, links, and performance data. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
-
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can review merchants, links, and performance data, then show which publisher workflows are included."
-
-## Coverage notes
-
-- Lock the exact official Sovrn HTTP surface before scaffolding or broad code work.
-- Keep coverage honest across Commerce HTTP APIs, Advertising Reporting APIs, and docs-only support pages.
-- Preserve the real auth split instead of flattening it into one fake auth model.
+These are the Sovrn Commerce and Advertising requests this tool can make. [Command guide](command_reference.md) · [Test results](proof.md)
 
 ## Summary
 
 - Provider: Sovrn Developer Center
 - Product shape: one combined safe CLI for official Sovrn Commerce HTTP APIs plus official Sovrn Advertising Reporting APIs
 - Last audited (UTC): 2026-06-08
-- Coverage state: endpoint map locked; all mapped CLI command families are implemented; proof/examples are still being filled in
+- Coverage state: all 22 mapped HTTP routes have named commands; see the test results for live evidence
 - Surface count: 22 official HTTP endpoint rows plus 1 official non-HTTP affiliate-link pattern accounted for separately
 
 ## Auth split to preserve
@@ -32,7 +22,7 @@ Status meanings:
 - `implemented` = official endpoint confirmed and a matching named CLI command is implemented
 - `implemented-access-gated` = named CLI command is implemented, but vendor access or registration is still required before live success is possible
 
-| Product area | Endpoint | Capability | Official doc | Auth shape | Planned CLI command | State | Notes |
+| Product area | Endpoint | Capability | Official doc | Auth shape | CLI command | State | Notes |
 |---|---|---|---|---|---|---|---|
 | Commerce account | `GET https://rest.viglink.com/api/account/campaigns/{search}` | List campaigns or search by name or campaign ID | `reference/campaigns.md` | Commerce secret header | `sovrn-safe-cli commerce campaigns get` | `implemented` | `search` defaults to `PRIMARY` in the official doc |
 | Commerce links | `GET https://api.viglink.com/api/link/` | Check whether a URL can be monetized | `reference/link.md` | Commerce site API key in query `key` | `sovrn-safe-cli commerce links check` | `implemented` | Link-check flow, not write |

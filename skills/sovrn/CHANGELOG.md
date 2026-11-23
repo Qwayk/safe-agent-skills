@@ -7,6 +7,10 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ## [Unreleased]
 
+- An explicit settings file now controls which Sovrn key and publisher the CLI uses. Onboarding creates the file with private permissions and shows the next command with that path.
+- Report commands reject unreadable replies. The approved-merchant result shows the page it returned.
+- Shortened the setup and report guides and removed demo and batch files. Kept the August Link API fix that hides the site key in returned URLs.
+
 ### Added
 - Initial Sovrn scaffold with the locked official coverage ledger and auth split.
 - Real named `commerce` and `advertising` command trees for the mapped official Sovrn endpoint surface.
@@ -14,7 +18,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 - Redacted proof examples for version output, local auth shape, and a live invalid-secret Commerce response.
 - Expanded validation coverage to 31 passing tests, including command wiring, auth honesty, redaction, rate-limit hint checks, and coverage-sync protection.
 - A live-proof capture guide for the remaining success-example step.
-- A publish-ready README contract test plus a public-doc path-leak guard for the Sovrn first-screen docs and proof files.
+- A publish-ready manual README review plus a public-doc path-leak guard for the Sovrn first-screen docs and proof files.
 
 ### Changed
 - Scaffold docs and runtime now use the real Sovrn auth split instead of the old generic token model.
@@ -26,6 +30,7 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 ### Fixed
 - Base CLI runtime: ensure argument/usage errors in `--output json` mode emit exactly one JSON error object (no argparse usage text).
 - Redacted comparison site-key path segments, bid-check user-sensitive request fields, and Advertising publisher-presence fingerprints.
+- Redacted sensitive query values inside URLs returned by Sovrn response bodies, including the optimized Link API URL.
 - Added a clear 429 retry hint in HTTP error messages without exposing secrets.
 
 ### Removed

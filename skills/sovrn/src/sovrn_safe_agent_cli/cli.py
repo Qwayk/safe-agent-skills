@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import shlex
 import sys
 import time
 from pathlib import Path
@@ -14,6 +15,7 @@ from .commands import onboarding as onboarding_cmd
 from .config import load_config
 from .errors import SafetyError, ToolError, ValidationError
 from .output import Output
+from .http import redact_url
 from .project_config import load_project_config
 from .runs import (
     RunContext,
@@ -141,7 +143,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--version", action="store_true", help="Print version and exit")
     p.add_argument("--config", default=None, help="Optional project defaults JSON (non-secret)")
     p.add_argument("--project-dir", default=None, help="Optional project directory (defaults to config file folder)")
-    p.add_argument("--env-file", default=".env", help="Optional .env file path (default: .env)")
+    p.add_argument("--env-file", help="Read Sovrn settings only from this file")
     p.add_argument("--timeout-s", type=float, default=None, help="Override timeout seconds")
     p.add_argument("--verbose", action="store_true", help="Verbose HTTP logging to stderr")
     p.add_argument("--debug", action="store_true", help="Show stack traces on errors")
@@ -203,6 +205,26 @@ def _output_mode_from_argv(argv: list[str]) -> str:
     return v if v in {"json", "text"} else "json"
 
 
+def _display_command(argv: list[str]) -> str:
+    private_flags = {
+        "--user-ip", "--user-agent", "--referrer-url", "--sub-id",
+        "--gdpr-consent", "--ccpa-consent", "--gpp-consent", "--cuid",
+    }
+    args = iter(argv)
+    display = ["sovrn-safe-cli"]
+    for arg in args:
+        flag, delimiter, value = arg.partition("=")
+        if flag in private_flags:
+            if not delimiter:
+                next(args, None)
+            display.extend((flag, "***REDACTED***"))
+        elif delimiter and value.startswith(("http://", "https://")):
+            display.append(flag + delimiter + redact_url(value))
+        else:
+            display.append(redact_url(arg) if arg.startswith(("http://", "https://")) else arg)
+    return shlex.join(display)
+
+
 def main(argv: list[str]) -> int:
     parser = build_parser()
     out = Output(mode=_output_mode_from_argv(argv))
@@ -217,9 +239,10 @@ def main(argv: list[str]) -> int:
             return int(e.code or 0)
         except Exception:
             return 0
+    env_path = args.env_file or ".env"
     write_capable = bool(getattr(args, "write_capable", False))
     run_ctx: RunContext = init_run_context(
-        env_file=str(args.env_file),
+        env_file=env_path,
         enabled=write_capable,
         run_id=str(args.run_id) if args.run_id else None,
         artifacts_dir=str(args.artifacts_dir) if args.artifacts_dir else None,
@@ -239,7 +262,7 @@ def main(argv: list[str]) -> int:
         loggers.append(AuditLogger(path=global_audit_log_path, enabled=True))
     audit = CompositeAuditLogger(loggers) if len(loggers) > 1 else (loggers[0] if loggers else AuditLogger(path=None, enabled=False))
 
-    runs_index_path = runs_index_path_for_env_file(str(args.env_file))
+    runs_index_path = runs_index_path_for_env_file(env_path)
     if str(getattr(args, "cmd", "") or "") == "runs":
         # `runs` is a local-only command; it still needs to know where the index lives.
         run_ctx = RunContext(
@@ -272,7 +295,7 @@ def main(argv: list[str]) -> int:
         if not getattr(args, "cmd", None):
             parser.error("Missing command. Use --help to see available commands.")
 
-        command_str = "sovrn-safe-cli " + " ".join(argv)
+        command_str = _display_command(argv)
         audit.bind_context(
             {
                 "tool": "sovrn-safe-cli",
@@ -296,7 +319,7 @@ def main(argv: list[str]) -> int:
                 "command_str": command_str,
                 "project_cfg": project_cfg,
                 "project_dir": project_dir,
-                "env_file": str(args.env_file),
+                "env_file": env_path,
                 "timeout_s": None,
                 "verbose": bool(args.verbose),
                 "apply": bool(args.apply),
@@ -324,7 +347,7 @@ def main(argv: list[str]) -> int:
             "command_str": command_str,
             "project_cfg": project_cfg,
             "project_dir": project_dir,
-            "env_file": str(args.env_file),
+            "env_file": env_path,
             "timeout_s": timeout_s,
             "verbose": bool(args.verbose),
             "apply": bool(args.apply),
@@ -385,7 +408,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="sovrn-safe-cli",
             version=__version__,
-            command="sovrn-safe-cli " + " ".join(argv),
+            command=_display_command(argv),
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -401,7 +424,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="sovrn-safe-cli",
             version=__version__,
-            command="sovrn-safe-cli " + " ".join(argv),
+            command=_display_command(argv),
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,
@@ -419,7 +442,7 @@ def main(argv: list[str]) -> int:
             run_ctx=run_ctx,
             tool="sovrn-safe-cli",
             version=__version__,
-            command="sovrn-safe-cli " + " ".join(argv),
+            command=_display_command(argv),
             env_fingerprint=None,
             output_obj=out.last if isinstance(out.last, dict) else None,
             audit_log_path=run_audit_log_path or global_audit_log_path,

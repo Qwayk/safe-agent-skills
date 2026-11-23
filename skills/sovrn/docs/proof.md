@@ -1,71 +1,25 @@
-# Proof and verification
+# Sovrn test results
 
-Sovrn proof should answer a simple question: what has actually been checked for publisher commerce, advertising reports, merchants, links, and performance data, and what still depends on account access, provider permissions, public API limits, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Fresh CLI installs from the source and the local release copy each passed 33 tests with the network blocked. A separate skill install matched all 47 release files under `sovrn`.
 
-If you only check one thing, check merchant/report proof and saved output examples before trusting publisher performance summaries.
+The checks used simulated replies to run all three quickstart paths with only the required settings. They confirmed that the selected file supplied the key and publisher, links and errors hid the key, unreadable reports failed, and approved merchants showed which page was returned.
 
-## Last verified
+## August 12, 2026 checks
 
-- Date (UTC): `2026-06-08`
-- Verified by: `Codex`
-- Tool version: `0.1.0`
-- Provider API version (if applicable): `See the live endpoint docs in docs/references.md`
-- Environment: `Local build review only. Live vendor proof not captured yet.`
+The Mac build of `0.1.0` passed 34 tests. On August 11, a live Commerce Link API check with a site key returned both eligible and ineligible links. A follow-up confirmed the CLI hid the key in the request and the optimized URL. Those results apply to the site whose key was used. Site approval and commission need their own checks.
 
-## Smoke checks
+This record includes no successful live examples for Commerce reports, the full approved-merchant list, comparisons, or Advertising.
 
-Run inside the tool folder:
+## June 8, 2026 checks
 
-1. Create venv and install:
-- `python3 -m venv .venv`
-- `.venv/bin/python -m pip install -e .`
+The original local review checked version `0.1.0`, the settings check, and the command paths. The saved campaign example shows an invalid secret response from Sovrn. [Current smoke commands](quickstart.md)
 
-2. Version check with no `.env` required:
-- `sovrn-safe-cli --output json --version`
+## Example output
 
-3. Local auth check:
-- `sovrn-safe-cli --output json auth check`
+- [CLI version](examples/outputs/version.json)
+- [Local settings check](examples/outputs/auth_check.json)
+- [Commerce campaign request with an invalid secret](examples/outputs/commerce_campaigns_invalid_secret.json)
 
-4. One representative Commerce read query:
-- `sovrn-safe-cli --output json commerce campaigns get --search PRIMARY`
-
-5. One representative Advertising read query:
-- `sovrn-safe-cli --output json advertising reports account get --start 2026-01-01T00:00:00Z --end 2026-01-02T00:00:00Z --metrics publisherRevenue --dimensions auction`
-
-## Example outputs (redacted)
-
-These committed redacted examples already exist:
-
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check.json`
-- `docs/examples/outputs/commerce_campaigns_invalid_secret.json`
-
-Current meaning:
-
-- the version example proves the shipped CLI identity and version output shape
-- the auth example proves the real local config-check shape
-- the campaigns 401 example proves the live official endpoint path and redacted error handling
-- a positive live-success example still needs a real Sovrn credential set
-- use `docs/live_proof_capture.md` to capture the missing success examples when credentials are available
-
-Planned success-example paths, once credentials are available:
-
-- `docs/examples/outputs/commerce_campaigns_success.json`
-- `docs/examples/outputs/commerce_links_check_success.json`
-- `docs/examples/outputs/commerce_comparisons_success.json`
-- `docs/examples/outputs/advertising_account_success.json`
-
-## What can go wrong
-
-- **Wrong auth shape** → verify the command fails with a clear message about the missing Commerce secret key, site key, Advertising API key, or publisher ID.
-- **Rate limiting** → verify the CLI surfaces a non-secret retry/backoff hint; confirm it does not loop/retry-storm.
-- **Pagination surprises** → verify results include paging metadata or clear “next page” hints in JSON/text mode.
-- **Coverage drift** → verify any new command family appears in `docs/api_coverage.md` before it is presented as shipped.
-
-## Links
-
-- Sources used: `docs/references.md`
-- Coverage source of truth: `docs/api_coverage.md`
-- Debug history: `docs/engineering_notes.md`
+For any approved live check, use the matching key and a small request from the [command guide](command_reference.md). Review results privately before saving an example. Remove keys, private account IDs, tracking data, and business data that cannot be shared. [API coverage](api_coverage.md) lists the supported requests.

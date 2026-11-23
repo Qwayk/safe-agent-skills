@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -55,6 +56,44 @@ class TestLiveCommandWiring(unittest.TestCase):
             self.assertEqual(payload["request"]["params"]["key"], "***REDACTED***")
             self.assertEqual(mock_request.call_args.kwargs["params"]["key"], "site-key-123")
 
+    def test_links_check_redacts_site_key_inside_response_url(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            env_path = self._env_file(
+                Path(d),
+                ["SOVRN_COMMERCE_SITE_API_KEY=site-key-123", "SOVRN_TIMEOUT_S=30"],
+            )
+            response = HttpResponse(
+                status=200,
+                headers={"content-type": "application/json"},
+                body=(
+                    b'{"affiliatable":true,"optimized":'
+                    b'"https://redirect.viglink.com?u=https%3A%2F%2Fexample.com&key=site-key-123"}'
+                ),
+                url=redact_url(
+                    "https://api.viglink.com/api/link/?out=https%3A%2F%2Fexample.com&key=site-key-123"
+                ),
+            )
+            with patch("sovrn_safe_agent_cli.http.HttpClient.request", return_value=response):
+                buf = io.StringIO()
+                with redirect_stdout(buf):
+                    rc = main(
+                        [
+                            "--env-file",
+                            str(env_path),
+                            "commerce",
+                            "links",
+                            "check",
+                            "--url",
+                            "https://example.com",
+                        ]
+                    )
+
+            self.assertEqual(rc, 0)
+            output = buf.getvalue()
+            self.assertNotIn("site-key-123", output)
+            payload = json.loads(output)
+            self.assertIn("key=%2A%2A%2AREDACTED%2A%2A%2A", payload["response"]["data"]["optimized"])
+
     def test_merchant_groups_approved_builds_filters(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             env_path = self._env_file(Path(d), ["SOVRN_COMMERCE_SECRET_KEY=secret-123", "SOVRN_TIMEOUT_S=30"])
@@ -78,6 +117,8 @@ class TestLiveCommandWiring(unittest.TestCase):
                         ]
                     )
             self.assertEqual(rc, 0)
+            self.assertEqual(json.loads(buf.getvalue())["pagination"], {"page": 1, "page_size": 1000})
+            mock_request.assert_called_once()
             body = mock_request.call_args.kwargs["json_body"]
             self.assertEqual(body["page"], 1)
             self.assertEqual(body["pageSize"], 1000)
@@ -372,3 +413,42 @@ class TestLiveCommandWiring(unittest.TestCase):
             for key in ("key", "ip", "userAgent", "referrerUrl", "subId", "gdprConsent", "ccpaConsent", "gppConsent", "cuid"):
                 self.assertEqual(payload["request"]["params"][key], "***REDACTED***")
             self.assertEqual(mock_request.call_args.kwargs["params"]["ip"], "203.0.113.10")
+            self.assertNotIn("203.0.113.10", buf.getvalue())
+            self.assertNotIn("consent-string", buf.getvalue())
+
+    def test_named_settings_file_wins_over_shell_for_account_report(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = self._env_file(Path(directory), [
+                "SOVRN_ADVERTISING_API_KEY=fixture-file-key",
+                "SOVRN_ADVERTISING_PUBLISHER_ID=111",
+            ])
+            response = self._fake_response("https://api.sovrn.com/reporting/advertising/publishers/111/account")
+            args = [
+                "--env-file", str(path), "advertising", "reports", "account", "get",
+                "--start", "2026-01-01T00:00:00Z", "--end", "2026-01-02T00:00:00Z",
+                "--dimensions", "auction", "--metrics", "publisherRevenue",
+            ]
+            env_vars = {"SOVRN_ADVERTISING_API_KEY": "fixture-shell-key", "SOVRN_ADVERTISING_PUBLISHER_ID": "222"}
+            with patch.dict(os.environ, env_vars):
+                with patch("sovrn_safe_agent_cli.http.HttpClient.request", return_value=response) as request:
+                    with redirect_stdout(io.StringIO()):
+                        self.assertEqual(main(args), 0)
+                self.assertIn("/111/account", request.call_args.args[1])
+                self.assertEqual(request.call_args.kwargs["headers"]["x-api-key"], "fixture-file-key")
+
+    def test_invalid_report_reply_is_an_error(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = self._env_file(Path(directory), ["SOVRN_COMMERCE_SECRET_KEY=fixture-secret-key"])
+            args = [
+                "--env-file", str(path), "commerce", "reports", "pages", "get",
+                "--click-date-start", "2026-01-01", "--click-date-end", "2026-01-02",
+            ]
+            for body in (b"<html>Temporary error</html>", b"", b'"temporarily unavailable"'):
+                with self.subTest(body=body):
+                    response = HttpResponse(200, {}, body, "https://viglink.io/v1/reports/pages")
+                    with patch("sovrn_safe_agent_cli.http.HttpClient.request", return_value=response):
+                        with redirect_stdout(out := io.StringIO()):
+                            self.assertEqual(main(args), 1)
+                    result = json.loads(out.getvalue())
+                    self.assertFalse(result["ok"])
+                    self.assertIn("JSON report", result["error"])

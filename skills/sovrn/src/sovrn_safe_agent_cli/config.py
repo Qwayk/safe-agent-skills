@@ -25,10 +25,21 @@ def _parse_env_file(path: Path) -> dict[str, str]:
     return out
 
 
-def _get(env: dict[str, str], key: str) -> str:
-    # OS env overrides env-file.
-    raw = os.environ.get(key) if key in os.environ else env.get(key)
-    return (raw or "").strip()
+SETUP_KEYS = (
+    "SOVRN_COMMERCE_SECRET_KEY",
+    "SOVRN_COMMERCE_SITE_API_KEY",
+    "SOVRN_ADVERTISING_API_KEY",
+    "SOVRN_ADVERTISING_PUBLISHER_ID",
+)
+
+
+def settings_values(env_file: str | None) -> dict[str, str]:
+    values = _parse_env_file(Path(env_file or ".env"))
+    if env_file is None:
+        for key in (*SETUP_KEYS, "SOVRN_TIMEOUT_S"):
+            if key in os.environ:
+                values[key] = os.environ[key].strip()
+    return values
 
 
 @dataclasses.dataclass(frozen=True)
@@ -51,14 +62,14 @@ class Config:
 
 
 def load_config(env_file: str | None) -> Config:
-    env = _parse_env_file(Path(env_file or ".env"))
+    env = settings_values(env_file)
 
-    commerce_secret_key = _get(env, "SOVRN_COMMERCE_SECRET_KEY") or None
-    commerce_site_api_key = _get(env, "SOVRN_COMMERCE_SITE_API_KEY") or None
-    advertising_api_key = _get(env, "SOVRN_ADVERTISING_API_KEY") or None
-    advertising_publisher_id = _get(env, "SOVRN_ADVERTISING_PUBLISHER_ID") or None
+    commerce_secret_key = env.get("SOVRN_COMMERCE_SECRET_KEY") or None
+    commerce_site_api_key = env.get("SOVRN_COMMERCE_SITE_API_KEY") or None
+    advertising_api_key = env.get("SOVRN_ADVERTISING_API_KEY") or None
+    advertising_publisher_id = env.get("SOVRN_ADVERTISING_PUBLISHER_ID") or None
 
-    timeout_s_raw = _get(env, "SOVRN_TIMEOUT_S") or "30"
+    timeout_s_raw = env.get("SOVRN_TIMEOUT_S") or "30"
     try:
         timeout_s = float(timeout_s_raw)
     except Exception:

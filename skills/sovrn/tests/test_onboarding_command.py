@@ -3,9 +3,11 @@ from __future__ import annotations
 import io
 import json
 import os
+import shlex
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from pathlib import Path
 
 from sovrn_safe_agent_cli.cli import main
 
@@ -31,3 +33,13 @@ class TestOnboardingCommand(unittest.TestCase):
             self.assertTrue(payload["onboarding"]["env_created"])
             self.assertTrue(os.path.exists(env_path))
             self.assertIn("SOVRN_COMMERCE_SECRET_KEY", payload["onboarding"]["missing"])
+
+    def test_onboarding_uses_private_file_and_keeps_it_in_next_command(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "chosen settings.env"
+            with redirect_stdout(out := io.StringIO()):
+                self.assertEqual(main(["--env-file", str(path), "onboarding"]), 0)
+            setup = json.loads(out.getvalue())["onboarding"]
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+            self.assertIn("SOVRN_COMMERCE_SITE_API_KEY=", path.read_text())
+            self.assertIn(str(path), shlex.split(setup["next_command"]))

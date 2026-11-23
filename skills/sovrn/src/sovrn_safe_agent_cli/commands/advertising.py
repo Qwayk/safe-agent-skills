@@ -82,6 +82,7 @@ def _build_report_handler(slug: str) -> Any:
             url=url,
             auth_shape="advertising-x-api-key+publisher-id",
             headers=advertising_headers(api_key),
+            expect_json=True,
             params=_common_report_params(args, include_dimensions=True),
         )
 
@@ -115,6 +116,7 @@ def _cmd_custom_get(args: Any, ctx: dict[str, Any]) -> int:
         auth_shape="advertising-x-api-key+publisher-id",
         headers=advertising_headers(api_key),
         params=params,
+        expect_json=True,
     )
 
 

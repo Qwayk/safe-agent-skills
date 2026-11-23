@@ -188,6 +188,7 @@ def _cmd_transactions_get(args: argparse.Namespace, ctx: dict[str, Any]) -> int:
     return emit_api_result(
         ctx=ctx,
         event="commerce.reports.transactions.get",
+        expect_json=True,
         method="GET",
         url="https://viglink.io/v1/reports/transactions",
         auth_shape="commerce-secret-header",
@@ -202,6 +203,7 @@ def _build_common_report_handler(report_slug: str) -> Any:
         return emit_api_result(
             ctx=ctx,
             event=f"commerce.reports.{report_slug.replace('-', '_')}.get",
+            expect_json=True,
             method="GET",
             url=COMMERCE_REPORT_ENDPOINTS[report_slug],
             auth_shape="commerce-secret-header",
@@ -233,12 +235,15 @@ def _cmd_merchant_groups_approved(args: argparse.Namespace, ctx: dict[str, Any])
     return emit_api_result(
         ctx=ctx,
         event="commerce.merchant_groups.approved",
+        expect_json=True,
         method="POST",
         url="https://viglink.io/merchants/rates/summaries",
         auth_shape="commerce-secret-header",
         headers=commerce_secret_headers(secret_key),
         params={"campaignId": args.campaign_id},
         json_body=body,
+        pagination={"page": args.page, "page_size": args.page_size},
+        notes=["This result is one page. Use --page for other pages. Wait at least 10 seconds between requests."],
     )
 
 
@@ -260,6 +265,7 @@ def _cmd_merchant_groups_delta(args: argparse.Namespace, ctx: dict[str, Any]) ->
     return emit_api_result(
         ctx=ctx,
         event="commerce.merchant_groups.delta",
+        expect_json=True,
         method="GET",
         url="https://viglink.io/merchants/rates/summaries/delta",
         auth_shape="commerce-secret-header",

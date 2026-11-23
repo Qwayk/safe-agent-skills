@@ -30,10 +30,10 @@ def cmd_auth_check(args, ctx) -> int:
             "missing_recommended": missing_recommended,
             "env_fingerprint": cfg.env_fingerprint,
             "notes": [
-                "This check only validates local Sovrn config presence.",
-                "Advertising commands need both SOVRN_ADVERTISING_API_KEY and SOVRN_ADVERTISING_PUBLISHER_ID.",
-                "Mixed Commerce commands need both the Commerce secret key and the Commerce site API key.",
-                "Use the real commerce or advertising read commands for live vendor proof.",
+                "This check shows which settings are filled in. It does not contact Sovrn.",
+                "Advertising reports need the Advertising key. Set the publisher ID in the file or pass --publisher-id to the report.",
+                "Coupons and price comparisons need both Commerce keys.",
+                "Run a report or link check to confirm access and see the results.",
             ],
         },
     }

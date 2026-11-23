@@ -1,66 +1,21 @@
-# Connect your Sovrn account
+# Connect to Sovrn
 
-Sovrn needs local credentials before an agent can inspect Commerce and Advertising data for publisher reports and link work.
+Run `sovrn-safe-cli --env-file .env onboarding`. It creates a private settings file if needed. Add the key for the job you want to do and keep it out of chat and Git.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+| What you want to do | What to add to the file |
+| --- | --- |
+| Check a link, request a bid, or get product suggestions | `SOVRN_COMMERCE_SITE_API_KEY` |
+| Read Commerce reports, campaigns, or approved merchants | `SOVRN_COMMERCE_SECRET_KEY` |
+| Find coupons or compare product prices | Both Commerce keys |
+| Read an Advertising report | `SOVRN_ADVERTISING_API_KEY` and `SOVRN_ADVERTISING_PUBLISHER_ID`. You can also pass the ID to a report with `--publisher-id`. |
 
-After setup, start with a small Commerce or Advertising read. This shipped surface is read-only.
+Find the Commerce keys in Sovrn's Commerce settings for the site you want to use. For Advertising, look under **Account → API Keys** and use the publisher ID for the report you want. [Commerce keys](https://developer.sovrn.com/docs/authorization) · [Advertising keys](https://developer.sovrn.com/reference/authorization-1)
 
-## Step 1: Create the local `.env` file
+Run `sovrn-safe-cli --env-file .env auth check`. It checks that the settings are filled in. Run a report or link check to confirm Sovrn accepts them. Repeat the same `--env-file` flag for every command. Naming a file makes the tool read all Sovrn settings from that file. When you leave the flag out, shell settings take priority over the default `.env`.
 
-In the tool folder:
+## If a request fails
 
-1. Copy `.env.example` to `.env`.
-2. Open `.env` in a text editor.
-3. Fill the Sovrn fields you want to use first.
-
-## Step 2: Get the Sovrn values
-
-You can fill all four values now, or start with only the product area you need first.
-
-### Commerce secret key
-
-1. Log in to the Sovrn Platform.
-2. Open Commerce Settings for the site you want to use.
-3. Open the key view for that site.
-4. If no secret key exists, generate one.
-5. Paste it into `SOVRN_COMMERCE_SECRET_KEY`.
-
-### Commerce site API key
-
-1. In the same Commerce site settings area, copy the site API key for that site.
-2. Paste it into `SOVRN_COMMERCE_SITE_API_KEY`.
-
-### Advertising reporting API key
-
-1. Log in to the Sovrn Platform.
-2. Open `Account` → `API Keys`.
-3. Create or copy the Advertising reporting API key.
-4. Paste it into `SOVRN_ADVERTISING_API_KEY`.
-
-### Advertising publisher ID
-
-1. Open the Advertising reporting setup area for the same account.
-2. Copy the publisher ID that matches your reporting account.
-3. Paste it into `SOVRN_ADVERTISING_PUBLISHER_ID`.
-
-## Step 3: Ask for a safe first check
-
-Good first requests:
-
-- “Confirm the tool is connected, then show me which Sovrn command bundles are ready.”
-- “Check whether these product URLs can be monetized before we use them.”
-- “Show me the approved merchants for this campaign.”
-- “Pull page and merchant performance for last month.”
-- “Compare prices for this product across merchants in one market.”
-- “Pull an advertising account report for this publisher.”
-
-## Step 4: If something fails
-
-The most common issues are:
-- Missing or incorrect values in `.env`
-- Mixing the Commerce secret key and the Commerce site API key
-- Missing the Advertising publisher ID even though the Advertising API key is present
-- Access-gated product APIs in the connected account
-
-See `docs/troubleshooting.md` for common errors and fixes.
+- Check the settings path and make sure the key is for the right site or publisher. A Commerce site API key can check a link. It takes a Commerce secret key to read that site's earnings.
+- For an empty report, check the publisher or site, date range, and any filters before drawing a conclusion.
+- For a request limit error, wait for the time Sovrn gives you. See [the command guide](command_reference.md) for report and merchant list limits.
+- Optional settings include `SOVRN_TIMEOUT_S`, which defaults to 30 seconds. Use `--verbose` for request status lines or `onboarding --no-write-env` to check setup without creating a file.

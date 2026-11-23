@@ -1,48 +1,9 @@
-# Safety model
+# Understand Sovrn results
 
-Sovrn is safest when you treat the agent as a focused reader for publisher commerce, advertising reports, merchants, links, and performance data. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+The tool reads reports and lists, checks links, and asks for bids or recommendations. Some of those queries use HTTP `POST`. They are requests for results and require no approval flags in this tool.
 
-The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+Before pulling a report, confirm the site or publisher and the date range. A Commerce site key belongs to one site. A link check describes the URL for that site and country. Check the account's site approval and actual earnings separately.
 
-A good safety ask is: "Read the merchant or report first, then summarize only from the returned Sovrn data."
+Merchant lists come one page at a time. Check later pages if you need the full list, and wait at least 10 seconds between approved-merchant requests. An empty report can be useful when the account and filters are right. An unreadable reply is an error.
 
-## Core safety rules
-
-This skill is careful in a different way from a write-capable skill.
-
-The main job here is not slowing down before a destructive change. The main job is keeping a read-only Sovrn tool honest about what it can query, which credential type each command needs, and what still is not proved live yet.
-
-## What safety means here
-
-- The shipped command names match real Sovrn Commerce and Advertising endpoints.
-- The tool keeps the real auth split visible instead of pretending one key can do every job.
-- Secrets stay redacted in output and logs.
-- Browser-only JavaScript docs and MCP beta docs are not presented as shipped CLI coverage.
-- If local setup is incomplete, the tool should say that clearly instead of guessing.
-
-## Read-only proof loop
-
-For the current read-only surface, the clean proof loop is:
-
-1. Confirm local readiness with `auth check`.
-2. Run a real Commerce or Advertising read command.
-3. Inspect the returned JSON and the coverage ledger.
-4. Save redacted examples in committed docs when the output is stable enough to keep.
-
-## If this tool ever gains writes later
-
-If official write-capable Sovrn endpoints are added later, the tool must return to the normal repo safety pattern:
-
-1. Dry-run by default.
-2. Require explicit apply flags.
-3. Verify after the change.
-4. Save plans and receipts without secrets.
-
-## Local run history
-
-The local run-history helpers stay in place for local audit review and future write-capable additions:
-
-- `.state/runs/<run_id>/`
-- `.state/runs/index.jsonl`
-
-Read-only commands do not create new run folders today.
+Keep keys out of chat and saved examples. Use private storage for account reports or bid data. The CLI hides the site key in returned links, so treat those links as report output. Use Sovrn's official link tools if you need a link to publish. [Build affiliate links](https://developer.sovrn.com/reference/building-affiliate-links)

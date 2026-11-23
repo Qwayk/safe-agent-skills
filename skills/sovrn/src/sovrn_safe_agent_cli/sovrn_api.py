@@ -3,10 +3,18 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
+from urllib.parse import quote
 
 from .errors import ValidationError
-from .http import HttpClient, HttpResponse
+from .http import (
+    HttpClient,
+    HttpResponse,
+    SENSITIVE_BID_QUERY_KEYS,
+    SENSITIVE_QUERY_KEYS,
+    redact_secrets,
+    redact_url,
+    request_secrets,
+)
 
 MARKET_CHOICES = (
     "usd_en",
@@ -26,19 +34,13 @@ SOVRN_PRODUCT_CHOICES = ("WRA", "ORG", "RAC", "RAL", "CUP", "TPA", "PCR", "TXT",
 DEVICE_TYPE_CHOICES = ("DSK", "MBL", "TBL", "UKN")
 GRANULARITY_CHOICES = ("hour", "day", "month")
 PROPERTY_TYPE_CHOICES = ("web", "app")
-SENSITIVE_QUERY_KEYS = {"key", "apikey", "api_key", "site-api-key"}
 SENSITIVE_EMIT_KEYS = {
     *SENSITIVE_QUERY_KEYS,
+    "authorization",
+    "x-api-key",
     "publisher_id",
     "advertising_publisher_id",
-    "ip",
-    "useragent",
-    "referrerurl",
-    "subid",
-    "gdprconsent",
-    "ccpaconsent",
-    "gppconsent",
-    "cuid",
+    *SENSITIVE_BID_QUERY_KEYS,
 }
 SELECTED_RESPONSE_HEADERS = (
     "content-type",
@@ -155,27 +157,6 @@ def require_one_of(*, names: tuple[str, ...], values: tuple[str | None, ...], me
     raise ValidationError(message)
 
 
-def redact_url(url: str) -> str:
-    if not url:
-        return url
-    parts = urlsplit(url)
-    path_parts = parts.path.split("/")
-    for idx, part in enumerate(path_parts):
-        if part == "sites" and idx + 1 < len(path_parts) and path_parts[idx + 1]:
-            path_parts[idx + 1] = "***REDACTED***"
-    safe_path = "/".join(path_parts)
-    if not parts.query:
-        return urlunsplit((parts.scheme, parts.netloc, safe_path, parts.query, parts.fragment))
-    query_pairs = parse_qsl(parts.query, keep_blank_values=True)
-    redacted_pairs: list[tuple[str, str]] = []
-    for key, value in query_pairs:
-        if key.lower() in SENSITIVE_QUERY_KEYS:
-            redacted_pairs.append((key, "***REDACTED***"))
-        else:
-            redacted_pairs.append((key, value))
-    return urlunsplit((parts.scheme, parts.netloc, safe_path, urlencode(redacted_pairs), parts.fragment))
-
-
 def redact_query_params(params: dict[str, Any] | None) -> dict[str, Any] | None:
     if not params:
         return None
@@ -188,13 +169,34 @@ def redact_query_params(params: dict[str, Any] | None) -> dict[str, Any] | None:
     return out
 
 
-def extract_response_data(resp: HttpResponse) -> Any:
-    if not resp.body:
+def redact_response_data(value: Any, secrets: tuple[str, ...]) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: "***REDACTED***" if key.lower() in SENSITIVE_EMIT_KEYS else redact_response_data(item, secrets)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [redact_response_data(item, secrets) for item in value]
+    if isinstance(value, str):
+        safe_value = redact_url(value) if value.lower().startswith(("http://", "https://")) else value
+        return redact_secrets(safe_value, secrets)
+    return value
+
+
+def extract_response_data(resp: HttpResponse, *, expect_json: bool) -> Any:
+    if resp.status == 304:
+        return None
+    if not resp.body and not expect_json:
         return None
     try:
-        return resp.json()
-    except Exception:
+        data = resp.json()
+    except (ValueError, UnicodeError):
+        if expect_json:
+            raise ValidationError("Sovrn did not return a JSON report.") from None
         return resp.text()
+    if expect_json and not isinstance(data, (dict, list)):
+        raise ValidationError("Sovrn did not return a JSON report object or list.")
+    return data
 
 
 def selected_response_headers(headers: dict[str, str]) -> dict[str, str]:
@@ -216,28 +218,33 @@ def emit_api_result(
     params: dict[str, Any] | None = None,
     json_body: dict[str, Any] | None = None,
     notes: list[str] | None = None,
+    expect_json: bool = False,
+    pagination: dict[str, int] | None = None,
 ) -> int:
     client = build_http_client(ctx)
     response = client.request(method, url, headers=headers, params=params, json_body=json_body)
+    secrets = request_secrets(url, headers, params)
     payload: dict[str, Any] = {
         "ok": True,
         "command": ctx.get("command_str"),
         "auth_shape": auth_shape,
         "request": {
             "method": method,
-            "url": response.url,
+            "url": redact_secrets(redact_url(response.url), secrets),
         },
         "response": {
             "status": response.status,
-            "headers": selected_response_headers(response.headers),
-            "data": extract_response_data(response),
+            "headers": redact_response_data(selected_response_headers(response.headers), secrets),
+            "data": redact_response_data(extract_response_data(response, expect_json=expect_json), secrets),
         },
     }
-    safe_params = redact_query_params(params)
+    safe_params = redact_response_data(redact_query_params(params), secrets)
     if safe_params:
         payload["request"]["params"] = safe_params
     if json_body is not None:
-        payload["request"]["json"] = json_body
+        payload["request"]["json"] = redact_response_data(json_body, secrets)
+    if pagination:
+        payload["pagination"] = pagination
     if notes:
         payload["notes"] = notes
     ctx["audit"].write(
@@ -245,7 +252,7 @@ def emit_api_result(
         {
             "auth_shape": auth_shape,
             "method": method,
-            "url": redact_url(url),
+            "url": redact_secrets(redact_url(url), secrets),
             "params": safe_params,
             "status": response.status,
         },

@@ -1,6 +1,6 @@
 # Command reference
 
-These commands cover Sovrn Commerce and Advertising reads for publisher reports and link work. The shipped public surface is read-only, so use it for checks and reports.
+Use `--env-file <path>` before the command name to choose a settings file. For a first request, use the key and command in the [quickstart](quickstart.md).
 
 For the guided path, start with [What you can do with Sovrn](use_cases.md), [Connect your Sovrn account](onboarding.md), and [Quickstart](quickstart.md).
 
@@ -10,9 +10,7 @@ For the guided path, start with [What you can do with Sovrn](use_cases.md), [Con
 - `sovrn-safe-cli --output json --version`
 - `sovrn-safe-cli auth check`
 
-`auth check` validates local Sovrn config presence only.
-Use the real `commerce` or `advertising` commands for live vendor proof.
-The locked shipped surface is tracked in [API coverage](api_coverage.md).
+`auth check` shows which settings are present. A report or link check confirms what the key can access. [API coverage](api_coverage.md) lists the requests and keys.
 
 ## Commerce reads
 
@@ -33,6 +31,8 @@ The locked shipped surface is tracked in [API coverage](api_coverage.md).
 - `sovrn-safe-cli commerce products recommend --page-url article-123 --content "gift guide copy"`
 - `sovrn-safe-cli commerce comparisons prices search --market usd_en --plainlink https://merchant.example/item`
 
+Commerce page reports cover up to 31 days per request. The start date is included and the end date is excluded. Sovrn limits the page report to one request every 60 seconds. Approved merchants returns one page at a time. Use `--page <number>` and, if needed, `--page-size <number>`. The default page size is 1,000 and the maximum is 2,500. Wait at least 10 seconds between approved-merchant requests. [Page reports](https://developer.sovrn.com/reference/get_reports-pages) · [Approved merchants](https://developer.sovrn.com/reference/post_summaries)
+
 ## Advertising reads
 
 - `sovrn-safe-cli advertising reports account get --start 2026-01-01T00:00:00Z --end 2026-01-02T00:00:00Z --metrics publisherRevenue --dimensions auction`
@@ -42,16 +42,8 @@ The locked shipped surface is tracked in [API coverage](api_coverage.md).
 - `sovrn-safe-cli advertising reports domain-bid get --domain-name example.com --start 2026-01-01T00:00:00Z --end 2026-01-02T00:00:00Z --metrics publisherRevenue --dimensions advertiser`
 - `sovrn-safe-cli advertising reports custom get --start 2026-01-01T00:00:00Z --end 2026-01-02T00:00:00Z --metrics publisherRevenue --dimensions domain --granularity day`
 
-## Local runs and history
+You can give a publisher ID with `--publisher-id <id>` when you run an Advertising report. Use the dates and the ID for the publisher you intend to check.
 
-The shipped Sovrn surface is read-only, so normal endpoint commands do not create run-history folders today.
+## Local history
 
-The local history helpers still exist for local audit review and any future write-capable additions.
-
-Optional flags:
-- `--run-id <id>`: set a specific run id (otherwise the tool generates one)
-- `--artifacts-dir <path>`: override where artifacts are written for this run
-- `--no-artifacts`: disable writing run artifacts (advanced)
-
-- `sovrn-safe-cli runs list [--limit 20]`
-- `sovrn-safe-cli runs show --run-id 2026-01-19T104512Z_a3f91c`
+Use `runs list` or `runs show --run-id <id>` to read existing local history. To log a new report request, pass `--log-file <path>` and choose a private location.
