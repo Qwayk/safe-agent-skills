@@ -1,24 +1,9 @@
-# Figma docs
+# Figma guides
 
-Figma is easiest to use when you start with the real job, then check setup, safety, and proof before asking an agent to do more. These docs explain how to read files, projects, comments, components, and design metadata, what access is needed, and where the tool stops before risky changes.
-
-If you are new, read the first few links before asking for account data or changes. They explain the useful jobs, the setup path, and the safety limits.
-
-## Start with the work
-- [What you can do with Figma](use_cases.md) - real jobs to hand to an agent for Figma
-- [Quickstart](quickstart.md) - the shortest path to one useful first result
-- [Connect your Figma account](onboarding.md) - what must be connected or confirmed before the first run
-- [How this stays safe](safety_model.md) - what the tool can and cannot change, and where approval is needed
-
-## Commands, setup, and fixes
-- [Command reference](command_reference.md) - the exact commands and options
-- [Authentication details](authentication.md) - credential rules and safe auth checks
-- [Configuration](configuration.md) - local settings, environment values, and precedence rules
-- [Troubleshooting](troubleshooting.md) - what to check when a command fails or refuses to run
-
-## Proof and details
-- [Proof and verification](proof.md) - what has been checked and what still needs live verification
-- [API coverage](api_coverage.md) - the API surfaces this skill actually covers
-- [Source references](references.md) - source notes behind the implementation and docs
-- [Technical architecture](architecture.md) - how the command, config, client, and output layers fit together
-- [Examples](examples/) - sample inputs or outputs when the tool ships them
+- [Quickstart](quickstart.md) to install the tool and read one file.
+- [Connect Figma](onboarding.md) to choose a token or fix an access problem.
+- [Approve and check changes](safety_model.md) before posting a comment or changing a webhook, variable, or developer link.
+- [Commands and options](command_reference.md) for exact names and examples.
+- [API coverage](api_coverage.md) for the endpoints the tool supports and which ones have access limits.
+- [Test results](proof.md) and [example files](examples/) to see what was checked.
+- [Figma sources](references.md) for the provider docs behind the tool.

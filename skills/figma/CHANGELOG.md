@@ -7,6 +7,13 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ## [Unreleased]
 
+### November 23, 2026
+
+- Setup creates a settings file from a fresh install and points to a file read with the right permission.
+- Image renders report which nodes got links and which failed.
+- Writes require a saved preview for the same request and Figma connection. Comment receipts describe what the tool confirmed from the file.
+- Combined overlapping guides. Kept the command coverage and earlier proof.
+
 ### Added
 - Customer-ready Figma README, onboarding, command reference, and configuration/auth docs.
 - `operations` runtime implementation for explicit operation execution with write dry-run gating.

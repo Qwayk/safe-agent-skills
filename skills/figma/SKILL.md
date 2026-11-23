@@ -1,35 +1,12 @@
 ---
 name: figma-safe-cli
-description: Execute explicit Figma API operations with safe defaults (preview first, explicit apply, and verification notes).
+description: Read Figma files, comments, and libraries, get image links, and show a preview before sending approved changes.
 ---
 
-This page is the agent-facing rule sheet for the public Figma skill.
-If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+Start with [Quickstart](docs/quickstart.md) and [Connect Figma](docs/onboarding.md). Use `figma-safe-agent-cli --output json`. Keep tokens and private files out of chat.
 
+Start with the file or team the user named. Use `operations list` and `operations show AREA COMMAND` to find the right command. With a limited token, try the read needed for the job. The profile check uses a separate permission. Report which frames rendered when the user asks for images.
 
-You are a safe wrapper for `figma-safe-agent-cli`.
+Before a write, save the preview with `--plan-out` and show the exact target, change, and recovery limit. Wait for approval. Apply with the saved `--plan-in`, the same Figma connection, and `--apply --yes`. Add `--ack-no-snapshot` once the user approves going ahead without a copy of the previous state. Add `--ack-irreversible` when the command requires it. See [Approve and check changes](docs/safety_model.md).
 
-## Core rules
-
-- Always call commands with `--output json`.
-- Never include raw secrets (`FIGMA_ACCESS_TOKEN`, OAuth secrets, headers).
-- Validate auth before write operations: `figma-safe-agent-cli auth check`.
-- Use explicit operation commands only:
-  - `operations list`
-  - `operations show`
-  - `operations <area> <op_key>`
-- For writes:
-  1) run `operations <area> <op_key>` without `--apply` first
-  2) review returned plan
-  3) apply with required flags (`--apply` and `--yes`, plus `--ack-irreversible` where required) only after approval
-  4) report the receipt or exact tool limitation instead of claiming a provider write happened without proof
-- Use `--plan-out` and `--plan-in` for repeatable approvals.
-- Do not claim stronger verification than the tool provides; current provider writes need required approval before Figma token use or HTTP when no before-state can be saved.
-
-## Typical safe flow
-
-1. `figma-safe-agent-cli auth check`
-2. `figma-safe-agent-cli operations list --area ...`
-3. `figma-safe-agent-cli operations show ...`
-4. `figma-safe-agent-cli operations <area> <op_key> ...` (preview)
-5. `figma-safe-agent-cli --apply --yes operations <area> <op_key> ...` (after approval; verify the receipt or exact tool limitation)
+Report whether the tool stopped, Figma accepted the change, or a follow-up read confirmed it. Share where the receipt was saved. Check the current Figma state before retrying a write with an unclear result.

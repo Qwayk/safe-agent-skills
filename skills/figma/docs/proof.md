@@ -1,69 +1,26 @@
-# Proof and verification
+# Figma test results
 
-Figma proof should answer a simple question: what has actually been checked for files, nodes, comments, branches, webhooks, and team resources, and what still needs live credentials, permissions, or reviewer judgment?
+## November 23, 2026
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Built the repo and public packages and installed each in a fresh Python environment. Each passed 38 tests and loaded all 51 named operations.
 
-If you only check one thing, check committed local artifacts, unit-test-backed examples, and live-access limits before trusting Figma claims.
+The installed-tool checks used simulated Figma replies. Setup created the settings file without a separate template. One file read worked with the profile permission absent, and a denied file read failed. When one of two frames failed to render, the output named the missing frame and saved the links Figma returned.
 
-## What this proves
+I checked all 11 write commands with local plans. A saved plan for the same request and connection passed. Missing plans, older plans and plans made without a connection stopped before a change was sent. The tests also covered changes to the file, comment text and token, and checked that receipts reported different comment text and missing comment lists accurately.
 
-This document shows what is proven in this repository today.
-All examples are from committed local artifacts and unit-test-backed runs. Live Figma
-behavior is not yet verified in this environment because real provider credentials and
-team/plan access are not available here.
-You don't need to run these commands yourself. They exist for auditing and proof.
+Live account access and provider-side changes still need a real Figma connection to verify.
 
-## Last verified (UTC)
+## June 4, 2026
 
-- Date: `2026-06-04`
-- Verified by: local tool runtime checks
-- Tool version: `0.1.0`
-- Provider API version: Figma REST docs references captured in `references.md`
-- Environment: local stub/fixture outputs under `docs/examples`
+The earlier local check used version `0.1.0` and the Figma docs listed in [References](references.md). It checked operation listing, token checks, named request options, write approvals and saving output. The files below are saved samples from that check. The successful profile check used a simulated reply.
 
-## Local proof evidence (committed artifacts)
+- [Version](examples/outputs/version.json)
+- [Profile check](examples/outputs/auth_check.json)
+- [List file commands](examples/outputs/operations_list_files.json)
+- [Show the post-comment command](examples/outputs/operations_show_post_comment.json)
+- [Read file nodes](examples/outputs/get_file_nodes.json)
+- [Preview a comment](examples/outputs/post_comment_dry_run.json)
+- [Comment apply stopped for approval to proceed without a saved before-state](examples/outputs/post_comment_apply.json)
+- [Example plan](examples/plan.example.json) and [example receipt](examples/receipt.example.json)
 
-Use these files for review and copy/paste checks:
-
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check.json`
-- `docs/examples/outputs/operations_list_files.json`
-- `docs/examples/outputs/operations_show_post_comment.json`
-- `docs/examples/outputs/get_file_nodes.json`
-- `docs/examples/outputs/post_comment_dry_run.json`
-- `docs/examples/outputs/post_comment_apply.json` (saved gate example before explicit no-snapshot approval)
-- `docs/examples/plan.example.json`
-- `docs/examples/receipt.example.json`
-
-## What each proof file shows
-
-- `outputs/version.json` — CLI version surface and startup path.
-- `outputs/auth_check.json` — auth status logic with token source and a successful live probe.
-- `outputs/operations_list_files.json` — `operations list` filter behavior.
-- `outputs/operations_show_post_comment.json` — metadata rendering for a write operation.
-- `outputs/get_file_nodes.json` — explicit read execution with named flags and filtered query parameters.
-- `outputs/post_comment_dry_run.json` — write path default behavior with request plan, no apply.
-- `outputs/post_comment_apply.json` — saved gate example that shows the no-snapshot approval checkpoint before a live write.
-- `plan.example.json` — reusable example write plan output.
-- `receipt.example.json` — example receipt shape for reviewed applies; the runtime can also emit a real apply receipt after explicit no-snapshot approval.
-
-## Local proof and test status
-
-- Implementation coverage:
-  - `operation_specs.py` to CLI runtime for explicit operation execution.
-  - `operations` command parsing and request construction (`list`, `show`, explicit area/op execution).
-  - auth/token behavior with `--skip-live` and auth mode checks.
-  - write safety gates: dry-run default, `--apply`, `--yes`, `--ack-irreversible`, `--plan-in`, and `--ack-no-snapshot` when no saved snapshot exists.
-  - output persistence with `--out` + `--overwrite`.
-- Live-provider verification status:
-  - **Not yet verified.** We only have local fixture/server evidence and mocked tests for endpoint request shape and safety behavior.
-  - Current write applies require explicit no-snapshot approval before provider HTTP when no saved snapshot is available.
-
-## What can still be wrong
-
-- Endpoints that are documented but gated by plan/team/org settings may still return
-  provider-level access errors in real projects.
-- Read-after-write verification still depends on real provider access and the specific write family used.
-- Discovery remains in runtime as docs-backed coverage (`/v1/discovery`) because the endpoint
-  is missing from the published OpenAPI YAML.
+The tool includes `/v1/discovery` from Figma's developer docs. At the June 4 check it was absent from Figma's published OpenAPI file.

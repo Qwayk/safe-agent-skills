@@ -1,27 +1,20 @@
 # API coverage
 
-Figma coverage shows exactly what this skill can do with files, nodes, comments, branches, webhooks, and team resources. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
-
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can inspect this file, list comments or nodes, and show which Figma actions are not included."
-
-## Coverage notes
+The table shows the 51 named operations in the tool. Access depends on the file, Figma plan, and token permissions. See [Connect Figma](onboarding.md) and [Approve and check changes](safety_model.md).
 
 Provider: Figma
 API base URL: `https://api.figma.com`
-Last verified (UTC): `2026-06-04`
-`operation_specs.py` is the source of truth. Runtime for all listed endpoints is implemented in the local tool.
-`status` now separates local/runtime proof from provider live verification status.
-Current write operations build plans first. When no saved snapshot is available, apply can still run after review and explicit `--ack-no-snapshot` approval.
+Original local coverage check (UTC): `2026-06-04`
+
+The command list comes from `operation_specs.py`. See [test results](proof.md) for the checks that were run.
 
 ## Coverage
 
 | In-scope area | Endpoint | Capability | CLI command(s) | Official docs source | Status | Notes |
 |---|---|---|---|---|---|---|
 | files | `GET /v1/files/{file_key}` | Get file JSON | `figma-safe-agent-cli operations files get-file` | [files](https://developers.figma.com/docs/rest-api/file-endpoints/) | implemented (local runtime), live-unverified | Get full file JSON, optional filters for version, ids, depth, geometry, plugin_data, branch_data. |
-| files | `GET /v1/files/{file_key}/nodes` | Get file JSON for specific nodes | `figma-safe-agent-cli operations files get-file-nodes` | [files](https://developers.figma.com/docs/rest-api/file-endpoints/) | implemented (local runtime), live-unverified | Subset mode for rendering one or more nodes from a file. |
-| files | `GET /v1/images/{file_key}` | Render images of file nodes | `figma-safe-agent-cli operations files render-images` | [files](https://developers.figma.com/docs/rest-api/file-endpoints/) | implemented (local runtime), live-unverified | Render and return image URLs for one or more node ids. |
+| files | `GET /v1/files/{file_key}/nodes` | Get file JSON for specific nodes | `figma-safe-agent-cli operations files get-file-nodes` | [files](https://developers.figma.com/docs/rest-api/file-endpoints/) | implemented (local runtime), live-unverified | Read the JSON for selected nodes in a file. |
+| files | `GET /v1/images/{file_key}` | Render images of file nodes | `figma-safe-agent-cli operations files render-images` | [files](https://developers.figma.com/docs/rest-api/file-endpoints/) | implemented (local runtime), live-unverified | Return temporary image links and identify nodes that failed to render. |
 | files | `GET /v1/files/{file_key}/images` | Get image fills | `figma-safe-agent-cli operations files get-image-fills` | [files](https://developers.figma.com/docs/rest-api/file-endpoints/) | implemented (local runtime), live-unverified | Get download links for all image fill references in a document. |
 | files | `GET /v1/files/{file_key}/meta` | Get file metadata | `figma-safe-agent-cli operations files get-file-meta` | [files](https://developers.figma.com/docs/rest-api/file-endpoints/) | implemented (local runtime), live-unverified | Get file metadata summary object. |
 | version-history | `GET /v1/files/{file_key}/versions` | Get file versions | `figma-safe-agent-cli operations version-history get-file-versions` | [version-history](https://developers.figma.com/docs/rest-api/version-history-endpoints/) | implemented (local runtime), live-unverified | List file history versions with optional paging by before/after/size. |

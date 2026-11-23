@@ -1,8 +1,6 @@
 # Command reference
 
-These commands cover Figma files, nodes, projects, comments, exports, and write gates. Resolve the file or node ID before asking for edits or generated changes.
-
-For the guided path, start with [What you can do with Figma](use_cases.md), [Connect your Figma account](onboarding.md), and [Quickstart](quickstart.md).
+Use [Quickstart](quickstart.md) to open a file or preview a comment. See [Connect Figma](onboarding.md) for settings and permissions.
 
 ## Global flags
 
@@ -10,14 +8,14 @@ For the guided path, start with [What you can do with Figma](use_cases.md), [Con
 - `--config PATH`: load optional non-secret project defaults JSON.
 - `--project-dir PATH`: override the project directory used for local state resolution.
 - `--env-file PATH`: point to a specific env file.
-- `--timeout-s N`: override the request timeout in seconds.
+- `--timeout-s N` overrides the profile check timeout in seconds. Set `FIGMA_TIMEOUT_S` for operation requests.
 - `--output json|text` (default: json).
 - `--verbose`: print HTTP timing details to stderr.
 - `--debug`: include stack traces on failures.
 - `--log-file PATH`: write audit events to a JSONL file.
 - `--apply`, `--yes`, `--ack-irreversible`: apply and confirmation controls for writes.
 - `--ack-no-snapshot`: approve a reviewed write when no saved snapshot is available.
-- `--plan-out PATH`, `--plan-in PATH`, `--receipt-out PATH`.
+- `--plan-out PATH` saves the preview. `--plan-in PATH` loads the reviewed plan for a write. `--receipt-out PATH` saves the result.
 - `--run-id ID`: attach a specific run id to this execution.
 - `--artifacts-dir PATH`: override the local artifacts folder for this run.
 - `--no-artifacts`: skip writing local run artifacts.
@@ -38,19 +36,15 @@ For the guided path, start with [What you can do with Figma](use_cases.md), [Con
 
 ## `operations <area> <op_key>` flags
 
-This is not a generic request bridge.
-
-- There is no generic path/query wrapper flag.
-- Use one explicit path/query flag per operation parameter, from the operation spec.
+- Use the named options shown by `operations show` or the command's `--help`.
 - Required path parameters appear as `--<path-param>` flags, for example `--file-key`.
 - Optional query parameters appear as `--<query-param>` flags, for example `--ids`, `--user-id`.
 - `--version` is a global flag, so `version` is exposed as `--version-id`.
 - `--body-json-file PATH` is required for write operations that accept a body.
-- `--out PATH` writes the response JSON (or raw body for non-JSON responses)
+- `--out PATH` writes the response body. For image renders, it saves the JSON with temporary links. The command's result lists which node IDs got links and which failed.
 - `--overwrite` replaces existing `--out` files.
 
-Read operations execute immediately.
-Write operations stay in dry-run mode unless you add `--apply`, and irreversible writes also require `--ack-irreversible`. When no saved snapshot is available, current write applies then require explicit `--ack-no-snapshot` approval before Figma token use or provider HTTP.
+Read operations run when requested. Writes preview by default and need a matching saved plan, approval, and the flags in [Approve and check changes](safety_model.md).
 
 ## Example commands
 
@@ -64,8 +58,11 @@ Write operations stay in dry-run mode unless you add `--apply`, and irreversible
   `figma-safe-agent-cli operations payments get-payments-by-plugin-payment-token --plugin-payment-token ...`
 - Check auth config without live probe:
   `figma-safe-agent-cli auth check --skip-live`
-- Safe write preview:
-  `figma-safe-agent-cli operations comments post-comment --file-key YOUR_FILE_KEY --body-json-file body.json`
-- Safe write apply:
-  `figma-safe-agent-cli --apply --yes --ack-no-snapshot operations comments post-comment --file-key YOUR_FILE_KEY --body-json-file body.json`
-  Current result after review: the tool may send the Figma write and can save a receipt.
+- Save a comment preview
+  `figma-safe-agent-cli --plan-out comment-plan.json operations comments post-comment --file-key YOUR_FILE_KEY --body-json-file body.json`
+- Post the approved comment
+  `figma-safe-agent-cli --plan-in comment-plan.json --apply --yes --ack-no-snapshot --receipt-out comment-receipt.json operations comments post-comment --file-key YOUR_FILE_KEY --body-json-file body.json`
+
+## Where commands are defined
+
+In `src/figma_safe_agent_cli/`, `operation_specs.py` lists the named API operations. `cli.py` builds their options. `commands/operations.py` prepares requests, checks plans, and reads the results. Settings come from `config.py` and requests go through `http.py`. `runs.py` and `audit_log.py` handle saved runs and logs. JSON mode returns one result object.

@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Final
 
-
 FigmaAPI_SPEC_URL: Final[str] = "https://raw.githubusercontent.com/figma/rest-api-spec/main/openapi/openapi.yaml"
 FigmaDocsBase: Final[str] = "https://developers.figma.com/docs/rest-api/"
 
@@ -55,7 +54,7 @@ AREAS_DOC_URLS: Final[dict[str, str]] = {
     "oembed": "https://developers.figma.com/docs/rest-api/oembed-endpoints/",
 }
 
-_PENDING_VERIFY = "Pending live verification once this operation is wired into the runtime and auth mode is connected"
+_PENDING_VERIFY = "Live Figma verification is pending."
 
 
 OPERATION_SPECS: Final[list[OperationSpec]] = [
@@ -67,7 +66,7 @@ OPERATION_SPECS: Final[list[OperationSpec]] = [
         path_template="/v1/files/{file_key}",
         docs_url=AREAS_DOC_URLS["files"],
         scope_notes="Get full file JSON, optional filters for version, ids, depth, geometry, plugin_data, branch_data.",
-        auth_notes="PAT/Plan token or OAuth2 with file_content:read + files:read.",
+        auth_notes="Use a supported Figma token with file_content:read.",
         required_path_params=["file_key"],
         required_query_params=[],
         body_json_file_expected=False,
@@ -86,8 +85,8 @@ OPERATION_SPECS: Final[list[OperationSpec]] = [
         method="GET",
         path_template="/v1/files/{file_key}/nodes",
         docs_url=AREAS_DOC_URLS["files"],
-        scope_notes="Subset mode for rendering one or more nodes from a file.",
-        auth_notes="PAT/Plan token or OAuth2 with file_content:read + files:read.",
+        scope_notes="Read the JSON for selected nodes in a file.",
+        auth_notes="Use a supported Figma token with file_content:read.",
         required_path_params=["file_key"],
         required_query_params=["ids"],
         body_json_file_expected=False,
@@ -106,8 +105,8 @@ OPERATION_SPECS: Final[list[OperationSpec]] = [
         method="GET",
         path_template="/v1/images/{file_key}",
         docs_url=AREAS_DOC_URLS["files"],
-        scope_notes="Render and return image URLs for one or more node ids.",
-        auth_notes="PAT/Plan token or OAuth2 with file_content:read + files:read.",
+        scope_notes="Read temporary image links and report which nodes failed to render.",
+        auth_notes="Use a supported Figma token with file_content:read.",
         required_path_params=["file_key"],
         required_query_params=["ids"],
         body_json_file_expected=False,
@@ -137,7 +136,7 @@ OPERATION_SPECS: Final[list[OperationSpec]] = [
         path_template="/v1/files/{file_key}/images",
         docs_url=AREAS_DOC_URLS["files"],
         scope_notes="Get download links for all image fill references in a document.",
-        auth_notes="PAT/Plan token or OAuth2 with file_content:read + files:read.",
+        auth_notes="Use a supported Figma token with file_content:read.",
         required_path_params=["file_key"],
         required_query_params=[],
         body_json_file_expected=False,
@@ -156,7 +155,7 @@ OPERATION_SPECS: Final[list[OperationSpec]] = [
         path_template="/v1/files/{file_key}/meta",
         docs_url=AREAS_DOC_URLS["files"],
         scope_notes="Get file metadata summary object.",
-        auth_notes="PAT/Plan token or OAuth2 with file_metadata:read + files:read.",
+        auth_notes="Use a supported Figma token with file_metadata:read.",
         required_path_params=["file_key"],
         required_query_params=[],
         body_json_file_expected=False,
@@ -195,7 +194,7 @@ OPERATION_SPECS: Final[list[OperationSpec]] = [
         path_template="/v1/files/{file_key}/comments",
         docs_url=AREAS_DOC_URLS["comments"],
         scope_notes="Read comments list for a file, optionally in markdown format.",
-        auth_notes="PAT/Plan token or OAuth2 with file_comments:read + files:read.",
+        auth_notes="Use a supported Figma token with file_comments:read.",
         required_path_params=["file_key"],
         required_query_params=[],
         body_json_file_expected=False,
@@ -255,7 +254,7 @@ OPERATION_SPECS: Final[list[OperationSpec]] = [
         path_template="/v1/files/{file_key}/comments/{comment_id}/reactions",
         docs_url=AREAS_DOC_URLS["comments"],
         scope_notes="List reactions for a comment; supports pagination cursor.",
-        auth_notes="PAT/Plan token or OAuth2 with file_comments:read + files:read.",
+        auth_notes="Use a supported Figma token with file_comments:read.",
         required_path_params=["file_key", "comment_id"],
         required_query_params=[],
         body_json_file_expected=False,

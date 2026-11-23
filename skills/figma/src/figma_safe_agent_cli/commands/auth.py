@@ -29,7 +29,7 @@ def cmd_auth_check(args, ctx) -> int:
     token_present = bool(cfg.token)
     if cfg.auth_mode == "plan":
         probe["attempted"] = False
-        probe["reason"] = "plan mode: /v1/me is not the plan-token smoke endpoint"
+        probe["reason"] = "For a plan token, try the read you need to check Figma access."
         overall_ok = token_present
         if not token_present:
             probe["reason"] = "plan mode: no token available in env or token file"
@@ -65,7 +65,7 @@ def cmd_auth_check(args, ctx) -> int:
             overall_ok = False
             probe["status"] = "blocked"
             probe["ok"] = False
-            probe["reason"] = str(e)
+            probe["reason"] = f"{e}\nThe profile check needs current_user:read. File reads use their own permissions."
 
     if overall_ok and probe["status"] is None:
         probe["status"] = "ok"

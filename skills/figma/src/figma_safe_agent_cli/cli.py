@@ -11,20 +11,20 @@ from .commands import auth as auth_cmd
 from .commands import onboarding as onboarding_cmd
 from .commands import operations as operations_cmd
 from .config import load_config
-from .project_config import load_project_config
 from .errors import SafetyError, ToolError, ValidationError
+from .operation_specs import list_operation_query_params, list_operations
 from .output import Output
-from .operation_specs import list_operations, list_operation_query_params
+from .project_config import load_project_config
 from .runs import (
     RunContext,
+    append_index_row,
     build_deterministic_summary,
+    find_run,
     init_run_context,
     list_runs,
-    find_run,
-    write_summary_md,
-    append_index_row,
     runs_index_path_for_env_file,
- )
+    write_summary_md,
+)
 
 
 class _ToolArgumentParser(argparse.ArgumentParser):
@@ -218,7 +218,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Acknowledge that this approved write may run without a saved before-state snapshot",
     )
     p.add_argument("--plan-out", default=None, help="Write a dry-run plan JSON to a file")
-    p.add_argument("--plan-in", default=None, help="Apply from an existing plan JSON file (high-risk writes)")
+    p.add_argument("--plan-in", default=None, help="Use the saved plan you reviewed (required to apply a write)")
     p.add_argument("--receipt-out", default=None, help="Write an apply receipt JSON to a file")
     p.add_argument(
         "--ack-irreversible",
@@ -254,7 +254,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     auth = sub.add_parser("auth", help="Authentication checks")
     auth_sub = auth.add_subparsers(dest="auth_cmd", required=True, parser_class=_ToolArgumentParser)
-    auth_check = auth_sub.add_parser("check", help="Smoke test credentials")
+    auth_check = auth_sub.add_parser("check", help="Check token setup and try the Figma profile endpoint")
     auth_check.add_argument("--skip-live", action="store_true", help="Skip the /v1/me probe")
     auth_check.set_defaults(func=auth_cmd.cmd_auth_check, write_capable=False, needs_config=True)
 

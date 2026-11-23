@@ -1,54 +1,20 @@
-# Safety model
+# Approve and check changes
 
-Figma can touch files, nodes, comments, branches, webhooks, and team resources, so the safe path is to look first, plan second, and change last. Reads and dry-run plans are where the agent should do most of its thinking. Real changes should only happen after the plan is reviewed and the required approval flags are present.
+You can read a file, look up comments, or get image links before deciding what to change. For a write, the tool shows a preview and waits for your approval.
 
-That matters because the risky part is usually not the command syntax. It is choosing the wrong account, changing the wrong live resource, exposing sensitive output, or approving a change that cannot be cleanly undone.
+## Before sending a change
 
-A good safety ask is: "Read the file or node first, then require no-snapshot approval before comments, file edits, webhook changes, or team writes."
+1. Use the Figma connection and file or team you intend to change. Run the command with `--plan-out PATH` to save the preview.
+2. Review the exact target and change. For a comment, check the file, the thread if it is a reply, and the full text.
+3. Review what you can undo. The current commands save no before-state to restore. Apply needs `--ack-no-snapshot` after you approve that limit. Commands marked irreversible also need `--ack-irreversible`.
+4. After approval, run the same command with `--plan-in PATH --apply --yes` and the required acknowledgements. Use `--receipt-out PATH` to pick where to save the result.
 
-## Core rules
+The plan must match the request and the Figma connection. Make a new preview if you change the connection, replace the token, change the request, or have a plan from an older version or from before setup. You can still preview without a token while planning the work.
 
-- Read operations can run immediately.
-- Write operations build a dry-run plan unless `--apply` is passed.
-- Reviewed writes need `--yes`, and some actions also need `--ack-irreversible`.
-- `--plan-in` checks request drift before apply.
-- Current write applies need explicit `--ack-no-snapshot` approval when no useful before-state can be saved.
-- Secrets are redacted from stdout, files, and logs.
+## After sending a change
 
-## What that means in practice
+Read the result before reporting success. A refusal means the tool stopped before sending the change. Figma can accept a request even if the tool cannot check the result afterward. For comments, the tool checks the file's comment list when it can. Read access to comments is a separate Figma permission.
 
-- File, project, component, analytics, and other read operations are straightforward reads.
-- Comment, webhook, variable, and dev-resource writes preview first.
-- `--plan-out` lets you save the exact reviewed plan.
-- `--receipt-out` stores the result of a reviewed apply.
-- `runs list` and `runs show` let you inspect earlier attempts.
+Check that the receipt matches the approved target and change. Note whether Figma accepted the change, what the tool could confirm with a follow-up read, and the saved record of approval to proceed without a copy of the previous state. If the result is unclear, inspect the current state before retrying. A second post can leave a duplicate comment.
 
-## Verification reality
-
-Read operations use the provider response as the verification signal.
-Write verification is the provider response plus best-effort read-back when the operation supports it.
-This is not a broad rollback or restore system.
-
-## Why the tool refuses
-
-The tool blocks with `ok: false` when:
-
-- required auth is missing
-- the live `/v1/me` probe fails
-- `--plan-in` does not match the request being rebuilt
-- required path or query input is malformed
-
-The tool refuses safely with `ok: true` and `refused: true` when:
-
-- a write tries to apply without the required approval flags
-- a reviewed plan does not match the current request
-
-## For safe agent use
-
-An agent should always:
-
-1. run read-only checks first
-2. show the dry-run plan
-3. wait for explicit approval
-4. apply only with the required safety flags
-5. report the no-snapshot requirement or saved receipt clearly after the run
+Run `runs list` or `runs show --run-id ID` to find saved runs. Keep plans, receipts, comments, and image links private when they contain workspace information. Before sharing records, check for secrets such as webhook passcodes in request bodies.

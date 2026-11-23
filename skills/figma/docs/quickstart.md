@@ -1,73 +1,43 @@
 # Quickstart
 
-Start with a small Figma read: checking files, nodes, comments, and team access before you edit design work.
+## Install and read a file
 
-Need more ideas? See [What you can do with Figma](use_cases.md). Need setup help? See [Connect your account](onboarding.md).
-
-A good first ask is:
-
-> Check that Figma is connected, run one safe read, and tell me what I should look at first.
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account or connection before asking for real work.
-3. Run one small read and make sure the result matches the real service.
-4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+If your agent already has the command-line tool, start with setup. To install it yourself, open the downloaded Figma tool folder, which contains `pyproject.toml`. Use Python 3.12 or newer.
 
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
-pip install -e '.[dev]'
+python -m pip install .
+figma-safe-agent-cli --version
 ```
 
-## 2. Check setup
-
-If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
+Run setup. Open the settings file it names and add your Figma token there. See [Connect Figma](onboarding.md) if you use OAuth or a plan token.
 
 ```bash
-cp .env.example .env
 figma-safe-agent-cli onboarding
-```
-
-```bash
-figma-safe-agent-cli auth check
-```
-
-## 3. Run one small first read
-
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
-
-```bash
-figma-safe-agent-cli operations list --area files
-figma-safe-agent-cli operations users get-me
 figma-safe-agent-cli operations files get-file-meta --file-key YOUR_FILE_KEY
 ```
 
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
+The file key comes after `figma.com/design/` in a design link. The file name in the result should match the design you meant to open.
 
-## 4. Stop before anything risky
+## Review a design or get images
 
-Ask for a reviewed plan before file edits, comments, exports, generated design changes, or anything that writes back to Figma.
+Ask your agent to read the comments and version history, review components and styles in a team library, or look up variables and webhooks. Give it the file, team, or project link you want it to use.
 
-## What a useful first result includes
+To get a PNG link for a frame, use its node ID. You can pass several IDs separated by commas.
 
-A good first result should make these things clear:
+```bash
+figma-safe-agent-cli operations files render-images --file-key YOUR_FILE_KEY --ids 1:2,1:3 --format png --out images.json
+```
 
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
+The command tells you which nodes got links and which failed. `images.json` holds Figma's reply with temporary links. Open or download the images while those links still work. Figma can fail to render an individual node, for example if it is missing or invisible. [Figma image docs](https://developers.figma.com/docs/rest-api/file-endpoints/#get-image)
 
-## Where to go next
+## Preview a comment
 
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your account](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+Put the exact comment in `body.json`, for example `{"message":"Can we confirm this button label?"}`.
+
+```bash
+figma-safe-agent-cli --plan-out comment-plan.json operations comments post-comment --file-key YOUR_FILE_KEY --body-json-file body.json
+```
+
+Ask the agent to show you the file and comment text. When you are ready to post it, follow [Approve and check changes](safety_model.md). The [command guide](command_reference.md) has options for other commands.

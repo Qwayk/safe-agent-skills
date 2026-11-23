@@ -14,6 +14,12 @@ from figma_safe_agent_cli.operation_specs import list_operations
 
 
 class TestOperationsRuntime(unittest.TestCase):
+    def _run(self, *args: str) -> tuple[int, dict]:
+        output = io.StringIO()
+        with redirect_stdout(output):
+            rc = main(["--no-artifacts", *args])
+        return rc, json.loads(output.getvalue())
+
     def _write_env(self, path: Path) -> None:
         path.write_text(
             "\n".join(
@@ -521,6 +527,111 @@ class TestOperationsRuntime(unittest.TestCase):
             payload = json.loads(buf.getvalue())
             self.assertFalse(payload["ok"])
             self.assertIn("Plan drift for query", payload["error"])
+
+    def test_saved_comment_plan_requires_the_same_request_and_connection(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            env = root / "figma.env"
+            self._write_env(env)
+            body = root / "comment.json"
+            body.write_text('{"message":"Please check the title."}', encoding="utf-8")
+            plan = root / "plan.json"
+            receipt = root / "receipt.json"
+            settings = ["--env-file", str(env)]
+            comment = [
+                "operations", "comments", "post-comment", "--file-key", "file_123",
+                "--body-json-file", str(body),
+            ]
+            review = [*settings, "--plan-out", str(plan), *comment]
+            apply = [*settings, "--apply", "--yes", "--ack-no-snapshot"]
+            reviewed = [*apply, "--plan-in", str(plan)]
+
+            with patch("figma_safe_agent_cli.commands.operations.HttpClient") as client:
+                self.assertTrue(self._run(*review)[1]["dry_run"])
+                self.assertNotIn("tok-test", plan.read_text(encoding="utf-8"))
+                self.assertTrue(self._run(*apply, *comment)[1]["refused"])
+                for change, replacement in (("file_123", "file_456"), (str(body), str(root / "changed.json"))):
+                    with self.subTest(change=change):
+                        (root / "changed.json").write_text('{"message":"Different text"}', encoding="utf-8")
+                        altered = [replacement if item == change else item for item in comment]
+                        self.assertNotEqual(self._run(*reviewed, *altered)[0], 0)
+                original_env = env.read_text(encoding="utf-8")
+                env.write_text(original_env.replace("tok-test", "another-token"), encoding="utf-8")
+                self.assertNotEqual(self._run(*reviewed, *comment)[0], 0)
+                env.write_text(original_env, encoding="utf-8")
+                client.assert_not_called()
+
+                send = client.return_value.request
+                send.side_effect = [
+                    HttpResponse(200, {}, b'{"id":"comment_1"}', "https://example.invalid"),
+                    HttpResponse(
+                        200, {}, b'{"comments":[{"id":"comment_1","message":"Please check the title."}]}',
+                        "https://example.invalid",
+                    ),
+                ]
+                rc, result = self._run(*reviewed, "--receipt-out", str(receipt), *comment)
+                self.assertEqual(rc, 0)
+                self.assertIn("text matches", result["verification_note"])
+                self.assertEqual(send.call_count, 2)
+                saved = json.loads(receipt.read_text(encoding="utf-8"))
+                self.assertTrue(saved["plan"]["no_snapshot_approval"]["approved"])
+                self.assertNotIn("tok-test", receipt.read_text(encoding="utf-8"))
+
+    def test_comment_receipts_distinguish_accepted_from_verified(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            env = root / "figma.env"
+            self._write_env(env)
+            body = root / "comment.json"
+            body.write_text('{"message":"Reviewed text"}', encoding="utf-8")
+            plan = root / "plan.json"
+            for action, args, initial, listing, expected in (
+                ("post-comment", ["--body-json-file", str(body)], b'{"id":"c1"}',
+                 b'{"comments":[{"id":"c1","message":"Different text"}]}', "could not be confirmed"),
+                ("delete-comment", ["--comment-id", "c1"], b"", b'{}', "usable comment list"),
+                ("delete-comment", ["--comment-id", "c1"], b"", b'{"comments":[]}', "is not visible"),
+            ):
+                with self.subTest(action=action, listing=listing):
+                    command = ["operations", "comments", action, "--file-key", "file_123", *args]
+                    settings = ["--env-file", str(env)]
+                    self.assertEqual(self._run(*settings, "--plan-out", str(plan), *command)[0], 0)
+                    with patch("figma_safe_agent_cli.commands.operations.HttpClient") as client:
+                        send = client.return_value.request
+                        send.side_effect = [HttpResponse(200, {}, reply, "https://example.invalid")
+                                            for reply in (initial, listing)]
+                        rc, result = self._run(
+                            *settings, "--apply", "--yes", "--ack-no-snapshot", "--ack-irreversible",
+                            "--plan-in", str(plan), *command,
+                        )
+                    self.assertEqual(rc, 0)
+                    self.assertIn(expected, result["verification_note"])
+                    self.assertEqual(send.call_count, 2)
+
+    def test_image_renders_report_which_nodes_got_links(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            env = Path(d) / ".env"
+            self._write_env(env)
+            images_file = Path(d) / "images.json"
+            for status, images, failed in (
+                ("complete", {"1:2": "https://example.invalid/a", "1:3": "https://example.invalid/b"}, []),
+                ("partial", {"1:2": "https://example.invalid/a", "1:3": None}, ["1:3"]),
+                ("failed", {"1:2": None}, ["1:2", "1:3"]),
+            ):
+                with self.subTest(status=status):
+                    body = {"images": images}
+                    with patch("figma_safe_agent_cli.commands.operations.HttpClient") as client:
+                        client.return_value.request.return_value = HttpResponse(
+                            200, {}, json.dumps(body).encode(), "https://example.invalid"
+                        )
+                        rc, result = self._run(
+                            "--env-file", str(env), "operations", "files", "render-images",
+                            "--file-key", "file_123", "--ids", "1:2,1:3", "--out", str(images_file),
+                            "--overwrite",
+                        )
+                    self.assertEqual(rc, int(status == "failed"))
+                    self.assertEqual(result["render"]["status"], status)
+                    self.assertEqual(result["render"]["failed_node_ids"], failed)
+                    self.assertEqual(json.loads(images_file.read_text(encoding="utf-8")), body)
 
     def test_discovery_requires_start_date(self) -> None:
         with tempfile.TemporaryDirectory() as d:

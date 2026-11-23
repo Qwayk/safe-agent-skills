@@ -29,5 +29,29 @@ class TestOnboardingCommand(unittest.TestCase):
             self.assertTrue(payload["ok"])
             self.assertTrue(payload["onboarding"]["env_created"])
             self.assertTrue(os.path.exists(env_path))
-            self.assertIn("FIGMA_BASE_URL", "\n".join(payload["onboarding"]["steps"]))
             self.assertEqual(payload["onboarding"]["missing"], [])
+
+    def test_onboarding_uses_defaults_without_an_example_and_keeps_the_selected_file(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            env_file = os.path.join(td, "config folder", "figma.env")
+            args = ["--env-file", env_file, "onboarding"]
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(main([*args, "--no-write-env"]), 0)
+            self.assertFalse(os.path.exists(env_file))
+
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                self.assertEqual(main(args), 0)
+            setup = json.loads(buf.getvalue())["onboarding"]
+            self.assertTrue(setup["env_created"])
+            self.assertEqual(setup["missing"], ["FIGMA_ACCESS_TOKEN"])
+            self.assertIn(f"--env-file '{env_file}'", setup["next_command"])
+
+            with open(env_file, "w", encoding="utf-8") as settings:
+                settings.write("FIGMA_ACCESS_TOKEN=fixture-token\n")
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                self.assertEqual(main(args), 0)
+            self.assertEqual(json.loads(buf.getvalue())["onboarding"]["missing"], [])
+            with open(env_file, encoding="utf-8") as settings:
+                self.assertEqual(settings.read(), "FIGMA_ACCESS_TOKEN=fixture-token\n")

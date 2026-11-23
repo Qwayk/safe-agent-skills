@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 from dataclasses import asdict
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -8,8 +10,12 @@ from urllib.parse import quote
 from ..errors import SafetyError, ValidationError
 from ..http import HttpClient
 from ..json_files import read_json_file, write_json_file
-from ..operation_specs import OperationSpec, get_operation, list_operation_query_params, list_operations
-
+from ..operation_specs import (
+    OperationSpec,
+    get_operation,
+    list_operation_query_params,
+    list_operations,
+)
 
 _STATUS_ONLY_VERIFICATION_NOTE = (
     "Response status is the verification signal for this operation; no follow-up readback is currently wired."
@@ -268,6 +274,7 @@ def _dry_run_output(
         "verification_note": verification_note,
     }
     if operation.safety.mode == "write":
+        plan["connection_fingerprint"] = payload["connection_fingerprint"]
         plan["before_state"] = _build_before_state_contract(operation, payload)
         plan["verification_plan"] = _build_before_state_refusal_verification_plan()
         plan["post_apply_verification_note"] = verification_note
@@ -339,8 +346,17 @@ def _write_output_payload(path: str | None, obj: Any, *, overwrite: bool) -> Non
     write_json_file(output, obj)
 
 
-def _validate_plan_in(plan_path: str | None, payload: dict[str, Any]) -> None:
+def _connection_fingerprint(cfg) -> str | None:
+    if not cfg.token:
+        return None
+    connection = json.dumps([cfg.base_url, cfg.auth_mode, cfg.token])
+    return sha256(connection.encode("utf-8")).hexdigest()
+
+
+def _validate_plan_in(plan_path: str | None, payload: dict[str, Any], *, required: bool) -> None:
     if not plan_path:
+        if required:
+            raise SafetyError("Save and review a preview, then pass it with --plan-in to apply.")
         return
     if not Path(plan_path).exists():
         raise ValidationError(f"Plan file not found: {plan_path}")
@@ -348,7 +364,7 @@ def _validate_plan_in(plan_path: str | None, payload: dict[str, Any]) -> None:
     if not isinstance(data, dict):
         raise ValidationError("Plan file must be a JSON object")
 
-    plan_request = data.get("request") if "request" in data else data.get("plan")
+    plan_request = data.get("plan", data if "method" in data else data.get("request"))
     if not isinstance(plan_request, dict):
         raise ValidationError("Plan missing request object")
 
@@ -364,9 +380,18 @@ def _validate_plan_in(plan_path: str | None, payload: dict[str, Any]) -> None:
         if expected_value != value:
             raise ValidationError(f"Plan drift for {key}: expected {expected_value!r}, found {value!r}")
 
-    plan_body = plan_request.get("body")
-    if (payload.get("body") or None) != (plan_body or None):
+    if json.dumps(payload["body"], sort_keys=True) != json.dumps(
+        plan_request.get("body"), sort_keys=True
+    ):
         raise ValidationError("Plan drift for body")
+    if required:
+        connection = plan_request.get("connection_fingerprint")
+        if not connection or connection != payload["connection_fingerprint"]:
+            raise ValidationError(
+                "The plan does not match the current Figma connection. Save and review a new preview."
+            )
+        if plan_request.get("operation_id") != payload["operation"]:
+            raise ValidationError("Plan drift for operation")
 
 
 def _extract_identifier(body: Any, keys: list[str]) -> str | None:
@@ -397,7 +422,18 @@ def _extract_items(body: Any, *keys: str) -> list[dict[str, Any]]:
     return []
 
 
-def _verify_comments_contains_id(cfg, ctx: dict[str, Any], file_key: str, comment_id: str) -> str:
+def _comment_list(body: Any) -> list[dict[str, Any]] | None:
+    comments = body.get("comments") if isinstance(body, dict) else None
+    if not isinstance(comments, list) or any(
+        not _extract_identifier(item, ["id", "comment_id"]) for item in comments
+    ):
+        return None
+    return comments
+
+
+def _verify_comments_contains_id(
+    cfg, ctx: dict[str, Any], file_key: str, comment_id: str, message: str | None
+) -> str:
     payload = _request_payload_from_template(
         cfg=cfg,
         method="GET",
@@ -410,10 +446,18 @@ def _verify_comments_contains_id(cfg, ctx: dict[str, Any], file_key: str, commen
     if response["status"] != 200:
         return f"Readback not complete: comment list check returned HTTP {response['status']}."
 
-    comments = _extract_items(response["body_json"], "comments")
-    if any(item.get("id") == comment_id or item.get("comment_id") == comment_id for item in comments):
-        return "Readback verified: comment exists."
-    return "Readback did not find comment in file comments."
+    comments = _comment_list(response["body_json"])
+    if comments is None:
+        return "Could not verify the comment because Figma did not return a usable comment list."
+    comment = next(
+        (item for item in comments if _extract_identifier(item, ["id", "comment_id"]) == comment_id),
+        None,
+    )
+    if comment is None:
+        return "Figma accepted the comment, but it did not appear in the file's comment list."
+    if message is None or comment.get("message") != message:
+        return "Found the comment, but the text could not be confirmed."
+    return "Verified that the comment is visible and the text matches."
 
 
 def _verify_comments_does_not_contain_id(cfg, ctx: dict[str, Any], file_key: str, comment_id: str) -> str:
@@ -429,8 +473,10 @@ def _verify_comments_does_not_contain_id(cfg, ctx: dict[str, Any], file_key: str
     if response["status"] != 200:
         return f"Readback not complete: comment list check returned HTTP {response['status']}."
 
-    comments = _extract_items(response["body_json"], "comments")
-    if any(item.get("id") == comment_id or item.get("comment_id") == comment_id for item in comments):
+    comments = _comment_list(response["body_json"])
+    if comments is None:
+        return "Could not verify removal because Figma did not return a usable comment list."
+    if any(_extract_identifier(item, ["id", "comment_id"]) == comment_id for item in comments):
         return "Readback not complete: comment still visible."
     return "Readback verified: comment is not visible."
 
@@ -525,7 +571,7 @@ def _best_effort_verification(
     strategy = getattr(spec, "verification_strategy", None)
     if not strategy:
         return _status_only_verification_note(spec)
-    if not isinstance(response.get("body_json"), dict):
+    if strategy != "comment-delete" and not isinstance(response.get("body_json"), dict):
         return f"Readback not attempted: response body was not JSON for {spec.area}:{spec.op_key}."
 
     try:
@@ -533,11 +579,14 @@ def _best_effort_verification(
             comment_id = _extract_identifier(response["body_json"], ["id", "comment_id"])
             if not comment_id:
                 return "Readback not attempted: create response did not return a comment id."
+            request_body = payload["body"]
+            message = request_body.get("message") if isinstance(request_body, dict) else None
             return _verify_comments_contains_id(
                 cfg,
                 ctx,
                 file_key=payload["path_params"]["file_key"],
                 comment_id=comment_id,
+                message=message if isinstance(message, str) else None,
             )
         if strategy == "comment-delete":
             file_key = payload["path_params"]["file_key"]
@@ -581,6 +630,20 @@ def _best_effort_verification(
         return f"Readback not attempted: {exc}"
 
     return _status_only_verification_note(spec)
+
+
+def _report_image_renders(payload: dict[str, Any], result: dict[str, Any]) -> str:
+    body = result["response"]["body_json"]
+    images = body.get("images") if isinstance(body, dict) else None
+    image_links = images if isinstance(images, dict) else {}
+    requested = dict.fromkeys(node.strip() for node in payload["query"]["ids"].split(","))
+    ready_links = {node for node, link in image_links.items() if isinstance(link, str) and link.strip()}
+    ready = [node for node in requested if node in ready_links]
+    failed = [node for node in requested if node not in ready_links]
+    status = "complete" if not failed else "partial" if ready else "failed"
+    result["ok"] = bool(ready)
+    result["render"] = {"status": status, "ready_node_ids": ready, "failed_node_ids": failed}
+    return f"Figma returned image links for {len(ready)} of {len(requested)} requested nodes."
 
 
 def _collect_path_params(spec: OperationSpec, args: Any) -> dict[str, str]:
@@ -645,8 +708,8 @@ def cmd_operations_list(args, ctx) -> int:
 
 
 def cmd_operations_show(args, ctx) -> int:
-    area = str(getattr(args, "area"))
-    op_key = str(getattr(args, "op_key"))
+    area = str(args.area)
+    op_key = str(args.op_key)
     spec = _pick_operation(area, op_key)
     data = _spec_to_dict(spec)
     ctx["out"].emit({"ok": True, "operation": data})
@@ -685,8 +748,14 @@ def cmd_operations_execute(args, ctx) -> int:
     )
     payload["operation"] = f"{spec.area}:{spec.op_key}"
 
-    _validate_plan_in(getattr(args, "plan_in", None), payload)
+    if spec.safety.mode == "write":
+        payload["connection_fingerprint"] = _connection_fingerprint(cfg)
     _enforce_apply_safety(spec, apply=apply, yes=yes, ack_irreversible=ack_irreversible)
+    _validate_plan_in(
+        ctx.get("plan_in"),
+        payload,
+        required=spec.safety.mode == "write" and apply and bool(ctx.get("ack_no_snapshot")),
+    )
 
     if spec.safety.mode == "write" and not apply:
         verification_note = (
@@ -714,6 +783,7 @@ def cmd_operations_execute(args, ctx) -> int:
                 },
             )
         else:
+            connection_fingerprint = payload["connection_fingerprint"]
             payload = _request_payload(
                 spec,
                 cfg,
@@ -739,9 +809,15 @@ def cmd_operations_execute(args, ctx) -> int:
                 "query": payload["query"],
                 "body": payload["body"],
                 "env_fingerprint": env_fingerprint,
+                "connection_fingerprint": connection_fingerprint,
                 "verification_note": verification,
                 "before_state": _build_before_state_contract(spec, payload),
-                "verification_plan": _build_before_state_refusal_verification_plan(),
+                "verification_plan": {
+                    "type": "best_effort_after_apply",
+                    "status": "provider_replied",
+                    "requires_no_snapshot_approval": True,
+                    "notes": "See the provider reply and verification note for what was checked.",
+                },
                 "recovery": _build_no_recovery_contract(spec),
                 "no_snapshot_approval": {"approved": True, "flag": "--ack-no-snapshot"},
             }
@@ -757,6 +833,8 @@ def cmd_operations_execute(args, ctx) -> int:
         result = _run_http(payload, cfg, ctx)
         primary_response = result.get("response", {})
         verification = _best_effort_verification(spec, cfg, ctx, payload, primary_response)
+        if spec.area == "files" and spec.op_key == "render-images":
+            verification = _report_image_renders(payload, result)
         result["verification_note"] = verification
         result["request"] = {
             **result["request"],
@@ -799,4 +877,4 @@ def cmd_operations_execute(args, ctx) -> int:
         _write_output_payload(str(out_path), output_obj, overwrite=overwrite)
 
     ctx["out"].emit(result)
-    return 0
+    return 0 if result["ok"] else 1

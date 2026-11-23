@@ -1,61 +1,33 @@
-# Connect your Figma account
+# Connect Figma
 
-Figma needs a local token or plan-based access before an agent can inspect files, nodes, teams, projects, or comments.
+Run `figma-safe-agent-cli onboarding` from the folder where you want to keep the settings. It creates `.env` if needed. Use `--env-file PATH` before `onboarding` to choose another file, and pass the same option to later commands. Add `--no-write-env` after `onboarding` to see the setup steps without creating the file.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+## Choose a token
 
-After setup, start with a file or access check and confirm the file, team, or project ID before asking for edits or exports.
+| Token | Local setup |
+| --- | --- |
+| Personal | Set `FIGMA_ACCESS_TOKEN` in the settings file. This is the default mode. |
+| OAuth | Set `FIGMA_AUTH_MODE=oauth`. Set `FIGMA_ACCESS_TOKEN` or save the token JSON with `figma-safe-agent-cli auth token set --file token.json`. |
+| Plan | Set `FIGMA_AUTH_MODE=plan` and `FIGMA_ACCESS_TOKEN`. Figma limits plan tokens to supported organization or enterprise actions. Comment writes need a supported personal or OAuth token. |
 
-## Step 1: Copy `.env.example` to `.env`
+Keep settings and tokens out of Git and chat. Values set in your shell take priority over the settings file. The API address defaults to `https://api.figma.com`, and the timeout defaults to 30 seconds. Use `FIGMA_BASE_URL` or `FIGMA_TIMEOUT_S` if you need to change either. For OAuth, a configured token takes priority over the saved token JSON under `.state/token.json` beside the settings file.
 
-Fill these first:
+## Check that you can open the file
 
-- `FIGMA_BASE_URL`
-- `FIGMA_AUTH_MODE`
-- `FIGMA_ACCESS_TOKEN` if you use `personal` or `plan` mode
-- `FIGMA_TIMEOUT_S` only if you want a custom timeout
+Start with a file you can open in Figma. These commands check different permissions.
 
-## Step 2: Pick one auth mode
+- `figma-safe-agent-cli operations files get-file-meta --file-key YOUR_FILE_KEY` needs `file_metadata:read`.
+- `figma-safe-agent-cli operations files get-file --file-key YOUR_FILE_KEY` and image renders need `file_content:read`.
+- `figma-safe-agent-cli operations comments get-comments --file-key YOUR_FILE_KEY` needs `file_comments:read`. Posting and deleting comments use `file_comments:write`.
 
-Use exactly one mode:
+`figma-safe-agent-cli auth check` tries the Figma profile endpoint with a personal or OAuth token. That endpoint needs `current_user:read`. If the check fails for that permission, try the read you actually need. Plan mode and `auth check --skip-live` report local setup only.
 
-- `personal` for a normal personal access token
-- `oauth` for an OAuth token JSON file stored at `.state/token.json`
-- `plan` for plan-scoped token flows when the job needs that Figma mode
+## If a command fails
 
-If you use OAuth, save the token file locally with:
+- Check that you used the same settings file and that the token is current. `figma-safe-agent-cli auth token status` shows saved OAuth token details without showing the token.
+- If Figma refuses a request, check the file key, whether the account can open the file, and whether the token has the permission for that command. Team or plan limits can also apply.
+- Use `operations show AREA COMMAND` to check the required options. The flag for Figma's version ID is `--version-id`.
+- Keep the error details for troubleshooting. `--verbose` shows request timing on stderr. `--debug` shows more details for developers. Before you share an error, remove any private account details or secrets.
+- If a write failed after it was sent, check Figma before retrying. See [Approve and check changes](safety_model.md).
 
-```bash
-figma-safe-agent-cli auth token set --file /path/to/token.json
-figma-safe-agent-cli auth token status
-```
-
-## Step 3: Run the built-in setup check
-
-```bash
-figma-safe-agent-cli onboarding
-figma-safe-agent-cli auth check
-```
-
-If the command succeeds, the skill can make authenticated calls with your current config.
-
-If it says blocked, go to [Troubleshooting](troubleshooting.md) before trying live work.
-
-## Good first asks
-
-Start with safe reads first:
-
-- "Show me what this Figma token can safely inspect."
-- "List the file, project, component, and library reads that are already available."
-- "Preview a comment or webhook change, but do not send it yet."
-
-## If setup is blocked
-
-Most onboarding blocks are simple:
-
-- missing `.env` fields
-- wrong auth mode for the token you have
-- OAuth token JSON missing or expired
-- file, team, project, or plan-level access limits in the Figma account
-
-`figma-safe-agent-cli auth check` tells you which of those is blocking.
+[Figma token setup](https://developers.figma.com/docs/rest-api/authentication/) · [Figma permissions](https://developers.figma.com/docs/rest-api/scopes/) · [Plan token limits](https://developers.figma.com/docs/rest-api/plan-access-tokens/#supported-endpoints)
