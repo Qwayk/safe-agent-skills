@@ -50,6 +50,11 @@ def read_inventory_index(path: Path) -> dict[tuple[str, str], dict[str, str]]:
             fmt = (row.get("format") or "").strip()
             if rid and fmt:
                 idx[(rid, fmt)] = dict(row)
+            notes = str(row.get("notes") or "")
+            if rid and notes.startswith("requested_format="):
+                requested = notes.partition(";")[0].removeprefix("requested_format=").strip()
+                if requested:
+                    idx[(rid, requested)] = dict(row)
     return idx
 
 

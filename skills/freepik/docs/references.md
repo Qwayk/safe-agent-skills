@@ -1,15 +1,9 @@
-# References
+# Provider docs
 
-Last verified (UTC): 2026-01-22
+Freepik is now called Magnific. The tool still starts with the Freepik API host and `x-freepik-api-key` for existing setups. See the provider's current instructions before changing an account or host. [Freepik is now Magnific](https://www.magnific.com/ai/docs/freepik-is-now-magnific)
 
-Official Freepik API documentation (used for endpoint shapes and naming):
-- https://docs.freepik.com/api
-- https://docs.freepik.com/api-reference/resources/overview
-- https://docs.freepik.com/api-reference/resources/list-resources
-- https://docs.freepik.com/api-reference/resources/get-resource
-- https://docs.freepik.com/api-reference/resources/download-resource
-- https://docs.freepik.com/api-reference/resources/download-resource-by-format
-
-Notes:
-- This tool defaults to `FREEPIK_API_BASE_URL=https://api.freepik.com/v1` (see `src/freepik_api_tool/config.py`).
-- The tool does not vendor or mirror Freepik docs; links above are the main reference.
+- [Stock API](https://docs.magnific.com/api-reference/resources/images-and-templates-api)
+- [Search parameters](https://docs.magnific.com/api-reference/resources/get-all-resources)
+- [API key and header](https://docs.magnific.com/authentication)
+- [Stock download credits](https://www.magnific.com/ai/docs/stock-content-download-credits)
+- [Finding downloads in your account](https://www.magnific.com/ai/docs/downloading-content)

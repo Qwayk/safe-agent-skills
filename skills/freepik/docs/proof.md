@@ -1,52 +1,17 @@
-# Proof and verification
+# What we checked
 
-Freepik proof should answer a simple question: what has actually been checked for image search, licensed downloads, binary fetches, and local inventory files, and what still needs live credentials, permissions, or reviewer judgment?
+## November 23, 2026
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Both local copies passed 41 offline tests with simulated Freepik replies. I also installed each copy in a clean Python environment, ran the installed command, and repeated the seven download and setup tests against the installed code. The full test suite checks startup with an account configured, selection of the asset preview, and exclusion of photos with missing or mismatched AI fields. Changing the account, file destination, asset, size or CSV rows blocks the license request until there is a new saved preview.
 
-If you only check one thing, check search proof, download-plan evidence, and local file handling before trusting licensed asset work.
+The tests send a license request once on a timeout or HTTP 503. They check that the inventory keeps the license link, download ID, file format and hash when a file is saved. They also check that a failed second file keeps the first file and its row and that a batch leaves the remaining jobs untouched.
 
-## Current proof summary
+## Earlier checks
 
-Last verified (UTC): 2026-06-11
+The earlier proof summary was dated June 11, 2026. The work tracked in issue #50 added the proof examples, required one JSON object on stdout even for usage errors, and checked refusal on unknown AI flags, repeat downloads and overwrites.
 
-## Smoke commands
+The saved [plan](examples/plan.example.json), [receipt](examples/receipt.example.json) and [command outputs](examples/outputs/) show the earlier result format. Save a new preview with `--plan-out` for any new download. The old plan examples predate the matching account and request check.
 
-Offline-only:
+## Run the checks
 
-- Unit tests: `python3 -m unittest -q`
-- CLI version output (no network): `freepik-api-tool --output json --version`
-
-Requires API access (read-only):
-
-- Auth check: `freepik-api-tool auth check`
-- Search (read): `freepik-api-tool search images --query "turkey" --limit 1`
-- Search photos shortlist (read): `freepik-api-tool search photos --query "turkey" --limit 5 --shortlist`
-- Write jobs CSV (local-only): `freepik-api-tool search photos --query "turkey" --limit 5 --write-jobs jobs.csv --job-format jpg --job-image-size 2000px`
-- Shoot-pack IDs + jobs generation: `freepik-api-tool resource shoot-pack --id RESOURCE_ID --write-jobs jobs.csv --job-format jpg --job-image-size 2000px`
-
-## What can go wrong
-
-- Auth failures (missing/invalid API key) cause `auth check` and other read calls to fail.
-- Freepik API field changes (missing `is_ai_generated` / `has_prompt`) trigger fail-closed refusals for `download`.
-- Current `download --apply` requires explicit no-snapshot approval before the Freepik download/license endpoint, binary fetch, destination file write, or inventory row write.
-- `download` refuses re-downloading an asset already in the inventory unless `--force`.
-- In `--output json` mode, any extra stdout breaks downstream JSON parsing; tests enforce the “one JSON object” contract (including parse/usage errors).
-
-## Verification
-
-- Proof artifacts (committed): `docs/examples/plan.example.json`, `docs/examples/receipt.example.json`, `docs/examples/outputs/`.
-- JSON contract: see `docs/examples/outputs/parse_error.json` and `tests/test_cli_json_output_contract.py`.
-- Download safety: see `docs/examples/outputs/download.dry_run.json`, `docs/examples/receipt.example.json`, `tests/test_download_image_size.py`, `tests/test_download_overwrite_guard.py`, and `tests/test_download_ack_no_snapshot.py`.
-- Dry-run proof: confirm the output has `before_state.status=no_snapshot_available` and `before_state.approval_required=--ack-no-snapshot`.
-- Approved apply proof: confirm the output has `ok=true`, `no_snapshot_approval.acknowledged=true`, `verification.ok=true`, and a row with `file_path`, `sha256`, `download_url`, and `license_url`.
-- Missing approval proof: confirm that omitting `--ack-no-snapshot` returns `refused=true` before any licensed download endpoint, destination file write, or inventory row write.
-- Confirm outputs include `recovery`: `strategy=no_inverse`, `rollback_ready=false`, `automatic_rollback=false`, `backups=[]`, `snapshots=[]`, `rollback_plan=null`.
-- Local helper writes (for example `--write-jobs`, `preview --save-preview`) are not rolled back by this CLI; delete those files manually if needed.
-
-## What to inspect
-
-- API coverage: `docs/api_coverage.md`
-- References: `docs/references.md`
-- Safety model: `docs/safety_model.md`
-- Example plans/receipts: `docs/examples/`
+Run `python3 -m unittest -q` from the package folder. Use `freepik-api-tool --output json --version` to check the installed command. For an authorized account check, use `freepik-api-tool auth check` to make one search. See the [developer guide](development.md) and [download approval steps](safety_model.md) before trying a licensed download.

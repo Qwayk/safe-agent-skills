@@ -35,10 +35,10 @@ class FreepikApi:
         if image_size:
             params["image_size"] = image_size
         url = f"{self.cfg.base_url}/resources/{resource_id}/download"
-        resp = self.http.request("GET", url, headers=self._auth_headers(), params=params or None, retries=2)
+        resp = self.http.request("GET", url, headers=self._auth_headers(), params=params or None)
         return resp.json()
 
     def download_by_id_and_format(self, resource_id: str, *, fmt: str) -> Any:
         url = f"{self.cfg.base_url}/resources/{resource_id}/download/{fmt}"
-        resp = self.http.request("GET", url, headers=self._auth_headers(), retries=2)
+        resp = self.http.request("GET", url, headers=self._auth_headers())
         return resp.json()

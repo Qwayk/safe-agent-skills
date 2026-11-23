@@ -1,59 +1,35 @@
 # Connect your Freepik account
 
-Freepik needs a local API key before an agent can search assets, review previews, check licenses, or prepare download plans.
+Create an API key in your Freepik or Magnific account. Create a private `.env` file in the folder you run the tool from and add `FREEPIK_API_KEY=your-key`. Keep the real key out of chat and Git. Use `--env-file /path/to/your.env` before the command to choose a different file.
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+```bash
+freepik-api-tool --output json auth check
+```
 
-After setup, start with a search and preview links before asking for licensed downloads or saved files.
+This runs one small search to check the key. Freepik may charge for API reads. Check your account before planning a large search.
 
-## Step 1. Get a Freepik API key
+## Settings you can change
 
-Open your Freepik account dashboard, find the API section, and create an API key.
+Environment variables take priority over values for the same name in the file.
 
-The exact dashboard steps can change over time, so use Freepik's current account UI if the labels move.
+| Setting | Default or purpose |
+| --- | --- |
+| `FREEPIK_API_KEY` | Required. `FREEPIK_KEY` also works. |
+| `FREEPIK_API_BASE_URL` | `https://api.freepik.com/v1`. `FREEPIK_BASE_URL` also works. |
+| `FREEPIK_AUTH_HEADER` | `x-freepik-api-key` |
+| `FREEPIK_AUTH_PREFIX` | Empty |
+| `FREEPIK_TIMEOUT_S` | 30 seconds |
+| `FREEPIK_ACCEPT_LANGUAGE` | Optional language such as `en-US` |
+| `FREEPIK_IMAGE_SIZE` | Optional size such as `2000px` |
+| `FREEPIK_DOWNLOAD_URL_JSONPATH` | Optional path to the download URL in the API reply |
+| `FREEPIK_LICENSE_URL_JSONPATH` | Optional path to the license URL in the API reply or asset details |
 
-## Step 2. Fill your local `.env` file
+Use `--config project.json` to set `downloads_dir` and `inventory_csv` for a project. Relative paths inside that file start at the file's folder. The defaults are `downloads/` and `licensed-downloads-ledger.csv` under `--project-dir`, the config file's folder, or the current folder, in that order. Keep keys in the env file.
 
-In the tool folder, copy `.env.example` to `.env` and fill these values:
+## If a command fails
 
-- `FREEPIK_API_BASE_URL`
-- `FREEPIK_API_KEY`
-
-Keep the default base URL unless Freepik support tells you to use something else.
-
-## Step 3. Optional: choose your local output paths
-
-If you want stable local paths for downloaded files and the inventory CSV, create a small project config JSON and pass it with `--config`.
-
-Useful keys:
-
-- `downloads_dir`
-- `inventory_csv`
-
-## Step 4. Ask your agent to check access first
-
-Before any real work, ask for a safe auth check.
-
-Example:
-
-- "Check that my Freepik skill is connected, then show me a short photo search for mushroom pasta."
-
-## Step 5. Ask for the real job
-
-Good next requests:
-
-- "Search for 40 recipe photos for mushroom pasta, exclude AI best-effort, and give me a shortlist."
-- "Preview the top 10 so I can pick the final IDs."
-- "Prepare download plans only for the IDs I approved and show me the no-snapshot approval that live download would need."
-- "Use my jobs CSV to prepare a careful batch download pass, and only apply after I confirm the final list."
-
-## If something fails
-
-Common causes:
-
-- missing or invalid API key
-- Freepik plan or quota limits
-- missing AI flags on a resource detail response, which makes the tool refuse download for safety
-- missing `--ack-no-snapshot` on a licensed live download
-
-See [Troubleshooting](troubleshooting.md) for common fixes.
+- **401 or 403 on the connection check.** Check the key, API host and header settings. A premium asset can also return 403 when your plan lacks access. Use `--param 'filters[license][freemium]=1'` to look for free assets.
+- **400 on a photo search.** Pass `--param 'filters[content_type][]=photo'` with the brackets, or use `search photos`. If a large search times out, try a smaller page of up to 100 results.
+- **Missing AI fields.** Choose another asset. The tool needs both `is_ai_generated=false` and `has_prompt=false`.
+- **A download stops or gives an unclear reply.** Read the result and [check what Freepik recorded](safety_model.md#when-a-download-stops) before trying again. If Freepik changed where it puts a URL, set the relevant JSONPath and save a fresh preview before any new attempt.
+- **Need more detail about a read error.** `--verbose` shows request lines. `--debug` shows a Python traceback. Keep any private URLs out of shared logs.

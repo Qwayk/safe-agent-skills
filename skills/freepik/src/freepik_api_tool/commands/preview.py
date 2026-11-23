@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 from ..freepik_api import FreepikApi
 from ..http import HttpClient
 from ..jsonpath import find_url_by_keywords
+from ..shortlist import best_preview_url
 
 
 def _preview_suffix(url: str) -> str:
@@ -21,7 +22,10 @@ def cmd_preview(args: Any, ctx: dict[str, Any]) -> int:
 
     rid = args.id
     detail = api.get_resource(rid)
-    preview_url = find_url_by_keywords(detail, include=("preview", "thumbnail", "thumb", "image"), exclude=("license",))
+    data = detail.get("data", detail) if isinstance(detail, dict) else {}
+    preview_url = best_preview_url(data) if isinstance(data, dict) else None
+    if not preview_url:
+        preview_url = find_url_by_keywords(detail, include=("preview", "thumbnail", "thumb"), exclude=("license",))
     if not preview_url:
         raise RuntimeError("Refused: could not find a preview URL in resource detail response")
 

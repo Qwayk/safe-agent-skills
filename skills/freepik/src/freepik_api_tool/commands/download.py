@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+import re
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -8,7 +11,7 @@ from ..freepik_api import FreepikApi
 from ..http import HttpClient
 from ..inventory import append_inventory_row, now_utc_iso, read_inventory_index, sha256_file
 from ..jsonpath import jsonpath_get
-
+from ..shortlist import best_preview_url
 
 BEFORE_STATE_REFUSAL_REASON = (
     "Refused: this Freepik licensed download has no reliable before-state snapshot. "
@@ -33,7 +36,7 @@ def _pick_license_url_from_detail(detail: Any, *, jsonpath: str | None) -> str |
         raise RuntimeError(f"Refused: license JSONPath did not resolve to a URL: {jsonpath}")
 
     data = _detail_data(detail)
-    v = data.get("license")
+    v = data.get("license_url") or data.get("licenseUrl") or data.get("license")
     if isinstance(v, str) and v.startswith("http"):
         return v
 
@@ -66,7 +69,7 @@ def _derive_name_from_url(url: str, *, fallback: str) -> str:
     return name or fallback
 
 
-def _pick_download_targets(payload: Any, *, jsonpath: str | None, fallback: str) -> list[dict[str, str]]:
+def _pick_download_targets(payload: Any, *, jsonpath: str | None, fallback: str) -> list[dict[str, Any]]:
     if jsonpath:
         v = jsonpath_get(payload, jsonpath)
         if isinstance(v, str) and v.startswith("http"):
@@ -81,16 +84,14 @@ def _pick_download_targets(payload: Any, *, jsonpath: str | None, fallback: str)
         raise RuntimeError(f"Refused: download JSONPath did not resolve to a URL or URL list: {jsonpath}")
 
     items = _extract_download_items(payload)
-    out: list[dict[str, str]] = []
+    out: list[dict[str, Any]] = []
     for item in items:
         u = item.get("url")
         if not (isinstance(u, str) and u.startswith("http")):
             raise RuntimeError("Refused: download response item missing url")
         fn = item.get("filename")
-        if isinstance(fn, str) and fn.strip():
-            out.append({"url": u, "filename": Path(fn).name})
-        else:
-            out.append({"url": u, "filename": _derive_name_from_url(u, fallback=fallback)})
+        name = Path(fn).name if isinstance(fn, str) and fn.strip() else _derive_name_from_url(u, fallback=fallback)
+        out.append({"url": u, "filename": name, "metadata": item})
     return out
 
 
@@ -169,248 +170,299 @@ def _missing_no_snapshot_approval_output(plan: dict[str, Any]) -> dict[str, Any]
     }
 
 
-def _require_no_snapshot_approval(ctx: dict[str, Any]) -> None:
-    if bool(ctx.get("ack_no_snapshot")):
-        return
-    raise RuntimeError(BEFORE_STATE_REFUSAL_REASON)
+def save_plan(path: str | None, plan: dict[str, Any]) -> str | None:
+    if not path:
+        return None
+    target = Path(path).expanduser().resolve()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open("x", encoding="utf-8") as stream:
+        json.dump(plan, stream, indent=2, ensure_ascii=False)
+        stream.write("\n")
+    return str(target)
+
+
+def require_reviewed_plan(
+    ctx: dict[str, Any], *, kind: str, requests: list[dict[str, Any]]
+) -> None:
+    path = ctx.get("plan_in")
+    if not path:
+        raise RuntimeError("Save and review a preview with --plan-out, then apply it with --plan-in.")
+    saved = json.loads(Path(path).expanduser().read_text(encoding="utf-8"))
+    if not isinstance(saved, dict) or saved.get("kind") != kind:
+        raise RuntimeError("Choose the saved Freepik preview for this operation.")
+    plans = saved.get("plans") if kind == "batch-download" else [saved]
+    if not isinstance(plans, list) or any(not isinstance(plan, dict) for plan in plans):
+        raise RuntimeError("The saved preview does not contain a complete download request.")
+    if [plan.get("request") for plan in plans] != requests:
+        raise RuntimeError("The download request changed. Save and review a new preview.")
+
+
+def _asset_client(ctx: dict[str, Any]) -> tuple[FreepikApi, HttpClient]:
+    http = HttpClient(timeout_s=ctx["timeout_s"], verbose=ctx["verbose"], user_agent="freepik-api-tool/0.1")
+    return FreepikApi(cfg=ctx["cfg"], http=http), http
+
+
+def download_request(args: Any, ctx: dict[str, Any]) -> dict[str, Any]:
+    cfg = ctx["cfg"]
+    project_cfg = ctx.get("project_cfg") or {}
+    project_dir = Path(ctx.get("project_dir") or Path.cwd()).expanduser().resolve()
+    rid = str(args.id).strip()
+    fmt = str(args.format).strip().lstrip(".").lower()
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", rid) or not re.fullmatch(r"[a-z0-9][a-z0-9-]*", fmt):
+        raise RuntimeError("Choose a valid Freepik resource ID and format.")
+    out_dir = Path(args.out_dir or project_cfg.get("downloads_dir") or project_dir / "downloads").expanduser().resolve()
+    inventory = Path(args.inventory or project_cfg.get("inventory_csv") or project_dir / "licensed-downloads-ledger.csv").expanduser().resolve()
+    image_size = str(getattr(args, "image_size", "") or "").strip() or cfg.image_size or ""
+    connection = urlparse(cfg.base_url)
+    fingerprint = sha256(json.dumps([
+        cfg.base_url, cfg.auth_header, cfg.auth_prefix, cfg.api_key,
+    ]).encode("utf-8")).hexdigest()
+    return {
+        "resource_id": rid,
+        "format": fmt,
+        "image_size": image_size,
+        "connection": connection._replace(netloc=connection.netloc.rsplit("@", 1)[-1], query="", fragment="").geturl(),
+        "connection_fingerprint": fingerprint,
+        "accept_language": cfg.accept_language,
+        "downloads_dir": str(out_dir),
+        "inventory_csv": str(inventory),
+        "force": bool(args.force),
+        "post_slug": str(getattr(args, "post_slug", "") or "").strip(),
+        "ghost_id": str(getattr(args, "ghost_id", "") or "").strip(),
+        "usage_role": str(getattr(args, "usage_role", "") or "").strip(),
+        "download_url_jsonpath": args.download_url_jsonpath or cfg.download_url_jsonpath,
+        "license_url_jsonpath": args.license_url_jsonpath or cfg.license_url_jsonpath,
+    }
+
+
+def _check_local_targets(request: dict[str, Any]) -> None:
+    out_dir = Path(request["downloads_dir"])
+    inventory = Path(request["inventory_csv"])
+    if (out_dir.exists() and not out_dir.is_dir()) or inventory.is_dir():
+        raise RuntimeError("Choose a download folder and an inventory CSV file.")
+    key = (request["resource_id"], request["format"])
+    if key in read_inventory_index(inventory) and not request["force"]:
+        raise RuntimeError(
+            f"Resource {key[0]} is already in the inventory for {key[1]}. Use --force if you intend to download it again."
+        )
+
+
+def prepare_download(request: dict[str, Any], ctx: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    _check_local_targets(request)
+    api, _ = _asset_client(ctx)
+    rid = request["resource_id"]
+    detail = api.get_resource(rid)
+    data = _detail_data(detail)
+    if data.get("id") is not None and str(data["id"]) != rid:
+        raise RuntimeError("Freepik returned details for a different resource ID.")
+    if data.get("is_ai_generated") is not False or data.get("has_prompt") is not False:
+        raise RuntimeError("Freepik did not confirm both non-AI fields for this asset.")
+    license_url = _pick_license_url_from_detail(data, jsonpath=None) if not request["license_url_jsonpath"] else None
+    plan = {
+        "kind": "download",
+        "apply": False,
+        "request": request,
+        "resource_id": rid,
+        "format": request["format"],
+        "image_size": request["image_size"],
+        "license_url": license_url,
+        "resource_url": data.get("url"),
+        "preview_url": best_preview_url(data),
+        "name": data.get("name") or data.get("title"),
+        "author": (data.get("author") or {}).get("name") if isinstance(data.get("author"), dict) else None,
+        "resource_type": data.get("type"),
+        "is_ai_generated": data["is_ai_generated"],
+        "has_prompt": data["has_prompt"],
+        "before_state": _build_before_state_contract(
+            resource_id=rid,
+            fmt=request["format"],
+            out_dir=Path(request["downloads_dir"]),
+            inventory=Path(request["inventory_csv"]),
+            image_size=request["image_size"],
+        ),
+        "verification_plan": _build_after_apply_verification_plan(),
+    }
+    if request["license_url_jsonpath"]:
+        try:
+            plan["license_url"] = _pick_license_url_from_detail(detail, jsonpath=request["license_url_jsonpath"])
+        except (RuntimeError, KeyError, IndexError, ValueError, TypeError):
+            pass
+    return plan, data
+
+
+def _returned_fields(payload: Any) -> tuple[str | None, str]:
+    if not isinstance(payload, dict):
+        return None, ""
+    link = payload.get("license_url") or payload.get("licenseUrl") or _pick_license_url_from_detail(payload, jsonpath=None)
+    if not isinstance(link, str) or urlparse(link).scheme not in {"http", "https"}:
+        link = None
+    return link, str(payload.get("download_id") or payload.get("downloadId") or "")
+
+
+def _receipt_row(data: dict[str, Any], plan: dict[str, Any]) -> dict[str, Any]:
+    req = plan["request"]
+    author = data.get("author") or data.get("contributor")
+    tags = data.get("tags")
+    keywords = []
+    if isinstance(tags, list):
+        for tag in tags:
+            value = (tag.get("name") or tag.get("slug")) if isinstance(tag, dict) else tag
+            if value:
+                keywords.append(str(value))
+    return {
+        **{k: req[k] for k in ("resource_id", "image_size", "post_slug", "ghost_id", "usage_role")},
+        "downloaded_at_utc": now_utc_iso(),
+        "title": plan["name"] or "",
+        "resource_type": plan["resource_type"] or "",
+        "resource_url": plan["resource_url"] or "",
+        "preview_url": plan["preview_url"] or "",
+        "keywords": "; ".join(keywords),
+        "author": author.get("name") or "" if isinstance(author, dict) else str(author or ""),
+    }
+
+
+def _file_format(path: Path) -> str:
+    with path.open("rb") as stream:
+        prefix = stream.read(16)
+    if prefix.startswith(b"\xff\xd8\xff"):
+        return "jpg"
+    if prefix.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "png"
+    if prefix.startswith((b"PK\x03\x04", b"PK\x05\x06", b"PK\x07\x08")):
+        return "zip"
+    if prefix.startswith(b"RIFF") and prefix[8:12] == b"WEBP":
+        return "webp"
+    return path.suffix.lstrip(".").lower()
+
+
+def apply_download(plan: dict[str, Any], data: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any]:
+    req = plan["request"]
+    _check_local_targets(req)
+    rid, fmt = req["resource_id"], req["format"]
+    out_dir = Path(req["downloads_dir"])
+    inventory = Path(req["inventory_csv"])
+    api, http = _asset_client(ctx)
+    rows: list[dict[str, Any]] = []
+    paths: list[str] = []
+    result = {
+        "ok": False,
+        "resource_id": rid,
+        "requested_format": fmt,
+        "rows": rows,
+        "file_paths": paths,
+        "inventory_csv": str(inventory),
+        "before_state": plan["before_state"],
+        "no_snapshot_approval": {"acknowledged": True, "flag": "--ack-no-snapshot"},
+        "recovery": _irreversible_license_recovery_contract(),
+        "provider_status": "outcome_unknown",
+    }
+
+    try:
+        if req["image_size"]:
+            payload = api.download_by_id(rid, image_size=req["image_size"])
+        else:
+            payload = api.download_by_id_and_format(rid, fmt=fmt)
+    except (RuntimeError, ValueError):
+        result["error"] = (
+            "Freepik's download outcome is unclear. Check Stock downloads in your account before trying again."
+        )
+        ctx["audit"].write("freepik.download.incomplete", result)
+        return result
+
+    result["provider_status"] = "replied"
+    step = "read the download response"
+    try:
+        receipt_link, download_id = _returned_fields(payload)
+        if isinstance(payload, dict):
+            data_link, data_id = _returned_fields(payload.get("data"))
+            receipt_link, download_id = data_link or receipt_link, data_id or download_id
+        if req["license_url_jsonpath"]:
+            try:
+                receipt_link = _pick_license_url_from_detail(payload, jsonpath=req["license_url_jsonpath"])
+            except (RuntimeError, KeyError, IndexError, ValueError, TypeError):
+                pass
+        result.update(license_url=receipt_link or plan["license_url"], download_id=download_id)
+        targets = _pick_download_targets(payload, jsonpath=req["download_url_jsonpath"], fallback=f"{rid}.{fmt}")
+        shared_license = receipt_link or plan["license_url"]
+        target_links = [_returned_fields(target.get("metadata")) for target in targets]
+        result.update(license_url=shared_license, download_id=download_id)
+        step = "find the license link"
+        if not shared_license and any(not link for link, _ in target_links):
+            try:
+                detail = api.get_resource(rid)
+                shared_license = _pick_license_url_from_detail(detail, jsonpath=req["license_url_jsonpath"])
+            except (RuntimeError, KeyError, IndexError, ValueError, TypeError):
+                shared_license = None
+        if not shared_license and any(not link for link, _ in target_links):
+            raise RuntimeError("Freepik replied to the download request without a usable license link.")
+
+        result.update(license_url=shared_license, download_id=download_id)
+        base_row = _receipt_row(data, plan)
+        step = "check the destination files"
+        used_names: set[str] = set()
+        outputs = []
+        for index, (target, (target_license, target_id)) in enumerate(zip(targets, target_links, strict=True), 1):
+            remote_name = Path(target["filename"]).name or "download"
+            name = f"{rid}--{remote_name}"
+            while name in used_names:
+                name = f"{rid}--{index}--{name}"
+            used_names.add(name)
+            file_path = out_dir / name
+            if file_path.exists() and not req["force"]:
+                raise RuntimeError(f"A file already exists here: {file_path}")
+            outputs.append((target, file_path, target_license or shared_license, target_id or download_id))
+        for target, file_path, license_url, file_download_id in outputs:
+            step = "save the downloaded file"
+            http.download_to_path(target["url"], file_path, retries=2, overwrite=req["force"])
+            paths.append(str(file_path))
+            actual_format = _file_format(file_path)
+            row = {
+                **base_row,
+                "file_name": file_path.name,
+                "file_path": str(file_path),
+                "sha256": sha256_file(file_path),
+                "download_url": target["url"],
+                "download_id": file_download_id,
+                "license_url": license_url,
+                "format": actual_format,
+                "notes": f"requested_format={fmt}" if actual_format != fmt else "",
+            }
+            step = "write the inventory row"
+            append_inventory_row(inventory, row)
+            rows.append(row)
+    except (RuntimeError, OSError, ValueError, KeyError, IndexError, TypeError):
+        result["error"] = (
+            f"Freepik replied, but the tool could not {step}. "
+            "Check Stock downloads and the listed local files before trying again."
+        )
+        ctx["audit"].write("freepik.download.incomplete", result)
+        return result
+
+    result["ok"] = True
+    result["verification"] = {"ok": True, "mode": "download-and-inventory", "file_count": len(rows)}
+    ctx["audit"].write("freepik.download", result)
+    return result
 
 
 def run_download(args: Any, ctx: dict[str, Any]) -> dict[str, Any]:
-    cfg = ctx["cfg"]
-    project_cfg = ctx.get("project_cfg") or {}
-    project_dir = Path(str(ctx.get("project_dir") or Path.cwd())).expanduser().resolve()
-    http = HttpClient(timeout_s=ctx["timeout_s"], verbose=ctx["verbose"], user_agent="freepik-api-tool/0.1")
-    api = FreepikApi(cfg=cfg, http=http)
-
+    request = download_request(args, ctx)
     apply = bool(ctx["apply"])
-    rid = str(args.id)
-    fmt = str(args.format).lstrip(".").lower()
-    out_dir_str = (str(getattr(args, "out_dir", "") or "")).strip() or str(project_cfg.get("downloads_dir") or (project_dir / "downloads"))
-    inv_path_str = (str(getattr(args, "inventory", "") or "")).strip() or str(project_cfg.get("inventory_csv") or (project_dir / "licensed-downloads-ledger.csv"))
-    if not out_dir_str.strip():
-        raise RuntimeError("Refused: missing --out-dir (or project config `downloads_dir`)")
-    if not inv_path_str.strip():
-        raise RuntimeError("Refused: missing --inventory (or project config `inventory_csv`)")
-    out_dir = Path(out_dir_str)
-    inv_path = Path(inv_path_str)
-    force = bool(args.force)
-    image_size = (str(args.image_size).strip() if getattr(args, "image_size", None) else "") or cfg.image_size
-    post_slug = (str(getattr(args, "post_slug", "") or "")).strip()
-    ghost_id = (str(getattr(args, "ghost_id", "") or "")).strip()
-    usage_role = (str(getattr(args, "usage_role", "") or "")).strip()
-
-    index = read_inventory_index(inv_path)
-    if (rid, fmt) in index and not force:
-        raise RuntimeError(
-            f"Refused: resource already in inventory for id={rid} format={fmt}; pass --force to re-download"
-        )
-
-    detail = api.get_resource(rid)
-    data = _detail_data(detail)
-
-    # Fail-closed non-AI gate (required for this migration workflow).
-    # Only proceed when the resource detail explicitly includes:
-    # - is_ai_generated == False
-    # - has_prompt == False
-    if "is_ai_generated" not in data or "has_prompt" not in data:
-        raise RuntimeError(
-            "Refused: resource detail missing AI flags (is_ai_generated/has_prompt); "
-            "treating as unknown per safety policy"
-        )
-    if data.get("is_ai_generated") is not False or data.get("has_prompt") is not False:
-        raise RuntimeError(
-            f"Refused: resource is AI/unknown per safety policy (is_ai_generated={data.get('is_ai_generated')}, "
-            f"has_prompt={data.get('has_prompt')})"
-        )
-
-    download_url_jsonpath = args.download_url_jsonpath or cfg.download_url_jsonpath
-    license_url_jsonpath = args.license_url_jsonpath or cfg.license_url_jsonpath
-    license_url = _pick_license_url_from_detail(detail, jsonpath=license_url_jsonpath)
-
-    plan = {
-        "apply": apply,
-        "resource_id": rid,
-        "format": fmt,
-        "license_url": license_url,
-        "resource_url": data.get("url"),
-        "preview_url": (data.get("preview") or {}).get("url") if isinstance(data.get("preview"), dict) else None,
-        "name": data.get("name"),
-        "author": (data.get("author") or {}).get("name") if isinstance(data.get("author"), dict) else None,
-        "resource_type": data.get("type"),
-        "is_ai_generated": data.get("is_ai_generated"),
-        "has_prompt": data.get("has_prompt"),
-        "image_size": image_size or "",
-        "note": (
-            "Dry-run does not call the Freepik download endpoint. "
-            "Apply requires explicit no-snapshot approval because licensed downloads may create a provider record."
-        ),
-    }
-    plan["before_state"] = _build_before_state_contract(
-        resource_id=rid,
-        fmt=fmt,
-        out_dir=out_dir,
-        inventory=inv_path,
-        image_size=image_size or "",
-    )
-    plan["verification_plan"] = _build_after_apply_verification_plan()
+    if apply and ctx.get("ack_no_snapshot"):
+        require_reviewed_plan(ctx, kind="download", requests=[request])
+    plan, data = prepare_download(request, ctx)
     if not apply:
         return {
             "dry_run": True,
             "plan": plan,
+            "plan_out": save_plan(ctx.get("plan_out"), plan),
             "recovery": _irreversible_license_recovery_contract(),
         }
-
-    try:
-        _require_no_snapshot_approval(ctx)
-    except RuntimeError:
-        ctx["audit"].write(
-            "freepik.download.refused",
-            {
-                "resource_id": rid,
-                "format": fmt,
-                "reason": BEFORE_STATE_REFUSAL_REASON,
-                "before_state": plan["before_state"],
-            },
-        )
+    if not ctx.get("ack_no_snapshot"):
         return _missing_no_snapshot_approval_output(plan)
-
-    # Apply: call the download endpoint (may create a license record), then fetch the binary.
-    out_dir.mkdir(parents=True, exist_ok=True)
-    if image_size:
-        # `image_size` is only supported on the /download endpoint (no-format).
-        payload = api.download_by_id(rid, image_size=image_size)
-        dl_mode = "by_id"
-    else:
-        try:
-            payload = api.download_by_id_and_format(rid, fmt=fmt)
-            dl_mode = "by_id_and_format"
-        except Exception as e:  # noqa: BLE001
-            # Fallback: some resource types/accounts may only support the non-format download endpoint.
-            ctx["audit"].write(
-                "freepik.download_mode_fallback",
-                {"resource_id": rid, "format": fmt, "error": str(e)},
-            )
-            payload = api.download_by_id(rid)
-            dl_mode = "by_id"
-
-    try:
-        targets = _pick_download_targets(payload, jsonpath=download_url_jsonpath, fallback=f"{rid}.{fmt}")
-    except Exception as e:  # noqa: BLE001
-        ctx["audit"].write(
-            "freepik.download_response_unparsed",
-            {
-                "resource_id": rid,
-                "format": fmt,
-                "download_mode": dl_mode,
-                "error": str(e),
-                "response": payload,
-            },
-        )
-        raise
-
-    # If license URL wasn't present before download, try again after the download call.
-    if not license_url:
-        try:
-            license_url = _pick_license_url_from_detail(api.get_resource(rid), jsonpath=license_url_jsonpath)
-        except Exception:
-            license_url = None
-
-    if not license_url:
-        raise RuntimeError(
-            "Refused: could not find a license URL in the resource detail response; "
-            "set FREEPIK_LICENSE_URL_JSONPATH or --license-url-jsonpath"
-        )
-
-    base_row: dict[str, Any] = {
-        "downloaded_at_utc": now_utc_iso(),
-        "resource_id": rid,
-        "format": fmt,
-        "license_url": license_url,
-        "notes": "",
-        "title": str(data.get("title") or data.get("name") or ""),
-        "resource_type": str(data.get("type") or ""),
-        "resource_url": str(data.get("url") or ""),
-        "image_size": image_size or "",
-        "post_slug": post_slug,
-        "ghost_id": ghost_id,
-        "usage_role": usage_role,
-    }
-
-    preview = data.get("preview")
-    if isinstance(preview, dict) and isinstance(preview.get("url"), str):
-        base_row["preview_url"] = preview["url"]
-
-    tags = data.get("tags")
-    if isinstance(tags, list):
-        out_tags: list[str] = []
-        for t in tags:
-            if isinstance(t, dict):
-                name = t.get("name") or t.get("slug")
-                if name:
-                    out_tags.append(str(name))
-            elif t:
-                out_tags.append(str(t))
-        base_row["keywords"] = "; ".join(out_tags)
-
-    author = data.get("author") or data.get("contributor")
-    if isinstance(author, dict):
-        base_row["author"] = str(author.get("name") or "")
-    elif isinstance(author, str):
-        base_row["author"] = author
-
-    rows: list[dict[str, Any]] = []
-    used_names: set[str] = set()
-    for i, t in enumerate(targets, start=1):
-        download_url = t["url"]
-        safe_remote = Path(t["filename"]).name or f"{rid}.{fmt}"
-        file_name = f"{rid}--{safe_remote}"
-        if file_name in used_names:
-            file_name = f"{rid}--{i}--{safe_remote}"
-        used_names.add(file_name)
-        file_path = out_dir / file_name
-
-        if file_path.exists() and not force:
-            raise RuntimeError(f"Refused: destination already exists: {file_path}; pass --force to overwrite")
-
-        http.download_to_path(download_url, file_path, retries=2)
-        digest = sha256_file(file_path)
-
-        row = dict(base_row)
-        row["file_name"] = file_name
-        row["file_path"] = str(file_path)
-        row["sha256"] = digest
-        row["download_url"] = download_url
-
-        append_inventory_row(inv_path, row)
-        rows.append(row)
-
-    ctx["audit"].write(
-        "freepik.download",
-        {
-            "resource_id": rid,
-            "format": fmt,
-            "file_paths": [r["file_path"] for r in rows],
-            "license_url": license_url,
-        },
-    )
-    return {
-        "ok": True,
-        "rows": rows,
-        "before_state": plan["before_state"],
-        "no_snapshot_approval": {
-            "acknowledged": True,
-            "flag": "--ack-no-snapshot",
-            "reason": "No reliable before-state snapshot is available for Freepik licensed downloads.",
-        },
-        "verification": {
-            "ok": True,
-            "mode": "download-and-inventory",
-            "file_count": len(rows),
-        },
-        "recovery": _irreversible_license_recovery_contract(),
-    }
+    return apply_download(plan, data, ctx)
 
 
 def cmd_download(args: Any, ctx: dict[str, Any]) -> int:
-    ctx["out"].emit(run_download(args, ctx))
-    return 0
+    result = run_download(args, ctx)
+    ctx["out"].emit(result)
+    return 1 if result.get("ok") is False else 0

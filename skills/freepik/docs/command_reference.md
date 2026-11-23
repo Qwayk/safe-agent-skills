@@ -1,125 +1,43 @@
 # Command reference
 
-These commands cover Freepik search, shortlist output, licenses, downloads, and jobs files. Use preview links first, then review any licensed download or local file output.
+Put shared flags before the command name.
 
-For the guided path, start with [What you can do with Freepik](use_cases.md), [Connect your Freepik account](onboarding.md), and [Quickstart](quickstart.md).
+| Flag | What it does |
+| --- | --- |
+| `--env-file PATH` | Read a private settings file. Defaults to `.env`. |
+| `--config PATH` | Read project paths from a JSON file. |
+| `--project-dir DIR` | Set the folder for default download and inventory paths. |
+| `--timeout-s SECONDS`, `--accept-language LANG` | Override the connection settings for this run. |
+| `--output json\|text` | Choose the output. JSON is the default and prints one object. |
+| `--log-file PATH`, `--verbose`, `--debug` | Save an audit log, show request lines, or show Python errors. |
+| `--plan-out FILE` | Save a single or batch download preview to a new JSON file. |
+| `--plan-in FILE` | Check the saved preview before applying a download. |
+| `--apply`, `--ack-no-snapshot`, `--yes` | Apply the approved download, confirm it has no restore point, and confirm a batch if used. |
 
-## `auth`
-- `freepik-api-tool auth check`
+## Check, search and preview
 
-## `search`
-- `freepik-api-tool search images --query TEXT [--limit N] [--page N] [--param k=v ...] [--exclude-ai]`
-- `freepik-api-tool search photos --query TEXT [--limit N] [--page N] [--param k=v ...] [--exclude-ai]`
+- `auth check` checks the key with one search.
+- `search images --query TEXT` searches images and templates. `search photos --query TEXT` adds the photo filter by default.
+- `resource get --id ID` returns the asset detail.
+- `resource related --id ID [--limit N]` shows related assets.
+- `resource shoot-pack --id ID [--limit N] [--same-series] [--same-collection] [--same-author] [--suggested]` looks for alternatives around one asset. It also accepts the jobs CSV flags below.
+- `preview --id ID [--save-preview DIR]` shows a preview URL or saves the preview file.
 
-Optional output helpers (both `images` and `photos`):
-- `--shortlist` (emit a compact, stable JSON object for human selection)
-- `--write-jobs PATH` (write a jobs CSV compatible with `jobs run`; local-only file output)
-- `--job-format FMT` (default: `jpg`)
-- `--job-image-size SIZE` (optional; example: `2000px`)
-- `--write-jobs` output is local-only; remove local files manually if no longer needed.
+Both search commands accept `--page N`, `--limit N`, and repeatable `--param KEY=VALUE`. Example filters are `'filters[license][freemium]=1'`, `'filters[license][premium]=1'`, `'filters[orientation]=horizontal'` and `'filters[content_type][]=photo'`. Keep the `[]` on the photo filter because the API expects a list.
 
-Shortlist output schema (stable keys; item fields may be `null` when Freepik omits them):
-- Top-level:
-  - `ok` (boolean)
-  - `mode` (string; `search_shortlist`)
-  - `query` (string)
-  - `page` (number)
-  - `limit` (number)
-  - `count` (number; number of items in `items`)
-  - `items` (array of objects)
-  - `jobs_csv` (object; only present when `--write-jobs` is used)
-- Each `items[]` object:
-  - `id` (string|null)
-  - `title` (string|null)
-  - `preview_url` (string|null)
-  - `license_url` (string|null)
-  - `author` (string|null)
-  - `orientation` (string|null)
-  - `resource_url` (string|null)
-- `jobs_csv` object (when present):
-  - `path` (string)
-  - `rows` (number)
-  - `columns` (array of strings)
+`--exclude-ai` reads each result's details and keeps assets with both non-AI flags set to false. It makes extra API calls. `--shortlist` returns `ok`, `mode`, `query`, `page`, `limit`, `count` and `items`. Each item can include `id`, `title`, `preview_url`, `license_url`, `author`, `orientation` and `resource_url`. The `tool` section shows the filter counts when used.
 
-Notes:
-- Freepik uses `filters` as a `deepObject` query param. Pass nested filters using bracket syntax, e.g.:
-  - `--param 'filters[license][freemium]=1'` (free resources)
-  - `--param 'filters[license][premium]=1'` (premium resources, requires premium access)
-  - `--param 'filters[orientation]=horizontal'`
-  - (AI filtering is not reliably supported by the API; use `--exclude-ai` + manual review)
+`--write-jobs PATH` saves a local CSV and reports its path, row count and columns in `jobs_csv` with a shortlist. Use `--job-format FMT` to change the default `jpg`, and `--job-image-size SIZE` to set an optional size.
 
-Important: some `filters` keys are arrays. For example, `content_type` must be an array:
-- ✅ `--param 'filters[content_type][]=photo'`
-- ❌ `--param 'filters[content_type]=photo'` (the API rejects this with HTTP 400)
+## Single or batch download
 
-`search photos` defaults:
-- Adds `filters[content_type][]=photo` unless overridden by your `--param`.
+- `download --id ID --format FMT` plans one licensed download.
+- `jobs run --file jobs.csv [--limit N]` plans the selected CSV rows in order.
 
-`--exclude-ai`:
-- Runs an additional per-item `resource get` call and filters out results when the resource detail indicates AI via `is_ai_generated=true` or `has_prompt=true`.
-- This is slower (extra API calls) but is the only way for the tool to enforce AI filtering because the browse response does not include AI flags.
+Both accept `--out-dir DIR` and `--inventory PATH`. For one download, you can also pass `--image-size SIZE`, `--post-slug SLUG`, `--ghost-id ID`, `--usage-role featured|body`, `--download-url-jsonpath PATH`, `--license-url-jsonpath PATH` and `--force`.
 
-Pricing note:
-- Freepik API pricing is per operation and can change. Freepik’s pricing page lists separate prices for search and for downloads.
-- It does not clearly state how “resource detail” requests are billed; assume any request may count.
+A requested image size uses Freepik's size endpoint. Without a size the tool asks the format endpoint for the format you chose. The file Freepik sends can have a different format. Check the inventory row for what was saved.
 
-## `resource`
-- `freepik-api-tool resource get --id ID`
-- `freepik-api-tool resource related --id ID [--limit N]`
-- `freepik-api-tool resource shoot-pack --id ID [--limit N] [--same-series] [--same-collection] [--same-author] [--suggested] [--write-jobs PATH] [--job-format FMT] [--job-image-size SIZE]`
+For a batch, put the per-download settings in the CSV. Use `resource_id` (or `id`) and `format`. Optional columns are `image_size`, `post_slug`, `ghost_id`, `usage_role`, `force`, `download_url_jsonpath` and `license_url_jsonpath`. The output is one JSON result for the batch.
 
-## `preview`
-- `freepik-api-tool preview --id ID [--save-preview DIR]`
-
-Notes:
-- Without `--save-preview`, preview output only returns the URL.
-- `--save-preview` writes local preview files only and requires manual cleanup if you want to remove them.
-
-## `download`
-Dry-run by default. Licensed live download also needs `--ack-no-snapshot` because no saved before-state snapshot is available for this write family.
-
-- Safety: refuses unless the resource detail explicitly includes `is_ai_generated=false` AND `has_prompt=false`.
-- `freepik-api-tool download --id ID --format FMT [--out-dir DIR] [--inventory PATH] [--post-slug SLUG] [--ghost-id ID] [--usage-role featured|body] [--image-size SIZE] [--download-url-jsonpath P] [--license-url-jsonpath P] [--force]`
-
-Approved single-download example:
-
-```bash
-freepik-api-tool --apply --ack-no-snapshot download --id ID --format jpg --out-dir downloads --inventory licensed-downloads-ledger.csv
-```
-
-Notes:
-- `--out-dir` and `--inventory` can be provided via `--config` using `downloads_dir` and `inventory_csv`.
-- `--image-size` is only supported by Freepik on the `/download` endpoint (no-format). Approved apply still needs explicit no-snapshot approval before reaching that endpoint.
-- `--post-slug/--ghost-id/--usage-role` are optional metadata fields for the inventory CSV.
-- Dry-run output includes `preview_url`, `resource_url`, and `no_snapshot_available` before-state metadata so you can visually sanity-check the approved ID before live download.
-- Approved apply writes the file and inventory row, then returns `rows`, `no_snapshot_approval`, `verification`, and `recovery`.
-- If you omit `--ack-no-snapshot`, the tool refuses before the licensed download endpoint, file write, or inventory row write.
-
-## `jobs`
-Batch downloads require `--apply --yes`, and licensed download rows also need `--ack-no-snapshot`.
-
-- `freepik-api-tool jobs run --file jobs.csv [--out-dir DIR] [--inventory PATH] [--limit N]`
-
-Approved batch example:
-
-```bash
-freepik-api-tool --apply --yes --ack-no-snapshot jobs run --file jobs.csv --out-dir downloads --inventory licensed-downloads-ledger.csv
-```
-
-Notes:
-- `--out-dir` and `--inventory` can be provided via `--config` using `downloads_dir` and `inventory_csv`.
-- `jobs run` emits a single JSON summary.
-- Licensed download rows require explicit no-snapshot approval. Approved rows write the local file and inventory row, while missing approval returns a refusal.
-- `jobs run` includes a `recovery` block with `strategy=no_inverse`, `rollback_ready=false`, and `automatic_rollback=false`.
-- Remote licensed writes are not reversible in this CLI. Local cleanup for helper files is manual.
-
-Job CSV columns:
-- `resource_id` (or `id`)
-- `format`
-- optional `image_size` (e.g. `2000px`)
-- optional `post_slug`
-- optional `ghost_id`
-- optional `usage_role` (`featured` or `body`)
-- optional `force` (`true/false`)
-- optional `download_url_jsonpath`
-- optional `license_url_jsonpath`
+See [single and batch examples](quickstart.md#download-one-approved-asset) and [what to do after a failed download](safety_model.md#when-a-download-stops).

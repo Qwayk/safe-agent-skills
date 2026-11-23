@@ -14,7 +14,7 @@ def _get_str(d: dict[str, Any], k: str) -> str | None:
     return _as_str(d.get(k))
 
 
-def _best_preview_url(item: dict[str, Any]) -> str | None:
+def best_preview_url(item: dict[str, Any]) -> str | None:
     direct = (
         _get_str(item, "preview_url")
         or _get_str(item, "previewUrl")
@@ -96,7 +96,7 @@ def shape_search_shortlist(*, items: list[Any]) -> dict[str, Any]:
             {
                 "id": rid,
                 "title": title,
-                "preview_url": _best_preview_url(raw),
+                "preview_url": best_preview_url(raw),
                 "license_url": license_url,
                 "author": _author_str(raw),
                 "orientation": orientation,

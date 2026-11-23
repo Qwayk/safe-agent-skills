@@ -26,7 +26,7 @@ class TestSearchExcludeAi(unittest.TestCase):
         args = SimpleNamespace(
             query="ai",
             page=1,
-            limit=3,
+            limit=5,
             param=[],
             exclude_ai=True,
         )
@@ -34,14 +34,16 @@ class TestSearchExcludeAi(unittest.TestCase):
         out = Mock()
         ctx = {"cfg": cfg, "timeout_s": 1.0, "verbose": False, "out": out}
 
-        search_payload = {"data": [{"id": 1}, {"id": 2}, {"id": 3}], "meta": {"total": 3}}
+        search_payload = {"data": [{"id": rid} for rid in range(1, 6)], "meta": {"total": 5}}
 
         def _detail_for(rid: str) -> dict[str, object]:
             if rid == "2":
                 return {"data": {"id": 2, "is_ai_generated": True}}
             if rid == "3":
                 return {"data": {"id": 3, "has_prompt": True}}
-            return {"data": {"id": int(rid), "is_ai_generated": False, "has_prompt": False}}
+            if rid == "4":
+                return {"data": {"id": 4, "is_ai_generated": False}}
+            return {"data": {"id": 1, "is_ai_generated": False, "has_prompt": False}}
 
         with patch.object(FreepikApi, "get_resources", autospec=True, return_value=search_payload), patch.object(
             FreepikApi,
@@ -50,9 +52,14 @@ class TestSearchExcludeAi(unittest.TestCase):
             side_effect=lambda self, rid: _detail_for(rid),
         ):
             rc = cmd_search_images(args, ctx)
+            emitted = out.emit.call_args.args[0]
+            args.shortlist = True
+            cmd_search_images(args, ctx)
 
         self.assertEqual(rc, 0)
-        emitted = out.emit.call_args[0][0]
         self.assertEqual([x["id"] for x in emitted["data"]], [1])
-        self.assertEqual(emitted["tool"]["removed_ids"], ["2", "3"])
-
+        self.assertEqual(emitted["tool"]["removed_ids"], ["2", "3", "4", "5"])
+        self.assertEqual(emitted["tool"]["unknown"], 2)
+        shortlist = out.emit.call_args.args[0]
+        self.assertEqual([x["id"] for x in shortlist["items"]], ["1"])
+        self.assertEqual(shortlist["tool"], emitted["tool"])

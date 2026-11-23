@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import os
 import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
@@ -109,6 +111,7 @@ class HttpClient:
         retries: int = 0,
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),
         chunk_size: int = 1024 * 1024,
+        overwrite: bool = True,
     ) -> str:
         """
         Stream a binary response to `path` using a temporary `.part` file then atomic rename.
@@ -116,8 +119,8 @@ class HttpClient:
         """
         attempt = 0
         display_url = url
-        tmp_path = path.with_name(path.name + ".part")
         while True:
+            tmp_path: Path | None = None
             attempt += 1
             start = time.time()
             if self._verbose:
@@ -141,13 +144,15 @@ class HttpClient:
                         raise RuntimeError(f"HTTP {resp.status_code} for GET {resp.url}\n{resp.text}")
 
                     path.parent.mkdir(parents=True, exist_ok=True)
-                    if tmp_path.exists():
-                        tmp_path.unlink()
-                    with tmp_path.open("wb") as f:
+                    with tempfile.NamedTemporaryFile(dir=path.parent, suffix=".part", delete=False) as f:
+                        tmp_path = Path(f.name)
                         for chunk in resp.iter_content(chunk_size=chunk_size):
                             if chunk:
                                 f.write(chunk)
-                    tmp_path.replace(path)
+                    if overwrite:
+                        tmp_path.replace(path)
+                    else:
+                        os.link(tmp_path, path)
                     return resp.url
             except requests.RequestException as e:
                 ms = int((time.time() - start) * 1000)
@@ -158,8 +163,8 @@ class HttpClient:
                     )
                 raise RuntimeError(f"Request failed for GET {display_url}: {type(e).__name__}: {e}") from e
             finally:
-                if tmp_path.exists():
+                if tmp_path is not None:
                     try:
-                        tmp_path.unlink()
+                        tmp_path.unlink(missing_ok=True)
                     except OSError:
                         pass

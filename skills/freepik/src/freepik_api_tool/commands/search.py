@@ -55,6 +55,8 @@ def _shape_shortlist_output(
     }
     if jobs_csv:
         out["jobs_csv"] = jobs_csv
+    if isinstance(payload, dict) and payload.get("tool"):
+        out["tool"] = payload["tool"]
     return out
 
 
@@ -102,37 +104,47 @@ def _cmd_search(
 
         kept: list[dict[str, Any]] = []
         removed_ids: list[str] = []
+        unknown = 0
         checked = 0
 
         for item in data:
             if not isinstance(item, dict):
+                unknown += 1
                 continue
             rid = item.get("id")
             if rid is None:
-                kept.append(item)
+                unknown += 1
                 continue
 
             checked += 1
             detail = api.get_resource(str(rid))
             dd = _detail_data(detail)
+            if dd.get("id") is not None and str(dd["id"]) != str(rid):
+                removed_ids.append(str(rid))
+                unknown += 1
+                continue
             is_ai = dd.get("is_ai_generated") is True
             has_prompt = dd.get("has_prompt") is True
             if is_ai or has_prompt:
                 removed_ids.append(str(rid))
                 continue
-            kept.append(item)
+            if dd.get("is_ai_generated") is False and dd.get("has_prompt") is False:
+                kept.append(item)
+            else:
+                removed_ids.append(str(rid))
+                unknown += 1
 
         payload = dict(payload)
         payload["data"] = kept
         payload["tool"] = {
             "exclude_ai": True,
             "checked": checked,
-            "removed": len(removed_ids),
+            "removed": len(data) - len(kept),
             "removed_ids": removed_ids,
+            "unknown": unknown,
             "kept": len(kept),
             "note": (
-                "Best-effort filter based on Freepik resource detail flags `is_ai_generated` and `has_prompt`. "
-                "If Freepik doesn’t provide these flags for a resource type, it won’t be filtered."
+                "Only assets with both is_ai_generated and has_prompt set to false are included."
             ),
         }
 

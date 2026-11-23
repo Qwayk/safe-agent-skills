@@ -1,28 +1,10 @@
-# Freepik docs
+# Freepik guides
 
-Freepik is easiest to use when you start with the real job, then check setup, safety, and proof before asking an agent to do more. These docs explain how to search assets, review downloads, and work with licensed creative material, what access is needed, and where the tool stops before risky changes.
-
-If you are new, read the first few links before asking for account data or changes. They explain the useful jobs, the setup path, and the safety limits.
-
-## Start with the work
-- [What you can do with Freepik](use_cases.md) - real jobs to hand to an agent for Freepik
-- [Quickstart](quickstart.md) - the shortest path to one useful first result
-- [Connect your Freepik account](onboarding.md) - what must be connected or confirmed before the first run
-- [How this stays safe](safety_model.md) - what the tool can and cannot change, and where approval is needed
-
-## Commands, setup, and fixes
-- [Command reference](command_reference.md) - the exact commands and options
-- [Authentication details](authentication.md) - credential rules and safe auth checks
-- [Configuration](configuration.md) - local settings, environment values, and precedence rules
-- [Troubleshooting](troubleshooting.md) - what to check when a command fails or refuses to run
-
-## Extra guides
-- [Recipe workflow recipes](recipe_workflow_recipes.md) - workflow examples for recipe and meal research
-- [Inventory schema](inventory_schema.md) - inventory fields and examples for store work
-
-## Proof and details
-- [Proof and verification](proof.md) - what has been checked and what still needs live verification
-- [API coverage](api_coverage.md) - the API surfaces this skill actually covers
-- [Source references](references.md) - source notes behind the implementation and docs
-- [Technical architecture](architecture.md) - how the command, config, client, and output layers fit together
-- [Examples](examples/) - sample inputs or outputs when the tool ships them
+- [Connect your account](onboarding.md) for setup, settings and common errors.
+- [Get started](quickstart.md) to search, preview, and plan a single or batch download.
+- [Command reference](command_reference.md) for flags, search filters and CSV inputs.
+- [Download approvals and errors](safety_model.md) for what the tool checks, saves and can undo.
+- [Recipe photos](recipe_workflow_recipes.md) for food photos and extra angles from the same shoot.
+- [Inventory columns](inventory_schema.md) for saved files and license details.
+- [API coverage](api_coverage.md) and [provider docs](references.md) for supported operations.
+- [Development](development.md) and [proof](proof.md) for testing and past checks.

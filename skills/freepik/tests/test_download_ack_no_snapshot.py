@@ -72,7 +72,7 @@ class TestDownloadAckNoSnapshot(unittest.TestCase):
             }
 
             def _fake_download_to_path(
-                self: HttpClient, url: str, path: Path, retries: int = 2  # noqa: ARG001
+                self: HttpClient, url: str, path: Path, *, retries: int, overwrite: bool  # noqa: ARG001
             ) -> None:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(b"abc")
@@ -85,7 +85,11 @@ class TestDownloadAckNoSnapshot(unittest.TestCase):
                 autospec=True,
                 side_effect=_fake_download_to_path,
             ) as mock_binary_download:
-                result = run_download(args, ctx)
+                plan = str(tmp / "preview.json")
+                run_download(args, ctx | {"apply": False, "plan_out": plan})
+                mock_download.assert_not_called()
+                mock_binary_download.assert_not_called()
+                result = run_download(args, ctx | {"plan_in": plan})
 
             self.assertTrue(result["ok"])
             self.assertEqual(result["before_state"]["status"], "no_snapshot_available")

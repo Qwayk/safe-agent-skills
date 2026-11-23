@@ -1,70 +1,54 @@
-# Quickstart
+# Search and download stock photos
 
-Start with a small Freepik read: checking search results, licenses, and asset options before you download or use creative files.
-
-Need more ideas? See [What you can do with Freepik](use_cases.md). Need setup help? See [Connect your account](onboarding.md).
-
-A good first ask is:
-
-> Search for recipe photos for mushroom pasta and give me 50 options with preview links.
-
-## What you will do first
-
-1. Make sure the local tool can run.
-2. Check the account or connection before asking for real work.
-3. Run one small read and make sure the result matches the real service.
-4. Ask for a reviewed plan before any change that could affect live data, spend, content, customers, or settings.
-
-## 1. Install or open the tool
-
-Use this when you are running the tool from a local checkout. If your agent host already installed the skill, you can skip this part.
+If you have a local copy of the tool, install it from its folder with Python 3.12 or newer.
 
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
-pip install -e '.[dev]'
+pip install .
 ```
 
-## 2. Check setup
+## Find a photo
 
-If you do not have credentials yet, run onboarding first and fill only the values the tool asks for. Never paste secrets into chat.
+[Connect your account](onboarding.md), then check the key and run a small search.
 
 ```bash
 freepik-api-tool auth check
-```
-
-## 3. Run one small first read
-
-Start with a read you can verify by eye. You want to see that the connection works and that the agent is looking at the right account, page, item, or public record.
-
-```bash
-freepik-api-tool search photos --query "roasted turkey" --limit 10 --shortlist
-```
-
-```bash
+freepik-api-tool search photos --query "mushroom pasta" --limit 10 --exclude-ai --shortlist
 freepik-api-tool resource get --id RESOURCE_ID
+freepik-api-tool preview --id RESOURCE_ID
 ```
 
-After this, ask the agent to summarize what came back in plain English and name anything missing, empty, or blocked.
+Replace `RESOURCE_ID` with an actual result. Review the preview before choosing it. To find more angles, try `resource shoot-pack --id RESOURCE_ID` and compare the previews by eye.
 
-## 4. Stop before anything risky
+## Download one approved asset
 
-Ask for a reviewed plan before downloads, licensed asset use, inventory files, or any file written to your machine.
+Save a preview to a new file. Review the asset ID, account, format or size, and destination. Make sure you approve the possible credit use and understand that the tool cannot undo the license.
 
-## What a useful first result includes
+```bash
+freepik-api-tool --plan-out photo-plan.json download --id RESOURCE_ID --format jpg --out-dir downloads
+```
 
-A good first result should make these things clear:
+After approval, use the same settings and pass the saved preview.
 
-- what was checked
-- whether the connection worked
-- what came back from the service
-- what the result means in plain English
-- what is safe to inspect next
-- where any saved file, export, plan, or receipt was written
+```bash
+freepik-api-tool --plan-in photo-plan.json --apply --ack-no-snapshot download --id RESOURCE_ID --format jpg --out-dir downloads
+```
 
-## Where to go next
+Check the result for the saved file, its SHA-256 hash and the license link. See [what to check if the download stops](safety_model.md#when-a-download-stops).
 
-- For real examples, read [What you can do](use_cases.md).
-- For setup details, read [Connect your account](onboarding.md).
-- For exact command options, read [Command reference](command_reference.md).
-- For approval rules and limits, read [How this skill stays safe](safety_model.md).
+## Download an approved list
+
+Build a `jobs.csv` with the final picks. The two required columns are `resource_id,format`. You can start from a search made with `--write-jobs candidates.csv` and keep only your chosen rows in `jobs.csv`.
+
+```bash
+freepik-api-tool --plan-out batch-plan.json jobs run --file jobs.csv --out-dir downloads
+```
+
+Review every row with the same approval as a single download. Use the command below after approval.
+
+```bash
+freepik-api-tool --plan-in batch-plan.json --apply --yes --ack-no-snapshot jobs run --file jobs.csv --out-dir downloads
+```
+
+If you change the picks, size, format, destination or account, save a new preview and review it before sending another download request.

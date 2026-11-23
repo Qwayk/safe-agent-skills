@@ -1,94 +1,42 @@
-# Recipe workflow (Freepik)
+# Find stock photos for recipes
 
-This is the **recipe-only** workflow for finding **non‑AI** stock photos and (when possible) getting **multiple angles from the same photoshoot**.
+Look for non-AI photos of the right dish. If you need several angles, use Freepik's series and related results as leads and compare the previews by eye.
 
-Important: “same photoshoot” is ultimately a **visual/manual** determination. The API sometimes provides no “series” grouping, and `suggested` is not proof of same shoot.
-
-## Summary
-
-1) Search photos (`filters[content_type][]=photo`)
-2) Save previews from search results (`image.source.url`) and shortlist by eye
-3) Verify non‑AI by `resource get` + by eye (migration rule: fail-closed; missing/unknown flags are rejected)
-4) Use `resource get` to look for “similar” candidates (`same_series` when present, else `suggested`)
-5) (Optional) Save extra previews and re-shortlist
-6) Prepare dry-run download plans for final picks. Live licensed download needs explicit no-snapshot approval when no saved snapshot is available.
-
-## Project integrations (optional)
-
-Some projects build additional scripts to:
-- run multiple queries per post
-- save local preview contact sheets
-- collect human approvals
-- build batch plans for approved IDs
-
-Keep any project-specific automation inside your project folder (not inside this tool repo).
-
-## Commands (examples)
-
-### Clean shortlist (recommended)
+## Find and review photos
 
 ```bash
 freepik-api-tool search images --query "lychee martini" --limit 20 \
-  --param 'filters[content_type][]=photo' \
-  --exclude-ai
+  --param 'filters[content_type][]=photo' --exclude-ai
 ```
 
-This is slow because it fetches resource detail for every item to filter AI best‑effort.
-
-### Preferred preview flow (fast + low API calls)
-
-The search response already includes a CDN image URL at `image.source.url`. You can download that URL as a **preview** without doing a `resource get` per item.
-
-Recommended approach:
-1) `search images` (photos only)
-2) download previews from `image.source.url`
-3) visually shortlist 1–3 IDs
-4) run `resource get` for the shortlist to confirm `is_ai_generated/has_prompt` and still verify by eye
-
-### Shortlist-first (recommended default)
+`--exclude-ai` reads the details of every result. To use fewer API calls, run the search without that flag, look through the preview links in `image.source.url`, then check the details of only your finalists.
 
 ```bash
-freepik-api-tool search images --query "lentil vegetable soup bowl" --limit 50 \
-  --param 'filters[content_type][]=photo'
-
-# Then verify candidates one-by-one:
-freepik-api-tool resource get --id <ID>
-freepik-api-tool preview --id <ID> --save-preview <PREVIEWS_DIR>/<post_slug>  # optional (costlier)
+freepik-api-tool resource get --id RESOURCE_ID
+freepik-api-tool preview --id RESOURCE_ID --save-preview previews/post-slug
 ```
 
-### Fast pick-one (fewer calls; stop early)
+The optional `--save-preview` puts a local review copy in the folder you choose. Check that the details show `is_ai_generated=false` and `has_prompt=false` for every asset you plan to use.
+
+## Find another angle
+
+In `resource get`, look for `data.related_resources.same_series`. If you see a promising match, open its details and check its series too. You can also check `suggested` for ideas. Compare the dish, props and lighting in the previews before calling two photos part of the same shoot.
+
+## Download after approval
+
+Save a preview for the exact photo and review the account, format and destination.
 
 ```bash
-freepik-api-tool search images --query "lychee martini" --limit 20 \
-  --param 'filters[content_type][]=photo'
-
-# Then check candidates one-by-one:
-freepik-api-tool resource get --id <ID>
-freepik-api-tool preview --id <ID> --save-preview <PREVIEWS_DIR>
+freepik-api-tool --plan-out recipe-plan.json download --id RESOURCE_ID --format jpg \
+  --out-dir downloads/by-post/post-slug --inventory licensed-downloads-ledger.csv
 ```
 
-### “Discover similar” (same photoshoot)
+After approval, apply the same request.
 
 ```bash
-freepik-api-tool resource get --id <WINNER_ID>
+freepik-api-tool --plan-in recipe-plan.json --apply --ack-no-snapshot download \
+  --id RESOURCE_ID --format jpg --out-dir downloads/by-post/post-slug \
+  --inventory licensed-downloads-ledger.csv
 ```
 
-Then look at:
-- `data.related_resources.same_series` (best, when present)
-- `data.related_resources.suggested` (fallback; mixed and optional)
-
-If the exact sibling image isn’t present in the winner’s series list, pick one item from the series and check *its* series list (multi-hop).
-
-### Download + inventory (always dry-run first)
-
-```bash
-freepik-api-tool download --id <ID> --format jpg \
-  --out-dir <DOWNLOADS_DIR>/by-post/<post_slug> \
-  --inventory <INVENTORY_CSV>
-
-freepik-api-tool --apply --ack-no-snapshot download --id <ID> --format jpg \
-  --out-dir <DOWNLOADS_DIR>/by-post/<post_slug> \
-  --inventory <INVENTORY_CSV>
-```
-
-Without explicit no-snapshot approval, apply refuses before the Freepik download/license endpoint, binary fetch, or inventory write. Approved applies return the no-snapshot approval record together with the file and inventory result.
+Use the [batch example](quickstart.md#download-an-approved-list) for several approved photos. Keep extra queries, contact sheets and project-specific approval scripts with the project that uses them.

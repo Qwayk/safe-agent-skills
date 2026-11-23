@@ -5,6 +5,7 @@ import dataclasses
 import sys
 from dataclasses import dataclass
 from functools import partial
+from pathlib import Path
 from typing import Any
 
 from . import __version__
@@ -100,6 +101,8 @@ def build_parser(*, json_mode: bool) -> argparse.ArgumentParser:
     p.add_argument("--log-file", default=None, help="Optional audit log path (JSONL)")
     p.add_argument("--apply", action="store_true", help="Apply changes (default is dry-run)")
     p.add_argument("--yes", action="store_true", help="Additional confirmation for batch jobs")
+    p.add_argument("--plan-out", help="Save a download or batch preview to a new JSON file")
+    p.add_argument("--plan-in", help="Use the matching saved preview when applying a download")
     p.add_argument(
         "--ack-no-snapshot",
         action="store_true",
@@ -151,8 +154,7 @@ def build_parser(*, json_mode: bool) -> argparse.ArgumentParser:
         "--exclude-ai",
         action="store_true",
         help=(
-            "Exclude AI-generated results by fetching each resource detail and filtering on "
-            "`is_ai_generated`/`has_prompt` (slower)."
+            "Read each result's details and keep only assets with both non-AI flags set to false."
         ),
     )
     search_images.set_defaults(func=search_cmd.cmd_search_images)
@@ -191,8 +193,7 @@ def build_parser(*, json_mode: bool) -> argparse.ArgumentParser:
         "--exclude-ai",
         action="store_true",
         help=(
-            "Exclude AI-generated results by fetching each resource detail and filtering on "
-            "`is_ai_generated`/`has_prompt` (slower)."
+            "Read each result's details and keep only assets with both non-AI flags set to false."
         ),
     )
     search_photos.set_defaults(func=search_cmd.cmd_search_photos)
@@ -351,6 +352,8 @@ def main(argv: list[str]) -> int:
             "apply": bool(args.apply),
             "yes": bool(args.yes),
             "ack_no_snapshot": bool(args.ack_no_snapshot),
+            "plan_out": args.plan_out,
+            "plan_in": args.plan_in,
             "project_cfg": project_cfg,
             "project_dir": str(project_dir),
         }
