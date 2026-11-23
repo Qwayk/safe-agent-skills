@@ -5,7 +5,7 @@ import json
 import sys
 import time
 from typing import Any
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, quote, quote_plus, urlencode, urlsplit, urlunsplit
 
 import requests
 
@@ -43,6 +43,30 @@ def redact_headers(headers: dict[str, str] | None) -> dict[str, str]:
     return out
 
 
+def redact_secrets(text: str, secrets: tuple[str, ...]) -> str:
+    forms = {
+        form for secret in secrets if secret for form in (secret, quote(secret, safe=""), quote_plus(secret))
+    }
+    for value in sorted(forms, key=len, reverse=True):
+        text = text.replace(value, "<redacted>")
+    return text
+
+
+def redact_response(value: Any, secrets: tuple[str, ...]) -> Any:
+    if isinstance(value, dict):
+        return {
+            redact_secrets(key, secrets): (
+                "<redacted>" if key.lower() in SECRET_KEYS else redact_response(item, secrets)
+            )
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [redact_response(item, secrets) for item in value]
+    if isinstance(value, str):
+        return redact_secrets(value, secrets)
+    return value
+
+
 @dataclasses.dataclass(frozen=True)
 class HttpResponse:
     status: int
@@ -51,23 +75,27 @@ class HttpResponse:
     url: str
 
     def json(self) -> Any:
-        return json.loads(self.body.decode("utf-8"))
+        try:
+            return json.loads(self.body.decode("utf-8"))
+        except ValueError:
+            raise RuntimeError("Skimlinks returned invalid JSON.") from None
 
     def text(self) -> str:
         return self.body.decode("utf-8", errors="replace")
 
 
 class HttpClient:
-    def __init__(self, *, timeout_s: float, verbose: bool, user_agent: str):
+    def __init__(self, *, timeout_s: float, verbose: bool, user_agent: str, credentials: tuple[str, ...] = ()):
         self._timeout_s = timeout_s
         self._verbose = verbose
         self._session = requests.Session()
         self._session.headers["User-Agent"] = user_agent
+        self._credentials = credentials
 
     @staticmethod
     def _format_url(url: str, params: dict[str, Any] | None) -> str:
         if not params:
-            return url
+            return redact_url(url)
         try:
             return redact_url(requests.Request("GET", url, params=params).prepare().url or url)
         except Exception:
@@ -86,7 +114,7 @@ class HttpClient:
         retry_on: tuple[int, ...] = (429, 500, 502, 503, 504),
     ) -> HttpResponse:
         attempt = 0
-        display_url = self._format_url(url, params)
+        display_url = redact_secrets(self._format_url(url, params), self._credentials)
         while True:
             attempt += 1
             start = time.time()
@@ -106,15 +134,15 @@ class HttpClient:
                 ms = int((time.time() - start) * 1000)
                 if self._verbose:
                     print(
-                        f"[http] {method} {display_url} -> EXCEPTION ({ms}ms): {type(e).__name__}: {e}",
+                        f"[http] {method} {display_url} -> EXCEPTION ({ms}ms): {type(e).__name__}",
                         file=sys.stderr,
                     )
                 raise RuntimeError(
-                    f"Request failed for {method} {display_url}: {type(e).__name__}: {e}"
-                ) from e
+                    f"Request failed for {method} {display_url}: {type(e).__name__}"
+                ) from None
             ms = int((time.time() - start) * 1000)
             if self._verbose:
-                print(f"[http] {method} {redact_url(resp.url)} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
+                print(f"[http] {method} {display_url} -> {resp.status_code} ({ms}ms)", file=sys.stderr)
 
             if resp.status_code < 400:
                 return HttpResponse(
@@ -128,4 +156,4 @@ class HttpClient:
                 time.sleep(min(2**attempt, 10))
                 continue
 
-            raise RuntimeError(f"HTTP {resp.status_code} for {method} {redact_url(resp.url)}\n{resp.text}")
+            raise RuntimeError(f"Skimlinks returned HTTP {resp.status_code} for {method} {display_url}.")

@@ -10,6 +10,9 @@ def _client(ctx: dict[str, Any]) -> SkimlinksClient:
 
 
 def _emit(ctx: dict[str, Any], event: str, out: dict[str, Any]) -> int:
+    data = out.get("data")
+    if isinstance(data, dict) and isinstance(data.get("has_more"), bool):
+        out["has_more"] = data["has_more"]
     ctx["audit"].write(event, {"ok": out.get("ok"), "path": out.get("path"), "params": out.get("params")})
     ctx["out"].emit(out)
     return 0

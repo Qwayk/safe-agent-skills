@@ -74,8 +74,9 @@ def cmd_product_get(args: Any, ctx: dict[str, Any]) -> int:
         ],
     )
     _require_publisher_domain_id(ctx, params)
-    if not any(params.get(key) for key in ("product_url", "product_keywords", "upc", "product_id")):
-        raise ValidationError("Pass one of --product-url, --product-keywords, --upc, or --product-id.")
+    search_fields = ("product_url", "product_keywords", "upc", "product_id")
+    if sum(bool(params.get(key)) for key in search_fields) != 1:
+        raise ValidationError("Pass exactly one of --product-url, --product-keywords, --upc, or --product-id.")
 
     out = _client(ctx).get_json(
         base_url=cfg.product_base_url,
@@ -120,13 +121,11 @@ def cmd_products_get(args: Any, ctx: dict[str, Any]) -> int:
 
     product_urls = _split_values(getattr(args, "product_url", None))
     product_ids = _split_values(getattr(args, "product_id", None))
-    if not product_urls and not product_ids:
-        raise ValidationError("Pass at least one --product-url or --product-id.")
-    body: dict[str, Any] = {}
-    if product_urls:
-        body["product_urls"] = product_urls
-    if product_ids:
-        body["product_ids"] = product_ids
+    if bool(product_urls) == bool(product_ids):
+        raise ValidationError("Pass either --product-url or --product-id. Use the same option for every item.")
+    if len(product_urls or product_ids) > 100:
+        raise ValidationError("Skimlinks accepts up to 100 Product Key items per request.")
+    body = {"product_urls": product_urls} if product_urls else {"product_ids": product_ids}
 
     out = _client(ctx).post_json(
         base_url=cfg.product_base_url,

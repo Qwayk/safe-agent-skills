@@ -1,50 +1,19 @@
 # API coverage
 
-Skimlinks coverage shows exactly what this skill can do with merchant search, reporting, Product Key lookups, and local link wrapping. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+This guide maps the commands to Skimlinks' documented operations. See [Skimlinks' reference guides](references.md) for the official definitions.
 
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
+The original coverage check was June 8, 2026. On November 23, 2026, we checked the definitions used for the local settings, report, merchant page, Product Key, and link fixes.
 
-A good first coverage check is: "Check whether this skill can search merchants, review reports, and show which Skimlinks workflows are covered."
-
-## Coverage notes
-
-Last verified: **2026-06-08**
-This is the source of truth for the Skimlinks command surface. It accounts for the official Skimlinks developer-center boundary and the shipped v0.1.0 CLI surface.
-
-## Official Sources
-
-- Developer center: `https://developers.skimlinks.com/`
-- Merchant API page: `https://developers.skimlinks.com/merchant.html`
-- Merchant API blueprint: `https://skimlinksmerchantapi.docs.apiary.io/api-description-document`
-- Reporting API page: `https://developers.skimlinks.com/reporting.html`
-- Reporting API blueprint: `https://skimlinksreporting.docs.apiary.io/api-description-document`
-- Product Key page: `https://developers.skimlinks.com/product-key.html`
-- Product Key blueprint: `https://skimlinksproducts.docs.apiary.io/api-description-document`
-- Link Wrapper page: `https://developers.skimlinks.com/link.html`
-- Link Wrapper Apiary JSON: `https://jsapi.apiary.io/apis/skimlinkslinkapi`
-- Data Pipe page: `https://developers.skimlinks.com/data-pipe.html`
-- Data Pipe blueprint: `https://datapipe1.docs.apiary.io/api-description-document`
-- Skimlinks JavaScript page: `https://developers.skimlinks.com/skimlinks-script.html`
-- Skimlinks JavaScript Apiary JSON: `https://jsapi.apiary.io/apis/skimjs`
-
-## Coverage Rules
-
-- The shipped CLI uses explicit named commands only.
-- There is no raw request, generic bridge, arbitrary URL caller, or call-anything command.
-- Merchant API, Reporting API, and Product Key use the temporary token endpoint at `https://authentication.skimapis.com/access_token`.
-- Product Key may require separate enabled credentials, so the CLI must support product-specific credentials instead of pretending all access tiers are identical.
-- Link Wrapper is an official URL-construction surface, not a JSON API. It is covered by a deterministic local URL builder.
-- Data Pipe is an official managed data-delivery guide. It is not a normal Skimlinks request/response API surface.
-- Skimlinks JavaScript is official browser-side implementation guidance. It is not a normal Skimlinks request/response API surface.
+Merchant, Reporting, and Product Key use a temporary access token. Link Wrapper builds a URL on your computer. Data Pipe and Skimlinks JavaScript have separate setup guides.
 
 ## Locked Command Families
 
 | Family | Command | Treatment | Notes |
 | --- | --- | --- | --- |
-| Auth | `auth check` | Shipped command | Exchanges credentials for a temporary access token and reports access status without printing secrets. |
-| Onboarding | `onboarding` | Shipped command | Prints setup steps and can create `.env` placeholders only. |
+| Auth | `auth check` | Shipped command | Exchanges credentials for a temporary access token and reports which credentials got a token. A Product Key lookup checks access. |
+| Onboarding | `onboarding` | Shipped command | Shows the settings needed and can create a private settings file with blank fields. |
 | Runs | `runs list`, `runs show` | Shipped command | Exposes local run history once implementation creates `.state/runs/`. |
-| Merchant API | `merchant merchants list` | Shipped command | Current v4 Merchant API. |
+| Merchant API | `merchant merchants list` | Shipped command | One v4 page per call. `has_more` shows when more are available. |
 | Merchant API | `merchant domains list` | Shipped command | Current v4 Merchant API. |
 | Merchant API | `merchant verticals list` | Shipped command | Current v4 Merchant API. |
 | Merchant API | `merchant alternative-verticals list` | Shipped command | Current v4 Merchant API. |
@@ -73,7 +42,7 @@ This is the source of truth for the Skimlinks command surface. It accounts for t
 | --- | --- | --- |
 | Merchant API | `SKIMLINKS_CLIENT_ID`, `SKIMLINKS_CLIENT_SECRET`, `SKIMLINKS_PUBLISHER_ID` | Uses `https://authentication.skimapis.com/access_token`, then sends `access_token` as a query parameter per official docs. |
 | Reporting API | `SKIMLINKS_CLIENT_ID`, `SKIMLINKS_CLIENT_SECRET`, `SKIMLINKS_PUBLISHER_ID` | Uses the same temporary-token flow as Merchant API. |
-| Product Key | `SKIMLINKS_PRODUCT_CLIENT_ID`, `SKIMLINKS_PRODUCT_CLIENT_SECRET`, `SKIMLINKS_PUBLISHER_ID`, `SKIMLINKS_PUBLISHER_DOMAIN_ID` or `--publisher-domain-id` | Product-specific credentials are preferred. If product-specific values are absent, implementation may fall back to shared credentials but must report that Product Key access can still be disabled by Skimlinks. Official Product Key docs require `publisher_domain_id` for both Product Key operations. |
+| Product Key | `SKIMLINKS_PRODUCT_CLIENT_ID`, `SKIMLINKS_PRODUCT_CLIENT_SECRET`, `SKIMLINKS_PUBLISHER_ID`, `SKIMLINKS_PUBLISHER_DOMAIN_ID` or `--publisher-domain-id` | Product-specific credentials are preferred. If product-specific values are absent, the tool tries the shared credentials when both Product Key fields are blank. Official Product Key docs require `publisher_domain_id` for both Product Key operations. |
 | Link Wrapper | `SKIMLINKS_LINK_WRAPPER_ID` | The official docs call this the domain-specific ID and show it as the `id` query parameter. |
 | Publisher domain filters | `SKIMLINKS_PUBLISHER_DOMAIN_ID` or `--publisher-domain-id` | Optional default for Merchant commands that support a publisher domain ID filter; required for Product Key commands. |
 
@@ -85,13 +54,13 @@ Base URL: `https://merchants.skimapis.com/`
 | --- | --- | --- | --- | --- | --- |
 | List / Search Merchants | GET | `/v4/publisher/{publisher_id}/merchants` | `merchant merchants list` | Shipped in v0.1.0 | Supports official filters including publisher domain, search, vertical, merchant IDs, country, favourite type, pagination, sorting, advertiser ID, and alternative vertical filters. |
 | List Domains | GET | `/v4/publisher/{publisher_id}/domains` | `merchant domains list` | Shipped in v0.1.0 | Requires publisher ID and access token. |
-| List Verticals | GET | `/v4/verticals` | `merchant verticals list` | Shipped in v0.1.0 | Public v4 vertical list in the current blueprint. |
-| List Alternative Verticals | GET | `/v4/alternative_verticals` | `merchant alternative-verticals list` | Shipped in v0.1.0 | Public v4 alternative vertical list in the current blueprint. |
+| List Verticals | GET | `/v4/verticals` | `merchant verticals list` | Shipped in v0.1.0 | Public v4 vertical list in the current OpenAPI definition. |
+| List Alternative Verticals | GET | `/v4/alternative_verticals` | `merchant alternative-verticals list` | Shipped in v0.1.0 | Public v4 alternative vertical list in the current OpenAPI definition. |
 | List / Search Offers | GET | `/v4/publisher/{publisher_id}/offers` | `merchant offers list` | Shipped in v0.1.0 | Supports official filters including search, merchant ID, vertical, country, period, favourite type, pagination, sorting, and advertiser ID. |
 
 ### Merchant Legacy V3
 
-The official Merchant blueprint still includes an `OLD version` group for v3. The CLI does not ship v3 commands in the initial customer-ready surface because v4 is the current documented API and covers the same merchant/domain/vertical/offer capabilities with the current temporary-token auth flow.
+The official Merchant definition still includes an `OLD version` group for v3. The CLI does not ship v3 commands in the initial customer-ready surface because v4 is the current documented API and covers the same merchant/domain/vertical/offer capabilities with the current temporary-token auth flow.
 
 | Official legacy operation | Method | Path | Command | Status | Coverage note |
 | --- | --- | --- | --- | --- | --- |
@@ -108,10 +77,10 @@ Base URL: `https://reporting.skimapis.com/`
 | --- | --- | --- | --- | --- | --- |
 | Search Commissions | GET | `/publisher/{publisher_id}/commission-report` | `reporting commissions search` | Shipped in v0.1.0 | Supports official filters including date range, updated since, custom ID, merchant ID, advertiser ID, domain ID, commission ID, status, commission type, pagination, and sorting. |
 | Get Performance Data Grouped By Date, Merchant, Page, Link, Domain, Country, Device or Network Payout Type | GET | `/publisher/{publisher_id}/reports` | `reporting aggregated get` | Shipped in v0.1.0 | Hub-style aggregated report. Supports required `report_by`, `start_date`, and `end_date`. |
-| Get Performance Link Data Grouped by Multiple Fields | GET | `/publisher/{publisher_id}/aggregation/v1/link-report` | `reporting link-report query` | Shipped in v0.1.0 | Returns NDJSON. Supports repeated `dim` and `met` query params. |
+| Get Performance Link Data Grouped by Multiple Fields | GET | `/publisher/{publisher_id}/aggregation/v1/link-report` | `reporting link-report query` | Shipped in v0.1.0 | Returns one JSON object per line. The tool accepts empty reports and rejects invalid rows. Supports repeated `dim` and `met` query params. |
 | Link report dimensions | GET | `/publisher/{publisher_id}/aggregation/v1/link-report/dimensions` | `reporting link-report dimensions` | Shipped in v0.1.0 | Helper endpoint named in the official link-report docs. |
 | Link report metrics | GET | `/publisher/{publisher_id}/aggregation/v1/link-report/metrics` | `reporting link-report metrics` | Shipped in v0.1.0 | Helper endpoint named in the official link-report docs. |
-| Get Performance Page Data Grouped by Multiple Fields | GET | `/publisher/{publisher_id}/aggregation/v1/page-report` | `reporting page-report query` | Shipped in v0.1.0 | Returns NDJSON. Supports repeated `dim` and `met` query params. |
+| Get Performance Page Data Grouped by Multiple Fields | GET | `/publisher/{publisher_id}/aggregation/v1/page-report` | `reporting page-report query` | Shipped in v0.1.0 | Returns one JSON object per line. The tool accepts empty reports and rejects invalid rows. Supports repeated `dim` and `met` query params. |
 | Page report dimensions | GET | `/publisher/{publisher_id}/aggregation/v1/page-report/dimensions` | `reporting page-report dimensions` | Shipped in v0.1.0 | Helper endpoint named in the official page-report docs. |
 | Page report metrics | GET | `/publisher/{publisher_id}/aggregation/v1/page-report/metrics` | `reporting page-report metrics` | Shipped in v0.1.0 | Helper endpoint named in the official page-report docs. |
 | Get trending products | GET | `/publisher/{publisher_id}/trending-products` | `reporting trending-products get` | Shipped in v0.1.0 | Supports official period, sort, advertiser, country, vertical, search, pagination, and audience-country filters. |
@@ -125,8 +94,8 @@ Base URL: `https://products.skimapis.com/`
 
 | Official operation | Method | Path | Command | Status | Coverage note |
 | --- | --- | --- | --- | --- | --- |
-| Get Product Details and Alternatives | GET | `/v2/publisher/{publisher_id}/product` | `product-key product get` | Shipped in v0.1.0 | Required query params include `access_token` and `publisher_domain_id`, plus one product selector such as `product_url`, `product_keywords`, `upc`, or `product_id`. `sort_desc` is the official string value `asc` or `desc`, default `desc`. The docs also list `/publisher/{publisher_id}/product` and `/v2/publisher/{publisher_id}/get-products` aliases for this operation. The CLI uses the v2 product path by default and records aliases in output metadata. |
-| Get Multi Product Details and Alternatives | POST | `/v1/publisher/{publisher_id}/products` | `product-key products get` | Shipped in v0.1.0 | Required query params include `access_token` and `publisher_domain_id`. Request body requires `product_urls` or `product_ids`. `sort_desc` is the official string value `asc` or `desc`, default `desc`. This is a read-like POST and does not mutate Skimlinks data or use `--apply`. |
+| Get Product Details and Alternatives | GET | `/v2/publisher/{publisher_id}/product` | `product-key product get` | Shipped in v0.1.0 | Required query params include `access_token` and `publisher_domain_id`, plus exactly one product selector: `product_url`, `product_keywords`, `upc`, or `product_id`. `sort_desc` is the official string value `asc` or `desc`, default `desc`. The docs also list `/publisher/{publisher_id}/product` and `/v2/publisher/{publisher_id}/get-products` aliases for this operation. The CLI uses the v2 product path by default and records aliases in output metadata. |
+| Get Multi Product Details and Alternatives | POST | `/v1/publisher/{publisher_id}/products` | `product-key products get` | Shipped in v0.1.0 | Required query params include `access_token` and `publisher_domain_id`. Send either `product_urls` or `product_ids`, up to 100 entries per request. `sort_desc` is the official string value `asc` or `desc`, default `desc`. This POST looks up products. It changes no Skimlinks data. |
 
 ## Link Wrapper
 
@@ -134,7 +103,7 @@ Base URL: `https://go.skimresources.com/`
 
 | Official operation | Method | Path | Command | Status | Coverage note |
 | --- | --- | --- | --- | --- | --- |
-| Build monetized redirect URL | URL construction | `/?id={domain_specific_id}&url={encoded_url}` | `link-wrapper build` | Shipped in v0.1.0 | Official parameters are required `id` and `url`, plus optional `xcust` and `sref`. The CLI builds the URL locally and can optionally validate encoding. It does not click or follow the redirect by default. |
+| Build monetized redirect URL | URL construction | `/?id={domain_specific_id}&url={encoded_url}` | `link-wrapper build` | Shipped in v0.1.0 | Official parameters are required `id` and `url`, plus optional `xcust` and `sref`. The destination needs an HTTP or HTTPS hostname. The CLI encodes it locally and leaves the resulting link unopened. |
 
 ## Data Pipe
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 from ..errors import ValidationError
 
@@ -14,8 +14,13 @@ def cmd_build(args: Any, ctx: dict[str, Any]) -> int:
         raise ValidationError("Missing Link Wrapper id. Set SKIMLINKS_LINK_WRAPPER_ID or pass --id.")
     if not target_url:
         raise ValidationError("Missing --url.")
-    if not (target_url.startswith("http://") or target_url.startswith("https://")):
-        raise ValidationError("--url must start with http:// or https://.")
+    try:
+        destination = urlsplit(target_url)
+        hostname = destination.hostname or ""
+    except ValueError:
+        raise ValidationError("--url must be an HTTP or HTTPS address with a hostname.") from None
+    if destination.scheme not in {"http", "https"} or not hostname or any(char.isspace() for char in hostname):
+        raise ValidationError("--url must be an HTTP or HTTPS address with a hostname.")
 
     params = {"id": domain_specific_id, "url": target_url}
     if getattr(args, "xcust", None):

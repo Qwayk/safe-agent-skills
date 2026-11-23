@@ -1,8 +1,6 @@
 # Command reference
 
-These commands cover Skimlinks merchants, reports, Product Key, Link Wrapper, and local link work. Check which credentials are present before Product Key or report commands.
-
-For the guided path, start with [What you can do with Skimlinks](use_cases.md), [Connect your Skimlinks account](onboarding.md), and [Quickstart](quickstart.md).
+For a first run, see [Quickstart](quickstart.md). If you use a separate settings file, pass `--env-file /path/to/account.env` before the command name every time.
 
 ## Onboarding
 
@@ -20,7 +18,7 @@ skimlinks-safe-cli auth check --scope product
 skimlinks-safe-cli auth check --scope all
 ```
 
-`--scope product` uses Product Key credentials when present. If Product Key credentials are absent, the tool can fall back to shared credentials and warns that Product Key may still be disabled by Skimlinks.
+`--scope product` tells you which credentials got a token. If both Product Key fields are blank, it tries the shared credentials. Use a Product Key lookup to confirm access.
 
 ## Runs
 
@@ -42,6 +40,8 @@ skimlinks-safe-cli merchant offers list [--publisher-id ID] [--search TEXT] [--m
 ```
 
 Other official Merchant filters are exposed as flags: `--id`, `--favourite-type`, `--sort-by`, `--sort-dir`, `--a-id`, `--alternative-vertical-id`, `--alternative-vertical-taxonomy`, and `--alternative-vertical-country`.
+
+Merchant and offer lists return one page per command. When `has_more` is true, use `--offset` with the same filters to continue.
 
 ## Reporting API
 
@@ -73,7 +73,9 @@ skimlinks-safe-cli product-key products get --publisher-domain-id 456 --product-
 skimlinks-safe-cli product-key products get --publisher-domain-id 456 --product-id 123456789012 --product-id 987654321098
 ```
 
-Product Key requires `--publisher-domain-id` unless `SKIMLINKS_PUBLISHER_DOMAIN_ID` is set in `.env`. Product Key supports filters such as `--country-code`, `--alternative-country-code`, `--domains`, `--exclude-domains`, `--referrer-url`, `--per-merchant-limit`, `--alternatives-size`, `--sort-by`, and `--sort-desc asc|desc`. The CLI sends the official `sort_desc` string value and does not send `true` or `false`.
+Product Key needs a publisher domain ID. Pass `--publisher-domain-id` or set `SKIMLINKS_PUBLISHER_DOMAIN_ID` in your settings file. For a single item, use exactly one search field. For a list, send up to 100 URLs or up to 100 IDs in one call.
+
+Available filters include `--country-code`, `--alternative-country-code`, `--domains`, `--exclude-domains`, `--referrer-url`, `--per-merchant-limit`, `--alternatives-size`, `--sort-by`, and `--sort-desc asc|desc`.
 
 ## Link Wrapper
 
@@ -82,4 +84,4 @@ skimlinks-safe-cli link-wrapper build --url https://merchant.example/product
 skimlinks-safe-cli link-wrapper build --id 123X456 --url https://merchant.example/product --xcust article-1 --sref https://publisher.example/page
 ```
 
-This command only builds the official `https://go.skimresources.com/` URL. It does not open the URL and does not follow redirects.
+The destination must be a full HTTP or HTTPS address with a hostname. The tool builds the `https://go.skimresources.com/` link on your computer and leaves it unopened.

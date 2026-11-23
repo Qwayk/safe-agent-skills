@@ -1,85 +1,69 @@
 from __future__ import annotations
 
+import os
+import shlex
 from pathlib import Path
 
+from ..config import read_settings
 
-def _read_text_lines(path: Path) -> list[str]:
-    if not path.exists():
-        return []
-    text = path.read_text(encoding="utf-8")
-    if not text:
-        return []
-    return text.splitlines(keepends=True)
-
-
-def _has_nonempty_env_value(lines: list[str], key: str) -> bool:
-    for line in lines:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#") or "=" not in stripped:
-            continue
-        candidate = stripped
-        if candidate.startswith("export "):
-            candidate = candidate[len("export ") :].lstrip()
-        k, v = candidate.split("=", 1)
-        if k.strip() == key and v.strip().strip("'").strip('"'):
-            return True
-    return False
+REQUIRED_SETTINGS = ("SKIMLINKS_CLIENT_ID", "SKIMLINKS_CLIENT_SECRET", "SKIMLINKS_PUBLISHER_ID")
+OPTIONAL_SETTINGS = (
+    "SKIMLINKS_PUBLISHER_DOMAIN_ID",
+    "SKIMLINKS_PRODUCT_CLIENT_ID",
+    "SKIMLINKS_PRODUCT_CLIENT_SECRET",
+    "SKIMLINKS_LINK_WRAPPER_ID",
+)
 
 
-def cmd_onboarding(args: object, ctx: dict) -> int:
-    out = ctx["out"]
-    env_file = str(getattr(args, "env_file", ".env"))
-    write_env = not bool(getattr(args, "no_write_env", False))
+def _open_private(path: str, flags: int) -> int:
+    return os.open(path, flags, 0o600)
 
-    env_path = Path(env_file)
+
+def cmd_onboarding(args, ctx) -> int:
+    env_path = Path(args.env_file or ".env")
     env_created = False
-
-    if write_env and not env_path.exists():
-        example_path = env_path.parent / ".env.example"
-        if example_path.exists():
-            env_path.write_text(example_path.read_text(encoding="utf-8"), encoding="utf-8")
+    if not args.no_write_env and not env_path.exists():
+        example = env_path.with_name(".env.example")
+        if example.is_file() and example != env_path:
+            template = example.read_text(encoding="utf-8")
         else:
-            env_path.write_text("", encoding="utf-8")
-        env_created = True
+            template = "".join(f"{key}=\n" for key in (*REQUIRED_SETTINGS, *OPTIONAL_SETTINGS))
+        try:
+            with open(env_path, "x", encoding="utf-8", opener=_open_private) as handle:
+                handle.write(template)
+        except FileExistsError:
+            pass
+        else:
+            env_created = True
 
-    lines = _read_text_lines(env_path)
-
-    missing: list[str] = []
-    for key in ("SKIMLINKS_CLIENT_ID", "SKIMLINKS_CLIENT_SECRET", "SKIMLINKS_PUBLISHER_ID"):
-        if not _has_nonempty_env_value(lines, key):
-            missing.append(key)
-
+    settings = read_settings(args.env_file, allow_missing=True)
+    missing = [key for key in REQUIRED_SETTINGS if not settings.get(key, "").strip()]
+    options = ["--env-file", args.env_file] if args.env_file is not None else []
+    next_command = shlex.join(["skimlinks-safe-cli", "--output", "json", *options, "auth", "check"])
     steps = [
-        "Create .env from .env.example if it does not exist.",
-        "Open Publisher Hub > Toolbox > APIs > API Authentication credentials.",
-        "Paste the Client ID and Client Secret into .env; never paste secrets into chat.",
-        "Add your Publisher ID as SKIMLINKS_PUBLISHER_ID.",
-        "For Product Key, add your Publisher Domain ID as SKIMLINKS_PUBLISHER_DOMAIN_ID or pass --publisher-domain-id.",
-        "For Product Key, ask your account manager for Product Key enabled credentials and use the product-specific fields.",
-        "For Link Wrapper, add your domain-specific ID as SKIMLINKS_LINK_WRAPPER_ID.",
-        "Run: skimlinks-safe-cli --output json auth check",
+        "In Publisher Hub, open Toolbox, APIs, then API Authentication.",
+        f"Enter the Client ID, Client Secret and Publisher ID in {env_path}. Keep credentials out of chat.",
+        "For Product Key, set SKIMLINKS_PUBLISHER_DOMAIN_ID or pass --publisher-domain-id.",
+        "If Skimlinks gave you separate Product Key credentials, fill in both Product Key fields.",
+        "To make affiliate links, set SKIMLINKS_LINK_WRAPPER_ID to your Site ID or pass --id.",
+        f"Run {next_command}",
     ]
-
-    payload = {
-        "ok": True,
-        "onboarding": {
-            "env_file": env_file,
-            "env_created": env_created,
-            "missing": missing,
-            "next_command": "skimlinks-safe-cli --output json auth check",
-            "steps": steps,
-        },
-    }
-
-    if str(getattr(args, "output", "json")) == "json":
-        out.emit(payload)
+    if args.output == "json":
+        ctx["out"].emit(
+            {
+                "ok": True,
+                "onboarding": {
+                    "env_file": str(env_path),
+                    "env_created": env_created,
+                    "missing": missing,
+                    "next_command": next_command,
+                    "steps": steps,
+                },
+            }
+        )
     else:
-        print("To connect this tool to Skimlinks, do this once:")
-        for i, s in enumerate(steps, start=1):
-            print(f"{i}. {s}")
+        for number, step in enumerate(steps, start=1):
+            print(f"{number}. {step}")
         if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        print("")
-        print("Next: skimlinks-safe-cli --output json auth check")
+            print(f"Missing settings for {env_path}: " + ", ".join(missing))
     return 0

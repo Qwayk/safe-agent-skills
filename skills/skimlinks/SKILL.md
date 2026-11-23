@@ -1,42 +1,18 @@
 ---
 name: skimlinks
-description: "Research Skimlinks merchants and reports, check Product Key data and build Link Wrapper URLs locally through skimlinks-safe-cli."
+description: "Find Skimlinks merchants and offers, read publisher reports, look up product alternatives, and build affiliate links with skimlinks-safe-cli."
 ---
 
-# Skill: Skimlinks
+# Skimlinks
 
-This page is the agent-facing rule sheet for the public Skimlinks skill.
-If you just want to use the skill, start with the README plus the use-cases and onboarding docs.
+Use this skill for Skimlinks merchant search, publisher reports, Product Key lookups, and local Link Wrapper URLs. Use [the command guide](docs/command_reference.md) for the available commands.
 
-This skill gives an agent a careful path for Skimlinks merchant discovery, reporting, Product Key checks, and local Link Wrapper URL builds through `skimlinks-safe-cli`.
+For account reads, start with [setup](docs/onboarding.md) and run the sign-in check if the account is unverified. Keep credentials and settings files out of chat. Use the Publisher ID and domain that match the user's request. Keep the selected `--env-file` on each command when the user picked one.
 
-## Reference points
+If `has_more` is true, say that there are more merchants or offers. Ask Skimlinks for the next page when the user needs the full result. For reports, give the date range, the fields used, and what the results show. If a report reply is invalid, explain that it could not be read.
 
-- CLI command: `skimlinks-safe-cli`
-- Command reference: `docs/command_reference.md`
-- API coverage ledger: `docs/api_coverage.md`
-- Proof pack: `docs/proof.md`
+For Product Key, use the right publisher domain ID. The sign-in check only shows whether the credentials can get a token. Use a lookup to confirm Product Key access.
 
-## Safety Rules
+Build Link Wrapper URLs with the Site ID and full destination URL. Give the user the link to review. Leave it unopened. This action needs no account sign-in.
 
-- Never ask the user to paste Skimlinks client secrets, access tokens, or `.env` contents into chat.
-- Start with `skimlinks-safe-cli onboarding` when setup is missing.
-- Use `skimlinks-safe-cli auth check` before live Merchant or Reporting requests.
-- Use `skimlinks-safe-cli auth check --scope product` before Product Key requests.
-- Treat Product Key as separately gated unless the account has enabled Product Key credentials.
-- Require `SKIMLINKS_PUBLISHER_DOMAIN_ID` or `--publisher-domain-id` for Product Key commands.
-- Use only explicit named commands from the command reference.
-- Do not invent raw HTTP requests or generic bridge commands.
-- Link Wrapper is a local URL builder. It must not open the URL or follow redirects.
-- Data Pipe and Skimlinks JavaScript are documented surfaces, but they are not shipped HTTP API command families in this CLI.
-
-## Normal Flow
-
-1. Check setup with onboarding or auth.
-2. Run the smallest explicit read command that answers the request.
-3. Report the useful result in plain English.
-4. Mention any Product Key, Data Pipe, JavaScript, or Link Wrapper limitation when it affects the answer.
-
-## Install Note
-
-Install or attach this skill using your host's normal skill-install flow before asking the agent to use it.
+Use the named commands for reads. Data Pipe and Skimlinks JavaScript have separate setup guides and are outside the CLI. See [API coverage](docs/api_coverage.md) and [what was tested](docs/proof.md).

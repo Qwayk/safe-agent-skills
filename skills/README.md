@@ -112,7 +112,7 @@ Start here if you want affiliate product research, creator catalogs, or partner-
 | [**Awin Publisher**](awin-publisher/README.md)<br><sub>Install slug: <code>awin-publisher-safe-cli</code></sub> | Review Awin publisher accounts, programs, offers, transactions, reports, feeds, linkbuilder work, and proof-of-purchase uploads | Awin publisher account | Reads + careful changes |
 | [**Sovrn**](sovrn/README.md)<br><sub>Install slug: <code>sovrn</code></sub> | Review Sovrn Commerce data, affiliate link checks, product suggestions, and advertising reports | Sovrn account | Read-only |
 | [**Awin Advertiser**](awin-advertiser/README.md)<br><sub>Install slug: <code>awin-advertiser-safe-cli</code></sub> | Review Awin advertiser performance and prepare careful validation, offer, feed, or conversion work | Awin advertiser account | Reads + careful changes |
-| [**Skimlinks**](skimlinks/README.md)<br><sub>Install slug: <code>skimlinks</code></sub> | Inspect merchants, publisher reports, Product Key lookups, and Link Wrapper URLs | Skimlinks account | Read-only + local URL build |
+| [**Skimlinks**](skimlinks/README.md)<br><sub>Install slug: <code>skimlinks</code></sub> | Find merchants, check commissions, look up product alternatives, and build affiliate links | Skimlinks account for API reads, Site ID for links | Reads and local link creation |
 
 ## Publishing and social channels
 

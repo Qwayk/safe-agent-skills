@@ -1,19 +1,7 @@
 from __future__ import annotations
 
+from ..http import redact_secrets, redact_url
 from ..skimlinks import PRODUCT_SCOPE, SHARED_SCOPE, SkimlinksClient, make_http_client
-
-
-def _safe_error_text(exc: Exception, cfg) -> str:
-    text = str(exc)
-    for value in (
-        cfg.client_id,
-        cfg.client_secret,
-        cfg.product_client_id,
-        cfg.product_client_secret,
-    ):
-        if value:
-            text = text.replace(value, "<redacted>")
-    return text
 
 
 def cmd_auth_check(args, ctx) -> int:
@@ -33,7 +21,7 @@ def cmd_auth_check(args, ctx) -> int:
                 {
                     "ok": False,
                     "scope": item,
-                    "error": _safe_error_text(exc, cfg),
+                    "error": redact_secrets(str(exc), cfg.credentials),
                     "error_type": type(exc).__name__,
                     "token_received": False,
                 }
@@ -42,7 +30,7 @@ def cmd_auth_check(args, ctx) -> int:
     out = {
         "ok": ok,
         "checks": checks,
-        "auth_url": cfg.auth_url,
+        "auth_url": redact_secrets(redact_url(cfg.auth_url), cfg.credentials),
         "publisher_id_configured": bool(cfg.publisher_id),
         "product_credentials_configured": bool(
             cfg.product_client_id and cfg.product_client_secret

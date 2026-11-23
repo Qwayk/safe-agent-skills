@@ -170,7 +170,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--version", action="store_true", help="Print version and exit")
     p.add_argument("--config", default=None, help="Optional project defaults JSON (non-secret)")
     p.add_argument("--project-dir", default=None, help="Optional project directory (defaults to config file folder)")
-    p.add_argument("--env-file", default=".env", help="Optional .env file path (default: .env)")
+    p.add_argument("--env-file", help="Use settings from this file alone. The default uses .env and shell settings.")
     p.add_argument("--timeout-s", type=float, default=None, help="Override timeout seconds")
     p.add_argument("--verbose", action="store_true", help="Verbose HTTP logging to stderr")
     p.add_argument("--debug", action="store_true", help="Show stack traces on errors")
@@ -549,7 +549,7 @@ def main(argv: list[str]) -> int:
             return 0
     write_capable = bool(getattr(args, "write_capable", False))
     run_ctx: RunContext = init_run_context(
-        env_file=str(args.env_file),
+        env_file=str(args.env_file or ".env"),
         enabled=write_capable,
         run_id=str(args.run_id) if args.run_id else None,
         artifacts_dir=str(args.artifacts_dir) if args.artifacts_dir else None,
@@ -569,7 +569,7 @@ def main(argv: list[str]) -> int:
         loggers.append(AuditLogger(path=global_audit_log_path, enabled=True))
     audit = CompositeAuditLogger(loggers) if len(loggers) > 1 else (loggers[0] if loggers else AuditLogger(path=None, enabled=False))
 
-    runs_index_path = runs_index_path_for_env_file(str(args.env_file))
+    runs_index_path = runs_index_path_for_env_file(str(args.env_file or ".env"))
     if str(getattr(args, "cmd", "") or "") == "runs":
         # `runs` is a local-only command; it still needs to know where the index lives.
         run_ctx = RunContext(
@@ -626,7 +626,7 @@ def main(argv: list[str]) -> int:
                 "command_str": command_str,
                 "project_cfg": project_cfg,
                 "project_dir": project_dir,
-                "env_file": str(args.env_file),
+                "env_file": str(args.env_file or ".env"),
                 "timeout_s": None,
                 "verbose": bool(args.verbose),
                 "apply": bool(args.apply),
@@ -654,7 +654,7 @@ def main(argv: list[str]) -> int:
             "command_str": command_str,
             "project_cfg": project_cfg,
             "project_dir": project_dir,
-            "env_file": str(args.env_file),
+            "env_file": str(args.env_file or ".env"),
             "timeout_s": timeout_s,
             "verbose": bool(args.verbose),
             "apply": bool(args.apply),

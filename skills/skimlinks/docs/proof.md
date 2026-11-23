@@ -1,12 +1,14 @@
 # Proof and verification
 
-Skimlinks proof should answer a simple question: what has actually been checked for merchant search, reporting, Product Key lookups, and local link wrapping, and what still depends on account access, provider permissions, public API limits, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Fresh wheels built from the source and the local release copy. Both clean installs of `skimlinks-safe-cli` passed 26 tests using simulated Skimlinks replies. The local `skimlinks` skill installed into a temporary Codex skills folder and matched all 46 files in the local release copy. Both skill files passed the skill validator, and local guide links passed.
 
-If you only check one thing, check merchant/report examples, Product Key proof, and local link-wrapper behavior before trusting affiliate work.
+The checks covered a private settings file, keeping shell settings out of the named account file, and hiding credentials and temporary tokens in output and logs. They also covered rejecting bad Product Key inputs before sending a request, showing when a merchant search has another page, and distinguishing an empty report from a failed report. A full destination URL built a local link without opening it.
 
-## Current proof summary
+These are local checks using simulated replies. Product Key access still needs a live lookup.
+
+## June 11, 2026 verification
 
 Last verified: **2026-06-11**
 
@@ -67,11 +69,12 @@ Smoke results:
 
 Live Skimlinks API calls were not run because no real credentials are stored in this repo.
 
-Redacted examples:
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check_missing_config.json`
-- `docs/examples/outputs/product_key_missing_domain_id.json`
-- `docs/examples/outputs/link_wrapper_build.json`
+Example outputs with private values removed:
+
+- [Version](examples/outputs/version.json)
+- [Missing account settings](examples/outputs/auth_check_missing_config.json)
+- [Missing Product Key publisher domain ID](examples/outputs/product_key_missing_domain_id.json)
+- [Built affiliate link](examples/outputs/link_wrapper_build.json)
 
 Main remaining live risk:
 - Product Key access may be disabled unless Skimlinks enables separate Product Key credentials.

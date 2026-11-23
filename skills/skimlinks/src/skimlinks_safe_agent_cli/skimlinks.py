@@ -8,7 +8,7 @@ from urllib.parse import urlencode, urljoin
 from . import __version__
 from .config import Config
 from .errors import ValidationError
-from .http import HttpClient, redact_url
+from .http import HttpClient, redact_response, redact_url
 
 SHARED_SCOPE = "shared"
 PRODUCT_SCOPE = "product"
@@ -28,6 +28,7 @@ def make_http_client(ctx: dict[str, Any]) -> HttpClient:
         timeout_s=timeout_s,
         verbose=verbose,
         user_agent=f"qwayk-skimlinks-safe-agent-cli/{__version__}",
+        credentials=ctx["cfg"].credentials,
     )
 
 
@@ -70,6 +71,10 @@ class SkimlinksClient:
                     client_id=self.cfg.product_client_id,
                     client_secret=self.cfg.product_client_secret,
                     source="product",
+                )
+            if self.cfg.product_client_id or self.cfg.product_client_secret:
+                raise ValidationError(
+                    "Fill in both Product Key credential fields, or leave both blank to use shared credentials."
                 )
             if self.cfg.client_id and self.cfg.client_secret:
                 return Credentials(
@@ -120,6 +125,10 @@ class SkimlinksClient:
         self._token_cache[scope] = token
         return token
 
+    def _public_data(self, value: Any) -> Any:
+        tokens = tuple(token["access_token"] for token in self._token_cache.values())
+        return redact_response(value, self.cfg.credentials + tokens)
+
     def auth_check(self, *, scope: str) -> dict[str, Any]:
         token = self.access_token(scope=scope)
         return {
@@ -127,12 +136,11 @@ class SkimlinksClient:
             "scope": scope,
             "credential_source": token.get("credential_source"),
             "token_received": True,
-            "timestamp": token.get("timestamp"),
-            "expiry_timestamp": token.get("expiry_timestamp"),
+            "timestamp": self._public_data(token.get("timestamp")),
+            "expiry_timestamp": self._public_data(token.get("expiry_timestamp")),
             "product_access_note": (
-                "Product Key may still be disabled by Skimlinks even when shared credentials "
-                "can mint a token."
-                if scope == PRODUCT_SCOPE and token.get("credential_source") == "shared-fallback"
+                "The credentials got a token. Run a Product Key lookup to check access."
+                if scope == PRODUCT_SCOPE
                 else None
             ),
         }
@@ -150,14 +158,13 @@ class SkimlinksClient:
             all_params["access_token"] = self.access_token(scope=scope)["access_token"]
         url = urljoin(base_url.rstrip("/") + "/", path.lstrip("/"))
         response = self.http.request("GET", url, params=all_params)
-        data = response.json()
         return {
             "ok": True,
             "method": "GET",
-            "url": redact_url(response.url),
+            "url": self._public_data(redact_url(response.url)),
             "path": path,
-            "params": safe_params(all_params),
-            "data": data,
+            "params": self._public_data(safe_params(all_params)),
+            "data": self._public_data(response.json()),
         }
 
     def get_ndjson(
@@ -173,18 +180,25 @@ class SkimlinksClient:
         url = urljoin(base_url.rstrip("/") + "/", path.lstrip("/"))
         response = self.http.request("GET", url, params=all_params)
         rows = []
-        for line in response.text().splitlines():
+        for line_number, line in enumerate(response.text().splitlines(), start=1):
             stripped = line.strip()
-            if stripped:
-                rows.append(json.loads(stripped))
+            if not stripped:
+                continue
+            try:
+                row = json.loads(stripped)
+            except ValueError:
+                raise RuntimeError(f"Skimlinks returned invalid report data on line {line_number}.") from None
+            if not isinstance(row, dict) or "error" in row or row.get("ok") is False:
+                raise RuntimeError(f"Skimlinks did not return a report row on line {line_number}.")
+            rows.append(row)
         return {
             "ok": True,
             "method": "GET",
-            "url": redact_url(response.url),
+            "url": self._public_data(redact_url(response.url)),
             "path": path,
-            "params": safe_params(all_params),
+            "params": self._public_data(safe_params(all_params)),
             "content_type": "application/x-ndjson",
-            "rows": rows,
+            "rows": self._public_data(rows),
             "count": len(rows),
         }
 
@@ -206,8 +220,8 @@ class SkimlinksClient:
             "ok": True,
             "method": "POST",
             "read_like": True,
-            "url": redact_url(response.url),
+            "url": self._public_data(redact_url(response.url)),
             "path": path,
-            "params": safe_params(all_params),
-            "data": response.json(),
+            "params": self._public_data(safe_params(all_params)),
+            "data": self._public_data(response.json()),
         }

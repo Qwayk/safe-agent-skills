@@ -1,69 +1,42 @@
 # Connect your Skimlinks account
 
-Skimlinks needs local publisher credentials before an agent can inspect merchants, reports, product data, and affiliate links.
+## Set up merchant search and reports
 
-Keep the setup files private. Do not paste `.env` values, API keys, client secrets, OAuth files, or saved token files into chat.
+1. Run `skimlinks-safe-cli onboarding`. It creates a private `.env` file with spaces for your settings. It leaves an existing file as it is.
+2. In Publisher Hub, open Toolbox, APIs, then API Authentication. Enter your Client ID and Client Secret in `SKIMLINKS_CLIENT_ID` and `SKIMLINKS_CLIENT_SECRET`. Enter your Publisher ID in `SKIMLINKS_PUBLISHER_ID`. Keep these values in your local file and out of chat and Git.
+3. Run `skimlinks-safe-cli auth check`. On success, Skimlinks issued a temporary token. Run [a small merchant search](quickstart.md) to check that your Publisher ID works.
 
-After setup, start with a merchant or reporting read and add Product Key credentials only if your account has that feature.
+Merchant and Reporting use the same credentials. The CLI requests a temporary token from `https://authentication.skimapis.com/access_token` using `client_credentials`.
 
-## What you need
+## Use a separate settings file
 
-- Merchant API and Reporting API credentials.
-- Your Skimlinks publisher ID.
-- Your publisher domain ID for Product Key.
-- Separate Product Key credentials if Skimlinks enabled Product Key separately for your account.
-- A Link Wrapper ID if you want a default ID for local Link Wrapper builds.
-
-## Step 1. Fill the local `.env` file
-
-In the tool folder:
-
-1. Run `skimlinks-safe-cli onboarding`, or copy `.env.example` to `.env`.
-2. Fill `SKIMLINKS_CLIENT_ID`, `SKIMLINKS_CLIENT_SECRET`, and `SKIMLINKS_PUBLISHER_ID`.
-3. Fill `SKIMLINKS_PUBLISHER_DOMAIN_ID`.
-4. Fill `SKIMLINKS_LINK_WRAPPER_ID` if you want a default Link Wrapper ID.
-5. Fill `SKIMLINKS_PRODUCT_CLIENT_ID` and `SKIMLINKS_PRODUCT_CLIENT_SECRET` only if Skimlinks gave you Product Key-specific credentials.
-
-## Step 2. Get the right values from Skimlinks
-
-1. Open Skimlinks Publisher Hub.
-2. Go to the Toolbox or developer/API area for your account.
-3. Copy the Merchant API and Reporting API client ID and client secret.
-4. Copy your publisher ID.
-5. Copy your publisher domain ID for Product Key.
-6. If Product Key is enabled separately, copy the Product Key-specific credentials too.
-7. If you use Link Wrapper, copy the Link Wrapper site ID.
-
-Never paste any client secret into chat. If the agent needs to check setup, ask it to run an auth check locally.
-
-## Step 3. Run the first safe checks
-
-These are the best first commands:
+Keep a file for each account in a private folder. Use the same file for setup and later commands.
 
 ```bash
-skimlinks-safe-cli --output json --version
-skimlinks-safe-cli --output json auth check
-skimlinks-safe-cli --output json auth check --scope product
+skimlinks-safe-cli --env-file /path/to/account.env onboarding
+skimlinks-safe-cli --env-file /path/to/account.env auth check
 ```
 
-If normal auth passes but Product Key auth fails, that usually means Product Key is not enabled or needs different credentials.
+When you pass `--env-file`, the tool takes its settings from that file alone. Command options such as `--publisher-id` still let you choose the target for a single call. Without `--env-file`, shell settings take priority over the default `.env`.
 
-## What to ask your agent next
+`onboarding --no-write-env` checks which settings are present without creating a file.
 
-- "Check whether my Skimlinks credentials work."
-- "List merchants that match this brand name."
-- "Show the reporting metrics available for link reports."
-- "Build a Link Wrapper URL for this merchant page without opening the link."
-- "Check whether Product Key credentials are configured before using Product Key."
-- "Look up Product Key alternatives for this URL using my publisher domain ID."
+## Add Product Key access
 
-## If something fails
+Set `SKIMLINKS_PUBLISHER_DOMAIN_ID` or pass `--publisher-domain-id` on a lookup. Merchant commands with that filter can also use the saved value.
 
-The most common causes are:
+If Skimlinks gave you separate Product Key credentials, fill in both `SKIMLINKS_PRODUCT_CLIENT_ID` and `SKIMLINKS_PRODUCT_CLIENT_SECRET`. Leave both blank to try the shared credentials. Run `skimlinks-safe-cli auth check --scope product` to see which credentials got a token. Run one [Product Key lookup](command_reference.md#product-key) to check actual access. Ask Skimlinks to enable Product Key if its API denies access with the right publisher and domain IDs.
 
-- missing or incorrect values in `.env`
-- Product Key not enabled for the account
-- a publisher ID or publisher domain ID from the wrong Skimlinks account
-- Skimlinks-side network or auth restrictions
+## Build links without signing in
 
-Use [Troubleshooting](troubleshooting.md) if the auth checks or first reads fail.
+In Publisher Hub, open Setup and find the Site ID for the site where you’ll use the link. Set `SKIMLINKS_LINK_WRAPPER_ID` or pass `--id` when you build a link. The tool makes the URL on your computer.
+
+## If a command fails
+
+- **Settings are missing.** Run onboarding with the same settings file, then fill in the fields it lists.
+- **Skimlinks rejects the credentials.** Check the Client ID and Client Secret in Publisher Hub. If sign-in works but a merchant search fails, check the Publisher ID on the request.
+- **A report fails.** Check the date range and choose fields from that report's dimensions and metrics commands. Keep the HTTP status or the report line number when asking for help.
+- **A link will not build.** Check the Site ID and use a full destination address with `http://` or `https://` and a hostname.
+- **You need more detail.** `--verbose` shows the request and status without the credentials. `--debug` is for local Python troubleshooting.
+
+For special setups, `SKIMLINKS_TIMEOUT_S` defaults to 30 seconds. Service addresses use the official defaults. The override names are `SKIMLINKS_AUTH_URL`, `SKIMLINKS_MERCHANT_BASE_URL`, `SKIMLINKS_REPORTING_BASE_URL`, `SKIMLINKS_PRODUCT_BASE_URL`, and `SKIMLINKS_LINK_WRAPPER_BASE_URL`.

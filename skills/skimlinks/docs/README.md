@@ -1,24 +1,11 @@
 # Skimlinks docs
 
-Skimlinks is easiest to use when you start with the real job, then check setup, safety, and proof before asking an agent to do more. These docs explain how to review merchants, links, performance, and affiliate reporting, what access is needed, and where the tool stops before risky changes.
-
-If you are new, read the first few links before asking for account data or changes. They explain the useful jobs, the setup path, and the safety limits.
-
-## Start with the work
-- [What you can do with Skimlinks](use_cases.md) - real jobs to hand to an agent for Skimlinks
-- [Connect your Skimlinks account](onboarding.md) - what must be connected or confirmed before the first run
-- [How this skill stays safe](safety_model.md) - what the tool can and cannot change, and where approval is needed
-- [Quickstart](quickstart.md) - the shortest path to one useful first result
-
-## Commands, setup, and fixes
-- [Command reference](command_reference.md) - the exact commands and options
-- [Authentication details](authentication.md) - credential rules and safe auth checks
-- [Configuration](configuration.md) - local settings, environment values, and precedence rules
-- [Troubleshooting](troubleshooting.md) - what to check when a command fails or refuses to run
-
-## Proof and details
-- [Proof and verification](proof.md) - what has been checked and what still needs live verification
-- [API coverage](api_coverage.md) - the API surfaces this skill actually covers
-- [Source references](references.md) - source notes behind the implementation and docs
-- [Technical architecture](architecture.md) - how the command, config, client, and output layers fit together
-- [Examples](examples/) - sample inputs or outputs when the tool ships them
+- [Connect your account and fix setup problems](onboarding.md)
+- [Run your first command](quickstart.md)
+- [See what you can ask](use_cases.md)
+- [Find a command or option](command_reference.md)
+- [Check how account data and links are handled](safety_model.md)
+- [See the checks and example results](proof.md)
+- [Check the API coverage](api_coverage.md)
+- [Read Skimlinks' own guides](references.md)
+- [Read the instructions loaded by the agent](../SKILL.md)

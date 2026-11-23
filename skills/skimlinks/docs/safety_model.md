@@ -1,31 +1,9 @@
-# Safety model
+# How the tool handles your account and data
 
-Skimlinks is safest when you treat the agent as a focused reader for merchant search, reporting, Product Key lookups, and local link wrapping. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+Merchant, Reporting, and Product Key commands read from Skimlinks. The Product Key command for a list of products sends a POST because the API expects the list in the request body. The request is a lookup.
 
-The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+Use the publisher and publisher domain that belong to the work. Keep Client IDs, Client Secrets, and temporary tokens out of chat, logs, and shared files. Onboarding creates an empty settings form for you to fill in. The tool returns HTTP status and request details when a call fails and leaves out the provider's raw error text.
 
-A good safety ask is: "Read the merchant or report first, then keep link-wrapper output local and treat Product Key results as read-like lookups."
+Link Wrapper builds a URL locally. Review the Site ID and destination before placing the link. The CLI does not open the URL or follow its redirect. Keep saved account reports private, and mention when a merchant search covers only part of the list.
 
-## Core safety rules
-
-This skill ships read commands, read-like Product Key POST lookups, and a local Link Wrapper URL builder.
-
-There are no live Skimlinks mutation commands in this release.
-
-## Safety rules
-
-- No raw request bridge.
-- No hidden endpoints.
-- No credentials or access tokens in stdout, stderr, logs, examples, or docs.
-- Product Key access is not flattened into the shared auth model.
-- Link Wrapper does not click links or follow redirects.
-- Data Pipe and Skimlinks JavaScript are documented as official non-API areas, not counted as shipped CLI command families.
-
-## What this means in practice
-
-- Merchant, Reporting, and Product Key work only read or query official Skimlinks surfaces.
-- The main setup risk is wrong credentials, the wrong publisher ID, or the wrong publisher domain ID.
-- Product Key can fail even when standard Merchant and Reporting auth works, because Skimlinks may gate Product Key separately.
-- `onboarding` can create a local placeholder `.env`, but it never writes secrets for you.
-
-If write commands are ever added later, they must use the repo-standard plan, review, apply, verify, and receipt flow.
+Use the commands in [the command guide](command_reference.md). If Skimlinks adds write commands in the future, follow the shared review, approval, verification, and receipt rules before adding them here.

@@ -31,30 +31,25 @@ class TestDocsFormatting(unittest.TestCase):
             joined = "\n".join(bad_lines)
             self.fail("Double-bullet lines found:\n" + joined)
 
-    def test_use_cases_stays_human_and_specific(self) -> None:
+    def test_readme_install_and_local_guide_links(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        text = (root / "docs" / "use_cases.md").read_text(encoding="utf-8")
-
-        required = [
-            "Skimlinks is useful when a publisher wants to understand",
-            "## Good questions to ask",
-            "## Everyday work this helps with",
-            "## What the agent should show you",
-            "## Good first path",
-            "Which pages or links earned commission last month?",
-        ]
-        for phrase in required:
-            self.assertIn(phrase, text)
-
-        stale_phrases = [
-            "Skimlinks work is usually about answering publisher money questions",
-            "Good jobs to give the agent",
-            "Use this page when you want practical",
-            "Link Wrapper URLs only as generated text",
-            "dry-run plan",
-        ]
-        for phrase in stale_phrases:
-            self.assertNotIn(phrase, text)
+        readme = root / "README.md"
+        skill = root / "SKILL.md"
+        if not skill.exists():
+            skill = root / "skills" / "skimlinks-safe-cli" / "SKILL.md"
+        self.assertIn("npx skills add Qwayk/safe-agent-skills@skimlinks -g -y", readme.read_text())
+        self.assertRegex(skill.read_text(), r"(?m)^name: skimlinks$")
+        for page in [readme, skill, *(root / "docs").glob("*.md")]:
+            for target in re.findall(r"\]\(([^)]+)\)", page.read_text()):
+                if "://" in target:
+                    continue
+                path, _, fragment = target.partition("#")
+                destination = page.parent / path if path else page
+                with self.subTest(page=page.name, target=target):
+                    self.assertTrue(destination.exists())
+                    if fragment:
+                        headings = re.findall(r"(?m)^#+ (.+)$", destination.read_text())
+                        self.assertIn(fragment, [heading.lower().replace(" ", "-") for heading in headings])
 
     def test_product_key_docs_match_required_domain_and_sort_contract(self) -> None:
         root = Path(__file__).resolve().parents[1]

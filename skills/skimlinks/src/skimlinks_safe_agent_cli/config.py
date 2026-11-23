@@ -4,12 +4,19 @@ import dataclasses
 import os
 from pathlib import Path
 
+from .errors import ValidationError
 
-def _parse_env_file(path: Path) -> dict[str, str]:
-    if not path.exists():
-        return {}
+
+def read_settings(env_file: str | None, *, allow_missing: bool = False) -> dict[str, str]:
+    path = Path(env_file or ".env")
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except FileNotFoundError:
+        if env_file is not None and not allow_missing:
+            raise ValidationError(f"Settings file not found: {path}. Run onboarding for this file.") from None
+        lines = []
     out: dict[str, str] = {}
-    for raw in path.read_text(encoding="utf-8").splitlines():
+    for raw in lines:
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
@@ -22,13 +29,12 @@ def _parse_env_file(path: Path) -> dict[str, str]:
         v = v.strip().strip("'").strip('"')
         if k:
             out[k] = v
-    return out
+    # A named file selects one account. Keep the existing shell overrides for the default setup.
+    return out if env_file is not None else {**out, **os.environ}
 
 
 def _get(env: dict[str, str], key: str) -> str:
-    # OS env overrides env-file.
-    value = os.environ[key] if key in os.environ else env.get(key, "")
-    return value.strip()
+    return env.get(key, "").strip()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -48,6 +54,14 @@ class Config:
     timeout_s: float
 
     @property
+    def credentials(self) -> tuple[str, ...]:
+        return tuple(
+            value
+            for value in (self.client_id, self.client_secret, self.product_client_id, self.product_client_secret)
+            if value
+        )
+
+    @property
     def env_fingerprint(self) -> str:
         publisher = self.publisher_id or "no-publisher"
         domain = self.publisher_domain_id or "no-domain"
@@ -55,7 +69,7 @@ class Config:
 
 
 def load_config(env_file: str | None) -> Config:
-    env = _parse_env_file(Path(env_file or ".env"))
+    env = read_settings(env_file)
 
     timeout_s_raw = _get(env, "SKIMLINKS_TIMEOUT_S") or "30"
     try:
