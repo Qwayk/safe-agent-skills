@@ -20,6 +20,9 @@ Because this tool is pre-1.0 (`0.x`), minor version bumps may include breaking c
 
 ### Fixed
 - Custom API key values are redacted from auth-path errors and verbose HTTP output.
+- Fixed the skill install command and put the first recipe search in the quickstart.
+- Masked custom keys in their plain and URL forms in results, logs and debug output.
+- Reported unexpected replies as errors while keeping empty search results.
 
 ### Removed
 - OAuth helpers, jobs flows, write-plan files, and other template-only write scaffolding.

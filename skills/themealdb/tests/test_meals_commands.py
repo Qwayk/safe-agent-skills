@@ -77,16 +77,28 @@ class TestMealsCommands(unittest.TestCase):
         self.assertEqual(calls[0]["url"], "https://www.themealdb.com/api/json/v1/1/categories.php")
 
     def test_search_name_passes_s_param_and_normalizes_empty_results(self) -> None:
-        rc, payload, calls = self._run_command(
-            meals_cmd.cmd_search_name,
-            SimpleNamespace(name="Arrabiata"),
-            {"meals": None},
-        )
-        self.assertEqual(rc, 0)
-        self.assertEqual(payload["command"], "search.name")
-        self.assertEqual(payload["count"], 0)
-        self.assertFalse(payload["found"])
-        self.assertEqual(calls[0]["params"], {"s": "Arrabiata"})
+        for empty in (None, []):
+            with self.subTest(empty=empty):
+                rc, payload, calls = self._run_command(
+                    meals_cmd.cmd_search_name,
+                    SimpleNamespace(name="Arrabiata"),
+                    {"meals": empty},
+                )
+                self.assertEqual(rc, 0)
+                self.assertEqual(payload["command"], "search.name")
+                self.assertEqual(payload["count"], 0)
+                self.assertFalse(payload["found"])
+                self.assertEqual(calls[0]["params"], {"s": "Arrabiata"})
+
+    def test_unexpected_replies_do_not_pass_as_empty_searches(self) -> None:
+        for reply in (
+            {"error": "access denied"},
+            {"meals": "access denied"},
+            {"meals": ["invalid row"]},
+            {"meals": [{"error": "invalid row"}]},
+        ):
+            with self.subTest(reply=reply), self.assertRaises(RuntimeError):
+                self._run_command(meals_cmd.cmd_search_name, SimpleNamespace(name="test"), reply)
 
     def test_search_first_letter_requires_one_letter(self) -> None:
         with self.assertRaises(ValidationError):

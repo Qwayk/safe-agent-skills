@@ -1,19 +1,16 @@
-# Proof and verification
+# TheMealDB test results
 
-TheMealDB proof should answer a simple question: what has actually been checked for public meals, ingredients, categories, areas, and recipe lookups, and what can still fail because of public API limits, changed upstream data, or reviewer judgment?
+## November 23, 2026 local checks
 
-You do not need to run every command before using the skill. Start with the evidence that matters most: the last verified date, the smoke checks, the saved example outputs, and the known failure cases.
+Both fresh CLI installs passed 21 offline tests. From an empty folder I used saved or simulated replies to search for Spicy Arrabiata Penne, open the recipe, and check that an empty search stays valid. An unexpected reply could no longer pass the connection check. With a fake key, I verified that its plain and URL forms stayed out of results, errors, debug output and the optional log.
 
-If you only check one thing, check meal, ingredient, category, and lookup examples before trusting recipe output.
+A fresh local Codex install matched all 47 files under `themealdb-safe-reader`. Before these changes, the published CLI found Spicy Arrabiata Penne and opened its ingredients and instructions through the live V1 API with the development key.
 
-## Last verified
+## May 21, 2026 checks
 
-- Date (UTC): `2026-05-21`
-- Scope: free TheMealDB V1 public read endpoints only
-- Validation command: `python3 -m venv .venv && .venv/bin/python -m pip install -e . && .venv/bin/python -m unittest -q`
-- Validation result: `16 tests passed`
+The original checks covered the free TheMealDB V1 reads. Sixteen tests passed. The saved API replies came from TheMealDB using public test key `1`.
 
-## Smoke commands
+### Commands used in the original checks
 
 - `qwayk-themealdb-safe-agent-cli --output json --version`
 - `qwayk-themealdb-safe-agent-cli --output json auth check`
@@ -22,29 +19,29 @@ If you only check one thing, check meal, ingredient, category, and lookup exampl
 - `qwayk-themealdb-safe-agent-cli --output json lookup id --meal-id 52772`
 - `qwayk-themealdb-safe-agent-cli --output json filter category --category Seafood`
 
-## Example outputs
+## Saved replies
 
-- `docs/examples/outputs/version.json`
-- `docs/examples/outputs/auth_check.json`
-- `docs/examples/outputs/categories.json`
-- `docs/examples/outputs/list_categories.json`
-- `docs/examples/outputs/list_areas.json`
-- `docs/examples/outputs/search_name_arrabiata.json`
-- `docs/examples/outputs/lookup_52772.json`
-- `docs/examples/outputs/filter_category_seafood.json`
-- `docs/examples/outputs/filter_area_canadian.json`
-- `docs/examples/outputs/filter_ingredient_chicken_breast.json`
-- `docs/examples/outputs/random.json`
+- [auth check](examples/outputs/auth_check.json)
+- [categories](examples/outputs/categories.json)
+- [filter area canadian](examples/outputs/filter_area_canadian.json)
+- [filter category seafood](examples/outputs/filter_category_seafood.json)
+- [filter ingredient chicken breast](examples/outputs/filter_ingredient_chicken_breast.json)
+- [list areas](examples/outputs/list_areas.json)
+- [list categories](examples/outputs/list_categories.json)
+- [list ingredients sample](examples/outputs/list_ingredients_sample.json)
+- [lookup 52772](examples/outputs/lookup_52772.json)
+- [random](examples/outputs/random.json)
+- [search name arrabiata](examples/outputs/search_name_arrabiata.json)
+- [version](examples/outputs/version.json)
 
-## What can go wrong
+## Run the tests
 
-- Network failure or vendor outage
-- Zero-result searches or filters
-- Invalid custom API key
-- Large payload from `list ingredients`
+From the tool folder:
 
-## Verification notes
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e .
+.venv/bin/python -m unittest -q
+```
 
-- Unit tests cover the command families and JSON error handling.
-- Auth-path safety tests confirm custom API keys are redacted from error output.
-- Live example outputs were captured from the real API using the public key `1`.
+See the [command guide](command_reference.md) for setup and errors and [API coverage](api_coverage.md) for the 11 reads.

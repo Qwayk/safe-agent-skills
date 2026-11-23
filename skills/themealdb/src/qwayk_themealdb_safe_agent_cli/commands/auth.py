@@ -7,6 +7,8 @@ def cmd_auth_check(args, ctx) -> int:
     _ = args
     cfg = ctx["cfg"]
     categories = fetch_categories(ctx)
+    if not any(category.get("idCategory") or category.get("strCategory") for category in categories):
+        raise RuntimeError("TheMealDB did not return categories to confirm the connection.")
     out = {
         "ok": True,
         "command": "auth.check",

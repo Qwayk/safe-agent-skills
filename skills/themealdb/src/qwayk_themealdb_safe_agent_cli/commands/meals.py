@@ -36,16 +36,16 @@ def _request_json(ctx: dict[str, Any], endpoint: str, *, params: dict[str, str] 
 
 
 def _collection(payload: dict[str, Any], key: str) -> list[dict[str, Any]]:
-    raw = payload.get(key)
-    if raw is None:
+    if key not in payload:
+        raise RuntimeError(f"TheMealDB did not return the expected `{key}` field.")
+    raw = payload[key]
+    if raw is None and key == "meals":
         return []
     if not isinstance(raw, list):
-        raise RuntimeError(f"Expected `{key}` to be a list")
-    clean: list[dict[str, Any]] = []
-    for item in raw:
-        if isinstance(item, dict):
-            clean.append(item)
-    return clean
+        raise RuntimeError(f"TheMealDB did not return a `{key}` list.")
+    if any(not isinstance(item, dict) or not item for item in raw):
+        raise RuntimeError(f"TheMealDB returned an invalid record in the `{key}` list.")
+    return raw
 
 
 def _emit(ctx: dict[str, Any], *, event: str, payload: dict[str, Any]) -> int:
@@ -85,6 +85,13 @@ def _meals_result(
 ) -> int:
     payload = _request_json(ctx, endpoint, params=params)
     meals = _collection(payload, "meals")
+    if any(
+        not isinstance(meal.get("idMeal"), (str, int))
+        or isinstance(meal["idMeal"], bool)
+        or not isinstance(meal.get("strMeal"), str)
+        for meal in meals
+    ):
+        raise RuntimeError("TheMealDB returned a meal without an ID or name.")
     return _emit(
         ctx,
         event=command,

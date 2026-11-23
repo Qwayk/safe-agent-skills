@@ -60,8 +60,8 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
         missing.append("THEMEALDB_TIMEOUT_S")
 
     steps = [
-        "Keep the default public key `1` unless you already have your own TheMealDB supporter key.",
-        "If `.env` does not exist yet, let this command create it from `.env.example`.",
+        "The built-in key 1 works for development and education. Use your own supporter key when required.",
+        "The settings file is optional. This command can create one with the development defaults.",
         "Run `qwayk-themealdb-safe-agent-cli --output json auth check` to confirm the API is reachable.",
         "Start with read-only commands like `categories`, `search`, `lookup`, and `filter`.",
     ]
@@ -80,12 +80,9 @@ def cmd_onboarding(args: object, ctx: dict) -> int:
     if str(getattr(args, "output", "json")) == "json":
         out.emit(payload)
     else:
-        print("This tool is ready to use with the public TheMealDB key `1`.")
-        for index, step in enumerate(steps, start=1):
-            print(f"{index}. {step}")
+        guidance = [f"{index}. {step}" for index, step in enumerate(steps, start=1)]
         if missing:
-            print("")
-            print(f"Missing in {env_file}: " + ", ".join(missing))
-        print("")
-        print("Next: qwayk-themealdb-safe-agent-cli --output json auth check")
+            guidance.extend(["", f"Using defaults for settings absent from {env_file}: " + ", ".join(missing)])
+        guidance.extend(["", "Connection check: qwayk-themealdb-safe-agent-cli --output json auth check"])
+        out.emit("\n".join(guidance))
     return 0

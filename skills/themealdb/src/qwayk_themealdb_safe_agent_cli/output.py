@@ -4,15 +4,24 @@ import json
 import sys
 from typing import Any
 
+from .audit_log import redact_text, sanitize
+
 
 class Output:
     def __init__(self, *, mode: str):
         self._mode = mode
         self._provenance: dict[str, Any] = {}
+        self._redacted_values: tuple[str, ...] = ()
         self.last: Any | None = None
 
     def set_provenance(self, provenance: dict[str, Any]) -> None:
         self._provenance = dict(provenance or {})
+
+    def set_redactions(self, values: tuple[str, ...]) -> None:
+        self._redacted_values = values
+
+    def redact_text(self, text: str) -> str:
+        return redact_text(text, self._redacted_values)
 
     def _with_provenance(self, obj: Any) -> Any:
         if self._mode != "json":
@@ -28,7 +37,7 @@ class Output:
         return merged
 
     def emit(self, obj: Any) -> None:
-        obj = self._with_provenance(obj)
+        obj = sanitize(self._with_provenance(obj), self._redacted_values)
         self.last = obj
         if self._mode == "json":
             json.dump(obj, sys.stdout, ensure_ascii=False, indent=2, sort_keys=True)

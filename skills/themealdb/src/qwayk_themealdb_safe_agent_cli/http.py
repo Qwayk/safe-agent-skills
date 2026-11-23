@@ -8,6 +8,8 @@ from typing import Any
 
 import requests
 
+from .audit_log import redact_text
+
 
 @dataclasses.dataclass(frozen=True)
 class HttpResponse:
@@ -34,15 +36,12 @@ class HttpClient:
     ):
         self._timeout_s = timeout_s
         self._verbose = verbose
-        self._redacted_values = tuple(v for v in redacted_values if v and v != "1")
+        self._redacted_values = redacted_values
         self._session = requests.Session()
         self._session.headers["User-Agent"] = user_agent
 
     def _redact_text(self, text: str) -> str:
-        clean = text
-        for value in sorted(set(self._redacted_values), key=len, reverse=True):
-            clean = clean.replace(value, "***REDACTED***")
-        return clean
+        return redact_text(text, self._redacted_values)
 
     @staticmethod
     def _format_url(url: str, params: dict[str, Any] | None) -> str:
@@ -87,7 +86,7 @@ class HttpClient:
                     )
                 raise RuntimeError(
                     f"Request failed for {method} {display_url}: {type(exc).__name__}: {self._redact_text(str(exc))}"
-                ) from exc
+                ) from None
 
             ms = int((time.time() - start) * 1000)
             safe_response_url = self._redact_text(str(resp.url))

@@ -20,7 +20,14 @@ These are the sources used to build and check this tool.
   - Used to confirm the guide note that area filters accept the documented `Canada` example, not only `Canadian`.
   - Last verified (UTC): `2026-05-21`
 
-## Extra notes
+## Current provider guidance
+
+- [API guide and test key](https://www.themealdb.com/api.php)
+- [V1 response formats](https://www.themealdb.com/api/spec/openapi-v1.yaml)
+- [Recipe lookup and attribution guidance](https://www.themealdb.com/AGENTS.md)
+- [Terms of use](https://www.themealdb.com/terms_of_use.php)
+
+## Scope notes
 
 - No third-party guides were used.
 - Premium V2 pages and upload features were intentionally excluded from the implementation scope.

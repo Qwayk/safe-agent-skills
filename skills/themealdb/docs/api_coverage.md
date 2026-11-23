@@ -1,46 +1,12 @@
-# API coverage
+# TheMealDB API coverage
 
-TheMealDB coverage shows exactly what this skill can do with public meals, ingredients, categories, areas, and recipe lookups. Start here when an ask sounds possible but you need to know whether it is already shipped, read-only, plan-first, gated, excluded, or outside the tool.
+The table lists the 11 public V1 recipe reads in this tool. The original endpoint review was on May 21, 2026. The standard API address is `https://www.themealdb.com/api/json/v1`. The examples below use test key `1` for development and education. [TheMealDB API guide](https://www.themealdb.com/api.php)
 
-Read the shipped command rows first, then check the excluded or not-yet-live rows before asking an agent to act. If an endpoint or workflow is not listed here, do not assume the skill supports it.
-
-A good first coverage check is: "Check whether this skill can search meals, list ingredients, and show which TheMealDB endpoints are included."
-
-## Coverage notes
-
-This file is the source of truth for the free TheMealDB V1 read surface this tool covers.
-
-## Summary
-
-- Provider: TheMealDB
-- Scope: documented free V1 public read endpoints only
-- API base URL: `https://www.themealdb.com/api/json/v1`
-- Auth method: V1 API key in the URL path, with public development key `1` used by default
-- Last audited (UTC): `2026-05-21`
-
-## Command surface
-
-- `qwayk-themealdb-safe-agent-cli onboarding`
-- `qwayk-themealdb-safe-agent-cli auth check`
-- `qwayk-themealdb-safe-agent-cli categories`
-- `qwayk-themealdb-safe-agent-cli list categories`
-- `qwayk-themealdb-safe-agent-cli list areas`
-- `qwayk-themealdb-safe-agent-cli list ingredients`
-- `qwayk-themealdb-safe-agent-cli search name --name <meal_name>`
-- `qwayk-themealdb-safe-agent-cli search first-letter --letter <letter>`
-- `qwayk-themealdb-safe-agent-cli lookup id --meal-id <meal_id>`
-- `qwayk-themealdb-safe-agent-cli random`
-- `qwayk-themealdb-safe-agent-cli filter ingredient --ingredient <ingredient>`
-- `qwayk-themealdb-safe-agent-cli filter category --category <category>`
-- `qwayk-themealdb-safe-agent-cli filter area --area <area>`
-
-`auth check` is a tool utility command. It uses `categories.php` as a read-only probe, but it is not counted as a separate provider capability.
-
-## Covered free V1 endpoints
+`auth check` reads `categories.php` to verify the connection. `onboarding` shows local setup help. Neither adds a recipe endpoint.
 
 | Endpoint | Capability | CLI command | Status | Safety | Tests and examples | Notes |
 |---|---|---|---|---|---|---|
-| `GET /1/search.php?s={meal_name}` | Search meals by full name | `search name --name <meal_name>` | implemented | read-only | `tests/test_meals_commands.py`, `docs/examples/outputs/search_name_arrabiata.json` | Returns `meals` or `null` from the API. CLI normalizes missing results to an empty list. |
+| `GET /1/search.php?s={meal_name}` | Search meals by full name | `search name --name <meal_name>` | implemented | read-only | `tests/test_meals_commands.py`, `docs/examples/outputs/search_name_arrabiata.json` | The API returns a `meals` list or `null` for no matches. The CLI reports no matches as an empty list. |
 | `GET /1/search.php?f={first_letter}` | Search meals by first letter | `search first-letter --letter <letter>` | implemented | read-only | `tests/test_meals_commands.py` | Letter must be one character. |
 | `GET /1/lookup.php?i={meal_id}` | Lookup full meal details by ID | `lookup id --meal-id <meal_id>` | implemented | read-only | `tests/test_meals_commands.py`, `docs/examples/outputs/lookup_52772.json` | Full recipe payload. |
 | `GET /1/random.php` | Fetch one random meal | `random` | implemented | read-only | `tests/test_meals_commands.py`, `docs/examples/outputs/random.json` | Random result shape matches `lookup` and `search`. |
@@ -52,10 +18,6 @@ This file is the source of truth for the free TheMealDB V1 read surface this too
 | `GET /1/filter.php?c={category}` | Filter meals by category | `filter category --category <category>` | implemented | read-only | `tests/test_meals_commands.py`, `docs/examples/outputs/filter_category_seafood.json` | Category values come from `list categories`. |
 | `GET /1/filter.php?a={area}` | Filter meals by area | `filter area --area <area>` | implemented | read-only | `tests/test_meals_commands.py`, `docs/examples/outputs/filter_area_canadian.json` | The guide shows both `Canada` and `Canadian`. Live API accepts both. |
 
-## Out of scope by design
+## Other TheMealDB features
 
-- `GET /v2/1/randomselection.php` — premium V2 only — not planned
-- `GET /v2/1/latest.php` — premium V2 only — not planned
-- `GET /v2/1/filter.php?i=ingredient1,ingredient2,...` — premium V2 only — not planned
-- Upload features and supporter-only features — out of scope — not planned
-- Image URL variants under the guide’s Images section — not JSON API endpoints — not planned
+The random selection, latest recipes, multiple-ingredient filters and uploads are outside this tool's public reads. Image-size URLs return images and are outside this JSON command list. Consult the [provider docs and terms](references.md) for access rules. [Test results](proof.md)

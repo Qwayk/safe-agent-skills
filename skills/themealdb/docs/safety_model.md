@@ -1,38 +1,7 @@
-# Safety model
+# What the TheMealDB tool reads
 
-TheMealDB is safest when you treat the agent as a focused reader for public meals, ingredients, categories, areas, and recipe lookups. It can help with research and reporting, but it should not be used as proof until it has fetched the actual records behind the summary.
+The tool reads recipes, ingredient lists, categories and cuisines through TheMealDB V1. It supports one filter at a time. Recipe uploads, multiple-ingredient searches and other supporter features are outside this tool.
 
-The main safety job is simple: stay inside the supported read surface, keep any saved output private when it contains business data, and avoid broad conclusions from thin list results.
+A filter returns meal names and IDs. Open the recipe by ID before telling someone what ingredients they need. Keep the original amounts and instructions when giving the recipe. Link to the meal's TheMealDB page and credit TheMealDB when sharing its data or images. [TheMealDB recipe and attribution guidance](https://www.themealdb.com/AGENTS.md)
 
-A good safety ask is: "Run one meal, ingredient, or category lookup first, then summarize only from the returned recipe data."
-
-## Core safety rules
-
-This tool is safe by design because it is read-only.
-
-## What the tool will do
-
-- Read the documented free TheMealDB V1 public endpoints
-- Use the public key `1` by default
-- Return one JSON object in `--output json`
-- Redact custom API keys from errors and verbose HTTP logs
-
-## What the tool will not do
-
-- No writes
-- No uploads
-- No premium V2 endpoints
-- No raw request bridge
-- No generic “call anything” command
-
-## Safety checks
-
-- `auth check` confirms the API is reachable with a read-only probe
-- `docs/api_coverage.md` is the source of truth for the allowed endpoint list
-- `docs/proof.md` and `docs/examples/outputs/` show real command evidence
-
-## Output safety
-
-- JSON mode prints exactly one object to stdout
-- Audit logs are optional and stay local
-- Custom API keys are never echoed back in normal output
+Use the built-in key for development and education. TheMealDB requires a paid subscription for app-store releases and asks public apps and production services to get suitable access. [Terms of use](https://www.themealdb.com/terms_of_use.php) · [Optional settings](command_reference.md)

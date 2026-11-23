@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import argparse
 import sys
+import traceback
 
 from . import __version__
-from .audit_log import AuditLogger
+from .audit_log import AuditLogger, key_redactions
 from .commands import auth as auth_cmd
 from .commands import meals as meals_cmd
 from .commands import onboarding as onboarding_cmd
@@ -107,12 +108,14 @@ def _build_context(args: argparse.Namespace, argv: list[str], out: Output) -> di
         config_file=str(getattr(args, "config", "") or "") or None,
         timeout_override=getattr(args, "timeout_s", None),
     )
-    audit = AuditLogger(path=str(getattr(args, "log_file", "") or "") or None, enabled=bool(args.log_file))
+    redacted_values = key_redactions(cfg.api_key)
+    out.set_redactions(redacted_values)
+    audit = AuditLogger(path=args.log_file, enabled=bool(args.log_file), redacted_values=redacted_values)
     http = HttpClient(
         timeout_s=cfg.timeout_s,
         verbose=bool(getattr(args, "verbose", False)),
         user_agent=f"qwayk-themealdb-safe-agent-cli/{__version__}",
-        redacted_values=(() if cfg.api_key == "1" else (cfg.api_key,)),
+        redacted_values=redacted_values,
     )
     command_str = "qwayk-themealdb-safe-agent-cli " + " ".join(argv)
     audit.bind_context(
@@ -171,7 +174,8 @@ def main(argv: list[str]) -> int:
         return 1
     except Exception as exc:
         if getattr(args, "debug", False):
-            raise
+            trace = "".join(traceback.format_exception(exc, chain=False))
+            sys.stderr.write(out.redact_text(trace))
         payload = {"ok": False, "error": str(exc), "error_type": type(exc).__name__}
         if audit:
             audit.write("error", payload)
