@@ -8,14 +8,16 @@ import shutil
 import stat
 import tempfile
 import unittest
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import redirect_stdout
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
+from urllib.parse import quote
 
 from sav_domain_api import OPERATIONS
 from sav_domain_api.cli import main
-from sav_domain_api.errors import StateError, ToolError
+from sav_domain_api.errors import StateError, StateFileExistsError, ToolError
 from sav_domain_api.redaction import redact
 from sav_domain_api.state import write_private_json
 
@@ -1003,7 +1005,7 @@ class TestSavRuntime(unittest.TestCase):
                 self.assertIn(expected_error, apply_payload["error"])
             self.assertEqual(calls, [])
 
-    def test_http_500_apply_still_creates_private_redacted_failure_receipt(self) -> None:
+    def test_http_500_marks_the_result_unknown_and_scrubs_the_receipt(self) -> None:
         args = _operation_args("domains set-sale-price")
         _, payload, _ = _run_cli(
             [
@@ -1028,6 +1030,7 @@ class TestSavRuntime(unittest.TestCase):
                 {
                     "ok": False,
                     "error_code": "downstream",
+                    "message": "SAV rejected fake-sav-test-key",
                     "status": "failed",
                     "auth_code": "should-never-appear",
                     "phone": "+1-555-0000",
@@ -1070,7 +1073,9 @@ class TestSavRuntime(unittest.TestCase):
             apply_payload["receipt"]["provider_response_only"],
             apply_payload["provider_response_received"],
         )
-        self.assertEqual(apply_payload["receipt"]["outcome"], "failure")
+        self.assertEqual(apply_payload["outcome"], "unknown")
+        self.assertEqual(apply_payload["receipt"]["outcome"], "unknown")
+        self.assertIn("Check the current state in SAV", apply_payload["next_step"])
         self.assertNotIn("durable", apply_payload)
         self.assertTrue(receipt_path.exists())
         self.assertEqual(len(calls), 1)
@@ -1080,9 +1085,11 @@ class TestSavRuntime(unittest.TestCase):
         self.assertEqual(receipt_payload["ok"], False)
         receipt_json = json.dumps(receipt_payload)
         self.assertNotIn("should-never-appear", receipt_json)
+        self.assertNotIn("fake-sav-test-key", receipt_json)
+        self.assertNotIn("fake-sav-test-key", json.dumps(apply_payload))
         self.assertIn("<redacted>", receipt_json)
 
-    def test_unparseable_apply_response_creates_opaque_failure_receipt(self) -> None:
+    def test_unparseable_apply_response_creates_an_unknown_receipt(self) -> None:
         args = _operation_args("domains set-sale-price")
         _, payload, _ = _run_cli(
             [
@@ -1126,6 +1133,8 @@ class TestSavRuntime(unittest.TestCase):
         self.assertEqual(rc, 1)
         self.assertEqual(result["ok"], False)
         self.assertEqual(result["error_type"], "RuntimeError")
+        self.assertEqual(result["outcome"], "unknown")
+        self.assertTrue(result["provider_2xx"])
         self.assertEqual(len(calls), 1)
         self.assertTrue(receipt_path.is_file())
         receipt_text = receipt_path.read_text(encoding="utf-8")
@@ -1962,12 +1971,9 @@ class TestSavRuntime(unittest.TestCase):
         )
         receipt_path = self.tmp / "provider-outcome.receipt.json"
         real_write = write_private_json
-        write_count = 0
 
         def _fail_final_write(*args, **kwargs):
-            nonlocal write_count
-            write_count += 1
-            if write_count == 1:
+            if kwargs.get("exclusive"):
                 return real_write(*args, **kwargs)
             raise StateError("receipt write failed")
 
@@ -2302,3 +2308,150 @@ class TestSavRuntime(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestApprovedPlanChecks(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.env = _auth_env(self.root)
+        self.command = ["domains", "set-auto-renewal", "--domain-name", "example.test", "--enabled", "1"]
+
+    @staticmethod
+    def mock_reply(call: dict[str, Any]) -> FakeResponse:
+        return FakeResponse(200, {"status": "OK"}, url=call["url"])
+
+    def cli(self, *args: str, request_handler=None):
+        return _run_cli(
+            ["--env-file", str(self.env), *args], request_handler or self.mock_reply
+        )
+
+    def plan(self) -> str:
+        rc, data, calls = self.cli(*self.command)
+        self.assertEqual(rc, 0)
+        self.assertFalse(calls)
+        return str(data["plan_path"])
+
+    def apply(self, plan: str, *options: str, request_handler=None):
+        return self.cli(
+            "--apply", "--yes", "--ack-no-snapshot", "--ack-high-risk",
+            "--plan-in", plan, *options, *self.command,
+            request_handler=request_handler,
+        )
+
+    def test_apply_uses_the_key_from_plan_creation(self) -> None:
+        plan = self.plan()
+        self.assertNotIn("fake-sav-test-key", Path(plan).read_text())
+        self.env.write_text("SAV_API_KEY=another-fake-key\n")
+        _, refusal, calls = self.apply(plan)
+        self.assertTrue(refusal["refused"])
+        self.assertIn("different SAV key", refusal["reason"])
+        self.assertFalse(calls)
+
+        _auth_env(self.root)
+        rc, accepted, calls = self.apply(plan)
+        self.assertEqual(rc, 0)
+        self.assertEqual(accepted["outcome"], "provider_accepted")
+        self.assertEqual(len(calls), 1)
+
+    def test_preview_without_key_requires_new_plan_to_apply(self) -> None:
+        self.env.write_text("")
+        with patch.dict("os.environ", {"SAV_API_KEY": ""}):
+            rc, draft, calls = self.cli(*self.command)
+        self.assertEqual(rc, 0)
+        self.assertFalse(draft["apply_ready"])
+        self.assertIsNone(draft["plan"]["account_binding"])
+        self.assertFalse(calls)
+
+        _auth_env(self.root)
+        _, refusal, calls = self.apply(draft["plan_path"])
+        self.assertIn("saved without one", refusal["reason"])
+        self.assertFalse(calls)
+
+    def test_unclear_attempt_cannot_be_repeated_with_another_receipt(self) -> None:
+        plan = self.plan()
+        selected = self.root / "requested.json"
+        rc, first, calls = self.apply(
+            plan, "--receipt-out", str(selected),
+            request_handler=lambda _call: FakeResponse(503, {"message": "Unavailable"}),
+        )
+        self.assertEqual(rc, 1)
+        self.assertEqual(first["outcome"], "unknown")
+        self.assertEqual(len(calls), 1)
+        canonical = self.root / ".state/receipts" / f"{first['receipt']['plan_id']}.receipt.json"
+        self.assertEqual(canonical.read_bytes(), selected.read_bytes())
+
+        other = self.root / "other.json"
+        _, refusal, calls = self.apply(plan, "--receipt-out", str(other))
+        self.assertTrue(refusal["refused"])
+        self.assertIn("already has an apply receipt", refusal["reason"])
+        self.assertFalse(calls)
+        self.assertFalse(other.exists())
+        self.assertEqual(canonical.read_bytes(), selected.read_bytes())
+
+    def test_output_paths_cannot_replace_inputs_or_other_receipts(self) -> None:
+        plan = Path(self.plan())
+        key = self.root / ".state/keys/plan-hmac.key"
+        secret_dir = self.root / ".state/secrets"
+        secret_dir.mkdir(mode=0o700)
+        secret = secret_dir / "code"
+        secret.write_text("fake-transfer-code")
+        existing = self.root / "another-receipt.json"
+        existing.write_text("existing record")
+        original = {p: p.read_bytes() for p in (plan, self.env, key, secret, existing)}
+
+        for destination in original:
+            with self.subTest(destination=destination):
+                _, refusal, calls = self.apply(str(plan), "--receipt-out", str(destination))
+                self.assertTrue(refusal["refused"])
+                self.assertFalse(calls)
+                self.assertEqual(destination.read_bytes(), original[destination])
+
+        alias = self.root / "alias.json"
+        alias.hardlink_to(plan)
+        _, refusal, calls = self.apply(str(plan), "--receipt-out", str(alias))
+        self.assertTrue(refusal["refused"])
+        self.assertFalse(calls)
+        self.assertEqual(alias.read_bytes(), original[plan])
+        rc, _, calls = self.apply(str(plan))
+        self.assertEqual(rc, 0)
+        self.assertEqual(len(calls), 1)
+
+    def test_transfer_response_scrubs_key_and_encoded_code(self) -> None:
+        secret = self.root / "code.txt"
+        code_value = "FAKE+CODE/77"
+        secret.write_text(code_value + "\n")
+        secret.chmod(0o600)
+        command = ["domains", "submit-transfer-code", "--domain-name", "example.test"]
+        rc, dry, calls = self.cli(*command, "--auth-code-file", str(secret))
+        self.assertEqual(rc, 0)
+        self.assertFalse(calls)
+
+        echo = f"key fake-sav-test-key, code {code_value} and {quote(code_value, safe='')}"
+        rc, result, calls = self.cli(
+            "--apply", "--yes", "--ack-no-snapshot", "--ack-high-risk",
+            "--plan-in", dry["plan_path"], *command,
+            request_handler=lambda _call: FakeResponse(400, {"message": echo}),
+        )
+        self.assertEqual(rc, 1)
+        self.assertEqual(len(calls), 1)
+        for text in (json.dumps(result), Path(result["receipt_path"]).read_text()):
+            for value in ("fake-sav-test-key", code_value, quote(code_value, safe="")):
+                self.assertNotIn(value, text)
+            self.assertIn("<redacted>", text)
+
+    def test_only_one_process_can_reserve_the_same_receipt(self) -> None:
+        destination = self.root / ".state/receipts/example.json"
+
+        def reserve(index):
+            try:
+                write_private_json(destination, {"attempt": index}, stop_at=self.root, exclusive=True)
+            except StateFileExistsError:
+                return False
+            return True
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            results = list(executor.map(reserve, range(2)))
+        self.assertEqual(results.count(True), 1)
+        self.assertEqual(json.loads(destination.read_text())["attempt"], results.index(True))

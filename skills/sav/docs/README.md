@@ -1,21 +1,8 @@
-# SAV Domain APIs v1 docs
+# SAV guides
 
-Use these pages in this order when you are deciding what to do next:
-
-- [Quickstart](quickstart.md) — one useful first result
-- [Onboarding](onboarding.md) — local env setup and access requirements
-- [Use cases](use_cases.md) — realistic asks you can hand to an agent
-- [Command reference](command_reference.md) — exact command and flag format
-- [Safety model](safety_model.md) — what must be approved
-- [Authentication](authentication.md) — key and host requirements
-- [Configuration](configuration.md) — env files and timeout control
-
-Proof and audit:
-
-- [Coverage](api_coverage.md) — what is covered
-- [Proof](proof.md) — what has been checked
-- [References](references.md) — official source links
-- [Skills wrapper](skills_wrappers.md) — when and how this skill should be used
-- [Engineering notes](engineering_notes.md) — design constraints and known limits
-- [Plan example](examples/plan.example.json)
-- [Receipt example](examples/receipt.example.json)
+- [Connect your account and keep the settings file private](onboarding.md)
+- [Check domains, sales, or prices and prepare a change](quickstart.md)
+- [Find the exact command](command_reference.md)
+- [Review a plan, approval, or receipt](safety_model.md)
+- [Find the API coverage and official sources](api_coverage.md)
+- [See the checks and sample results](proof.md)

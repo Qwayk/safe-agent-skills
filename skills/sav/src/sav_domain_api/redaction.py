@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
+from urllib.parse import quote, quote_plus
 
 REDACTED = "<redacted>"
 
 SENSITIVE_TOKENS = {
+    "apikey",
+    "savapikey",
     "authcode",
     "auth",
     "whois",
@@ -102,26 +105,32 @@ def _contains_sensitive_field(raw_key: str) -> bool:
     return bool(tokens.intersection(SENSITIVE_TOKENS))
 
 
-def redact(value: object) -> object:
-    if isinstance(value, Mapping):
-        redacted: dict[str, object] = {}
-        for raw_key, raw_value in value.items():
-            if not isinstance(raw_key, str):
-                redacted[str(raw_key)] = REDACTED
-                continue
-            if _contains_sensitive_field(raw_key):
-                redacted[raw_key] = REDACTED
-            else:
-                redacted[raw_key] = redact(raw_value)
-        return redacted
+def redact(value: object, *, secrets: tuple[str, ...] = ()) -> object:
+    # SAV can repeat a submitted value in free-form text or in a URL.
+    sensitive_strings = sorted(
+        {form for secret in secrets if secret for form in (secret, quote(secret, safe=""), quote_plus(secret))},
+        key=len,
+        reverse=True,
+    )
+    pattern = (
+        re.compile("|".join(map(re.escape, sensitive_strings))) if sensitive_strings else None
+    )
 
-    if isinstance(value, list):
-        return [redact(item) for item in value]
+    def scrub_text(text: str) -> str:
+        return pattern.sub(REDACTED, text) if pattern else text
 
-    if isinstance(value, tuple):
-        return [redact(item) for item in value]
+    def scrub(item: object) -> object:
+        if isinstance(item, Mapping):
+            return {
+                scrub_text(str(key)): (
+                    scrub(nested) if isinstance(key, str) and not _contains_sensitive_field(key) else REDACTED
+                )
+                for key, nested in item.items()
+            }
+        if isinstance(item, (list, tuple)):
+            return [scrub(nested) for nested in item]
+        if isinstance(item, str):
+            return scrub_text(item)
+        return item
 
-    if isinstance(value, str):
-        return value
-
-    return value
+    return scrub(value)

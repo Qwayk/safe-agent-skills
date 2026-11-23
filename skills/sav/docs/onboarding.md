@@ -1,71 +1,22 @@
-# Connect SAV Domain APIs v1
+# Connect your SAV account
 
-You need a valid SAV API key and a whitelisted request source before running this CLI.
-This tool does not perform logins, OAuth flow, API onboarding, or whitelist requests.
+Get the API key for the account you want to use. SAV's API docs ask you to have SAV allow the IP address that will send requests. It lists `support@sav.com` for that setup. [SAV API documentation](https://documenter.getpostman.com/view/9688716/TzzANHFJ)
 
-## 1) Prepare the local environment file
+From the tool folder, make a private settings file. This command preserves an existing file:
 
 ```bash
-cp .env.example .env
+(set -C; umask 077; cat .env.example > .env)
 ```
 
-## 2) Add required access values
-
-In `.env`, set only values you were given by SAV:
-
-```text
-SAV_API_KEY=
-SAV_TIMEOUT_S=30
-```
-
-Enter the key SAV issued after `SAV_API_KEY=`. It is required for read commands and write apply commands.
-
-The process environment takes precedence over values in `--env-file`.
-
-`SAV_TIMEOUT_S` is optional. If omitted, runtime defaults to `30`.
-
-## 3) Confirm runtime and command surface
+Open `.env` and fill in `SAV_API_KEY`. Keep the file out of Git and the key out of chat and command arguments. Use `chmod 600 .env` if the file is already there and needs private permissions.
 
 ```bash
 sav --output json --env-file .env --version
-```
-
-## 4) Confirm a read call works
-
-```bash
 sav --output json --env-file .env domains active
 ```
 
-If this returns valid JSON, the tool can reach the fixed SAV API host.
+Use the same `--env-file` on later commands. Without it, the tool looks for `.env`. A `SAV_API_KEY` set in the shell takes priority over the file. If the first account read fails, check that you selected the intended file and key, and that SAV allows your current IP.
 
-## 5) Create one safe write plan
+The default timeout is 30 seconds. Set `SAV_TIMEOUT_S` in the environment or file, or pass `--timeout-s` on a command. Use a finite positive number.
 
-```bash
-sav --output json --env-file .env --plan-out .state/plans/sale-price-example.json domains set-sale-price --domain-name example.com --sale-price 42
-```
-
-Stop here and review the output before any apply step.
-
-For transfer submission, create a private secret file under `.state/secrets` and pass it through `--auth-code-file`:
-
-```bash
-mkdir -p .state/secrets
-chmod 700 .state/secrets
-AUTH_FILE="$(mktemp ".state/secrets/sav-transfer.XXXXXX")"
-read -r -s SAV_TRANSFER_CODE
-printf '%s\n' "$SAV_TRANSFER_CODE" > "$AUTH_FILE"
-chmod 600 "$AUTH_FILE"
-unset SAV_TRANSFER_CODE
-
-sav --output json --env-file .env --plan-out .state/plans/submit-transfer-code.example.json domains submit-transfer-code --domain-name example.com --auth-code-file "$AUTH_FILE"
-
-rm -f "$AUTH_FILE"
-```
-
-The file must be a regular mode-`0600` file with exactly one non-empty line. The value is never placed in command arguments or env vars.
-
-## Important setup expectations
-
-- IP whitelisting and account-level access are account prerequisites handled by SAV.
-- The transfer authorization code has no environment fallback. It is read only from `--auth-code-file` during dry-run creation.
-- Keep plan and receipt files out of shared directories; mode `0600` is used automatically.
+Plans, receipts, and the local signing key go into private folders under `.state/` beside the selected settings file. The tool uses `0700` for these folders and `0600` for the files. Custom paths for plans and receipts stay under the settings file's parent folder and use a private parent directory. See [Quickstart](quickstart.md) for the private transfer-code file.

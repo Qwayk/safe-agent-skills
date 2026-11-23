@@ -1,5 +1,6 @@
 {
   "ok": false,
+  "dry_run": false,
   "command": "sav domains set-whois-contacts",
   "operation_id": "update_domain_whois_contacts",
   "provider_received": true,

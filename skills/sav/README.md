@@ -1,99 +1,21 @@
-# SAV Domain APIs v1
+# SAV
 
-The SAV Domain APIs v1 tool for agents helps you review domains in your SAV account, check recent auction and premium sales, see current transaction pricing, and prepare documented domain changes.
+Use SAV to list your active domains, check recent auction and premium sales, or see current transaction prices. You can also prepare changes to renewals, nameservers, privacy, contact details, sale listings, and pending transfers.
 
-You can ask your agent to show your active domains, review recent sales, check SAV's current pricing, or prepare an update to a sale listing, renewal setting, nameservers, privacy, WHOIS contacts, or a pending transfer.
+Try asking your agent, “Show my active domains,” or “What did I sell in recent premium sales?” Your agent can read the account first and show you the result. If you ask for a change, it saves a private plan for you to review before sending anything to SAV.
 
-For example: "Show my active SAV domains," "Check my recent premium sales," "What is SAV's current domain pricing?" or "Prepare a plan to change the nameservers for example.com."
+## Install
 
-The agent starts by reading your account and explaining the result. If you ask it to change a domain, it builds a private plan for review first and keeps sensitive values redacted from output.
-
-## Start here first
-
-- Need use-case ideas first? [Use cases](docs/use_cases.md)
-- Need onboarding and setup? [Onboarding and env file](docs/onboarding.md)
-- Need safety details? [Safety model](docs/safety_model.md)
-- Need exact syntax? [Command reference](docs/command_reference.md)
-- Want proof and limits? [Proof and verification](docs/proof.md)
-
-## What your agent can do
-
-- Review active domains in the account.
-- Check recent auction sales, premium sales, and current SAV transaction pricing.
-- Prepare changes to auto-renewal, nameservers, privacy, and WHOIS contacts.
-- Prepare transfer authorization, sale-price, sale-listing, and remove-from-sale actions.
-
-Reads go only to SAV's documented domain API host. Write plans are private mode-`0600` files that keep the minimum exact values needed for apply, while displayed output and receipts hide transfer codes and WHOIS contact data.
-
-The private state layout is under the env-file directory and guarded by `0700` directories:
-
-- `.state/plans/` for plans
-- `.state/receipts/` for receipts
-- `.state/keys/` for signing key material
-
-## What happens before live changes
-
-Every write command is review-first by default:
-
-- `--plan-out` builds the plan file.
-- dry-run write does not call SAV HTTP.
-- apply requires `--plan-in`, `--apply`, `--yes`, `--ack-no-snapshot`, and `--ack-high-risk` in the same command.
-- apply output is redacted and indicates receipt status.
-- Plan files are schema `2` and signed with HMAC-SHA256.
-- Plan signing keys live at `.state/keys/plan-hmac.key`.
-
-## What access this tool needs
-
-- `SAV_API_KEY` is required for reads and apply writes.
-- `SAV_API_KEY` may come from the process environment or the selected env file; the process environment takes precedence.
-- SAV asks for account IP whitelisting through `support@sav.com`.
-- This is a user prerequisite; the tool only uses the provided access.
-- Provider host is fixed to `https://api.sav.com/domains_api_v1/`.
-- `SAV_TIMEOUT_S` controls request timeout when set.
-- The tool does not accept a literal transfer code flag or retry prompt during apply.
-
-## Install and first run
-
-Install slug: `sav`.
-
-Ask your agent to install the `sav` skill from `Qwayk/safe-agent-skills`. If your host does not install skills directly, run:
+Ask your agent to install the `sav` skill from the Qwayk catalog, or run:
 
 ```bash
 npx skills add Qwayk/safe-agent-skills@sav -g -y
 ```
 
-Then confirm the command is available:
+Follow [Onboarding](docs/onboarding.md) to connect your account. Use [Quickstart](docs/quickstart.md) to check a report or prepare a change.
 
-```bash
-sav --output json --env-file .env --version
-```
-
-Then run:
-
-```bash
-sav --output json --env-file .env domains active
-```
-
-## What it covers today
-
-The tool covers the complete official SAV Domain APIs v1 collection: account domains, recent sales, transaction pricing, and the documented domain, transfer, privacy, contact, renewal, and sale changes.
-
-See [API coverage](docs/api_coverage.md) for all 12 operation and command mappings.
-
-## Limits
-
-- No hidden raw-request bridge.
-- No rollback, backup, or restore workflow is currently shipped.
-- No independent readback guarantee for write commands.
-- Receipts report provider response and explicit safety state, not restoreability.
-- For writes, only `provider_accepted` can be reported from 2xx provider responses; it reflects provider response only and does not verify durable account state.
-- Source proof uses mocked provider behavior only. No SAV credential or live SAV request was used.
-- No claim of live proof from examples; signatures in examples are placeholders.
-
-## Helpful docs
-
-- [Use cases](docs/use_cases.md)
-- [Safe change flow](docs/safety_model.md)
-- [Coverage map](docs/api_coverage.md)
-- [Authentication rules](docs/authentication.md)
-- [Command reference](docs/command_reference.md)
+- [Find a command](docs/command_reference.md)
+- [Review approvals and receipts](docs/safety_model.md)
+- [See all 12 SAV API commands](docs/api_coverage.md)
+- [See what we tested](docs/proof.md)
+- [Browse the guides](docs/README.md)

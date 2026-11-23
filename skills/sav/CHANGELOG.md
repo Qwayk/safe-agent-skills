@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Saved plans check the SAV key used to make them. A preview without a key still works.
+- The CLI records one attempt per plan and keeps receipts separate from input and secret files.
+- SAV replies hide known keys and codes even in message text. Server errors and unreadable success replies tell the user to check the account before trying again.
+- Combined the setup, approval, and agent guides.
+
 ## 0.1.4 — 2026-07-31
 
 - Bumped package docs/runtime versions to `0.1.4`.

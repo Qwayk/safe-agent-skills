@@ -1,12 +1,14 @@
 {
   "ok": true,
   "dry_run": true,
+  "apply_ready": true,
   "command": "sav domains set-whois-contacts",
   "operation_id": "update_domain_whois_contacts",
   "plan_path": ".state/plans/set-whois-contacts.example.json",
   "plan": {
-    "schema_version": 2,
+    "schema_version": 3,
     "plan_id": "ab4f6a8fd7e2b3c1a9c4d5e6f7a8b0c1d2e3f4056a7b8c9d0e1f2a3b4c5d6e7f",
+    "account_binding": "0000000000000000000000000000000000000000000000000000000000000000",
     "key_id": "0000000000000000000000000000000000000000000000000000000000000000",
     "command": "sav domains set-whois-contacts",
     "operation_id": "update_domain_whois_contacts",

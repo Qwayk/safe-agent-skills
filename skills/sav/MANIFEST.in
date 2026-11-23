@@ -1,7 +1,7 @@
 include .env.example
-include AGENTS.md
 include CHANGELOG.md
 include README.md
+include SKILL.md
 recursive-include docs *
 recursive-include skills *
 recursive-include tests *.py

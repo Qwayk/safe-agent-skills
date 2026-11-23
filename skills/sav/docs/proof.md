@@ -1,69 +1,28 @@
-# Proof and verification
+# What we tested
 
-## Last verified
+## November 23, 2026 local checks
 
-- Date (UTC): 2026-07-31
-- Runtime: `sav` CLI
-  - Version: `0.1.4`
-- Fixed runtime host: `https://api.sav.com/domains_api_v1/`
-- Provider API source: `https://documenter.getpostman.com/view/9688716/TzzANHFJ`
+Fresh installs of both local copies loaded all 12 SAV commands and passed 56 tests with simulated replies. The tests checked that a saved plan uses the same SAV key, that a receipt cannot overwrite the plan or settings, and that a second apply stops even if it names a different receipt. They also checked that unclear replies tell the user to check SAV and that known keys and transfer codes stay out of the output and receipt.
 
-## What this proves
+Both copies built a wheel and source archive, passed Ruff and mypy, and matched the generated command list. The archives include the right skill file. The local guide links and all three JSON examples passed.
 
-- The vendored collection matches the pinned SHA-256 and deterministically generates 12 commands.
-- Mocked behavior tests cover all 12 dispatch paths, the fixed host and `APIKEY` header, redirect refusal, zero-network dry-runs, plan key creation, HMAC signing, approvals, useful redaction, strict validation, apply-attempt outcomes, safe errors, receipts, and wrapper layout contract checks (source/public exclusivity with missing+duplicate fail cases).
-- Ruff and mypy pass for the current source.
-- No restore or rollback contract exists for this boundary.
+## July 31, 2026
 
-## Verified results
+The source and public layouts of version `0.1.4` each passed 50 offline tests. The archive and wheel built successfully. Lint and type checks passed, all three redacted JSON examples parsed, and the clean wheel loaded 12 commands (four reads and eight writes).
 
-- Vendored collection SHA-256: `d330b3df8f1b1962fcae295b0dc47b831c15f68d0d90db73c4dcb151968e33fe`.
-- Deterministic generation: current.
-- Unit tests: all `50` pass in the source layout and in a fresh public-style layout.
-- Ruff: clean.
-- Mypy: clean across `11` source files.
-- Example JSON: all `3` files parse.
-- Source archive and wheel: exact version `0.1.4` built successfully.
-- Archive/privacy checks: current wheel and source archive are clean.
-- Clean installed-wheel proof: version `0.1.4`, exact 12-operation/4-read/8-write inventory.
+The simulated replies checked routing, the fixed host and `APIKEY` header, refusal to follow redirects, offline plans, private file permissions, the signed plan, transfer-code handling, redaction, and write receipts. The skill passed in both layouts. The tests also reject a package with either no skill file or two copies.
 
-## Smoke checks
+## Provider source
 
-Run these checks from the tool folder:
+The [official SAV collection](references.md) is pinned by SHA-256 `d330b3df8f1b1962fcae295b0dc47b831c15f68d0d90db73c4dcb151968e33fe`. It generates the same [12 commands](api_coverage.md) every time. The host is `https://api.sav.com/domains_api_v1/`.
+
+## Run the checks
 
 ```bash
-.venv/bin/python -m json.tool docs/examples/read-active.example.json
-.venv/bin/python -m json.tool docs/examples/plan.example.json
-.venv/bin/python -m json.tool docs/examples/receipt.example.json
-.venv/bin/python tools/generate_inventory.py --check
-PYTHONPATH=src .venv/bin/python -m unittest -q
-PYTHONPATH=src .venv/bin/ruff check src tests tools
-PYTHONPATH=src .venv/bin/mypy src
+python tools/generate_inventory.py --check
+python -m unittest -q
+ruff check src tests tools
+mypy src
 ```
 
-## Proof notes
-
-- Write dry-runs are local, make no provider request, and save a mode-`0600` plan.
-- apply requires reviewed plan + all explicit approval flags.
-- independent readback and rollback are not available for current writes.
-- `provider_response_only` is true only when `provider_response_received` is true.
-- `durable_state_verified` stays false on every current path because no independent SAV readback exists.
-- `receipt_written` reports only whether the local receipt was saved.
-- a 2xx response is reported as `provider_accepted`; it is not verified lasting SAV account state.
-- on every non-2xx provider response, apply returns `1` and writes a redacted receipt when the final private write succeeds.
-- pre-transport receipt failure stops before network; request exceptions keep the outcome unknown; final receipt persistence failure keeps the provider status visible and says not to retry blindly.
-- the JSON examples are mocked, redacted illustrations only. They are not live SAV responses and do not contain real signatures or private paths.
-- No credential or live SAV request was used for this proof.
-
-## Output artifacts in this repo
-
-- `docs/examples/read-active.example.json`
-- `docs/examples/plan.example.json`
-- `docs/examples/receipt.example.json`
-- `docs/api_coverage.md` (generator output)
-
-## Layout coverage
-
-- Source layout: the complete suite passes with only `skills/sav/SKILL.md`.
-- Public layout: the complete suite passes in a fresh temporary public-style copy with only top-level `SKILL.md` and no `skills/` tree.
-- The resolver rejects a missing wrapper and rejects both paths together, so one layout cannot silently duplicate or lose the wrapper behavior.
+The [domain read](examples/read-active.example.json), [plan](examples/plan.example.json), and [receipt](examples/receipt.example.json) are redacted examples. The tests use simulated replies. Check actual account results in SAV after an approved live change.

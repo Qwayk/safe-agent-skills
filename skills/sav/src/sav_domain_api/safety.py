@@ -8,7 +8,7 @@ from math import isfinite
 
 from .errors import ValidationError
 
-PLAN_SCHEMA_VERSION = 2
+PLAN_SCHEMA_VERSION = 3
 PLAN_REQUIRED_ACKS = ("--apply", "--yes", "--ack-no-snapshot", "--ack-high-risk")
 
 
@@ -96,6 +96,12 @@ def parse_auth_code(value: str) -> str:
     if not candidate:
         raise ValidationError("auth-code cannot be empty")
     return candidate
+
+
+def bind_account(api_key: str | None, signing_key: bytes) -> str | None:
+    if api_key is None:
+        return None
+    return hmac.new(signing_key, b"sav-plan-account\0" + api_key.encode("utf-8"), "sha256").hexdigest()
 
 
 def build_plan_hmac(plan_body: dict[str, object], key: bytes) -> str:

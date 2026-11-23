@@ -1,6 +1,6 @@
 # Command reference
 
-This tool supports only fixed commands from `docs/api_coverage.md`.
+See the [coverage table](api_coverage.md) for all 12 named commands.
 
 - Host: fixed `https://api.sav.com/domains_api_v1`
 - Requests do not follow redirects and are sent with a timeout policy (finite positive seconds only).
@@ -23,7 +23,7 @@ sav --output json --env-file .env sales recent-premium
 sav --output json --env-file .env pricing list
 ```
 
-## Write commands (dry-run by default)
+## Prepare a write plan
 
 ```bash
 sav --output json --env-file .env --plan-out .state/plans/remove-from-sale.example.json domains remove-from-sale --domain-name example.com
@@ -48,17 +48,8 @@ sav --output json --env-file .env --apply --yes --ack-no-snapshot --ack-high-ris
 sav --output json --env-file .env --apply --yes --ack-no-snapshot --ack-high-risk --plan-in .state/plans/set-whois-contacts.example.json --receipt-out .state/receipts/set-whois-contacts.example.receipt.json domains set-whois-contacts --domain-name example.com --name "Alice Example" --organization "Example LLC" --email-address alice@example.com --street "1 Example Way" --city Austin --country US --phone "+1-555-0100" --state TX --postal-code 78701 --update-registrant 1 --update-tech 0 --update-admin 0
 ```
 
-## Shared safety behavior
+## Check the plan and receipt
 
-- a dry-run saves a plan and makes no provider request.
-- missing `--plan-in` or approvals returns a safe refusal output.
-- no generic raw command bridge is available.
-- a 2xx apply result uses `outcome: "provider_accepted"`; provider/account state remains unverified without independent readback.
-- `receipt_written` describes only the local receipt file, and `provider_response_only` is true only when a provider response was received.
+Use a plan saved with the intended SAV key. Keep the same key and inputs during apply. Give an optional `--receipt-out` its own new file. See [approval and receipt rules](safety_model.md).
 
-Transfer submit:
-
-- Create `AUTH_FILE` first with the private unique-file steps in [Quickstart](quickstart.md), then use it only for the dry-run and remove it immediately afterward.
-- the file must be a regular mode-`0600` file with one non-empty line.
-- apply uses the saved plan and does not accept `--auth-code-file` again.
-- do not write transfer code on the command line or in environment variables.
+For a transfer, create a private code file using [Quickstart](quickstart.md). Pass it only while preparing the plan. During apply, use the reviewed plan file.

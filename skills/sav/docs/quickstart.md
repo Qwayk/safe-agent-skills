@@ -1,59 +1,50 @@
 # Quickstart
 
-Your first useful result is a list of the active domains in your SAV account:
+After [connecting your account](onboarding.md), try a read. The examples use `.env`. Use your own settings file if you chose a different name.
 
 ```bash
 sav --output json --env-file .env domains active
-```
-
-This read requires a SAV API key and an IP address that SAV has allowed. If those are not ready, follow [Onboarding](onboarding.md) first.
-
-## Confirm the tool
-
-```bash
-sav --output json --env-file .env --version
-```
-
-## Try another read
-
-```bash
+sav --output json --env-file .env sales recent-auction
+sav --output json --env-file .env sales recent-premium
 sav --output json --env-file .env pricing list
 ```
 
-The response is JSON. It names the command and official operation, then returns the redacted SAV response.
+## Prepare a change
 
-Transfer dry-runs must read the code from a private file. Create it without putting the code in the command itself:
-
-```bash
-mkdir -p .state/secrets
-chmod 700 .state/secrets
-AUTH_FILE="$(mktemp ".state/secrets/sav-transfer.XXXXXX")"
-read -r -s SAV_TRANSFER_CODE
-printf '%s\n' "$SAV_TRANSFER_CODE" > "$AUTH_FILE"
-chmod 600 "$AUTH_FILE"
-unset SAV_TRANSFER_CODE
-
-sav --output json --env-file .env --plan-out .state/plans/submit-transfer-code.example.json domains submit-transfer-code --domain-name example.com --auth-code-file "$AUTH_FILE"
-
-rm -f "$AUTH_FILE"
-```
-
-Apply runs from the reviewed plan and does not re-read a transfer file.
-
-## Prepare a change without sending it
+For example, ask the agent to prepare a plan to turn on auto-renewal for a domain. This command saves the plan locally:
 
 ```bash
-sav --output json --env-file .env --plan-out .state/plans/example-sale-price.json domains set-sale-price --domain-name example.com --sale-price 42
+sav --output json --env-file .env --plan-out .state/plans/renewal.json \
+  domains set-auto-renewal --domain-name example.com --enabled 1
 ```
 
-This creates a private mode-`0600` plan and makes no SAV request. The displayed plan hides sensitive values.
-
-## Stop and review
-
-Do not apply until the target, requested values, missing snapshot, and lack of rollback are clear. A reviewed apply repeats the exact command and values:
+Check the domain, the requested setting, and the account key used to prepare the plan. After approval, run with the same key and inputs:
 
 ```bash
-sav --output json --env-file .env --apply --yes --ack-no-snapshot --ack-high-risk --plan-in .state/plans/example-sale-price.json --receipt-out .state/receipts/example-sale-price.receipt.json domains set-sale-price --domain-name example.com --sale-price 42
+sav --output json --env-file .env --apply --yes --ack-no-snapshot --ack-high-risk \
+  --plan-in .state/plans/renewal.json \
+  domains set-auto-renewal --domain-name example.com --enabled 1
 ```
 
-The apply command is shown for reference. The source proof did not run it against SAV.
+The receipt shows what SAV returned. Read the [approval guide](safety_model.md) before applying or trying a change again.
+
+## Prepare a pending transfer
+
+Start with a regular file under a private folder. Enter the transfer code when prompted by your shell.
+
+```bash
+(umask 077; mkdir -p .state/secrets)
+code_file="$(mktemp .state/secrets/sav-transfer.XXXXXX)"
+read -r -s sav_transfer_code
+printf '%s\n' "$sav_transfer_code" > "$code_file"
+unset sav_transfer_code
+
+sav --output json --env-file .env --plan-out .state/plans/transfer.json \
+  domains submit-transfer-code --domain-name example.com --auth-code-file "$code_file"
+
+rm -f "$code_file"
+```
+
+The file needs one non-empty line, mode `0600`, and a mode-`0700` parent folder. Use `--auth-code-file` only when making the plan. Apply uses the reviewed plan and keeps the code out of displayed output.
+
+For nameservers, sale prices, privacy, and contact updates, see the [command reference](command_reference.md).

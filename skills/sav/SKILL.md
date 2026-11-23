@@ -1,39 +1,19 @@
 ---
 name: sav
-description: Use when the user wants to read SAV account domains, recent sales, or transaction pricing, or prepare and approve one of the documented SAV Domain APIs v1 changes.
+description: Check SAV domains, sales, and prices, or prepare a domain or listing change for approval.
 ---
 
-Use this skill for the 12 operations in the official SAV Domain APIs v1 collection. Do not use it for domain registration, auction bidding, website automation, undocumented SAV endpoints, or arbitrary API calls.
+# SAV
 
-Start with a read such as `sav domains active` or `sav pricing list`. If the user asks for a change, create and review the dry-run plan before discussing apply.
+Use `sav` to check active domains, recent sales, and prices or prepare a change. Use the [named commands](docs/command_reference.md). Start with the account and domain the user asked about. Follow [account setup](docs/onboarding.md) when the key or settings file is missing.
 
-Core rules:
-- Always run `--output json` unless caller requires another format.
-- Never print secret-like values (API key, auth code, WHOIS personal data).
-- Reads require SAV access and may run directly. Changes always save a private plan; use `--plan-out` when a specific path is useful, then apply only from the reviewed `--plan-in`.
-- Write apply always requires all: `--apply --yes --plan-in --ack-no-snapshot --ack-high-risk`.
-- Plan state is `.state/` under the env-file directory with mode-`0700` directories for plans, receipts, and keys and mode-`0600` files.
-- Plans are `schema_version: 2` and signed with HMAC-SHA256.
-- `.state/keys/plan-hmac.key` is generated locally if missing and not shared.
-- Transfer writes accept only `--auth-code-file` for dry-run; apply uses the saved plan and must not include a transfer code file or literal code.
-- The transfer authorization code has no environment or literal command-line fallback.
-- Keep transfer secret files in `.state/secrets`, mode-`0600`, and remove the temp file immediately after the dry-run.
-- Never follow redirects. Treat every non-2xx provider response as a failure.
-- Treat `provider_accepted` as a 2xx provider response only, not verified lasting account state.
-- Treat `receipt_written` as local receipt persistence only. `durable_state_verified` remains false without independent readback.
-- `provider_response_only` is true only when `provider_response_received` is true.
-- If the apply outcome is unknown or the final receipt was not written (`receipt_written: false`), tell the user not to retry blindly.
-- Require finite positive timeouts and strict domain and nameserver values before any provider request.
-- Do not claim restore, rollback, or backup support for writes.
-- Never use any path that exposes private workspace files in user-facing summaries.
-- Say clearly that every write currently has no documented before-state snapshot, independent readback, rollback, or restore path.
+Start with a read such as `sav domains active` or `sav pricing list` when it answers the request. The tool covers the 12 commands listed in the guide. For domain registration, auction bids, browser automation, or other API requests, use a different tool.
 
-Write flow examples:
+Use `--output json` unless the user asks for another format. Keep API keys, transfer codes, and contact details out of chat.
 
-```bash
-sav --output json --env-file <env-file> --plan-out <plan-path> domains set-sale-price --domain-name example.com --sale-price 42
-```
+1. Save a private plan with `--plan-out` or use the default location. A preview can be made without a key. Before asking for approval, make a plan with the intended SAV key.
+2. Show the user the account, domain, and exact change. Explain that the tool has no saved copy of the current state or automatic restore. For a transfer, read the code from a private `--auth-code-file` when making the plan, then remove the temporary file.
+3. After approval, use the same account and inputs with `--apply --yes --plan-in --ack-no-snapshot --ack-high-risk`. Apply uses the saved transfer code from the plan.
+4. Read the receipt. `provider_accepted` means SAV returned a readable success reply. To confirm the change, check the account in SAV. If the result is unclear or the final receipt could not be saved, check SAV before making a new plan.
 
-```bash
-sav --output json --env-file <env-file> --apply --yes --ack-no-snapshot --ack-high-risk --plan-in <plan-path> --receipt-out <receipt-path> domains set-sale-price --domain-name example.com --sale-price 42
-```
+See [approvals and receipts](docs/safety_model.md) for the full flow.

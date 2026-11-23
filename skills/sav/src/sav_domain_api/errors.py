@@ -17,10 +17,17 @@ class StateError(ToolError):
     """State persistence, permissions, or path safety failure."""
 
 
-class HttpResponseError(ValidationError):
-    """Provider returned a non-success status code."""
+class StateFileExistsError(StateError):
+    """A private file that must be new already exists."""
 
-    def __init__(self, message: str, *, status: int, response: object) -> None:
+
+class HttpResponseError(ValidationError):
+    """Provider returned an error or a reply the CLI could not read."""
+
+    def __init__(
+        self, message: str, *, status: int, response: object, parsed: bool = True
+    ) -> None:
         self.status = status
         self.response = response
+        self.parsed = parsed
         super().__init__(message)

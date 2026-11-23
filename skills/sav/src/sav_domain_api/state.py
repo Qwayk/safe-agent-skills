@@ -8,7 +8,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from .errors import StateError
+from .errors import StateError, StateFileExistsError
 
 
 def _is_private_dir_mode(mode: int) -> bool:
@@ -30,15 +30,17 @@ def ensure_private_directory(path: Path, *, stop_at: Path) -> None:
 
     for directory in reversed(chain):
         try:
-            if not directory.exists():
+            try:
                 directory.mkdir(mode=0o700)
+            except FileExistsError:
+                pass
+            else:
                 os.chmod(directory, 0o700)
-                continue
 
-            if directory.is_symlink():
+            st_mode = directory.lstat().st_mode
+            if stat.S_ISLNK(st_mode):
                 raise StateError("State path must not be a symlink")
 
-            st_mode = directory.stat().st_mode
             if not _is_private_dir_mode(st_mode):
                 raise StateError("State directory must be private (0o700)")
         except OSError as exc:
@@ -58,7 +60,9 @@ def _fsync_directory(directory: Path) -> None:
             os.close(fd)
 
 
-def _write_bytes(path: Path, payload: bytes, *, stop_at: Path) -> None:
+def _write_bytes(
+    path: Path, payload: bytes, *, stop_at: Path, exclusive: bool = False
+) -> None:
     ensure_private_directory(path.parent, stop_at=stop_at)
 
     target = path
@@ -76,31 +80,40 @@ def _write_bytes(path: Path, payload: bytes, *, stop_at: Path) -> None:
         os.fsync(fd)
         os.close(fd)
         fd = -1
-        os.replace(tmp_file, target)
+        if exclusive:
+            os.link(tmp_file, target)
+        else:
+            os.replace(tmp_file, target)
         _fsync_directory(target.parent)
+    except FileExistsError as exc:
+        raise StateFileExistsError("The requested private file already exists.") from exc
     except OSError as exc:
+        raise StateError("Unable to write state file") from exc
+    finally:
         if tmp_file is not None:
             with contextlib.suppress(OSError):
                 os.unlink(tmp_file)
-        raise StateError("Unable to write state file") from exc
-    finally:
         if fd >= 0:
             with contextlib.suppress(OSError):
                 os.close(fd)
 
 
-def write_private_json(path: Path, payload: dict[str, Any], *, stop_at: Path) -> None:
+def write_private_json(
+    path: Path, payload: dict[str, Any], *, stop_at: Path, exclusive: bool = False
+) -> None:
     encoded = json.dumps(
         payload,
         ensure_ascii=False,
         sort_keys=True,
         separators=(",", ":"),
     ).encode("utf-8") + b"\n"
-    _write_bytes(path, encoded, stop_at=stop_at)
+    _write_bytes(path, encoded, stop_at=stop_at, exclusive=exclusive)
 
 
-def write_private_bytes(path: Path, payload: bytes, *, stop_at: Path) -> None:
-    _write_bytes(path, payload, stop_at=stop_at)
+def write_private_bytes(
+    path: Path, payload: bytes, *, stop_at: Path, exclusive: bool = False
+) -> None:
+    _write_bytes(path, payload, stop_at=stop_at, exclusive=exclusive)
 
 
 def read_plan_key(path: Path) -> bytes:

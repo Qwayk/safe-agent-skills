@@ -45,6 +45,8 @@ class HttpClient:
         payload_text = response.text if response.text else ""
         try:
             payload = _JsonDecoder.load(payload_text)
+            if not isinstance(payload, (dict, list)):
+                raise ValueError("provider reply is not a JSON object or list")
         except (json.JSONDecodeError, ValueError):
             message = (
                 f"Provider request failed: HTTP {status}"
@@ -55,6 +57,7 @@ class HttpClient:
                 message,
                 status=status,
                 response={"unparsed_response": "<redacted>"},
+                parsed=False,
             ) from None
 
         if not (200 <= status <= 299):

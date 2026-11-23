@@ -13,7 +13,14 @@ from typing import Any, TypedDict, cast
 
 from . import OPERATIONS, __version__
 from .config import BASE_URL, Config, load_config
-from .errors import HttpResponseError, SafetyError, StateError, ToolError, ValidationError
+from .errors import (
+    HttpResponseError,
+    SafetyError,
+    StateError,
+    StateFileExistsError,
+    ToolError,
+    ValidationError,
+)
 from .http import HttpClient
 from .output import Output
 from .redaction import redact
@@ -21,6 +28,7 @@ from .safety import (
     PLAN_REQUIRED_ACKS,
     PLAN_SCHEMA_VERSION,
     assert_any_whois_update,
+    bind_account,
     build_plan_hmac,
     parse_auth_code,
     parse_country_code,
@@ -173,7 +181,12 @@ def _load_or_create_signing_key(*, env_file: str) -> tuple[bytes, Path]:
         return read_plan_key(key_path), key_path
 
     key = os.urandom(32)
-    write_private_bytes(key_path, key, stop_at=_env_dir(env_file=env_file))
+    try:
+        write_private_bytes(
+            key_path, key, stop_at=_env_dir(env_file=env_file), exclusive=True
+        )
+    except StateFileExistsError:
+        key = read_plan_key(key_path)
     return key, key_path
 
 
@@ -335,14 +348,18 @@ def _validate_plan(
     command: str,
     env_file: str,
     args: argparse.Namespace,
-) -> tuple[dict[str, Any], bytes]:
+    api_key: str | None,
+) -> dict[str, Any]:
     if not Path(plan_path).exists():
         raise ValidationError("Plan file not found")
     plan = _load_plan_json(Path(plan_path))
+    if plan.get("schema_version") == 2:
+        raise SafetyError("Save and review a new plan with the intended SAV account key.")
     required_keys = {
         "schema_version",
         "plan_id",
         "key_id",
+        "account_binding",
         "command",
         "operation_id",
         "endpoint",
@@ -360,7 +377,9 @@ def _validate_plan(
 
     if not isinstance(plan.get("schema_version"), int) or int(plan["schema_version"]) != PLAN_SCHEMA_VERSION:
         raise ValidationError("Invalid plan schema version")
-    if not isinstance(plan.get("plan_id"), str) or not plan.get("plan_id"):
+    if not isinstance(plan.get("plan_id"), str) or len(plan["plan_id"]) != 64 or any(
+        ch not in "0123456789abcdef" for ch in plan["plan_id"]
+    ):
         raise ValidationError("Plan is missing an id")
     if plan.get("command") != command:
         raise SafetyError("Plan command does not match")
@@ -406,6 +425,13 @@ def _validate_plan(
     ):
         raise SafetyError("Plan signature mismatch")
 
+    account = plan.get("account_binding")
+    current = bind_account(api_key, signing_key)
+    if not isinstance(account, str) or current is None or not hmac.compare_digest(
+        account.encode("utf-8"), current.encode("ascii")
+    ):
+        raise SafetyError("This plan uses a different SAV key or was saved without one. Save and review a new plan.")
+
     if not isinstance(plan.get("params"), dict):
         raise ValidationError("Plan params are invalid")
     normalized_params = _normalize_plan_params(op, cast(dict[str, Any], plan["params"]))
@@ -416,16 +442,19 @@ def _validate_plan(
     if query != normalized_params:
         raise SafetyError("Plan command payload mismatch")
 
-    return plan, signing_key
+    return plan
 
 
-def _build_plan(op: OperationLike, args: argparse.Namespace, *, key: bytes) -> dict[str, Any]:
+def _build_plan(
+    op: OperationLike, args: argparse.Namespace, *, key: bytes, api_key: str | None
+) -> dict[str, Any]:
     command = f"sav {op['command_path']}"
     params = _build_query(op, args)
     payload: dict[str, Any] = {
         "schema_version": PLAN_SCHEMA_VERSION,
         "plan_id": hashlib.sha256(os.urandom(16)).hexdigest(),
         "key_id": hashlib.sha256(key).hexdigest(),
+        "account_binding": bind_account(api_key, key),
         "command": command,
         "operation_id": op["operation_id"],
         "endpoint": f"{BASE_URL}/{op['operation_id']}",
@@ -441,8 +470,30 @@ def _build_plan(op: OperationLike, args: argparse.Namespace, *, key: bytes) -> d
     return payload
 
 
-def _write_private_payload(path: Path, payload: dict[str, Any], *, env_file: str) -> None:
-    write_private_json(path, payload, stop_at=_env_dir(env_file=env_file))
+def _write_private_payload(
+    path: Path, payload: dict[str, Any], *, env_file: str, exclusive: bool = False
+) -> None:
+    write_private_json(path, payload, stop_at=_env_dir(env_file=env_file), exclusive=exclusive)
+
+
+def _validate_output_path(
+    path: Path, *, role: str, env_file: str, inputs: tuple[Path, ...] = ()
+) -> None:
+    resolved = path.resolve()
+    state, plans, receipts, keys = _state_dirs(env_file=env_file)
+    other_outputs = receipts if role == "plan" else plans
+    if any(
+        resolved.is_relative_to(folder.resolve())
+        for folder in (other_outputs, keys, state / "secrets")
+    ):
+        raise SafetyError(f"Choose a {role} path separate from plans, receipts, keys, and secret files.")
+
+    for source in (Path(env_file), _key_path(env_file=env_file), *inputs):
+        if resolved == source.resolve():
+            raise SafetyError(f"The {role} output must be separate from input files and the signing key.")
+        with contextlib.suppress(FileNotFoundError):
+            if path.samefile(source):
+                raise SafetyError(f"The {role} output must be separate from input files and the signing key.")
 
 
 def _receipt_verification(*, independent_readback_available: bool, provider_response_received: bool) -> str:
@@ -463,16 +514,13 @@ def _build_apply_receipt(
     response: object | None,
     request_attempted: bool | str,
     provider_response_received: bool,
+    outcome: str,
+    secrets: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     snapshot_status = str(plan.get("snapshot_status"))
     independent_readback = bool(plan.get("independent_readback_available", False))
     rollback_available = bool(plan.get("rollback_available", False))
     provider_2xx = status is not None and 200 <= status <= 299
-    outcome = (
-        "unknown"
-        if not provider_response_received
-        else ("provider_accepted" if provider_2xx else "failure")
-    )
     return {
         "command": f"sav {op['command_path']}",
         "operation_id": op["operation_id"],
@@ -492,7 +540,7 @@ def _build_apply_receipt(
             independent_readback_available=independent_readback,
             provider_response_received=provider_response_received,
         ),
-        "response": redact(response) if response is not None else None,
+        "response": redact(response, secrets=secrets) if response is not None else None,
     }
 
 
@@ -519,7 +567,7 @@ def _run_read(op: OperationLike, *, args: argparse.Namespace, cfg: Config, out: 
             "api_host": BASE_URL,
             "read": {
                 "status": response.status,
-                "response": redact(response.json_body),
+                "response": redact(response.json_body, secrets=(cfg.api_key or "",)),
             },
         }
     )
@@ -563,74 +611,90 @@ def _run_write(
     op: OperationLike,
     *,
     args: argparse.Namespace,
-    cfg: Config | None,
+    cfg: Config,
     out: Output,
 ) -> int:
     command = f"sav {op['command_path']}"
+    env_file = str(args.env_file)
 
     if not bool(args.apply):
         if args.plan_out is not None and Path(str(args.plan_out)).suffix != ".json":
             raise ValidationError("Plan output must be a JSON file")
 
         auth_code = None
+        transfer_input: tuple[Path, ...] = ()
         if op["operation_id"] == "submit_auth_code_for_pending_transfer_in":
             raw = args.__dict__.get("auth_code")
             if raw is None:
                 raise ValidationError("--auth-code-file is required")
             auth_code = _read_auth_code_file(str(raw))
+            transfer_input = (Path(str(raw)),)
 
         _ = _build_query(op, args, auth_code=auth_code)
-        signing_key, _ = _load_or_create_signing_key(env_file=str(args.env_file))
-        plan = _build_plan(op, args=NamespaceProxy(args, auth_code=auth_code), key=signing_key)
-
-        plan_path = Path(
-            args.plan_out
-            or str(_default_plan_path(env_file=str(args.env_file), plan_id=str(plan["plan_id"])) )
+        if args.plan_out:
+            _validate_output_path(
+                Path(args.plan_out), role="plan", env_file=env_file, inputs=transfer_input
+            )
+        signing_key, _ = _load_or_create_signing_key(env_file=env_file)
+        plan = _build_plan(
+            op, args=NamespaceProxy(args, auth_code=auth_code), key=signing_key, api_key=cfg.api_key
         )
-        _write_private_payload(plan_path, plan, env_file=str(args.env_file))
+        plan_path = Path(
+            args.plan_out or _default_plan_path(env_file=env_file, plan_id=str(plan["plan_id"]))
+        )
+        _write_private_payload(plan_path, plan, env_file=env_file)
         out.emit(
             {
                 "ok": True,
                 "dry_run": True,
+                "apply_ready": cfg.api_key is not None,
                 "command": command,
                 "operation_id": op["operation_id"],
                 "plan_path": str(plan_path),
-                "plan": redact(plan),
+                "plan": redact(plan, secrets=(cfg.api_key or "", auth_code or "")),
             }
         )
         return 0
 
-    plan, _ = _validate_plan(
-        str(args.plan_in),
-        op=op,
-        command=command,
-        env_file=str(args.env_file),
-        args=args,
+    plan = _validate_plan(
+        str(args.plan_in), op=op, command=command, env_file=env_file, args=args, api_key=cfg.api_key
     )
-    if cfg is None:
-        raise ValidationError("Missing authentication for apply path")
-
     query = _build_query(
         op,
         args,
         auth_code=str(cast(dict[str, Any], plan["params"]).get("auth_code", "")),
     )
-    receipt_path = _resolve_receipt_path(args=args, plan=plan, env_file=str(args.env_file))
-    pre_receipt = _build_apply_receipt(
-        plan=plan,
-        op=op,
-        status=None,
-        response=None,
-        request_attempted="unknown",
-        provider_response_received=False,
+    canonical_receipt = _default_receipt_path(env_file=env_file, plan_id=str(plan["plan_id"]))
+    receipt_path = _resolve_receipt_path(args=args, plan=plan, env_file=env_file)
+    _validate_output_path(
+        receipt_path, role="receipt", env_file=env_file, inputs=(Path(args.plan_in),)
     )
+    if canonical_receipt.exists() or canonical_receipt.is_symlink():
+        raise SafetyError("This plan already has an apply receipt. Check SAV before creating a new plan.")
+    if receipt_path.resolve() == canonical_receipt.resolve():
+        receipt_path = canonical_receipt
+    elif receipt_path.exists() or receipt_path.is_symlink():
+        raise SafetyError("Choose a new path for the receipt. The current path already exists.")
+
+    pre_receipt = _build_apply_receipt(
+        plan=plan, op=op, status=None, response=None, request_attempted="unknown",
+        provider_response_received=False, outcome="unknown",
+    )
+    pending = {"ok": False, "receipt": pre_receipt}
+    custom_reserved = False
     try:
-        _write_private_payload(
-            receipt_path,
-            {"ok": False, "receipt": pre_receipt},
-            env_file=str(args.env_file),
-        )
+        if receipt_path != canonical_receipt:
+            _write_private_payload(receipt_path, pending, env_file=env_file, exclusive=True)
+            custom_reserved = True
+        _write_private_payload(canonical_receipt, pending, env_file=env_file, exclusive=True)
     except StateError as exc:
+        if custom_reserved:
+            with contextlib.suppress(OSError):
+                receipt_path.unlink()
+        if isinstance(exc, StateFileExistsError) and canonical_receipt.exists():
+            raise SafetyError(
+                "This plan already has an apply receipt. Check SAV before creating a new plan."
+            ) from exc
         out.emit(
             {
                 "ok": False,
@@ -650,185 +714,65 @@ def _run_write(
         )
         return 1
 
+    status: int | None = None
+    reply: object | None = None
+    error: str | None = None
+    error_type: str | None = None
     try:
         response = HttpClient(timeout_s=cfg.timeout_s).get(
             url=f"{BASE_URL}/{op['operation_id']}",
             headers={"APIKEY": cfg.api_key or ""},
             params=query,
         )
+        status, reply = response.status, response.json_body
+        outcome = "provider_accepted"
     except HttpResponseError as exc:
-        is_redirect_like = 300 <= exc.status < 400
-        response_receipt = _build_apply_receipt(
-            plan=plan,
-            op=op,
-            status=exc.status,
-            response=exc.response,
-            request_attempted=True,
-            provider_response_received=True,
-        )
-        try:
-            _write_private_payload(
-                receipt_path,
-                {"ok": False, "receipt": response_receipt},
-                env_file=str(args.env_file),
-            )
-            out.emit(
-                {
-                    "ok": False,
-                    "command": command,
-                    "operation_id": op["operation_id"],
-                    "provider_received": True,
-                    "provider_response_received": True,
-                    "provider_status": exc.status,
-                    "provider_2xx": False,
-                    "outcome": "failure",
-                    "durable_state_verified": False,
-                    "receipt_written": True,
-                    "receipt_path": str(receipt_path),
-                    "receipt": response_receipt,
-                    "error": str(exc),
-                    "error_type": "ValidationError" if is_redirect_like else "RuntimeError",
-                    "retry": "do-not-retry",
-                }
-            )
-            return 1
-        except StateError as write_exc:
-            out.emit(
-                {
-                    "ok": False,
-                    "command": command,
-                    "operation_id": op["operation_id"],
-                    "provider_received": True,
-                    "provider_response_received": True,
-                    "provider_status": exc.status,
-                    "provider_2xx": False,
-                    "outcome": "failure",
-                    "durable_state_verified": False,
-                    "receipt_written": False,
-                    "receipt": response_receipt,
-                    "error": str(write_exc),
-                    "error_type": "StateError",
-                    "retry": "do-not-retry",
-                }
-            )
-            return 1
-
+        status, reply = exc.status, exc.response
+        unclear = status == 408 or status >= 500 or (200 <= status <= 299 and not exc.parsed)
+        outcome = "unknown" if unclear else "failure"
+        error = str(exc)
+        error_type = "ValidationError" if 300 <= status < 400 else "RuntimeError"
     except ToolError as exc:
-        request_exception_receipt = _build_apply_receipt(
-            plan=plan,
-            op=op,
-            status=None,
-            response=None,
-            request_attempted=True,
-            provider_response_received=False,
-        )
-        receipt_written = True
-        try:
-            _write_private_payload(
-                receipt_path,
-                {"ok": False, "receipt": request_exception_receipt},
-                env_file=str(args.env_file),
-            )
-        except StateError:
-            receipt_written = False
-        out.emit(
-            {
-                "ok": False,
-                "command": command,
-                "operation_id": op["operation_id"],
-                "provider_received": False,
-                "provider_response_received": False,
-                "provider_status": None,
-                "provider_2xx": False,
-                "outcome": "unknown",
-                "durable_state_verified": False,
-                "receipt_written": receipt_written,
-                "receipt_path": str(receipt_path),
-                "receipt": request_exception_receipt,
-                "error": str(exc),
-                "error_type": type(exc).__name__,
-                "retry": "do-not-retry",
-            }
-        )
-        return 1
+        outcome = "unknown"
+        error, error_type = str(exc), type(exc).__name__
 
-    provider_status = response.status
-    provider_receipt = _build_apply_receipt(
-        plan=plan,
-        op=op,
-        status=provider_status,
-        response=response.json_body,
-        request_attempted=True,
-        provider_response_received=True,
+    secrets = (cfg.api_key or "", query.get("auth_code", ""))
+    receipt = _build_apply_receipt(
+        plan=plan, op=op, status=status, response=reply, request_attempted=True,
+        provider_response_received=status is not None, outcome=outcome, secrets=secrets,
     )
-    provider_ok = 200 <= provider_status <= 299
+    ok = outcome == "provider_accepted"
+    payload: dict[str, Any] = {
+        "ok": ok,
+        "dry_run": False,
+        "command": command,
+        "operation_id": op["operation_id"],
+        "receipt_path": str(receipt_path),
+        "receipt": receipt,
+        "provider_received": status is not None,
+        "provider_response_received": status is not None,
+        "provider_status": status,
+        "provider_2xx": receipt["provider_2xx"],
+        "outcome": outcome,
+        "durable_state_verified": False,
+        "receipt_written": True,
+    }
+    if error:
+        payload.update(error=redact(error, secrets=secrets), error_type=error_type, retry="do-not-retry")
+    if outcome == "unknown":
+        payload["next_step"] = "Check the current state in SAV before creating a new plan."
+
     try:
-        _write_private_payload(
-            receipt_path,
-            {"ok": provider_ok, "receipt": provider_receipt},
-            env_file=str(args.env_file),
-        )
+        for path in dict.fromkeys((canonical_receipt, receipt_path)):
+            _write_private_payload(path, {"ok": ok, "receipt": receipt}, env_file=env_file)
     except StateError as exc:
-        out.emit(
-            {
-                "ok": False,
-                "command": command,
-                "operation_id": op["operation_id"],
-                "provider_received": True,
-                "provider_response_received": True,
-                "provider_status": provider_status,
-                "provider_2xx": provider_ok,
-                "outcome": "provider_accepted" if provider_ok else "failure",
-                "durable_state_verified": False,
-                "receipt_written": False,
-                "receipt": provider_receipt,
-                "error": str(exc),
-                "error_type": "StateError",
-                "retry": "do-not-retry",
-            }
+        payload.update(
+            ok=False, receipt_written=False, error=str(exc), error_type="StateError",
+            retry="do-not-retry",
+            next_step="Check the current state in SAV before creating a new plan.",
         )
-        return 1
-
-    if provider_ok:
-        out.emit(
-            {
-                "ok": True,
-                "dry_run": False,
-                "command": command,
-                "operation_id": op["operation_id"],
-                "receipt_path": str(receipt_path),
-                "receipt": provider_receipt,
-                "provider_received": True,
-                "provider_response_received": True,
-                "provider_status": provider_status,
-                "provider_2xx": True,
-                "outcome": "provider_accepted",
-                "durable_state_verified": False,
-                "receipt_written": True,
-            }
-        )
-        return 0
-
-    out.emit(
-        {
-            "ok": False,
-            "command": command,
-            "operation_id": op["operation_id"],
-            "provider_received": True,
-            "provider_response_received": True,
-            "provider_status": provider_status,
-            "provider_2xx": False,
-            "outcome": "failure",
-            "durable_state_verified": False,
-            "receipt_written": True,
-            "receipt_path": str(receipt_path),
-            "receipt": provider_receipt,
-            "error": f"Provider request failed: HTTP {provider_status}",
-            "error_type": "RuntimeError",
-            "retry": "do-not-retry",
-        }
-    )
-    return 1
+    out.emit(payload)
+    return 0 if payload["ok"] else 1
 
 
 class NamespaceProxy(argparse.Namespace):
@@ -871,7 +815,7 @@ def main(argv: list[str] | None = None) -> int:
                     api_key=cfg.api_key,
                     timeout_s=parse_timeout_s(args.timeout_s, field_name="--timeout-s"),
                 )
-            return _run_write(op=op, args=args, cfg=cfg if args.apply else None, out=out)
+            return _run_write(op=op, args=args, cfg=cfg, out=out)
 
         cfg = load_config(env_file=str(args.env_file), require_api_key=True)
         if args.timeout_s is not None:
